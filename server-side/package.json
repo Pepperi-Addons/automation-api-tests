@@ -28,6 +28,11 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "0.0.24",
-        "@pepperi-addons/papi-sdk": "^1.0.14"
+        "@pepperi-addons/papi-sdk": "file:../../papi-sdk",
+        "@rollup/plugin-json": "^4.1.0",
+        "chai": "^4.2.0",
+        "mocha": "^7.2.0",
+        "mochawesome": "^6.1.1",
+        "node-fetch": "^2.6.0"
     }
 }
