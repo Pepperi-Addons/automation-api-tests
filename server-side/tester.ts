@@ -14,7 +14,8 @@ export default function Tester() {
             reportFilename: fileName,
             html: false,
             consoleReporter: 'none'
-        }
+        },
+        timeout: 10000
     });
     const root = mocha.suite;
     let context: Suite | undefined = root;
