@@ -6,7 +6,7 @@
   "DefaultEditor": "editor",
   "Endpoints": [
     "installation.js",
-    "api.ts",
+    "tests.ts",
     "file_storage_test.ts"
   ],
   "Editors": [

@@ -1,17 +1,8 @@
-import { PapiClient, InstalledAddon } from '@pepperi-addons/papi-sdk'
-import { Client } from '@pepperi-addons/debug-server';
-import { stringify } from 'querystring';
-import { FileStorage } from '@pepperi-addons/papi-sdk/dist/entities/fileStorage';
+import { PapiClient, FileStorage } from "@pepperi-addons/papi-sdk";
 
-class TestService {
+export class FileStorageService {
+    constructor(public papiClient: PapiClient) {
 
-    papiClient: PapiClient
-
-    constructor(private client: Client) {
-        this.papiClient = new PapiClient({
-            baseURL: client.BaseURL,
-            token: client.OAuthAccessToken
-        });
     }
 
     //Test Data
@@ -39,11 +30,7 @@ class TestService {
         }
     }
 
-    //API Calls
-    getAddons(): Promise<InstalledAddon[]> {
-        return this.papiClient.addons.installedAddons.find({});
-    }
-
+    //Files Storage API Calls
     getFilesFromStorage() {
         return this.papiClient.fileStorage.find({});
     }
@@ -55,8 +42,4 @@ class TestService {
     getFileConfigurationByID(id: number) {
         return this.papiClient.fileStorage.get(id);
     }
-
-    //functions
 }
-
-export default TestService;
