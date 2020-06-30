@@ -1,8 +1,11 @@
 import Mocha, { Suite } from 'mocha';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import promised from 'chai-as-promised'
 import fs from 'fs'
 import path from 'path'
 import Mochawesome from 'mochawesome'
+
+chai.use(promised);
 
 export default function Tester() {
     const mochaDir = '/tmp/mochawesome-results-' + new Date().toISOString().replace(/\.|\:/g, '-');

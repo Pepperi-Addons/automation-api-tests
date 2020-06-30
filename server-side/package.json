@@ -18,6 +18,7 @@
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
         "@rollup/plugin-node-resolve": "^8.0.0",
+        "@types/chai-as-promised": "^7.1.2",
         "@types/dotenv": "^8.2.0",
         "@types/node": "^10.17.24",
         "nodemon": "^2.0.4",
@@ -31,6 +32,7 @@
         "@pepperi-addons/papi-sdk": "file:../../papi-sdk",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
         "mocha": "^7.2.0",
         "mochawesome": "^6.1.1",
         "node-fetch": "^2.6.0"

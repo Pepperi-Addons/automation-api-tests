@@ -1,6 +1,7 @@
 import GeneralService from '../services/general.service'
 import tester from '../tester';
 import { FileStorageService } from '../services/file-storage.service';
+import { FileStorage } from '@pepperi-addons/papi-sdk';
 
 // Test Functions /file_storage_test/CRUDOneFileFromFileStorageTest
 export async function CRUDOneFileFromFileStorageTest(generalService: GeneralService) {
@@ -81,9 +82,33 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             updatedFileObjectBase64["ModificationDate"] = "1999-09-09Z";
             updatedFileObjectBase64["Title"] = "Test 9999999";
             updatedFileObjectBase64["URL"] = "https://cdn.Test";
+            const obj: FileStorage = {
+                Description: "New description",
+                Content: Buffer.from('EDCBA').toString('base64'),
+                CreationDate: "1999-09-09Z",
+                FileName: "Test 9999999.txt", //TODO: Changing the name to a name without ".txt" sufix should be prevented or something,
+                IsSync: true,
+                MimeType: "text/xml",
+                ModificationDate: "1999-09-09Z",
+                Title: "Test 9999999",
+                URL: "https://cdn.Test",
+            }
 
             await service.postFilesToStorage(updatedFileObjectBase64 as any);
 
+
+            /*
+                        await service.postFilesToStorage({
+                Description: "New description",
+                Content: Buffer.from('EDCBA').toString('base64'),
+                CreationDate: "1999-09-09Z",
+                FileName: "Test 9999999.txt", //TODO: Changing the name to a name without ".txt" sufix should be prevented or somethin,
+                IsSync: true,
+                MimeType: "text/xml",
+                ModificationDate: "1999-09-09Z",
+                Title: "Test 9999999",
+                URL: "https://cdn.Test",
+            });*/
             //Get the current (after the update) files from the File Storage
             let allfilesAfterBase64Update = await service.getFilesFromStorage();
 
@@ -315,7 +340,7 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
         });
     });
 
-    await describe('Make sure file uploaded via Base64 when using both Base64 and URL', () => {
+    describe('Make sure file uploaded via Base64 when using both Base64 and URL', () => {
 
         let testDataFileNameFromURLAndBase64;
         let allfilesAfterURLAndBase64;
@@ -396,7 +421,7 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
         });
     });
 
-    await describe('Mandatory Title test (negative)', () => {
+    describe('Mandatory Title test (negative)', () => {
 
         let tempBodyNonTitle = {};
         it('Don\'t Create a file in the file storage', async () => {
@@ -414,22 +439,41 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             let allfilesAfterNonTitle = await service.getFilesFromStorage();
 
             expect(allfilesBeforeAddNonTitle.length).to.be.equal(allfilesAfterNonTitle.length);
+
+            // //Get the current (after) files from the File Storage
+            // let allfilesAfterNonTitle = await service.getFilesFromStorage();
+
+            expect(service.getFilesFromStorage()).eventually.to.be.an('array').with.lengthOf(allfilesAfterNonTitle.length)
         });
 
+        /*let postWithoutTitleResponse;
+try {
+    postWithoutTitleResponse = await service.postFilesToStorage(tempBodyNonTitle as any);
+} catch (error) {
+    postWithoutTitleResponse = error;
+}
+expect(postWithoutTitleResponse["message"].split("\":\"")[1].split("\",\"")[0]).to.contain("The mandatory property \\\"Title\\\" can\'t be ignore.");
+*/
+        var aaa;
         it('Correct exception message for Title', async () => {
+            //var postWithoutTitleResponse = await service.postFilesToStorage(tempBodyNonTitle as any);
 
-            let postWithoutTitleResponse;
-            try {
-                postWithoutTitleResponse = await service.postFilesToStorage(tempBodyNonTitle as any);
-            } catch (error) {
-                postWithoutTitleResponse = error;
-            }
-            expect(postWithoutTitleResponse["message"].split("\":\"")[1].split("\",\"")[0]).to.contain("The mandatory property \\\"Title\\\" can\'t be ignore.");
+            //expect(async () => { await service.postFilesToStorage(tempBodyNonTitle as any) }).to.throw("The mandatory property \\\"Title\\\" can\'t be ignore.");
+            //expect(service.postFilesToStorage(tempBodyNonTitle as any).then).to.throw("The mandatory property \\\"Title\\\" can\'t be ignore.");
+            //expect(service.postFilesToStorage(tempBodyNonTitle as any).then).to.contain("The mandatory property \\\"Title\\\" can\'t be ignore.");
+            expect(service.postFilesToStorage(tempBodyNonTitle as any)).eventually.to.throw('Title');
+            aaa += 1;
+        });
+
+        it('Correct exception message for Title2', async () => {
+            //expect(service.postFilesToStorage(tempBodyNonTitle as any).then).to.throw();
+            expect(async () => { await service.postFilesToStorage(tempBodyNonTitle as any) }).to.throw;
+
         });
 
     });
 
-    await describe('Mandatory FileName test (negative)', () => {
+    describe('Mandatory FileName test (negative)', () => {
 
         let tempBodyNonFileName = {};
         it('Don\'t Create a file in the file storage', async () => {
@@ -460,7 +504,7 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
 
     });
 
-    await describe('Mandatory fields test (negative)', () => {
+    describe('Mandatory fields test (negative)', () => {
 
         let tempBodyNonMandatory = {};
         it('Don\'t Create a file in the file storage', async () => {
