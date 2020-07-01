@@ -2,35 +2,34 @@ import GeneralService from '../services/general.service'
 import tester from '../tester';
 import { FileStorageService } from '../services/file-storage.service';
 import { FileStorage } from '@pepperi-addons/papi-sdk';
+import { Url } from 'url';
+import { StreamPriorityOptions } from 'http2';
 
 // Test Functions /file_storage_test/CRUDOneFileFromFileStorageTest
 export async function CRUDOneFileFromFileStorageTest(generalService: GeneralService) {
     const service = new FileStorageService(generalService.papiClient);
     const { describe, expect, it, run } = tester();
-
     const fetch = require("node-fetch");
 
     //#region Tests
     describe('CRUD One File Using The File Storage in Base64', () => {
 
-        let allfilesAfterBase64;
-        let testDataFileNameFromBase64;
+        let allfilesAfterBase64: FileStorage[];
+        let testDataFileNameFromBase64: string;
         it('Create a file in the file storage', async () => {
 
             //Get the current (before) files from the File Storage
-            let allfilesBeforeAddFromBase64 = await service.getFilesFromStorage();
+            let allfilesBeforeAddFromBase64: FileStorage[] = await service.getFilesFromStorage();
 
             //Add a file to the File Storage
             testDataFileNameFromBase64 = "Test " + Math.floor(Math.random() * 1000000).toString();
             await service.postFilesToStorage(service.createNewTextFileFromBase64(testDataFileNameFromBase64, testDataFileNameFromBase64));
 
             //Get the current (after) files from the File Storage
-            allfilesAfterBase64 = await service.getFilesFromStorage();
-
-            expect(allfilesBeforeAddFromBase64.length).to.be.equal(allfilesAfterBase64.length - 1);
+            await expect(allfilesAfterBase64 = await service.getFilesFromStorage()).to.be.an('array').with.lengthOf(allfilesBeforeAddFromBase64.length + 1);
         });
 
-        let fileObjectBase64;
+        let fileObjectBase64: FileStorage;
         it('Read the new added file properties', async () => {
 
             //Save the created file information
@@ -55,62 +54,41 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             expect(fileObjectBase64.URL).to.be.contain(testDataFileNameFromBase64 + ".txt");
         });
 
-        let uriFromBase64
+        let uriFromBase64: string;
         it('Read the new added file content', async () => {
 
             //Get the created file content
-            uriFromBase64 = fileObjectBase64.URL;
-            let fileContentFromBase64 = await fetch(uriFromBase64)
+            uriFromBase64 = fileObjectBase64.URL as any;
+            let fileContentFromBase64: string = await fetch(uriFromBase64)
                 .then((response) => response.text());
 
             expect(fileContentFromBase64).to.contain("ABCD");
         });
 
-        let inItUpdatedFileObjectBase64;
-        let updatedFileContentFromBase64;
+        let inItUpdatedFileObjectBase64: FileStorage;
+        let updatedFileContentFromBase64: string;
         it('Update the new added file', async () => {
 
             //Update the new added file
-            let updatedFileObjectBase64 = {};
-            Object.assign(updatedFileObjectBase64, fileObjectBase64);
-            updatedFileObjectBase64["Description"] = "New description";
-            updatedFileObjectBase64["Content"] = Buffer.from('EDCBA').toString('base64');
-            updatedFileObjectBase64["CreationDate"] = "1999-09-09Z";
-            updatedFileObjectBase64["FileName"] = "Test 9999999.txt"; //TODO: Changing the name to a name without ".txt" sufix should be prevented or something
-            updatedFileObjectBase64["IsSync"] = true;
-            updatedFileObjectBase64["MimeType"] = "text/xml";
-            updatedFileObjectBase64["ModificationDate"] = "1999-09-09Z";
-            updatedFileObjectBase64["Title"] = "Test 9999999";
-            updatedFileObjectBase64["URL"] = "https://cdn.Test";
-            const obj: FileStorage = {
+            const updatedFileObjectBase64: FileStorage = {
+                Configuration: fileObjectBase64.Configuration,
+                Hidden: fileObjectBase64.Hidden,
+                InternalID: fileObjectBase64.InternalID,
                 Description: "New description",
                 Content: Buffer.from('EDCBA').toString('base64'),
                 CreationDate: "1999-09-09Z",
-                FileName: "Test 9999999.txt", //TODO: Changing the name to a name without ".txt" sufix should be prevented or something,
+                FileName: "Test 9999999.txt", //TODO: Changing the name to a name without ".txt" sufix should be prevented or something
                 IsSync: true,
                 MimeType: "text/xml",
                 ModificationDate: "1999-09-09Z",
                 Title: "Test 9999999",
-                URL: "https://cdn.Test",
+                URL: "https://cdn.Test"
             }
 
-            await service.postFilesToStorage(updatedFileObjectBase64 as any);
+            await service.postFilesToStorage(updatedFileObjectBase64);
 
-
-            /*
-                        await service.postFilesToStorage({
-                Description: "New description",
-                Content: Buffer.from('EDCBA').toString('base64'),
-                CreationDate: "1999-09-09Z",
-                FileName: "Test 9999999.txt", //TODO: Changing the name to a name without ".txt" sufix should be prevented or somethin,
-                IsSync: true,
-                MimeType: "text/xml",
-                ModificationDate: "1999-09-09Z",
-                Title: "Test 9999999",
-                URL: "https://cdn.Test",
-            });*/
             //Get the current (after the update) files from the File Storage
-            let allfilesAfterBase64Update = await service.getFilesFromStorage();
+            let allfilesAfterBase64Update: FileStorage[] = await service.getFilesFromStorage();
 
             let updatedFileObjectBase64NewUrl;
             for (let index = 0; index < allfilesAfterBase64Update.length; index++) {
@@ -135,13 +113,13 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             expect(inItUpdatedFileObjectBase64.Configuration).to.be.null;
             expect(inItUpdatedFileObjectBase64.Content).to.be.null;
             expect(inItUpdatedFileObjectBase64.CreationDate).to.contain(new Date().toISOString().split("T")[0]);
-            expect(inItUpdatedFileObjectBase64.Description).to.be.equal(updatedFileObjectBase64["Description"]);
-            expect(inItUpdatedFileObjectBase64.FileName).to.be.equal(updatedFileObjectBase64["FileName"]);
+            expect(inItUpdatedFileObjectBase64.Description).to.be.equal(updatedFileObjectBase64.Description);
+            expect(inItUpdatedFileObjectBase64.FileName).to.be.equal(updatedFileObjectBase64.FileName);
             expect(inItUpdatedFileObjectBase64.Hidden).to.be.false;
-            expect(inItUpdatedFileObjectBase64.IsSync).to.be.equal(updatedFileObjectBase64["IsSync"]);
+            expect(inItUpdatedFileObjectBase64.IsSync).to.be.equal(updatedFileObjectBase64.IsSync);
             expect(inItUpdatedFileObjectBase64.MimeType).to.be.equal("text/plain");
             expect(inItUpdatedFileObjectBase64.ModificationDate).to.contain(new Date().toISOString().split("T")[0]);
-            expect(inItUpdatedFileObjectBase64.Title).to.be.equal(updatedFileObjectBase64["Title"]);
+            expect(inItUpdatedFileObjectBase64.Title).to.be.equal(updatedFileObjectBase64.Title);
             expect(inItUpdatedFileObjectBase64.URL).to.be.contain(updatedFileObjectBase64NewUrl.URL);
         });
 
@@ -152,25 +130,23 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
         it('Read the first added file content again after updated the new file', async () => {
 
             //Get the created file content
-            let fileContentFromBase64AfterUpdate = await fetch(uriFromBase64)
+            let fileContentFromBase64AfterUpdate: string = await fetch(uriFromBase64)
                 .then((response) => response.text());
 
             expect(fileContentFromBase64AfterUpdate).to.contain("ABCD");
         });
 
-        let allfilesAfterBase64Deleted;
-        it('Make sure all clean ups are finished', async () => {
+        it('Make sure files removed in the end of the tests', async () => {
 
-            //Make sure all the files are removed in the end of the tests
-            let deletedFiles = await TestCleanUp(service);
-
-            //Get the current (after) files from the File Storage
-            allfilesAfterBase64Deleted = await service.getFilesFromStorage();
-            expect(deletedFiles > 0);
+            //Make sure files removed in the end of the tests
+            await expect(TestCleanUp(service)).eventually.to.be.above(0)
         });
 
-        it('Delete the new file', () => {
-            let deletedfileObjectBase64;
+        it('Delete the new file', async () => {
+
+            //Get the current (after) files from the File Storage
+            let allfilesAfterBase64Deleted: FileStorage[] = await service.getFilesFromStorage();
+            let deletedfileObjectBase64: any;
 
             for (let index = 0; index < allfilesAfterBase64Deleted.length; index++) {
                 if (allfilesAfterBase64Deleted[index].FileName?.toString().startsWith(testDataFileNameFromBase64)) {
@@ -180,24 +156,27 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             }
             expect(deletedfileObjectBase64).to.be.undefined
         });
+
     });
 
     describe('CRD One File Using The File Storage using URL', () => {
 
-        let fileObjectURL;
-        let testDataFileNameFromURL
+        let fileObjectURL: FileStorage;
+        let testDataFileNameFromURL: string;
         it('Create a file in the file storage', async () => {
 
             //Get the current (before) files from the File Storage
-            let allfilesBeforeAddFromURL = await service.getFilesFromStorage();
+            let allfilesBeforeAddFromURL: FileStorage[] = await service.getFilesFromStorage();
 
             //Add a file to the File Storage with URL
             testDataFileNameFromURL = "Test " + Math.floor(Math.random() * 1000000).toString();
-            let testDataFileURL = "https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt";
+            let testDataFileURL: string = "https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt";
             await service.postFilesToStorage(service.createNewTextFileFromUrl(testDataFileNameFromURL, testDataFileNameFromURL, "", testDataFileURL));
 
+            let allfilesAfterURL: FileStorage[];
+
             //Get the current (after) files from the File Storage
-            let allfilesAfterURL = await service.getFilesFromStorage();
+            await expect(allfilesAfterURL = await service.getFilesFromStorage()).to.be.an('array').with.lengthOf(allfilesBeforeAddFromURL.length + 1);
 
             //Save the created file information
             for (let index = 0; index < allfilesAfterURL.length; index++) {
@@ -206,8 +185,6 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
                     break;
                 }
             }
-
-            expect(allfilesBeforeAddFromURL.length).to.be.equal(allfilesAfterURL.length - 1);
         });
 
         it('Read the new added file properties', async () => {
@@ -229,27 +206,24 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
         it('Read the new added file content', async () => {
 
             //Get the created file content
-            let uriFromURL = fileObjectURL.URL;
-            let fileContentFromURL = await fetch(uriFromURL)
+            let uriFromURL: string = fileObjectURL.URL as any;
+            let fileContentFromURL: string = await fetch(uriFromURL)
                 .then((response) => response.text());
 
             expect(fileContentFromURL).to.contain("Test Data for File Storage");
         });
 
-        let allfilesAfterURLDeleted;
+        it('Make sure files removed in the end of the tests', async () => {
 
-        it('Make sure all clean ups are finished', async () => {
-
-            //Make sure all the files are removed in the end of the tests
-            let deletedFiles = await TestCleanUp(service);
-
-            //Get the current (after) files from the File Storage
-            allfilesAfterURLDeleted = await service.getFilesFromStorage();
-            expect(deletedFiles > 0);
+            //Make sure files removed in the end of the tests
+            await expect(TestCleanUp(service)).eventually.to.be.above(0)
         });
 
-        it('Delete the new file', () => {
-            let deletedfileObjectURL;
+        it('Delete the new file', async () => {
+
+            //Get the current (after) files from the File Storage
+            let allfilesAfterURLDeleted: FileStorage[] = await service.getFilesFromStorage();
+            let deletedfileObjectURL: any;
 
             for (let index = 0; index < allfilesAfterURLDeleted.length; index++) {
                 if (allfilesAfterURLDeleted[index].FileName?.toString().startsWith(testDataFileNameFromURL)) {
@@ -259,31 +233,32 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             }
             expect(deletedfileObjectURL).to.be.undefined
         });
+
     });
 
     describe('CRD One File Using The File Storage With IsSync = true', () => {
 
-        let fileObjectIsSync;
-        let testDataFileNameIsSync;
-        let allfilesAfterIsSync;
+        let testDataFileNameIsSync: string;
+        let allfilesAfterIsSync: FileStorage[];
+        let fileObjectIsSync: FileStorage;
         it('Create a file in the file storage', async () => {
 
             //Get the current (before) files from the File Storage
-            let allfilesBeforeIsSync = await service.getFilesFromStorage();
+            let allfilesBeforeIsSync: FileStorage[] = await service.getFilesFromStorage();
 
             //Add a file to the File Storage with URL
             testDataFileNameIsSync = "Test " + Math.floor(Math.random() * 1000000).toString();
-            let testDataFileIsSync = await service.createNewTextFileFromBase64(testDataFileNameIsSync, testDataFileNameIsSync);
-            testDataFileIsSync["IsSync"] = true;
+            let testDataFileIsSync: FileStorage = await service.createNewTextFileFromBase64(testDataFileNameIsSync, testDataFileNameIsSync);
+            testDataFileIsSync.IsSync = true;
             await service.postFilesToStorage(testDataFileIsSync);
 
             //Get the current (after) files from the File Storage
-            allfilesAfterIsSync = await service.getFilesFromStorage();
-
-            expect(allfilesBeforeIsSync.length).to.be.equal(allfilesAfterIsSync.length - 1);
+            await expect(allfilesAfterIsSync = await service.getFilesFromStorage()).to.be.an('array').with.lengthOf(allfilesBeforeIsSync.length + 1);
         });
 
-        let fileContentFromIsSync
+        //I STOPED HERE 30/06/2020
+
+        let fileContentFromIsSync: string;
         it('Read the new added file properties', async () => {
 
             //Save the created file information
@@ -295,7 +270,7 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             }
 
             //Get the created file content
-            let uriFromIsSync = fileObjectIsSync.URL;
+            let uriFromIsSync: string = fileObjectIsSync.URL as any;
             fileContentFromIsSync = await fetch(uriFromIsSync)
                 .then((response) => response.text());
 
@@ -317,18 +292,17 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             expect(fileContentFromIsSync).to.contain("ABCD");
         });
 
-        let allfilesAfterIsSyncDeleted;
-        it('Make sure all clean ups are finished', async () => {
-            //Make sure all the files are removed in the end of the tests
-            let deletedFiles = await TestCleanUp(service);
+        it('Make sure files removed in the end of the tests', async () => {
 
-            //Get the current (after) files from the File Storage
-            allfilesAfterIsSyncDeleted = await service.getFilesFromStorage();
-            expect(deletedFiles > 0);
+            //Make sure files removed in the end of the tests
+            await expect(TestCleanUp(service)).eventually.to.be.above(0)
         });
 
-        it('Delete the new file', () => {
-            let deletedfileObjectIsSync;
+        it('Delete the new file', async () => {
+
+            //Get the current (after) files from the File Storage
+            let allfilesAfterIsSyncDeleted: FileStorage[] = await service.getFilesFromStorage();
+            let deletedfileObjectIsSync: any;
 
             for (let index = 0; index < allfilesAfterIsSyncDeleted.length; index++) {
                 if (allfilesAfterIsSyncDeleted[index].FileName?.toString().startsWith(testDataFileNameIsSync)) {
@@ -338,30 +312,30 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             }
             expect(deletedfileObjectIsSync).to.be.undefined
         });
+
     });
 
     describe('Make sure file uploaded via Base64 when using both Base64 and URL', () => {
 
-        let testDataFileNameFromURLAndBase64;
-        let allfilesAfterURLAndBase64;
+        let testDataFileNameFromURLAndBase64: string;
+        let allfilesAfterURLAndBase64: FileStorage[];
         it('Create a file in the file storage', async () => {
 
             //Get the current (before) files from the File Storage
-            let allfilesBeforeAddFromURLAndBase64 = await service.getFilesFromStorage();
+            let allfilesBeforeAddFromURLAndBase64: FileStorage[] = await service.getFilesFromStorage();
 
             //Add a file to the File Storage with URL
             testDataFileNameFromURLAndBase64 = "Test " + Math.floor(Math.random() * 1000000).toString();
-            let testDataFileURLAndBase64 = "https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt";
-            let testDataFileURLAndBase64Body = await service.createNewTextFileFromBase64(testDataFileNameFromURLAndBase64, testDataFileNameFromURLAndBase64);
-            testDataFileURLAndBase64Body["URL"] = testDataFileURLAndBase64;
+            let testDataFileURLAndBase64: string = "https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt";
+            let testDataFileURLAndBase64Body: FileStorage = await service.createNewTextFileFromBase64(testDataFileNameFromURLAndBase64, testDataFileNameFromURLAndBase64);
+            testDataFileURLAndBase64Body.URL = testDataFileURLAndBase64;
             await service.postFilesToStorage(testDataFileURLAndBase64Body);
 
             //Get the current (after) files from the File Storage
-            allfilesAfterURLAndBase64 = await service.getFilesFromStorage();
-            expect(allfilesBeforeAddFromURLAndBase64.length).to.be.equal(allfilesAfterURLAndBase64.length - 1);
+            await expect(allfilesAfterURLAndBase64 = await service.getFilesFromStorage()).to.be.an('array').with.lengthOf(allfilesBeforeAddFromURLAndBase64.length + 1);
         });
 
-        let fileObjectURLAndBase64;
+        let fileObjectURLAndBase64: FileStorage;
         it('Read the new added file properties', async () => {
 
             //Save the created file information
@@ -386,30 +360,27 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             expect(fileObjectURLAndBase64.URL).to.be.contain(testDataFileNameFromURLAndBase64 + ".txt");
         });
 
-        let fileContentFromURLAndBase64;
         it('Read the new added file content', async () => {
 
             //Get the created file content
-            let uriFromURLAndBase64 = fileObjectURLAndBase64.URL;
-            fileContentFromURLAndBase64 = await fetch(uriFromURLAndBase64)
+            let uriFromURLAndBase64: string = fileObjectURLAndBase64.URL as any;
+            let fileContentFromURLAndBase64: String = await fetch(uriFromURLAndBase64)
                 .then((response) => response.text());
 
             expect(fileContentFromURLAndBase64).to.contain("ABCD");
         });
 
-        let allfilesAfterURLAndBase64Deleted;
-        it('Make sure all clean ups are finished', async () => {
-            //Make sure all the files are removed in the end of the tests
-            let deletedFiles = await TestCleanUp(service);
+        it('Make sure files removed in the end of the tests', async () => {
 
-            //Get the current (after) files from the File Storage
-            allfilesAfterURLAndBase64Deleted = await service.getFilesFromStorage();
-            expect(deletedFiles > 0);
-
+            //Make sure files removed in the end of the tests
+            await expect(TestCleanUp(service)).eventually.to.be.above(0);
         });
 
-        it('Delete the new file', () => {
-            let deletedfileObjectURLAndBase64;
+        it('Delete the new file', async () => {
+
+            //Get the current (after) files from the File Storage
+            let allfilesAfterURLAndBase64Deleted: FileStorage[] = await service.getFilesFromStorage();
+            let deletedfileObjectURLAndBase64: any;
 
             for (let index = 0; index < allfilesAfterURLAndBase64Deleted.length; index++) {
                 if (allfilesAfterURLAndBase64Deleted[index].FileName?.toString().startsWith(testDataFileNameFromURLAndBase64)) {
@@ -419,116 +390,82 @@ export async function CRUDOneFileFromFileStorageTest(generalService: GeneralServ
             }
             expect(deletedfileObjectURLAndBase64).to.be.undefined
         });
+
     });
 
     describe('Mandatory Title test (negative)', () => {
 
-        let tempBodyNonTitle = {};
-        it('Don\'t Create a file in the file storage', async () => {
+        let letallfilesBeforeAddNonTitle: FileStorage[];
+        it('Correct exception message for Title', async () => {
 
             //Get the current (before) files from the File Storage
-            let allfilesBeforeAddNonTitle = await service.getFilesFromStorage();
+            letallfilesBeforeAddNonTitle = await service.getFilesFromStorage();
 
             //Add a file to the File Storage without Title
-            let testDataFileNameNonTitle = "Test " + Math.floor(Math.random() * 1000000).toString();
-            let testDataFileNonTitle = await service.createNewTextFileFromBase64(testDataFileNameNonTitle, testDataFileNameNonTitle);
-            tempBodyNonTitle["Content"] = testDataFileNonTitle.Content;
-            tempBodyNonTitle["FileName"] = testDataFileNonTitle.FileName;
+            let testDataFileNameNonTitle: string = "Test " + Math.floor(Math.random() * 1000000).toString();
+            let testDataFileNonTitle: FileStorage = await service.createNewTextFileFromBase64(testDataFileNameNonTitle, testDataFileNameNonTitle);
+            let tempBodyNonTitle = {};
+            tempBodyNonTitle['Content'] = testDataFileNonTitle.Content;
+            tempBodyNonTitle['FileName'] = testDataFileNonTitle.FileName;
+
+            await expect(service.postFilesToStorage(tempBodyNonTitle as any)).to.be.rejectedWith('The mandatory property \\\"Title\\\" can\'t be ignore.');
+        });
+
+        it('Don\'t Create a file in the file storage', async () => {
 
             //Get the current (after) files from the File Storage
-            let allfilesAfterNonTitle = await service.getFilesFromStorage();
-
-            expect(allfilesBeforeAddNonTitle.length).to.be.equal(allfilesAfterNonTitle.length);
-
-            // //Get the current (after) files from the File Storage
-            // let allfilesAfterNonTitle = await service.getFilesFromStorage();
-
-            expect(service.getFilesFromStorage()).eventually.to.be.an('array').with.lengthOf(allfilesAfterNonTitle.length)
-        });
-
-        /*let postWithoutTitleResponse;
-try {
-    postWithoutTitleResponse = await service.postFilesToStorage(tempBodyNonTitle as any);
-} catch (error) {
-    postWithoutTitleResponse = error;
-}
-expect(postWithoutTitleResponse["message"].split("\":\"")[1].split("\",\"")[0]).to.contain("The mandatory property \\\"Title\\\" can\'t be ignore.");
-*/
-        var aaa;
-        it('Correct exception message for Title', async () => {
-            //var postWithoutTitleResponse = await service.postFilesToStorage(tempBodyNonTitle as any);
-
-            //expect(async () => { await service.postFilesToStorage(tempBodyNonTitle as any) }).to.throw("The mandatory property \\\"Title\\\" can\'t be ignore.");
-            //expect(service.postFilesToStorage(tempBodyNonTitle as any).then).to.throw("The mandatory property \\\"Title\\\" can\'t be ignore.");
-            //expect(service.postFilesToStorage(tempBodyNonTitle as any).then).to.contain("The mandatory property \\\"Title\\\" can\'t be ignore.");
-            expect(service.postFilesToStorage(tempBodyNonTitle as any)).eventually.to.throw('Title');
-            aaa += 1;
-        });
-
-        it('Correct exception message for Title2', async () => {
-            //expect(service.postFilesToStorage(tempBodyNonTitle as any).then).to.throw();
-            expect(async () => { await service.postFilesToStorage(tempBodyNonTitle as any) }).to.throw;
-
+            await expect(service.getFilesFromStorage()).eventually.to.be.an('array').with.lengthOf(letallfilesBeforeAddNonTitle.length);
         });
 
     });
 
     describe('Mandatory FileName test (negative)', () => {
 
-        let tempBodyNonFileName = {};
-        it('Don\'t Create a file in the file storage', async () => {
+        let allfilesBeforeAddNonFileName: FileStorage[];
+        it('Correct exception message for FileName', async () => {
 
             //Get the current (before) files from the File Storage
-            let allfilesBeforeAddNonFileName = await service.getFilesFromStorage();
+            allfilesBeforeAddNonFileName = await service.getFilesFromStorage();
 
             //Add a file to the File Storage without FileName
             let testDataFileNameNonFileName = "Test " + Math.floor(Math.random() * 1000000).toString();
-            let testDataFileNonFileName = await service.createNewTextFileFromBase64(testDataFileNameNonFileName, testDataFileNameNonFileName);
-            tempBodyNonFileName["Content"] = testDataFileNonFileName.Content;
-            tempBodyNonFileName["Title"] = testDataFileNonFileName.Title;
+            let testDataFileNonFileName: FileStorage = await service.createNewTextFileFromBase64(testDataFileNameNonFileName, testDataFileNameNonFileName);
+            let tempBodyNonFileName = {};
+            tempBodyNonFileName['Content'] = testDataFileNonFileName.Content;
+            tempBodyNonFileName['Title'] = testDataFileNonFileName.Title;
 
-            //Get the current (after) files from the File Storage
-            let allfilesAfterNonFileName = await service.getFilesFromStorage();
-            expect(allfilesBeforeAddNonFileName.length).to.be.equal(allfilesAfterNonFileName.length);
+            await expect(service.postFilesToStorage(tempBodyNonFileName as any)).to.be.rejectedWith('The mandatory property \\\"FileName\\\" can\'t be ignore.');
         });
 
-        it('Correct exception message for FileName', async () => {
-            let postWithoutFileNameResponse;
-            try {
-                postWithoutFileNameResponse = await service.postFilesToStorage(tempBodyNonFileName as any);
-            } catch (error) {
-                postWithoutFileNameResponse = error;
-            }
-            expect(postWithoutFileNameResponse["message"].split("\":\"")[1].split("\",\"")[0]).to.contain("The mandatory property \\\"FileName\\\" can\'t be ignore.");
+        it('Don\'t Create a file in the file storage', async () => {
+
+            //Get the current (after) files from the File Storage
+            await expect(service.getFilesFromStorage()).eventually.to.be.an('array').with.lengthOf(allfilesBeforeAddNonFileName.length);
         });
 
     });
 
     describe('Mandatory fields test (negative)', () => {
 
-        let tempBodyNonMandatory = {};
-        it('Don\'t Create a file in the file storage', async () => {
-            let allfilesBeforeAddNonMandatory = await service.getFilesFromStorage();
+        let allfilesBeforeAddNonMandatory: FileStorage[];
+        it('Correct exception message for FileName', async () => {
+
+            //Get the current (before) files from the File Storage
+            allfilesBeforeAddNonMandatory = await service.getFilesFromStorage();
 
             //Add a file to the File Storage without Mandatory
             let testDataFileNameNonMandatory = "Test " + Math.floor(Math.random() * 1000000).toString();
-            let testDataFileNonMandatory = await service.createNewTextFileFromBase64(testDataFileNameNonMandatory, testDataFileNameNonMandatory);
-            tempBodyNonMandatory["Content"] = testDataFileNonMandatory.Content;
+            let testDataFileNonMandatory: FileStorage = await service.createNewTextFileFromBase64(testDataFileNameNonMandatory, testDataFileNameNonMandatory);
+            let tempBodyNonMandatory = {};
+            tempBodyNonMandatory['Content'] = testDataFileNonMandatory.Content;
 
-            //Get the current (after) files from the File Storage
-            let allfilesAfterNonMandatory = await service.getFilesFromStorage();
-            expect(allfilesBeforeAddNonMandatory.length).to.be.equal(allfilesAfterNonMandatory.length);
+            await expect(service.postFilesToStorage(tempBodyNonMandatory as any)).to.be.rejectedWith('The mandatory properties \\\"Title\\\", \\\"FileName\\\" can\'t be ignore.');
         });
 
-        it('Correct exception message for FileName', async () => {
+        it('Don\'t Create a file in the file storage', async () => {
 
-            let postWithoutMandatoryResponse;
-            try {
-                postWithoutMandatoryResponse = await service.postFilesToStorage(tempBodyNonMandatory as any);
-            } catch (error) {
-                postWithoutMandatoryResponse = error;
-            }
-            expect(postWithoutMandatoryResponse["message"].split("\":\"")[1].split("\",\"")[0]).to.contain("The mandatory properties \\\"Title\\\", \\\"FileName\\\" can\'t be ignore.");
+            //Get the current (after) files from the File Storage
+            await expect(service.getFilesFromStorage()).eventually.to.be.an('array').with.lengthOf(allfilesBeforeAddNonMandatory.length);
         });
 
     });
@@ -540,15 +477,18 @@ expect(postWithoutTitleResponse["message"].split("\":\"")[1].split("\",\"")[0]).
 //Service Functionss
 //Remove all test files from Files Storage
 async function TestCleanUp(service: FileStorageService) {
-    let allfilesObject = await service.getFilesFromStorage();
-    let tempBody = {};
-    let deletedCounter = 0;
+    let allfilesObject: FileStorage[] = await service.getFilesFromStorage();
+    let deletedCounter: number = 0;
     for (let index = 0; index < allfilesObject.length; index++) {
         if (allfilesObject[index].FileName?.toString().startsWith("Test ") &&
-            Number(allfilesObject[index].FileName?.toString().split(' ')[1].split('.')[0]) > 1000) {
-            tempBody["InternalID"] = allfilesObject[index].InternalID;
-            tempBody["Hidden"] = true;
-            await service.postFilesToStorage(tempBody as any);
+            Number(allfilesObject[index].FileName?.toString().split(' ')[1].split('.')[0]) > 100) {
+            const tempBody: FileStorage = {
+                FileName: allfilesObject[index].FileName,
+                Title: allfilesObject[index].Title,
+                InternalID: allfilesObject[index].InternalID,
+                Hidden: true
+            }
+            await service.postFilesToStorage(tempBody);
             deletedCounter++;
         }
     }
