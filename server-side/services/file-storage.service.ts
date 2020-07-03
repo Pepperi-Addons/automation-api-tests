@@ -9,11 +9,11 @@ export class FileStorageService {
     }
 
     //Files Storage API Calls
-    getFilesFromStorage() {
-        return this.papiClient.fileStorage.find({});
+    getFilesFromStorage(options?: Findoption) {
+        return this.papiClient.fileStorage.find(options? options : {});
     }
 
-    postFilesToStorage(body: FileStorage) {
+    postFileToStorage(body: FileStorage) {
         return this.papiClient.fileStorage.upsert(body);
     }
 

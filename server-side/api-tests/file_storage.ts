@@ -10,449 +10,576 @@ export async function FileStorageTests(generalService: GeneralService) {
     const { describe, expect, it, run } = tester();
 
     //#region Tests
-    describe('CRUD One File Using The File Storage in Base64', () => {
-        let allFilesAfter: FileStorage[];
-        let testDataFileName: string;
-        it('Create a file in the file storage', async () => {
-            //Get the current (before) files from the File Storage
-            const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
 
-            //Add a file to the File Storage
-            testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-            await service.postFilesToStorage({
-                Title: testDataFileName,
-                FileName: testDataFileName + '.txt',
-                Description: '',
-                Content: service.createTestDataInBase64Format(),
+    //#region Endpoints
+    describe('Endpoints', () => {
+
+        describe('Upsert', () => {
+
+            it('Upsert a file valid response', async () => {
+
+                const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await expect(
+                    service.postFileToStorage({
+                        Title: testDataFileName,
+                        FileName: testDataFileName + '.txt',
+                        Description: '',
+                        Content: service.createTestDataInBase64Format(),
+                    }),
+                )
+                    .eventually.to.have.property('InternalID')
+                    .that.is.a('number')
+                    .and.is.above(0);
             });
-
-            //Get the current (after) files from the File Storage
-            await expect((allFilesAfter = await service.getFilesFromStorage()))
-                .to.be.an('array')
-                .with.lengthOf(allfilesBefore.length + 1);
         });
 
-        let fileObject: FileStorage;
-        it('Read the new added file properties', async () => {
-            //Save the created file information
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    fileObject = allFilesAfter[index];
-                    break;
-                }
-            }
+        describe('Get', () => {
 
-            expect(Number(fileObject.InternalID) > 200000);
-            expect(fileObject.Configuration).to.be.null;
-            expect(fileObject.Content).to.be.null;
-            expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-            expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-            expect(fileObject.Hidden).to.be.false;
-            expect(fileObject.IsSync).to.be.false;
-            expect(fileObject.MimeType).to.be.equal('text/plain');
-            expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Title).to.be.equal(testDataFileName);
-            expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
-        });
+            it('Get a file valid response', async () => {
 
-        let uriStr: string;
-        it('Read the new added file content', async () => {
-            //Get the created file content
-            uriStr = fileObject.URL as any;
-            const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
-            expect(fileContent).to.contain('ABCD');
-        });
-
-        let inItupdatedFileObject: FileStorage;
-        let updatedFileContent: string;
-        it('Update the new added file', async () => {
-            //Update the new added file
-            const updatedFileObject: FileStorage = {
-                Configuration: fileObject.Configuration,
-                Hidden: fileObject.Hidden,
-                InternalID: fileObject.InternalID,
-                Description: 'New description',
-                Content: Buffer.from('EDCBA').toString('base64'),
-                CreationDate: '1999-09-09Z',
-                FileName: 'Test 9999999.txt', //TODO: Changing the name to a name without ".txt" sufix should be prevented or something
-                IsSync: true,
-                MimeType: 'text/xml',
-                ModificationDate: '1999-09-09Z',
-                Title: 'Test 9999999',
-                URL: 'https://cdn.Test',
-            };
-
-            await service.postFilesToStorage(updatedFileObject);
-
-            //Get the current (after the update) files from the File Storage
-            const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
-
-            let updatedFileObjectNewUrl;
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].InternalID == fileObject.InternalID) {
-                    updatedFileObjectNewUrl = allFilesAfter[index];
-                    break;
-                }
-            }
-
-            //Get the updated file content
-            const updateduriStr = updatedFileObjectNewUrl.URL;
-            updatedFileContent = await fetch(updateduriStr).then((response) => response.text());
-
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].InternalID == fileObject.InternalID) {
-                    inItupdatedFileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-            expect(Number(inItupdatedFileObject.InternalID) == fileObject.InternalID);
-            expect(inItupdatedFileObject.Configuration).to.be.null;
-            expect(inItupdatedFileObject.Content).to.be.null;
-            expect(inItupdatedFileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(inItupdatedFileObject.Description).to.be.equal(updatedFileObject.Description);
-            expect(inItupdatedFileObject.FileName).to.be.equal(updatedFileObject.FileName);
-            expect(inItupdatedFileObject.Hidden).to.be.false;
-            expect(inItupdatedFileObject.IsSync).to.be.equal(updatedFileObject.IsSync);
-            expect(inItupdatedFileObject.MimeType).to.be.equal('text/plain');
-            expect(inItupdatedFileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(inItupdatedFileObject.Title).to.be.equal(updatedFileObject.Title);
-            expect(inItupdatedFileObject.URL).to.be.contain(updatedFileObjectNewUrl.URL);
-        });
-
-        it('Read the updated file content', () => {
-            expect(updatedFileContent).to.contain('EDCBA');
-        });
-
-        it('Read the first added file content again after updated the new file', async () => {
-            //Get the created file content
-            const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
-            expect(fileContent).to.contain('ABCD');
-        });
-
-        it('Make sure files removed in the end of the tests', async () => {
-            //Make sure files removed in the end of the tests
-            await expect(TestCleanUp(service)).eventually.to.be.above(0);
-        });
-
-        it('Delete the new file', async () => {
-            //Get the current (after) files from the File Storage
-            const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
-            let deletedFileObject: any;
-
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    deletedFileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-            expect(deletedFileObject).to.be.undefined;
-        });
-    });
-
-    describe('CRD One File Using The File Storage using URL', () => {
-        let fileObject: FileStorage;
-        let testDataFileName: string;
-        it('Create a file in the file storage', async () => {
-            //Get the current (before) files from the File Storage
-            const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
-
-            //Add a file to the File Storage with URL
-            testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-            await service.postFilesToStorage({
-                Title: testDataFileName,
-                FileName: testDataFileName + '.txt',
-                Description: '',
-                URL:
-                    'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
-            });
-
-            let allFilesAfter: FileStorage[];
-
-            //Get the current (after) files from the File Storage
-            await expect((allFilesAfter = await service.getFilesFromStorage()))
-                .to.be.an('array')
-                .with.lengthOf(allfilesBefore.length + 1);
-
-            //Save the created file information
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    fileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-        });
-
-        it('Read the new added file properties', async () => {
-            expect(Number(fileObject.InternalID) > 200000);
-            expect(fileObject.Configuration).to.be.null;
-            expect(fileObject.Content).to.be.null;
-            expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-            expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-            expect(fileObject.Hidden).to.be.false;
-            expect(fileObject.IsSync).to.be.false;
-            expect(fileObject.MimeType).to.be.equal('text/plain');
-            expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Title).to.be.equal(testDataFileName);
-            expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
-        });
-
-        it('Read the new added file content', async () => {
-            //Get the created file content
-            const uriStr: string = fileObject.URL as any;
-            const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
-            expect(fileContent).to.contain('Test Data for File Storage');
-        });
-
-        it('Make sure files removed in the end of the tests', async () => {
-            //Make sure files removed in the end of the tests
-            await expect(TestCleanUp(service)).eventually.to.be.above(0);
-        });
-
-        it('Delete the new file', async () => {
-            //Get the current (after) files from the File Storage
-            const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
-            let deletedFileObject: any;
-
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    deletedFileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-            expect(deletedFileObject).to.be.undefined;
-        });
-    });
-
-    describe('CRD One File Using The File Storage With IsSync = true', () => {
-        let testDataFileName: string;
-        let allFilesAfter: FileStorage[];
-        let fileObject: FileStorage;
-        it('Create a file in the file storage', async () => {
-            //Get the current (before) files from the File Storage
-            const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
-
-            //Add a file to the File Storage with URL
-            testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-            await service.postFilesToStorage({
-                Title: testDataFileName,
-                FileName: testDataFileName + '.txt',
-                Description: '',
-                Content: service.createTestDataInBase64Format(),
-                IsSync: true,
-            });
-            //Get the current (after) files from the File Storage
-            await expect((allFilesAfter = await service.getFilesFromStorage()))
-                .to.be.an('array')
-                .with.lengthOf(allfilesBefore.length + 1);
-        });
-
-        //I STOPED HERE 30/06/2020
-
-        let fileContent: string;
-        it('Read the new added file properties', async () => {
-            //Save the created file information
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    fileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-
-            //Get the created file content
-            const uriStr: string = fileObject.URL as any;
-            fileContent = await fetch(uriStr).then((response) => response.text());
-
-            expect(Number(fileObject.InternalID) > 200000);
-            expect(fileObject.Configuration).to.be.null;
-            expect(fileObject.Content).to.be.null;
-            expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-            expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-            expect(fileObject.Hidden).to.be.false;
-            expect(fileObject.IsSync).to.be.true;
-            expect(fileObject.MimeType).to.be.equal('text/plain');
-            expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Title).to.be.equal(testDataFileName);
-            expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
-        });
-
-        it('Read the new added file content', () => {
-            expect(fileContent).to.contain('ABCD');
-        });
-
-        it('Make sure files removed in the end of the tests', async () => {
-            //Make sure files removed in the end of the tests
-            await expect(TestCleanUp(service)).eventually.to.be.above(0);
-        });
-
-        it('Delete the new file', async () => {
-            //Get the current (after) files from the File Storage
-            const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
-            let deletedFileObject: any;
-
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    deletedFileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-            expect(deletedFileObject).to.be.undefined;
-        });
-    });
-
-    describe('Make sure file uploaded via Base64 when using both Base64 and URL', () => {
-        let testDataFileName: string;
-        let allFilesAfter: FileStorage[];
-        it('Create a file in the file storage', async () => {
-            //Get the current (before) files from the File Storage
-            const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
-
-            //Add a file to the File Storage with URL
-            testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-            await service.postFilesToStorage({
-                Title: testDataFileName,
-                FileName: testDataFileName + '.txt',
-                Description: '',
-                Content: service.createTestDataInBase64Format(),
-                URL:
-                    'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
-            });
-            //Get the current (after) files from the File Storage
-            await expect((allFilesAfter = await service.getFilesFromStorage()))
-                .to.be.an('array')
-                .with.lengthOf(allfilesBefore.length + 1);
-        });
-
-        let fileObject: FileStorage;
-        it('Read the new added file properties', async () => {
-            //Save the created file information
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    fileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-
-            expect(Number(fileObject.InternalID) > 200000);
-            expect(fileObject.Configuration).to.be.null;
-            expect(fileObject.Content).to.be.null;
-            expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-            expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-            expect(fileObject.Hidden).to.be.false;
-            expect(fileObject.IsSync).to.be.false;
-            expect(fileObject.MimeType).to.be.equal('text/plain');
-            expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-            expect(fileObject.Title).to.be.equal(testDataFileName);
-            expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
-        });
-
-        it('Read the new added file content', async () => {
-            //Get the created file content
-            const uriStr: string = fileObject.URL as any;
-            const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
-            expect(fileContent).to.contain('ABCD');
-        });
-
-        it('Make sure files removed in the end of the tests', async () => {
-            //Make sure files removed in the end of the tests
-            await expect(TestCleanUp(service)).eventually.to.be.above(0);
-        });
-
-        it('Delete the new file', async () => {
-            //Get the current (after) files from the File Storage
-            const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
-            let deletedFileObject: any;
-
-            for (let index = 0; index < allFilesAfter.length; index++) {
-                if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
-                    deletedFileObject = allFilesAfter[index];
-                    break;
-                }
-            }
-            expect(deletedFileObject).to.be.undefined;
-        });
-    });
-
-    describe('Mandatory Title test (negative)', () => {
-        let allfilesBefore: FileStorage[];
-        it('Correct exception message for Title', async () => {
-            //Get the current (before) files from the File Storage
-            allfilesBefore = await service.getFilesFromStorage();
-
-            //Add a file to the File Storage without Title
-            const testDataFileName: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-            await expect(
-                await service.postFilesToStorage({
+                const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const created = await service.postFileToStorage({
+                    Title: testDataFileName,
                     FileName: testDataFileName + '.txt',
                     Description: '',
                     Content: service.createTestDataInBase64Format(),
-                } as any),
-            ).to.be.rejectedWith('The mandatory property \\"Title\\" can\'t be ignore.');
-        });
+                });
 
-        it("Don't Create a file in the file storage", async () => {
-            //Get the current (after) files from the File Storage
-            await expect(service.getFilesFromStorage())
-                .eventually.to.be.an('array')
-                .with.lengthOf(allfilesBefore.length);
+                expect(service.papiClient.fileStorage.iter({ 
+                    where: `InternalID = '${created.InternalID}'`
+                }).toArray()).eventually.to.have.property('$0')
+                        .eventually.to.include(({ "Title": testDataFileName })
+                // .eventually.to.deep.include.any.property('Title')
+                // .contain(testDataFileName);
+            });
         });
     });
+    //#endregion Endpoints
 
-    describe('Mandatory FileName test (negative)', () => {
-        let allfilesBefore: FileStorage[];
-        it('Correct exception message for FileName', async () => {
-            //Get the current (before) files from the File Storage
-            allfilesBefore = await service.getFilesFromStorage();
+    //#region Scenarios
+    describe('Scenarios', () => {
 
-            //Add a file to the File Storage without FileName
-            const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-            await expect(
-                service.postFilesToStorage({
-                    Title: testDataFileName + '.txt',
+        describe('CRUD One File Using The File Storage in Base64', () => {
+
+            it('Add a file to the file storage', async () => {
+
+                const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+
+                const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await expect(
+                    service.postFileToStorage({
+                        Title: testDataFileName,
+                        FileName: testDataFileName + '.txt',
+                        Description: '',
+                        Content: service.createTestDataInBase64Format(),
+                    }),
+                )
+                    .eventually.to.have.property('InternalID')
+                    .a('number')
+                    .above(200000);
+
+                await expect((await service.getFilesFromStorage()))
+                    .to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length + 1);
+            });
+
+
+            it('Read a file from the file storage', async () => {
+
+                const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await expect(
+                    service.postFileToStorage({
+                        Title: testDataFileName,
+                        FileName: testDataFileName + '.txt',
+                        Description: '',
+                        Content: service.createTestDataInBase64Format(),
+                    }),
+                )
+                    .eventually.to.have.property('InternalID')
+                    .a('number')
+                    .above(200000);
+
+                const fileObject: FileStorage = await service.getFilesFromStorage({ where: "Title=" + testDataFileName })[0];
+
+                expect(Number(fileObject.InternalID) > 200000);
+                expect(fileObject.Configuration).to.be.null;
+                expect(fileObject.Content).to.be.null;
+                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
+                expect(fileObject.Hidden).to.be.false;
+                expect(fileObject.IsSync).to.be.false;
+                expect(fileObject.MimeType).to.be.equal('text/plain');
+                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Title).to.be.equal(testDataFileName);
+                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+            });
+
+            let allFilesAfter: FileStorage[];
+            let testDataFileName: string;
+            it('Create a file in the file storage', async () => {
+
+                //Get the current (before) files from the File Storage
+                const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+
+                //Add a file to the File Storage
+                testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await service.postFileToStorage({
+                    Title: testDataFileName,
+                    FileName: testDataFileName + '.txt',
                     Description: '',
                     Content: service.createTestDataInBase64Format(),
-                } as any),
-            ).to.be.rejectedWith('The mandatory property \\"FileName\\" can\'t be ignore.');
+                });
+
+                //Get the current (after) files from the File Storage
+                await expect((allFilesAfter = await service.getFilesFromStorage()))
+                    .to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length + 1);
+
+                let fileObject;
+                //Save the created file information
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        fileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+
+                expect(Number(fileObject.InternalID) > 200000);
+                expect(fileObject.Configuration).to.be.null;
+                expect(fileObject.Content).to.be.null;
+                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
+                expect(fileObject.Hidden).to.be.false;
+                expect(fileObject.IsSync).to.be.false;
+                expect(fileObject.MimeType).to.be.equal('text/plain');
+                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Title).to.be.equal(testDataFileName);
+                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+            });
+
+            let fileObject: FileStorage;
+            it('Read the new added file properties', async () => {
+                //Save the created file information
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        fileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+
+                expect(Number(fileObject.InternalID) > 200000);
+                expect(fileObject.Configuration).to.be.null;
+                expect(fileObject.Content).to.be.null;
+                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
+                expect(fileObject.Hidden).to.be.false;
+                expect(fileObject.IsSync).to.be.false;
+                expect(fileObject.MimeType).to.be.equal('text/plain');
+                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Title).to.be.equal(testDataFileName);
+                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+            });
+
+            let uriStr: string;
+            it('Read the new added file content', async () => {
+                //Get the created file content
+                uriStr = fileObject.URL as any;
+                const fileContent: string = await fetch(uriStr).then((response) => response.text());
+
+                expect(fileContent).to.contain('ABCD');
+            });
+
+            let inItupdatedFileObject: FileStorage;
+            let updatedFileContent: string;
+            it('Update the new added file', async () => {
+                //Update the new added file
+                const updatedFileObject: FileStorage = {
+                    Configuration: fileObject.Configuration,
+                    Hidden: fileObject.Hidden,
+                    InternalID: fileObject.InternalID,
+                    Description: 'New description',
+                    Content: Buffer.from('EDCBA').toString('base64'),
+                    CreationDate: '1999-09-09Z',
+                    FileName: 'Test 9999999.txt', //TODO: Changing the name to a name without ".txt" sufix should be prevented or something
+                    IsSync: true,
+                    MimeType: 'text/xml',
+                    ModificationDate: '1999-09-09Z',
+                    Title: 'Test 9999999',
+                    URL: 'https://cdn.Test',
+                };
+
+                await service.postFileToStorage(updatedFileObject);
+
+                //Get the current (after the update) files from the File Storage
+                const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+
+                let updatedFileObjectNewUrl;
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].InternalID == fileObject.InternalID) {
+                        updatedFileObjectNewUrl = allFilesAfter[index];
+                        break;
+                    }
+                }
+
+                //Get the updated file content
+                const updateduriStr = updatedFileObjectNewUrl.URL;
+                updatedFileContent = await fetch(updateduriStr).then((response) => response.text());
+
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].InternalID == fileObject.InternalID) {
+                        inItupdatedFileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+                expect(Number(inItupdatedFileObject.InternalID) == fileObject.InternalID);
+                expect(inItupdatedFileObject.Configuration).to.be.null;
+                expect(inItupdatedFileObject.Content).to.be.null;
+                expect(inItupdatedFileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(inItupdatedFileObject.Description).to.be.equal(updatedFileObject.Description);
+                expect(inItupdatedFileObject.FileName).to.be.equal(updatedFileObject.FileName);
+                expect(inItupdatedFileObject.Hidden).to.be.false;
+                expect(inItupdatedFileObject.IsSync).to.be.equal(updatedFileObject.IsSync);
+                expect(inItupdatedFileObject.MimeType).to.be.equal('text/plain');
+                expect(inItupdatedFileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(inItupdatedFileObject.Title).to.be.equal(updatedFileObject.Title);
+                expect(inItupdatedFileObject.URL).to.be.contain(updatedFileObjectNewUrl.URL);
+            });
+
+            it('Read the updated file content', () => {
+                expect(updatedFileContent).to.contain('EDCBA');
+            });
+
+            it('Read the first added file content again after updated the new file', async () => {
+                //Get the created file content
+                const fileContent: string = await fetch(uriStr).then((response) => response.text());
+
+                expect(fileContent).to.contain('ABCD');
+            });
+
+            it('Make sure files removed in the end of the tests', async () => {
+                //Make sure files removed in the end of the tests
+                await expect(TestCleanUp(service)).eventually.to.be.above(0);
+            });
+
+            it('Delete the new file', async () => {
+                //Get the current (after) files from the File Storage
+                const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                let deletedFileObject: any;
+
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        deletedFileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+                expect(deletedFileObject).to.be.undefined;
+            });
         });
 
-        it("Don't Create a file in the file storage", async () => {
-            //Get the current (after) files from the File Storage
-            await expect(service.getFilesFromStorage())
-                .eventually.to.be.an('array')
-                .with.lengthOf(allfilesBefore.length);
+        describe('CRD One File Using The File Storage using URL', () => {
+            let fileObject: FileStorage;
+            let testDataFileName: string;
+            it('Create a file in the file storage', async () => {
+                //Get the current (before) files from the File Storage
+                const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+
+                //Add a file to the File Storage with URL
+                testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await service.postFileToStorage({
+                    Title: testDataFileName,
+                    FileName: testDataFileName + '.txt',
+                    Description: '',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
+                });
+
+                let allFilesAfter: FileStorage[];
+
+                //Get the current (after) files from the File Storage
+                await expect((allFilesAfter = await service.getFilesFromStorage()))
+                    .to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length + 1);
+
+                //Save the created file information
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        fileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+            });
+
+            it('Read the new added file properties', async () => {
+                expect(Number(fileObject.InternalID) > 200000);
+                expect(fileObject.Configuration).to.be.null;
+                expect(fileObject.Content).to.be.null;
+                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
+                expect(fileObject.Hidden).to.be.false;
+                expect(fileObject.IsSync).to.be.false;
+                expect(fileObject.MimeType).to.be.equal('text/plain');
+                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Title).to.be.equal(testDataFileName);
+                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+            });
+
+            it('Read the new added file content', async () => {
+                //Get the created file content
+                const uriStr: string = fileObject.URL as any;
+                const fileContent: string = await fetch(uriStr).then((response) => response.text());
+
+                expect(fileContent).to.contain('Test Data for File Storage');
+            });
+
+            it('Make sure files removed in the end of the tests', async () => {
+                //Make sure files removed in the end of the tests
+                await expect(TestCleanUp(service)).eventually.to.be.above(0);
+            });
+
+            it('Delete the new file', async () => {
+                //Get the current (after) files from the File Storage
+                const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                let deletedFileObject: any;
+
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        deletedFileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+                expect(deletedFileObject).to.be.undefined;
+            });
         });
-    });
 
-    describe('Mandatory properties test (negative)', () => {
-        let allfilesBefore: FileStorage[];
-        it('Correct exception message for mandatory properties', async () => {
-            //Get the current (before) files from the File Storage
-            allfilesBefore = await service.getFilesFromStorage();
+        describe('CRD One File Using The File Storage With IsSync = true', () => {
+            let testDataFileName: string;
+            let allFilesAfter: FileStorage[];
+            let fileObject: FileStorage;
+            it('Create a file in the file storage', async () => {
+                //Get the current (before) files from the File Storage
+                const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
 
-            //Add a file to the File Storage without any Mandatory
-            await expect(
-                service.postFilesToStorage({
+                //Add a file to the File Storage with URL
+                testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await service.postFileToStorage({
+                    Title: testDataFileName,
+                    FileName: testDataFileName + '.txt',
                     Description: '',
                     Content: service.createTestDataInBase64Format(),
-                } as any),
-            ).to.be.rejectedWith('The mandatory properties \\"Title\\", \\"FileName\\" can\'t be ignore.');
+                    IsSync: true,
+                });
+                //Get the current (after) files from the File Storage
+                await expect((allFilesAfter = await service.getFilesFromStorage()))
+                    .to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length + 1);
+            });
+
+            let fileContent: string;
+            it('Read the new added file properties', async () => {
+                //Save the created file information
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        fileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+
+                //Get the created file content
+                const uriStr: string = fileObject.URL as any;
+                fileContent = await fetch(uriStr).then((response) => response.text());
+
+                expect(Number(fileObject.InternalID) > 200000);
+                expect(fileObject.Configuration).to.be.null;
+                expect(fileObject.Content).to.be.null;
+                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
+                expect(fileObject.Hidden).to.be.false;
+                expect(fileObject.IsSync).to.be.true;
+                expect(fileObject.MimeType).to.be.equal('text/plain');
+                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Title).to.be.equal(testDataFileName);
+                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+            });
+
+            it('Read the new added file content', () => {
+                expect(fileContent).to.contain('ABCD');
+            });
+
+            it('Make sure files removed in the end of the tests', async () => {
+                //Make sure files removed in the end of the tests
+                await expect(TestCleanUp(service)).eventually.to.be.above(0);
+            });
+
+            it('Delete the new file', async () => {
+                //Get the current (after) files from the File Storage
+                const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                let deletedFileObject: any;
+
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        deletedFileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+                expect(deletedFileObject).to.be.undefined;
+            });
         });
 
-        it("Don't Create a file in the file storage", async () => {
-            //Get the current (after) files from the File Storage
-            await expect(service.getFilesFromStorage())
-                .eventually.to.be.an('array')
-                .with.lengthOf(allfilesBefore.length);
+        describe('Make sure file uploaded via Base64 when using both Base64 and URL', () => {
+            let testDataFileName: string;
+            let allFilesAfter: FileStorage[];
+            it('Create a file in the file storage', async () => {
+                //Get the current (before) files from the File Storage
+                const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+
+                //Add a file to the File Storage with URL
+                testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await service.postFileToStorage({
+                    Title: testDataFileName,
+                    FileName: testDataFileName + '.txt',
+                    Description: '',
+                    Content: service.createTestDataInBase64Format(),
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
+                });
+                //Get the current (after) files from the File Storage
+                await expect((allFilesAfter = await service.getFilesFromStorage()))
+                    .to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length + 1);
+            });
+
+            let fileObject: FileStorage;
+            it('Read the new added file properties', async () => {
+                //Save the created file information
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        fileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+
+                expect(Number(fileObject.InternalID) > 200000);
+                expect(fileObject.Configuration).to.be.null;
+                expect(fileObject.Content).to.be.null;
+                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
+                expect(fileObject.Hidden).to.be.false;
+                expect(fileObject.IsSync).to.be.false;
+                expect(fileObject.MimeType).to.be.equal('text/plain');
+                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObject.Title).to.be.equal(testDataFileName);
+                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+            });
+
+            it('Read the new added file content', async () => {
+                //Get the created file content
+                const uriStr: string = fileObject.URL as any;
+                const fileContent: string = await fetch(uriStr).then((response) => response.text());
+
+                expect(fileContent).to.contain('ABCD');
+            });
+
+            it('Make sure files removed in the end of the tests', async () => {
+                //Make sure files removed in the end of the tests
+                await expect(TestCleanUp(service)).eventually.to.be.above(0);
+            });
+
+            it('Delete the new file', async () => {
+                //Get the current (after) files from the File Storage
+                const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                let deletedFileObject: any;
+
+                for (let index = 0; index < allFilesAfter.length; index++) {
+                    if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                        deletedFileObject = allFilesAfter[index];
+                        break;
+                    }
+                }
+                expect(deletedFileObject).to.be.undefined;
+            });
+        });
+
+        describe('Mandatory Title test (negative)', () => {
+            let allfilesBefore: FileStorage[];
+            it('Correct exception message for Title', async () => {
+                //Get the current (before) files from the File Storage
+                allfilesBefore = await service.getFilesFromStorage();
+
+                //Add a file to the File Storage without Title
+                const testDataFileName: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await expect(
+                    service.postFileToStorage({
+                        FileName: testDataFileName + '.txt',
+                        Description: '',
+                        Content: service.createTestDataInBase64Format(),
+                    } as any),
+                ).to.be.rejectedWith('The mandatory property \\"Title\\" can\'t be ignore.');
+            });
+
+            it("Don't Create a file in the file storage", async () => {
+                //Get the current (after) files from the File Storage
+                await expect(service.getFilesFromStorage())
+                    .eventually.to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length);
+            });
+        });
+
+        describe('Mandatory FileName test (negative)', () => {
+            let allfilesBefore: FileStorage[];
+            it('Correct exception message for FileName', async () => {
+                //Get the current (before) files from the File Storage
+                allfilesBefore = await service.getFilesFromStorage();
+
+                //Add a file to the File Storage without FileName
+                const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                await expect(
+                    service.postFileToStorage({
+                        Title: testDataFileName + '.txt',
+                        Description: '',
+                        Content: service.createTestDataInBase64Format(),
+                    } as any),
+                ).to.be.rejectedWith('The mandatory property \\"FileName\\" can\'t be ignore.');
+            });
+
+            it("Don't Create a file in the file storage", async () => {
+                //Get the current (after) files from the File Storage
+                await expect(service.getFilesFromStorage())
+                    .eventually.to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length);
+            });
+        });
+
+        describe('Mandatory properties test (negative)', () => {
+            let allfilesBefore: FileStorage[];
+            it('Correct exception message for mandatory properties', async () => {
+                //Get the current (before) files from the File Storage
+                allfilesBefore = await service.getFilesFromStorage();
+
+                //Add a file to the File Storage without any Mandatory
+                await expect(
+                    service.postFileToStorage({
+                        Description: '',
+                        Content: service.createTestDataInBase64Format(),
+                    } as any),
+                ).to.be.rejectedWith('The mandatory properties \\"Title\\", \\"FileName\\" can\'t be ignore.');
+            });
+
+            it("Don't Create a file in the file storage", async () => {
+                //Get the current (after) files from the File Storage
+                await expect(service.getFilesFromStorage())
+                    .eventually.to.be.an('array')
+                    .with.lengthOf(allfilesBefore.length);
+            });
         });
     });
 
+    //#endregion Scenarios
     return run();
     //#endregion Tests
 }
@@ -473,7 +600,7 @@ async function TestCleanUp(service: FileStorageService) {
                 InternalID: allfilesObject[index].InternalID,
                 Hidden: true,
             };
-            await service.postFilesToStorage(tempBody);
+            await service.postFileToStorage(tempBody);
             deletedCounter++;
         }
     }
