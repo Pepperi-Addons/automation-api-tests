@@ -48,3 +48,5 @@ describe('learning about mocha', function () {
         });
     });
 });
+
+mocha.run();

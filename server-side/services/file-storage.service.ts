@@ -9,8 +9,12 @@ export class FileStorageService {
     }
 
     //Files Storage API Calls
-    getFilesFromStorage() {
-        return this.papiClient.fileStorage.find();
+    getFilesFromStorage(where?: string) {
+        return this.papiClient.fileStorage
+            .iter({
+                where,
+            })
+            .toArray();
     }
 
     postFileToStorage(body: FileStorage) {
