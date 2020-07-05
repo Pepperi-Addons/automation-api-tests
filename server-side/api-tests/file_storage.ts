@@ -13,11 +13,8 @@ export async function FileStorageTests(generalService: GeneralService) {
 
     //#region Endpoints
     describe('Endpoints', () => {
-
         describe('Upsert', () => {
-
             it('Upsert a file valid response', async () => {
-
                 const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                 await expect(
                     service.postFileToStorage({
@@ -34,9 +31,7 @@ export async function FileStorageTests(generalService: GeneralService) {
         });
 
         describe('Get', () => {
-
             it('Get a file valid response', async () => {
-
                 const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                 const created = await service.postFileToStorage({
                     Title: testDataFileName,
@@ -45,10 +40,15 @@ export async function FileStorageTests(generalService: GeneralService) {
                     Content: service.createTestDataInBase64Format(),
                 });
 
-                expect(service.papiClient.fileStorage.iter({ 
-                    where: `InternalID = '${created.InternalID}'`
-                }).toArray()).eventually.to.have.property('$0')
-                        .eventually.to.include(({ "Title": testDataFileName })
+                expect(
+                    service.papiClient.fileStorage
+                        .iter({
+                            where: `InternalID = '${created.InternalID}'`,
+                        })
+                        .toArray(),
+                )
+                    .eventually.to.have.property('$0')
+                    .eventually.to.include({ Title: testDataFileName });
                 // .eventually.to.deep.include.any.property('Title')
                 // .contain(testDataFileName);
             });
@@ -58,11 +58,8 @@ export async function FileStorageTests(generalService: GeneralService) {
 
     //#region Scenarios
     describe('Scenarios', () => {
-
         describe('CRUD One File Using The File Storage in Base64', () => {
-
             it('Add a file to the file storage', async () => {
-
                 const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
 
                 const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
@@ -78,14 +75,12 @@ export async function FileStorageTests(generalService: GeneralService) {
                     .a('number')
                     .above(200000);
 
-                await expect((await service.getFilesFromStorage()))
+                await expect(await service.getFilesFromStorage())
                     .to.be.an('array')
                     .with.lengthOf(allfilesBefore.length + 1);
             });
 
-
             it('Read a file from the file storage', async () => {
-
                 const testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                 await expect(
                     service.postFileToStorage({
@@ -99,7 +94,7 @@ export async function FileStorageTests(generalService: GeneralService) {
                     .a('number')
                     .above(200000);
 
-                const fileObject: FileStorage = await service.getFilesFromStorage({ where: "Title=" + testDataFileName })[0];
+                const fileObject: FileStorage = await service.getFilesFromStorage()[0];
 
                 expect(Number(fileObject.InternalID) > 200000);
                 expect(fileObject.Configuration).to.be.null;
@@ -118,7 +113,6 @@ export async function FileStorageTests(generalService: GeneralService) {
             let allFilesAfter: FileStorage[];
             let testDataFileName: string;
             it('Create a file in the file storage', async () => {
-
                 //Get the current (before) files from the File Storage
                 const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
 
