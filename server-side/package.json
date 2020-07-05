@@ -12,15 +12,27 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "compile": "tsc",
-        "build": "rollup -c rollup.config.js",
-        "start": "tsc -w app.local.ts"
+        "build": "npm run lint && rollup -c rollup.config.js",
+        "start": "tsc -w app.local.ts",
+        "lint": "eslint --ext .ts .",
+        "fix-lint": "eslint --ext .ts . --fix",
+        "learn": "ts-mocha a.ts"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
         "@rollup/plugin-node-resolve": "^8.0.0",
+        "@types/chai-as-promised": "^7.1.2",
         "@types/dotenv": "^8.2.0",
+        "@types/mocha": "^7.0.2",
         "@types/node": "^10.17.24",
+        "@types/node-fetch": "^2.5.7",
+        "@typescript-eslint/eslint-plugin": "^3.5.0",
+        "@typescript-eslint/parser": "^3.5.0",
+        "eslint": "^7.3.1",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.4",
         "nodemon": "^2.0.4",
+        "prettier": "^2.0.5",
         "rollup": "^2.10.9",
         "rollup-plugin-typescript2": "^0.27.1",
         "ts-node": "^8.10.1",
@@ -31,8 +43,10 @@
         "@pepperi-addons/papi-sdk": "file:../../papi-sdk",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
         "mocha": "^7.2.0",
         "mochawesome": "^6.1.1",
-        "node-fetch": "^2.6.0"
+        "node-fetch": "^2.6.0",
+        "ts-mocha": "^7.0.0"
     }
 }
