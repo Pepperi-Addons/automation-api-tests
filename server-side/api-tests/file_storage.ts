@@ -91,27 +91,30 @@ export async function FileStorageTests(generalService: GeneralService) {
                     .a('number')
                     .above(200000);
 
-                    const fileObjectArr = await service.getFilesFromStorage(`Title='${testDataFileName}'`);
-                    return expect(fileObjectArr[0])
-                    .to.include({ Title: testDataFileName })
-                    .and.to.include('Configuration').that.is.null
-/*
-                        .to.include({ Title: testDataFileName })
-                        .and.to.include({ InternalID: created.InternalID })
-                        .and.to.include({ FileName: testDataFileName + '.txt' })
-                        .and.to.include({ Description: '' });
+                const fileObjectArr = await service.getFilesFromStorage(`Title='${testDataFileName}'`);
+                return Promise.all([
+                    expect(fileObjectArr[0]).to.have.property('InternalID').that.is.above(0),
 
-                expect(fileObject.Configuration).to.be.null;
-                expect(fileObject.Content).to.be.null;
-                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-                expect(fileObject.Hidden).to.be.false;
-                expect(fileObject.IsSync).to.be.false;
-                expect(fileObject.MimeType).to.be.equal('text/plain');
-                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Title).to.be.equal(testDataFileName);
-                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');*/
+                    expect(fileObjectArr[0])
+                        .to.include({ Title: testDataFileName })
+                        .and.to.include({ Configuration: null })
+                        .and.to.include({ Content: null })
+                        .and.to.include({ Description: '' }) //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                        .and.to.include({ FileName: testDataFileName + '.txt' })
+                        .and.to.include({ Hidden: false })
+                        .and.to.include({ IsSync: false })
+                        .and.to.include({ MimeType: 'text/plain' })
+                        .and.to.have.property('CreationDate')
+                        .that.contain(new Date().toISOString().split('T')[0]),
+
+                    expect(fileObjectArr[0])
+                        .to.have.property('ModificationDate')
+                        .that.contain(new Date().toISOString().split('T')[0]),
+
+                    expect(fileObjectArr[0])
+                        .to.have.property('URL')
+                        .that.contain(testDataFileName + '.txt'),
+                ]);
             });
 
             let allFilesAfter: FileStorage[];
@@ -276,7 +279,7 @@ export async function FileStorageTests(generalService: GeneralService) {
                 expect(deletedFileObject).to.be.undefined;
             });
         });
-/*
+
         describe('CRD One File Using The File Storage using URL', () => {
             let fileObject: FileStorage;
             let testDataFileName: string;
@@ -574,7 +577,7 @@ export async function FileStorageTests(generalService: GeneralService) {
                     .eventually.to.be.an('array')
                     .with.lengthOf(allfilesBefore.length);
             });
-        });*/
+        });
     });
 
     //#endregion Scenarios
