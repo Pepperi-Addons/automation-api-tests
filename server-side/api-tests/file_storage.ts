@@ -41,11 +41,12 @@ export async function FileStorageTests(generalService: GeneralService) {
                 });
 
                 const getFileResponseObj = await service.getFilesFromStorage(`InternalID=${created.InternalID}`);
-                return expect(getFileResponseObj[0])
-                    .to.include({ Title: testDataFileName })
-                    .and.to.include({ InternalID: created.InternalID })
-                    .and.to.include({ FileName: testDataFileName + '.txt' })
-                    .and.to.include({ Description: '' });
+                return expect(getFileResponseObj[0]).to.include({
+                    Title: testDataFileName,
+                    InternalID: created.InternalID,
+                    FileName: testDataFileName + '.txt',
+                    Description: '',
+                });
             });
         });
     });
@@ -69,7 +70,7 @@ export async function FileStorageTests(generalService: GeneralService) {
                     )
                         .eventually.to.have.property('InternalID')
                         .a('number')
-                        .above(200000),
+                        .above(0),
 
                     expect(await service.getFilesFromStorage())
                         .to.be.an('array')
@@ -89,32 +90,24 @@ export async function FileStorageTests(generalService: GeneralService) {
                 )
                     .eventually.to.have.property('InternalID')
                     .a('number')
-                    .above(200000);
+                    .above(0);
 
                 const fileObjectArr = await service.getFilesFromStorage(`Title='${testDataFileName}'`);
-                return Promise.all([
-                    expect(fileObjectArr[0]).to.have.property('InternalID').that.is.above(0),
 
-                    expect(fileObjectArr[0])
-                        .to.include({ Title: testDataFileName })
-                        .and.to.include({ Configuration: null })
-                        .and.to.include({ Content: null })
-                        .and.to.include({ Description: '' }) //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                        .and.to.include({ FileName: testDataFileName + '.txt' })
-                        .and.to.include({ Hidden: false })
-                        .and.to.include({ IsSync: false })
-                        .and.to.include({ MimeType: 'text/plain' })
-                        .and.to.have.property('CreationDate')
-                        .that.contain(new Date().toISOString().split('T')[0]),
-
-                    expect(fileObjectArr[0])
-                        .to.have.property('ModificationDate')
-                        .that.contain(new Date().toISOString().split('T')[0]),
-
-                    expect(fileObjectArr[0])
-                        .to.have.property('URL')
-                        .that.contain(testDataFileName + '.txt'),
-                ]);
+                expect(fileObjectArr[0].InternalID).to.be.above(0);
+                expect(fileObjectArr[0]).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                    FileName: testDataFileName + '.txt',
+                    Hidden: false,
+                    IsSync: false,
+                    MimeType: 'text/plain',
+                    Title: testDataFileName,
+                });
+                expect(fileObjectArr[0].CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObjectArr[0].ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(fileObjectArr[0].URL).to.contain(testDataFileName + '.txt');
             });
 
             let allFilesAfter: FileStorage[];
@@ -146,18 +139,20 @@ export async function FileStorageTests(generalService: GeneralService) {
                     }
                 }
 
-                expect(Number(fileObject.InternalID) > 200000);
-                expect(fileObject.Configuration).to.be.null;
-                expect(fileObject.Content).to.be.null;
+                expect(fileObject.InternalID).to.be.above(0);
+                expect(fileObject).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                    FileName: testDataFileName + '.txt',
+                    Hidden: false,
+                    IsSync: false,
+                    MimeType: 'text/plain',
+                    Title: testDataFileName,
+                });
                 expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-                expect(fileObject.Hidden).to.be.false;
-                expect(fileObject.IsSync).to.be.false;
-                expect(fileObject.MimeType).to.be.equal('text/plain');
                 expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Title).to.be.equal(testDataFileName);
-                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+                expect(fileObject.URL).to.contain(testDataFileName + '.txt');
             });
 
             let fileObject: FileStorage;
@@ -170,18 +165,20 @@ export async function FileStorageTests(generalService: GeneralService) {
                     }
                 }
 
-                expect(Number(fileObject.InternalID) > 200000);
-                expect(fileObject.Configuration).to.be.null;
-                expect(fileObject.Content).to.be.null;
+                expect(fileObject.InternalID).to.be.above(0);
+                expect(fileObject).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                    FileName: testDataFileName + '.txt',
+                    Hidden: false,
+                    IsSync: false,
+                    MimeType: 'text/plain',
+                    Title: testDataFileName,
+                });
                 expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-                expect(fileObject.Hidden).to.be.false;
-                expect(fileObject.IsSync).to.be.false;
-                expect(fileObject.MimeType).to.be.equal('text/plain');
                 expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Title).to.be.equal(testDataFileName);
-                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+                expect(fileObject.URL).to.contain(testDataFileName + '.txt');
             });
 
             let uriStr: string;
@@ -193,7 +190,7 @@ export async function FileStorageTests(generalService: GeneralService) {
                 expect(fileContent).to.contain('ABCD');
             });
 
-            let inItupdatedFileObject: FileStorage;
+            let inUpdatedFileObject: FileStorage;
             let updatedFileContent: string;
             it('Update the new added file', async () => {
                 //Update the new added file
@@ -231,22 +228,24 @@ export async function FileStorageTests(generalService: GeneralService) {
 
                 for (let index = 0; index < allFilesAfter.length; index++) {
                     if (allFilesAfter[index].InternalID == fileObject.InternalID) {
-                        inItupdatedFileObject = allFilesAfter[index];
+                        inUpdatedFileObject = allFilesAfter[index];
                         break;
                     }
                 }
-                expect(Number(inItupdatedFileObject.InternalID) == fileObject.InternalID);
-                expect(inItupdatedFileObject.Configuration).to.be.null;
-                expect(inItupdatedFileObject.Content).to.be.null;
-                expect(inItupdatedFileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(inItupdatedFileObject.Description).to.be.equal(updatedFileObject.Description);
-                expect(inItupdatedFileObject.FileName).to.be.equal(updatedFileObject.FileName);
-                expect(inItupdatedFileObject.Hidden).to.be.false;
-                expect(inItupdatedFileObject.IsSync).to.be.equal(updatedFileObject.IsSync);
-                expect(inItupdatedFileObject.MimeType).to.be.equal('text/plain');
-                expect(inItupdatedFileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(inItupdatedFileObject.Title).to.be.equal(updatedFileObject.Title);
-                expect(inItupdatedFileObject.URL).to.be.contain(updatedFileObjectNewUrl.URL);
+                expect(inUpdatedFileObject.InternalID).to.be.eql(fileObject.InternalID);
+                expect(inUpdatedFileObject).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: updatedFileObject.Description,
+                    FileName: updatedFileObject.FileName,
+                    Hidden: false,
+                    IsSync: updatedFileObject.IsSync,
+                    MimeType: 'text/plain',
+                    Title: updatedFileObject.Title,
+                });
+                expect(inUpdatedFileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(inUpdatedFileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
+                expect(inUpdatedFileObject.URL).to.contain(updatedFileObjectNewUrl.URL);
             });
 
             it('Read the updated file content', () => {
@@ -314,18 +313,20 @@ export async function FileStorageTests(generalService: GeneralService) {
             });
 
             it('Read the new added file properties', async () => {
-                expect(Number(fileObject.InternalID) > 200000);
-                expect(fileObject.Configuration).to.be.null;
-                expect(fileObject.Content).to.be.null;
+                expect(fileObject.InternalID).to.be.above(0);
+                expect(fileObject).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                    FileName: testDataFileName + '.txt',
+                    Hidden: false,
+                    IsSync: false,
+                    MimeType: 'text/plain',
+                    Title: testDataFileName,
+                });
                 expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-                expect(fileObject.Hidden).to.be.false;
-                expect(fileObject.IsSync).to.be.false;
-                expect(fileObject.MimeType).to.be.equal('text/plain');
                 expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Title).to.be.equal(testDataFileName);
-                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+                expect(fileObject.URL).to.contain(testDataFileName + '.txt');
             });
 
             it('Read the new added file content', async () => {
@@ -393,18 +394,20 @@ export async function FileStorageTests(generalService: GeneralService) {
                 const uriStr: string = fileObject.URL as any;
                 fileContent = await fetch(uriStr).then((response) => response.text());
 
-                expect(Number(fileObject.InternalID) > 200000);
-                expect(fileObject.Configuration).to.be.null;
-                expect(fileObject.Content).to.be.null;
+                expect(fileObject.InternalID).to.be.above(0);
+                expect(fileObject).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                    FileName: testDataFileName + '.txt',
+                    Hidden: false,
+                    IsSync: true,
+                    MimeType: 'text/plain',
+                    Title: testDataFileName,
+                });
                 expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-                expect(fileObject.Hidden).to.be.false;
-                expect(fileObject.IsSync).to.be.true;
-                expect(fileObject.MimeType).to.be.equal('text/plain');
                 expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Title).to.be.equal(testDataFileName);
-                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+                expect(fileObject.URL).to.contain(testDataFileName + '.txt');
             });
 
             it('Read the new added file content', () => {
@@ -464,18 +467,17 @@ export async function FileStorageTests(generalService: GeneralService) {
                     }
                 }
 
-                expect(Number(fileObject.InternalID) > 200000);
-                expect(fileObject.Configuration).to.be.null;
-                expect(fileObject.Content).to.be.null;
-                expect(fileObject.CreationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Description).to.be.equal(''); //undefined //TODO: Wait for ido to decide - DB cant contian undefined
-                expect(fileObject.FileName).to.be.equal(testDataFileName + '.txt');
-                expect(fileObject.Hidden).to.be.false;
-                expect(fileObject.IsSync).to.be.false;
-                expect(fileObject.MimeType).to.be.equal('text/plain');
-                expect(fileObject.ModificationDate).to.contain(new Date().toISOString().split('T')[0]);
-                expect(fileObject.Title).to.be.equal(testDataFileName);
-                expect(fileObject.URL).to.be.contain(testDataFileName + '.txt');
+                expect(fileObject.InternalID).to.be.above(0);
+                expect(fileObject).to.include({
+                    Configuration: null,
+                    Content: null,
+                    Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                    FileName: testDataFileName + '.txt',
+                    Hidden: false,
+                    IsSync: false,
+                    MimeType: 'text/plain',
+                    Title: testDataFileName,
+                });
             });
 
             it('Read the new added file content', async () => {
