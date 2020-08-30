@@ -37,6 +37,39 @@ export async function DataViewsTests(generalService: GeneralService) {
                     .and.to.have.property('InternalID')
                     .that.is.a('Number');
             });
+
+            it('Upsert Data View (Card) Valid Creation Amount', async () => {
+                //Get All Before
+                const totalDataViewsBefore: number = await (await service.getDataView()).length;
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return Promise.all([
+                    await expect(
+                        service.postDataView({
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                            Context: {
+                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                ScreenSize: 'Landscape',
+                                Profile: {
+                                    Name: 'Admin',
+                                },
+                            },
+                            Fields: [],
+                            Rows: [],
+                            Columns: [],
+                        }),
+                    )
+                        .eventually.to.include({
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                        })
+                        .and.to.have.property('InternalID')
+                        .that.is.a('Number'),
+                    await expect(service.getDataView())
+                        .eventually.to.be.an('array')
+                        .with.lengthOf(totalDataViewsBefore + 1),
+                ]);
+            });
         });
 
         describe('Get', () => {
