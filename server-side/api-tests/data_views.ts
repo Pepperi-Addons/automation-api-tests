@@ -3,7 +3,7 @@ import tester from '../tester';
 import { DataViewsService } from '../services/data-views.service';
 import { DataView } from '@pepperi-addons/papi-sdk';
 
-// All File Storage Tests
+// All File Storage Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
 export async function DataViewsTests(generalService: GeneralService) {
     const service = new DataViewsService(generalService.papiClient);
     const { describe, expect, it, run } = tester();
@@ -340,7 +340,8 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(testDataView.Context.ScreenSize).to.eql('Tablet');
                     expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
                     expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2019-12-31T07');
+                    expect(testDataView.CreationDateTime).to.contain('20');
+                    expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
                     expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                     expect(testDataView.ModificationDateTime).to.contain('Z');
@@ -382,7 +383,8 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(testDataView.Context.ScreenSize).to.eql('Tablet');
                     expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
                     expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2019-12-31T07');
+                    expect(testDataView.CreationDateTime).to.contain('20');
+                    expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
                     expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                     expect(testDataView.ModificationDateTime).to.contain('Z');
@@ -424,7 +426,8 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(testDataView.Context.ScreenSize).to.eql('Tablet');
                     expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
                     expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2019-12-31T07');
+                    expect(testDataView.CreationDateTime).to.contain('20');
+                    expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
                     expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                     expect(testDataView.ModificationDateTime).to.contain('Z');
@@ -466,7 +469,8 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(testDataView.Context.ScreenSize).to.eql('Tablet');
                     expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
                     expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2019-12-31T07');
+                    expect(testDataView.CreationDateTime).to.contain('20');
+                    expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
                     expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                     expect(testDataView.ModificationDateTime).to.contain('Z');
@@ -783,7 +787,8 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(testDataView.Context.ScreenSize).to.eql('Tablet');
                     expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
                     expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2019-12-31T07');
+                    expect(testDataView.CreationDateTime).to.contain('20');
+                    expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
                     expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                     expect(testDataView.ModificationDateTime).to.contain('Z');
@@ -793,11 +798,1068 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: 'Hello',
                     });
                 });
+            });
 
-                it('Upsert Data View (Map) with Fields,Rows and Columns (UI-16855)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    const testDataView: DataView = await service.postDataView({
+            it('Upsert Data View (Map) With Fields, Rows and Columns (DI-16855)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = await service.postDataView({
+                    Type: 'Map',
+                    Title: testDataViewTitle,
+                    Context: {
+                        Object: {
+                            Resource: 'activities',
+                            InternalID: 271932,
+                            Name: 'Daily deposit',
+                        },
+                        Name: 'Testing_MAP_123456',
+                        ScreenSize: 'Tablet',
+                        Profile: {
+                            InternalID: 67773,
+                            Name: 'Rep',
+                        },
+                    },
+                    Fields: [
+                        {
+                            FieldID: 'Test 123456',
+                            Title: 'Hello',
+                            Type: 'Phone',
+                            Mandatory: true,
+                            ReadOnly: true,
+                            Layout: {
+                                Origin: {
+                                    X: 10,
+                                    Y: 20,
+                                },
+                                Size: {
+                                    Height: 10,
+                                    Width: 20,
+                                },
+                            },
+                            Style: {
+                                Alignment: {
+                                    Horizontal: 'Center',
+                                    Vertical: 'Bottom',
+                                },
+                            },
+                        },
+                    ],
+                    Rows: [
+                        {
+                            Mode: 'MatchParent',
+                        },
+                    ],
+                    Columns: [{}, {}],
+                });
+
+                expect(testDataView.InternalID).to.be.above(0);
+                expect(testDataView).to.include({
+                    InternalID: testDataView.InternalID,
+                    Type: 'Map',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                });
+                expect(testDataView.Context['Object' as any].Resource).to.be.eql('activities');
+                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271932);
+                expect(testDataView.Context['Object' as any].Name).to.eql('Daily deposit');
+                expect(testDataView.Context.Name).to.eql('Testing_MAP_123456');
+                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
+                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
+                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+                expect(testDataView.ModificationDateTime).to.contain('Z');
+                expect(testDataView.Fields).to.be.an('array');
+                expect(testDataView.Fields[0]).to.include({
+                    FieldID: 'Test 123456',
+                    Title: 'Hello',
+                    Type: 'Phone',
+                });
+                expect(testDataView['Rows'][0]).to.include({
+                    Mode: 'MatchParent',
+                });
+                expect(testDataView['Columns']).to.be.an('array');
+                expect(testDataView['Columns'][0]).to.be.an('object');
+                expect(testDataView['Columns'][1]).to.be.an('object');
+            });
+
+            it('Upsert Data View (Grid) With Fields, Rows and Columns (DI-16861)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = await service.postDataView({
+                    Type: 'Grid',
+                    Title: testDataViewTitle,
+                    Context: {
+                        Object: {
+                            Resource: 'activities',
+                            InternalID: 271932,
+                            Name: 'Daily deposit',
+                        },
+                        Name: 'Testing_MAP_123456',
+                        ScreenSize: 'Tablet',
+                        Profile: {
+                            InternalID: 67773,
+                            Name: 'Rep',
+                        },
+                    },
+                    Fields: [
+                        {
+                            FieldID: 'Test 123456',
+                            Title: 'Hello',
+                            Type: 'Phone',
+                            Mandatory: true,
+                            ReadOnly: true,
+                            Layout: {
+                                Origin: {
+                                    X: 10,
+                                    Y: 20,
+                                },
+                                Size: {
+                                    Height: 10,
+                                    Width: 20,
+                                },
+                            },
+                            Style: {
+                                Alignment: {
+                                    Horizontal: 'Center',
+                                    Vertical: 'Bottom',
+                                },
+                            },
+                        },
+                        {
+                            FieldID: 'Test 123456',
+                            Title: 'Hello',
+                            Type: 'Phone',
+                            Mandatory: true,
+                            ReadOnly: true,
+                            Layout: {
+                                Origin: {
+                                    X: 10,
+                                    Y: 20,
+                                },
+                                Size: {
+                                    Height: 10,
+                                    Width: 20,
+                                },
+                            },
+                            Style: {
+                                Alignment: {
+                                    Horizontal: 'Center',
+                                    Vertical: 'Bottom',
+                                },
+                            },
+                        },
+                    ],
+                    Rows: [
+                        {
+                            Mode: 'MatchParent',
+                        },
+                    ],
+                    Columns: [
+                        {
+                            Width: 50,
+                        },
+                        {
+                            Width: 10,
+                        },
+                    ],
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0,
+                });
+
+                expect(testDataView.InternalID).to.be.above(0);
+                expect(testDataView).to.include({
+                    InternalID: testDataView.InternalID,
+                    Type: 'Grid',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                    FrozenColumnsCount: 0,
+                    MinimumColumnWidth: 0,
+                });
+                expect(testDataView.Context['Object' as any].Resource).to.be.eql('activities');
+                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271932);
+                expect(testDataView.Context['Object' as any].Name).to.eql('Daily deposit');
+                expect(testDataView.Context.Name).to.eql('Testing_MAP_123456');
+                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
+                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
+                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+                expect(testDataView.ModificationDateTime).to.contain('Z');
+                expect(testDataView.Fields).to.be.an('array');
+                expect(testDataView.Fields[0]).to.include({
+                    FieldID: 'Test 123456',
+                    Title: 'Hello',
+                    Type: 'Phone',
+                });
+                expect(testDataView['Columns']).to.be.an('array');
+                expect(testDataView['Columns'][0]).to.include({
+                    Width: 50,
+                });
+                expect(testDataView['Columns'][1]).to.include({
+                    Width: 10,
+                });
+            });
+
+            it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
+                const testDataViewArr: DataView[] = await service.getDataView({
+                    where: 'InternalID = 4067228',
+                    include_deleted: 1,
+                });
+                const testDataView = testDataViewArr[0];
+                expect(testDataView).to.include({
+                    InternalID: 4067228,
+                    Type: 'Menu',
+                    Title: 'Rep',
+                    Hidden: true,
+                });
+                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
+                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271439);
+                expect(testDataView.Context['Object' as any].Name).to.eql('new');
+                expect(testDataView.Context.Name).to.eql('CartBulkMenu');
+                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
+                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
+                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain('Z');
+                expect(testDataView.Fields).to.be.an('array');
+                expect(testDataView.Fields[0]).to.include({
+                    FieldID: 'Delete',
+                    Title: 'Delete',
+                });
+                expect(testDataView.Fields[1]).to.include({
+                    FieldID: 'Edit',
+                    Title: 'Edit',
+                });
+            });
+
+            it('Upsert Data View (Large) (DI-16874)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = await service.postDataView({
+                    Type: 'Large',
+                    Title: testDataViewTitle,
+                    Context: {
+                        Object: {
+                            Resource: 'transactions',
+                            InternalID: 268428,
+                            Name: 'Sales Order',
+                        },
+                        Name: 'Large_Creation_Test',
+                        ScreenSize: 'Tablet',
+                        Profile: {
+                            InternalID: 67773,
+                            Name: 'Rep',
+                        },
+                    },
+                    Fields: [],
+                    Columns: [],
+                    Rows: [],
+                });
+
+                expect(testDataView.InternalID).to.be.above(0);
+                expect(testDataView).to.include({
+                    InternalID: testDataView.InternalID,
+                    Type: 'Large',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                });
+                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
+                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
+                expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
+                expect(testDataView.Context.Name).to.eql('Large_Creation_Test');
+                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
+                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
+                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+                expect(testDataView.ModificationDateTime).to.contain('Z');
+                expect(testDataView.Fields).to.be.an('array');
+                expect(testDataView.Fields[0]).to.be.undefined;
+                expect(testDataView['Columns']).to.be.an('array');
+                expect(testDataView['Columns'][0]).to.be.undefined;
+                expect(testDataView['Rows']).to.be.an('array');
+                expect(testDataView['Rows'][0]).to.be.undefined;
+            });
+
+            it('Upsert Data View (Line)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = await service.postDataView({
+                    Type: 'Line',
+                    Title: testDataViewTitle,
+                    Context: {
+                        Object: {
+                            Resource: 'transactions',
+                            InternalID: 268428,
+                            Name: 'Sales Order',
+                        },
+                        Name: 'Line_Creation_Test',
+                        ScreenSize: 'Tablet',
+                        Profile: {
+                            InternalID: 67773,
+                            Name: 'Rep',
+                        },
+                    },
+                    Fields: [],
+                    Columns: [],
+                    Rows: [],
+                });
+
+                expect(testDataView.InternalID).to.be.above(0);
+                expect(testDataView).to.include({
+                    InternalID: testDataView.InternalID,
+                    Type: 'Line',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                });
+                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
+                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
+                expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
+                expect(testDataView.Context.Name).to.eql('Line_Creation_Test');
+                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
+                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
+                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+                expect(testDataView.ModificationDateTime).to.contain('Z');
+                expect(testDataView.Fields).to.be.an('array');
+                expect(testDataView.Fields[0]).to.be.undefined;
+                expect(testDataView['Columns']).to.be.an('array');
+                expect(testDataView['Columns'][0]).to.be.undefined;
+                expect(testDataView['Rows']).to.be.an('array');
+                expect(testDataView['Rows'][0]).to.be.undefined;
+            });
+
+            it('Upsert Data View (CardsGrid)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = await service.postDataView({
+                    Type: 'CardsGrid',
+                    Title: testDataViewTitle,
+                    Context: {
+                        Object: {
+                            Resource: 'transactions',
+                            InternalID: 268428,
+                            Name: 'Sales Order',
+                        },
+                        Name: 'CardsGrid_Creation_Test',
+                        ScreenSize: 'Tablet',
+                        Profile: {
+                            InternalID: 67773,
+                            Name: 'Rep',
+                        },
+                    },
+                    Fields: [],
+                    Columns: [],
+                    Rows: [],
+                });
+
+                expect(testDataView.InternalID).to.be.above(0);
+                expect(testDataView).to.include({
+                    InternalID: testDataView.InternalID,
+                    Type: 'CardsGrid',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                });
+                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
+                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
+                expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
+                expect(testDataView.Context.Name).to.eql('CardsGrid_Creation_Test');
+                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
+                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
+                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+                expect(testDataView.ModificationDateTime).to.contain('Z');
+                expect(testDataView.Fields).to.be.an('array');
+                expect(testDataView.Fields[0]).to.be.undefined;
+                expect(testDataView['Columns']).to.be.an('array');
+                expect(testDataView['Columns'][0]).to.be.undefined;
+                expect(testDataView['Rows']).to.be.an('array');
+                expect(testDataView['Rows'][0]).to.be.undefined;
+            });
+        });
+
+        describe('Negative', () => {
+            it('Insert New Data View (Card) With Wrong Context.Name', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: `Oren ${testDataViewTitle}`, //(#Negative).replace(/ /gi, '_'),
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
+                );
+            });
+
+            it('Insert New Data View (Card) Without Context.Profile', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: undefined, //(#Negative)'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Expected field: 'Context.Profile' to have either 'Name' or 'InternalID'",
+                );
+            });
+
+            it('Insert New Data View (Card) Without Context.Name', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Name'");
+            });
+
+            it('Insert New Data View (Card) Without Context.ScreenSize', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                            ScreenSize: undefined as any, //(#Negative)'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Missing expected field: 'Context.ScreenSize'",
+                );
+            });
+
+            it('Insert New Data View (Card) Without Type', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: undefined as any, //'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Type'");
+            });
+
+            it('Insert New Data View (Configuration) Without Context.Object (DI-16781)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: 'ActivityProfilePermission',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Object'");
+            });
+
+            it('Insert New Data View (Configuration) Without Context.Object.Name (DI-16796)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'activities',
+                            },
+                            Name: 'ActivityProfilePermission',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Expected field: 'Context.Object' to have either 'Name' or 'InternalID'",
+                );
+            });
+
+            it('Insert New Data View (Configuration) With Wrong Context.Object.Name (DI-16872)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'activities',
+                                Name: 'Oren Test',
+                            },
+                            Name: 'ActivityProfilePermission',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                InternalID: 67778,
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Object with Name = 'Oren Test' for Resource = 'activities' not found",
+                );
+            });
+
+            it('Insert New Data View (Configuration) With Wrong Context.Name (DI-16747)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'activities',
+                                Name: 'Photo',
+                            },
+                            Name: 'ActivityProfilePermission ',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
+                );
+            });
+
+            it('Insert new data view (Configuration) With Object (Unexpected) For WebAppMainBar', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'activities',
+                                Name: 'Photo',
+                            },
+                            Name: 'WebAppMainBar',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Unexpected field: 'Context.Object' for DataView of 'WebAppMainBar'",
+                );
+            });
+
+            it('Insert New Data View (Configuration) Without Context.Profile', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: 'ActivityProfilePermission',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: undefined, //(#Negative)'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Expected field: 'Context.Profile' to have either 'Name' or 'InternalID'",
+                );
+            });
+
+            it('Insert New Data View (Configuration) Without Context.Name', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Name'");
+            });
+
+            it('Insert New Data View (Configuration) Without Context.ScreenSize', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Configuration',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: 'ActivityProfilePermission',
+                            ScreenSize: undefined as any, //(#Negative)'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Missing expected field: 'Context.ScreenSize'",
+                );
+            });
+
+            it('Insert New Data View (Configuration) Without Type', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: undefined as any, //'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: 'ActivityProfilePermission',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Type'");
+            });
+
+            it('Try To Update Context Of Existing Data View (Form)', async () => {
+                //Create new Data View to be updated
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = {
+                    Type: 'Form',
+                    Title: testDataViewTitle,
+                    Hidden: true,
+                    Context: {
+                        Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                        ScreenSize: 'Tablet',
+                        Profile: {
+                            Name: 'Rep',
+                        },
+                    },
+                    Fields: [],
+                    Rows: [],
+                    Columns: [],
+                };
+
+                const postDataViewResponseObj: DataView = await service.postDataView(testDataView);
+
+                return expect(
+                    service.postDataView({
+                        InternalID: postDataViewResponseObj.InternalID,
+                        Type: 'Form',
+                        Title: testDataViewTitle,
+                        Hidden: false,
+                        Context: {
+                            Name: postDataViewResponseObj.Context.Name,
+                            ScreenSize: 'Phablet',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    `Failed due to exception: The Context send does not match the current Context. Current Context: {\\"Name\\":\\"${postDataViewResponseObj.Context.Name}\\",\\"ScreenSize\\":\\"Tablet\\",\\"Profile\\":{\\"InternalID\\":67773,\\"Name\\":\\"Rep\\"}`,
+                );
+            });
+
+            it('Upsert Data View (Menu) With Wrong Context.Object (DI-16872)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Menu',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'transactions',
+                                InternalID: 268421, //8
+                            },
+                            Name: 'OrderCartSmartSearch',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                InternalID: 67773,
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'InternalID'");
+            });
+
+            it('Upsert Data View (Card) With Missing Non-Mandatory Field Valid Response (DI-16807)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return Promise.all([
+                    await expect(
+                        service.postDataView({
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                            Context: {
+                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                ScreenSize: 'Landscape',
+                                Profile: {
+                                    Name: 'Rep',
+                                },
+                            },
+                            Fields: [],
+                            Rows: [],
+                            Columns: [],
+                        }),
+                    )
+                        .eventually.to.include({
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                        })
+                        .and.to.have.property('InternalID')
+                        .that.is.a('Number'),
+                    await expect(
+                        service.postDataView({
+                            Type: 'Card',
+                            Context: {
+                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                ScreenSize: 'Landscape',
+                                Profile: {
+                                    Name: 'Rep',
+                                },
+                            },
+                            Fields: [],
+                            Rows: [],
+                            Columns: [],
+                        }),
+                    )
+                        .eventually.to.include({
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                        })
+                        .and.to.have.property('InternalID')
+                        .that.is.a('Number'),
+                ]);
+            });
+
+            it('Upsert Data View (Details) Valid Response For Landscape (DI-16818)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: '',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
+                );
+            });
+
+            it('Upsert Data View (Details) Valid Response For Tablet', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: '',
+                            ScreenSize: 'Tablet',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
+                );
+            });
+
+            it('Upsert Data View (Details) Valid Response For Phablet (DI-16818)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Name: '',
+                            ScreenSize: 'Phablet',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
+                );
+            });
+
+            it('Upsert Data View (Grid) With Wrong Type For Context.Name (DI-16809)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        InternalID: 4886426,
+                        Type: 'Grid',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'transactions',
+                                Name: 'Sales Order',
+                            },
+                            Name: 'OrderViewsMenu',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                        FrozenColumnsCount: 0,
+                        MinimumColumnWidth: 0,
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Expected Type = 'Menu' for Context.Name = 'OrderViewsMenu'",
+                );
+            });
+
+            it('Upsert Data View (Grid) With Wrong InternalID', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        InternalID: 488642612,
+                        Type: 'Menu',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'transactions',
+                                Name: 'Sales Order',
+                            },
+                            Name: 'OrderViewsMenu',
+                            ScreenSize: 'Landscape',
+                            Profile: {
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Rows: [],
+                        Columns: [],
+                        FrozenColumnsCount: 0,
+                        MinimumColumnWidth: 0,
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    'Failed due to exception: Could not find DataView with InternalID = 488642612',
+                );
+            });
+
+            it('Upsert Data View (Menu) Witout Fields.Title', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Menu',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'transactions',
+                                InternalID: 268428,
+                                Name: 'Sales Order',
+                            },
+                            Name: 'CartBulkMenu',
+                            ScreenSize: 'Tablet',
+                            Profile: {
+                                InternalID: 67773,
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [
+                            {
+                                FieldID: '123456',
+                                //Title: "hello"
+                            },
+                        ],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Fields[0].Title'");
+            });
+
+            it('Upsert Data View (Menu) Witout Fields.FieldID', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Menu',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'transactions',
+                                InternalID: 268428,
+                                Name: 'Sales Order',
+                            },
+                            Name: 'CartBulkMenu',
+                            ScreenSize: 'Tablet',
+                            Profile: {
+                                InternalID: 67773,
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [
+                            {
+                                //FieldID: "123456",
+                                Title: 'hello',
+                            } as any,
+                        ],
+                    }),
+                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Fields[0].FieldID'");
+            });
+
+            it('Upsert Data View (Map) Without Fields[0].Style.Alignment.Vertical (DI-16852)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
                         Type: 'Map',
+                        Title: testDataViewTitle,
+                        Context: {
+                            Object: {
+                                Resource: 'activities',
+                                InternalID: 271932,
+                                Name: 'Daily deposit',
+                            },
+                            Name: 'Testing_MAP_123456',
+                            ScreenSize: 'Tablet',
+                            Profile: {
+                                InternalID: 67773,
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [
+                            {
+                                FieldID: 'Test 123456',
+                                Title: 'Hello',
+                                Type: 'Phone',
+                                Mandatory: true,
+                                ReadOnly: true,
+                                Layout: {
+                                    Origin: {
+                                        X: 10,
+                                        Y: 20,
+                                    },
+                                    Size: {
+                                        Height: 10,
+                                        Width: 20,
+                                    },
+                                },
+                                Style: {
+                                    Alignment: {
+                                        Horizontal: 'Center',
+                                        //Vertical: 'Bottom',
+                                    },
+                                },
+                            },
+                        ],
+                        Rows: [
+                            {
+                                Mode: 'MatchParent',
+                            },
+                        ],
+                        Columns: [],
+                    } as any),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Missing expected field: 'Fields[0].Style.Alignment.Vertical'",
+                );
+            });
+
+            it("Upsert Data View (Grid) With One 'Fields' And Two 'Columns' (DI-16861)", async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Grid',
                         Title: testDataViewTitle,
                         Context: {
                             Object: {
@@ -842,44 +1904,26 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 Mode: 'MatchParent',
                             },
                         ],
-                        Columns: [{}, {}],
-                    });
+                        Columns: [
+                            {
+                                Width: 50,
+                            },
+                            {
+                                Width: 10,
+                            },
+                        ],
+                        FrozenColumnsCount: 0,
+                        MinimumColumnWidth: 0,
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: A Grid's number of columns must match it's number of fields",
+                );
+            });
 
-                    expect(testDataView.InternalID).to.be.above(0);
-                    expect(testDataView).to.include({
-                        InternalID: testDataView.InternalID,
-                        Type: 'Map',
-                        Title: testDataViewTitle,
-                        Hidden: false,
-                    });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('activities');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271932);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Daily deposit');
-                    expect(testDataView.Context.Name).to.eql('Testing_MAP_123456');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2020-08-24T');
-                    expect(testDataView.CreationDateTime).to.contain('Z');
-                    expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
-                    expect(testDataView.ModificationDateTime).to.contain('Z');
-                    expect(testDataView.Fields).to.be.an('array');
-                    expect(testDataView.Fields[0]).to.include({
-                        FieldID: 'Test 123456',
-                        Title: 'Hello',
-                        Type: 'Phone',
-                    });
-                    expect(testDataView['Rows'][0]).to.include({
-                        Mode: 'MatchParent',
-                    });
-                    expect(testDataView['Columns']).to.be.an('array');
-                    expect(testDataView['Columns'][0]).to.be.an('object');
-                    expect(testDataView['Columns'][1]).to.be.an('object');
-                });
-
-                it('Upsert Data View (Grid) with Fields,Rows and Columns (UI-16861)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    const testDataView: DataView = await service.postDataView({
+            it("Upsert Data View (Grid) With Two 'Fields' And One 'Columns' (DI-16861)", async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
                         Type: 'Grid',
                         Title: testDataViewTitle,
                         Context: {
@@ -952,929 +1996,17 @@ export async function DataViewsTests(generalService: GeneralService) {
                             {
                                 Width: 50,
                             },
-                            {
-                                Width: 10,
-                            },
                         ],
                         FrozenColumnsCount: 0,
                         MinimumColumnWidth: 0,
-                    });
-
-                    expect(testDataView.InternalID).to.be.above(0);
-                    expect(testDataView).to.include({
-                        InternalID: testDataView.InternalID,
-                        Type: 'Grid',
-                        Title: testDataViewTitle,
-                        Hidden: false,
-                        FrozenColumnsCount: 0,
-                        MinimumColumnWidth: 0,
-                    });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('activities');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271932);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Daily deposit');
-                    expect(testDataView.Context.Name).to.eql('Testing_MAP_123456');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('2020-08-24T');
-                    expect(testDataView.CreationDateTime).to.contain('Z');
-                    expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
-                    expect(testDataView.ModificationDateTime).to.contain('Z');
-                    expect(testDataView.Fields).to.be.an('array');
-                    expect(testDataView.Fields[0]).to.include({
-                        FieldID: 'Test 123456',
-                        Title: 'Hello',
-                        Type: 'Phone',
-                    });
-                    expect(testDataView['Rows'][0]).to.include({
-                        Mode: 'MatchParent',
-                    });
-                    expect(testDataView['Columns']).to.be.an('array');
-                    expect(testDataView['Columns'][0]).to.include({
-                        Width: 50,
-                    });
-                    expect(testDataView['Columns'][0]).to.include({
-                        Width: 10,
-                    });
-                });
-            });
-
-            describe('Negative', () => {
-                it('Insert New Data View (Card) With Wrong Context.Name', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: `Oren ${testDataViewTitle}`, //(#Negative).replace(/ /gi, '_'),
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
-                    );
-                });
-
-                it('Insert New Data View (Card) Without Context.Profile', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: undefined, //(#Negative)'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Expected field: 'Context.Profile' to have either 'Name' or 'InternalID'",
-                    );
-                });
-
-                it('Insert New Data View (Card) Without Context.Name', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Name'");
-                });
-
-                it('Insert New Data View (Card) Without Context.ScreenSize', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                ScreenSize: undefined as any, //(#Negative)'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Missing expected field: 'Context.ScreenSize'",
-                    );
-                });
-
-                it('Insert New Data View (Card) Without Type', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: undefined as any, //'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Type'");
-                });
-
-                it('Insert New Data View (Configuration) Without Context.Object (DI-16781)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: 'ActivityProfilePermission',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Missing expected field: 'Context.Object'",
-                    );
-                });
-
-                it('Insert New Data View (Configuration) Without Context.Object.Name (DI-16796)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                },
-                                Name: 'ActivityProfilePermission',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Expected field: 'Context.Object' to have either 'Name' or 'InternalID'",
-                    );
-                });
-
-                it('Insert New Data View (Configuration) With Wrong Context.Object.Name', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                    Name: 'Oren Test',
-                                },
-                                Name: 'ActivityProfilePermission',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    InternalID: 67778,
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Object with Name = 'Oren Test' for Resource = 'activities' not found",
-                    );
-                });
-
-                it('Insert New Data View (Configuration) With Wrong Context.Name (DI-16747)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                    Name: 'Photo',
-                                },
-                                Name: 'ActivityProfilePermission ',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
-                    );
-                });
-
-                it('Insert new data view (Configuration) With Object (Unexpected) For WebAppMainBar', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                    Name: 'Photo',
-                                },
-                                Name: 'WebAppMainBar',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Unexpected field: 'Context.Object' for DataView of 'WebAppMainBar'",
-                    );
-                });
-
-                it('Insert New Data View (Configuration) Without Context.Profile', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: 'ActivityProfilePermission',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: undefined, //(#Negative)'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Expected field: 'Context.Profile' to have either 'Name' or 'InternalID'",
-                    );
-                });
-
-                it('Insert New Data View (Configuration) Without Context.Name', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Name'");
-                });
-
-                it('Insert New Data View (Configuration) Without Context.ScreenSize', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Configuration',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: 'ActivityProfilePermission',
-                                ScreenSize: undefined as any, //(#Negative)'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Missing expected field: 'Context.ScreenSize'",
-                    );
-                });
-
-                it('Insert New Data View (Configuration) Without Type', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: undefined as any, //'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: 'ActivityProfilePermission',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Type'");
-                });
-
-                it('Try To Update Context Of Existing Data View (Form)', async () => {
-                    //Create new Data View to be updated
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    const testDataView: DataView = {
-                        Type: 'Form',
-                        Title: testDataViewTitle,
-                        Hidden: true,
-                        Context: {
-                            Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                            ScreenSize: 'Tablet',
-                            Profile: {
-                                Name: 'Rep',
-                            },
-                        },
-                        Fields: [],
-                        Rows: [],
-                        Columns: [],
-                    };
-
-                    const postDataViewResponseObj: DataView = await service.postDataView(testDataView);
-
-                    return expect(
-                        service.postDataView({
-                            InternalID: postDataViewResponseObj.InternalID,
-                            Type: 'Form',
-                            Title: testDataViewTitle,
-                            Hidden: false,
-                            Context: {
-                                Name: postDataViewResponseObj.Context.Name,
-                                ScreenSize: 'Phablet',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        `Failed due to exception: The Context send does not match the current Context. Current Context: {\\"Name\\":\\"${postDataViewResponseObj.Context.Name}\\",\\"ScreenSize\\":\\"Tablet\\",\\"Profile\\":{\\"InternalID\\":67773,\\"Name\\":\\"Rep\\"}`,
-                    );
-                });
-
-                it('Upsert Data View (Menu) With Wrong Context.Object', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Menu',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'transactions',
-                                    InternalID: 268421, //8
-                                },
-                                Name: 'OrderCartSmartSearch',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                        }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'InternalID'");
-                });
-
-                it('Upsert Existing Data View (Default) Should Fulfilled', async () => {
-                    return expect(
-                        service.postDataView({
-                            InternalID: 4067228,
-                            Type: 'Menu',
-                            Title: 'Rep',
-                            Context: {
-                                Name: 'CartBulkMenu',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [
-                                {
-                                    FieldID: 'Delete',
-                                    Title: 'Delete',
-                                },
-                                {
-                                    FieldID: 'Edit',
-                                    Title: 'Edit',
-                                },
-                            ],
-                        }),
-                    ).eventually.to.be.fulfilled;
-                });
-
-                it('Upsert Data View (Card) With Missing Non-Mandatory Field Valid Response (DI-16807)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return Promise.all([
-                        await expect(
-                            service.postDataView({
-                                Type: 'Card',
-                                Title: testDataViewTitle,
-                                Context: {
-                                    Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                    ScreenSize: 'Landscape',
-                                    Profile: {
-                                        Name: 'Rep',
-                                    },
-                                },
-                                Fields: [],
-                                Rows: [],
-                                Columns: [],
-                            }),
-                        )
-                            .eventually.to.include({
-                                Type: 'Card',
-                                Title: testDataViewTitle,
-                            })
-                            .and.to.have.property('InternalID')
-                            .that.is.a('Number'),
-                        await expect(
-                            service.postDataView({
-                                Type: 'Card',
-                                Context: {
-                                    Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                    ScreenSize: 'Landscape',
-                                    Profile: {
-                                        Name: 'Rep',
-                                    },
-                                },
-                                Fields: [],
-                                Rows: [],
-                                Columns: [],
-                            }),
-                        )
-                            .eventually.to.include({
-                                Type: 'Card',
-                                Title: testDataViewTitle,
-                            })
-                            .and.to.have.property('InternalID')
-                            .that.is.a('Number'),
-                    ]);
-                });
-
-                it('Upsert Data View (Details) Valid Response For Landscape (DI-16818)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: '',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
-                    );
-                });
-
-                it('Upsert Data View (Details) Valid Response For Tablet', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: '',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
-                    );
-                });
-
-                it('Upsert Data View (Details) Valid Response For Phablet (DI-16818)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Name: '',
-                                ScreenSize: 'Phablet',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
-                    );
-                });
-
-                it('Upsert Data View (Grid) With Wrong Type For Context.Name (DI-16809)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            InternalID: 4886426,
-                            Type: 'Grid',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'transactions',
-                                    Name: 'Sales Order',
-                                },
-                                Name: 'OrderViewsMenu',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                            FrozenColumnsCount: 0,
-                            MinimumColumnWidth: 0,
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Expected Type = 'Menu' for Context.Name = 'OrderViewsMenu'",
-                    );
-                });
-
-                it('Upsert Data View (Grid) With Wrong InternalID', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            InternalID: 488642612,
-                            Type: 'Menu',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'transactions',
-                                    Name: 'Sales Order',
-                                },
-                                Name: 'OrderViewsMenu',
-                                ScreenSize: 'Landscape',
-                                Profile: {
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Rows: [],
-                            Columns: [],
-                            FrozenColumnsCount: 0,
-                            MinimumColumnWidth: 0,
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        'Failed due to exception: Could not find DataView with InternalID = 488642612',
-                    );
-                });
-
-                it('Upsert Data View (Menu) witout Fields.Title', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Menu',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
-                                },
-                                Name: 'CartBulkMenu',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [
-                                {
-                                    FieldID: '123456',
-                                    //Title: "hello"
-                                },
-                            ],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Missing expected field: 'Fields[0].Title'",
-                    );
-                });
-
-                it('Upsert Data View (Menu) witout Fields.FieldID', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Menu',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
-                                },
-                                Name: 'CartBulkMenu',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [
-                                {
-                                    //FieldID: "123456",
-                                    Title: 'hello',
-                                } as any,
-                            ],
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Missing expected field: 'Fields[0].FieldID'",
-                    );
-                });
-
-                it('Upsert Data View (Map) without Fields[0].Style.Alignment.Vertical (DI-16852)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Map',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                    InternalID: 271932,
-                                    Name: 'Daily deposit',
-                                },
-                                Name: 'Testing_MAP_123456',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [
-                                {
-                                    FieldID: 'Test 123456',
-                                    Title: 'Hello',
-                                    Type: 'Phone',
-                                    Mandatory: true,
-                                    ReadOnly: true,
-                                    Layout: {
-                                        Origin: {
-                                            X: 10,
-                                            Y: 20,
-                                        },
-                                        Size: {
-                                            Height: 10,
-                                            Width: 20,
-                                        },
-                                    },
-                                    Style: {
-                                        Alignment: {
-                                            Horizontal: 'Center',
-                                            //Vertical: 'Bottom',
-                                        },
-                                    },
-                                },
-                            ],
-                            Rows: [
-                                {
-                                    Mode: 'MatchParent',
-                                },
-                            ],
-                            Columns: [],
-                        } as any),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: Missing expected field: 'Fields[0].Style.Alignment.Vertical'",
-                    );
-                });
-
-                it('Upsert Data View (Grid) with one Fields two Columns (UI-16861)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Grid',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                    InternalID: 271932,
-                                    Name: 'Daily deposit',
-                                },
-                                Name: 'Testing_MAP_123456',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [
-                                {
-                                    FieldID: 'Test 123456',
-                                    Title: 'Hello',
-                                    Type: 'Phone',
-                                    Mandatory: true,
-                                    ReadOnly: true,
-                                    Layout: {
-                                        Origin: {
-                                            X: 10,
-                                            Y: 20,
-                                        },
-                                        Size: {
-                                            Height: 10,
-                                            Width: 20,
-                                        },
-                                    },
-                                    Style: {
-                                        Alignment: {
-                                            Horizontal: 'Center',
-                                            Vertical: 'Bottom',
-                                        },
-                                    },
-                                },
-                                {
-                                    FieldID: 'Test 123456',
-                                    Title: 'Hello',
-                                    Type: 'Phone',
-                                    Mandatory: true,
-                                    ReadOnly: true,
-                                    Layout: {
-                                        Origin: {
-                                            X: 10,
-                                            Y: 20,
-                                        },
-                                        Size: {
-                                            Height: 10,
-                                            Width: 20,
-                                        },
-                                    },
-                                    Style: {
-                                        Alignment: {
-                                            Horizontal: 'Center',
-                                            Vertical: 'Bottom',
-                                        },
-                                    },
-                                },
-                            ],
-                            Rows: [
-                                {
-                                    Mode: 'MatchParent',
-                                },
-                            ],
-                            Columns: [
-                                {
-                                    Width: 50,
-                                },
-                                {
-                                    Width: 10,
-                                },
-                            ],
-                            FrozenColumnsCount: 0,
-                            MinimumColumnWidth: 0,
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: A Grid's number of columns must match it's number of fields",
-                    );
-                });
-
-                it('Upsert Data View (Grid) with Fields two Fields and One Columns (UI-16861)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Type: 'Grid',
-                            Title: testDataViewTitle,
-                            Context: {
-                                Object: {
-                                    Resource: 'activities',
-                                    InternalID: 271932,
-                                    Name: 'Daily deposit',
-                                },
-                                Name: 'Testing_MAP_123456',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [
-                                {
-                                    FieldID: 'Test 123456',
-                                    Title: 'Hello',
-                                    Type: 'Phone',
-                                    Mandatory: true,
-                                    ReadOnly: true,
-                                    Layout: {
-                                        Origin: {
-                                            X: 10,
-                                            Y: 20,
-                                        },
-                                        Size: {
-                                            Height: 10,
-                                            Width: 20,
-                                        },
-                                    },
-                                    Style: {
-                                        Alignment: {
-                                            Horizontal: 'Center',
-                                            Vertical: 'Bottom',
-                                        },
-                                    },
-                                },
-                                {
-                                    FieldID: 'Test 123456',
-                                    Title: 'Hello',
-                                    Type: 'Phone',
-                                    Mandatory: true,
-                                    ReadOnly: true,
-                                    Layout: {
-                                        Origin: {
-                                            X: 10,
-                                            Y: 20,
-                                        },
-                                        Size: {
-                                            Height: 10,
-                                            Width: 20,
-                                        },
-                                    },
-                                    Style: {
-                                        Alignment: {
-                                            Horizontal: 'Center',
-                                            Vertical: 'Bottom',
-                                        },
-                                    },
-                                },
-                            ],
-                            Rows: [
-                                {
-                                    Mode: 'MatchParent',
-                                },
-                            ],
-                            Columns: [
-                                {
-                                    Width: 50,
-                                },
-                            ],
-                            FrozenColumnsCount: 0,
-                            MinimumColumnWidth: 0,
-                        }),
-                    ).eventually.to.be.rejectedWith(
-                        "Failed due to exception: A Grid's number of columns must match it's number of fields",
-                    );
-                });
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: A Grid's number of columns must match it's number of fields",
+                );
             });
         });
     });
+
     //#endregion Scenarios
 
     describe('Test Clean Up (Hidden = true)', () => {
@@ -1899,7 +2031,8 @@ async function TestCleanUp(service: DataViewsService) {
     for (let index = 0; index < allDataViewObjects.length; index++) {
         if (
             allDataViewObjects[index].Title?.toString().startsWith('Test') &&
-            Number(allDataViewObjects[index].Title?.toString().split(' ')[1]) > 100
+            Number(allDataViewObjects[index].Title?.toString().split(' ')[1]) > 100 &&
+            allDataViewObjects[index].Hidden == false
         ) {
             try {
                 console.log('deleted idex: ' + index);
