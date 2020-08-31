@@ -18,7 +18,7 @@ export default function Tester() {
             html: true,
             consoleReporter: 'none',
         },
-        timeout: 30000,
+        timeout: 120000,
     });
     const root = mocha.suite;
     let context: Suite | undefined = root;
