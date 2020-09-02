@@ -22,7 +22,7 @@ export class FieldsService {
     }
 
     deleteFields(resource_name: ResourceTypes, FieldID: string, type_Id?: string) {
-        if (resource_name == 'catalogs'  || type_Id == undefined) {
+        if (resource_name == 'catalogs' || type_Id == undefined) {
             return this.papiClient.metaData.type(resource_name).fields.delete(FieldID);
         }
         return this.papiClient.metaData.type(resource_name).types.subtype(type_Id).fields.delete(FieldID);
