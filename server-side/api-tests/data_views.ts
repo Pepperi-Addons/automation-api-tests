@@ -3,7 +3,7 @@ import tester from '../tester';
 import { DataViewsService } from '../services/data-views.service';
 import { DataView } from '@pepperi-addons/papi-sdk';
 
-// All File Storage Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
+// All Data Views Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
 export async function DataViewsTests(generalService: GeneralService) {
     const service = new DataViewsService(generalService.papiClient);
     const { describe, expect, it, run } = tester();
@@ -70,6 +70,97 @@ export async function DataViewsTests(generalService: GeneralService) {
                         .with.lengthOf(totalDataViewsBefore + 1),
                 ]);
             });
+
+            it('Upsert Data Views Batch Valid Response (DI-16869)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataViewBatch([
+                        {
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                            Context: {
+                                Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                ScreenSize: 'Landscape',
+                                Profile: {
+                                    Name: 'Rep',
+                                },
+                            },
+                            Fields: [],
+                            Rows: [],
+                            Columns: [],
+                        },
+                        {
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                            Context: {
+                                Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
+                                ScreenSize: 'Landscape',
+                                Profile: {
+                                    Name: 'Rep',
+                                },
+                            },
+                            Fields: [],
+                            Rows: [],
+                            Columns: [],
+                        },
+                    ]),
+                )
+                    .eventually.to.include({
+                        Type: 'Card',
+                        Title: testDataViewTitle,
+                    })
+                    .and.to.have.property('InternalID')
+                    .that.is.a('Number');
+            });
+
+            it('Upsert Data Views Batch Valid Creation Amount (DI-16869)', async () => {
+                //Get All Before
+                const totalDataViewsBefore: number = await (await service.getDataView()).length;
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return Promise.all([
+                    await expect(
+                        service.postDataViewBatch([
+                            {
+                                Type: 'Card',
+                                Title: testDataViewTitle,
+                                Context: {
+                                    Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                    ScreenSize: 'Landscape',
+                                    Profile: {
+                                        Name: 'Admin',
+                                    },
+                                },
+                                Fields: [],
+                                Rows: [],
+                                Columns: [],
+                            },
+                            {
+                                Type: 'Card',
+                                Title: testDataViewTitle,
+                                Context: {
+                                    Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
+                                    ScreenSize: 'Landscape',
+                                    Profile: {
+                                        Name: 'Admin',
+                                    },
+                                },
+                                Fields: [],
+                                Rows: [],
+                                Columns: [],
+                            },
+                        ]),
+                    )
+                        .eventually.to.include({
+                            Type: 'Card',
+                            Title: testDataViewTitle,
+                        })
+                        .and.to.have.property('InternalID')
+                        .that.is.a('Number'),
+                    await expect(service.getDataView())
+                        .eventually.to.be.an('array')
+                        .with.lengthOf(totalDataViewsBefore + 2),
+                ]);
+            });
         });
 
         describe('Get', () => {
@@ -92,6 +183,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'Grid',
                     Title: testDataViewTitle,
+                    Hidden: false,
                     Context: {
                         Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                         ScreenSize: 'Tablet',
@@ -121,10 +213,12 @@ export async function DataViewsTests(generalService: GeneralService) {
                     FrozenColumnsCount: 0,
                     MinimumColumnWidth: 0,
                 });
-                expect(getDataViewResponseObj[0].Context.Profile.Name).to.eql('Buyer');
-                expect(getDataViewResponseObj[0].Context.Profile.InternalID).to.be.above(0);
-                expect(getDataViewResponseObj[0].Context.Name).to.eql(`Oren ${testDataViewTitle}`.replace(/ /gi, '_'));
-                expect(getDataViewResponseObj[0].Context.ScreenSize).to.eql('Tablet');
+                expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Buyer');
+                expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
+                expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
+                    `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                );
+                expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Tablet');
                 expect(getDataViewResponseObj[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(getDataViewResponseObj[0].CreationDateTime).to.contain('Z');
                 expect(getDataViewResponseObj[0].ModificationDateTime).to.contain(
@@ -140,6 +234,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'Grid',
                     Title: testDataViewTitle,
+                    Hidden: false,
                     Context: {
                         Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                         ScreenSize: 'Tablet',
@@ -170,10 +265,12 @@ export async function DataViewsTests(generalService: GeneralService) {
                     FrozenColumnsCount: 0,
                     MinimumColumnWidth: 0,
                 });
-                expect(getDataViewResponseObj[0].Context.Profile.Name).to.eql('Buyer');
-                expect(getDataViewResponseObj[0].Context.Profile.InternalID).to.be.above(0);
-                expect(getDataViewResponseObj[0].Context.Name).to.eql(`Oren ${testDataViewTitle}`.replace(/ /gi, '_'));
-                expect(getDataViewResponseObj[0].Context.ScreenSize).to.eql('Tablet');
+                expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Buyer');
+                expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
+                expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
+                    `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                );
+                expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Tablet');
                 expect(getDataViewResponseObj[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(getDataViewResponseObj[0].CreationDateTime).to.contain('Z');
                 expect(getDataViewResponseObj[0].ModificationDateTime).to.contain(
@@ -229,6 +326,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     const testDataView: DataView = await service.postDataView({
                         Type: 'Form',
                         Title: testDataViewTitle,
+                        Hidden: false,
                         Context: {
                             Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                             ScreenSize: 'Phablet',
@@ -251,12 +349,12 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                     });
-                    expect(getDataViewResponseObj[0].Context.Profile.Name).to.eql('Admin');
-                    expect(getDataViewResponseObj[0].Context.Profile.InternalID).to.be.above(0);
-                    expect(getDataViewResponseObj[0].Context.Name).to.eql(
+                    expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Admin');
+                    expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
+                    expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
                         `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                     );
-                    expect(getDataViewResponseObj[0].Context.ScreenSize).to.eql('Phablet');
+                    expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Phablet');
                     expect(getDataViewResponseObj[0].CreationDateTime).to.contain(
                         new Date().toISOString().split('T')[0],
                     );
@@ -270,7 +368,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(getDataViewResponseObj[0].Fields).to.be.an('array');
                 });
 
-                it('Update the new added file', async () => {
+                it('Update the Data View', async () => {
                     //Create new Data View to be updated
                     const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                     const testDataView: DataView = {
@@ -296,7 +394,7 @@ export async function DataViewsTests(generalService: GeneralService) {
 
                     const updatedDataViewObject: DataView = {
                         InternalID: postDataViewResponseObj.InternalID,
-                        Type: 'Card',
+                        Type: 'Form',
                         Title: testDataViewNewTitle,
                         Hidden: false,
                         Context: postDataViewResponseObj.Context,
@@ -315,14 +413,16 @@ export async function DataViewsTests(generalService: GeneralService) {
                     expect(getDataViewResponseObj[0].InternalID).to.be.above(0);
                     expect(getDataViewResponseObj[0]).to.include({
                         InternalID: postUpdatedDataViewResponseObj.InternalID,
-                        Type: 'Card',
+                        Type: 'Form',
                         Title: testDataViewNewTitle,
                         Hidden: false,
                     });
-                    expect(getDataViewResponseObj[0].Context.Profile.Name).to.eql('Admin');
-                    expect(getDataViewResponseObj[0].Context.Profile.InternalID).to.be.above(0);
-                    expect(getDataViewResponseObj[0].Context.Name).to.eql(postUpdatedDataViewResponseObj.Context.Name);
-                    expect(getDataViewResponseObj[0].Context.ScreenSize).to.eql('Phablet');
+                    expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Admin');
+                    expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
+                    expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
+                        postUpdatedDataViewResponseObj['Context' as any].Name,
+                    );
+                    expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Phablet');
                     expect(getDataViewResponseObj[0].CreationDateTime).to.contain(
                         new Date().toISOString().split('T')[0],
                     );
@@ -343,6 +443,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     const testDataView: DataView = await service.postDataView({
                         Type: 'Menu',
                         Title: testDataViewTitle,
+                        Hidden: false,
                         Context: {
                             Object: {
                                 Resource: 'transactions',
@@ -366,13 +467,13 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                     });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                    expect(testDataView.Context.Name).to.eql('CartBulkMenu');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                    expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -386,6 +487,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     const testDataView: DataView = await service.postDataView({
                         Type: 'Menu',
                         Title: testDataViewTitle,
+                        Hidden: false,
                         Context: {
                             Object: {
                                 Resource: 'transactions',
@@ -409,13 +511,13 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                     });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                    expect(testDataView.Context.Name).to.eql('CartBulkMenu');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                    expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -429,6 +531,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     const testDataView: DataView = await service.postDataView({
                         Type: 'Menu',
                         Title: testDataViewTitle,
+                        Hidden: false,
                         Context: {
                             Object: {
                                 Resource: 'transactions',
@@ -452,13 +555,13 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                     });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                    expect(testDataView.Context.Name).to.eql('CartBulkMenu');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                    expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -472,6 +575,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     const testDataView: DataView = await service.postDataView({
                         Type: 'Menu',
                         Title: testDataViewTitle,
+                        Hidden: false,
                         Context: {
                             Object: {
                                 Resource: 'transactions',
@@ -495,13 +599,13 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                     });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                    expect(testDataView.Context.Name).to.eql('CartBulkMenu');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                    expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -528,7 +632,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                             Title: testDataViewTitle,
                             Type: 'Menu',
                         } as any),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context'");
+                    ).eventually.to.be.rejectedWith('Failed due to exception: Expected either InternalID or Context');
                 });
 
                 it('Upsert Data View to be rejected with missing Context.Name', async () => {
@@ -654,7 +758,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     );
                 });
 
-                it('Upsert Data View to be rejected with missing Fields', async () => {
+                it('Upsert existing Data View Without Changes', async () => {
                     const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                     return expect(
                         service.postDataView({
@@ -669,89 +773,37 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 },
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: 268428,
+                                    Name: 'Sales Order',
                                 },
                             },
-                        } as any),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Fields'");
-                });
-
-                it('Upsert Data View to be rejected with already existing', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Title: testDataViewTitle,
-                            Type: 'Menu',
-                            Context: {
-                                Name: 'CartBulkMenu',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                                Object: {
-                                    Resource: 'transactions',
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
                         }),
-                    ).eventually.to.be.rejectedWith(
-                        `Failed due to exception: There should only be one data view for context: {\\"Name\\":\\"CartBulkMenu\\",\\"ScreenSize\\":\\"Tablet\\",\\"Profile\\":{\\"InternalID\\":67773,\\"Name\\":\\"Rep\\"}}`,
-                    );
+                    ).eventually.to.be.fulfilled;
                 });
             });
 
             describe('Upsert Data View (Details) Form Missing Data Members To Data View ', () => {
-                it('Upsert Data View to be rejected with missing Columns', async () => {
+                it('Upsert Data View To Be Fulfilled', async () => {
                     const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                     return expect(
                         service.postDataView({
                             Title: testDataViewTitle,
                             Type: 'Details',
                             Context: {
+                                Object: {
+                                    Resource: 'transactions',
+                                    InternalID: 268428,
+                                    Name: 'Sales Order',
+                                },
                                 Name: 'Test_Details',
                                 ScreenSize: 'Tablet',
                                 Profile: {
                                     InternalID: 67773,
                                     Name: 'Rep',
                                 },
-                                Object: {
-                                    Resource: 'transactions',
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
                             },
-                            Fields: [],
                         }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Columns'");
-                });
-
-                it('Upsert Data View to be rejected with missing Rows', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataView({
-                            Title: testDataViewTitle,
-                            Type: 'Details',
-                            Context: {
-                                Name: 'Test_Details',
-                                ScreenSize: 'Tablet',
-                                Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                                Object: {
-                                    Resource: 'transactions',
-                                    InternalID: 67773,
-                                    Name: 'Rep',
-                                },
-                            },
-                            Fields: [],
-                            Columns: [],
-                        }),
-                    ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Rows'");
+                    ).eventually.to.be.fulfilled;
                 });
 
                 it('Upsert Data View To Be Fulfilled', async () => {
@@ -774,8 +826,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 },
                             },
                             Fields: [],
-                            Columns: [],
-                            Rows: [],
                         }),
                     ).eventually.to.be.fulfilled;
                 });
@@ -785,6 +835,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                     const testDataView: DataView = await service.postDataView({
                         Type: 'Menu',
                         Title: testDataViewTitle,
+                        Hidden: false,
                         Context: {
                             Object: {
                                 Resource: 'transactions',
@@ -813,20 +864,20 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                     });
-                    expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                    expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                    expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                    expect(testDataView.Context.Name).to.eql('CartBulkMenu');
-                    expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                    expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                    expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
                     expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                     expect(testDataView.ModificationDateTime).to.contain('Z');
                     expect(testDataView.Fields).to.be.an('array');
-                    expect(testDataView.Fields[0]).to.include({
+                    expect(testDataView['Fields' as any][0]).to.include({
                         FieldID: 'Test 123456',
                         Title: 'Hello',
                     });
@@ -838,13 +889,14 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'Map',
                     Title: testDataViewTitle,
+                    Hidden: false,
                     Context: {
                         Object: {
                             Resource: 'activities',
                             InternalID: 271932,
                             Name: 'Daily deposit',
                         },
-                        Name: 'Testing_MAP_123456',
+                        Name: 'Testing_Map_123456',
                         ScreenSize: 'Tablet',
                         Profile: {
                             InternalID: 67773,
@@ -891,20 +943,20 @@ export async function DataViewsTests(generalService: GeneralService) {
                     Title: testDataViewTitle,
                     Hidden: false,
                 });
-                expect(testDataView.Context['Object' as any].Resource).to.be.eql('activities');
-                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271932);
-                expect(testDataView.Context['Object' as any].Name).to.eql('Daily deposit');
-                expect(testDataView.Context.Name).to.eql('Testing_MAP_123456');
-                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('activities');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271932);
+                expect(testDataView['Context' as any].Object.Name).to.eql('Daily deposit');
+                expect(testDataView['Context' as any].Name).to.eql('Testing_Map_123456');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                 expect(testDataView.CreationDateTime).to.contain('20');
                 expect(testDataView.CreationDateTime).to.contain('T');
                 expect(testDataView.CreationDateTime).to.contain('Z');
                 expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(testDataView.ModificationDateTime).to.contain('Z');
                 expect(testDataView.Fields).to.be.an('array');
-                expect(testDataView.Fields[0]).to.include({
+                expect(testDataView['Fields' as any][0]).to.include({
                     FieldID: 'Test 123456',
                     Title: 'Hello',
                     Type: 'Phone',
@@ -922,13 +974,14 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'Grid',
                     Title: testDataViewTitle,
+                    Hidden: true,
                     Context: {
                         Object: {
                             Resource: 'activities',
                             InternalID: 271932,
                             Name: 'Daily deposit',
                         },
-                        Name: 'Testing_MAP_123456',
+                        Name: 'Testing_Grid_123456',
                         ScreenSize: 'Tablet',
                         Profile: {
                             InternalID: 67773,
@@ -983,11 +1036,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                     ],
-                    Rows: [
-                        {
-                            Mode: 'MatchParent',
-                        },
-                    ],
                     Columns: [
                         {
                             Width: 50,
@@ -1005,24 +1053,24 @@ export async function DataViewsTests(generalService: GeneralService) {
                     InternalID: testDataView.InternalID,
                     Type: 'Grid',
                     Title: testDataViewTitle,
-                    Hidden: false,
+                    Hidden: true,
                     FrozenColumnsCount: 0,
                     MinimumColumnWidth: 0,
                 });
-                expect(testDataView.Context['Object' as any].Resource).to.be.eql('activities');
-                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271932);
-                expect(testDataView.Context['Object' as any].Name).to.eql('Daily deposit');
-                expect(testDataView.Context.Name).to.eql('Testing_MAP_123456');
-                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('activities');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271932);
+                expect(testDataView['Context' as any].Object.Name).to.eql('Daily deposit');
+                expect(testDataView['Context' as any].Name).to.eql('Testing_Grid_123456');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                 expect(testDataView.CreationDateTime).to.contain('20');
                 expect(testDataView.CreationDateTime).to.contain('T');
                 expect(testDataView.CreationDateTime).to.contain('Z');
                 expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(testDataView.ModificationDateTime).to.contain('Z');
                 expect(testDataView.Fields).to.be.an('array');
-                expect(testDataView.Fields[0]).to.include({
+                expect(testDataView['Fields' as any][0]).to.include({
                     FieldID: 'Test 123456',
                     Title: 'Hello',
                     Type: 'Phone',
@@ -1048,23 +1096,23 @@ export async function DataViewsTests(generalService: GeneralService) {
                     Title: 'Rep',
                     Hidden: true,
                 });
-                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(271439);
-                expect(testDataView.Context['Object' as any].Name).to.eql('new');
-                expect(testDataView.Context.Name).to.eql('CartBulkMenu');
-                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271439);
+                expect(testDataView['Context' as any].Object.Name).to.eql('new');
+                expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                 expect(testDataView.CreationDateTime).to.contain('20');
                 expect(testDataView.CreationDateTime).to.contain('T');
                 expect(testDataView.CreationDateTime).to.contain('Z');
                 expect(testDataView.ModificationDateTime).to.contain('Z');
                 expect(testDataView.Fields).to.be.an('array');
-                expect(testDataView.Fields[0]).to.include({
+                expect(testDataView['Fields' as any][0]).to.include({
                     FieldID: 'Delete',
                     Title: 'Delete',
                 });
-                expect(testDataView.Fields[1]).to.include({
+                expect(testDataView['Fields' as any][1]).to.include({
                     FieldID: 'Edit',
                     Title: 'Edit',
                 });
@@ -1075,13 +1123,14 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'Large',
                     Title: testDataViewTitle,
+                    Hidden: false,
                     Context: {
                         Object: {
                             Resource: 'transactions',
                             InternalID: 268428,
                             Name: 'Sales Order',
                         },
-                        Name: 'Large_Creation_Test',
+                        Name: 'OrderCenterVariant',
                         ScreenSize: 'Tablet',
                         Profile: {
                             InternalID: 67773,
@@ -1100,20 +1149,20 @@ export async function DataViewsTests(generalService: GeneralService) {
                     Title: testDataViewTitle,
                     Hidden: false,
                 });
-                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                expect(testDataView.Context.Name).to.eql('Large_Creation_Test');
-                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                expect(testDataView['Context' as any].Name).to.eql('OrderCenterVariant');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                 expect(testDataView.CreationDateTime).to.contain('20');
                 expect(testDataView.CreationDateTime).to.contain('T');
                 expect(testDataView.CreationDateTime).to.contain('Z');
                 expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(testDataView.ModificationDateTime).to.contain('Z');
                 expect(testDataView.Fields).to.be.an('array');
-                expect(testDataView.Fields[0]).to.be.undefined;
+                expect(testDataView['Fields' as any][0]).to.be.undefined;
                 expect(testDataView['Columns']).to.be.an('array');
                 expect(testDataView['Columns'][0]).to.be.undefined;
                 expect(testDataView['Rows']).to.be.an('array');
@@ -1125,6 +1174,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'Line',
                     Title: testDataViewTitle,
+                    Hidden: false,
                     Context: {
                         Object: {
                             Resource: 'transactions',
@@ -1150,20 +1200,20 @@ export async function DataViewsTests(generalService: GeneralService) {
                     Title: testDataViewTitle,
                     Hidden: false,
                 });
-                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                expect(testDataView.Context.Name).to.eql('Line_Creation_Test');
-                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                expect(testDataView['Context' as any].Name).to.eql('Line_Creation_Test');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                 expect(testDataView.CreationDateTime).to.contain('20');
                 expect(testDataView.CreationDateTime).to.contain('T');
                 expect(testDataView.CreationDateTime).to.contain('Z');
                 expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(testDataView.ModificationDateTime).to.contain('Z');
                 expect(testDataView.Fields).to.be.an('array');
-                expect(testDataView.Fields[0]).to.be.undefined;
+                expect(testDataView['Fields' as any][0]).to.be.undefined;
                 expect(testDataView['Columns']).to.be.an('array');
                 expect(testDataView['Columns'][0]).to.be.undefined;
                 expect(testDataView['Rows']).to.be.an('array');
@@ -1175,6 +1225,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                 const testDataView: DataView = await service.postDataView({
                     Type: 'CardsGrid',
                     Title: testDataViewTitle,
+                    Hidden: false,
                     Context: {
                         Object: {
                             Resource: 'transactions',
@@ -1200,24 +1251,63 @@ export async function DataViewsTests(generalService: GeneralService) {
                     Title: testDataViewTitle,
                     Hidden: false,
                 });
-                expect(testDataView.Context['Object' as any].Resource).to.be.eql('transactions');
-                expect(testDataView.Context['Object' as any].InternalID).to.be.eql(268428);
-                expect(testDataView.Context['Object' as any].Name).to.eql('Sales Order');
-                expect(testDataView.Context.Name).to.eql('CardsGrid_Creation_Test');
-                expect(testDataView.Context.ScreenSize).to.eql('Tablet');
-                expect(testDataView.Context.Profile.InternalID).to.be.eql(67773);
-                expect(testDataView.Context.Profile.Name).to.eql('Rep');
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
+                expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                expect(testDataView['Context' as any].Name).to.eql('CardsGrid_Creation_Test');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
                 expect(testDataView.CreationDateTime).to.contain('20');
                 expect(testDataView.CreationDateTime).to.contain('T');
                 expect(testDataView.CreationDateTime).to.contain('Z');
                 expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
                 expect(testDataView.ModificationDateTime).to.contain('Z');
                 expect(testDataView.Fields).to.be.an('array');
-                expect(testDataView.Fields[0]).to.be.undefined;
+                expect(testDataView['Fields' as any][0]).to.be.undefined;
                 expect(testDataView['Columns']).to.be.an('array');
                 expect(testDataView['Columns'][0]).to.be.undefined;
                 expect(testDataView['Rows']).to.be.an('array');
                 expect(testDataView['Rows'][0]).to.be.undefined;
+            });
+
+            it('Insert New Data View (Configuration) With Non Existing Context.Name (DI-16868)', async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = await service.postDataView({
+                    Type: 'Configuration',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                    Context: {
+                        Object: {
+                            Resource: 'activities',
+                            InternalID: 271932,
+                        },
+                        Name: 'Oren_Test_12345',
+                        ScreenSize: 'Landscape',
+                        Profile: {
+                            InternalID: 67773,
+                        },
+                    },
+                });
+                expect(testDataView.InternalID).to.be.above(0);
+                expect(testDataView).to.include({
+                    InternalID: testDataView.InternalID,
+                    Type: 'Configuration',
+                    Title: testDataViewTitle,
+                    Hidden: false,
+                });
+                expect(testDataView['Context' as any].Object.Resource).to.be.eql('activities');
+                expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271932);
+                expect(testDataView['Context' as any].Object.Name).to.eql('Daily deposit');
+                expect(testDataView['Context' as any].Name).to.eql('Oren_Test_12345');
+                expect(testDataView['Context' as any].ScreenSize).to.eql('Landscape');
+                expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
+                expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                expect(testDataView.CreationDateTime).to.contain('20');
+                expect(testDataView.CreationDateTime).to.contain('T');
+                expect(testDataView.CreationDateTime).to.contain('Z');
+                expect(testDataView.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+                expect(testDataView.ModificationDateTime).to.contain('Z');
             });
         });
 
@@ -1342,8 +1432,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Object'");
             });
@@ -1365,8 +1453,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
                     "Failed due to exception: Expected field: 'Context.Object' to have either 'Name' or 'InternalID'",
@@ -1391,8 +1477,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
                     "Failed due to exception: Object with Name = 'Oren Test' for Resource = 'activities' not found",
@@ -1417,8 +1501,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
                     'Failed due to exception: Context.Name must be non-empty and can only contain letters, numbers or an underscore',
@@ -1443,8 +1525,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
                     "Failed due to exception: Unexpected field: 'Context.Object' for DataView of 'WebAppMainBar'",
@@ -1465,8 +1545,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
                     "Failed due to exception: Expected field: 'Context.Profile' to have either 'Name' or 'InternalID'",
@@ -1487,8 +1565,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Context.Name'");
             });
@@ -1507,8 +1583,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
                     "Failed due to exception: Missing expected field: 'Context.ScreenSize'",
@@ -1563,18 +1637,19 @@ export async function DataViewsTests(generalService: GeneralService) {
                         Title: testDataViewTitle,
                         Hidden: false,
                         Context: {
-                            Name: postDataViewResponseObj.Context.Name,
+                            Name: postDataViewResponseObj['Context' as any].Name,
                             ScreenSize: 'Phablet',
                             Profile: {
                                 Name: 'Rep',
                             },
                         },
-                        Fields: [],
-                        Rows: [],
-                        Columns: [],
                     }),
                 ).eventually.to.be.rejectedWith(
-                    `Failed due to exception: The Context send does not match the current Context. Current Context: {\\"Name\\":\\"${postDataViewResponseObj.Context.Name}\\",\\"ScreenSize\\":\\"Tablet\\",\\"Profile\\":{\\"InternalID\\":67773,\\"Name\\":\\"Rep\\"}`,
+                    `Failed due to exception: The Context sent does not match the existing Context. Expected: {\\"Name\\":\\"${
+                        postDataViewResponseObj['Context' as any].Name
+                    }\\",\\"ScreenSize\\":\\"Phablet\\",\\"Profile\\":{\\"InternalID\\":67773,\\"Name\\":\\"Rep\\"}}, Actual: {\\"Name\\":\\"${
+                        postDataViewResponseObj['Context' as any].Name
+                    }\\",\\"ScreenSize\\":\\"Tablet\\",\\"Profile\\":{\\"InternalID\\":67773}}`,
                 );
             });
 
@@ -1598,10 +1673,12 @@ export async function DataViewsTests(generalService: GeneralService) {
                         },
                         Fields: [],
                     }),
-                ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'InternalID'");
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Object with InternalID = 268421 for Resource = 'transactions' not found",
+                );
             });
 
-            it('Upsert Data View (Card) With Missing Non-Mandatory Field Valid Response (DI-16807)', async () => {
+            it('Upsert Data View (Card) With Missing Non-Mandatory Field Valid Response (DI-16807 and DI-16870)', async () => {
                 const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                 return Promise.all([
                     await expect(
@@ -1735,8 +1812,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
                         FrozenColumnsCount: 0,
                         MinimumColumnWidth: 0,
                     }),
@@ -1764,13 +1839,9 @@ export async function DataViewsTests(generalService: GeneralService) {
                             },
                         },
                         Fields: [],
-                        Rows: [],
-                        Columns: [],
-                        FrozenColumnsCount: 0,
-                        MinimumColumnWidth: 0,
                     }),
                 ).eventually.to.be.rejectedWith(
-                    'Failed due to exception: Could not find DataView with InternalID = 488642612',
+                    'Failed due to exception: DataView with InternalID = 488642612 does not exist',
                 );
             });
 
@@ -1799,7 +1870,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 //Title: "hello"
                             },
                         ],
-                    }),
+                    } as any),
                 ).eventually.to.be.rejectedWith("Failed due to exception: Missing expected field: 'Fields[0].Title'");
             });
 
@@ -1844,7 +1915,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 InternalID: 271932,
                                 Name: 'Daily deposit',
                             },
-                            Name: 'Testing_MAP_123456',
+                            Name: 'Testing_Map_123456',
                             ScreenSize: 'Tablet',
                             Profile: {
                                 InternalID: 67773,
@@ -1900,7 +1971,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 InternalID: 271932,
                                 Name: 'Daily deposit',
                             },
-                            Name: 'Testing_MAP_123456',
+                            Name: 'Testing_Grid_123456',
                             ScreenSize: 'Tablet',
                             Profile: {
                                 InternalID: 67773,
@@ -1930,11 +2001,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                                         Vertical: 'Bottom',
                                     },
                                 },
-                            },
-                        ],
-                        Rows: [
-                            {
-                                Mode: 'MatchParent',
                             },
                         ],
                         Columns: [
@@ -1965,7 +2031,7 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 InternalID: 271932,
                                 Name: 'Daily deposit',
                             },
-                            Name: 'Testing_MAP_123456',
+                            Name: 'Testing_Grid_123456',
                             ScreenSize: 'Tablet',
                             Profile: {
                                 InternalID: 67773,
@@ -2020,11 +2086,6 @@ export async function DataViewsTests(generalService: GeneralService) {
                                 },
                             },
                         ],
-                        Rows: [
-                            {
-                                Mode: 'MatchParent',
-                            },
-                        ],
                         Columns: [
                             {
                                 Width: 50,
@@ -2035,6 +2096,76 @@ export async function DataViewsTests(generalService: GeneralService) {
                     }),
                 ).eventually.to.be.rejectedWith(
                     "Failed due to exception: A Grid's number of columns must match it's number of fields",
+                );
+            });
+
+            it("Upsert Data View (Large) with wrong 'Context.Name' (DI-16874)", async () => {
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                return expect(
+                    service.postDataView({
+                        Type: 'Large',
+                        Title: testDataViewTitle,
+                        Hidden: false,
+                        Context: {
+                            Object: {
+                                Resource: 'transactions',
+                                InternalID: 268428,
+                                Name: 'Sales Order',
+                            },
+                            Name: 'Large_Creation_Test',
+                            ScreenSize: 'Tablet',
+                            Profile: {
+                                InternalID: 67773,
+                                Name: 'Rep',
+                            },
+                        },
+                        Fields: [],
+                        Columns: [],
+                        Rows: [],
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    "Failed due to exception: Expected field: 'Context.Name' to be of one of: OrderCenterItemFullPage, OrderCenterVariant",
+                );
+            });
+
+            it('Try to changed a Data View from Form to Card', async () => {
+                //Create new Data View to be updated
+                const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                const testDataView: DataView = {
+                    Type: 'Form',
+                    Title: testDataViewTitle,
+                    Hidden: true,
+                    Context: {
+                        Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                        ScreenSize: 'Phablet',
+                        Profile: {
+                            Name: 'Admin',
+                        },
+                    },
+                    Fields: [],
+                    Rows: [],
+                    Columns: [],
+                };
+
+                const postDataViewResponseObj: DataView = await service.postDataView(testDataView);
+
+                //Update the new added file
+                const testDataViewNewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+
+                const updatedDataViewObject: DataView = {
+                    InternalID: postDataViewResponseObj.InternalID,
+                    Type: 'Card',
+                    Title: testDataViewNewTitle,
+                    Hidden: false,
+                    Context: postDataViewResponseObj.Context,
+                    Fields: [],
+                    Rows: [],
+                    Columns: [],
+                };
+
+                //Get the current (after the update) data view
+                return expect(service.postDataView(updatedDataViewObject)).eventually.to.be.rejectedWith(
+                    "Failed due to exception: DataView Type can't be changed from Form to Card",
                 );
             });
         });
@@ -2056,7 +2187,7 @@ export async function DataViewsTests(generalService: GeneralService) {
 }
 
 //Service Functions
-//Remove all test files from Files Storage
+//Remove all test data views (Hidden = true)
 async function TestCleanUp(service: DataViewsService) {
     const allDataViewObjects: DataView[] = await service.getDataView();
     let deletedCounter = 0;

@@ -14,4 +14,8 @@ export class DataViewsService {
     postDataView(dataView: DataView) {
         return this.papiClient.metaData.dataViews.upsert(dataView);
     }
+
+    postDataViewBatch(dataView: DataView[]) {
+        return this.papiClient.metaData.dataViews.batch(dataView);
+    }
 }
