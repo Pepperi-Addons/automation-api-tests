@@ -11,12 +11,43 @@ export async function FieldsTests(generalService: GeneralService) {
     //#region Endpoints
     describe('Endpoints', () => {
         describe('Get', () => {
-            it('Get All Data Views Valid Response (DI-16800)', async () => {
+            /*it('Get All Data Views Valid Response (DI-16800)', async () => {
                 return expect(service.getFields('transactions', '268428')).eventually.to.be.include({});
             });
 
             it('Get All Data Views Valid Response (DI-16800)', async () => {
                 return expect(service.getFields('transactions', '268428', 'Archive')).eventually.to.be.include({});
+            });*/
+
+            it('Get All Data Views Valid Response (DI-16800)', async () => {
+                //return expect(
+                const oren1 = await service.upsertFields(
+                    'transactions',
+                    {
+                        FieldID: 'TSATest  1234',
+                        Label: '123',
+                        UIType: {
+                            ID: 1,
+                        },
+                        Format: 'Int64',
+                    },
+                    '268428',
+                );
+                debugger;
+                const oren2 = await service.deleteFields('transactions', 'TSATest  1234', '268428');
+                debugger;
+
+                const oren3 = await service.upsertFields('catalogs', {
+                    FieldID: 'TSATest  12345',
+                    Label: '123',
+                    UIType: {
+                        ID: 1,
+                    },
+                    Format: 'Int64',
+                });
+                debugger;
+                const oren4 = await service.deleteFields('catalogs', 'TSATest  12345');
+                debugger;
             });
         });
     });
