@@ -8,46 +8,53 @@ export async function FieldsTests(generalService: GeneralService) {
     const { describe, expect, it, run } = tester();
 
     //#region Tests
-    //#region Endpoints
-    describe('Endpoints', () => {
-        describe('Get', () => {
-            /*it('Get All Data Views Valid Response (DI-16800)', async () => {
-                return expect(service.getFields('transactions', '268428')).eventually.to.be.include({});
-            });
-
-            it('Get All Data Views Valid Response (DI-16800)', async () => {
-                return expect(service.getFields('transactions', '268428', 'Archive')).eventually.to.be.include({});
-            });*/
-
-            it('Get All Data Views Valid Response (DI-16800)', async () => {
-                //return expect(
-                const oren1 = await service.upsertFields(
-                    'transactions',
-                    {
-                        FieldID: 'TSATest  1234',
-                        Label: '123',
-                        UIType: {
-                            ID: 1,
-                        },
-                        Format: 'Int64',
-                    },
-                    '268428',
-                );
-                debugger;
-                const oren2 = await service.deleteFields('transactions', 'TSATest  1234', '268428');
-                debugger;
-
-                const oren3 = await service.upsertFields('catalogs', {
-                    FieldID: 'TSATest  12345',
-                    Label: '123',
-                    UIType: {
-                        ID: 1,
-                    },
-                    Format: 'Int64',
+    describe('Fields Tests Suites', () => {
+        //#region Endpoints
+        describe('Endpoints', () => {
+            describe('Get', () => {
+                /*it('Get All Data Views Valid Response (DI-16800)', async () => {
+                    return expect(service.getFields('transactions', '268428')).eventually.to.be.include({});
                 });
-                debugger;
-                const oren4 = await service.deleteFields('catalogs', 'TSATest  12345');
-                debugger;
+    
+                it('Get All Data Views Valid Response (DI-16800)', async () => {
+                    return expect(service.getFields('transactions', '268428', 'Archive')).eventually.to.be.include({});
+                });*/
+
+                it('Get All Data Views Valid Response (DI-16800)', async () => {
+                    //return expect(
+                    const thisIsForTesting = service.papiClient.accounts.find({ page: 1 });
+                    return Promise.all([
+                        expect(1 > 9).to.be.false,
+                        expect(thisIsForTesting).eventually.to.be.above(20),
+                        expect(1 > 9).to.be.false,
+                        expect(1 > 9).to.be.false,
+                        expect(1 > 9).false,
+                    ]);
+
+                    // const oren1 = await service.upsertFields(
+                    //     'transactions',
+                    //     {
+                    //         FieldID: 'TSATest  1234',
+                    //         Label: '123',
+                    //         UIType: {
+                    //             ID: 1,
+                    //         },
+                    //         Format: 'Int64',
+                    //     },
+                    //     '268428',
+                    // );
+                    // const oren2 = await service.deleteFields('transactions', 'TSATest  1234', '268428');
+
+                    // const oren3 = await service.upsertFields('catalogs', {
+                    //     FieldID: 'TSATest  12345',
+                    //     Label: '123',
+                    //     UIType: {
+                    //         ID: 1,
+                    //     },
+                    //     Format: 'Int64',
+                    // });
+                    // const oren4 = await service.deleteFields('catalogs', 'TSATest  12345');
+                });
             });
         });
     });
