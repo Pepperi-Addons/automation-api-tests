@@ -18,55 +18,64 @@ export class SanityService {
     }
 
     deleteAccount(accountID: number) {
-        return this.papiClient.delete('/accounts/' + accountID);
-    }
-
-    async createTSA(type: string, nameATD: string, body: ApiFieldObject) {
-        const ATDarr = await this.getATD(type);
-        let ATD;
-        for (let i = 0; i < ATDarr.length; i++) {
-            if (ATDarr[i].ExternalID == nameATD) {
-                ATD = ATDarr[i].TypeID;
-                break;
-            }
-        }
-        return await this.papiClient.metaData.type(type + "/types" + ATD).fields.upsert(body);
+        return this.papiClient.accounts.delete(accountID);
     }
 
     async getATD(type: string) {
         return await this.papiClient.metaData.type(type).types.get();
     }
 
-    async createBulkTSA(type: string, nameATD: string, body: any[]){
+    async findATDbyName(type: string, nameATD: string){
         const ATDarr = await this.getATD(type);
         let ATD;
-        let resultArr: any[] = [];
         for (let i = 0; i < ATDarr.length; i++) {
             if (ATDarr[i].ExternalID == nameATD) {
                 ATD = ATDarr[i].TypeID;
                 break;
             }
         }
-        for (let i = 0; i < body.length; i++ ){
-            let tempResult = await this.papiClient.metaData.type(type + "/types/" + ATD).fields.upsert(body[i]);
-            resultArr.push(tempResult.FieldID)
+        return ATD;
+    }
+
+    async createTSA(type: string, body: ApiFieldObject, ATD?: number) {
+        if(type != 'accounts'){
+            return await this.papiClient.metaData.type(type + "/types/" + ATD).fields.upsert(body);
+        }
+        else{
+            return await this.papiClient.metaData.type(type).fields.upsert(body);
+        }
+    }
+
+    async createBulkTSA(type: string, body: ApiFieldObject[], ATD?: string){
+        let resultArr: any[] = [];
+        if(type != 'accounts' && ATD != undefined){
+            for (let i = 0; i < body.length; i++ ){
+                let tempResult = await this.papiClient.metaData.type(type + "/types/" + ATD).fields.upsert(body[i]);
+                resultArr.push(tempResult.FieldID)
+            }
+        }
+        else{
+            for (let i = 0; i < body.length; i++ ){
+                let tempResult = await this.papiClient.metaData.type(type).fields.upsert(body[i]);
+                resultArr.push(tempResult.FieldID)
+            }
         }
         return resultArr;
     }
 
-    async deleteBulkTSA(type: string, nameATD: string, body: any[]) {
-        const ATDarr = await this.getATD(type);
+    async deleteBulkTSA(type: string, body: ApiFieldObject[], ATD?: string) {
         let resultArr: any[] = [];
-        let ATD;
-        for (let i = 0; i < ATDarr.length; i++) {
-            if (ATDarr[i].ExternalID == nameATD) {
-                ATD = ATDarr[i].TypeID;
-                break;
+        if(type != 'accounts' && ATD != undefined){
+            for (let i = 0; i < body.length; i++ ){
+                let tempResult = await this.papiClient.metaData.type(type).types.subtype(ATD).fields.delete(body[i].FieldID);
+                resultArr.push(body[i].FieldID)
             }
         }
-        for (let i = 0; i < body.length; i++ ){
-            let tempResult = await this.papiClient.delete('/meta_data/' + type + "/types/" + ATD + body[i].FieldID);
-            resultArr.push(body[i].FieldID + " - " + tempResult.statusText)
+        else{
+            for (let i = 0; i < body.length; i++ ){
+                let tempResult = await this.papiClient.metaData.type(type).fields.delete(body[i].FieldID);
+                resultArr.push(body[i].FieldID)
+            }
         }
         return resultArr;   
     }
