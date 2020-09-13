@@ -14,6 +14,7 @@ export async function all(client: Client) {
         data_views(client, describe, expect, it),
         fields(client, describe, expect, it),
         sync(client, describe, expect, it),
+        sanity_Test(client, describe, expect, it),
     ]).then(() => run());
 }
 
@@ -57,7 +58,13 @@ export async function sync(client: Client, describe?, expect?, it?) {
     }
 }
 
-export async function sanity_Test(client: Client) {
+export async function sanity_Test(client: Client, describe?, expect?, it?) {
     const service = new GeneralService(client);
-    return sanityTest(service);
+    if (describe == undefined || expect == undefined || it == undefined) {
+        const { describe, expect, it, run } = tester();
+        return sanityTest(service, describe, expect, it).then(() => run());
+    } else {
+        return sanityTest(service, describe, expect, it);
+    }
+
 }
