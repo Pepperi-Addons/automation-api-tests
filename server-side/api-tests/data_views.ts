@@ -1,12 +1,10 @@
 import GeneralService from '../services/general.service';
-import tester from '../tester';
 import { DataViewsService } from '../services/data-views.service';
 import { DataView } from '@pepperi-addons/papi-sdk';
 
 // All Data Views Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
-export async function DataViewsTests(generalService: GeneralService) {
+export async function DataViewsTests(generalService: GeneralService, describe, expect, it) {
     const service = new DataViewsService(generalService.papiClient);
-    const { describe, expect, it, run } = tester();
 
     //#region Tests
     describe('Data Views Tests Suites', () => {
@@ -2201,7 +2199,6 @@ export async function DataViewsTests(generalService: GeneralService) {
         });
     });
     //#endregion Tests
-    return run();
 }
 
 //Service Functions

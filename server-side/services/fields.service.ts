@@ -4,7 +4,11 @@ declare type ResourceTypes = 'activity' | 'transactions' | 'transaction_lines' |
 export class FieldsService {
     constructor(public papiClient: PapiClient) {}
 
-    getFields(resource_name: ResourceTypes, type_Id, FieldID?) {
+    getTypes(resource_name: ResourceTypes) {
+        return this.papiClient.metaData.type(resource_name).types.get();
+    }
+
+    getFields(resource_name: ResourceTypes, type_Id?, FieldID?) {
         if (resource_name == 'catalogs') {
             return this.papiClient.metaData.type(resource_name).fields.get();
         }
