@@ -8,10 +8,14 @@ export class DataViewsService {
     }
 
     getDataView(options?: Record<string, unknown>) {
-        return this.papiClient.metaData.dataViews.find(options);
+        return this.papiClient.metaData.dataViews.iter(options).toArray();
     }
 
     postDataView(dataView: DataView) {
         return this.papiClient.metaData.dataViews.upsert(dataView);
+    }
+
+    postDataViewBatch(dataView: DataView[]) {
+        return this.papiClient.metaData.dataViews.batch(dataView);
     }
 }

@@ -1,16 +1,16 @@
 import GeneralService from '../services/general.service';
 import tester from '../tester';
 import { SanityService } from '../services/sanity.service';
-import { PapiClient } from '@pepperi-addons/papi-sdk';
+import { PapiClient, ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
-// All File Storage Tests
+// All Sanity Tests
 export async function sanityTest(generalService: GeneralService) {
     const service = new SanityService(generalService.papiClient);
     const { describe, expect, it, run } = tester();
 
     //#region Array of TSAs
 
-    const TSAarr = [
+    const TSAarr: ApiFieldObject[] = [
         {
             "FieldID": "TSAAttachmentAPI",
             "Label": "AttachmentAPI",
@@ -22,10 +22,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:52:51.917",
-            "ModificationDate": "2020-09-01T10:52:51.917",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -41,10 +38,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "Boolean",
             "Format": "Boolean",
-            "CreationDate": "2020-09-01T10:50:38.76",
-            "ModificationDate": "2020-09-01T10:50:38.76",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -63,10 +57,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "Number",
             "Format": "Double",
-            "CreationDate": "2020-09-01T10:50:07.74",
-            "ModificationDate": "2020-09-01T10:50:07.74",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -82,10 +73,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "DateTime",
-            "CreationDate": "2020-09-01T10:48:09.647",
-            "ModificationDate": "2020-09-01T10:48:09.647",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -101,10 +89,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "DateTime",
-            "CreationDate": "2020-09-01T10:48:29.937",
-            "ModificationDate": "2020-09-01T10:48:29.937",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -120,10 +105,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "Number",
             "Format": "Double",
-            "CreationDate": "2020-09-01T10:49:39.13",
-            "ModificationDate": "2020-09-01T10:49:39.13",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -141,10 +123,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:51:06.103",
-            "ModificationDate": "2020-09-01T10:51:06.103",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -168,10 +147,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:54:01.48",
-            "ModificationDate": "2020-09-01T10:54:01.48",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -187,10 +163,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:56:38.57",
-            "ModificationDate": "2020-09-01T10:56:38.57",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -206,10 +179,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:52:31.25",
-            "ModificationDate": "2020-09-01T10:52:31.25",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -229,10 +199,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:46:17.167",
-            "ModificationDate": "2020-09-01T10:46:17.167",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -250,10 +217,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:53:46.423",
-            "ModificationDate": "2020-09-01T10:53:46.423",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -269,12 +233,8 @@ export async function sanityTest(generalService: GeneralService) {
                 "ID": 12,
                 "Name": "MultiTickBox"
             },
-            "Type": null,
             "Format": "String[]",
-            "CreationDate": "2020-09-01T10:51:44.98",
-            "ModificationDate": "2020-09-01T10:51:44.98",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {
@@ -297,10 +257,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "Integer",
             "Format": "Int64",
-            "CreationDate": "2020-09-01T10:49:04.013",
-            "ModificationDate": "2020-09-01T10:49:04.013",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -316,10 +273,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:46:49.367",
-            "ModificationDate": "2020-09-01T10:47:32.28",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -335,41 +289,10 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:53:27.443",
-            "ModificationDate": "2020-09-01T10:53:27.443",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
-        },
-        {
-            "FieldID": "TSAReferenceAPI",
-            "Label": "ReferenceAPI",
-            "Description": "",
-            "IsUserDefinedField": true,
-            "UIType": {
-                "ID": 48,
-                "Name": "GuidReferenceType"
-            },
-            "Type": "String",
-            "Format": "Guid",
-            "CreationDate": "2020-09-01T10:56:19.537",
-            "ModificationDate": "2020-09-01T10:56:19.537",
-            "Hidden": false,
-            "CSVMappedColumnName": null,
-            "UserDefinedTableSource": null,
-            "CalculatedRuleEngine": null,
-            "TypeSpecificFields": {
-                "ReferenceToResourceType": {
-                    "ID": 35,
-                    "Name": "accounts"
-                },
-                "ReferenceTo": {
-                    "ExternalID": "Customer",
-                    "UUID": "2d10c36b-2b4f-4d29-a767-3f39720f5a8b"
-                }
-            }
         },
         {
             "FieldID": "TSASignatureAPI",
@@ -382,10 +305,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:53:08.05",
-            "ModificationDate": "2020-09-01T10:53:08.05",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -401,10 +321,7 @@ export async function sanityTest(generalService: GeneralService) {
             },
             "Type": "String",
             "Format": "String",
-            "CreationDate": "2020-09-01T10:45:41.447",
-            "ModificationDate": "2020-09-01T10:47:50.113",
             "Hidden": false,
-            "CSVMappedColumnName": null,
             "UserDefinedTableSource": null,
             "CalculatedRuleEngine": null,
             "TypeSpecificFields": {}
@@ -439,76 +356,232 @@ export async function sanityTest(generalService: GeneralService) {
     //     });
     // });
 
-    describe('Accounts', () => {
-        describe('Account INSERT', () => {
-            it('Create account', async () => {
+    describe('Objects sanity', () => {
+        describe('Accounts', () => {
+            it('POST/UPDATE/DELETE account', async () => {
 
-                await service.createBulkTSA('accounts','Customer',TSAarr)
+                let createdTSAs = await service.createBulkTSA('accounts', TSAarr)
+                console.log('The following fields were created:\n' + createdTSAs)
+                let accountExternalID: string = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
 
-                // const createdAccount = await service.createAccount({
-                //     ExternalID: "Automated API Test 1",
-                //     City: "City",
-                //     Country: "US",
-                //     Debts30: 30,
-                //     Debts60: 60,
-                //     Debts90: 90,
-                //     DebtsAbove90: 100,
-                //     Discount: 10,
-                //     Email: "Test1@test.com",
-                //     Latitude: 5,
-                //     Longitude: 10,
-                //     Mobile: "555-1234",
-                //     Name: "Automated API Test 1",
-                //     Note: "Note 1",
-                //     Phone: "555-4321",
-                //     Prop1: "Prop 1",
-                //     Prop2: "Prop 2",
-                //     Prop3: "Prop 3",
-                //     Prop4: "Prop 4",
-                //     Prop5: "Prop 5",
-                //     State: "NY",
-                //     Status: 2,
-                //     Street: "Street 1",
-                //     Type: "Customer",
-                //     ZipCode: "12345"
-                // });
+                const createdAccount = await service.createAccount({
+                    ExternalID: accountExternalID,
+                    City: "City",
+                    Country: "US",
+                    Debts30: 30,
+                    Debts60: 60,
+                    Debts90: 90,
+                    DebtsAbove90: 100,
+                    Discount: 10,
+                    Email: "Test1@test.com",
+                    Mobile: "555-1234",
+                    Name: accountExternalID,
+                    Note: "Note 1",
+                    Phone: "555-4321",
+                    Prop1: "Prop 1",
+                    Prop2: "Prop 2",
+                    Prop3: "Prop 3",
+                    Prop4: "Prop 4",
+                    Prop5: "Prop 5",
+                    State: "NY",
+                    Status: 2,
+                    Street: "Street 1",
+                    Type: "Customer",
+                    ZipCode: "12345",
+                    TSAAttachmentAPI: {
+                        URL: "http://www.africau.edu/images/default/sample.pdf",
+                        Content: ""
+                    },
+                    TSACheckboxAPI: true,
+                    TSACurrencyAPI: 10.0,
+                    TSADateAPI: "2020-09-01Z",
+                    TSADateTimeAPI: "2020-08-31T21:00:00Z",
+                    TSADecimalNumberAPI: 5.5,
+                    TSADropdownAPI: "1",
+                    TSAEmailAPI: "Test@test.com",
+                    TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
+                    TSAImageAPI: {
+                        URL: "https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg",
+                        Content: ""
+                    },
+                    TSALimitedLineAPI: "Limit text",
+                    TSALinkAPI: "https://www.ynet.co.il",
+                    TSAMultiChoiceAPI: "A",
+                    TSANumberAPI: 5,
+                    TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze",
+                    TSAPhoneNumberAPI: "9725554325",
+                    TSASignatureAPI: {
+                        URL: "https://capitalstars.com/qpay/assets/images/sign2.png",
+                        Content: ""
+                    },
+                    TSASingleLineAPI: "Random text"
+                } as any);
 
-                // const getCreatedAccount = await service.getAccount(`InternalID=${createdAccount.InternalID}`);
+                const getCreatedAccount = await service.getAccount(`InternalID=${createdAccount.InternalID}`) as any;
 
-                // return Promise.all([
-                //     expect(getCreatedAccount[0]).to.include({
-                //         ExternalID: "Automated API Test 1",
-                //         City: "City",
-                //         Country: "US",
-                //         Debts30: 30,
-                //         Debts60: 60,
-                //         Debts90: 90,
-                //         DebtsAbove90: 100,
-                //         Discount: 10,
-                //         Email: "Test1@test.com",
-                //         Latitude: 5,
-                //         Longitude: 10,
-                //         Mobile: "555-1234",
-                //         Name: "Automated API Test 1",
-                //         Note: "Note 1",
-                //         Phone: "555-4321",
-                //         Prop1: "Prop 1",
-                //         Prop2: "Prop 2",
-                //         Prop3: "Prop 3",
-                //         Prop4: "Prop 4",
-                //         Prop5: "Prop 5",
-                //         State: "New York",
-                //         Status: 2,
-                //         Street: "Street 1",
-                //         Type: "Customer",
-                //         ZipCode: "12345"
-                //     }),
-                //     expect(await service.deleteAccount(createdAccount.InternalID as any))
-                //         .to.include({ statusText: 'OK' }),
-                //     expect(await service.getAccount(`InternalID=${createdAccount.InternalID}`))
-                //         .to.be.an('array')
-                //         .with.lengthOf(0)
-                // ]);
+                return Promise.all([
+                    expect(getCreatedAccount[0]).to.include({
+                        ExternalID: accountExternalID,
+                        City: "City",
+                        Country: "US",
+                        Debts30: 30,
+                        Debts60: 60,
+                        Debts90: 90,
+                        DebtsAbove90: 100,
+                        Discount: 10,
+                        Email: "Test1@test.com",
+                        Mobile: "555-1234",
+                        Name: accountExternalID,
+                        Note: "Note 1",
+                        Phone: "555-4321",
+                        Prop1: "Prop 1",
+                        Prop2: "Prop 2",
+                        Prop3: "Prop 3",
+                        Prop4: "Prop 4",
+                        Prop5: "Prop 5",
+                        State: "New York",
+                        Status: 2,
+                        Street: "Street 1",
+                        Type: "Customer",
+                        ZipCode: "12345",
+                        TSACheckboxAPI: true,
+                        TSACurrencyAPI: 10.0,
+                        TSADateAPI: "2020-09-01Z",
+                        TSADateTimeAPI: "2020-08-31T21:00:00Z",
+                        TSADecimalNumberAPI: 5.5,
+                        TSADropdownAPI: "1",
+                        TSAEmailAPI: "Test@test.com",
+                        TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
+                        TSALimitedLineAPI: "Limit text",
+                        TSALinkAPI: "https://www.ynet.co.il",
+                        TSAMultiChoiceAPI: "A",
+                        TSANumberAPI: 5,
+                        TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze",
+                        TSAPhoneNumberAPI: "9725554325",
+                        TSASingleLineAPI: "Random text"
+                    }),
+                    expect(getCreatedAccount[0].TSAImageAPI.URL).to.include("stock-photography-slider.jpg"),
+                    expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include("sign2.png"),
+                    expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include("sample.pdf"),
+
+                    // expect(await service.createAccount({
+                    //     ExternalID: "Automated API Test 1",
+                    //     City: "City update",
+                    //     Country: "US",
+                    //     Debts30: 35,
+                    //     Debts60: 65,
+                    //     Debts90: 95,
+                    //     DebtsAbove90: 105,
+                    //     Discount: 15,
+                    //     Email: "Test2@test.com",
+                    //     // Latitude: 8,
+                    //     // Longitude: 12,
+                    //     Mobile: "555-123456",
+                    //     Name: "Automated API Test 5",
+                    //     Note: "Note 5",
+                    //     Phone: "555-43210",
+                    //     Prop1: "Prop 11",
+                    //     Prop2: "Prop 22",
+                    //     Prop3: "Prop 33",
+                    //     Prop4: "Prop 44",
+                    //     Prop5: "Prop 55",
+                    //     State: "CA",
+                    //     Status: 2,
+                    //     Street: "Street 5",
+                    //     Type: "Customer",
+                    //     ZipCode: "1234567",
+                    //     // TSAAttachmentAPI: {
+                    //     //     URL: "http://sandbox.pepperi.com/WrntyImages/30014280/2/1913272/sample.pdf",
+                    //     //     Content: ""
+                    //     // },
+                    //     TSACheckboxAPI: true,
+                    //     TSACurrencyAPI: 15.0,
+                    //     TSADateAPI: "2020-09-05Z",
+                    //     TSADateTimeAPI: "2020-08-25T22:00:00Z",
+                    //     TSADecimalNumberAPI: 5.2,
+                    //     TSADropdownAPI: "1",
+                    //     TSAEmailAPI: "Test@test.com",
+                    //     TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
+                    //     TSAImageAPI: {
+                    //         URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=WrntyImages/30014280/1/1913271/download.png",
+                    //         Content: ""
+                    //     },
+                    //     TSALimitedLineAPI: "Limit text",
+                    //     TSALinkAPI: "https://www.ynet.co.il",
+                    //     TSAMultiChoiceAPI: "C",
+                    //     TSANumberAPI: 2,
+                    //     TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
+                    //     TSAPhoneNumberAPI: "972555432512",
+                    //     TSASignatureAPI: {
+                    //         URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=30014280/Attachments/e442f0a1f9dd4ab289f7c00f6ee11890.png",
+                    //         Content: ""
+                    //     },
+                    //     TSASingleLineAPI: "Random TEXT"
+                    // } as any))
+                    //     .to.be.include({
+                    //         ExternalID: "Automated API Test 1",
+                    //         City: "City update",
+                    //         Country: "US",
+                    //         Debts30: 35,
+                    //         Debts60: 65,
+                    //         Debts90: 95,
+                    //         DebtsAbove90: 105,
+                    //         Discount: 15,
+                    //         Email: "Test2@test.com",
+                    //         // Latitude: 8,
+                    //         // Longitude: 12,
+                    //         Mobile: "555-123456",
+                    //         Name: "Automated API Test 5",
+                    //         Note: "Note 5",
+                    //         Phone: "555-43210",
+                    //         Prop1: "Prop 11",
+                    //         Prop2: "Prop 22",
+                    //         Prop3: "Prop 33",
+                    //         Prop4: "Prop 44",
+                    //         Prop5: "Prop 55",
+                    //         State: "CA",
+                    //         Status: 2,
+                    //         Street: "Street 5",
+                    //         Type: "Customer",
+                    //         ZipCode: "1234567",
+                    //         // TSAAttachmentAPI: {
+                    //         //     URL: "http://sandbox.pepperi.com/WrntyImages/30014280/2/1913272/sample.pdf",
+                    //         //     Content: ""
+                    //         // },
+                    //         TSACheckboxAPI: true,
+                    //         TSACurrencyAPI: 15.0,
+                    //         TSADateAPI: "2020-09-05Z",
+                    //         TSADateTimeAPI: "2020-08-25T22:00:00Z",
+                    //         TSADecimalNumberAPI: 5.2,
+                    //         TSADropdownAPI: "1",
+                    //         TSAEmailAPI: "Test@test.com",
+                    //         TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
+                    //         TSAImageAPI: {
+                    //             URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=WrntyImages/30014280/1/1913271/download.png",
+                    //             Content: ""
+                    //         },
+                    //         TSALimitedLineAPI: "Limit text",
+                    //         TSALinkAPI: "https://www.ynet.co.il",
+                    //         TSAMultiChoiceAPI: "C",
+                    //         TSANumberAPI: 2,
+                    //         TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
+                    //         TSAPhoneNumberAPI: "972555432512",
+                    //         TSASignatureAPI: {
+                    //             URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=30014280/Attachments/e442f0a1f9dd4ab289f7c00f6ee11890.png",
+                    //             Content: ""
+                    //         },
+                    //         TSASingleLineAPI: "Random TEXT"
+                    //     }),
+                    expect(await service.deleteAccount(createdAccount.InternalID as any))
+                        .to.be.true,
+                    expect(await service.deleteAccount(createdAccount.InternalID as any))
+                        .to.be.false,
+                    expect(await service.getAccount(`InternalID=${createdAccount.InternalID}`))
+                        .to.be.an('array')
+                        .with.lengthOf(0),
+                    expect(createdTSAs.length ==  (await service.deleteBulkTSA('accounts', TSAarr)).length)
+                        .to.be.true
+                ]);
             });
 
 
