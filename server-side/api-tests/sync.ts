@@ -1,33 +1,32 @@
 import GeneralService from '../services/general.service';
-import tester from '../tester';
 import { FieldsService } from '../services/fields.service';
 import fetch from 'node-fetch';
 
 declare type TestResult = 'Pass' | 'Fail';
 declare type Stats = 'Done' | 'Skipp' | 'SyncStart';
+interface TestObject {
+    TestResult?: string;
+    apiGetResponse?: Record<string, unknown>;
+    testBody?: Record<string, unknown>;
+}
 
 let _localData;
-let _syncTestCount = 0;
-const _syncCache = {
-    Get: {},
-    Put: {},
-    CleanUp: {},
-};
 let _agentWrntyID;
 let _catalogWrntyID;
 
-// All File Storage Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
-export async function SyncTests(generalService: GeneralService) {
+// All Sync Tests
+export async function SyncTests(generalService: GeneralService, describe, expect, it) {
     const service = new FieldsService(generalService.papiClient);
-    const { describe, expect, it, run } = tester();
 
     console.log('Initiate Sync Tests | ' + getDateAndTime());
 
     const accounts = await service.papiClient.accounts.find({ page: 1 });
-    const activities = await service.papiClient.transactions.find({
-        where: `Type='Sales Order'`,
-        page: 1,
-    });
+    const activities = await service.papiClient.transactions
+        .iter({
+            where: `Type='Sales Order'`,
+            page: 1,
+        })
+        .toArray();
 
     const _accountExternalIDStr = accounts[0].ExternalID?.toString();
     const activiy = activities[0];
@@ -111,113 +110,48 @@ export async function SyncTests(generalService: GeneralService) {
         testResultsObj.ResyncEmptyTest = sync(_body, 'Resync with no data');
     }*/
 
-    //Test Config
-    const testConfigObj = {
-        PutAfterGetTest: '' as any,
-        syncDataMembersValidationPut: '' as any,
-        syncDataMembersValidationGet: '' as any,
-        //PutAfterGetTest: "" as any,
-        //PutAfterGetTest: "" as any,
-    };
-
-    _syncTestCount = Object.keys(testConfigObj).length;
-
-    async function syncPutAfterGetTest() {
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        const PutAfterGetTest = await syncPutAfterGet(_body);
-        return PutAfterGetTest;
-    }
-    testConfigObj.PutAfterGetTest = await syncPutAfterGetTest();
-    _syncTestCount--;
-
-    async function syncDataMembersValidationPut() {
-        _body.LocalDataUpdates = _localData;
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        const syncDataMembersValidationPut = await syncDataMembersValidation(_body);
-        return syncDataMembersValidationPut;
-    }
-    let validationPutResponse = await syncDataMembersValidationPut();
-    if (validationPutResponse['TestResult'] == ('Pass' as TestResult)) {
-        validationPutResponse = await syncPostGetValidation(
-            validationPutResponse['apiGetResponse'],
-            validationPutResponse['testBody'],
-        );
-        if (validationPutResponse == ('Pass' as TestResult)) {
-            testConfigObj.syncDataMembersValidationPut = validationPutResponse;
-            _syncTestCount--;
-        } else {
-            testConfigObj.syncDataMembersValidationPut = validationPutResponse;
-            _syncTestCount--;
-        }
-    } else {
-        testConfigObj.syncDataMembersValidationPut = validationPutResponse;
-        _syncTestCount--;
-    }
-
-    async function syncDataMembersValidationGet() {
-        _body.LocalDataUpdates = null;
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        const syncDataMembersValidationGet = await syncDataMembersValidation(_body);
-        return syncDataMembersValidationGet;
-    }
-    let validationGetResponse = await syncDataMembersValidationGet();
-    if (validationGetResponse['TestResult'] == ('Pass' as TestResult)) {
-        validationGetResponse = await syncPostGetValidation(
-            validationGetResponse['apiGetResponse'],
-            validationGetResponse['testBody'],
-        );
-        if (validationGetResponse == ('Pass' as TestResult)) {
-            testConfigObj.syncDataMembersValidationGet = validationGetResponse;
-            _syncTestCount--;
-        } else {
-            testConfigObj.syncDataMembersValidationGet = validationGetResponse;
-            _syncTestCount--;
-        }
-    } else {
-        testConfigObj.syncDataMembersValidationGet = validationGetResponse;
-        _syncTestCount--;
-    }
-
-    let inetrvalLimit = 600000;
-    const SetIntervalEvery = 6000;
-    await new Promise((resolve) => {
-        const waitForAllTestResults = setInterval(() => {
-            inetrvalLimit -= SetIntervalEvery;
-            if (inetrvalLimit < 1) {
-                console.log('Interval Timout');
-                clearInterval(waitForAllTestResults);
-                resolve();
-            } else if (_syncTestCount == 0) {
-                console.log('Test Done | ' + getDateAndTime());
-                clearInterval(waitForAllTestResults);
-                resolve();
-            }
-        }, SetIntervalEvery);
-    });
-
     describe('Sync Tests Suites', () => {
         describe('Endpoints and data members validations', () => {
             it('Sync Put After Get Valid Response of URL and UUID', async () => {
-                return expect(testConfigObj.PutAfterGetTest).to.contain('Pass' as TestResult);
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                const PutAfterGetTest = await syncPutAfterGet(_body);
+                return expect(PutAfterGetTest).to.contain('Pass' as TestResult);
             });
 
             it('Simple Sync Put Data Members Validation', async () => {
                 _body.LocalDataUpdates = _localData;
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-                return expect(testConfigObj.syncDataMembersValidationPut).to.contain('Pass' as TestResult);
+                const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(_body);
+                if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
+                    return expect(
+                        syncPostGetValidation(
+                            syncDataMembersValidationPut.apiGetResponse,
+                            syncDataMembersValidationPut.testBody,
+                        ).TestResult,
+                    ).to.contain('Pass' as TestResult);
+                } else {
+                    return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                }
             });
 
             it('Simple Sync Get Data Members Validation', async () => {
                 _body.LocalDataUpdates = null;
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-                return expect(testConfigObj.syncDataMembersValidationGet).to.contain('Pass' as TestResult);
+                const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(_body);
+                if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
+                    return expect(
+                        syncPostGetValidation(
+                            syncDataMembersValidationGet.apiGetResponse,
+                            syncDataMembersValidationGet.testBody,
+                        ).TestResult,
+                    ).to.contain('Pass' as TestResult);
+                }
+                return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
             });
 
-            it('Simple Sync Get', async () => {
-                _body.LocalDataUpdates = null;
-                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-                return expect(testConfigObj.syncDataMembersValidationGet).to.contain('Pass' as TestResult);
-            });
+            /*it('Simple Sync Get', async () => {
+                return expect(syncDataMembersValidationGet).to.contain('Pass' as TestResult);
+            });*/
 
             /*
  
@@ -240,15 +174,10 @@ export async function SyncTests(generalService: GeneralService) {
                     }*/
 
             it('Test Clean Up', async () => {
-                const CleanUpTest = await cleanUpTest().then(function (result) {
-                    return result;
-                });
-                return expect(CleanUpTest).to.contain('Pass' as TestResult);
+                return expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
             });
         });
     });
-
-    return run();
 
     //#region syncPutAfterGet
     async function syncPutAfterGet(body) {
@@ -286,11 +215,16 @@ export async function SyncTests(generalService: GeneralService) {
             '/application/sync/jobinfo/' + syncPostApiResponse.SyncJobUUID,
             180000,
         );
-
         if (apiGetResponse.Status == 'Done' && apiGetResponse.ProgressPercentage == 100) {
-            return { TestResult: 'Pass', apiGetResponse: apiGetResponse, testBody: testBody };
+            return {
+                TestResult: 'Pass',
+                apiGetResponse: apiGetResponse,
+                testBody: testBody,
+            } as TestObject;
         } else {
-            return `The Get Status is: '${apiGetResponse.Status} , after 180 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`;
+            return {
+                TestResult: `The Get Status is: '${apiGetResponse.Status} , after 180 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
+            } as TestObject;
         }
     }
     //#endregion syncDataMembersValidation
@@ -319,22 +253,20 @@ export async function SyncTests(generalService: GeneralService) {
             errorMessage += `${error} | `;
         }
         if (errorMessage == '') {
-            return 'Pass' as TestResult;
+            return { TestResult: 'Pass' } as TestObject;
         } else {
-            return errorMessage;
+            return { TestResult: errorMessage } as TestObject;
         }
     }
     //#endregion syncPostGetValidation
 
     //#region cleanUp
     async function cleanUpTest() {
-        _syncCache.CleanUp['Hide All The New Transactions'] = {};
-        _syncCache.CleanUp['Hide All The New Transactions'].ErrorMessage = '';
         let countHiddenTransactions = 0;
+        let countFailedToHideTransactions = 0;
         const allActivitiesArr = await service.papiClient.get(
             "/all_activities?where=CreationDateTime>'2020-07-07Z'&page_size=-1&order_by=ModificationDateTime DESC",
         );
-
         for (let index = 0; index < allActivitiesArr.length; index++) {
             const activityToHide = allActivitiesArr[index];
             if (activityToHide.Remark.startsWith('Test ') && parseInt(activityToHide.Remark.split(' ')[1]) > 200) {
@@ -343,13 +275,36 @@ export async function SyncTests(generalService: GeneralService) {
                     Hidden: true,
                 };
                 countHiddenTransactions++;
-                await service.papiClient.post('/transactions', transaction);
+                try {
+                    await service.papiClient.post('/transactions', transaction);
+                } catch (error) {
+                    countFailedToHideTransactions++;
+                    console.log(
+                        `Error when trying to delete transaction with InternalID of: ${transaction.InternalID} Error: ${error}`,
+                    );
+                }
             }
         }
-        console.log(
-            `Done: all the new transactions (${countHiddenTransactions}) are Hidden = true | ${getDateAndTime()}`,
-        );
-        return 'Pass' as TestResult;
+        if (countFailedToHideTransactions > 0) {
+            console.log(
+                `Error: hidden failed for some transaction (${countFailedToHideTransactions}) and sucssfuly for (${
+                    countHiddenTransactions - countFailedToHideTransactions
+                })are Hidden = true | ${getDateAndTime()}`,
+            );
+        } else {
+            console.log(
+                `Done: all the new transactions (${countHiddenTransactions}) are Hidden = true | ${getDateAndTime()}`,
+            );
+        }
+        if (countFailedToHideTransactions > 0) {
+            return {
+                TestResult: `Error: hidden failed for some transaction (${countFailedToHideTransactions}) and sucssfuly for (${
+                    countHiddenTransactions - countFailedToHideTransactions
+                }) that are now with Hidden = true | ${getDateAndTime()}`,
+            } as TestObject;
+        } else {
+            return { TestResult: 'Pass' } as TestObject;
+        }
     }
     //#endregion cleanUp
 
@@ -365,6 +320,26 @@ export async function SyncTests(generalService: GeneralService) {
         );
     }
     //#endregion getDate
+
+    /* //this interval no longer needed and it never worked
+        let inetrvalLimit = 600000;
+    const SetIntervalEvery = 6000;
+    new Promise((resolve) => {
+        const waitForAllTestResults = setInterval(() => {
+            inetrvalLimit -= SetIntervalEvery;
+            if (inetrvalLimit < 1) {
+                console.log('Interval Timout');
+                clearInterval(waitForAllTestResults);
+                resolve();
+            } else if (_syncTestCount == 0) {
+                console.log('Test Done | ' + getDateAndTime());
+                clearInterval(waitForAllTestResults);
+                resolve();
+                return run();
+            }
+        }, SetIntervalEvery);
+    });
+    */
     /*
     }).then(async () => {
         let getNewResyncFileSize;

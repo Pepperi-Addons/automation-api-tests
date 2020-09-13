@@ -8,7 +8,7 @@ export class DataViewsService {
     }
 
     getDataView(options?: Record<string, unknown>) {
-        return this.papiClient.metaData.dataViews.find(options);
+        return this.papiClient.metaData.dataViews.iter(options).toArray();
     }
 
     postDataView(dataView: DataView) {

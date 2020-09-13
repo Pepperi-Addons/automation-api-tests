@@ -1,13 +1,11 @@
 import GeneralService from '../services/general.service';
-import tester from '../tester';
 import { FileStorageService } from '../services/file-storage.service';
 import { FileStorage } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 
 // All File Storage Tests
-export async function FileStorageTests(generalService: GeneralService) {
+export async function FileStorageTests(generalService: GeneralService, describe, expect, it) {
     const service = new FileStorageService(generalService.papiClient);
-    const { describe, expect, it, run } = tester();
 
     //#region Tests
     describe('File Storage Tests Suites', () => {
@@ -598,7 +596,6 @@ export async function FileStorageTests(generalService: GeneralService) {
         });
     });
     //#endregion Scenarios
-    return run();
     //#endregion Tests
 }
 
