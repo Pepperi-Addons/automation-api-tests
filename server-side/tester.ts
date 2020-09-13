@@ -15,7 +15,7 @@ export default function Tester() {
         reporterOptions: {
             reportDir: mochaDir,
             reportFilename: fileName,
-            html: true,
+            html: false,
             consoleReporter: 'none',
         },
         timeout: 420000,
