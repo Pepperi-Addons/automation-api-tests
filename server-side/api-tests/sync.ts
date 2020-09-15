@@ -11,107 +11,107 @@ interface TestObject {
 }
 
 let _localData;
-let _agentWrntyID;
-let _catalogWrntyID;
+let _agentExternalID;
+let _catalogExternalID;
 
 // All Sync Tests
 export async function SyncTests(generalService: GeneralService, describe, expect, it) {
     const service = new FieldsService(generalService.papiClient);
 
-    console.log('Initiate Sync Tests | ' + getDateAndTime());
+    console.log('Initiate Sync Tests | ' + generalService.getTime());
 
-    const accounts = await service.papiClient.accounts.find({ page: 1 });
-    const activities = await service.papiClient.transactions
-        .iter({
-            where: `Type='Sales Order'`,
-            page: 1,
-        })
-        .toArray();
+    let accounts;
+    let activities;
+    let _body;
+    let isSkipp = false;
+    describe('Sync Tests Suites', async () => {
+        it('Sync Prerequisites', async () => {
+            try {
+                accounts = await service.papiClient.accounts.find({ page: 1 });
+                activities = await service.papiClient.transactions
+                    .iter({
+                        where: `Type='Sales Order'`,
+                        page: 1,
+                    })
+                    .toArray();
 
-    const _accountExternalIDStr = accounts[0].ExternalID?.toString();
-    const activiy = activities[0];
+                const _accountExternalIDStr = accounts[0].ExternalID?.toString();
+                const activiy = activities[0];
 
-    const _activityTypeIDStr = activiy.ActivityTypeID;
+                const _activityTypeIDStr = activiy.ActivityTypeID;
 
-    _agentWrntyID = generalService.getClientData('UserID');
-    const catalogs = await service.papiClient.get('/catalogs');
-    _catalogWrntyID = catalogs[0].InternalID;
-    _localData = {
-        jsonBody: {
-            2: {
-                Headers: [
-                    'AccountExternalID',
-                    'DiscountPercentage',
-                    'ExternalID',
-                    'ActivityTypeID',
-                    'AgentWrntyID',
-                    'CatalogWrntyID',
-                    'Remark',
-                ],
-                Lines: [
-                    [
-                        _accountExternalIDStr,
-                        new Date().getTime().toString(),
-                        Math.floor(Math.random() * 1000000000).toString(),
-                        _activityTypeIDStr,
-                        _agentWrntyID,
-                        _catalogWrntyID,
-                        `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                    ],
-                    [
-                        _accountExternalIDStr,
-                        new Date().getTime().toString(),
-                        Math.floor(Math.random() * 1000000000).toString(),
-                        _activityTypeIDStr,
-                        _agentWrntyID,
-                        _catalogWrntyID,
-                        `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                    ],
-                ],
-            },
-        },
-    };
-    //GET
-    const _body = {
-        LocalDataUpdates: null,
-        LastSyncDateTime: 62610367500000 /*This Uses c# DateTime.Ticks*/,
-        DeviceExternalID: 'OrenSyncTest',
-        CPIVersion: '16.40',
-        TimeZoneDiff: 0,
-        Locale: true,
-        BrandedAppID: 5555,
-        UserFullName: 'Samuray_Pong',
-        SoftwareVersion: 9001,
-        SourceType: '5',
-        DeviceModel: 'SynkingOren',
-        DeviceName: 'OrenSynKing',
-        DeviceScreenSize: 9000,
-        SystemName: 'OREN-PC',
-        ClientDBUUID: 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString(),
-    };
+                _agentExternalID = generalService.getClientData('UserID');
+                const catalogs = await service.papiClient.get('/catalogs');
+                _catalogExternalID = catalogs[0].InternalID;
+                _localData = {
+                    jsonBody: {
+                        2: {
+                            Headers: [
+                                'AccountExternalID',
+                                'DiscountPercentage',
+                                'ExternalID',
+                                'ActivityTypeID',
+                                'AgentWrntyID',
+                                'CatalogWrntyID',
+                                'Remark',
+                            ],
+                            Lines: [
+                                [
+                                    _accountExternalIDStr,
+                                    new Date().getTime().toString(),
+                                    Math.floor(Math.random() * 1000000000).toString(),
+                                    _activityTypeIDStr,
+                                    _agentExternalID,
+                                    _catalogExternalID,
+                                    `Test ${Math.floor(Math.random() * 1000000).toString()}`,
+                                ],
+                                [
+                                    _accountExternalIDStr,
+                                    new Date().getTime().toString(),
+                                    Math.floor(Math.random() * 1000000000).toString(),
+                                    _activityTypeIDStr,
+                                    _agentExternalID,
+                                    _catalogExternalID,
+                                    `Test ${Math.floor(Math.random() * 1000000).toString()}`,
+                                ],
+                            ],
+                        },
+                    },
+                };
+                //GET
+                _body = {
+                    LocalDataUpdates: null,
+                    LastSyncDateTime: 62610367500000 /*This Uses c# DateTime.Ticks*/,
+                    DeviceExternalID: 'OrenSyncTest',
+                    CPIVersion: '16.40',
+                    TimeZoneDiff: 0,
+                    Locale: true,
+                    BrandedAppID: 5555,
+                    UserFullName: 'Samuray_Pong',
+                    SoftwareVersion: 9001,
+                    SourceType: '5',
+                    DeviceModel: 'SynkingOren',
+                    DeviceName: 'OrenSynKing',
+                    DeviceScreenSize: 9000,
+                    SystemName: 'OREN-PC',
+                    ClientDBUUID: 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString(),
+                };
+            } catch (error) {
+                isSkipp = true;
+                return expect(error).to.be.null;
+            }
+            Promise.all([
+                expect(accounts).to.not.be.undefined,
+                expect(activities).to.not.be.undefined,
+                expect(_body).to.not.be.undefined,
+            ]);
+        });
 
-    /*if (testConfigObj.isGetTest) {
-        _body.LocalDataUpdates = null;
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        testResultsObj.GetTest = sync(_body, 'Simple Get');
-    }
-
-    if (testConfigObj.isResyncFullTest) {
-        _body.LocalDataUpdates = _localData;
-        _body.LastSyncDateTime = 0;
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        testResultsObj.ResyncFullTest = sync(_body, 'Resync with data');
-    }
-
-    if (testConfigObj.isResyncEmptyTest) {
-        _body.LocalDataUpdates = null;
-        _body.LastSyncDateTime = 0;
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        testResultsObj.ResyncEmptyTest = sync(_body, 'Resync with no data');
-    }*/
-
-    describe('Sync Tests Suites', () => {
         describe('Endpoints and data members validations', () => {
+            if (isSkipp) {
+                describe.Skipp();
+            }
+
             it('Sync Put After Get Valid Response of URL and UUID', async () => {
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const PutAfterGetTest = await syncPutAfterGet(_body);
@@ -123,12 +123,22 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(_body);
                 if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
-                    return expect(
-                        syncPostGetValidation(
-                            syncDataMembersValidationPut.apiGetResponse,
-                            syncDataMembersValidationPut.testBody,
-                        ).TestResult,
-                    ).to.contain('Pass' as TestResult);
+                    return Promise.all[
+                        (expect(
+                            syncPostGetValidation(
+                                syncDataMembersValidationPut.apiGetResponse,
+                                syncDataMembersValidationPut.testBody,
+                            ).TestResult,
+                        ).to.contain('Pass' as TestResult),
+                        await expect(
+                            orderCreationValidation(
+                                syncDataMembersValidationPut.apiGetResponse,
+                                syncDataMembersValidationPut.testBody,
+                            ),
+                        )
+                            .eventually.to.have.property('TestResult')
+                            .that.contain('Pass' as TestResult))
+                    ];
                 } else {
                     return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
                 }
@@ -149,29 +159,35 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
             });
 
-            /*it('Simple Sync Get', async () => {
-                return expect(syncDataMembersValidationGet).to.contain('Pass' as TestResult);
-            });*/
+            it('Resync Put Data Members Validation', async () => {
+                _body.LocalDataUpdates = _localData;
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(_body);
+                if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
+                    const resyncWithOrderCreationValidationPut = await orderCreationValidation(
+                        syncDataMembersValidationPut.apiGetResponse,
+                        syncDataMembersValidationPut.testBody,
+                    );
+                    return expect(resyncWithOrderCreationValidationPut.TestResult).to.contain('Pass' as TestResult);
+                } else {
+                    return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                }
+            });
 
-            /*
- 
-                    if (testConfigObj.isResyncFullTest) {
-                        it('Resync With Data', async () => {
-                            const ResyncFullTest = await testResultsObj.ResyncFullTest.then(function (result) {
-                                return result;
-                            });
-                            return expect(ResyncFullTest).to.contain('Pass' as TestResult);
-                        });
-                    }
-            
-                    if (testConfigObj.isResyncEmptyTest) {
-                        it('Resync With No Data', async () => {
-                            const ResyncEmptyTest = await testResultsObj.ResyncEmptyTest.then(function (result) {
-                                return result;
-                            });
-                            return expect(ResyncEmptyTest).to.contain('Pass' as TestResult);
-                        });
-                    }*/
+            it('Resync Get Data Members Validation', async () => {
+                _body.LocalDataUpdates = null;
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(_body);
+                if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
+                    //     const resyncWithOrderCreationValidationGet = await orderCreationValidation(
+                    //         syncDataMembersValidationGet.apiGetResponse,
+                    //         syncDataMembersValidationGet.testBody,
+                    //     );
+                    //     return expect(resyncWithOrderCreationValidationGet.TestResult).to.contain('Pass' as TestResult);
+                    // } else {
+                    return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
+                }
+            });
 
             it('Test Clean Up', async () => {
                 return expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
@@ -260,13 +276,85 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     }
     //#endregion syncPostGetValidation
 
+    //#region resyncWithOrderCreationValidation
+    async function orderCreationValidation(apiGetResponse, testBody) {
+        let errorMessage = '';
+        //Create local test values for comparison
+        const localTestValuesArr: string[] = [];
+        if (testBody.LocalDataUpdates != null) {
+            for (let index = 0; index < testBody.LocalDataUpdates.jsonBody[2].Headers.length; index++) {
+                localTestValuesArr.push(testBody.LocalDataUpdates.jsonBody[2].Headers[index].toString());
+            }
+            for (let index = 0; index < localTestValuesArr.length; index++) {
+                if (localTestValuesArr[index] == 'AgentWrntyID') {
+                    localTestValuesArr.pop();
+                    index--;
+                }
+                if (localTestValuesArr[index] == 'CatalogWrntyID') {
+                    localTestValuesArr.pop();
+                    index--;
+                }
+            }
+        }
+        try {
+            // test that correct transactions created
+            for (let j = 0; j < testBody.LocalDataUpdates.jsonBody[2].Lines.length; j++) {
+                const getTransactionsLines = await service.papiClient.allActivities.find({
+                    where: `ExternalID=${testBody.LocalDataUpdates.jsonBody[2].Lines[j][2]}`,
+                });
+                if (getTransactionsLines.length > 0) {
+                    for (let index = 0; index < localTestValuesArr.length; index++) {
+                        try {
+                            if (
+                                getTransactionsLines[0][localTestValuesArr[index]] !=
+                                testBody.LocalDataUpdates.jsonBody[2].Lines[j][index]
+                            ) {
+                                console.log(
+                                    `Is this: ${getTransactionsLines[0][localTestValuesArr[index]]}, equal to this: ${
+                                        testBody.LocalDataUpdates.jsonBody[2].Lines[j][index]
+                                    }`,
+                                );
+                                errorMessage += `Missmatch sent Property: ${
+                                    testBody.LocalDataUpdates.jsonBody[2].Lines[j][index]
+                                } Not identical to recived Property: ${
+                                    getTransactionsLines[0][localTestValuesArr[index]]
+                                } | `;
+                            }
+                        } catch (error) {
+                            console.log(`Error for: ${[localTestValuesArr[index]]} | ${error}`);
+                            errorMessage += `For Client Info Prop: ${[
+                                localTestValuesArr[index],
+                            ]} Error was thrown: ${error} | `;
+                        }
+                    }
+                    //test that the file was created in the serverd
+                    if (!checkFile(apiGetResponse.DataUpdates.URL)) {
+                        errorMessage += 'File was not created on the sever | ';
+                    }
+                } else {
+                    errorMessage += 'New transaction was not found | ';
+                }
+            }
+        } catch (error) {
+            errorMessage += `${error} | `;
+        }
+        if (errorMessage == '') {
+            return { TestResult: 'Pass' } as TestObject;
+        } else {
+            return { TestResult: errorMessage } as TestObject;
+        }
+    }
+    //#endregion resyncWithOrderCreationValidation
+
     //#region cleanUp
     async function cleanUpTest() {
         let countHiddenTransactions = 0;
         let countFailedToHideTransactions = 0;
-        const allActivitiesArr = await service.papiClient.get(
-            "/all_activities?where=CreationDateTime>'2020-07-07Z'&page_size=-1&order_by=ModificationDateTime DESC",
-        );
+        const allActivitiesArr = (await service.papiClient.allActivities.find({
+            where: "CreationDateTime>'2020-07-07Z'",
+            page_size: -1,
+            orderBy: 'ModificationDateTime DESC',
+        })) as any;
         for (let index = 0; index < allActivitiesArr.length; index++) {
             const activityToHide = allActivitiesArr[index];
             if (activityToHide.Remark.startsWith('Test ') && parseInt(activityToHide.Remark.split(' ')[1]) > 200) {
@@ -276,7 +364,8 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 };
                 countHiddenTransactions++;
                 try {
-                    await service.papiClient.post('/transactions', transaction);
+                    //await service.papiClient.post('/transactions', transaction);
+                    await service.papiClient.transactions.delete(activityToHide.InternalID);
                 } catch (error) {
                     countFailedToHideTransactions++;
                     console.log(
@@ -289,18 +378,18 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             console.log(
                 `Error: hidden failed for some transaction (${countFailedToHideTransactions}) and sucssfuly for (${
                     countHiddenTransactions - countFailedToHideTransactions
-                })are Hidden = true | ${getDateAndTime()}`,
+                })are Hidden = true | ${generalService.getTime()}`,
             );
         } else {
             console.log(
-                `Done: all the new transactions (${countHiddenTransactions}) are Hidden = true | ${getDateAndTime()}`,
+                `Done: all the new transactions (${countHiddenTransactions}) are Hidden = true | ${generalService.getTime()}`,
             );
         }
         if (countFailedToHideTransactions > 0) {
             return {
                 TestResult: `Error: hidden failed for some transaction (${countFailedToHideTransactions}) and sucssfuly for (${
                     countHiddenTransactions - countFailedToHideTransactions
-                }) that are now with Hidden = true | ${getDateAndTime()}`,
+                }) that are now with Hidden = true | ${generalService.getTime()}`,
             } as TestObject;
         } else {
             return { TestResult: 'Pass' } as TestObject;
@@ -308,149 +397,70 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     }
     //#endregion cleanUp
 
-    //#region getDate
-    function getDateAndTime() {
-        const getDate = new Date();
-        return (
-            getDate.getHours().toString().padStart(2, '0') +
-            ' : ' +
-            getDate.getMinutes().toString().padStart(2, '0') +
-            ' : ' +
-            getDate.getSeconds().toString().padStart(2, '0')
-        );
-    }
-    //#endregion getDate
-
-    /* //this interval no longer needed and it never worked
-        let inetrvalLimit = 600000;
-    const SetIntervalEvery = 6000;
-    new Promise((resolve) => {
-        const waitForAllTestResults = setInterval(() => {
-            inetrvalLimit -= SetIntervalEvery;
-            if (inetrvalLimit < 1) {
-                console.log('Interval Timout');
-                clearInterval(waitForAllTestResults);
-                resolve();
-            } else if (_syncTestCount == 0) {
-                console.log('Test Done | ' + getDateAndTime());
-                clearInterval(waitForAllTestResults);
-                resolve();
-                return run();
-            }
-        }, SetIntervalEvery);
-    });
-    */
     /*
-    }).then(async () => {
-        let getNewResyncFileSize;
-        let getResyncFileSize;
+    if (testName.includes('Resync')) {
+    }
+            }).then(async () => {
         await new Promise(async (resolve) => {
-            if (apiGetResponse.Status != 'Done') {
-                // test fails
-                errorMessage += `The Get Status is: '${apiGetResponse.Status} , after 180 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID} | `;
-            } else {
-                // test wasn't fail
-                try {
-                    // test that the data we sent was the same data we got from the API
-                    for (const prop in apiGetResponse.ClientInfo) {
-                        try {
-                            if (
-                                prop != 'LocalDataUpdates' &&
-                                apiGetResponse.ClientInfo[prop] != testBody[prop].toString()
-                            ) {
-                                console.log(
-                                    `Is this: ${apiGetResponse.ClientInfo[prop]}, equal to this: ${testBody[prop]}`,
-                                );
-                                errorMessage += `Missmatch sent Property: ${apiGetResponse.ClientInfo[prop]} Not identical to recived Property: ${testBody[prop]} | `;
-                            }
-                        } catch (error) {
-                            console.log(`Error for: ${prop} | ${error}`);
-                            errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
-                        }
+            // now we will add an object and post it again
+            testBody['LocalDataUpdates'] = _localData;
+            testBody['ClientDBUUID'] = Math.floor(Math.random() * 1000000000).toString();
+            postOrder();
+    
+            let newSyncPostApiResponse;
+            let apiGetAfterResponse;
+            inetrvalLimit = 180000;
+            const getResultObjectResyncInterval = setInterval(() => {
+                async function waitForPostGetResponse() {
+                    // now we will do a full sync and make sure that the size of the new file, is bigger then the last one
+                    if (newSyncPostApiResponse == undefined) {
+                        testBody['LocalDataUpdates'] = null;
+                        newSyncPostApiResponse = await service.papiClient.post('/application/sync', testBody);
                     }
-                    //test that the file was created in the serverd
-                    if (!checkFile(apiGetResponse.DataUpdates.URL)) {
-                        errorMessage += 'File was not created on the sever | ';
-                    }
-                } catch (error) {
-                    errorMessage += `${error} | `;
+                    //wait until resync is done
+                    apiGetAfterResponse = await service.papiClient.get(
+                        '/application/sync/jobinfo/' + newSyncPostApiResponse.SyncJobUUID,
+                    );
+                    getDate = new Date();
+                    dateStr =
+                        `${getDate.getHours().toString().padStart(2, '0')}` +
+                        ' : ' +
+                        +`${getDate.getMinutes().toString().padStart(2, '0')}` +
+                        ' : ' +
+                        +`${getDate.getSeconds().toString().padStart(2, '0')}`;
                 }
-            }
-            if (testName.includes('Resync')) {
-                if (getResyncFileSize == undefined) {
-                    const isTransactionValid = checkTransactionExits(apiGetResponse.DataUpdates.URL);
-                    if (isTransactionValid) {
-                    } else {
-                        errorMessage += 'Failed to create transaction | ';
+    
+                waitForPostGetResponse();
+    
+                inetrvalLimit -= SetIntervalEvery;
+                if (inetrvalLimit < 1) {
+                    console.log(`Resync Interval Timeout For: ${testName} | ${dateStr}`);
+                    clearInterval(getResultObjectResyncInterval);
+                    errorMessage += `Resync Interval Timeout For: ${testName} | ${dateStr} | `;
+                    resolve();
+                } else if (
+                    apiGetAfterResponse.Status == 'Done' &&
+                    apiGetAfterResponse.ProgressPercentage == 100
+                ) {
+                    if (getNewResyncFileSize == undefined) {
                     }
                 }
-            }
-        }).then(async () => {
-            await new Promise(async (resolve) => {
-                // now we will add an object and post it again
-                testBody['LocalDataUpdates'] = _localData;
-                testBody['ClientDBUUID'] = Math.floor(Math.random() * 1000000000).toString();
-                postOrder();
-    
-                let newSyncPostApiResponse;
-                let apiGetAfterResponse;
-                inetrvalLimit = 180000;
-                const getResultObjectResyncInterval = setInterval(() => {
-                    async function waitForPostGetResponse() {
-                        // now we will do a full sync and make sure that the size of the new file, is bigger then the last one
-                        if (newSyncPostApiResponse == undefined) {
-                            testBody['LocalDataUpdates'] = null;
-                            newSyncPostApiResponse = await service.papiClient.post('/application/sync', testBody);
-                        }
-                        //wait until resync is done
-                        apiGetAfterResponse = await service.papiClient.get(
-                            '/application/sync/jobinfo/' + newSyncPostApiResponse.SyncJobUUID,
-                        );
-                        getDate = new Date();
-                        dateStr =
-                            `${getDate.getHours().toString().padStart(2, '0')}` +
-                            ' : ' +
-                            +`${getDate.getMinutes().toString().padStart(2, '0')}` +
-                            ' : ' +
-                            +`${getDate.getSeconds().toString().padStart(2, '0')}`;
+                if (getResyncFileSize != null && getNewResyncFileSize != null) {
+                    console.log(`Resync Interval Done For: ${testName} | ${dateStr}`);
+                    if (getNewResyncFileSize < getResyncFileSize) {
+                        errorMessage += `This is a problem with the resync file size. the size of the first resync was: ${getResyncFileSize} , and after we add 2 orders the size was: ${getNewResyncFileSize} | `;
                     }
-    
-                    waitForPostGetResponse();
-    
-                    inetrvalLimit -= SetIntervalEvery;
-                    if (inetrvalLimit < 1) {
-                        console.log(`Resync Interval Timeout For: ${testName} | ${dateStr}`);
-                        clearInterval(getResultObjectResyncInterval);
-                        errorMessage += `Resync Interval Timeout For: ${testName} | ${dateStr} | `;
-                        resolve();
-                    } else if (
-                        apiGetAfterResponse.Status == 'Done' &&
-                        apiGetAfterResponse.ProgressPercentage == 100
-                    ) {
-                        if (getNewResyncFileSize == undefined) {
-                            const isTransactionValid = checkTransactionExits(apiGetResponse.DataUpdates.URL);
-                            if (isTransactionValid) {
-                            } else {
-                                errorMessage += 'Failed to create transaction | ';
-                            }
-                        }
-                    }
-                    if (getResyncFileSize != null && getNewResyncFileSize != null) {
-                        console.log(`Resync Interval Done For: ${testName} | ${dateStr}`);
-                        if (getNewResyncFileSize < getResyncFileSize) {
-                            errorMessage += `This is a problem with the resync file size. the size of the first resync was: ${getResyncFileSize} , and after we add 2 orders the size was: ${getNewResyncFileSize} | `;
-                        }
-                        clearInterval(getResultObjectResyncInterval);
-                        resolve();
-                    } else {
-                        console.log('Response is done but a data file is emtpy');
-                        errorMessage += 'Response is done but a data file is emtpy | ';
-                        clearInterval(getResultObjectResyncInterval);
-                        resolve();
-                    }
-                });
+                    clearInterval(getResultObjectResyncInterval);
+                    resolve();
+                } else {
+                    console.log('Response is done but a data file is emtpy');
+                    errorMessage += 'Response is done but a data file is emtpy | ';
+                    clearInterval(getResultObjectResyncInterval);
+                    resolve();
+                }
             });
         });
+    });
     */
 
     //Get the stream of the file' and check if its size is bigger then 10 KB
@@ -458,10 +468,6 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         const fileContent: string = await fetch(url).then((response) => response.text());
         return (encodeURI(fileContent).split(/%..|./).length - 1) / 1000 > 10;
     }
-
-    /*async function checkTransactionExits(url) {
-        return true;
-    }*/
 
     /*async function postOrder() {
         _body.LocalDataUpdates = _localData;

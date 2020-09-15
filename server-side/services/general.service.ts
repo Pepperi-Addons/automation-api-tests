@@ -37,6 +37,30 @@ export default class GeneralService {
         return;
     };
 
+    //#region getDate
+    getTime = function () {
+        const getDate = new Date();
+        return (
+            getDate.getHours().toString().padStart(2, '0') +
+            ':' +
+            getDate.getMinutes().toString().padStart(2, '0') +
+            ':' +
+            getDate.getSeconds().toString().padStart(2, '0')
+        );
+    };
+
+    getDate = function () {
+        const getDate = new Date();
+        return (
+            getDate.getDate().toString().padStart(2, '0') +
+            '/' +
+            (getDate.getMonth() + 1).toString().padStart(2, '0') +
+            '/' +
+            getDate.getFullYear().toString().padStart(4, '0')
+        );
+    };
+    //#endregion getDate
+
     getClientData(data: ClientData): string {
         return parseJwt(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
