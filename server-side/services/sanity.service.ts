@@ -63,7 +63,10 @@ export class SanityService {
         const resultArr: any[] = [];
         if (type != 'accounts' && ATD != undefined) {
             for (let i = 0; i < body.length; i++) {
-                await this.papiClient.metaData.type(type).types.subtype(ATD).fields.delete(body[i].FieldID);
+                const tempResult = await this.papiClient.metaData
+                    .type(type)
+                    .types.subtype(ATD)
+                    .fields.delete(body[i].FieldID);
                 resultArr.push(body[i].FieldID);
             }
         } else {
