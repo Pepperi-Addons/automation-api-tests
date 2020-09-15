@@ -6,7 +6,7 @@ import { FileStorageTests } from './api-tests/file_storage';
 import { DataViewsTests } from './api-tests/data_views';
 import { FieldsTests } from './api-tests/fields';
 import { SyncTests } from './api-tests/sync';
-import { ObjectsTests } from './api-tests/sanity';
+import { ObjectsTests } from './api-tests/objects';
 
 export async function all(client: Client) {
     const { describe, expect, it, run } = tester();

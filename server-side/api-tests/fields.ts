@@ -29,7 +29,7 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                     const postFields = await service.upsertFields(
                         'transactions',
                         {
-                            FieldID: 'TSATest  1234',
+                            FieldID: 'TSATest 1234',
                             Label: '123',
                             UIType: {
                                 ID: 1,
@@ -42,7 +42,7 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                     const upsertFields = await service.upsertFields(
                         'transactions',
                         {
-                            FieldID: 'TSATest  1234',
+                            FieldID: 'TSATest 1234',
                             Label: '123',
                             UIType: {
                                 ID: 1,
@@ -51,7 +51,6 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                         },
                         '268428',
                     );
-
                     return Promise.all([
                         expect(postFields['InternalID']).not.to.be.undefined,
                         expect(postFields['InternalID'] == upsertFields['InternalID']).to.be.true,
@@ -66,7 +65,7 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                             service.upsertFields(
                                 'transactions',
                                 {
-                                    FieldID: 'TSATest  1234',
+                                    FieldID: 'TSATest 1234',
                                     Label: '123',
                                     UIType: {
                                         ID: 1,
@@ -75,8 +74,8 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                                 },
                                 '268428',
                             ),
-                        ).eventually.to.include({ FieldID: 'TSATest  1234' }),
-                        expect(service.deleteFields('transactions', 'TSATest  1234', '268428')).eventually.to.be.true,
+                        ).eventually.to.include({ FieldID: 'TSATest 1234' }),
+                        expect(service.deleteFields('transactions', 'TSATest 1234', '268428')).eventually.to.be.true,
                     ]);
                 });
             });

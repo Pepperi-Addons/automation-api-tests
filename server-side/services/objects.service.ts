@@ -1,5 +1,4 @@
 import { PapiClient, Account, ApiFieldObject } from '@pepperi-addons/papi-sdk';
-import fetch from 'node-fetch';
 
 export class SanityService {
     constructor(public papiClient: PapiClient) {}

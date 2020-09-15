@@ -1,10 +1,10 @@
 import GeneralService from '../services/general.service';
-import { SanityService } from '../services/sanity.service';
+import { SanityService as ObjectsService } from '../services/objects.service';
 import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
 // All Sanity Tests
 export async function ObjectsTests(generalService: GeneralService, describe, expect, it) {
-    const service = new SanityService(generalService.papiClient);
+    const service = new ObjectsService(generalService.papiClient);
 
     //#region Array of TSAs
 
