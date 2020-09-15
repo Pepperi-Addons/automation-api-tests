@@ -1,12 +1,10 @@
 import GeneralService from '../services/general.service';
-import tester from '../tester';
 import { SanityService } from '../services/sanity.service';
-import { PapiClient, ApiFieldObject } from '@pepperi-addons/papi-sdk';
+import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
 // All Sanity Tests
-export async function sanityTest(generalService: GeneralService) {
+export async function ObjectsTests(generalService: GeneralService, describe, expect, it) {
     const service = new SanityService(generalService.papiClient);
-    const { describe, expect, it, run } = tester();
 
     //#region Array of TSAs
 
@@ -344,8 +342,7 @@ export async function sanityTest(generalService: GeneralService) {
     //         });
     //     });
     // });
-
-    describe('Objects sanity', () => {
+    describe('Objects Tests Suites', async () => {
         describe('Accounts', () => {
             it('POST/UPDATE/DELETE account', async () => {
                 const createdTSAs = await service.createBulkTSA('accounts', TSAarr);
@@ -571,6 +568,4 @@ export async function sanityTest(generalService: GeneralService) {
             });
         });
     });
-
-    return run();
 }
