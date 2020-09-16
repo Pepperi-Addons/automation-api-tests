@@ -3,7 +3,7 @@ import { FieldsService } from '../services/fields.service';
 import fetch from 'node-fetch';
 
 declare type TestResult = 'Pass' | 'Fail';
-declare type Stats = 'Done' | 'Skipp' | 'SyncStart';
+declare type Stats = 'Done' | 'skip' | 'SyncStart';
 interface TestObject {
     TestResult?: string;
     apiGetResponse?: Record<string, unknown>;
@@ -23,7 +23,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     let accounts;
     let activities;
     let _body;
-    let isSkipp = false;
+    let isSkip = false;
     describe('Sync Tests Suites', async () => {
         it('Sync Prerequisites', async () => {
             try {
@@ -97,7 +97,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                     ClientDBUUID: 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString(),
                 };
             } catch (error) {
-                isSkipp = true;
+                isSkip = true;
                 return expect(error).to.be.null;
             }
             Promise.all([
@@ -108,8 +108,8 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         });
 
         describe('Endpoints and data members validations', () => {
-            if (isSkipp) {
-                describe.Skipp();
+            if (isSkip) {
+                describe.skip();
             }
 
             it('Sync Put After Get Valid Response of URL and UUID', async () => {
@@ -120,6 +120,11 @@ export async function SyncTests(generalService: GeneralService, describe, expect
 
             it('Simple Sync Put Data Members Validation', async () => {
                 _body.LocalDataUpdates = _localData;
+                for (let index = 0; index < _body.LocalDataUpdates.jsonBody[2].Lines.length; index++) {
+                    _body.LocalDataUpdates.jsonBody[2].Lines[index][2] = Math.floor(
+                        Math.random() * 1000000000,
+                    ).toString();
+                }
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(_body);
                 if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
@@ -160,7 +165,28 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             });
 
             it('Resync Put Data Members Validation', async () => {
+                //Creating a sync that will be stuck
                 _body.LocalDataUpdates = _localData;
+                for (let index = 0; index < _body.LocalDataUpdates.jsonBody[2].Lines.length; index++) {
+                    _body.LocalDataUpdates.jsonBody[2].Lines[index][2] = Math.floor(
+                        Math.random() * 1000000000,
+                    ).toString();
+                }
+                _body.LocalDataUpdates += 'Bug';
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                const responseOfSyncWithError: TestObject = await syncStuckValidation(_body);
+                if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
+                    return expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
+                }
+
+                //Forcing resync with fixed data that should work
+                _body.LocalDataUpdates = _localData;
+                for (let index = 0; index < _body.LocalDataUpdates.jsonBody[2].Lines.length; index++) {
+                    _body.LocalDataUpdates.jsonBody[2].Lines[index][2] = Math.floor(
+                        Math.random() * 1000000000,
+                    ).toString();
+                }
+                _body.LastSyncDateTime = 0;
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(_body);
                 if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
@@ -175,16 +201,21 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             });
 
             it('Resync Get Data Members Validation', async () => {
+                //Creating a sync that will be stuck
                 _body.LocalDataUpdates = null;
+                _body.LocalDataUpdates += 'Bug';
+                _body.LastSyncDateTime = 62610367500000 /*This Uses c# DateTime.Ticks*/;
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                const responseOfSyncWithError: TestObject = await syncStuckValidation(_body);
+                if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
+                    return expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
+                }
+
+                //Forcing resync with the same sync data that got stuck
+                _body.LastSyncDateTime = 0;
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(_body);
                 if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
-                    //     const resyncWithOrderCreationValidationGet = await orderCreationValidation(
-                    //         syncDataMembersValidationGet.apiGetResponse,
-                    //         syncDataMembersValidationGet.testBody,
-                    //     );
-                    //     return expect(resyncWithOrderCreationValidationGet.TestResult).to.contain('Pass' as TestResult);
-                    // } else {
                     return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
                 }
             });
@@ -239,11 +270,39 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             } as TestObject;
         } else {
             return {
-                TestResult: `The Get Status is: '${apiGetResponse.Status} , after 180 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
+                TestResult: `The Get Status is: '${apiGetResponse.Status} , and the Progress Percentage is: '${apiGetResponse.ProgressPercentage} after 180 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
             } as TestObject;
         }
     }
     //#endregion syncDataMembersValidation
+
+    //#region syncStuckValidation
+    async function syncStuckValidation(body) {
+        const testBody = {};
+        Object.assign(testBody, body);
+
+        //POST sync job
+        const syncPostApiResponse = await service.papiClient.post('/application/sync', testBody);
+
+        //GET sync jobinfo
+        const apiGetResponse = await waitForStatus(
+            'Done',
+            '/application/sync/jobinfo/' + syncPostApiResponse.SyncJobUUID,
+            90000,
+        );
+        if (apiGetResponse.Status == 'SyncStart' && apiGetResponse.ProgressPercentage == 1) {
+            return {
+                TestResult: 'Pass',
+                apiGetResponse: apiGetResponse,
+                testBody: testBody,
+            } as TestObject;
+        } else {
+            return {
+                TestResult: `The Get Status is: '${apiGetResponse.Status} , and the Progress Percentage is: '${apiGetResponse.ProgressPercentage} after 90 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
+            } as TestObject;
+        }
+    }
+    //#endregion syncStuckValidation
 
     //#region syncPostGetValidation
     function syncPostGetValidation(apiGetResponse, testBody) {
@@ -364,8 +423,11 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 };
                 countHiddenTransactions++;
                 try {
-                    //await service.papiClient.post('/transactions', transaction);
+                    /*if (index % 2 == 0) {
+                        await service.papiClient.post('/transactions', transaction);*/
+                    /*} else {*/
                     await service.papiClient.transactions.delete(activityToHide.InternalID);
+                    /*}*/
                 } catch (error) {
                     countFailedToHideTransactions++;
                     console.log(
@@ -397,84 +459,15 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     }
     //#endregion cleanUp
 
-    /*
-    if (testName.includes('Resync')) {
-    }
-            }).then(async () => {
-        await new Promise(async (resolve) => {
-            // now we will add an object and post it again
-            testBody['LocalDataUpdates'] = _localData;
-            testBody['ClientDBUUID'] = Math.floor(Math.random() * 1000000000).toString();
-            postOrder();
-    
-            let newSyncPostApiResponse;
-            let apiGetAfterResponse;
-            inetrvalLimit = 180000;
-            const getResultObjectResyncInterval = setInterval(() => {
-                async function waitForPostGetResponse() {
-                    // now we will do a full sync and make sure that the size of the new file, is bigger then the last one
-                    if (newSyncPostApiResponse == undefined) {
-                        testBody['LocalDataUpdates'] = null;
-                        newSyncPostApiResponse = await service.papiClient.post('/application/sync', testBody);
-                    }
-                    //wait until resync is done
-                    apiGetAfterResponse = await service.papiClient.get(
-                        '/application/sync/jobinfo/' + newSyncPostApiResponse.SyncJobUUID,
-                    );
-                    getDate = new Date();
-                    dateStr =
-                        `${getDate.getHours().toString().padStart(2, '0')}` +
-                        ' : ' +
-                        +`${getDate.getMinutes().toString().padStart(2, '0')}` +
-                        ' : ' +
-                        +`${getDate.getSeconds().toString().padStart(2, '0')}`;
-                }
-    
-                waitForPostGetResponse();
-    
-                inetrvalLimit -= SetIntervalEvery;
-                if (inetrvalLimit < 1) {
-                    console.log(`Resync Interval Timeout For: ${testName} | ${dateStr}`);
-                    clearInterval(getResultObjectResyncInterval);
-                    errorMessage += `Resync Interval Timeout For: ${testName} | ${dateStr} | `;
-                    resolve();
-                } else if (
-                    apiGetAfterResponse.Status == 'Done' &&
-                    apiGetAfterResponse.ProgressPercentage == 100
-                ) {
-                    if (getNewResyncFileSize == undefined) {
-                    }
-                }
-                if (getResyncFileSize != null && getNewResyncFileSize != null) {
-                    console.log(`Resync Interval Done For: ${testName} | ${dateStr}`);
-                    if (getNewResyncFileSize < getResyncFileSize) {
-                        errorMessage += `This is a problem with the resync file size. the size of the first resync was: ${getResyncFileSize} , and after we add 2 orders the size was: ${getNewResyncFileSize} | `;
-                    }
-                    clearInterval(getResultObjectResyncInterval);
-                    resolve();
-                } else {
-                    console.log('Response is done but a data file is emtpy');
-                    errorMessage += 'Response is done but a data file is emtpy | ';
-                    clearInterval(getResultObjectResyncInterval);
-                    resolve();
-                }
-            });
-        });
-    });
-    */
-
     //Get the stream of the file' and check if its size is bigger then 10 KB
     async function checkFile(url) {
         const fileContent: string = await fetch(url).then((response) => response.text());
+        //if the file is very big, no need to count bytes on stream
+        if (fileContent.length > 100000) {
+            return true;
+        }
         return (encodeURI(fileContent).split(/%..|./).length - 1) / 1000 > 10;
     }
-
-    /*async function postOrder() {
-        _body.LocalDataUpdates = _localData;
-        _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-        const apiPostResponse = await service.papiClient.post('/application/sync', _body);
-        return waitForStatus('Done', '/application/sync/jobinfo/' + apiPostResponse.SyncJobUUID, 180000);
-    }*/
 
     async function waitForStatus(status: Stats, url: string, time: number) {
         const maxLoops = time / 3000;
