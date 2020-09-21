@@ -7,7 +7,11 @@ export class DataViewsService {
         return this.papiClient.metaData.dataViews.get(id);
     }
 
-    getDataView(options?: Record<string, unknown>) {
+    getDataViews(options?: Record<string, unknown>) {
+        return this.papiClient.metaData.dataViews.find(options);
+    }
+
+    getAllDataViews(options?: Record<string, unknown>) {
         return this.papiClient.metaData.dataViews.iter(options).toArray();
     }
 

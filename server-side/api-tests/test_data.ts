@@ -29,12 +29,16 @@ export async function TestData(generalService: GeneralService, describe, expect,
     }
 
     describe('Test Data', async () => {
-        it(`Start Test: \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 ${service.getDate()}  ${service.getTime()}`, () => {
+        it(`Start Test Date And Time: \xa0\xa0\xa0\xa0\xa0 ${service.getDate()} \xa0\xa0\xa0\xa0 ${service.getTime()}`, () => {
             expect(service.getDate().length == 10 && service.getTime().length == 8).to.be.true;
         });
 
-        it(`Tested User: \xa0\xa0\xa0\xa0 ${service.getClientData('UserEmail')}`, () => {
-            expect(service.getClientData('UserEmail')).to.contain('@pepperi');
+        it(`Tested User: \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 ${service.getClientData(
+            'UserEmail',
+        )} \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 UserID: \xa0${service.getClientData(
+            'UserID',
+        )} \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 DistributorID: \xa0${service.getClientData('DistributorID')}`, () => {
+            expect(service.getClientData('UserEmail')).to.contain('@');
         });
 
         it('Test Prerequisites', async () => {
@@ -42,20 +46,20 @@ export async function TestData(generalService: GeneralService, describe, expect,
         });
 
         describe('Installed Addons Versions', () => {
-            it(`Services Framework \xa0 | \xa0\xa0 Version: ${installedAddons['Services Framework']}`, () => {
+            it(`Services Framework \xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Services Framework']}`, () => {
                 expect(installedAddons['Services Framework']).to.not.be.null;
             });
-            it(`WebApp Platform \xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0 Version: ${installedAddons['WebApp Platform']}`, () => {
+            it(`Cross Platforms API \xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Cross Platforms API']}`, () => {
+                expect(installedAddons['Cross Platforms API']).to.not.be.null;
+            });
+            it(`WebApp Platform \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['WebApp Platform']}`, () => {
                 expect(installedAddons['WebApp Platform']).to.not.be.null;
             });
-            it(`Data Views API \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0 Version: ${installedAddons['Data Views API']}`, () => {
-                expect(installedAddons['Data Views API']).to.not.be.null;
-            });
-            it(`Addons Manager \xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0 Version: ${installedAddons['Addons Manager']}`, () => {
+            it(`Addons Manager \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Addons Manager']}`, () => {
                 expect(installedAddons['Addons Manage']).to.not.be.null;
             });
-            it(`Cross Platforms API \xa0 | \xa0\xa0 Version: ${installedAddons['Cross Platforms API']}`, () => {
-                expect(installedAddons['Cross Platforms API']).to.not.be.null;
+            it(`Data Views API \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Data Views API']}`, () => {
+                expect(installedAddons['Data Views API']).to.not.be.null;
             });
         });
     });

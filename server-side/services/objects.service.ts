@@ -1,13 +1,19 @@
 import { PapiClient, Account, ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
-export class SanityService {
+export class ObjectsService {
     constructor(public papiClient: PapiClient) {}
 
     createAccount(body: Account) {
         return this.papiClient.accounts.upsert(body);
     }
 
-    getAccount(where?: string) {
+    getAccounts(where?: string) {
+        return this.papiClient.accounts.find({
+            where,
+        });
+    }
+
+    getAllAccounts(where?: string) {
         return this.papiClient.accounts
             .iter({
                 where,

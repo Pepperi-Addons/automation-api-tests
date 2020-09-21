@@ -3,13 +3,13 @@ import { FieldsService } from '../services/fields.service';
 import fetch from 'node-fetch';
 
 declare type TestResult = 'Pass' | 'Fail';
-declare type Stats = 'Done' | 'skip' | 'SyncStart';
+declare type SyncStatus = 'New' | 'SyncStart' | 'Skipped' | 'Done';
 interface TestObject {
     TestResult?: string;
     apiGetResponse?: Record<string, unknown>;
     testBody?: Record<string, unknown>;
 }
-
+const apiCallsInvterval = 400;
 let _localData;
 let _agentExternalID;
 let _catalogExternalID;
@@ -28,13 +28,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         it('Sync Prerequisites', async () => {
             try {
                 accounts = await service.papiClient.accounts.find({ page: 1 });
-                activities = await service.papiClient.transactions
-                    .iter({
-                        where: `Type='Sales Order'`,
-                        page: 1,
-                    })
-                    .toArray();
-
+                activities = await service.papiClient.transactions.find({ where: `Type='Sales Order'`, page: 1 });
                 const _accountExternalIDStr = accounts[0].ExternalID?.toString();
                 const activiy = activities[0];
 
@@ -81,7 +75,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 //GET
                 _body = {
                     LocalDataUpdates: null,
-                    LastSyncDateTime: 62610367500000 /*This Uses c# DateTime.Ticks*/,
+                    LastSyncDateTime: 62610367500000, //This Uses c# DateTime.Ticks
                     DeviceExternalID: 'OrenSyncTest',
                     CPIVersion: '16.40',
                     TimeZoneDiff: 0,
@@ -187,7 +181,6 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                     ).toString();
                 }
                 _body.LastSyncDateTime = 0;
-                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(_body);
                 if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                     const resyncWithOrderCreationValidationPut = await orderCreationValidation(
@@ -204,7 +197,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 //Creating a sync that will be stuck
                 _body.LocalDataUpdates = null;
                 _body.LocalDataUpdates += 'Bug';
-                _body.LastSyncDateTime = 62610367500000 /*This Uses c# DateTime.Ticks*/;
+                _body.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
                 _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const responseOfSyncWithError: TestObject = await syncStuckValidation(_body);
                 if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
@@ -213,13 +206,152 @@ export async function SyncTests(generalService: GeneralService, describe, expect
 
                 //Forcing resync with the same sync data that got stuck
                 _body.LastSyncDateTime = 0;
-                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                 const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(_body);
                 if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
                     return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
                 }
             });
+        });
 
+        describe('Skipped Mechanisem Tests Scenarios', () => {
+            it('One Hundred Gets', async () => {
+                const getsSize = 100;
+                const tempPostPromiseArr = [] as any;
+                _body.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
+                _body.LocalDataUpdates = null;
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                for (let index = 0; index < getsSize; index++) {
+                    //POST sync job
+                    tempPostPromiseArr.push(await service.papiClient.post('/application/sync', _body));
+                }
+
+                const oneHundredGetResponsArr = [] as any;
+                for (let index = 0; index < getsSize; index++) {
+                    oneHundredGetResponsArr.push(
+                        await waitForStatus(
+                            '/application/sync/jobinfo/' + tempPostPromiseArr[index].SyncJobUUID,
+                            180000,
+                        ),
+                    );
+                }
+
+                for (let index = 0; index < oneHundredGetResponsArr.length; index++) {
+                    oneHundredGetResponsArr[index] = oneHundredGetResponsArr[index].Status;
+                }
+
+                console.log(oneHundredGetResponsArr);
+                expect(JSON.stringify(oneHundredGetResponsArr).match(/Done/g)).to.be.an('array').with.length.above(0);
+                expect(JSON.stringify(oneHundredGetResponsArr).match(/Skipped/g))
+                    .to.be.an('array')
+                    .with.length.above(0);
+                expect(JSON.stringify(oneHundredGetResponsArr).match(/Done|Skipped/g))
+                    .to.be.an('array')
+                    .with.length.of(100);
+            });
+
+            it('One Hundred Puts', async () => {
+                const putsSize = 100;
+                const tempPostPromiseArr = [] as any;
+                _body.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
+                _body.LocalDataUpdates = _localData;
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                for (let index = 0; index < putsSize; index++) {
+                    //POST sync job
+                    tempPostPromiseArr.push(await service.papiClient.post('/application/sync', _body));
+                }
+
+                const oneHundredPutResponsArr = [] as any;
+                for (let index = 0; index < putsSize; index++) {
+                    oneHundredPutResponsArr.push(
+                        await waitForStatus(
+                            '/application/sync/jobinfo/' + tempPostPromiseArr[index].SyncJobUUID,
+                            180000,
+                        ),
+                    );
+                }
+
+                let orderLinesValidationResult;
+                for (let index = 0; index < oneHundredPutResponsArr.length; index++) {
+                    if (oneHundredPutResponsArr[index].Status == ('Done' as SyncStatus)) {
+                        orderLinesValidationResult = await orderCreationValidation(
+                            oneHundredPutResponsArr[index],
+                            _body,
+                        );
+                        console.log('Done result: ' + JSON.stringify(oneHundredPutResponsArr[index]));
+                        console.log('Done Body: ' + JSON.stringify(_body));
+                    }
+                    oneHundredPutResponsArr[index] = oneHundredPutResponsArr[index].Status;
+                }
+
+                console.log(oneHundredPutResponsArr);
+                expect(orderLinesValidationResult)
+                    .to.have.property('TestResult')
+                    .that.contain('Pass' as TestResult);
+                expect(JSON.stringify(oneHundredPutResponsArr).match(/Done/g)).to.be.an('array').with.length.above(0);
+                expect(JSON.stringify(oneHundredPutResponsArr).match(/Skipped/g))
+                    .to.be.an('array')
+                    .with.length.above(0);
+                expect(JSON.stringify(oneHundredPutResponsArr).match(/Done|Skipped/g))
+                    .to.be.an('array')
+                    .with.length.of(100);
+            });
+
+            it('Twenty Puts With Added Lines', async () => {
+                const putsSize = 20;
+                const tempPostPromiseArr = [] as any;
+                _body.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
+                _body.LocalDataUpdates = _localData;
+                _body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                for (let index = 0; index < putsSize; index++) {
+                    //Add one order line in every iteration
+                    _body.LocalDataUpdates.jsonBody[2].Lines.push([
+                        _localData.jsonBody[2].Lines[0][0],
+                        new Date().getTime().toString(),
+                        Math.floor(Math.random() * 1000000000).toString(),
+                        _localData.jsonBody[2].Lines[0][3],
+                        _agentExternalID,
+                        _catalogExternalID,
+                        `Test ${Math.floor(Math.random() * 1000000).toString()}`,
+                    ]);
+                    //POST sync job
+                    tempPostPromiseArr.push(await service.papiClient.post('/application/sync', _body));
+                }
+
+                const twentyPutResponsArr = [] as any;
+                for (let index = 0; index < putsSize; index++) {
+                    twentyPutResponsArr.push(
+                        await waitForStatus(
+                            '/application/sync/jobinfo/' + tempPostPromiseArr[index].SyncJobUUID,
+                            180000,
+                        ),
+                    );
+                }
+
+                let orderLinesValidationResult;
+                for (let index = 0; index < twentyPutResponsArr.length; index++) {
+                    if (twentyPutResponsArr[index].Status == ('Done' as SyncStatus)) {
+                        orderLinesValidationResult = await orderCreationValidation(twentyPutResponsArr[index], _body);
+                        console.log('Done result: ' + JSON.stringify(twentyPutResponsArr[index]));
+                        console.log('Done Body: ' + JSON.stringify(_body));
+                    }
+                    twentyPutResponsArr[index] = twentyPutResponsArr[index].Status;
+                }
+
+                console.log(twentyPutResponsArr);
+                expect(orderLinesValidationResult)
+                    .to.have.property('TestResult')
+                    .that.contain('Pass' as TestResult);
+                expect(JSON.stringify(twentyPutResponsArr).match(/Done/g)).to.be.an('array').with.length.above(0);
+                expect(JSON.stringify(twentyPutResponsArr).match(/Skipped/g))
+                    .to.be.an('array')
+                    .with.length.above(0);
+                expect(JSON.stringify(twentyPutResponsArr).match(/Done|Skipped/g))
+                    .to.be.an('array')
+                    .with.length.of(20);
+            });
+        });
+
+        describe('Exit Test', () => {
             it('Test Clean Up', async () => {
                 return expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
             });
@@ -228,13 +360,12 @@ export async function SyncTests(generalService: GeneralService, describe, expect
 
     //#region syncPutAfterGet
     async function syncPutAfterGet(body) {
-        body.LocalDataUpdates = _localData;
+        body.LocalDataUpdates = null;
         const getResponse = syncPutAfterGetCallback(await service.papiClient.post('/application/sync', body));
         if (getResponse.toString().startsWith('Error')) {
             return getResponse;
         }
         body.LocalDataUpdates = _localData;
-        body.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
         const putResponse = syncPutAfterGetCallback(await service.papiClient.post('/application/sync', body));
         return putResponse;
     }
@@ -258,7 +389,6 @@ export async function SyncTests(generalService: GeneralService, describe, expect
 
         //GET sync jobinfo
         const apiGetResponse = await waitForStatus(
-            'Done',
             '/application/sync/jobinfo/' + syncPostApiResponse.SyncJobUUID,
             180000,
         );
@@ -286,7 +416,6 @@ export async function SyncTests(generalService: GeneralService, describe, expect
 
         //GET sync jobinfo
         const apiGetResponse = await waitForStatus(
-            'Done',
             '/application/sync/jobinfo/' + syncPostApiResponse.SyncJobUUID,
             90000,
         );
@@ -391,7 +520,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                         errorMessage += 'File was not created on the sever | ';
                     }
                 } else {
-                    errorMessage += 'New transaction was not found | ';
+                    errorMessage += `New transaction with ExternalID = ${testBody.LocalDataUpdates.jsonBody[2].Lines[j][2]}, was not found | `;
                 }
             }
         } catch (error) {
@@ -423,7 +552,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 };
                 countHiddenTransactions++;
                 try {
-                    /*if (index % 2 == 0) {
+                    /*if (index % 2 == 0) { //This can verify that DI-16911 is fixed, but its not yet developed by Maor Akav 17/09/2020
                         await service.papiClient.post('/transactions', transaction);*/
                     /*} else {*/
                     await service.papiClient.transactions.delete(activityToHide.InternalID);
@@ -459,6 +588,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     }
     //#endregion cleanUp
 
+    //#region check file
     //Get the stream of the file' and check if its size is bigger then 10 KB
     async function checkFile(url) {
         const fileContent: string = await fetch(url).then((response) => response.text());
@@ -468,16 +598,25 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         }
         return (encodeURI(fileContent).split(/%..|./).length - 1) / 1000 > 10;
     }
+    //#endregion check file
 
-    async function waitForStatus(status: Stats, url: string, time: number) {
-        const maxLoops = time / 3000;
+    //#region wait for status
+    async function waitForStatus(url: string, maxTime: number) {
+        const maxLoops = maxTime / (apiCallsInvterval * 10);
         let counter = 0;
         let apiGetResponse;
         do {
-            generalService.sleep(3000);
+            if (apiGetResponse != undefined) {
+                generalService.sleep(apiCallsInvterval * 10);
+            }
             counter++;
             apiGetResponse = await service.papiClient.get(url);
-        } while (apiGetResponse.Status != status && counter < maxLoops);
+        } while (
+            (apiGetResponse.Status == ('SyncStart' as SyncStatus) || apiGetResponse.Status == ('New' as SyncStatus)) &&
+            apiGetResponse.ModificationDateTime - apiGetResponse.CreationDateTime < maxTime &&
+            counter < maxLoops
+        );
         return apiGetResponse;
     }
+    //#endregion wait for status
 }
