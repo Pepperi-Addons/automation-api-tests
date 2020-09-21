@@ -1,5 +1,5 @@
 import GeneralService from '../services/general.service';
-import { SanityService as ObjectsService } from '../services/objects.service';
+import { ObjectsService } from '../services/objects.service';
 import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
 // All Sanity Tests
@@ -403,7 +403,7 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                     TSASingleLineAPI: 'Random text',
                 } as any);
 
-                const getCreatedAccount = (await service.getAccount(`InternalID=${createdAccount.InternalID}`)) as any;
+                const getCreatedAccount = (await service.getAccounts(`InternalID=${createdAccount.InternalID}`)) as any;
 
                 return Promise.all([
                     expect(getCreatedAccount[0]).to.include({
@@ -560,7 +560,7 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                     //     }),
                     expect(await service.deleteAccount(createdAccount.InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(createdAccount.InternalID as any)).to.be.false,
-                    expect(await service.getAccount(`InternalID=${createdAccount.InternalID}`))
+                    expect(await service.getAccounts(`InternalID=${createdAccount.InternalID}`))
                         .to.be.an('array')
                         .with.lengthOf(0),
                     expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true,

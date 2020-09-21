@@ -39,7 +39,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
 
                 it('Upsert Data View (Card) Valid Creation Amount', async () => {
                     //Get All Before
-                    const totalDataViewsBefore: number = await (await service.getDataView()).length;
+                    const totalDataViewsBefore: number = await (await service.getDataViews()).length;
                     const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                     return Promise.all([
                         await expect(
@@ -64,7 +64,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             })
                             .and.to.have.property('InternalID')
                             .that.is.a('Number'),
-                        await expect(service.getDataView())
+                        await expect(service.getDataViews())
                             .eventually.to.be.an('array')
                             .with.lengthOf(totalDataViewsBefore + 1),
                     ]);
@@ -115,7 +115,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
 
                 it('Upsert Data Views Batch Valid Creation Amount (DI-16869)', async () => {
                     //Get All Before
-                    const totalDataViewsBefore: number = await (await service.getDataView()).length;
+                    const totalDataViewsBefore: number = await (await service.getDataViews()).length;
                     const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                     return Promise.all([
                         await expect(
@@ -156,7 +156,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             })
                             .and.to.have.property('InternalID')
                             .that.is.a('Number'),
-                        await expect(service.getDataView())
+                        await expect(service.getDataViews())
                             .eventually.to.be.an('array')
                             .with.lengthOf(totalDataViewsBefore + 2),
                     ]);
@@ -166,12 +166,12 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
 
             describe('Get', () => {
                 it('Get All Data Views Valid Response (DI-16800)', async () => {
-                    return expect(service.getDataView()).eventually.to.be.an('array').with.length.above(0);
+                    return expect(service.getDataViews()).eventually.to.be.an('array').with.length.above(0);
                 });
 
                 it('Get No Data Views Valid Response', async () => {
                     return expect(
-                        service.getDataView({
+                        service.getDataViews({
                             where: `InternalID = '00'`,
                         }),
                     )
@@ -198,7 +198,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         MinimumColumnWidth: 0,
                     });
 
-                    const getDataViewResponseObj: DataView[] = await service.getDataView({
+                    const getDataViewResponseObj: DataView[] = await service.getDataViews({
                         where: `InternalID = '${testDataView.InternalID}'`,
                         //where: 'Type = Grid AND Title = Rep',
                         //where: "Type = 'Grid' AND CreationDateTime = '2019-12-31Z'",
@@ -251,7 +251,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         MinimumColumnWidth: 0,
                     });
 
-                    const getDataViewResponseObj: DataView[] = await service.getDataView({
+                    const getDataViewResponseObj: DataView[] = await service.getDataViews({
                         where: `InternalID = '${testDataView.InternalID}'`,
                         //where: 'Type = Grid AND Context.ScreenSize = Tablet AND Context.Profile.Name = Buyer',
                         //where: "Type = 'Grid' AND CreationDateTime = '2019-12-31Z'",
@@ -294,7 +294,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
             describe('Positive', () => {
                 describe('CRUD Data View (Form - Update: Title, Type, Hidden)', () => {
                     it('Add Data View', async () => {
-                        const allDataViewsBefore: DataView[] = await service.getDataView();
+                        const allDataViewsBefore: DataView[] = await service.getDataViews();
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         return Promise.all([
                             await expect(
@@ -320,7 +320,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 .and.to.have.property('InternalID')
                                 .that.is.a('Number'),
 
-                            expect(await service.getDataView())
+                            expect(await service.getDataViews())
                                 .to.be.an('array')
                                 .with.lengthOf(allDataViewsBefore.length + 1),
                         ]);
@@ -344,7 +344,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Columns: [],
                         });
 
-                        const getDataViewResponseObj: DataView[] = await service.getDataView({
+                        const getDataViewResponseObj: DataView[] = await service.getDataViews({
                             where: `InternalID = '${testDataView.InternalID}'`,
                         });
                         expect(getDataViewResponseObj[0].InternalID).to.be.above(0);
@@ -413,7 +413,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         );
 
                         //Get the current (after the update) data view
-                        const getDataViewResponseObj: DataView[] = await service.getDataView({
+                        const getDataViewResponseObj: DataView[] = await service.getDataViews({
                             where: `InternalID = '${postUpdatedDataViewResponseObj.InternalID}'`,
                         });
 
@@ -1096,7 +1096,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                 });
 
                 it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
-                    const testDataViewArr: DataView[] = await service.getDataView({
+                    const testDataViewArr: DataView[] = await service.getDataViews({
                         where: 'InternalID = 4067228',
                         include_deleted: 1,
                     });
@@ -2192,10 +2192,10 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
 
         describe('Test Clean Up (Hidden = true)', () => {
             it('All The Data Views Hidden', async () => {
-                const dataViewCounter: number = await (await service.getDataView()).length;
+                const dataViewCounter: number = await (await service.getDataViews()).length;
                 return Promise.all([
                     await expect(TestCleanUp(service)).eventually.to.be.above(0),
-                    await expect((await service.getDataView()).length).to.be.below(dataViewCounter),
+                    await expect((await service.getDataViews()).length).to.be.below(dataViewCounter),
                 ]);
             });
         });
@@ -2206,7 +2206,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
 //Service Functions
 //Remove all test data views (Hidden = true)
 async function TestCleanUp(service: DataViewsService) {
-    const allDataViewObjects: DataView[] = await service.getDataView();
+    const allDataViewObjects: DataView[] = await service.getDataViews();
     let deletedCounter = 0;
 
     for (let index = 0; index < allDataViewObjects.length; index++) {

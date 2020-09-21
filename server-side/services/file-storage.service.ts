@@ -10,6 +10,12 @@ export class FileStorageService {
 
     //Files Storage API Calls
     getFilesFromStorage(where?: string) {
+        return this.papiClient.fileStorage.find({
+            where,
+        });
+    }
+
+    getAllFilesFromStorage(where?: string) {
         return this.papiClient.fileStorage
             .iter({
                 where,
