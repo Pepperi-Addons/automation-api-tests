@@ -1,17 +1,31 @@
 import { PapiClient, DataView } from '@pepperi-addons/papi-sdk';
-
+interface FindOptions {
+    fields?: string[];
+    where?: string;
+    orderBy?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
 export class DataViewsService {
     constructor(public papiClient: PapiClient) {}
+
+    getServer() {
+        return this.papiClient['options'].baseURL.includes('staging') ? 'Sandbox' : 'Production';
+    }
 
     getDataViewByID(id: number) {
         return this.papiClient.metaData.dataViews.get(id);
     }
 
-    getDataViews(options?: Record<string, unknown>) {
+    getDataViews(options?: FindOptions) {
         return this.papiClient.metaData.dataViews.find(options);
     }
 
-    getAllDataViews(options?: Record<string, unknown>) {
+    getAllDataViews(options?: FindOptions) {
         return this.papiClient.metaData.dataViews.iter(options).toArray();
     }
 

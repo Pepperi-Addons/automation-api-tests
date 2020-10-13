@@ -1,7 +1,10 @@
-import mocha from 'mocha';
+import Mocha from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+
 chai.use(promised);
+
+const mocha = new Mocha();
 
 describe('learning about mocha', function () {
     it('check properties on object', async function () {

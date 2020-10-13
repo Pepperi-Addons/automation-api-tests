@@ -6,8 +6,51 @@ import { DataView } from '@pepperi-addons/papi-sdk';
 export async function DataViewsTests(generalService: GeneralService, describe, expect, it) {
     const service = new DataViewsService(generalService.papiClient);
 
+    //Prerequisites Test Data
+    const transactionsTypeArr = [] as any;
+    const activitiesTypeArr = [] as any;
+    const userTypeIDArr = [] as any;
+
+    const transactionsArr = await generalService.getTypes('transactions');
+    transactionsArr.forEach((element) => {
+        transactionsTypeArr.push(element.ExternalID);
+        transactionsTypeArr[element.ExternalID] = element.TypeID;
+    });
+
+    const activitiesArr = await generalService.getTypes('activities');
+    activitiesArr.forEach((element) => {
+        activitiesTypeArr.push(element.ExternalID);
+        activitiesTypeArr[element.ExternalID] = element.TypeID;
+    });
+
+    const usersArr = await service.papiClient.get('/users');
+    usersArr.forEach((element) => {
+        userTypeIDArr.push(element.Profile.Data.Name);
+        userTypeIDArr[element.Profile.Data.Name] = element.Profile.Data.InternalID;
+    });
+
     //#region Tests
     describe('Data Views Tests Suites', () => {
+        //Test Data
+        it(`Test Data: Transaction - Name: \xa0${transactionsTypeArr[0]},\xa0 TypeID: \xa0${
+            transactionsTypeArr[transactionsTypeArr[0]]
+        }`, async () => {
+            expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
+        });
+
+        it(`Test Data: Activity \xa0 - Name: \xa0${activitiesTypeArr[0]}, \xa0 TypeID: \xa0${
+            activitiesTypeArr[activitiesTypeArr[0]]
+        }`, async () => {
+            expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
+        });
+
+        it(`Test Data: Users - Name: \xa0${userTypeIDArr[0]}, \xa0 InternalID: \xa0${
+            userTypeIDArr[userTypeIDArr[0]]
+        }, Name: \xa0${userTypeIDArr[1]}, \xa0 InternalID: \xa0${userTypeIDArr[userTypeIDArr[1]]}`, async () => {
+            expect(userTypeIDArr[userTypeIDArr[0]]).to.be.a('number').that.is.above(0);
+            expect(userTypeIDArr[userTypeIDArr[1]]).to.be.a('number').that.is.above(0);
+        });
+
         //#region Endpoints
         describe('Endpoints', () => {
             describe('Upsert', () => {
@@ -21,7 +64,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -50,7 +93,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                     ScreenSize: 'Landscape',
                                     Profile: {
-                                        Name: 'Admin',
+                                        Name: userTypeIDArr[0],
                                     },
                                 },
                                 Fields: [],
@@ -82,7 +125,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                     ScreenSize: 'Landscape',
                                     Profile: {
-                                        Name: 'Rep',
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                                 Fields: [],
@@ -96,7 +139,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
                                     ScreenSize: 'Landscape',
                                     Profile: {
-                                        Name: 'Rep',
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                                 Fields: [],
@@ -127,7 +170,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                         Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                         ScreenSize: 'Landscape',
                                         Profile: {
-                                            Name: 'Admin',
+                                            Name: userTypeIDArr[0],
                                         },
                                     },
                                     Fields: [],
@@ -141,7 +184,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                         Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
                                         ScreenSize: 'Landscape',
                                         Profile: {
-                                            Name: 'Admin',
+                                            Name: userTypeIDArr[0],
                                         },
                                     },
                                     Fields: [],
@@ -189,7 +232,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                             ScreenSize: 'Tablet',
                             Profile: {
-                                Name: 'Buyer',
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [],
@@ -203,7 +246,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         //where: 'Type = Grid AND Title = Rep',
                         //where: "Type = 'Grid' AND CreationDateTime = '2019-12-31Z'",
                         //where: "CreationDateTime = '2019-12-31Z'",
-                        //where: "Type = 'Grid' AND Title = 'Buyer'",
+                        //where: "Type = 'Grid' AND Title = userTypeIDArr[userTypeIDArr[1]]",
                     });
                     expect(getDataViewResponseObj[0].InternalID).to.be.above(0);
                     expect(getDataViewResponseObj[0]).to.include({
@@ -214,7 +257,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         FrozenColumnsCount: 0,
                         MinimumColumnWidth: 0,
                     });
-                    expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Buyer');
+                    expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
                     expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
                         `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
@@ -242,7 +285,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                             ScreenSize: 'Tablet',
                             Profile: {
-                                Name: 'Buyer',
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [],
@@ -256,7 +299,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         //where: 'Type = Grid AND Context.ScreenSize = Tablet AND Context.Profile.Name = Buyer',
                         //where: "Type = 'Grid' AND CreationDateTime = '2019-12-31Z'",
                         //where: "CreationDateTime = '2019-12-31Z'",
-                        //where: "Type = 'Grid' AND Title = 'Buyer'",
+                        //where: "Type = 'Grid' AND Title = userTypeIDArr[userTypeIDArr[1]]",
                     });
                     console.log(getDataViewResponseObj);
                     expect(getDataViewResponseObj[0].InternalID).to.be.above(0);
@@ -268,7 +311,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         FrozenColumnsCount: 0,
                         MinimumColumnWidth: 0,
                     });
-                    expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Buyer');
+                    expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
                     expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
                         `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
@@ -305,7 +348,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                         Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                         ScreenSize: 'Phablet',
                                         Profile: {
-                                            Name: 'Admin',
+                                            Name: userTypeIDArr[0],
                                         },
                                     },
                                     Fields: [],
@@ -336,7 +379,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Phablet',
                                 Profile: {
-                                    Name: 'Admin',
+                                    Name: userTypeIDArr[0],
                                 },
                             },
                             Fields: [],
@@ -354,7 +397,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Title: testDataViewTitle,
                             Hidden: false,
                         });
-                        expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Admin');
+                        expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql(userTypeIDArr[0]);
                         expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
                         expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
                             `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
@@ -384,7 +427,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Phablet',
                                 Profile: {
-                                    Name: 'Admin',
+                                    Name: userTypeIDArr[0],
                                 },
                             },
                             Fields: [],
@@ -424,7 +467,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Title: testDataViewNewTitle,
                             Hidden: false,
                         });
-                        expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql('Admin');
+                        expect(getDataViewResponseObj[0]['Context' as any].Profile.Name).to.eql(userTypeIDArr[0]);
                         expect(getDataViewResponseObj[0]['Context' as any].Profile.InternalID).to.be.above(0);
                         expect(getDataViewResponseObj[0]['Context' as any].Name).to.eql(
                             postUpdatedDataViewResponseObj['Context' as any].Name,
@@ -454,14 +497,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    //InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    //InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -475,12 +518,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Hidden: false,
                         });
                         expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                        expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                            transactionsTypeArr[transactionsTypeArr[0]],
+                        );
+                        expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                         expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
                         expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                        expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                            userTypeIDArr[userTypeIDArr[1]],
+                        );
+                        expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                         expect(testDataView.CreationDateTime).to.contain('20');
                         expect(testDataView.CreationDateTime).to.contain('T');
                         expect(testDataView.CreationDateTime).to.contain('Z');
@@ -498,14 +545,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    //Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    //Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -519,12 +566,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Hidden: false,
                         });
                         expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                        expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                            transactionsTypeArr[transactionsTypeArr[0]],
+                        );
+                        expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                         expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
                         expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                        expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                            userTypeIDArr[userTypeIDArr[1]],
+                        );
+                        expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                         expect(testDataView.CreationDateTime).to.contain('20');
                         expect(testDataView.CreationDateTime).to.contain('T');
                         expect(testDataView.CreationDateTime).to.contain('Z');
@@ -542,14 +593,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    //InternalID: 67773,
-                                    Name: 'Rep',
+                                    //InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -563,12 +614,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Hidden: false,
                         });
                         expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                        expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                            transactionsTypeArr[transactionsTypeArr[0]],
+                        );
+                        expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                         expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
                         expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                        expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                            userTypeIDArr[userTypeIDArr[1]],
+                        );
+                        expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                         expect(testDataView.CreationDateTime).to.contain('20');
                         expect(testDataView.CreationDateTime).to.contain('T');
                         expect(testDataView.CreationDateTime).to.contain('Z');
@@ -586,14 +641,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    //Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    //Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -607,12 +662,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Hidden: false,
                         });
                         expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                        expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                            transactionsTypeArr[transactionsTypeArr[0]],
+                        );
+                        expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                         expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
                         expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                        expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                            userTypeIDArr[userTypeIDArr[1]],
+                        );
+                        expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                         expect(testDataView.CreationDateTime).to.contain('20');
                         expect(testDataView.CreationDateTime).to.contain('T');
                         expect(testDataView.CreationDateTime).to.contain('Z');
@@ -715,8 +774,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: 'CartBulkMenu',
                                     ScreenSize: 'Tablet',
                                     Profile: {
-                                        InternalID: 67773,
-                                        Name: 'Rep',
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                             } as any),
@@ -735,8 +794,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: 'CartBulkMenu',
                                     ScreenSize: 'Tablet',
                                     Profile: {
-                                        InternalID: 67773,
-                                        Name: 'Rep',
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
                                     },
                                     Object: {},
                                 },
@@ -756,8 +815,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: 'CartBulkMenu',
                                     ScreenSize: 'Tablet',
                                     Profile: {
-                                        InternalID: 67773,
-                                        Name: 'Rep',
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
                                     },
                                     Object: {
                                         Resource: 'transactions',
@@ -779,13 +838,13 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: 'CartBulkMenu',
                                     ScreenSize: 'Tablet',
                                     Profile: {
-                                        InternalID: 67773,
-                                        Name: 'Rep',
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
                                     },
                                     Object: {
                                         Resource: 'transactions',
-                                        InternalID: 268428,
-                                        Name: 'Sales Order',
+                                        InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                        Name: transactionsTypeArr[0],
                                     },
                                 },
                             }),
@@ -803,14 +862,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Context: {
                                     Object: {
                                         Resource: 'transactions',
-                                        InternalID: 268428,
-                                        Name: 'Sales Order',
+                                        InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                        Name: transactionsTypeArr[0],
                                     },
                                     Name: 'Test_Details',
                                     ScreenSize: 'Tablet',
                                     Profile: {
-                                        InternalID: 67773,
-                                        Name: 'Rep',
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                             }),
@@ -826,14 +885,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Context: {
                                     Object: {
                                         Resource: 'transactions',
-                                        InternalID: 268428,
-                                        Name: 'Sales Order',
+                                        InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                        Name: transactionsTypeArr[0],
                                     },
                                     Name: 'Test_Details',
                                     ScreenSize: 'Tablet',
                                     Profile: {
-                                        InternalID: 67773,
-                                        Name: 'Rep',
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                                 Fields: [],
@@ -850,14 +909,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [
@@ -876,12 +935,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Hidden: false,
                         });
                         expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                        expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                            transactionsTypeArr[transactionsTypeArr[0]],
+                        );
+                        expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                         expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
                         expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                        expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                            userTypeIDArr[userTypeIDArr[1]],
+                        );
+                        expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                         expect(testDataView.CreationDateTime).to.contain('20');
                         expect(testDataView.CreationDateTime).to.contain('T');
                         expect(testDataView.CreationDateTime).to.contain('Z');
@@ -904,14 +967,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Context: {
                             Object: {
                                 Resource: 'activities',
-                                InternalID: 271932,
-                                Name: 'Daily deposit',
+                                InternalID: activitiesTypeArr[activitiesTypeArr[0]],
+                                Name: activitiesTypeArr[0],
                             },
                             Name: 'Testing_Map_123456',
                             ScreenSize: 'Tablet',
                             Profile: {
-                                InternalID: 67773,
-                                Name: 'Rep',
+                                InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [
@@ -955,12 +1018,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Hidden: false,
                     });
                     expect(testDataView['Context' as any].Object.Resource).to.be.eql('activities');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271932);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('Daily deposit');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                        activitiesTypeArr[activitiesTypeArr[0]],
+                    );
+                    expect(testDataView['Context' as any].Object.Name).to.eql(activitiesTypeArr[0]);
                     expect(testDataView['Context' as any].Name).to.eql('Testing_Map_123456');
                     expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                        userTypeIDArr[userTypeIDArr[1]],
+                    );
+                    expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -989,14 +1056,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Context: {
                             Object: {
                                 Resource: 'activities',
-                                InternalID: 271932,
-                                Name: 'Daily deposit',
+                                InternalID: activitiesTypeArr[activitiesTypeArr[0]],
+                                Name: activitiesTypeArr[0],
                             },
                             Name: 'Testing_Grid_123456',
                             ScreenSize: 'Tablet',
                             Profile: {
-                                InternalID: 67773,
-                                Name: 'Rep',
+                                InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [
@@ -1069,12 +1136,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         MinimumColumnWidth: 0,
                     });
                     expect(testDataView['Context' as any].Object.Resource).to.be.eql('activities');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271932);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('Daily deposit');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                        activitiesTypeArr[activitiesTypeArr[0]],
+                    );
+                    expect(testDataView['Context' as any].Object.Name).to.eql(activitiesTypeArr[0]);
                     expect(testDataView['Context' as any].Name).to.eql('Testing_Grid_123456');
                     expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                        userTypeIDArr[userTypeIDArr[1]],
+                    );
+                    expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -1095,39 +1166,41 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                     });
                 });
 
-                it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
-                    const testDataViewArr: DataView[] = await service.getDataViews({
-                        where: 'InternalID = 4067228',
-                        include_deleted: 1,
+                if (service.getServer().includes('Sandbox') ? true : false) {
+                    it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
+                        const testDataViewArr: DataView[] = await service.getDataViews({
+                            where: 'InternalID = 4067228',
+                            include_deleted: true,
+                        });
+                        const testDataView = testDataViewArr[0];
+                        expect(testDataView).to.include({
+                            InternalID: 4067228,
+                            Type: 'Menu',
+                            Title: 'Rep', //userTypeIDArr[1], //Need to fix this Oren
+                            Hidden: true,
+                        });
+                        expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                        expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271439);
+                        expect(testDataView['Context' as any].Object.Name).to.eql('new');
+                        expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                        expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                        expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773); //userTypeIDArr[userTypeIDArr[1]]); //Need to fix this Oren
+                        expect(testDataView['Context' as any].Profile.Name).to.eql('Rep'); //userTypeIDArr[1]); //Need to fix this Oren
+                        expect(testDataView.CreationDateTime).to.contain('20');
+                        expect(testDataView.CreationDateTime).to.contain('T');
+                        expect(testDataView.CreationDateTime).to.contain('Z');
+                        expect(testDataView.ModificationDateTime).to.contain('Z');
+                        expect(testDataView.Fields).to.be.an('array');
+                        expect(testDataView['Fields' as any][0]).to.include({
+                            FieldID: 'Delete',
+                            Title: 'Delete',
+                        });
+                        expect(testDataView['Fields' as any][1]).to.include({
+                            FieldID: 'Edit',
+                            Title: 'Edit',
+                        });
                     });
-                    const testDataView = testDataViewArr[0];
-                    expect(testDataView).to.include({
-                        InternalID: 4067228,
-                        Type: 'Menu',
-                        Title: 'Rep',
-                        Hidden: true,
-                    });
-                    expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271439);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('new');
-                    expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
-                    expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
-                    expect(testDataView.CreationDateTime).to.contain('20');
-                    expect(testDataView.CreationDateTime).to.contain('T');
-                    expect(testDataView.CreationDateTime).to.contain('Z');
-                    expect(testDataView.ModificationDateTime).to.contain('Z');
-                    expect(testDataView.Fields).to.be.an('array');
-                    expect(testDataView['Fields' as any][0]).to.include({
-                        FieldID: 'Delete',
-                        Title: 'Delete',
-                    });
-                    expect(testDataView['Fields' as any][1]).to.include({
-                        FieldID: 'Edit',
-                        Title: 'Edit',
-                    });
-                });
+                }
 
                 it('Upsert Data View (Large) (DI-16874)', async () => {
                     const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
@@ -1138,14 +1211,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Context: {
                             Object: {
                                 Resource: 'transactions',
-                                InternalID: 268428,
-                                Name: 'Sales Order',
+                                InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                Name: transactionsTypeArr[0],
                             },
                             Name: 'OrderCenterVariant',
                             ScreenSize: 'Tablet',
                             Profile: {
-                                InternalID: 67773,
-                                Name: 'Rep',
+                                InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [],
@@ -1161,12 +1234,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Hidden: false,
                     });
                     expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+                    expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                     expect(testDataView['Context' as any].Name).to.eql('OrderCenterVariant');
                     expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                        userTypeIDArr[userTypeIDArr[1]],
+                    );
+                    expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -1189,14 +1266,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Context: {
                             Object: {
                                 Resource: 'transactions',
-                                InternalID: 268428,
-                                Name: 'Sales Order',
+                                InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                Name: transactionsTypeArr[0],
                             },
                             Name: 'Line_Creation_Test',
                             ScreenSize: 'Tablet',
                             Profile: {
-                                InternalID: 67773,
-                                Name: 'Rep',
+                                InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [],
@@ -1212,12 +1289,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Hidden: false,
                     });
                     expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+                    expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                     expect(testDataView['Context' as any].Name).to.eql('Line_Creation_Test');
                     expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                        userTypeIDArr[userTypeIDArr[1]],
+                    );
+                    expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -1240,14 +1321,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Context: {
                             Object: {
                                 Resource: 'transactions',
-                                InternalID: 268428,
-                                Name: 'Sales Order',
+                                InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                Name: transactionsTypeArr[0],
                             },
                             Name: 'CardsGrid_Creation_Test',
                             ScreenSize: 'Tablet',
                             Profile: {
-                                InternalID: 67773,
-                                Name: 'Rep',
+                                InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [],
@@ -1263,12 +1344,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Hidden: false,
                     });
                     expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(268428);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('Sales Order');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+                    expect(testDataView['Context' as any].Object.Name).to.eql(transactionsTypeArr[0]);
                     expect(testDataView['Context' as any].Name).to.eql('CardsGrid_Creation_Test');
                     expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                        userTypeIDArr[userTypeIDArr[1]],
+                    );
+                    expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -1291,12 +1376,12 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Context: {
                             Object: {
                                 Resource: 'activities',
-                                InternalID: 271932,
+                                InternalID: activitiesTypeArr[activitiesTypeArr[0]],
                             },
                             Name: 'Oren_Test_12345',
                             ScreenSize: 'Landscape',
                             Profile: {
-                                InternalID: 67773,
+                                InternalID: userTypeIDArr[userTypeIDArr[1]],
                             },
                         },
                     });
@@ -1308,12 +1393,16 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         Hidden: false,
                     });
                     expect(testDataView['Context' as any].Object.Resource).to.be.eql('activities');
-                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271932);
-                    expect(testDataView['Context' as any].Object.Name).to.eql('Daily deposit');
+                    expect(testDataView['Context' as any].Object.InternalID).to.be.eql(
+                        activitiesTypeArr[activitiesTypeArr[0]],
+                    );
+                    expect(testDataView['Context' as any].Object.Name).to.eql(activitiesTypeArr[0]);
                     expect(testDataView['Context' as any].Name).to.eql('Oren_Test_12345');
                     expect(testDataView['Context' as any].ScreenSize).to.eql('Landscape');
-                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773);
-                    expect(testDataView['Context' as any].Profile.Name).to.eql('Rep');
+                    expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(
+                        userTypeIDArr[userTypeIDArr[1]],
+                    );
+                    expect(testDataView['Context' as any].Profile.Name).to.eql(userTypeIDArr[1]);
                     expect(testDataView.CreationDateTime).to.contain('20');
                     expect(testDataView.CreationDateTime).to.contain('T');
                     expect(testDataView.CreationDateTime).to.contain('Z');
@@ -1333,7 +1422,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`, //(#Negative).replace(/ /gi, '_'),
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1355,7 +1444,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: undefined, //(#Negative)'Rep',
+                                    Name: undefined, //(#Negative)userTypeIDArr[userTypeIDArr[1]],
                                 },
                             },
                             Fields: [],
@@ -1377,7 +1466,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1397,7 +1486,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: undefined as any, //(#Negative)'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1419,7 +1508,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1439,7 +1528,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'ActivityProfilePermission',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1462,7 +1551,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'ActivityProfilePermission',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1486,7 +1575,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'ActivityProfilePermission',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    InternalID: 67778,
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
                                 },
                             },
                             Fields: [],
@@ -1505,12 +1594,12 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'activities',
-                                    Name: 'Photo',
+                                    Name: 'activitiesTypeArr[0]',
                                 },
                                 Name: 'ActivityProfilePermission ',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1529,12 +1618,12 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'activities',
-                                    Name: 'Photo',
+                                    Name: 'activitiesTypeArr[0]',
                                 },
                                 Name: 'WebAppMainBar',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1554,7 +1643,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'ActivityProfilePermission',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: undefined, //(#Negative)'Rep',
+                                    Name: undefined, //(#Negative)userTypeIDArr[userTypeIDArr[1]],
                                 },
                             },
                             Fields: [],
@@ -1574,7 +1663,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1592,7 +1681,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'ActivityProfilePermission',
                                 ScreenSize: undefined as any, //(#Negative)'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1612,7 +1701,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'ActivityProfilePermission',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1633,7 +1722,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                             ScreenSize: 'Tablet',
                             Profile: {
-                                Name: 'Rep',
+                                Name: userTypeIDArr[1],
                             },
                         },
                         Fields: [],
@@ -1653,16 +1742,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: postDataViewResponseObj['Context' as any].Name,
                                 ScreenSize: 'Phablet',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                         }),
                     ).eventually.to.be.rejectedWith(
                         `Failed due to exception: The Context sent does not match the existing Context. Expected: {\\"Name\\":\\"${
                             postDataViewResponseObj['Context' as any].Name
-                        }\\",\\"ScreenSize\\":\\"Phablet\\",\\"Profile\\":{\\"InternalID\\":67773,\\"Name\\":\\"Rep\\"}}, Actual: {\\"Name\\":\\"${
-                            postDataViewResponseObj['Context' as any].Name
-                        }\\",\\"ScreenSize\\":\\"Tablet\\",\\"Profile\\":{\\"InternalID\\":67773}}`,
+                        }\\",\\"ScreenSize\\":\\"Phablet\\",`,
                     );
                 });
 
@@ -1680,8 +1767,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: 'OrderCartSmartSearch',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1702,7 +1789,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                     ScreenSize: 'Landscape',
                                     Profile: {
-                                        Name: 'Rep',
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                                 Fields: [],
@@ -1723,7 +1810,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                     Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                                     ScreenSize: 'Landscape',
                                     Profile: {
-                                        Name: 'Rep',
+                                        Name: userTypeIDArr[1],
                                     },
                                 },
                                 Fields: [],
@@ -1750,7 +1837,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: '',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1772,7 +1859,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: '',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1794,7 +1881,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                                 Name: '',
                                 ScreenSize: 'Phablet',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1816,12 +1903,12 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    Name: 'Sales Order',
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'OrderViewsMenu',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1843,12 +1930,12 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    Name: 'Sales Order',
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'OrderViewsMenu',
                                 ScreenSize: 'Landscape',
                                 Profile: {
-                                    Name: 'Rep',
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -1867,14 +1954,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [
@@ -1898,14 +1985,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'CartBulkMenu',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [
@@ -1929,14 +2016,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'activities',
-                                    InternalID: 271932,
-                                    Name: 'Daily deposit',
+                                    InternalID: activitiesTypeArr[activitiesTypeArr[0]],
+                                    Name: activitiesTypeArr[0],
                                 },
                                 Name: 'Testing_Map_123456',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [
@@ -1985,14 +2072,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'activities',
-                                    InternalID: 271932,
-                                    Name: 'Daily deposit',
+                                    InternalID: activitiesTypeArr[activitiesTypeArr[0]],
+                                    Name: activitiesTypeArr[0],
                                 },
                                 Name: 'Testing_Grid_123456',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [
@@ -2045,14 +2132,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'activities',
-                                    InternalID: 271932,
-                                    Name: 'Daily deposit',
+                                    InternalID: activitiesTypeArr[activitiesTypeArr[0]],
+                                    Name: activitiesTypeArr[0],
                                 },
                                 Name: 'Testing_Grid_123456',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [
@@ -2126,14 +2213,14 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Context: {
                                 Object: {
                                     Resource: 'transactions',
-                                    InternalID: 268428,
-                                    Name: 'Sales Order',
+                                    InternalID: transactionsTypeArr[transactionsTypeArr[0]],
+                                    Name: transactionsTypeArr[0],
                                 },
                                 Name: 'Large_Creation_Test',
                                 ScreenSize: 'Tablet',
                                 Profile: {
-                                    InternalID: 67773,
-                                    Name: 'Rep',
+                                    InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                    Name: userTypeIDArr[1],
                                 },
                             },
                             Fields: [],
@@ -2156,7 +2243,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                             ScreenSize: 'Phablet',
                             Profile: {
-                                Name: 'Admin',
+                                Name: userTypeIDArr[0],
                             },
                         },
                         Fields: [],
