@@ -18,7 +18,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         service.postFileToStorage({
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
-                            Description: '',
                             Content: service.createTestDataInBase64Format(),
                         }),
                     )
@@ -34,16 +33,16 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     const created = await service.postFileToStorage({
                         Title: testDataFileName,
                         FileName: testDataFileName + '.txt',
-                        Description: '',
                         Content: service.createTestDataInBase64Format(),
                     });
 
-                    const getFileResponseObj = await service.getFilesFromStorage(`InternalID=${created.InternalID}`);
+                    const getFileResponseObj = await service.getFilesFromStorage({
+                        where: `InternalID=${created.InternalID}`,
+                    });
                     return expect(getFileResponseObj[0]).to.include({
                         Title: testDataFileName,
                         InternalID: created.InternalID,
                         FileName: testDataFileName + '.txt',
-                        Description: '',
                     });
                 });
             });
@@ -55,14 +54,13 @@ export async function FileStorageTests(generalService: GeneralService, describe,
             describe('Positive', () => {
                 describe('CRUD One File Using The File Storage in Base64', () => {
                     it('Add file to the file storage', async () => {
-                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
                         const testDataFileName: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         return Promise.all([
                             await expect(
                                 service.postFileToStorage({
                                     Title: testDataFileName,
                                     FileName: testDataFileName + '.txt',
-                                    Description: '',
                                     Content: service.createTestDataInBase64Format(),
                                 }),
                             )
@@ -70,7 +68,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                                 .a('number')
                                 .above(0),
 
-                            expect(await service.getFilesFromStorage())
+                            expect(await service.getFilesFromStorage({ page_size: -1 }))
                                 .to.be.an('array')
                                 .with.lengthOf(allfilesBefore.length + 1),
                         ]);
@@ -82,7 +80,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                             service.postFileToStorage({
                                 Title: testDataFileName,
                                 FileName: testDataFileName + '.txt',
-                                Description: '',
                                 Content: service.createTestDataInBase64Format(),
                             }),
                         )
@@ -90,13 +87,14 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                             .a('number')
                             .above(0);
 
-                        const fileObjectArr = await service.getFilesFromStorage(`Title='${testDataFileName}'`);
+                        const fileObjectArr = await service.getFilesFromStorage({
+                            where: `Title='${testDataFileName}'`,
+                        });
 
                         expect(fileObjectArr[0].InternalID).to.be.above(0);
                         expect(fileObjectArr[0]).to.include({
                             Configuration: null,
                             Content: null,
-                            Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
                             FileName: testDataFileName + '.txt',
                             Hidden: false,
                             IsSync: false,
@@ -114,19 +112,18 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let testDataFileName: string;
                     it('Create file in the file storage', async () => {
                         //Get the current (before) files from the File Storage
-                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage
                         testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         await service.postFileToStorage({
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
-                            Description: '',
                             Content: service.createTestDataInBase64Format(),
                         });
 
                         //Get the current (after) files from the File Storage
-                        await expect((allFilesAfter = await service.getFilesFromStorage()))
+                        await expect((allFilesAfter = await service.getFilesFromStorage({ page_size: -1 })))
                             .to.be.an('array')
                             .with.lengthOf(allfilesBefore.length + 1);
 
@@ -143,7 +140,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         expect(fileObject).to.include({
                             Configuration: null,
                             Content: null,
-                            Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
                             FileName: testDataFileName + '.txt',
                             Hidden: false,
                             IsSync: false,
@@ -171,7 +167,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         expect(fileObject).to.include({
                             Configuration: null,
                             Content: null,
-                            Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
+                            //Description: 'Test Description', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
                             FileName: testDataFileName + '.txt',
                             Hidden: false,
                             IsSync: false,
@@ -190,7 +186,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         //Get the created file content
                         uriStr = fileObject.URL as any;
                         const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
                         expect(fileContent).to.contain('ABCD');
                     });
 
@@ -216,7 +211,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         await service.postFileToStorage(updatedFileObject);
 
                         //Get the current (after the update) files from the File Storage
-                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
 
                         let updatedFileObjectNewUrl;
                         for (let index = 0; index < allFilesAfter.length; index++) {
@@ -272,7 +267,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it('Delete the new file', async () => {
                         //Get the current (after) files from the File Storage
-                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
@@ -290,14 +285,13 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let testDataFileName: string;
                     it('Create file in the file storage', async () => {
                         //Get the current (before) files from the File Storage
-                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage with URL
                         testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         await service.postFileToStorage({
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
-                            Description: '',
                             URL:
                                 'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
                         });
@@ -305,7 +299,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         let allFilesAfter: FileStorage[];
 
                         //Get the current (after) files from the File Storage
-                        await expect((allFilesAfter = await service.getFilesFromStorage()))
+                        await expect((allFilesAfter = await service.getFilesFromStorage({ page_size: -1 })))
                             .to.be.an('array')
                             .with.lengthOf(allfilesBefore.length + 1);
 
@@ -323,7 +317,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         expect(fileObject).to.include({
                             Configuration: null,
                             Content: null,
-                            Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
                             FileName: testDataFileName + '.txt',
                             Hidden: false,
                             IsSync: false,
@@ -352,7 +345,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it('Delete the new file', async () => {
                         //Get the current (after) files from the File Storage
-                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
@@ -371,19 +364,18 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let fileObject: FileStorage;
                     it('Create file in the file storage', async () => {
                         //Get the current (before) files from the File Storage
-                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage with URL
                         testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         await service.postFileToStorage({
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
-                            Description: '',
                             Content: service.createTestDataInBase64Format(),
                             IsSync: true,
                         });
                         //Get the current (after) files from the File Storage
-                        return expect((allFilesAfter = await service.getFilesFromStorage()))
+                        return expect((allFilesAfter = await service.getFilesFromStorage({ page_size: -1 })))
                             .to.be.an('array')
                             .with.lengthOf(allfilesBefore.length + 1);
                     });
@@ -406,7 +398,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         expect(fileObject).to.include({
                             Configuration: null,
                             Content: null,
-                            Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
                             FileName: testDataFileName + '.txt',
                             Hidden: false,
                             IsSync: true,
@@ -431,7 +422,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it('Delete the new file', async () => {
                         //Get the current (after) files from the File Storage
-                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
@@ -449,20 +440,19 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let allFilesAfter: FileStorage[];
                     it('Create file in the file storage', async () => {
                         //Get the current (before) files from the File Storage
-                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage();
+                        const allfilesBefore: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage with URL
                         testDataFileName = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         await service.postFileToStorage({
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
-                            Description: '',
                             Content: service.createTestDataInBase64Format(),
                             URL:
                                 'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
                         });
                         //Get the current (after) files from the File Storage
-                        return expect((allFilesAfter = await service.getFilesFromStorage()))
+                        return expect((allFilesAfter = await service.getFilesFromStorage({ page_size: -1 })))
                             .to.be.an('array')
                             .with.lengthOf(allfilesBefore.length + 1);
                     });
@@ -481,7 +471,6 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         expect(fileObject).to.include({
                             Configuration: null,
                             Content: null,
-                            Description: '', //undefined //TODO: Wait for ido to decide - DB cant contian undefined
                             FileName: testDataFileName + '.txt',
                             Hidden: false,
                             IsSync: false,
@@ -505,7 +494,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it('Delete the new file', async () => {
                         //Get the current (after) files from the File Storage
-                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage();
+                        const allFilesAfter: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
@@ -524,14 +513,13 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let allfilesBefore: FileStorage[];
                     it('Correct exception message for Title', async () => {
                         //Get the current (before) files from the File Storage
-                        allfilesBefore = await service.getFilesFromStorage();
+                        allfilesBefore = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage without Title
                         const testDataFileName: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         return expect(
                             service.postFileToStorage({
                                 FileName: testDataFileName + '.txt',
-                                Description: '',
                                 Content: service.createTestDataInBase64Format(),
                             } as any),
                         ).to.be.rejectedWith('The mandatory property \\"Title\\" can\'t be ignore.');
@@ -539,7 +527,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it("Don't Create file in the file storage", async () => {
                         //Get the current (after) files from the File Storage
-                        return expect(service.getFilesFromStorage())
+                        return expect(service.getFilesFromStorage({ page_size: -1 }))
                             .eventually.to.be.an('array')
                             .with.lengthOf(allfilesBefore.length);
                     });
@@ -549,14 +537,13 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let allfilesBefore: FileStorage[];
                     it('Correct exception message for FileName', async () => {
                         //Get the current (before) files from the File Storage
-                        allfilesBefore = await service.getFilesFromStorage();
+                        allfilesBefore = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage without FileName
                         const testDataFileName: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         return expect(
                             service.postFileToStorage({
                                 Title: testDataFileName + '.txt',
-                                Description: '',
                                 Content: service.createTestDataInBase64Format(),
                             } as any),
                         ).to.be.rejectedWith('The mandatory property \\"FileName\\" can\'t be ignore.');
@@ -564,7 +551,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it("Don't Create file in the file storage", async () => {
                         //Get the current (after) files from the File Storage
-                        return expect(service.getFilesFromStorage())
+                        return expect(service.getFilesFromStorage({ page_size: -1 }))
                             .eventually.to.be.an('array')
                             .with.lengthOf(allfilesBefore.length);
                     });
@@ -574,12 +561,11 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     let allfilesBefore: FileStorage[];
                     it('Correct exception message for mandatory properties', async () => {
                         //Get the current (before) files from the File Storage
-                        allfilesBefore = await service.getFilesFromStorage();
+                        allfilesBefore = await service.getFilesFromStorage({ page_size: -1 });
 
                         //Add file to the File Storage without any Mandatory
                         return expect(
                             service.postFileToStorage({
-                                Description: '',
                                 Content: service.createTestDataInBase64Format(),
                             } as any),
                         ).to.be.rejectedWith('The mandatory properties \\"Title\\", \\"FileName\\" can\'t be ignore.');
@@ -587,7 +573,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                     it("Don't Create file in the file storage", async () => {
                         //Get the current (after) files from the File Storage
-                        return expect(service.getFilesFromStorage())
+                        return expect(service.getFilesFromStorage({ page_size: -1 }))
                             .eventually.to.be.an('array')
                             .with.lengthOf(allfilesBefore.length);
                     });
@@ -602,7 +588,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 //Service Functions
 //Remove all test files from Files Storage
 async function TestCleanUp(service: FileStorageService) {
-    const allfilesObject: FileStorage[] = await service.getFilesFromStorage();
+    const allfilesObject: FileStorage[] = await service.getFilesFromStorage({ page_size: -1 });
     let deletedCounter = 0;
     for (let index = 0; index < allfilesObject.length; index++) {
         if (

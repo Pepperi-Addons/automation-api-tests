@@ -1,6 +1,6 @@
 {
     "name": "test",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "",
     "main": "api.ts",
     "types": "",
@@ -17,14 +17,16 @@
         "lint": "eslint --ext .ts .",
         "fix-lint": "eslint --ext .ts . --fix",
         "learn": "ts-mocha ./learn/baseTestExample.ts",
-        "learna": "ts-mocha ./learn/orenAsyncExecution.ts"
+        "learn-p": "ts-mocha --reporter mochawesome ./learn/baseTestParallelExample.ts",
+        "learn-i": "ts-mocha --j 4 --p false ./learn/intervalTestExample.ts",
+        "learn-ip": "ts-mocha --reporter mochawesome --timeout 1200000 ./learn/intervalTestParallelExample.ts"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
         "@rollup/plugin-node-resolve": "^8.0.0",
         "@types/chai-as-promised": "^7.1.2",
         "@types/dotenv": "^8.2.0",
-        "@types/mocha": "^7.0.2",
+        "@types/mocha": "^8.0.3",
         "@types/node": "^10.17.24",
         "@types/node-fetch": "^2.5.7",
         "@typescript-eslint/eslint-plugin": "^3.5.0",
@@ -41,11 +43,11 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "0.0.24",
-        "@pepperi-addons/papi-sdk": "^1.14.3",
+        "@pepperi-addons/papi-sdk": "^1.16.0",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
-        "mocha": "^7.2.0",
+        "mocha": "^8.1.3",
         "mochawesome": "^6.1.1",
         "node-fetch": "^2.6.0",
         "ts-mocha": "^7.0.0"

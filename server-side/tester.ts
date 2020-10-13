@@ -7,15 +7,22 @@ import Mochawesome from 'mochawesome';
 
 chai.use(promised);
 
-export default function Tester() {
-    const mochaDir = '/tmp/mochawesome-results-' + new Date().toISOString().replace(/\.|\:/g, '-');
+export default function Tester(testName?: string, environment?: string) {
+    const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
+        environment ? environment : 'Default'
+    }-Tests-Results-${new Date()
+        .toISOString()
+        .substring(0, 16)
+        .replace(/-/g, '.')
+        .replace(/:/g, '_')
+        .replace(/T/g, 'T_')}`;
     const fileName = 'report';
     const mocha = new Mocha({
         reporter: Mochawesome,
         reporterOptions: {
             reportDir: mochaDir,
             reportFilename: fileName,
-            html: false,
+            html: true,
             consoleReporter: 'none',
         },
         timeout: 1200000,

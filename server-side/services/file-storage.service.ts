@@ -1,5 +1,15 @@
 import { PapiClient, FileStorage } from '@pepperi-addons/papi-sdk';
-
+interface FindOptions {
+    fields?: string[];
+    where?: string;
+    orderBy?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
 export class FileStorageService {
     constructor(public papiClient: PapiClient) {}
 
@@ -9,18 +19,12 @@ export class FileStorageService {
     }
 
     //Files Storage API Calls
-    getFilesFromStorage(where?: string) {
-        return this.papiClient.fileStorage.find({
-            where,
-        });
+    getFilesFromStorage(options?: FindOptions) {
+        return this.papiClient.fileStorage.find(options);
     }
 
-    getAllFilesFromStorage(where?: string) {
-        return this.papiClient.fileStorage
-            .iter({
-                where,
-            })
-            .toArray();
+    getAllFilesFromStorage(options?: FindOptions) {
+        return this.papiClient.fileStorage.iter(options).toArray();
     }
 
     postFileToStorage(body: FileStorage) {

@@ -1,4 +1,4 @@
-import { PapiClient, InstalledAddon } from '@pepperi-addons/papi-sdk';
+import { PapiClient, InstalledAddon, Catalog } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 
 declare type ClientData =
@@ -19,6 +19,8 @@ const UserDataObject = {
     DistributorUUID: 'pepperi.distributoruuid',
     Server: 'pepperi.datacenter',
 };
+
+declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
 export default class GeneralService {
     papiClient: PapiClient;
@@ -61,12 +63,24 @@ export default class GeneralService {
     };
     //#endregion getDate
 
+    getServer() {
+        return this.client.BaseURL.includes('staging') ? 'Sandbox' : 'Production';
+    }
+
     getClientData(data: ClientData): string {
         return parseJwt(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
 
     getAddons(): Promise<InstalledAddon[]> {
         return this.papiClient.addons.installedAddons.find({});
+    }
+
+    getCatalogs(): Promise<Catalog[]> {
+        return this.papiClient.catalogs.find({});
+    }
+
+    getTypes(resource_name: ResourceTypes) {
+        return this.papiClient.metaData.type(resource_name).types.get();
     }
 }
 

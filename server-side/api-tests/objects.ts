@@ -346,7 +346,7 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
         describe('Accounts', () => {
             it('POST/UPDATE/DELETE account', async () => {
                 const createdTSAs = await service.createBulkTSA('accounts', TSAarr);
-                console.log('The following fields were created:\n' + createdTSAs);
+                console.log('The following fields created:\n' + createdTSAs);
                 const accountExternalID: string = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
 
                 const createdAccount = await service.createAccount({
@@ -403,7 +403,9 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                     TSASingleLineAPI: 'Random text',
                 } as any);
 
-                const getCreatedAccount = (await service.getAccounts(`InternalID=${createdAccount.InternalID}`)) as any;
+                const getCreatedAccount = (await service.getAccounts({
+                    where: `InternalID=${createdAccount.InternalID}`,
+                })) as any;
 
                 return Promise.all([
                     expect(getCreatedAccount[0]).to.include({
@@ -560,7 +562,7 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                     //     }),
                     expect(await service.deleteAccount(createdAccount.InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(createdAccount.InternalID as any)).to.be.false,
-                    expect(await service.getAccounts(`InternalID=${createdAccount.InternalID}`))
+                    expect(await service.getAccounts({ where: `InternalID=${createdAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0),
                     expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true,

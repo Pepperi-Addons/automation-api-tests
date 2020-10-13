@@ -1,5 +1,17 @@
 import { PapiClient, Account, ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
+interface FindOptions {
+    fields?: string[];
+    where?: string;
+    orderBy?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
+
 export class ObjectsService {
     constructor(public papiClient: PapiClient) {}
 
@@ -7,18 +19,12 @@ export class ObjectsService {
         return this.papiClient.accounts.upsert(body);
     }
 
-    getAccounts(where?: string) {
-        return this.papiClient.accounts.find({
-            where,
-        });
+    getAccounts(options?: FindOptions) {
+        return this.papiClient.accounts.find(options);
     }
 
-    getAllAccounts(where?: string) {
-        return this.papiClient.accounts
-            .iter({
-                where,
-            })
-            .toArray();
+    getAllAccounts(options?: FindOptions) {
+        return this.papiClient.accounts.iter(options).toArray();
     }
 
     deleteAccount(accountID: number) {

@@ -29,11 +29,11 @@ export async function TestData(generalService: GeneralService, describe, expect,
     }
 
     describe('Test Data', async () => {
-        it(`Start Test Date And Time: \xa0\xa0\xa0\xa0\xa0 ${service.getDate()} \xa0\xa0\xa0\xa0 ${service.getTime()}`, () => {
+        it(`Start Test Server Time And Date: \xa0\xa0\xa0\xa0 ${service.getServer()} \xa0\xa0\xa0\xa0 ${service.getTime()} \xa0\xa0\xa0\xa0 ${service.getDate()}`, () => {
             expect(service.getDate().length == 10 && service.getTime().length == 8).to.be.true;
         });
 
-        it(`Tested User: \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 ${service.getClientData(
+        it(`Tested User: \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 ${service.getClientData(
             'UserEmail',
         )} \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 UserID: \xa0${service.getClientData(
             'UserID',
