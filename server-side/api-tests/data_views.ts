@@ -5,6 +5,7 @@ import { DataView } from '@pepperi-addons/papi-sdk';
 // All Data Views Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
 export async function DataViewsTests(generalService: GeneralService, describe, expect, it) {
     const service = new DataViewsService(generalService.papiClient);
+    const clientService = generalService;
 
     //Prerequisites Test Data
     const transactionsTypeArr = [] as any;
@@ -1166,7 +1167,7 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                     });
                 });
 
-                if (service.getServer().includes('Sandbox') ? true : false) {
+                if (clientService.getClientData('UserEmail').includes('oren.v@')) {
                     it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
                         const testDataViewArr: DataView[] = await service.getDataViews({
                             where: 'InternalID = 4067228',
