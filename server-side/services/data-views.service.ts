@@ -13,10 +13,6 @@ interface FindOptions {
 export class DataViewsService {
     constructor(public papiClient: PapiClient) {}
 
-    getServer() {
-        return this.papiClient['options'].baseURL.includes('staging') ? 'Sandbox' : 'Production';
-    }
-
     getDataViewByID(id: number) {
         return this.papiClient.metaData.dataViews.get(id);
     }
