@@ -15,6 +15,7 @@ let isSkipMechanisem = false;
 let isSkipMechanisemHundredGets = false;
 let isSkipMechanisemHundredPuts = false;
 let isGetResync = false;
+let isPutResync = false;
 
 let _localData;
 let _agentExternalID;
@@ -24,6 +25,7 @@ let _catalogExternalID;
 export async function SyncAllTests(generalService: GeneralService, describe, expect, it) {
     isSkipMechanisem = true;
     isGetResync = false;
+    isPutResync = true;
     isSkipMechanisemHundredGets = false;
     isSkipMechanisemHundredPuts = false;
     await SyncTests(generalService, describe, expect, it);
@@ -204,25 +206,27 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                 return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
             });
 
-            it('Resync Put Data Members Validation', async () => {
-                //Creating a sync that will be stuck
-                const testBody = {} as SyncBody;
-                Object.assign(testBody, _body);
-                testBody['LocalDataUpdates' as any] = null;
-                testBody['LocalDataUpdates' as any] += 'Bug';
-                testBody.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
-                testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
-                const responseOfSyncWithError: TestObject = await syncStuckValidation(testBody);
-                if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
-                    return expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
-                }
-                //Forcing resync with the same sync data that got stuck
-                testBody.LastSyncDateTime = 0;
-                const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(testBody);
-                if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
-                    return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
-                }
-            });
+            if (isPutResync) {
+                it('Resync Put Data Members Validation', async () => {
+                    //Creating a sync that will be stuck
+                    const testBody = {} as SyncBody;
+                    Object.assign(testBody, _body);
+                    testBody['LocalDataUpdates' as any] = null;
+                    testBody['LocalDataUpdates' as any] += 'Bug';
+                    testBody.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
+                    testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                    const responseOfSyncWithError: TestObject = await syncStuckValidation(testBody);
+                    if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
+                        return expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
+                    }
+                    //Forcing resync with the same sync data that got stuck
+                    testBody.LastSyncDateTime = 0;
+                    const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(testBody);
+                    if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
+                        return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
+                    }
+                });
+            }
 
             if (isGetResync) {
                 it('Resync Get Data Members Validation', async () => {
