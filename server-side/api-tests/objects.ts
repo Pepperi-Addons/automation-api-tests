@@ -344,10 +344,12 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
     // });
     describe('Objects Tests Suites', async () => {
         describe('Accounts', () => {
-            it('POST/UPDATE/DELETE account', async () => {
+            it('CRUD', async () => {
                 const createdTSAs = await service.createBulkTSA('accounts', TSAarr);
                 console.log('The following fields created:\n' + createdTSAs);
                 const accountExternalID: string = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+
+                let updatedAccount;
 
                 const createdAccount = await service.createAccount({
                     ExternalID: accountExternalID,
@@ -452,114 +454,103 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                     expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('sign2.png'),
                     expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
 
-                    // expect(await service.createAccount({
-                    //     ExternalID: "Automated API Test 1",
-                    //     City: "City update",
-                    //     Country: "US",
-                    //     Debts30: 35,
-                    //     Debts60: 65,
-                    //     Debts90: 95,
-                    //     DebtsAbove90: 105,
-                    //     Discount: 15,
-                    //     Email: "Test2@test.com",
-                    //     // Latitude: 8,
-                    //     // Longitude: 12,
-                    //     Mobile: "555-123456",
-                    //     Name: "Automated API Test 5",
-                    //     Note: "Note 5",
-                    //     Phone: "555-43210",
-                    //     Prop1: "Prop 11",
-                    //     Prop2: "Prop 22",
-                    //     Prop3: "Prop 33",
-                    //     Prop4: "Prop 44",
-                    //     Prop5: "Prop 55",
-                    //     State: "CA",
-                    //     Status: 2,
-                    //     Street: "Street 5",
-                    //     Type: "Customer",
-                    //     ZipCode: "1234567",
-                    //     // TSAAttachmentAPI: {
-                    //     //     URL: "http://sandbox.pepperi.com/WrntyImages/30014280/2/1913272/sample.pdf",
-                    //     //     Content: ""
-                    //     // },
-                    //     TSACheckboxAPI: true,
-                    //     TSACurrencyAPI: 15.0,
-                    //     TSADateAPI: "2020-09-05Z",
-                    //     TSADateTimeAPI: "2020-08-25T22:00:00Z",
-                    //     TSADecimalNumberAPI: 5.2,
-                    //     TSADropdownAPI: "1",
-                    //     TSAEmailAPI: "Test@test.com",
-                    //     TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
-                    //     TSAImageAPI: {
-                    //         URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=WrntyImages/30014280/1/1913271/download.png",
-                    //         Content: ""
-                    //     },
-                    //     TSALimitedLineAPI: "Limit text",
-                    //     TSALinkAPI: "https://www.ynet.co.il",
-                    //     TSAMultiChoiceAPI: "C",
-                    //     TSANumberAPI: 2,
-                    //     TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
-                    //     TSAPhoneNumberAPI: "972555432512",
-                    //     TSASignatureAPI: {
-                    //         URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=30014280/Attachments/e442f0a1f9dd4ab289f7c00f6ee11890.png",
-                    //         Content: ""
-                    //     },
-                    //     TSASingleLineAPI: "Random TEXT"
-                    // } as any))
-                    //     .to.be.include({
-                    //         ExternalID: "Automated API Test 1",
-                    //         City: "City update",
-                    //         Country: "US",
-                    //         Debts30: 35,
-                    //         Debts60: 65,
-                    //         Debts90: 95,
-                    //         DebtsAbove90: 105,
-                    //         Discount: 15,
-                    //         Email: "Test2@test.com",
-                    //         // Latitude: 8,
-                    //         // Longitude: 12,
-                    //         Mobile: "555-123456",
-                    //         Name: "Automated API Test 5",
-                    //         Note: "Note 5",
-                    //         Phone: "555-43210",
-                    //         Prop1: "Prop 11",
-                    //         Prop2: "Prop 22",
-                    //         Prop3: "Prop 33",
-                    //         Prop4: "Prop 44",
-                    //         Prop5: "Prop 55",
-                    //         State: "CA",
-                    //         Status: 2,
-                    //         Street: "Street 5",
-                    //         Type: "Customer",
-                    //         ZipCode: "1234567",
-                    //         // TSAAttachmentAPI: {
-                    //         //     URL: "http://sandbox.pepperi.com/WrntyImages/30014280/2/1913272/sample.pdf",
-                    //         //     Content: ""
-                    //         // },
-                    //         TSACheckboxAPI: true,
-                    //         TSACurrencyAPI: 15.0,
-                    //         TSADateAPI: "2020-09-05Z",
-                    //         TSADateTimeAPI: "2020-08-25T22:00:00Z",
-                    //         TSADecimalNumberAPI: 5.2,
-                    //         TSADropdownAPI: "1",
-                    //         TSAEmailAPI: "Test@test.com",
-                    //         TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
-                    //         TSAImageAPI: {
-                    //             URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=WrntyImages/30014280/1/1913271/download.png",
-                    //             Content: ""
-                    //         },
-                    //         TSALimitedLineAPI: "Limit text",
-                    //         TSALinkAPI: "https://www.ynet.co.il",
-                    //         TSAMultiChoiceAPI: "C",
-                    //         TSANumberAPI: 2,
-                    //         TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
-                    //         TSAPhoneNumberAPI: "972555432512",
-                    //         TSASignatureAPI: {
-                    //             URL: "https://sandbox.pepperi.com/Handlers/ResizeImage.ashx?imgPath=30014280/Attachments/e442f0a1f9dd4ab289f7c00f6ee11890.png",
-                    //             Content: ""
-                    //         },
-                    //         TSASingleLineAPI: "Random TEXT"
-                    //     }),
+                   
+                    expect(updatedAccount = await service.createAccount({
+                        ExternalID: accountExternalID,
+                        City: "City update",
+                        Country: "US",
+                        Debts30: 35,
+                        Debts60: 65,
+                        Debts90: 95,
+                        DebtsAbove90: 105,
+                        Discount: 15,
+                        Email: "Test2@test.com",
+                        Mobile: "555-123456",
+                        Name: accountExternalID + " Update",
+                        Note: "Note 5",
+                        Phone: "555-43210",
+                        Prop1: "Prop 11",
+                        Prop2: "Prop 22",
+                        Prop3: "Prop 33",
+                        Prop4: "Prop 44",
+                        Prop5: "Prop 55",
+                        State: "CA",
+                        Status: 2,
+                        Street: "Street 5",
+                        Type: "Customer",
+                        ZipCode: "1234567",
+                        TSAAttachmentAPI: {
+                            URL: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                            Content: ""
+                        },
+                        TSACheckboxAPI: true,
+                        TSACurrencyAPI: 15.0,
+                        TSADateAPI: "2020-09-05Z",
+                        TSADateTimeAPI: "2020-08-25T22:00:00Z",
+                        TSADecimalNumberAPI: 5.2,
+                        TSADropdownAPI: "1",
+                        TSAEmailAPI: "Test@test.com",
+                        TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
+                        TSAImageAPI: {
+                            URL: "https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg",
+                            Content: ""
+                        },
+                        TSALimitedLineAPI: "Limit text",
+                        TSALinkAPI: "https://www.ynet.co.il",
+                        TSAMultiChoiceAPI: "C",
+                        TSANumberAPI: 2,
+                        TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
+                        TSAPhoneNumberAPI: "972555432512",
+                        TSASignatureAPI: {
+                            URL: "https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png",
+                            Content: ""
+                        },
+                        TSASingleLineAPI: "Random TEXT"
+                    } as any))
+                        .to.be.include({
+                            ExternalID: accountExternalID,
+                            City: "City update",
+                            Country: "US",
+                            Debts30: 35,
+                            Debts60: 65,
+                            Debts90: 95,
+                            DebtsAbove90: 105,
+                            Discount: 15,
+                            Email: "Test2@test.com",
+                            Mobile: "555-123456",
+                            Name: accountExternalID + " Update",
+                            Note: "Note 5",
+                            Phone: "555-43210",
+                            Prop1: "Prop 11",
+                            Prop2: "Prop 22",
+                            Prop3: "Prop 33",
+                            Prop4: "Prop 44",
+                            Prop5: "Prop 55",
+                            State: "California",
+                            Status: 2,
+                            Street: "Street 5",
+                            Type: "Customer",
+                            ZipCode: "1234567",
+                            TSACheckboxAPI: true,
+                            TSACurrencyAPI: 15.0,
+                            TSADateAPI: "2020-09-05Z",
+                            TSADateTimeAPI: "2020-08-25T22:00:00Z",
+                            TSADecimalNumberAPI: 5.2,
+                            TSADropdownAPI: "1",
+                            TSAEmailAPI: "Test@test.com",
+                            TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
+                            TSALimitedLineAPI: "Limit text",
+                            TSALinkAPI: "https://www.ynet.co.il",
+                            TSAMultiChoiceAPI: "C",
+                            TSANumberAPI: 2,
+                            TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
+                            TSAPhoneNumberAPI: "972555432512",
+                            TSASingleLineAPI: "Random TEXT"
+                        }),
+                    
+                    expect(updatedAccount.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                    expect(updatedAccount.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                    expect(updatedAccount.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
                     expect(await service.deleteAccount(createdAccount.InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(createdAccount.InternalID as any)).to.be.false,
                     expect(await service.getAccounts({ where: `InternalID=${createdAccount.InternalID}` }))
