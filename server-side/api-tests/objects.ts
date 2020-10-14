@@ -429,110 +429,16 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                     expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('sign2.png'),
                     expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
 
-<<<<<<< HEAD
-                   
-                    expect(updatedAccount = await service.createAccount({
-                        ExternalID: accountExternalID,
-                        City: "City update",
-                        Country: "US",
-                        Debts30: 35,
-                        Debts60: 65,
-                        Debts90: 95,
-                        DebtsAbove90: 105,
-                        Discount: 15,
-                        Email: "Test2@test.com",
-                        Mobile: "555-123456",
-                        Name: accountExternalID + " Update",
-                        Note: "Note 5",
-                        Phone: "555-43210",
-                        Prop1: "Prop 11",
-                        Prop2: "Prop 22",
-                        Prop3: "Prop 33",
-                        Prop4: "Prop 44",
-                        Prop5: "Prop 55",
-                        State: "CA",
-                        Status: 2,
-                        Street: "Street 5",
-                        Type: "Customer",
-                        ZipCode: "1234567",
-                        TSAAttachmentAPI: {
-                            URL: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-                            Content: ""
-                        },
-                        TSACheckboxAPI: true,
-                        TSACurrencyAPI: 15.0,
-                        TSADateAPI: "2020-09-05Z",
-                        TSADateTimeAPI: "2020-08-25T22:00:00Z",
-                        TSADecimalNumberAPI: 5.2,
-                        TSADropdownAPI: "1",
-                        TSAEmailAPI: "Test@test.com",
-                        TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
-                        TSAImageAPI: {
-                            URL: "https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg",
-                            Content: ""
-                        },
-                        TSALimitedLineAPI: "Limit text",
-                        TSALinkAPI: "https://www.ynet.co.il",
-                        TSAMultiChoiceAPI: "C",
-                        TSANumberAPI: 2,
-                        TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
-                        TSAPhoneNumberAPI: "972555432512",
-                        TSASignatureAPI: {
-                            URL: "https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png",
-                            Content: ""
-                        },
-                        TSASingleLineAPI: "Random TEXT"
-                    } as any))
-                        .to.be.include({
-                            ExternalID: accountExternalID,
-                            City: "City update",
-                            Country: "US",
-=======
                     expect(
                         (updatedAccount = await service.createAccount({
                             ExternalID: accountExternalID,
                             City: 'City update',
                             Country: 'US',
->>>>>>> f7fc6301db8b666b27b73f8c8e924a3041e8f6ed
                             Debts30: 35,
                             Debts60: 65,
                             Debts90: 95,
                             DebtsAbove90: 105,
                             Discount: 15,
-<<<<<<< HEAD
-                            Email: "Test2@test.com",
-                            Mobile: "555-123456",
-                            Name: accountExternalID + " Update",
-                            Note: "Note 5",
-                            Phone: "555-43210",
-                            Prop1: "Prop 11",
-                            Prop2: "Prop 22",
-                            Prop3: "Prop 33",
-                            Prop4: "Prop 44",
-                            Prop5: "Prop 55",
-                            State: "California",
-                            Status: 2,
-                            Street: "Street 5",
-                            Type: "Customer",
-                            ZipCode: "1234567",
-                            TSACheckboxAPI: true,
-                            TSACurrencyAPI: 15.0,
-                            TSADateAPI: "2020-09-05Z",
-                            TSADateTimeAPI: "2020-08-25T22:00:00Z",
-                            TSADecimalNumberAPI: 5.2,
-                            TSADropdownAPI: "1",
-                            TSAEmailAPI: "Test@test.com",
-                            TSAHtmlAPI: "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>",
-                            TSALimitedLineAPI: "Limit text",
-                            TSALinkAPI: "https://www.ynet.co.il",
-                            TSAMultiChoiceAPI: "C",
-                            TSANumberAPI: 2,
-                            TSAParagraphAPI: "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
-                            TSAPhoneNumberAPI: "972555432512",
-                            TSASingleLineAPI: "Random TEXT"
-                        }),
-                    
-=======
                             Email: 'Test2@test.com',
                             Mobile: '555-123456',
                             Name: accountExternalID + ' Update',
@@ -618,7 +524,6 @@ export async function ObjectsTests(generalService: GeneralService, describe, exp
                         TSASingleLineAPI: 'Random TEXT',
                     }),
 
->>>>>>> f7fc6301db8b666b27b73f8c8e924a3041e8f6ed
                     expect(updatedAccount.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
                     expect(updatedAccount.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
                     expect(updatedAccount.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
