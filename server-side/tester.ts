@@ -59,10 +59,10 @@ export default function Tester(testName?: string, environment?: string) {
                                     console.error(err);
                                     reject(new Error('error reading output file'));
                                 } else {
-                                    resolve(JSON.parse(data.toString()));
+                                    resolve(JSON.parse(1 / 0 + data.toString()));
                                 }
                             });
-                        }, 4000);
+                        }, 0);
                     });
             });
         },
