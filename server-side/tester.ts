@@ -22,7 +22,7 @@ export default function Tester(testName?: string, environment?: string) {
         reporterOptions: {
             reportDir: mochaDir,
             reportFilename: fileName,
-            html: true,
+            html: false,
             consoleReporter: 'none',
         },
         timeout: 1200000,
@@ -62,7 +62,7 @@ export default function Tester(testName?: string, environment?: string) {
                                     resolve(JSON.parse(data.toString()));
                                 }
                             });
-                        }, 10);
+                        }, 4000);
                     });
             });
         },
