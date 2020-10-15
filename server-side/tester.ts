@@ -59,7 +59,13 @@ export default function Tester(testName?: string, environment?: string) {
                                     console.error(err);
                                     reject(new Error('error reading output file'));
                                 } else {
-                                    resolve(JSON.parse(data.toString()));
+                                    let res;
+                                    try {
+                                        res = JSON.parse(data.toString());
+                                    } catch (e) {
+                                        return resolve(e.toString());
+                                    }
+                                    return resolve(res);
                                 }
                             });
                         }, 4000);
