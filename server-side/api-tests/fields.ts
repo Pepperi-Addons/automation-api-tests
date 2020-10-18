@@ -10,6 +10,11 @@ await fetch(url, {
     body:JSON.stringify(atd),
     headers:
         });
+
+        // how to fetch
+        // const fileContent: string = await fetch(uriStr).then((response) => response.text());
+        //         expect(fileContent).to.contain('ABCD');
+        
 */
 
 // All Fields Tests
