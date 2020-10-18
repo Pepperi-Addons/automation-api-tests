@@ -142,7 +142,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             ]);
         });
 
-        describe('Endpoints and data members validations', () => {
+        describe('Endpoints And Data Members Validations', () => {
             if (isSkip) {
                 describe.skip();
             }

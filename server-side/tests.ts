@@ -1,4 +1,4 @@
-import { Client } from '@pepperi-addons/debug-server';
+import { Client, Request } from '@pepperi-addons/debug-server';
 import tester from './tester';
 import GeneralService from './services/general.service';
 import { TestData } from './api-tests/test_data';
@@ -7,6 +7,8 @@ import { DataViewsTests } from './api-tests/data_views';
 import { FieldsTests } from './api-tests/fields';
 import { SyncAllTests, SyncTests } from './api-tests/sync';
 import { ObjectsTests } from './api-tests/objects';
+import { AuditLogsTests } from './api-tests/audit_logs';
+import { VarAPITests } from './api-tests/var_api';
 
 export async function all(client: Client) {
     const { describe, expect, it, run } = tester('All', client.BaseURL.includes('staging') ? 'Sandbox' : 'Production');
@@ -17,6 +19,7 @@ export async function all(client: Client) {
         fields(client, describe, expect, it),
         sync(client, describe, expect, it),
         objects(client, describe, expect, it),
+        audit_logs(client, describe, expect, it),
     ]).then(() => run());
 }
 
@@ -28,6 +31,7 @@ export async function sanity(client: Client) {
     return Promise.all([
         await test_data(client, describe, expect, it),
         objects(client, describe, expect, it),
+        audit_logs(client, describe, expect, it),
     ]).then(() => run());
 }
 
@@ -121,5 +125,37 @@ export async function objects(client: Client, describe?, expect?, it?) {
         ]).then(() => run());
     } else {
         return ObjectsTests(service, describe, expect, it);
+    }
+}
+
+export async function audit_logs(client: Client, describe?, expect?, it?) {
+    const service = new GeneralService(client);
+    if (describe == undefined || expect == undefined || it == undefined) {
+        const { describe, expect, it, run } = tester(
+            'Audit_Logs',
+            client.BaseURL.includes('staging') ? 'Sandbox' : 'Production',
+        );
+        return Promise.all([
+            await test_data(client, describe, expect, it),
+            AuditLogsTests(service, describe, expect, it),
+        ]).then(() => run());
+    } else {
+        return AuditLogsTests(service, describe, expect, it);
+    }
+}
+
+export async function var_api(client: Client, request: Request, describe?, expect?, it?) {
+    const service = new GeneralService(client);
+    if (describe == undefined || expect == undefined || it == undefined) {
+        const { describe, expect, it, run } = tester(
+            'Var_API',
+            client.BaseURL.includes('staging') ? 'Sandbox' : 'Production',
+        );
+        return Promise.all([
+            await test_data(client, describe, expect, it),
+            VarAPITests(service, request, describe, expect, it),
+        ]).then(() => run());
+    } else {
+        return VarAPITests(service, request, describe, expect, it);
     }
 }
