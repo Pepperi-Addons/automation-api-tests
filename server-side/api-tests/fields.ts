@@ -566,7 +566,7 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
             it('Created 11 Testing TSA', () => {
                 return expect(
                     service.papiClient.get(
-                        "/type_safe_attribute?where=Name LIKE 'TSATest%'&fields=Name&include_deleted=1",
+                        "/type_safe_attribute?where=Name LIKE 'TSATest %'&fields=Name&include_deleted=1",
                     ),
                 )
                     .eventually.to.be.an('array')
