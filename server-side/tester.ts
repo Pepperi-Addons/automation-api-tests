@@ -78,7 +78,6 @@ export default function Tester(testName?: string, environment?: string) {
                                         .replace(/,"pending":\[\]/g, '')
                                         .replace(/,"pending":false/g, '')
                                         .replace(/,"context":null/g, '')
-                                        .replace(/,"speed":"slow"/g, '')
                                         .replace(/,"skipped":\[\]/g, '')
                                         .replace(/,"file":""/g, '')
                                         .replace(/,"root":true/g, '')
