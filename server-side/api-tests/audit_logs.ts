@@ -320,7 +320,7 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
 
     //Test
     async function executeSyncTest(testName, testDataBody) {
-        const UpdateApiResponse = await generalService.papiClient.post('/application/sync', testDataBody);
+        let UpdateApiResponse = await generalService.papiClient.post('/application/sync', testDataBody);
         let syncJobUUID;
         let syncURI;
         const mandatoryStepsNewInproDoneObj = {
@@ -346,7 +346,7 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
         // addTestResultUnderHeadline(testName, "Get New Sync ProgressPercentage Test", newSyncAPIResponse.ProgressPercentage == 0 ? mandatoryStepsNewInproDoneObj.newSyncProgressPercentage = true : "ProgressPercentage is: " + newSyncAPIResponse.ProgressPercentage);
         // console.log({ Sync_Result_Object_New: newSyncAPIResponse });
 
-        const newSyncAPIResponse = await generalService.papiClient.get(syncURI);
+        let newSyncAPIResponse = await generalService.papiClient.get(syncURI);
 
         //Not Mandatory - rarely happen in new sync 18/10/2020
         // addTestResultUnderHeadline(
@@ -364,17 +364,31 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
         // );
         // console.log({ Audit_Log_Sync_Result_Object_New: newSyncAPIResponse });
 
+        //If Sync already Done, try 5 times to get sync that is not done yet.
+        if (newSyncAPIResponse.Status == ('Done' as SyncStatus)) {
+            for (let index = 0; index < 5; index++) {
+                UpdateApiResponse = await generalService.papiClient.post('/application/sync', testDataBody);
+                syncURI = UpdateApiResponse.URI;
+                newSyncAPIResponse = await generalService.papiClient.get(syncURI);
+                if (newSyncAPIResponse.Status == ('Done' as SyncStatus)) {
+                    index = 5;
+                    break;
+                }
+            }
+        }
+
         addTestResultUnderHeadline(
             testName,
             'Get Sync Status Test',
-            newSyncAPIResponse.Status == 'SyncStart'
+            newSyncAPIResponse.Status == ('SyncStart' as SyncStatus) ||
+                newSyncAPIResponse.Status == ('New' as SyncStatus)
                 ? (mandatoryStepsNewInproDoneObj.inProgressSyncStatus = true)
                 : 'Status is: ' + newSyncAPIResponse.Status,
         );
         addTestResultUnderHeadline(
             testName,
             'Get Sync ProgressPercentage Test',
-            newSyncAPIResponse.ProgressPercentage > 0
+            newSyncAPIResponse.ProgressPercentage >= 0
                 ? (mandatoryStepsNewInproDoneObj.inProgressSyncProgressPercentage = true)
                 : 'ProgressPercentage is: ' + newSyncAPIResponse.ProgressPercentage,
         );
@@ -436,7 +450,10 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
                                     Audit_Log_Sync_Result_Object_Done: auditLogSyncResponse,
                                 });
                                 return resolve();
-                            } else if (JSON.stringify(auditLogSyncResponse).includes('SyncStart' as SyncStatus)) {
+                            } else if (
+                                JSON.stringify(auditLogSyncResponse).includes('SyncStart' as SyncStatus) ||
+                                JSON.stringify(auditLogSyncResponse).includes('New' as SyncStatus)
+                            ) {
                                 console.log({ Sync_Result_Object_In_Progress: auditLogSyncResponse });
                             } else {
                                 clearInterval(getResultObjectInterval);
