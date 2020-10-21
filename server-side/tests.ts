@@ -18,7 +18,6 @@ export async function all(client: Client) {
         data_views(client, describe, expect, it),
         fields(client, describe, expect, it),
         sync(client, describe, expect, it),
-        objects(client, describe, expect, it),
         audit_logs(client, describe, expect, it),
     ]).then(() => run());
 }
