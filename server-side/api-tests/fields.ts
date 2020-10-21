@@ -101,14 +101,14 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                         transactionsTypeArr[transactionsTypeArr[0]],
                     );
                     return Promise.all([
-                        expect(postField['InternalID']).not.to.be.undefined,
-                        expect(postField['InternalID']).to.equals(upsertField['InternalID']), //Ineternal ID should be added to the new API
+                        expect(postField.InternalID).not.to.be.undefined,
+                        expect(postField.InternalID).to.equals(upsertField.InternalID),
                         expect(postField.Label).to.not.equals(upsertField.Label),
-                        //expect(postField.CreationDate).to.contain('Z'), // Should also be renamed to "CreationDateTime"
-                        expect(postField.ModificationDate).to.contain(new Date().toISOString().split('T')[0]), // Should also be renamed to "ModificationDateTime"
-                        //expect(postField.ModificationDate).to.contain('Z'),
-                        expect(postField.CreationDate).to.equals(upsertField.CreationDate),
-                        expect(postField.ModificationDate).to.not.equals(upsertField.ModificationDate),
+                        expect(postField.CreationDateTime).to.contain('Z'),
+                        expect(postField.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                        expect(postField.ModificationDateTime).to.contain('Z'),
+                        expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                        expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
                     ]);
                 });
             });
@@ -178,16 +178,16 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                         transactionsTypeArr[transactionsTypeArr[0]],
                     );
                     return Promise.all([
-                        expect(postField['InternalID']).not.to.be.undefined,
+                        expect(postField.InternalID).not.to.be.undefined,
                         expect(postField['UIType'].Name).to.equals('TextBox'),
-                        expect(postField['InternalID']).not.to.be.undefined,
-                        expect(postField['InternalID']).to.equals(upsertField['InternalID']), //Ineternal ID should be added to the new API
+                        expect(postField.InternalID).not.to.be.undefined,
+                        expect(postField.InternalID).to.equals(upsertField.InternalID),
                         expect(postField.Label).to.not.equals(upsertField.Label),
-                        //expect(postField.CreationDate).to.contain('Z'), // Should also be renamed to "CreationDateTime"
-                        expect(postField.ModificationDate).to.contain(new Date().toISOString().split('T')[0]), // Should also be renamed to "ModificationDateTime"
-                        //expect(postField.ModificationDate).to.contain('Z'),
-                        expect(postField.CreationDate).to.equals(upsertField.CreationDate),
-                        expect(postField.ModificationDate).to.not.equals(upsertField.ModificationDate),
+                        expect(postField.CreationDateTime).to.contain('Z'),
+                        expect(postField.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                        expect(postField.ModificationDateTime).to.contain('Z'),
+                        expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                        expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
                         //expect(service.deleteField('transactions', fieldId, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
                         expect(
                             service.upsertField(
@@ -239,14 +239,16 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                             });
 
                             return Promise.all([
-                                expect(postField['InternalID']).not.to.be.undefined,
-                                expect(postField['InternalID']).to.equals(upsertField['InternalID']), //Ineternal ID should be added to the new API
+                                expect(postField.InternalID).not.to.be.undefined,
+                                expect(postField.InternalID).to.equals(upsertField.InternalID),
                                 expect(postField.Label).to.not.equals(upsertField.Label),
-                                //expect(postField.CreationDate).to.contain('Z'), // Should also be renamed to "CreationDateTime"
-                                expect(postField.ModificationDate).to.contain(new Date().toISOString().split('T')[0]), // Should also be renamed to "ModificationDateTime"
-                                //expect(postField.ModificationDate).to.contain('Z'),
-                                expect(postField.CreationDate).to.equals(upsertField.CreationDate),
-                                expect(postField.ModificationDate).to.not.equals(upsertField.ModificationDate),
+                                expect(postField.CreationDateTime).to.contain('Z'),
+                                expect(postField.ModificationDateTime).to.contain(
+                                    new Date().toISOString().split('T')[0],
+                                ),
+                                expect(postField.ModificationDateTime).to.contain('Z'),
+                                expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                                expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
                                 expect(service.deleteField(resourceType, fieldId)).eventually.to.be.true,
                                 // expect(
                                 //     service.upsertField(resourceType, {
@@ -289,14 +291,16 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                             );
 
                             return Promise.all([
-                                expect(postField['InternalID']).not.to.be.undefined,
-                                expect(postField['InternalID']).to.equals(upsertField['InternalID']), //Ineternal ID should be added to the new API
+                                expect(postField.InternalID).not.to.be.undefined,
+                                expect(postField.InternalID).to.equals(upsertField.InternalID),
                                 expect(postField.Label).to.not.equals(upsertField.Label),
-                                //expect(postField.CreationDate).to.contain('Z'), // Should also be renamed to "CreationDateTime"
-                                expect(postField.ModificationDate).to.contain(new Date().toISOString().split('T')[0]), // Should also be renamed to "ModificationDateTime"
-                                //expect(postField.ModificationDate).to.contain('Z'),
-                                expect(postField.CreationDate).to.equals(upsertField.CreationDate),
-                                expect(postField.ModificationDate).to.not.equals(upsertField.ModificationDate),
+                                expect(postField.CreationDateTime).to.contain('Z'),
+                                expect(postField.ModificationDateTime).to.contain(
+                                    new Date().toISOString().split('T')[0],
+                                ),
+                                expect(postField.ModificationDateTime).to.contain('Z'),
+                                expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                                expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
                                 expect(
                                     service.deleteField(
                                         resourceType,
@@ -423,16 +427,16 @@ export async function FieldsTests(generalService: GeneralService, describe, expe
                     transactionsTypeArr[transactionsTypeArr[0]],
                 );
                 return Promise.all([
-                    expect(postField['InternalID']).not.to.be.undefined,
+                    expect(postField.InternalID).not.to.be.undefined,
                     expect(postField.CalculatedRuleEngine.Temporary).to.be.true,
                     expect(upsertField.CalculatedRuleEngine.Temporary).to.be.false,
-                    expect(postField['InternalID']).to.equals(upsertField['InternalID']), //Ineternal ID should be added to the new API
+                    expect(postField.InternalID).to.equals(upsertField.InternalID),
                     expect(postField.Label).to.not.equals(upsertField.Label),
-                    //expect(postField.CreationDate).to.contain('Z'), // Should also be renamed to "CreationDateTime"
-                    expect(postField.ModificationDate).to.contain(new Date().toISOString().split('T')[0]), // Should also be renamed to "ModificationDateTime"
-                    //expect(postField.ModificationDate).to.contain('Z'),
-                    expect(postField.CreationDate).to.equals(upsertField.CreationDate),
-                    expect(postField.ModificationDate).to.not.equals(upsertField.ModificationDate),
+                    expect(postField.CreationDateTime).to.contain('Z'),
+                    expect(postField.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                    expect(postField.ModificationDateTime).to.contain('Z'),
+                    expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                    expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
                     //expect(service.deleteField('transactions', fieldId, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
                     expect(
                         service.upsertField(
