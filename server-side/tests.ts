@@ -197,12 +197,12 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
         };
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
-            SyncTests(service, testerFunctions),
+            SyncAllTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
         testName = '';
         return testResult;
     } else {
-        return SyncAllTests(service, testerFunctions);
+        return SyncTests(service, testerFunctions);
     }
 }
 
