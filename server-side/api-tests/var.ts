@@ -1,8 +1,12 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
 
 // All Var API Tests
-export async function VarAPITests(generalService: GeneralService, request, describe, expect, it) {
+export async function VarTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
+
     //#region Endpoints
     describe('Endpoints', () => {
         describe('Get', () => {

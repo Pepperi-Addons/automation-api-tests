@@ -1,4 +1,4 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import { SyncService } from '../services/sync.service';
 import fetch from 'node-fetch';
 import { SyncBody, Account, Transaction, GeneralActivity } from '@pepperi-addons/papi-sdk';
@@ -22,17 +22,20 @@ let _agentExternalID;
 let _catalogExternalID;
 
 // All Sync Tests
-export async function SyncAllTests(generalService: GeneralService, describe, expect, it) {
+export async function SyncAllTests(generalService: GeneralService, tester: TesterFunctions) {
     isSkipMechanisem = true;
     isGetResync = false;
     isPutResync = true;
     isSkipMechanisemHundredGets = false;
     isSkipMechanisemHundredPuts = false;
-    await SyncTests(generalService, describe, expect, it);
+    await SyncTests(generalService, tester);
 }
 
-export async function SyncTests(generalService: GeneralService, describe, expect, it) {
+export async function SyncTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new SyncService(generalService.papiClient);
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
 
     console.log('Initiate Sync Tests | ' + generalService.getTime());
 
@@ -144,7 +147,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
 
         describe('Endpoints And Data Members Validations', () => {
             if (isSkip) {
-                describe.skip();
+                throw new Error('Test Skipped: Prerequisites not met');
             }
 
             it('Sync Put After Get Valid Response of URL and UUID', async () => {
@@ -311,7 +314,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                                 .with.length.above(0);
                             expect(JSON.stringify(oneHundredGetResponsArr).match(/Done|Skipped/g))
                                 .to.be.an('array')
-                                .with.length.of(100);
+                                .with.lengthOf(100);
                         });
                     }
 
@@ -329,7 +332,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                                 .with.length.above(0);
                             expect(JSON.stringify(oneHundredPutResponsArr).match(/Done|Skipped/g))
                                 .to.be.an('array')
-                                .with.length.of(100);
+                                .with.lengthOf(100);
                         });
                     }
 
@@ -344,7 +347,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
                             .with.length.above(0);
                         expect(JSON.stringify(tenPutResponsArr).match(/Done|Skipped/g))
                             .to.be.an('array')
-                            .with.length.of(10);
+                            .with.with.lengthOf(10);
                     });
                 });
             }
@@ -445,7 +448,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         }
         for (let index = 0; index < getsSize; index++) {
             oneHundredGetResponsArr.push(
-                await waitForSyncStatus(tempPostOneHundredGetsPromiseArr[index].SyncJobUUID, 180000),
+                await waitForSyncStatus(tempPostOneHundredGetsPromiseArr[index].SyncJobUUID, 3.5 * 60000),
             );
         }
     }
@@ -463,7 +466,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         }
         for (let index = 0; index < putsSize; index++) {
             oneHundredPutResponsArr.push(
-                await waitForSyncStatus(tempPostOneHundredPutssPromiseArr[index].SyncJobUUID, 180000),
+                await waitForSyncStatus(tempPostOneHundredPutssPromiseArr[index].SyncJobUUID, 3.5 * 60000),
             );
         }
         for (let index = 0; index < oneHundredPutResponsArr.length; index++) {
@@ -503,7 +506,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             tempPostTenPutssPromiseArr.push(await service.post(testBody));
         }
         for (let index = 0; index < tenPutsSize; index++) {
-            tenPutResponsArr.push(await waitForSyncStatus(tempPostTenPutssPromiseArr[index].SyncJobUUID, 180000));
+            tenPutResponsArr.push(await waitForSyncStatus(tempPostTenPutssPromiseArr[index].SyncJobUUID, 3.5 * 60000));
         }
         for (let index = 0; index < tenPutResponsArr.length; index++) {
             if (tenPutResponsArr[index].Status == ('Done' as SyncStatus)) {
@@ -526,7 +529,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         const syncPostApiResponse = await service.post(testBody);
 
         //GET sync jobinfo
-        const apiGetResponse = await waitForSyncStatus(syncPostApiResponse.SyncJobUUID, 180000);
+        const apiGetResponse = await waitForSyncStatus(syncPostApiResponse.SyncJobUUID, 3.5 * 60000);
         if (apiGetResponse.Status == 'Done' && apiGetResponse.ProgressPercentage == 100) {
             return {
                 TestResult: 'Pass',
@@ -535,7 +538,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
             } as TestObject;
         } else {
             return {
-                TestResult: `The Get Status is: '${apiGetResponse.Status} , and the Progress Percentage is: '${apiGetResponse.ProgressPercentage} after 180 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
+                TestResult: `The Get Status is: '${apiGetResponse.Status} , and the Progress Percentage is: '${apiGetResponse.ProgressPercentage} after 210 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
             } as TestObject;
         }
     }
@@ -550,7 +553,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
         const syncPostApiResponse = await service.post(testBody);
 
         //GET sync jobinfo
-        const apiGetResponse = await waitForSyncStatus(syncPostApiResponse.SyncJobUUID, 90000);
+        const apiGetResponse = await waitForSyncStatus(syncPostApiResponse.SyncJobUUID, 1.5 * 60000);
         if (apiGetResponse.Status == 'SyncStart' && apiGetResponse.ProgressPercentage == 1) {
             return {
                 TestResult: 'Pass',
@@ -660,18 +663,71 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     //#region syncPostGetValidation
     function syncPostGetValidation(apiGetResponse, testBody) {
         let errorMessage = '';
+        let isFormattedDate = false;
         try {
-            // test that the data we sent was the same data we got from the API
-            for (const prop in apiGetResponse.ClientInfo) {
+            // test the date format of the jobInfo
+            for (const prop in apiGetResponse) {
                 try {
-                    if (prop != 'LocalDataUpdates' && apiGetResponse.ClientInfo[prop] != testBody[prop].toString()) {
-                        console.log(`Is this: ${apiGetResponse.ClientInfo[prop]}, equal to this: ${testBody[prop]}`);
-                        errorMessage += `Missmatch sent Property: ${apiGetResponse.ClientInfo[prop]} Not identical to recived Property: ${testBody[prop]} | `;
+                    if (prop.includes('Formated')) {
+                        isFormattedDate = true;
+                        if (
+                            apiGetResponse[prop].substring(0, 18) !=
+                            new Date(apiGetResponse[prop.substring(8)]).toISOString().substring(0, 18)
+                        ) {
+                            console.log(
+                                `Is this: ${apiGetResponse[prop]}, represent this: ${new Date(
+                                    apiGetResponse[prop.substring(8)],
+                                ).toISOString()}`,
+                            );
+                            errorMessage += `Missmatch sent Property: ${
+                                apiGetResponse[prop]
+                            } Not represent the time of: ${apiGetResponse[prop.substring(8)]} | `;
+                        }
+                        if (apiGetResponse[prop].slice(-1) != 'Z') {
+                            errorMessage += `Date Don't Contain "Z" That Indicate UTC DateTime Format: ${apiGetResponse[prop]} | `;
+                        }
                     }
                 } catch (error) {
                     console.log(`Error for: ${prop} | ${error}`);
                     errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
                 }
+            }
+            // test that the data we sent was the same data we got from the API
+            for (const prop in apiGetResponse.ClientInfo) {
+                try {
+                    if (
+                        prop != 'LocalDataUpdates' &&
+                        !prop.includes('Formated') &&
+                        apiGetResponse.ClientInfo[prop] != testBody[prop].toString()
+                    ) {
+                        console.log(`Is this: ${apiGetResponse.ClientInfo[prop]}, equal to this: ${testBody[prop]}`);
+                        errorMessage += `Missmatch sent Property: ${apiGetResponse.ClientInfo[prop]} Not identical to recived Property: ${testBody[prop]} | `;
+                    } else if (prop.includes('Formated')) {
+                        isFormattedDate = true;
+                        if (
+                            apiGetResponse.ClientInfo[prop].substring(0, 18) !=
+                            new Date(apiGetResponse.ClientInfo[prop.substring(8)]).toISOString().substring(0, 18)
+                        ) {
+                            console.log(
+                                `Is this: ${apiGetResponse.ClientInfo[prop]}, represent this: ${new Date(
+                                    apiGetResponse.ClientInfo[prop.substring(8)],
+                                ).toISOString()}`,
+                            );
+                            errorMessage += `Missmatch sent Property: ${
+                                apiGetResponse.ClientInfo[prop]
+                            } Not represent the time of: ${apiGetResponse.ClientInfo[prop.substring(8)]} | `;
+                        }
+                        if (apiGetResponse.ClientInfo[prop].slice(-1) != 'Z') {
+                            errorMessage += `Date Don't Contain "Z" That Indicate UTC DateTime Format: ${apiGetResponse.ClientInfo[prop]} | `;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Error for: ${prop} | ${error}`);
+                    errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
+                }
+            }
+            if (!isFormattedDate) {
+                errorMessage += `ClientInfo missing formated dates: ${JSON.stringify(apiGetResponse.ClientInfo)} | `;
             }
             //test that the file was created in the serverd
             if (!checkFile(apiGetResponse.DataUpdates.URL)) {
@@ -691,7 +747,7 @@ export async function SyncTests(generalService: GeneralService, describe, expect
     //#region check file
     //Get the stream of the file' and check if its size is bigger then 10 KB
     async function checkFile(url) {
-        return true;
+        //return true;
         const fileContent: string = await fetch(url).then((response) => response.text());
         //if the file is very big, no need to count bytes on stream
         if (fileContent.length > 100000) {
