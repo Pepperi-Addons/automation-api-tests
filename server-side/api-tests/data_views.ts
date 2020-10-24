@@ -1,11 +1,14 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import { DataViewsService } from '../services/data-views.service';
 import { DataView } from '@pepperi-addons/papi-sdk';
 
 // All Data Views Tests //NeedToCover: [] Covered: [Grid, Details, Configuration, Menu, Map, Grid, Form, Card, Large, Line, CardsGrid]
-export async function DataViewsTests(generalService: GeneralService, describe, expect, it) {
+export async function DataViewsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new DataViewsService(generalService.papiClient);
     const clientService = generalService;
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
 
     //Prerequisites Test Data
     const transactionsTypeArr = [] as any;
@@ -264,9 +267,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                     );
                     expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(getDataViewResponseObj[0].CreationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    );
+                    expect(getDataViewResponseObj[0].CreationDateTime).to.contain('20');
+                    expect(getDataViewResponseObj[0].CreationDateTime).to.contain('T');
                     expect(getDataViewResponseObj[0].CreationDateTime).to.contain('Z');
                     expect(getDataViewResponseObj[0].ModificationDateTime).to.contain(
                         new Date().toISOString().split('T')[0],
@@ -318,9 +320,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                         `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                     );
                     expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Tablet');
-                    expect(getDataViewResponseObj[0].CreationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    );
+                    expect(getDataViewResponseObj[0].CreationDateTime).to.contain('20');
+                    expect(getDataViewResponseObj[0].CreationDateTime).to.contain('T');
                     expect(getDataViewResponseObj[0].CreationDateTime).to.contain('Z');
                     expect(getDataViewResponseObj[0].ModificationDateTime).to.contain(
                         new Date().toISOString().split('T')[0],
@@ -404,9 +405,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
                         );
                         expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Phablet');
-                        expect(getDataViewResponseObj[0].CreationDateTime).to.contain(
-                            new Date().toISOString().split('T')[0],
-                        );
+                        expect(getDataViewResponseObj[0].CreationDateTime).to.contain('20');
+                        expect(getDataViewResponseObj[0].CreationDateTime).to.contain('T');
                         expect(getDataViewResponseObj[0].CreationDateTime).to.contain('Z');
                         expect(getDataViewResponseObj[0].ModificationDateTime).to.contain(
                             new Date().toISOString().split('T')[0],
@@ -474,9 +474,8 @@ export async function DataViewsTests(generalService: GeneralService, describe, e
                             postUpdatedDataViewResponseObj['Context' as any].Name,
                         );
                         expect(getDataViewResponseObj[0]['Context' as any].ScreenSize).to.eql('Phablet');
-                        expect(getDataViewResponseObj[0].CreationDateTime).to.contain(
-                            new Date().toISOString().split('T')[0],
-                        );
+                        expect(getDataViewResponseObj[0].CreationDateTime).to.contain('20');
+                        expect(getDataViewResponseObj[0].CreationDateTime).to.contain('T');
                         expect(getDataViewResponseObj[0].CreationDateTime).to.contain('Z');
                         expect(getDataViewResponseObj[0].ModificationDateTime).to.contain(
                             new Date().toISOString().split('T')[0],

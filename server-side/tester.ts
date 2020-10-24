@@ -8,6 +8,7 @@ import Mochawesome from 'mochawesome';
 chai.use(promised);
 
 export default function Tester(testName?: string, environment?: string) {
+    const testObject = {};
     const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
         environment ? environment : 'Default'
     }-Tests-Results-${new Date()
@@ -92,6 +93,56 @@ export default function Tester(testName?: string, environment?: string) {
                             });
                         }, 4000);
                     });
+            });
+        },
+
+        setNewTestHeadline(testHeadline) {
+            testObject[testHeadline] = {};
+            testObject[testHeadline].testsNamesArr = [];
+            testObject[testHeadline].errorsArr = [];
+        },
+
+        addTestResultUnderHeadline(testHeadline, testName, testResult?) {
+            testObject[testHeadline].testsNamesArr.push(testName);
+            switch (typeof testResult) {
+                case 'object':
+                    if (testResult.stack === undefined) {
+                        testObject[testHeadline].errorsArr.push(JSON.stringify(testResult) + '\nMocha run exception:');
+                    } else {
+                        testObject[testHeadline].errorsArr.push(testResult.stack.toString() + '\nMocha run exception:');
+                    }
+                    break;
+                case 'boolean':
+                    if (!testResult) {
+                        testObject[testHeadline].errorsArr.push('Test failed' + '\nMocha run exception:');
+                    } else {
+                        testObject[testHeadline].errorsArr.push('');
+                    }
+                    break;
+                case 'string':
+                    if (testResult.length > 0) {
+                        testObject[testHeadline].errorsArr.push(testResult + '\nMocha run exception:');
+                    } else {
+                        testObject[testHeadline].errorsArr.push('');
+                    }
+                    break;
+                default:
+                    testObject[testHeadline].errorsArr.push('');
+                    break;
+            }
+        },
+
+        printTestResults(describe, expect, it, testSuitesName) {
+            describe(`${testSuitesName} Tests Suites`, function () {
+                for (const key in testObject) {
+                    describe(key, function () {
+                        for (let i = 0; i < testObject[key]['testsNamesArr'].length; i++) {
+                            it(i + 1 + ') ' + testObject[key]['testsNamesArr'][i], function () {
+                                expect(testObject[key]['errorsArr'][i].toString()).to.not.contain(' ');
+                            });
+                        }
+                    });
+                }
             });
         },
     };

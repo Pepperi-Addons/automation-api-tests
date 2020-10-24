@@ -1,10 +1,17 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
 
 declare type SyncStatus = 'New' | 'SyncStart' | 'Skipped' | 'Done';
 
 // All Fields Tests
-export async function AuditLogsTests(generalService: GeneralService, describe, expect, it) {
+export async function AuditLogsTests(generalService: GeneralService, tester: TesterFunctions) {
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
+    const setNewTestHeadline = tester.setNewTestHeadline;
+    const addTestResultUnderHeadline = tester.addTestResultUnderHeadline;
+    const printTestResults = tester.printTestResults;
+
     //#region Prerequisites for Audit Logs Tests
     //TestData
     const testDataDraftToExecuteInPositiveTest = {
@@ -95,59 +102,6 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
     };
     //#endregion Prerequisites for Audit Logs Tests
 
-    //#region Test Config area
-    const testObject = {};
-    function setNewTestHeadline(testHeadline) {
-        testObject[testHeadline] = {};
-        testObject[testHeadline].testsNamesArr = [];
-        testObject[testHeadline].errorsArr = [];
-    }
-
-    function addTestResultUnderHeadline(testHeadline, testName, testResult?) {
-        testObject[testHeadline].testsNamesArr.push(testName);
-        switch (typeof testResult) {
-            case 'object':
-                if (testResult.stack === undefined) {
-                    testObject[testHeadline].errorsArr.push(JSON.stringify(testResult) + '\nMocha run exception:');
-                } else {
-                    testObject[testHeadline].errorsArr.push(testResult.stack.toString() + '\nMocha run exception:');
-                }
-                break;
-            case 'boolean':
-                if (!testResult) {
-                    testObject[testHeadline].errorsArr.push('Test failed' + '\nMocha run exception:');
-                } else {
-                    testObject[testHeadline].errorsArr.push('');
-                }
-                break;
-            case 'string':
-                if (testResult.length > 0) {
-                    testObject[testHeadline].errorsArr.push(testResult + '\nMocha run exception:');
-                } else {
-                    testObject[testHeadline].errorsArr.push('');
-                }
-                break;
-            default:
-                testObject[testHeadline].errorsArr.push('');
-                break;
-        }
-    }
-
-    //#region Report
-    //Report Area
-    function printTestResults(testObject) {
-        for (const key in testObject) {
-            describe(key, function () {
-                for (let i = 0; i < testObject[key]['testsNamesArr'].length; i++) {
-                    it(i + 1 + ') ' + testObject[key]['testsNamesArr'][i], function () {
-                        expect(testObject[key]['errorsArr'][i].toString()).to.not.include(' ');
-                    });
-                }
-            });
-        }
-    }
-    //#endregion Report
-
     const syncTest = 'Audit Logs Sync Test';
     setNewTestHeadline(syncTest);
 
@@ -214,7 +168,7 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
                 );
             },
         ),
-    ]).then(() => printTestResults(testObject));
+    ]).then(() => printTestResults(describe, expect, it, 'Audit Logs'));
 
     //Test
     async function createCodeJobUsingDraftTest(testName, draftExecuteableCode) {
@@ -235,16 +189,20 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
         //This can be used to test the Scheduler addon (3/3)
         //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
         let executeDraftCodeApiResponse;
-        //asyne is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
-        if (async) {
-            executeDraftCodeApiResponse = await generalService.papiClient.post(
-                '/code_jobs/async/' + codeJobUUID + '/execute_draft',
-            );
-        } else {
-            executeDraftCodeApiResponse = await generalService.papiClient.post(
-                '/code_jobs/' + codeJobUUID + '/execute_draft',
-            );
+        try {
+            if (async) {
+                executeDraftCodeApiResponse = await generalService.papiClient.post(
+                    '/code_jobs/async/' + codeJobUUID + '/execute_draft',
+                );
+            } else {
+                executeDraftCodeApiResponse = await generalService.papiClient.post(
+                    '/code_jobs/' + codeJobUUID + '/execute_draft',
+                );
+            }
+        } catch (error) {
+            executeDraftCodeApiResponse = error;
         }
+        //asyne is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
 
         console.log({ executeDraftCodeApiResponse: executeDraftCodeApiResponse });
 
@@ -263,7 +221,7 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
         }
 
         if (codeJobUUID != undefined) {
-            let inetrvalLimit = 120000;
+            let inetrvalLimit = 180000;
             const SetIntervalEvery = 6000;
             await new Promise((resolve) => {
                 const getResultObjectInterval = setInterval(async () => {
@@ -276,7 +234,20 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
                     }
                     const getAuditLogURI =
                         "/audit_logs?Where=AuditInfo.JobMessageData.CodeJobUUID='" + codeJobUUID + "'";
-                    const apiResponse = await generalService.papiClient.get(getAuditLogURI);
+
+                    let apiResponse;
+                    try {
+                        apiResponse = await generalService.papiClient.get(getAuditLogURI);
+                    } catch (error) {
+                        clearInterval(getResultObjectInterval);
+                        apiResponse = error;
+                        console.log({ getAuditLogApiResponse: apiResponse });
+
+                        await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
+                        addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Throwing Error: ', apiResponse);
+                        return resolve();
+                    }
+
                     if (JSON.stringify(apiResponse).includes('"ResultObject":')) {
                         clearInterval(getResultObjectInterval);
                         await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
@@ -342,20 +313,20 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
         }
         //Status: "New" and ProgressPercentage: 0, are not mandatory.
         // var newSyncAPIResponse = await generalService.papiClient.get(syncURI);
-        // addTestResultUnderHeadline(testName, "Get New Sync Status Test", newSyncAPIResponse.Status == "New" ? mandatoryStepsNewInproDoneObj.newSyncStatus = true : "Status is: " + newSyncAPIResponse.Status);
-        // addTestResultUnderHeadline(testName, "Get New Sync ProgressPercentage Test", newSyncAPIResponse.ProgressPercentage == 0 ? mandatoryStepsNewInproDoneObj.newSyncProgressPercentage = true : "ProgressPercentage is: " + newSyncAPIResponse.ProgressPercentage);
+        //  addTestResultUnderHeadline(testName, "Get New Sync Status Test", newSyncAPIResponse.Status == "New" ? mandatoryStepsNewInproDoneObj.newSyncStatus = true : "Status is: " + newSyncAPIResponse.Status);
+        //  addTestResultUnderHeadline(testName, "Get New Sync ProgressPercentage Test", newSyncAPIResponse.ProgressPercentage == 0 ? mandatoryStepsNewInproDoneObj.newSyncProgressPercentage = true : "ProgressPercentage is: " + newSyncAPIResponse.ProgressPercentage);
         // console.log({ Sync_Result_Object_New: newSyncAPIResponse });
 
         let newSyncAPIResponse = await generalService.papiClient.get(syncURI);
 
         //Not Mandatory - rarely happen in new sync 18/10/2020
-        // addTestResultUnderHeadline(
+        //  addTestResultUnderHeadline(
         //     testName,
         //     'Get New Audit Log Sync Status Test',
         //     newSyncAPIResponse.Status == 'New' as SyncStatus ? true : 'Status is: ' + newSyncAPIResponse.Status,
         // );
 
-        // addTestResultUnderHeadline(
+        //  addTestResultUnderHeadline(
         //     testName,
         //     'Get New Audit Log Sync ProgressPercentage Test',
         //     newSyncAPIResponse.ProgressPercentage >= 0
@@ -396,7 +367,7 @@ export async function AuditLogsTests(generalService: GeneralService, describe, e
 
         if (syncJobUUID != undefined && syncURI != undefined) {
             let lastStatusStr = '';
-            let inetrvalLimit = 120000;
+            let inetrvalLimit = 180000;
             const SetIntervalEvery = 2000; //Intervals changed from 4000 to 100 since in some users 4000 is skipping the GetInProgress Audit Log
             await new Promise((resolve) => {
                 const getResultObjectInterval = setInterval(async () => {
