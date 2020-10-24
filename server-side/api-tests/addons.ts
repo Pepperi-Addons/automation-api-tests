@@ -1,0 +1,438 @@
+import GeneralService, { TesterFunctions } from '../services/general.service';
+//import fetch from 'node-fetch';
+
+// All Fields Tests
+export async function AddonsTests(generalService: GeneralService, tester: TesterFunctions) {
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
+    describe('Endpoints', () => {
+        describe('Get', () => {
+            it('Get Array Of Addons', async () => {
+                const apiResponse = await generalService.papiClient.addons.find();
+                expect(apiResponse).to.be.an('array').with.length.above(0);
+                console.log(apiResponse);
+            });
+        });
+    });
+
+    // const setNewTestHeadline = tester.setNewTestHeadline;
+    // const addTestResultUnderHeadline = tester.addTestResultUnderHeadline;
+    // const printTestResults = tester.printTestResults;
+    //     const syncTest = 'Audit Logs Sync Test';
+    //     setNewTestHeadline(syncTest);
+    //     const codeJobPositiveTest = 'Audit Logs Positive CodeJob Test';
+    //     setNewTestHeadline(codeJobPositiveTest);
+    //     const codeJobNegativeTest = 'Audit Logs Negative CodeJob Test';
+    //     setNewTestHeadline(codeJobNegativeTest);
+    //     const codeJobPositiveAsyncTest = 'Audit Logs Positive Async CodeJob Test';
+    //     setNewTestHeadline(codeJobPositiveAsyncTest);
+    //     const codeJobNegativeAsyncTest = 'Audit Logs Negative Async CodeJob Test';
+    //     setNewTestHeadline(codeJobNegativeAsyncTest);
+    //     //#endregion Test Config area
+    //         //make sure all tests are finished before printing results
+    //         // var waitForAllTestsResults = await setInterval(() => {
+    //         //     if (intervalCounter < 1) {
+    //         //         clearInterval(waitForAllTestsResults);
+    //         //         intervalCounter--;
+    //         //     }
+    //         // }, 100);
+    //     //Print Test Results
+    //     await Promise.all([
+    //         //Sync Test
+    //         await executeSyncTest(syncTest, testDataBodySyncTest),
+    //         //These tests are for the old Sync Enpoint
+    //         createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
+    //             async (positiveCodeJobUUID) => {
+    //                 await executeDraftCodeJobTest(
+    //                     codeJobPositiveTest,
+    //                     positiveCodeJobUUID,
+    //                     testDataDraftToExecuteInPositiveTest,
+    //                     false,
+    //                 );
+    //             },
+    //         ),
+    //         createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
+    //             async (negativeCodeJobUUID) => {
+    //                 await executeDraftCodeJobTest(
+    //                     codeJobNegativeTest,
+    //                     negativeCodeJobUUID,
+    //                     testDataDraftToExecuteInNegativeTest,
+    //                     false,
+    //                 );
+    //             },
+    //         ),
+    //         //These tests are for the new Async Enpoint
+    //         createCodeJobUsingDraftTest(codeJobPositiveAsyncTest, testDataDraftToExecuteInPositiveTest).then(
+    //             async (positiveAsyncCodeJobUUID) => {
+    //                 await executeDraftCodeJobTest(
+    //                     codeJobPositiveAsyncTest,
+    //                     positiveAsyncCodeJobUUID,
+    //                     testDataDraftToExecuteInPositiveTest,
+    //                     true,
+    //                 );
+    //             },
+    //         ),
+    //         createCodeJobUsingDraftTest(codeJobNegativeAsyncTest, testDataDraftToExecuteInNegativeTest).then(
+    //             async (negativeAsyncCodeJobUUID) => {
+    //                 await executeDraftCodeJobTest(
+    //                     codeJobNegativeAsyncTest,
+    //                     negativeAsyncCodeJobUUID,
+    //                     testDataDraftToExecuteInNegativeTest,
+    //                     true,
+    //                 );
+    //             },
+    //         ),
+    //     ]).then(() => printTestResults(testObject));
+    //     //Test
+    //     async function createCodeJobUsingDraftTest(testName, draftExecuteableCode) {
+    //         let codeJobUUID;
+    //         const updateValuesToDraftExecute = draftExecuteableCode;
+    //         const UpdateApiResponse = await generalService.papiClient.post('/code_jobs', updateValuesToDraftExecute);
+    //         if (UpdateApiResponse.UUID.length < 36) {
+    //             addTestResultUnderHeadline(testName, 'Post CodeJobe with Draft', UpdateApiResponse);
+    //         } else {
+    //             codeJobUUID = UpdateApiResponse.UUID;
+    //             addTestResultUnderHeadline(testName, 'Post CodeJobe with Draft');
+    //         }
+    //         return codeJobUUID;
+    //     }
+    //     //Test
+    //     async function executeDraftCodeJobTest(testName, codeJobUUID, testDataBody, async) {
+    //         //This can be used to test the Scheduler addon (3/3)
+    //         //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
+    //         let executeDraftCodeApiResponse;
+    //         //asyne is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
+    //         if (async) {
+    //             executeDraftCodeApiResponse = await generalService.papiClient.post(
+    //                 '/code_jobs/async/' + codeJobUUID + '/execute_draft',
+    //             );
+    //         } else {
+    //             executeDraftCodeApiResponse = await generalService.papiClient.post(
+    //                 '/code_jobs/' + codeJobUUID + '/execute_draft',
+    //             );
+    //         }
+    //         console.log({ executeDraftCodeApiResponse: executeDraftCodeApiResponse });
+    //         if (async) {
+    //             if (executeDraftCodeApiResponse.ExecutionUUID.length > 36 || executeDraftCodeApiResponse.URI.length > 48) {
+    //                 addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft', executeDraftCodeApiResponse);
+    //             } else {
+    //                 addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft');
+    //             }
+    //         } else {
+    //             if (executeDraftCodeApiResponse.success === undefined) {
+    //                 addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft', executeDraftCodeApiResponse);
+    //             } else {
+    //                 addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft');
+    //             }
+    //         }
+    //         if (codeJobUUID != undefined) {
+    //             let inetrvalLimit = 180000;
+    //             const SetIntervalEvery = 6000;
+    //             await new Promise((resolve) => {
+    //                 const getResultObjectInterval = setInterval(async () => {
+    //                     inetrvalLimit -= SetIntervalEvery;
+    //                     if (inetrvalLimit < 1) {
+    //                         clearInterval(getResultObjectInterval);
+    //                         await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
+    //                         addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Interval Timer', false);
+    //                         return resolve();
+    //                     }
+    //                     const getAuditLogURI =
+    //                         "/audit_logs?Where=AuditInfo.JobMessageData.CodeJobUUID='" + codeJobUUID + "'";
+    //                     const apiResponse = await generalService.papiClient.get(getAuditLogURI);
+    //                     if (JSON.stringify(apiResponse).includes('"ResultObject":')) {
+    //                         clearInterval(getResultObjectInterval);
+    //                         await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
+    //                         //Print the API response
+    //                         console.log({ Code_Job_Result_Object: apiResponse });
+    //                         const codeJobResultObject = isExecuteDraftCodeJobValidResponse(apiResponse, testDataBody);
+    //                         console.log('CodeJobResultObject return result: ' + codeJobResultObject);
+    //                         addTestResultUnderHeadline(
+    //                             testName,
+    //                             'Execute Draft Code Job Valid Response',
+    //                             codeJobResultObject,
+    //                         );
+    //                         const auditLogsResultObject = await generalService.getAuditLogResultObjectIfValid(
+    //                             getAuditLogURI,
+    //                         );
+    //                         //Print the AuditLogs Result Object
+    //                         console.log({ Code_Job_Audit_Logs_Object: auditLogsResultObject });
+    //                         //Report test result
+    //                         if (JSON.stringify(auditLogsResultObject).includes('AuditInfo')) {
+    //                             addTestResultUnderHeadline(testName, 'Audit Logs of Draft Code Job Valid Response');
+    //                         } else {
+    //                             addTestResultUnderHeadline(
+    //                                 testName,
+    //                                 'Audit Logs of Draft Code Job Valid Response',
+    //                                 auditLogsResultObject,
+    //                             );
+    //                         }
+    //                         resolve();
+    //                     }
+    //                 }, SetIntervalEvery);
+    //             });
+    //         }
+    //         //This can be use to easily extract the token to the console
+    //         //console.log({Token : API._Token})
+    //     }
+    //     //Test
+    //     async function executeSyncTest(testName, testDataBody) {
+    //         let UpdateApiResponse = await generalService.papiClient.post('/application/sync', testDataBody);
+    //         let syncJobUUID;
+    //         let syncURI;
+    //         const mandatoryStepsNewInproDoneObj = {
+    //             //Status: "New" and ProgressPercentage: 0, are not mandatory
+    //             //newSyncStatus: false,
+    //             //newSyncProgressPercentage: false,
+    //             inProgressSyncStatus: false,
+    //             inProgressSyncProgressPercentage: false,
+    //             doneSyncStatus: false,
+    //             doneSyncProgressPercentage: false,
+    //         };
+    //         if (UpdateApiResponse.SyncJobUUID.length < 36) {
+    //             addTestResultUnderHeadline(testName, 'Post Sync', UpdateApiResponse);
+    //         } else {
+    //             syncJobUUID = UpdateApiResponse.SyncJobUUID;
+    //             syncURI = UpdateApiResponse.URI;
+    //             addTestResultUnderHeadline(testName, 'Post Sync');
+    //         }
+    //         //Status: "New" and ProgressPercentage: 0, are not mandatory.
+    //         // var newSyncAPIResponse = await generalService.papiClient.get(syncURI);
+    //         // addTestResultUnderHeadline(testName, "Get New Sync Status Test", newSyncAPIResponse.Status == "New" ? mandatoryStepsNewInproDoneObj.newSyncStatus = true : "Status is: " + newSyncAPIResponse.Status);
+    //         // addTestResultUnderHeadline(testName, "Get New Sync ProgressPercentage Test", newSyncAPIResponse.ProgressPercentage == 0 ? mandatoryStepsNewInproDoneObj.newSyncProgressPercentage = true : "ProgressPercentage is: " + newSyncAPIResponse.ProgressPercentage);
+    //         // console.log({ Sync_Result_Object_New: newSyncAPIResponse });
+    //         let newSyncAPIResponse = await generalService.papiClient.get(syncURI);
+    //         //Not Mandatory - rarely happen in new sync 18/10/2020
+    //         // addTestResultUnderHeadline(
+    //         //     testName,
+    //         //     'Get New Audit Log Sync Status Test',
+    //         //     newSyncAPIResponse.Status == 'New' as SyncStatus ? true : 'Status is: ' + newSyncAPIResponse.Status,
+    //         // );
+    //         // addTestResultUnderHeadline(
+    //         //     testName,
+    //         //     'Get New Audit Log Sync ProgressPercentage Test',
+    //         //     newSyncAPIResponse.ProgressPercentage >= 0
+    //         //         ? true
+    //         //         : 'ProgressPercentage is: ' + newSyncAPIResponse.ProgressPercentage,
+    //         // );
+    //         // console.log({ Audit_Log_Sync_Result_Object_New: newSyncAPIResponse });
+    //         //If Sync already Done, try 5 times to get sync that is not done yet.
+    //         if (newSyncAPIResponse.Status == ('Done' as SyncStatus)) {
+    //             for (let index = 0; index < 5; index++) {
+    //                 UpdateApiResponse = await generalService.papiClient.post('/application/sync', testDataBody);
+    //                 syncURI = UpdateApiResponse.URI;
+    //                 newSyncAPIResponse = await generalService.papiClient.get(syncURI);
+    //                 if (newSyncAPIResponse.Status == ('Done' as SyncStatus)) {
+    //                     index = 5;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //         addTestResultUnderHeadline(
+    //             testName,
+    //             'Get Sync Status Test',
+    //             newSyncAPIResponse.Status == ('SyncStart' as SyncStatus) ||
+    //                 newSyncAPIResponse.Status == ('New' as SyncStatus)
+    //                 ? (mandatoryStepsNewInproDoneObj.inProgressSyncStatus = true)
+    //                 : 'Status is: ' + newSyncAPIResponse.Status,
+    //         );
+    //         addTestResultUnderHeadline(
+    //             testName,
+    //             'Get Sync ProgressPercentage Test',
+    //             newSyncAPIResponse.ProgressPercentage >= 0
+    //                 ? (mandatoryStepsNewInproDoneObj.inProgressSyncProgressPercentage = true)
+    //                 : 'ProgressPercentage is: ' + newSyncAPIResponse.ProgressPercentage,
+    //         );
+    //         console.log({ Sync_Result_Object_In_Progress: newSyncAPIResponse });
+    //         if (syncJobUUID != undefined && syncURI != undefined) {
+    //             let lastStatusStr = '';
+    //             let inetrvalLimit = 180000;
+    //             const SetIntervalEvery = 2000; //Intervals changed from 4000 to 100 since in some users 4000 is skipping the GetInProgress Audit Log
+    //             await new Promise((resolve) => {
+    //                 const getResultObjectInterval = setInterval(async () => {
+    //                     inetrvalLimit -= SetIntervalEvery;
+    //                     if (inetrvalLimit < 1) {
+    //                         clearInterval(getResultObjectInterval);
+    //                         //Report test results
+    //                         addTestResultUnderHeadline(testName, 'Audit Logs of Sync - Interval Timer', false);
+    //                         return resolve();
+    //                     }
+    //                     const auditLogSyncResponse = await generalService.papiClient.get(syncURI);
+    //                     if (JSON.stringify(auditLogSyncResponse).includes('"ProgressPercentage":')) {
+    //                         if (lastStatusStr != auditLogSyncResponse.Status) {
+    //                             lastStatusStr = auditLogSyncResponse.Status;
+    //                             if (
+    //                                 auditLogSyncResponse.Status == ('Done' as SyncStatus) &&
+    //                                 auditLogSyncResponse.ProgressPercentage == 100
+    //                             ) {
+    //                                 mandatoryStepsNewInproDoneObj.doneSyncStatus = true;
+    //                                 mandatoryStepsNewInproDoneObj.doneSyncProgressPercentage = true;
+    //                                 clearInterval(getResultObjectInterval);
+    //                                 console.log({ Sync_Result_Object_Done: auditLogSyncResponse });
+    //                                 //Status: "New" and ProgressPercentage: 0, are not mandatory.
+    //                                 if (
+    //                                     /*mandatoryStepsNewInproDoneObj.newSyncStatus && mandatoryStepsNewInproDoneObj.newSyncProgressPercentage &&*/
+    //                                     mandatoryStepsNewInproDoneObj.inProgressSyncStatus &&
+    //                                     mandatoryStepsNewInproDoneObj.inProgressSyncProgressPercentage &&
+    //                                     mandatoryStepsNewInproDoneObj.doneSyncStatus &&
+    //                                     mandatoryStepsNewInproDoneObj.doneSyncProgressPercentage
+    //                                 ) {
+    //                                     addTestResultUnderHeadline(testName, 'All Sync test mandatory steps complete');
+    //                                 } else {
+    //                                     addTestResultUnderHeadline(
+    //                                         testName,
+    //                                         'All Sync test mandatory steps complete',
+    //                                         mandatoryStepsNewInproDoneObj,
+    //                                     );
+    //                                 }
+    //                                 //Report test results
+    //                                 if (JSON.stringify(auditLogSyncResponse).includes('ClientInfo')) {
+    //                                     addTestResultUnderHeadline(testName, 'Audit Logs of Sync Valid Response');
+    //                                 } else {
+    //                                     addTestResultUnderHeadline(
+    //                                         testName,
+    //                                         'Audit Logs of Sync Valid Response',
+    //                                         auditLogSyncResponse,
+    //                                     );
+    //                                 }
+    //                                 console.log({
+    //                                     Audit_Log_Sync_Result_Object_Done: auditLogSyncResponse,
+    //                                 });
+    //                                 return resolve();
+    //                             } else if (
+    //                                 JSON.stringify(auditLogSyncResponse).includes('SyncStart' as SyncStatus) ||
+    //                                 JSON.stringify(auditLogSyncResponse).includes('New' as SyncStatus)
+    //                             ) {
+    //                                 console.log({ Sync_Result_Object_In_Progress: auditLogSyncResponse });
+    //                             } else {
+    //                                 clearInterval(getResultObjectInterval);
+    //                                 console.log('SyncResultObject return');
+    //                                 console.log({ Sync_Result_Object_Is_Bugged: auditLogSyncResponse });
+    //                                 //Report test results
+    //                                 addTestResultUnderHeadline(
+    //                                     testName,
+    //                                     'Audit Logs of Sync Is not Done - Error: ',
+    //                                     auditLogSyncResponse,
+    //                                 );
+    //                                 return resolve();
+    //                             }
+    //                         }
+    //                     }
+    //                 }, SetIntervalEvery);
+    //             });
+    //         }
+    //         //This can be use to easily extract the token to the console
+    //         //console.log({ Token: API._Token })
+    //     }
+    //     //Base Functions
+    //     function isExecuteDraftCodeJobValidResponse(codeJobAPIResponse, testDataBody) {
+    //         let tempObj = {} as any;
+    //         if (codeJobAPIResponse[0] === undefined) {
+    //             tempObj = codeJobAPIResponse.result;
+    //         } else {
+    //             tempObj = codeJobAPIResponse[0];
+    //         }
+    //         //Check UUID
+    //         try {
+    //             if (
+    //                 tempObj.DistributorUUID == tempObj.UUID ||
+    //                 tempObj.DistributorUUID == tempObj.Event.User.UUID ||
+    //                 tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //                 tempObj.UUID == tempObj.Event.User.UUID ||
+    //                 tempObj.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //                 tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //                 tempObj.UUID != tempObj.UUID ||
+    //                 tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[1] != tempObj.DistributorUUID ||
+    //                 tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[3] !=
+    //                     tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //                 tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
+    //             ) {
+    //                 return 'Error in UUID in Code Job API Response';
+    //             }
+    //         } catch (e) {
+    //             e.stack = 'UUID in Code Job API Response:\n' + e.stack;
+    //             return e;
+    //         }
+    //         //Check Date and Time
+    //         try {
+    //             if (
+    //                 !tempObj.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
+    //                 !tempObj.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
+    //             ) {
+    //                 return 'Error in Date and Time in Code Job API Response';
+    //             }
+    //         } catch (e) {
+    //             e.stack = 'Date and Time in Code Job API Response:\n' + e.stack;
+    //             return e;
+    //         }
+    //         //Check Type and Event
+    //         try {
+    //             if (
+    //                 (tempObj.AuditType != 'action' && tempObj.AuditType != 'data') ||
+    //                 tempObj.Event.Type != 'code_job_execution' ||
+    //                 tempObj.Event.User.Email != generalService.getClientData('UserEmail') ||
+    //                 tempObj.Event.User.InternalID != generalService.getClientData('UserID') ||
+    //                 tempObj.Event.User.UUID != generalService.getClientData('UserUUID') ||
+    //                 tempObj.AuditInfo.JobMessageData.CodeJobName != testDataBody.CodeJobName ||
+    //                 tempObj.AuditInfo.JobMessageData.CodeJobDescription != testDataBody.Description
+    //             ) {
+    //                 return 'The Type or Event contain wrong data';
+    //             }
+    //         } catch (e) {
+    //             e.stack = 'Type and Event in Code Job API Response:\n' + e.stack;
+    //             return e;
+    //         }
+    //         //Check Result Object
+    //         try {
+    //             //Verify that ErrorMessage exist
+    //             if (tempObj.AuditInfo.ErrorMessage != undefined) {
+    //                 //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("ERROR")
+    //                 //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("Error") //Changed in 26/07 investigated with nofar
+    //                 if (tempObj.AuditInfo.ErrorMessage.includes('Failed') ^ testDataBody.DraftCode.includes('Error')) {
+    //                     return 'Error in execution result';
+    //                 }
+    //             }
+    //         } catch (e) {
+    //             e.stack = 'Draft Code Error in Code Job API Response:\n' + e.stack;
+    //             return e;
+    //         }
+    //         return true;
+    //     }
+    //     //Function to remove all the Scheduler Code Jobs from Distributor
+    //     async function removeAllSchedulerCodeJobFromDistributor(codeJobUUID?: string) {
+    //         //codeJobUUID = undefined;
+    //         //for (var index = 100; index > 0; index--) {
+    //         let getAllCodeJobs = [] as any;
+    //         if (codeJobUUID == undefined) {
+    //             getAllCodeJobs = await generalService.papiClient.get('/code_jobs?Fields=UUID');
+    //         } else {
+    //             getAllCodeJobs.push({ UUID: codeJobUUID });
+    //         }
+    //         // if (getAllCodeJobs.length == 0) {
+    //         //     break;
+    //         // }
+    //         for (let i = 0; i < getAllCodeJobs.length; i++) {
+    //             const codeJobObject = {
+    //                 CodeJobIsHidden: true,
+    //                 UUID: getAllCodeJobs[i].UUID,
+    //                 IsScheduled: false,
+    //             };
+    //             await fetch(generalService['client'].BaseURL + '/code_jobs', {
+    //                 method: 'POST',
+    //                 body: JSON.stringify(codeJobObject),
+    //                 headers: {
+    //                     Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+    //                     //X-Pepperi-OwnerID is the ID of the Addon
+    //                     'X-Pepperi-OwnerID': '9b00d684-4615-4293-9727-63da81802a8d',
+    //                 },
+    //             });
+    //             console.log(i);
+    //             console.log(JSON.stringify(codeJobObject.UUID));
+    //             if (getAllCodeJobs.length == 1) {
+    //                 i = 0;
+    //                 break;
+    //             }
+    //         }
+    //     }
+}

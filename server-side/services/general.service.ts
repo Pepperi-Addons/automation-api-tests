@@ -171,3 +171,13 @@ function parseJwt(token) {
     );
     return JSON.parse(jsonPayload);
 }
+
+export interface TesterFunctions {
+    describe: any;
+    expect: any;
+    it: any;
+    run: any;
+    setNewTestHeadline: any;
+    addTestResultUnderHeadline: any;
+    printTestResults: any;
+}

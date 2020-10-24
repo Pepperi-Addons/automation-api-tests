@@ -1,4 +1,4 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import { FieldsService } from '../services/fields.service';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -18,8 +18,11 @@ await fetch(url, {
 */
 
 // All Fields Tests
-export async function FieldsTests(generalService: GeneralService, describe, expect, it) {
+export async function FieldsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new FieldsService(generalService.papiClient);
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
 
     /*import/export ATD*/
     /*activity transactions*/

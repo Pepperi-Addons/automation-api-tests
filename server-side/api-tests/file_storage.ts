@@ -1,11 +1,14 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { FileStorage } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 
 // All File Storage Tests
-export async function FileStorageTests(generalService: GeneralService, describe, expect, it) {
+export async function FileStorageTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new FileStorageService(generalService.papiClient);
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
 
     //#region Tests
     describe('File Storage Tests Suites', () => {
@@ -130,7 +133,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         let fileObject;
                         //Save the created file information
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 fileObject = allFilesAfter[index];
                                 break;
                             }
@@ -157,7 +160,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     it('Read the new added file properties', async () => {
                         //Save the created file information
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 fileObject = allFilesAfter[index];
                                 break;
                             }
@@ -271,7 +274,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 deletedFileObject = allFilesAfter[index];
                                 break;
                             }
@@ -305,7 +308,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
 
                         //Save the created file information
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 fileObject = allFilesAfter[index];
                                 break;
                             }
@@ -349,7 +352,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 deletedFileObject = allFilesAfter[index];
                                 break;
                             }
@@ -384,7 +387,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     it('Read the new added file properties', async () => {
                         //Save the created file information
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 fileObject = allFilesAfter[index];
                                 break;
                             }
@@ -426,7 +429,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 deletedFileObject = allFilesAfter[index];
                                 break;
                             }
@@ -461,7 +464,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                     it('Read the new added file properties', async () => {
                         //Save the created file information
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 fileObject = allFilesAfter[index];
                                 break;
                             }
@@ -498,7 +501,7 @@ export async function FileStorageTests(generalService: GeneralService, describe,
                         let deletedFileObject: any;
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
-                            if (allFilesAfter[index].FileName?.toString().startsWith(testDataFileName)) {
+                            if (allFilesAfter[index].FileName?.toString().startsWith(`${testDataFileName}.txt`)) {
                                 deletedFileObject = allFilesAfter[index];
                                 break;
                             }

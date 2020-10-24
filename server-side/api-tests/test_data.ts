@@ -1,4 +1,4 @@
-import GeneralService from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 
 const installedAddons = {
     'Services Framework': '' as any,
@@ -9,8 +9,11 @@ const installedAddons = {
 };
 
 // All Sync Tests
-export async function TestData(generalService: GeneralService, describe, expect, it) {
+export async function TestDataTest(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService;
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
 
     const installedAddonsArr = await service.getAddons();
     for (let index = 0; index < installedAddonsArr.length; index++) {
