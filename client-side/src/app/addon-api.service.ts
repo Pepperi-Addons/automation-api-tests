@@ -23,12 +23,22 @@ export class AddonApiService
     }
 
     getAddonApiBaseURL(): string {
-        const dev = (this.userService.getAddonStaticFolder() as string).indexOf('localhost') > -1;
-        return dev ? "http://localhost:4400" : `${this.papiBaseURL}/addons/api/${this.addonData.Addon.UUID}`;
+        // const dev = (this.userService.getAddonStaticFolder() as string).indexOf('localhost') > -1;
+        const dev = false;
+        return dev ? "http://localhost:4400" : `${this.papiBaseURL}/addons/api/async/${this.addonData.Addon.UUID}`;//async added
     }
 
     getAddonStaticFolderURL(): string {
         return this.userService.getAddonStaticFolder();
+    }
+
+    getApiEndpoint(url) {
+        const options = { 
+            'headers': {
+                'Authorization': 'Bearer ' + this.userService.getUserToken()
+            }
+        };
+        return this.httpClient.get(this.getAddonApiBaseURL() + url, options);
     }
 
     get(url) {
@@ -37,6 +47,8 @@ export class AddonApiService
                 'Authorization': 'Bearer ' + this.userService.getUserToken()
             }
         };
-        return this.httpClient.get(this.getAddonApiBaseURL() + url, options);
+        return this.httpClient.get(this.papiBaseURL + url, options);
     }
+
+    
 }

@@ -7,8 +7,13 @@
             type="text"
             [(ngModel)]="apiEndpoint"
         />
+    
         <button type="button" class="btn pepperi-button mat-button strong color-main sm pull-right flip" (click)="testEndpoint(apiEndpoint)">
             {{ 'Submit_Btn_Title' | translate }}
+        </button>
+
+        <button type="button" class="btn pepperi-button mat-button  color-main sm pull-right flip" (click)="pollExecution(apiEndpoint)">
+            {{ 'Poll_Btn_Title' | translate }}
         </button>
     </mat-card>
 
