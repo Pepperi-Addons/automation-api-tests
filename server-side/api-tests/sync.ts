@@ -36,8 +36,8 @@ export async function SyncWithBugRecreation(generalService: GeneralService, test
 }
 
 // All Sync Tests
-export async function SyncAllTests(generalService: GeneralService, tester: TesterFunctions) {
-    isBase = true;
+export async function SyncLongTests(generalService: GeneralService, tester: TesterFunctions) {
+    isBase = false;
     isSkipMechanisem = true;
     isSkipMechanisemHundredGets = false;
     isSkipMechanisemHundredPuts = false;

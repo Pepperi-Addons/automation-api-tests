@@ -14,6 +14,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             'WebApp Platform': '00000000-0000-0000-1234-000000000b2b',
             'Addons Manager': 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
             'Data Views API': '484e7f22-796a-45f8-9082-12a734bac4e8',
+            'Settings Framework': '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
         };
         for (const addonName in testData) {
             const addonUUID = testData[addonName];

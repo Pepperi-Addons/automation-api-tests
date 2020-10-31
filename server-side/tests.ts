@@ -5,7 +5,7 @@ import { TestDataTest } from './api-tests/test_data';
 import { FileStorageTests } from './api-tests/file_storage';
 import { DataViewsTests } from './api-tests/data_views';
 import { FieldsTests } from './api-tests/fields';
-import { SyncAllTests, SyncTests, SyncWithBugRecreation } from './api-tests/sync';
+import { SyncLongTests, SyncTests, SyncWithBugRecreation } from './api-tests/sync';
 import { ObjectsTests } from './api-tests/objects';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
@@ -31,8 +31,6 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         sync(client, testerFunctions),
-        data_views(client, testerFunctions),
-        audit_logs(client, testerFunctions),
         file_storage(client, testerFunctions),
         fields(client, testerFunctions),
     ]).then(() => testerFunctions.run());
@@ -227,7 +225,7 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
         };
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
-            SyncAllTests(service, testerFunctions),
+            SyncLongTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
         testName = '';
         return testResult;
@@ -450,9 +448,9 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Var' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Upgrade_Dependencies' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Var';
+        testName = 'Upgrade_Dependencies';
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
