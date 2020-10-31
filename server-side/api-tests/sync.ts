@@ -634,6 +634,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         } while (
             (apiGetResponse.Status == ('SyncStart' as SyncStatus) || apiGetResponse.Status == ('New' as SyncStatus)) &&
             apiGetResponse.ModificationDateTime - apiGetResponse.CreationDateTime < maxTime &&
+            new Date().getTime() - apiGetResponse.CreationDateTime < maxTime &&
             counter < maxLoops
         );
         return apiGetResponse;
