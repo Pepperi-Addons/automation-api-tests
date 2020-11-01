@@ -9,20 +9,22 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
 
     describe('Upgrade Dependencies Addons', () => {
         const testData = {
-            'Services Framework': '00000000-0000-0000-0000-000000000a91',
-            'Cross Platforms API': '00000000-0000-0000-0000-000000abcdef',
-            'WebApp Platform': '00000000-0000-0000-1234-000000000b2b',
-            'Addons Manager': 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
-            'Data Views API': '484e7f22-796a-45f8-9082-12a734bac4e8',
-            'Settings Framework': '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
+            'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
+            'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', 'V'],
+            'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.50'],
+            'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
+            'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '0.'],
+            'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5'],
         };
+
         for (const addonName in testData) {
-            const addonUUID = testData[addonName];
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
             describe(`${addonName}`, () => {
                 let varLatestVersion;
                 it('Upgarde To Latest Version', async () => {
                     varLatestVersion = await fetch(
-                        `${generalService['client'].BaseURL}/var/addons/versions?where=AddonUUID='${addonUUID}'&order_by=CreationDateTime DESC`,
+                        `${generalService['client'].BaseURL}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%'&order_by=CreationDateTime DESC`,
                         {
                             method: `GET`,
                             headers: {
@@ -31,6 +33,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                         },
                     ).then((response) => response.json());
                     varLatestVersion = varLatestVersion[0].Version;
+
                     await expect(service.addons.installedAddons.addonUUID(`${addonUUID}`).upgrade(varLatestVersion))
                         .eventually.to.have.property('ExecutionUUID')
                         .a('string')
