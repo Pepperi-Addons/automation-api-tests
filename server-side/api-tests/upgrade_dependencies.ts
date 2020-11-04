@@ -7,14 +7,33 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
     const expect = tester.expect;
     const it = tester.it;
 
+    //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework
     describe('Upgrade Dependencies Addons', () => {
         const testData = {
-            'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
-            'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', 'V'],
-            'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.50'],
-            'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
-            'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '0.'],
-            'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5'],
+            'Services Framework': [
+                '00000000-0000-0000-0000-000000000a91',
+                request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5',
+            ],
+            'Cross Platforms API': [
+                '00000000-0000-0000-0000-000000abcdef',
+                request.body.crossPlatformsAPI ? `${request.body.crossPlatformsAPI}` : 'V',
+            ],
+            'WebApp Platform': [
+                '00000000-0000-0000-1234-000000000b2b',
+                request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.50',
+            ],
+            'Addons Manager': [
+                'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
+                request.body.addonsManager ? `${request.body.addonsManager}` : '0.',
+            ],
+            'Data Views API': [
+                '484e7f22-796a-45f8-9082-12a734bac4e8',
+                request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '0.',
+            ],
+            'Settings Framework': [
+                '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
+                request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
+            ],
         };
 
         for (const addonName in testData) {
@@ -28,7 +47,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                         {
                             method: `GET`,
                             headers: {
-                                Authorization: request.body.varKey,
+                                Authorization: `${request.body.varKey}`,
                             },
                         },
                     ).then((response) => response.json());

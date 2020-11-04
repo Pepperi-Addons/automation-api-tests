@@ -204,11 +204,13 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                         return Promise.all[
                             (expect(
-                                await syncPostGetValidation(
+                                syncPostGetValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
-                                ).TestResult,
-                            ).to.contain('Pass' as TestResult),
+                                ),
+                            )
+                                .eventually.to.have.property('TestResult')
+                                .that.contain('Pass' as TestResult),
                             await expect(
                                 orderCreationValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
@@ -231,11 +233,13 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
                         return expect(
-                            await syncPostGetValidation(
+                            syncPostGetValidation(
                                 syncDataMembersValidationGet.apiGetResponse,
                                 syncDataMembersValidationGet.testBody,
-                            ).TestResult,
-                        ).to.contain('Pass' as TestResult);
+                            ),
+                        )
+                            .eventually.to.have.property('TestResult')
+                            .that.contain('Pass' as TestResult);
                     }
                     return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
                 });
@@ -324,11 +328,13 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                             return Promise.all[
                                 (expect(
-                                    await syncPostGetValidation(
+                                    syncPostGetValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
-                                    ).TestResult,
-                                ).to.contain('Pass' as TestResult),
+                                    ),
+                                )
+                                    .eventually.to.have.property('TestResult')
+                                    .that.contain('Pass' as TestResult),
                                 await expect(
                                     orderCreationValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
@@ -693,7 +699,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         }
                     }
                     //test that the file was created in the serverd
-                    if (!checkFile(apiGetResponse.DataUpdates.URL)) {
+                    if (!(await checkFile(apiGetResponse.DataUpdates.URL))) {
                         errorMessage += 'File was not created on the sever | ';
                     }
                 } else {
@@ -714,7 +720,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     //#endregion resyncWithOrderCreationValidation
 
     //#region syncPostGetValidation
-    function syncPostGetValidation(apiGetResponse, testBody) {
+    async function syncPostGetValidation(apiGetResponse, testBody) {
         let errorMessage = '';
         let isFormattedDate = false;
         try {
@@ -783,7 +789,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 errorMessage += `ClientInfo missing formatted dates: ${JSON.stringify(apiGetResponse.ClientInfo)} | `;
             }
             //test that the file was created in the serverd
-            if (!checkFile(apiGetResponse.DataUpdates.URL)) {
+            if (!(await checkFile(apiGetResponse.DataUpdates.URL))) {
                 errorMessage += 'File was not created on the sever | ';
             }
         } catch (error) {
@@ -799,14 +805,22 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
 
     //#region check file
     //Get the stream of the file' and check if its size is bigger then 10 KB
-    async function checkFile(url) {
-        //return true;
-        const fileContent: string = await fetch(url).then((response) => response.text());
-        //if the file is very big, no need to count bytes on stream
-        if (fileContent.length > 100000) {
-            return true;
-        }
-        return (encodeURI(fileContent).split(/%..|./).length - 1) / 1000 > 10;
+    function checkFile(url) {
+        return fetch(url, {
+            method: 'GET',
+            size: 10000, // maximum response body size in bytes, 10000 = 10KB
+        })
+            .then((res) => res.text())
+            .then((json) => {
+                console.log(json);
+                console.log(`File size was smaller then 10KB`);
+                return false;
+            })
+            .catch((error) => {
+                console.log(`File size was bigger then 10KB ${error}`);
+                return true;
+            });
+        //return (encodeURI(fileContent).split(/%..|./).length - 1) / 1000 > 10;
     }
     //#endregion check file
 }

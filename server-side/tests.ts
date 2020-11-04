@@ -16,8 +16,23 @@ import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 let testName = '';
 let testEnvironment = '';
 
+function CalculateUsedMemory() {
+    const used = process.memoryUsage();
+    const memoryUsed = {};
+    for (const key in used) {
+        memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
+    }
+    console.log(`memoryUse in MB = ${JSON.stringify(memoryUsed)}`);
+}
+
+function PrintMemoryUseToLog(testName) {
+    console.log(`Start Test: ${testName}`);
+    CalculateUsedMemory();
+}
+
 export async function all(client: Client, testerFunctions: TesterFunctions) {
     testName = 'All';
+    PrintMemoryUseToLog(testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
         : client.BaseURL.includes('papi-eu')
@@ -34,12 +49,14 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
         file_storage(client, testerFunctions),
         fields(client, testerFunctions),
     ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog(testName);
     testName = '';
     return testResult;
 }
 
 export async function sanity(client: Client, testerFunctions: TesterFunctions) {
     testName = 'Sanity';
+    PrintMemoryUseToLog(testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
         : client.BaseURL.includes('papi-eu')
@@ -55,6 +72,7 @@ export async function sanity(client: Client, testerFunctions: TesterFunctions) {
         audit_logs(client, testerFunctions),
         objects(client, testerFunctions),
     ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog(testName);
     testName = '';
     return testResult;
 }
@@ -63,6 +81,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
     const service = new GeneralService(client);
     if (testName == '') {
         testName = 'Test_Data';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -84,6 +103,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
         const testResult = await Promise.all([await test_data(client, testerFunctions)]).then(() =>
             testerFunctions.run(),
         );
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -98,6 +118,7 @@ export async function file_storage(client: Client, testerFunctions: TesterFuncti
         (testName != 'File_Storage' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'File_Storage';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -120,6 +141,7 @@ export async function file_storage(client: Client, testerFunctions: TesterFuncti
             await test_data(client, testerFunctions),
             FileStorageTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -134,6 +156,7 @@ export async function data_views(client: Client, testerFunctions: TesterFunction
         (testName != 'Data_Views' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Data_Views';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -156,6 +179,7 @@ export async function data_views(client: Client, testerFunctions: TesterFunction
             await test_data(client, testerFunctions),
             DataViewsTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -169,6 +193,7 @@ export async function fields(client: Client, testerFunctions: TesterFunctions) {
         (testName != 'Fields' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Fields';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -191,6 +216,7 @@ export async function fields(client: Client, testerFunctions: TesterFunctions) {
             await test_data(client, testerFunctions),
             FieldsTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -205,6 +231,7 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
         (testName != 'Sync' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Sync';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -227,6 +254,7 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
             await test_data(client, testerFunctions),
             SyncLongTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -237,6 +265,7 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
 export async function sync_bug(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Sync_Bug';
+    PrintMemoryUseToLog(testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
         : client.BaseURL.includes('papi-eu')
@@ -259,6 +288,7 @@ export async function sync_bug(client: Client, testerFunctions: TesterFunctions)
         await test_data(client, testerFunctions),
         SyncWithBugRecreation(service, testerFunctions),
     ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog(testName);
     testName = '';
     return testResult;
 }
@@ -271,6 +301,7 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
         (testName != 'Objects' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Objects';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -293,6 +324,7 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
             await test_data(client, testerFunctions),
             ObjectsTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -307,6 +339,7 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
         (testName != 'Audit_Logs' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Audit_Logs';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -329,6 +362,7 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
             await test_data(client, testerFunctions),
             AuditLogsTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -343,6 +377,7 @@ export async function var_api(client: Client, request: Request, testerFunctions:
         (testName != 'Var' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Var';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -365,6 +400,7 @@ export async function var_api(client: Client, request: Request, testerFunctions:
             await test_data(client, testerFunctions),
             VarTests(service, request, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -379,6 +415,7 @@ export async function addons(client: Client, testerFunctions: TesterFunctions) {
         (testName != 'Addons' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Addons';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -401,6 +438,7 @@ export async function addons(client: Client, testerFunctions: TesterFunctions) {
             await test_data(client, testerFunctions),
             AddonsTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -415,6 +453,7 @@ export async function import_export_atd(client: Client, testerFunctions: TesterF
         (testName != 'Import_Export_Atd' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Import_Export_Atd';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -437,6 +476,7 @@ export async function import_export_atd(client: Client, testerFunctions: TesterF
             await test_data(client, testerFunctions),
             ImportExportATDTests(service, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
@@ -451,6 +491,7 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
         (testName != 'Upgrade_Dependencies' && testName != 'All' && testName != 'Sanity')
     ) {
         testName = 'Upgrade_Dependencies';
+        PrintMemoryUseToLog(testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
@@ -473,6 +514,7 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
             await test_data(client, testerFunctions),
             UpgradeDependenciesTests(service, request, testerFunctions),
         ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog(testName);
         testName = '';
         return testResult;
     } else {
