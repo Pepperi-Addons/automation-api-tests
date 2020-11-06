@@ -203,7 +203,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                         return Promise.all[
-                            (expect(
+                            (await expect(
                                 syncPostGetValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
@@ -211,7 +211,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             )
                                 .eventually.to.have.property('TestResult')
                                 .that.contain('Pass' as TestResult),
-                            await expect(
+                            expect(
                                 orderCreationValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
@@ -327,7 +327,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
 
                         if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                             return Promise.all[
-                                (expect(
+                                (await expect(
                                     syncPostGetValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
@@ -335,7 +335,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 )
                                     .eventually.to.have.property('TestResult')
                                     .that.contain('Pass' as TestResult),
-                                await expect(
+                                expect(
                                     orderCreationValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
@@ -698,7 +698,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             ]} Error was thrown: ${error} | `;
                         }
                     }
-                    //test that the file was created in the serverd
+                    //test that the file was created in the server
                     if (!(await checkFile(apiGetResponse.DataUpdates.URL))) {
                         errorMessage += 'File was not created on the sever | ';
                     }
@@ -788,7 +788,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             if (!isFormattedDate) {
                 errorMessage += `ClientInfo missing formatted dates: ${JSON.stringify(apiGetResponse.ClientInfo)} | `;
             }
-            //test that the file was created in the serverd
+            //test that the file was created in the server
             if (!(await checkFile(apiGetResponse.DataUpdates.URL))) {
                 errorMessage += 'File was not created on the sever | ';
             }
