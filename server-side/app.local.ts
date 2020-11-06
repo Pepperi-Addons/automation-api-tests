@@ -1,6 +1,9 @@
 import { DebugServer } from '@pepperi-addons/debug-server';
 import config from '../addon.config.json';
 
+//Skip SSL in Debug Mode
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0 as any;
+
 const dir = __dirname;
 const server = new DebugServer({
     addonUUID: process.env.AddonUUID,
