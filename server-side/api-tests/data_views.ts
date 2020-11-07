@@ -36,21 +36,21 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
     //#region Tests
     describe('Data Views Tests Suites', () => {
         //Test Data
-        it(`Test Data: Transaction - Name: \xa0${transactionsTypeArr[0]},\xa0 TypeID: \xa0${
+        it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID: ${
             transactionsTypeArr[transactionsTypeArr[0]]
         }`, async () => {
             expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
 
-        it(`Test Data: Activity \xa0 - Name: \xa0${activitiesTypeArr[0]}, \xa0 TypeID: \xa0${
+        it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID: ${
             activitiesTypeArr[activitiesTypeArr[0]]
         }`, async () => {
             expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
 
-        it(`Test Data: Users - Name: \xa0${userTypeIDArr[0]}, \xa0 InternalID: \xa0${
-            userTypeIDArr[userTypeIDArr[0]]
-        }, Name: \xa0${userTypeIDArr[1]}, \xa0 InternalID: \xa0${userTypeIDArr[userTypeIDArr[1]]}`, async () => {
+        it(`Test Data: Users - Name: ${userTypeIDArr[0]}, InternalID: ${userTypeIDArr[userTypeIDArr[0]]}, Name: ${
+            userTypeIDArr[1]
+        }, InternalID: ${userTypeIDArr[userTypeIDArr[1]]}`, async () => {
             expect(userTypeIDArr[userTypeIDArr[0]]).to.be.a('number').that.is.above(0);
             expect(userTypeIDArr[userTypeIDArr[1]]).to.be.a('number').that.is.above(0);
         });
@@ -118,97 +118,97 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                 });
 
                 /*// Array endpoints are not yet supported and Batch SKD is not yet working
-                it('Upsert Data Views Batch Valid Response (DI-16869)', async () => {
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return expect(
-                        service.postDataViewBatch([
-                            {
-                                Type: 'Card',
-                                Title: testDataViewTitle,
-                                Context: {
-                                    Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                    ScreenSize: 'Landscape',
-                                    Profile: {
-                                        Name: userTypeIDArr[1],
-                                    },
-                                },
-                                Fields: [],
-                                Rows: [],
-                                Columns: [],
-                            },
-                            {
-                                Type: 'Card',
-                                Title: testDataViewTitle,
-                                Context: {
-                                    Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
-                                    ScreenSize: 'Landscape',
-                                    Profile: {
-                                        Name: userTypeIDArr[1],
-                                    },
-                                },
-                                Fields: [],
-                                Rows: [],
-                                Columns: [],
-                            },
-                        ]),
-                    )
-                        .eventually.to.include({
-                            Type: 'Card',
-                            Title: testDataViewTitle,
-                        })
-                        .and.to.have.property('InternalID')
-                        .that.is.a('Number');
-                });
+        it('Upsert Data Views Batch Valid Response (DI-16869)', async () => {
+          const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+          return expect(
+            service.postDataViewBatch([
+              {
+                Type: 'Card',
+                Title: testDataViewTitle,
+                Context: {
+                  Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                  ScreenSize: 'Landscape',
+                  Profile: {
+                    Name: userTypeIDArr[1],
+                  },
+                },
+                Fields: [],
+                Rows: [],
+                Columns: [],
+              },
+              {
+                Type: 'Card',
+                Title: testDataViewTitle,
+                Context: {
+                  Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
+                  ScreenSize: 'Landscape',
+                  Profile: {
+                    Name: userTypeIDArr[1],
+                  },
+                },
+                Fields: [],
+                Rows: [],
+                Columns: [],
+              },
+            ]),
+          )
+            .eventually.to.include({
+              Type: 'Card',
+              Title: testDataViewTitle,
+            })
+            .and.to.have.property('InternalID')
+            .that.is.a('Number');
+        });
 
-                it('Upsert Data Views Batch Valid Creation Amount (DI-16869)', async () => {
-                    //Get All Before
-                    const totalDataViewsBefore: number = await (await service.getDataViews()).length;
-                    const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                    return Promise.all([
-                        await expect(
-                            service.postDataViewBatch([
-                                {
-                                    Type: 'Card',
-                                    Title: testDataViewTitle,
-                                    Context: {
-                                        Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                                        ScreenSize: 'Landscape',
-                                        Profile: {
-                                            Name: userTypeIDArr[0],
-                                        },
-                                    },
-                                    Fields: [],
-                                    Rows: [],
-                                    Columns: [],
-                                },
-                                {
-                                    Type: 'Card',
-                                    Title: testDataViewTitle,
-                                    Context: {
-                                        Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
-                                        ScreenSize: 'Landscape',
-                                        Profile: {
-                                            Name: userTypeIDArr[0],
-                                        },
-                                    },
-                                    Fields: [],
-                                    Rows: [],
-                                    Columns: [],
-                                },
-                            ]),
-                        )
-                            .eventually.to.include({
-                                Type: 'Card',
-                                Title: testDataViewTitle,
-                            })
-                            .and.to.have.property('InternalID')
-                            .that.is.a('Number'),
-                        await expect(service.getDataViews())
-                            .eventually.to.be.an('array')
-                            .with.lengthOf(totalDataViewsBefore + 2),
-                    ]);
-                });
-            */
+        it('Upsert Data Views Batch Valid Creation Amount (DI-16869)', async () => {
+          //Get All Before
+          const totalDataViewsBefore: number = await (await service.getDataViews()).length;
+          const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+          return Promise.all([
+            await expect(
+              service.postDataViewBatch([
+                {
+                  Type: 'Card',
+                  Title: testDataViewTitle,
+                  Context: {
+                    Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                    ScreenSize: 'Landscape',
+                    Profile: {
+                      Name: userTypeIDArr[0],
+                    },
+                  },
+                  Fields: [],
+                  Rows: [],
+                  Columns: [],
+                },
+                {
+                  Type: 'Card',
+                  Title: testDataViewTitle,
+                  Context: {
+                    Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
+                    ScreenSize: 'Landscape',
+                    Profile: {
+                      Name: userTypeIDArr[0],
+                    },
+                  },
+                  Fields: [],
+                  Rows: [],
+                  Columns: [],
+                },
+              ]),
+            )
+              .eventually.to.include({
+                Type: 'Card',
+                Title: testDataViewTitle,
+              })
+              .and.to.have.property('InternalID')
+              .that.is.a('Number'),
+            await expect(service.getDataViews())
+              .eventually.to.be.an('array')
+              .with.lengthOf(totalDataViewsBefore + 2),
+          ]);
+        });
+      */
             });
 
             describe('Get', () => {
