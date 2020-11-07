@@ -46,12 +46,12 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
     //#region Tests
     describe('Fields Tests Suites', () => {
         //Test Data
-        it(`Test Data: Transaction - Name: \xa0${transactionsTypeArr[0]}, \xa0 TypeID: \xa0${
+        it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
             transactionsTypeArr[transactionsTypeArr[0]]
         }`, async () => {
             expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
-        it(`Test Data: Activity \xa0\xa0 - Name: \xa0${activitiesTypeArr[0]}, \xa0 TypeID: \xa0${
+        it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
             activitiesTypeArr[activitiesTypeArr[0]]
         }`, async () => {
             expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);

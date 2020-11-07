@@ -68,25 +68,25 @@ export default function Tester(testName?: string, environment?: string) {
                                     }
 
                                     //Test results report might be to big for the addon, so remove some data from response
-                                    let outpot = JSON.stringify(res)
-                                        .replace(/\s/g, '')
-                                        .replace(/,"fullFile":""/g, '')
-                                        .replace(/,"afterHooks":\[\]/g, '')
-                                        .replace(/,"beforeHooks":\[\]/g, '')
-                                        .replace(/,"err":{}/g, '')
-                                        .replace(/,"isHook":false/g, '')
-                                        .replace(/,"skipped":false/g, '')
-                                        .replace(/,"pending":\[\]/g, '')
-                                        .replace(/,"pending":false/g, '')
-                                        .replace(/,"context":null/g, '')
-                                        .replace(/,"skipped":\[\]/g, '')
-                                        .replace(/,"file":""/g, '')
-                                        .replace(/,"root":true/g, '')
-                                        .replace(/,"rootEmpty":true/g, '');
-
+                                    let outpot = JSON.stringify(res);
                                     //Check response length to remove the code parts if needed
                                     if (outpot.length > 200000) {
-                                        outpot = outpot.replace(/(\"code\":)(.*?)(?=\"uuid\":)/g, '');
+                                        outpot = outpot
+                                            .replace(/\s/g, '')
+                                            .replace(/,"fullFile":""/g, '')
+                                            .replace(/,"afterHooks":\[\]/g, '')
+                                            .replace(/,"beforeHooks":\[\]/g, '')
+                                            .replace(/,"err":{}/g, '')
+                                            .replace(/,"isHook":false/g, '')
+                                            .replace(/,"skipped":false/g, '')
+                                            .replace(/,"pending":\[\]/g, '')
+                                            .replace(/,"pending":false/g, '')
+                                            .replace(/,"context":null/g, '')
+                                            .replace(/,"skipped":\[\]/g, '')
+                                            .replace(/,"file":""/g, '')
+                                            .replace(/,"root":true/g, '')
+                                            .replace(/,"rootEmpty":true/g, '')
+                                            .replace(/(\"code\":)(.*?)(?=\"uuid\":)/g, '');
                                     }
                                     return resolve(JSON.parse(outpot));
                                 }

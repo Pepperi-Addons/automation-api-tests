@@ -32,15 +32,13 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
     }
 
     describe('Test Data', async () => {
-        it(`Start Test Server Time And Date: \xa0\xa0\xa0\xa0 ${service.getServer()} \xa0\xa0\xa0\xa0 ${service.getTime()} \xa0\xa0\xa0\xa0 ${service.getDate()}`, () => {
+        it(`Start Test Server Time And Date: ${service.getServer()} ${service.getTime()} ${service.getDate()}`, () => {
             expect(service.getDate().length == 10 && service.getTime().length == 8).to.be.true;
         });
 
-        it(`Tested User: \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 ${service.getClientData(
-            'UserEmail',
-        )} \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 UserID: \xa0${service.getClientData(
+        it(`Tested User: ${service.getClientData('UserEmail')} UserID: ${service.getClientData(
             'UserID',
-        )} \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 DistributorID: \xa0${service.getClientData('DistributorID')}`, () => {
+        )} DistributorID: ${service.getClientData('DistributorID')}`, () => {
             expect(service.getClientData('UserEmail')).to.contain('@');
         });
 
@@ -49,19 +47,19 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
         });
 
         describe('Installed Addons Versions', () => {
-            it(`Services Framework \xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Services Framework']}`, () => {
+            it(`Services Framework | Version: ${installedAddons['Services Framework']}`, () => {
                 expect(installedAddons['Services Framework']).to.not.be.null;
             });
-            it(`Cross Platforms API \xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Cross Platforms API']}`, () => {
+            it(`Cross Platforms API | Version: ${installedAddons['Cross Platforms API']}`, () => {
                 expect(installedAddons['Cross Platforms API']).to.not.be.null;
             });
-            it(`WebApp Platform \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['WebApp Platform']}`, () => {
+            it(`WebApp Platform | Version: ${installedAddons['WebApp Platform']}`, () => {
                 expect(installedAddons['WebApp Platform']).to.not.be.null;
             });
-            it(`Addons Manager \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Addons Manager']}`, () => {
+            it(`Addons Manager | Version: ${installedAddons['Addons Manager']}`, () => {
                 expect(installedAddons['Addons Manage']).to.not.be.null;
             });
-            it(`Data Views API \xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0 | \xa0\xa0\xa0\xa0 Version: ${installedAddons['Data Views API']}`, () => {
+            it(`Data Views API | Version: ${installedAddons['Data Views API']}`, () => {
                 expect(installedAddons['Data Views API']).to.not.be.null;
             });
         });
