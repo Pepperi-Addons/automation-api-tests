@@ -683,7 +683,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             // test that correct transactions created
             for (let j = 0; j < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; j++) {
                 const getTransactionsLines = await service.papiClient.allActivities.find({
-                    where: `ExternalID=${testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][2]}`,
+                    where: `ExternalID='${testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][2]}'`,
                 });
                 if (getTransactionsLines.length > 0) {
                     for (let index = 0; index < localTestValuesArr.length; index++) {
