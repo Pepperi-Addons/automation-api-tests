@@ -17,25 +17,38 @@ let isSkipMechanisemHundredGets = false;
 let isSkipMechanisemHundredPuts = false;
 let isGetResync = false;
 let isPutResync = false;
-let isKnownBug = false;
+let isBigData = false;
+let isCleanAfterTests = false;
 
 let _localData;
 let _agentExternalID;
 let _catalogExternalID;
 
 // All Sync Tests
-export async function SyncWithBugRecreation(generalService: GeneralService, tester: TesterFunctions) {
+export async function SyncClean(generalService: GeneralService, tester: TesterFunctions) {
     isBase = false;
     isSkipMechanisem = false;
     isSkipMechanisemHundredGets = false;
     isSkipMechanisemHundredPuts = false;
     isGetResync = false;
     isPutResync = false;
-    isKnownBug = true;
+    isBigData = false;
+    isCleanAfterTests = true;
     await ExecuteSyncTests(generalService, tester);
 }
 
-// All Sync Tests
+export async function SyncWithBigData(generalService: GeneralService, tester: TesterFunctions) {
+    isBase = false;
+    isSkipMechanisem = false;
+    isSkipMechanisemHundredGets = false;
+    isSkipMechanisemHundredPuts = false;
+    isGetResync = false;
+    isPutResync = false;
+    isBigData = true;
+    isCleanAfterTests = false;
+    await ExecuteSyncTests(generalService, tester);
+}
+
 export async function SyncLongTests(generalService: GeneralService, tester: TesterFunctions) {
     isBase = false;
     isSkipMechanisem = true;
@@ -43,7 +56,8 @@ export async function SyncLongTests(generalService: GeneralService, tester: Test
     isSkipMechanisemHundredPuts = false;
     isGetResync = false;
     isPutResync = true;
-    isKnownBug = false;
+    isBigData = false;
+    isCleanAfterTests = true;
     await ExecuteSyncTests(generalService, tester);
 }
 
@@ -54,7 +68,8 @@ export async function SyncTests(generalService: GeneralService, tester: TesterFu
     isSkipMechanisemHundredPuts = false;
     isGetResync = false;
     isPutResync = false;
-    isKnownBug = false;
+    isBigData = false;
+    isCleanAfterTests = true;
     await ExecuteSyncTests(generalService, tester);
 }
 
@@ -105,7 +120,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             _agentExternalID,
                             _catalogExternalID,
                             `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                            `-5`,
+                            `-${Math.floor(Math.random() * 1000).toString()}`,
                         ],
                         [
                             _accountExternalIDStr,
@@ -115,7 +130,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             _agentExternalID,
                             _catalogExternalID,
                             `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                            `-5`,
+                            `-${Math.floor(Math.random() * 1000).toString()}`,
                         ],
                     ],
                 },
@@ -310,8 +325,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 });
             }
 
-            if (isKnownBug) {
-                describe('Known Bugs', () => {
+            if (isBigData) {
+                describe('Big Data', () => {
                     it('500KB Sync (DI-17093)', async () => {
                         //Creating a 500KB sync for big data endpoint
                         const testBody = {} as SyncBody;
@@ -330,7 +345,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             syncDataArray[index][5] = _catalogExternalID;
                             syncDataArray[index][6] =
                                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec sapien ipsum. Curabitur vel scelerisque tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. Aliquam lacus metus, pulvinar sit amet elit quis, dictum maximus leo. Suspendisse potenti. Pellentesque suscipit, ante non ullamcorper porta, mauris tortor bibendum orci, et tincidunt lacus risus semper urna. Cras quis neque ligula. Aenean id ex eu diam sodales placerat id nec metus. Sed at vulputate ipsum. Duis aliquam sapien ligula, ut gravida urna congue in. Suspendisse molestie nisl quis volutpat commodo. Vivamus laoreet viverra dui et consectetur. Aenean egestas maximus urna quis maximus. Nullam suscipit faucibus magna, in dignissim dui aliquam quis. Sed dapibus neque vitae ante dignissim, eget consectetur est viverra. Nunc massa justo, sagittis vitae tortor vitae, aliquet laoreet leo. Quisque volutpat mollis metus, ac sodales enim euismod et. Nunc leo justo, scelerisque sit amet pellentesque sed, congue ut libero. Mauris bibendum metus eros, cursus tristique metus tristique et. Donec ac vehicula massa. Aliquam pharetra sit amet nunc sed tincidunt. Mauris bibendum euismod augue vel rhoncus. Aenean egestas tellus leo, sed egestas odio vehicula a. Sed facilisis vulputate mi, a imperdiet ipsum sollicitudin sit amet. Phasellus gravida gravida orci non imperdiet. Vivamus quis libero nec lorem porttitor maximus. Duis placerat sagittis sem. Suspendisse ut faucibus justo. Pellentesque quis sapien elit. Donec dapibus sed nisi at euismod. Sed ac fringilla nisl. Duis nec purus dolor. Aenean vestibulum vehicula risus eget blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur porttitor non lorem sed placerat. Quisque sodales maximus lorem, nec porta nunc fermentum sit amet. Integer euismod sollicitudin euismod. Ut consequat nec ligula et dapibus. Quisque ipsum nulla, convallis id ultricies sed, pharetra quis risus. Praesent vel laoreet sem. In sagittis purus at justo blandit maximus. Integer vulputate blandit lectus nec auctor. Phasellus facilisis, libero quis malesuada egestas, lacus felis cursus ex, nec faucibus dolor mauris nec ipsum. In nibh purus, imperdiet a magna ut, gravida vulputate justo. Interdum et malesuada fames ac ante ipsum primis in faucibus. In eget leo eget lectus auctor tincidunt. Nullam quis vestibulum augue, id sodales est. Fusce faucibus risus velit, vestibulum tincidunt lectus hendrerit id. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In hac habitasse platea dictumst. Praesent elementum consectetur purus. Aliquam ut neque consectetur, gravida velit ac, venenatis nisl. Etiam iaculis ligula ipsum, eget placerat lacus vestibulum sed. Vestibulum non risus sollicitudin, elementum ante quis, convallis orci. Ut sed mattis magna, non tincidunt tortor. Ut pulvinar, neque id feugiat lacinia, est erat volutpat lacus, ut elementum diam sem at diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In auctor consectetur accumsan. Quisque aliquam euismod viverra. Pellentesque finibus non orci sollicitudin consectetur. Aenean nulla massa, bibendum sed lectus sit amet, iaculis sodales nibh. Nulla convallis mi ac magna rutrum, consectetur condimentum nibh rutrum. Integer rhoncus sed ligula ut pharetra. Maecenas tortor erat, interdum vitae interdum sit amet, malesuada vel nulla. Aliquam a ex euismod, malesuada sapien ac, suscipit neque. Curabitur eget lectus enim. Integer feugiat lorem orci, non ornare justo aliquet ut. Pellentesque dignissim, est eu hendrerit ultrices, ipsum justo semper mi, mattis suscipit ligula sapien id ex. Fusce vitae sem vehicula, finibus nulla ultricies, commodo nisi. Etiam finibus odio ut lacinia dictum. Aenean a magna sit amet massa feugiat laoreet hendrerit id nisl. Fusce eu diam at nunc maximus lobortis ut sit amet lacus. In pharetra nisi justo, sed porta tellus euismod in. Sed at tincidunt magna, ut volutpat justo. Aliquam mollis euismod velit, in sollicitudin libero ultricies at. Etiam quis erat id turpis interdum facilisis. Praesent sodales nisl id dolor porttitor malesuada. Integer vitae consequat magna. Nullam gravida ultricies arcu, sit amet volutpat diam efficitur ut. In tincidunt mattis metus a scelerisque. Donec sit amet urna vehicula dui aliquet cursus vitae eget diam. Maecenas ac faucibus mauris. Suspendisse lectus tortor, pretium nec est in, luctus accumsan erat. Duis suscipit leo elementum lacus sagittis, sit amet tempor nulla mollis. Quisque lectus lectus, laoreet et dapibus id, aliquam vel arcu. Morbi sapien libero, malesuada a sem quis, iaculis iaculis mauris. Proin diam elit, semper a libero vitae, pulvinar auctor dui. Morbi quis turpis a neque condimentum feugiat. Nulla euismod lacus sed nunc ullamcorper ultrices. Quisque facilisis ullamcorper metus. In posuere ac sapien a sagittis. Nullam quis pharetra turpis. Aliquam consequat lacus a augue gravida posuere. Quisque porta, orci ac malesuada congue, lectus ligula bibendum sem, vel condimentum erat velit sed urna. Vivamus elementum felis quis dui vestibulum, volutpat consectetur odio dictum. Praesent non mattis augue, vitae facilisis metus. Praesent varius risus eu gravida ultrices. Ut arcu tellus, gravida eu elit sed, congue scelerisque orci. Etiam at ipsum pharetra, cursus nulla at, congue urna. Phasellus id ultricies nisl. Nullam id mi sit amet magna euismod euismod at et turpis. Suspendisse congue dolor id massa lobortis condimentum sed eget magna. Sed a lectus sit amet magna dapibus fringilla. Cras lectus enim, facilisis ac blandit id, ullamcorper id ante. Donec sed leo et erat convallis dapibus ac id eros. Vestibulum non rutrum diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec vel faucibus mauris, a pulvinar sem. Donec vitae suscipit purus, porttitor consequat vel.';
-                            syncDataArray[index][7] = `-5`;
+                            syncDataArray[index][7] = `-${Math.floor(Math.random() * 1000).toString()}`;
                         }
                         testBody['LocalDataUpdates' as any].jsonBody[2].Line = syncDataArray;
 
@@ -346,7 +361,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 )
                                     .eventually.to.have.property('TestResult')
                                     .that.contain('Pass' as TestResult),
-                                expect(
+                                await expect(
                                     orderCreationValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
@@ -416,12 +431,13 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     });
                 });
             }
-
-            describe('Exit Test', () => {
-                it('Test Clean Up', async () => {
-                    return expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
+            if (isCleanAfterTests) {
+                describe('Exit Test', () => {
+                    it('Test Clean Up', async () => {
+                        return expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
+                    });
                 });
-            });
+            }
         });
     });
 
@@ -570,7 +586,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 _agentExternalID,
                 _catalogExternalID,
                 `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                `-5`,
+                `-${Math.floor(Math.random() * 1000).toString()}`,
             ]);
             //POST sync job
             tempPostTenPutssPromiseArr.push(await service.post(testBody));
@@ -659,7 +675,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     }
     //#endregion wait for status
 
-    //#region resyncWithOrderCreationValidation
+    //#region orderCreationValidation
     async function orderCreationValidation(apiGetResponse, testBody) {
         let errorMessage = '';
         //Create local test values for comparison
@@ -680,8 +696,17 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             }
         }
         try {
+            let skipTransactionsSize = 1;
+            //Make sure max of 10 transactions will be tests, or else it will take so much time
+            if (testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length > 10) {
+                skipTransactionsSize = Math.floor(testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length / 10);
+            }
             // test that correct transactions created
-            for (let j = 0; j < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; j++) {
+            for (
+                let j = 0;
+                j < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length;
+                j = j + skipTransactionsSize
+            ) {
                 const getTransactionsLines = await service.papiClient.allActivities.find({
                     where: `ExternalID='${testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][2]}'`,
                 });
@@ -710,10 +735,6 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             ]} Error was thrown: ${error} | `;
                         }
                     }
-                    //test that the file was created in the server
-                    if (!(await checkFile(apiGetResponse.DataUpdates.URL))) {
-                        errorMessage += 'File was not created on the sever | ';
-                    }
                 } else {
                     errorMessage += `New transaction with ExternalID = ${
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][2]
@@ -729,7 +750,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             return { TestResult: errorMessage } as TestObject;
         }
     }
-    //#endregion resyncWithOrderCreationValidation
+    //#endregion orderCreationValidation
 
     //#region syncPostGetValidation
     async function syncPostGetValidation(apiGetResponse, testBody) {
