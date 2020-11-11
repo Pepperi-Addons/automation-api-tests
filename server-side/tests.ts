@@ -5,7 +5,7 @@ import { TestDataTest } from './api-tests/test_data';
 import { FileStorageTests } from './api-tests/file_storage';
 import { DataViewsTests } from './api-tests/data_views';
 import { FieldsTests } from './api-tests/fields';
-import { SyncLongTests, SyncTests, SyncWithBugRecreation } from './api-tests/sync';
+import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
 import { ObjectsTests } from './api-tests/objects';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
@@ -262,9 +262,9 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
     }
 }
 
-export async function sync_bug(client: Client, testerFunctions: TesterFunctions) {
+export async function sync_big_data(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Sync_Bug';
+    testName = 'Sync_Big_Data';
     PrintMemoryUseToLog(testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -286,7 +286,38 @@ export async function sync_bug(client: Client, testerFunctions: TesterFunctions)
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SyncWithBugRecreation(service, testerFunctions),
+        SyncWithBigData(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog(testName);
+    testName = '';
+    return testResult;
+}
+
+export async function sync_clean(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Sync_Clean';
+    PrintMemoryUseToLog(testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        testName,
+        testEnvironment,
+    );
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+        setNewTestHeadline,
+        addTestResultUnderHeadline,
+        printTestResults,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SyncClean(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog(testName);
     testName = '';
