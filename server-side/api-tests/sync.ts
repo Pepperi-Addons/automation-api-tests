@@ -621,12 +621,26 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     }
                 }
 
+                const loopsCounter = 0;
+                let syncJobInfo;
+                let syncJobInfoURL: string;
+                do {
+                    syncJobInfo = await service.jobInfo(tempPostTenPutssPromiseArr[index].SyncJobUUID);
+                    syncJobInfoURL = syncJobInfo.SentData?.ResponseURL as any;
+                    generalService.sleep(500);
+                } while (syncJobInfoURL == null && loopsCounter < 30);
+
                 let counter = 0;
                 do {
                     generalService.sleep(500);
-                    putXmlResponse = await fetch(
-                        `https://syncresponse.pepperi.com/${getSyncDataResponse.SyncUUID}`,
-                    ).then((response) => response.text());
+                    try {
+                        putXmlResponse = await fetch(syncJobInfoURL).then((response) => response.text());
+                    } catch (error) {
+                        return {
+                            TestResult: `Error in sync job info: ${JSON.stringify(syncJobInfo)}, Error: ${error}`,
+                        } as TestObject;
+                    }
+
                     console.log({ In_the_Puts_Xml: putXmlResponse });
                     counter++;
                 } while (putXmlResponse.includes('Message>Access Denied') && counter < 30);
@@ -685,12 +699,26 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 isSyncLocalDataUpdatesValid =
                     JSON.stringify(getSyncDataResponse.LocalDataUpdates) == JSON.stringify(testBody.LocalDataUpdates);
             }
+
+            const loopsCounter = 0;
+            let syncJobInfo;
+            let syncJobInfoURL: string;
+            do {
+                syncJobInfo = await service.jobInfo(syncPostApiResponse.SyncJobUUID);
+                syncJobInfoURL = syncJobInfo.SentData?.ResponseURL as any;
+                generalService.sleep(500);
+            } while (syncJobInfoURL == null && loopsCounter < 30);
+
             let counter = 0;
             do {
                 generalService.sleep(500);
-                putXmlResponse = await fetch(
-                    `https://syncresponse.pepperi.com/${getSyncDataResponse.SyncUUID}`,
-                ).then((response) => response.text());
+                try {
+                    putXmlResponse = await fetch(syncJobInfoURL).then((response) => response.text());
+                } catch (error) {
+                    return {
+                        TestResult: `Error in sync job info: ${JSON.stringify(syncJobInfo)}, Error: ${error}`,
+                    } as TestObject;
+                }
                 console.log({ In_the_Data_Members_Xml: putXmlResponse });
                 counter++;
             } while (putXmlResponse.includes('Message>Access Denied') && counter < 30);
