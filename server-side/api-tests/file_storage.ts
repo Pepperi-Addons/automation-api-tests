@@ -259,7 +259,6 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the first added file content again after updated the new file', async () => {
                         //Get the created file content
                         const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
                         expect(fileContent).to.contain('ABCD');
                     });
 
@@ -337,7 +336,6 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
                         const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
                         expect(fileContent).to.contain('Test Data for File Storage');
                     });
 
@@ -486,7 +484,6 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
                         const fileContent: string = await fetch(uriStr).then((response) => response.text());
-
                         expect(fileContent).to.contain('ABCD');
                     });
 
