@@ -115,27 +115,28 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         [
                             _accountExternalIDStr,
                             new Date().getTime().toString(),
-                            Math.floor(Math.random() * 100000000000000).toString(),
+                            Math.floor(Math.random() * 100000000000123).toString(),
                             _activityTypeIDStr,
                             _agentExternalID,
                             _catalogExternalID,
                             `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                            `-${Math.floor(Math.random() * 1000).toString()}`,
+                            `-${Math.floor(Math.random() * 1000123).toString()}`,
                         ],
                         [
                             _accountExternalIDStr,
                             new Date().getTime().toString(),
-                            Math.floor(Math.random() * 100000000000000).toString(),
+                            Math.floor(Math.random() * 100000000000321).toString(),
                             _activityTypeIDStr,
                             _agentExternalID,
                             _catalogExternalID,
                             `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                            `-${Math.floor(Math.random() * 1000).toString()}`,
+                            `-${Math.floor(Math.random() * 1000321).toString()}`,
                         ],
                     ],
                 },
             },
         };
+        generalService.sleep(Math.floor(Math.random() * 10));
         //GET
         _body = {
             LocalDataUpdates: null as any,
@@ -174,6 +175,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     const tenPutsSize = 10;
     const tempPostTenPutssPromiseArr = [] as any;
     const tenPutResponsArr = [] as any;
+    const tenPutDataResponsArr = [] as any;
+    const tenPutsResponsArr = [] as any;
     let tenOrderLinesValidationResult;
 
     if (isSkipMechanisem) {
@@ -345,7 +348,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             syncDataArray[index][5] = _catalogExternalID;
                             syncDataArray[index][6] =
                                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec sapien ipsum. Curabitur vel scelerisque tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. Aliquam lacus metus, pulvinar sit amet elit quis, dictum maximus leo. Suspendisse potenti. Pellentesque suscipit, ante non ullamcorper porta, mauris tortor bibendum orci, et tincidunt lacus risus semper urna. Cras quis neque ligula. Aenean id ex eu diam sodales placerat id nec metus. Sed at vulputate ipsum. Duis aliquam sapien ligula, ut gravida urna congue in. Suspendisse molestie nisl quis volutpat commodo. Vivamus laoreet viverra dui et consectetur. Aenean egestas maximus urna quis maximus. Nullam suscipit faucibus magna, in dignissim dui aliquam quis. Sed dapibus neque vitae ante dignissim, eget consectetur est viverra. Nunc massa justo, sagittis vitae tortor vitae, aliquet laoreet leo. Quisque volutpat mollis metus, ac sodales enim euismod et. Nunc leo justo, scelerisque sit amet pellentesque sed, congue ut libero. Mauris bibendum metus eros, cursus tristique metus tristique et. Donec ac vehicula massa. Aliquam pharetra sit amet nunc sed tincidunt. Mauris bibendum euismod augue vel rhoncus. Aenean egestas tellus leo, sed egestas odio vehicula a. Sed facilisis vulputate mi, a imperdiet ipsum sollicitudin sit amet. Phasellus gravida gravida orci non imperdiet. Vivamus quis libero nec lorem porttitor maximus. Duis placerat sagittis sem. Suspendisse ut faucibus justo. Pellentesque quis sapien elit. Donec dapibus sed nisi at euismod. Sed ac fringilla nisl. Duis nec purus dolor. Aenean vestibulum vehicula risus eget blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur porttitor non lorem sed placerat. Quisque sodales maximus lorem, nec porta nunc fermentum sit amet. Integer euismod sollicitudin euismod. Ut consequat nec ligula et dapibus. Quisque ipsum nulla, convallis id ultricies sed, pharetra quis risus. Praesent vel laoreet sem. In sagittis purus at justo blandit maximus. Integer vulputate blandit lectus nec auctor. Phasellus facilisis, libero quis malesuada egestas, lacus felis cursus ex, nec faucibus dolor mauris nec ipsum. In nibh purus, imperdiet a magna ut, gravida vulputate justo. Interdum et malesuada fames ac ante ipsum primis in faucibus. In eget leo eget lectus auctor tincidunt. Nullam quis vestibulum augue, id sodales est. Fusce faucibus risus velit, vestibulum tincidunt lectus hendrerit id. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In hac habitasse platea dictumst. Praesent elementum consectetur purus. Aliquam ut neque consectetur, gravida velit ac, venenatis nisl. Etiam iaculis ligula ipsum, eget placerat lacus vestibulum sed. Vestibulum non risus sollicitudin, elementum ante quis, convallis orci. Ut sed mattis magna, non tincidunt tortor. Ut pulvinar, neque id feugiat lacinia, est erat volutpat lacus, ut elementum diam sem at diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In auctor consectetur accumsan. Quisque aliquam euismod viverra. Pellentesque finibus non orci sollicitudin consectetur. Aenean nulla massa, bibendum sed lectus sit amet, iaculis sodales nibh. Nulla convallis mi ac magna rutrum, consectetur condimentum nibh rutrum. Integer rhoncus sed ligula ut pharetra. Maecenas tortor erat, interdum vitae interdum sit amet, malesuada vel nulla. Aliquam a ex euismod, malesuada sapien ac, suscipit neque. Curabitur eget lectus enim. Integer feugiat lorem orci, non ornare justo aliquet ut. Pellentesque dignissim, est eu hendrerit ultrices, ipsum justo semper mi, mattis suscipit ligula sapien id ex. Fusce vitae sem vehicula, finibus nulla ultricies, commodo nisi. Etiam finibus odio ut lacinia dictum. Aenean a magna sit amet massa feugiat laoreet hendrerit id nisl. Fusce eu diam at nunc maximus lobortis ut sit amet lacus. In pharetra nisi justo, sed porta tellus euismod in. Sed at tincidunt magna, ut volutpat justo. Aliquam mollis euismod velit, in sollicitudin libero ultricies at. Etiam quis erat id turpis interdum facilisis. Praesent sodales nisl id dolor porttitor malesuada. Integer vitae consequat magna. Nullam gravida ultricies arcu, sit amet volutpat diam efficitur ut. In tincidunt mattis metus a scelerisque. Donec sit amet urna vehicula dui aliquet cursus vitae eget diam. Maecenas ac faucibus mauris. Suspendisse lectus tortor, pretium nec est in, luctus accumsan erat. Duis suscipit leo elementum lacus sagittis, sit amet tempor nulla mollis. Quisque lectus lectus, laoreet et dapibus id, aliquam vel arcu. Morbi sapien libero, malesuada a sem quis, iaculis iaculis mauris. Proin diam elit, semper a libero vitae, pulvinar auctor dui. Morbi quis turpis a neque condimentum feugiat. Nulla euismod lacus sed nunc ullamcorper ultrices. Quisque facilisis ullamcorper metus. In posuere ac sapien a sagittis. Nullam quis pharetra turpis. Aliquam consequat lacus a augue gravida posuere. Quisque porta, orci ac malesuada congue, lectus ligula bibendum sem, vel condimentum erat velit sed urna. Vivamus elementum felis quis dui vestibulum, volutpat consectetur odio dictum. Praesent non mattis augue, vitae facilisis metus. Praesent varius risus eu gravida ultrices. Ut arcu tellus, gravida eu elit sed, congue scelerisque orci. Etiam at ipsum pharetra, cursus nulla at, congue urna. Phasellus id ultricies nisl. Nullam id mi sit amet magna euismod euismod at et turpis. Suspendisse congue dolor id massa lobortis condimentum sed eget magna. Sed a lectus sit amet magna dapibus fringilla. Cras lectus enim, facilisis ac blandit id, ullamcorper id ante. Donec sed leo et erat convallis dapibus ac id eros. Vestibulum non rutrum diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec vel faucibus mauris, a pulvinar sem. Donec vitae suscipit purus, porttitor consequat vel.';
-                            syncDataArray[index][7] = `-${Math.floor(Math.random() * 1000).toString()}`;
+                            syncDataArray[index][7] = `-${Math.floor(Math.random() * 1000100).toString()}`;
+                            generalService.sleep(Math.floor(Math.random() * 10));
                         }
                         testBody['LocalDataUpdates' as any].jsonBody[2].Line = syncDataArray;
 
@@ -417,6 +421,10 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     }
 
                     it('Ten Puts With Added Lines', async () => {
+                        console.log(tenPutDataResponsArr);
+                        expect(tenPutDataResponsArr.join()).to.not.include('Missmatch');
+                        console.log(tenPutsResponsArr);
+                        expect(tenPutsResponsArr.join()).to.not.include('<');
                         console.log(tenPutResponsArr);
                         expect(tenOrderLinesValidationResult)
                             .to.have.property('TestResult')
@@ -586,12 +594,64 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 _agentExternalID,
                 _catalogExternalID,
                 `Test ${Math.floor(Math.random() * 1000000).toString()}`,
-                `-${Math.floor(Math.random() * 1000).toString()}`,
+                `-${Math.floor(Math.random() * 1000100).toString()}`,
             ]);
+            generalService.sleep(Math.floor(Math.random() * 10));
             //POST sync job
             tempPostTenPutssPromiseArr.push(await service.post(testBody));
         }
+
         for (let index = 0; index < tenPutsSize; index++) {
+            //get the last data and put response
+            if (index + 1 >= tenPutsSize) {
+                //GET sync data
+                let getSyncDataResponse;
+                let putXmlResponse;
+
+                let isSyncLocalDataUpdatesValid = false;
+                if (testBody['LocalDataUpdates'] != null) {
+                    getSyncDataResponse = await service.SyncData(tempPostTenPutssPromiseArr[index].SyncJobUUID);
+                    if (getSyncDataResponse.LocalDataUpdates != null) {
+                        isSyncLocalDataUpdatesValid =
+                            JSON.stringify(getSyncDataResponse.LocalDataUpdates) ==
+                            JSON.stringify(testBody.LocalDataUpdates);
+                    } else {
+                        //This should never happen
+                        isSyncLocalDataUpdatesValid = false;
+                    }
+                }
+
+                let counter = 0;
+                do {
+                    generalService.sleep(500);
+                    putXmlResponse = await fetch(
+                        `https://syncresponse.pepperi.com/${getSyncDataResponse.SyncUUID}`,
+                    ).then((response) => response.text());
+                    console.log({ In_the_Puts_Xml: putXmlResponse });
+                    counter++;
+                } while (putXmlResponse.includes('Message>Access Denied') && counter < 30);
+
+                if (putXmlResponse.includes('<Successful>true</Successful>')) {
+                    const putXmlResponseArr = putXmlResponse.split('<PutObjectResult>');
+                    if (
+                        !putXmlResponseArr[putXmlResponseArr.length - 1].includes('Row inserted.') ||
+                        !putXmlResponseArr[putXmlResponseArr.length - 1].includes('<Successful>true</Successful>')
+                    ) {
+                        tenPutsResponsArr.push(`Error in put: ${putXmlResponseArr[putXmlResponseArr.length - 1]}`);
+                    }
+                } else {
+                    tenPutsResponsArr.push(`Error in put: ${putXmlResponse}`);
+                }
+                console.log({ In_the_Puts: getSyncDataResponse });
+
+                if (!isSyncLocalDataUpdatesValid) {
+                    tenPutDataResponsArr.push(
+                        `Missmatch in the LocalDataUpdates, the get sync data response: ${JSON.stringify(
+                            getSyncDataResponse.LocalDataUpdates,
+                        )}, not match to the sent data: ${JSON.stringify(testBody.LocalDataUpdates)}.`,
+                    );
+                }
+            }
             tenPutResponsArr.push(await waitForSyncStatus(tempPostTenPutssPromiseArr[index].SyncJobUUID, 3.5 * 60000));
         }
         for (let index = 0; index < tenPutResponsArr.length; index++) {
@@ -614,18 +674,81 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         //POST sync job
         const syncPostApiResponse = await service.post(testBody);
 
+        //GET sync data
+        let getSyncDataResponse;
+        let putXmlResponse;
+
+        let isSyncLocalDataUpdatesValid = true;
+        if (testBody['LocalDataUpdates'] != null && !testBody['LocalDataUpdates'].toString().includes('Bug')) {
+            getSyncDataResponse = await service.SyncData(syncPostApiResponse.SyncJobUUID);
+            if (getSyncDataResponse.LocalDataUpdates != null) {
+                isSyncLocalDataUpdatesValid =
+                    JSON.stringify(getSyncDataResponse.LocalDataUpdates) == JSON.stringify(testBody.LocalDataUpdates);
+            }
+            let counter = 0;
+            do {
+                generalService.sleep(500);
+                putXmlResponse = await fetch(
+                    `https://syncresponse.pepperi.com/${getSyncDataResponse.SyncUUID}`,
+                ).then((response) => response.text());
+                console.log({ In_the_Data_Members_Xml: putXmlResponse });
+                counter++;
+            } while (putXmlResponse.includes('Message>Access Denied') && counter < 30);
+            if (putXmlResponse.includes('<Successful>true</Successful>')) {
+                const putXmlResponseArr = putXmlResponse.split('<PutObjectResult>');
+                for (let i = 1; i < putXmlResponseArr.length; i++) {
+                    if (
+                        !putXmlResponseArr[i].includes('Row inserted.') ||
+                        !putXmlResponseArr[i].includes('<Successful>true</Successful>')
+                    ) {
+                        isSyncLocalDataUpdatesValid = false;
+                        console.log({ Error_In_the_Data_Members: putXmlResponseArr[i] });
+                    }
+                }
+                console.log({ In_the_Data_Members: getSyncDataResponse });
+            } else {
+                isSyncLocalDataUpdatesValid = false;
+                console.log({ Error_In_the_Data_Members: putXmlResponse });
+            }
+
+            console.log({ In_the_Data_Members: getSyncDataResponse });
+        }
+
         //GET sync jobinfo
         const apiGetResponse = await waitForSyncStatus(syncPostApiResponse.SyncJobUUID, 3.5 * 60000);
-        if (apiGetResponse.Status == 'Done' && apiGetResponse.ProgressPercentage == 100) {
+        if (
+            apiGetResponse.Status == 'Done' &&
+            apiGetResponse.ProgressPercentage == 100 &&
+            isSyncLocalDataUpdatesValid
+        ) {
             return {
                 TestResult: 'Pass',
                 apiGetResponse: apiGetResponse,
                 testBody: testBody as any,
             } as TestObject;
         } else {
-            return {
-                TestResult: `The Get Status is: '${apiGetResponse.Status} , and the Progress Percentage is: '${apiGetResponse.ProgressPercentage} after 210 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
-            } as TestObject;
+            if (isSyncLocalDataUpdatesValid) {
+                return {
+                    TestResult: `The Get Status is: ${apiGetResponse.Status} , and the Progress Percentage is: ${apiGetResponse.ProgressPercentage} after 210 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}.`,
+                } as TestObject;
+            } else {
+                if (putXmlResponse == undefined) {
+                    return {
+                        TestResult: `Missmatch in the LocalDataUpdates, the get sync data response: ${JSON.stringify(
+                            getSyncDataResponse.LocalDataUpdates,
+                        )}, not match to the sent data: ${JSON.stringify(
+                            testBody.LocalDataUpdates,
+                        )}, the get stutus is: ${apiGetResponse.Status}, the Progress Percentage is: ${
+                            apiGetResponse.ProgressPercentage
+                        }, the Sync UUID is: ${apiGetResponse.SyncUUID}, the DB-UUID is: ${
+                            apiGetResponse.ClientInfo.ClientDBUUID
+                        }.`,
+                    } as TestObject;
+                }
+                return {
+                    TestResult: `Error in the put: ${putXmlResponse}.`,
+                } as TestObject;
+            }
         }
     }
     //#endregion syncDataMembersValidation
@@ -648,7 +771,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             } as TestObject;
         } else {
             return {
-                TestResult: `The Get Status is: '${apiGetResponse.Status} , and the Progress Percentage is: '${apiGetResponse.ProgressPercentage} after 90 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}`,
+                TestResult: `The Get Status is: ${apiGetResponse.Status}, and the Progress Percentage is: ${apiGetResponse.ProgressPercentage} after 90 sec The Sync UUID is: ${apiGetResponse.SyncUUID}. The DB-UUID is: ${apiGetResponse.ClientInfo.ClientDBUUID}.`,
             } as TestObject;
         }
     }

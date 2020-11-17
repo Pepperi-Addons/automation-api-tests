@@ -8,7 +8,7 @@ const installedAddons = {
     'Cross Platforms API': '' as any,
 };
 
-// All Sync Tests
+// Get the Tests Data
 export async function TestDataTest(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService;
     const describe = tester.describe;
