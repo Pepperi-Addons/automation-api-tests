@@ -42,7 +42,7 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
             expect(service.getClientData('UserEmail')).to.contain('@');
         });
 
-        it('Test Prerequisites', async () => {
+        it('Test Prerequisites', () => {
             expect(installedAddonsArr).to.be.an('array');
         });
 

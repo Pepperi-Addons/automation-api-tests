@@ -11,6 +11,7 @@ export class SyncService {
     jobInfo(uuid: string) {
         return this.papiClient.application.sync.jobInfo(uuid);
     }
+
     post(body: SyncBody) {
         return this.papiClient.application.sync.post(body);
     }

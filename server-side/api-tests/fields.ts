@@ -48,19 +48,19 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
         //Test Data
         it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
             transactionsTypeArr[transactionsTypeArr[0]]
-        }`, async () => {
+        }`, () => {
             expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
         it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
             activitiesTypeArr[activitiesTypeArr[0]]
-        }`, async () => {
+        }`, () => {
             expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
 
         //#region Endpoints
         describe('Endpoints', () => {
             describe('Get', () => {
-                it('Get Transaction With The Type Sales Order', async () => {
+                it('Get Transaction With The Type Sales Order', () => {
                     return expect(transactionsTypeArr).to.have.property('Sales Order');
                 });
 
@@ -72,7 +72,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         .with.length.above(5);
                 });
 
-                it('Get An Activity TypeID', async () => {
+                it('Get An Activity TypeID', () => {
                     return expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').and.is.above(0);
                 });
             });

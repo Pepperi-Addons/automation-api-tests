@@ -38,19 +38,19 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
         //Test Data
         it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID: ${
             transactionsTypeArr[transactionsTypeArr[0]]
-        }`, async () => {
+        }`, () => {
             expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
 
         it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID: ${
             activitiesTypeArr[activitiesTypeArr[0]]
-        }`, async () => {
+        }`, () => {
             expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
 
         it(`Test Data: Users - Name: ${userTypeIDArr[0]}, InternalID: ${userTypeIDArr[userTypeIDArr[0]]}, Name: ${
             userTypeIDArr[1]
-        }, InternalID: ${userTypeIDArr[userTypeIDArr[1]]}`, async () => {
+        }, InternalID: ${userTypeIDArr[userTypeIDArr[1]]}`, () => {
             expect(userTypeIDArr[userTypeIDArr[0]]).to.be.a('number').that.is.above(0);
             expect(userTypeIDArr[userTypeIDArr[1]]).to.be.a('number').that.is.above(0);
         });

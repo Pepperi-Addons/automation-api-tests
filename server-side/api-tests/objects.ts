@@ -320,7 +320,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
     //#endregion Array of TSAs
 
-    describe('Objects Tests Suites', async () => {
+    describe('Objects Tests Suites', () => {
         describe('Accounts', () => {
             it('CRUD', async () => {
                 const createdTSAs = await service.createBulkTSA('accounts', TSAarr);
