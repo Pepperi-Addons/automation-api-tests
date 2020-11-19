@@ -99,7 +99,8 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                     it(`Export Transactions ATD ${transactionName}`, async () => {
                         return expect(importExportATDService.exportATD('transactions', transactionID))
                             .eventually.to.have.property('URL')
-                            .that.contain('https://cdn.')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
                     });
                 }
@@ -109,7 +110,8 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                     it(`Export Activities ATD ${activityName}`, async () => {
                         return expect(importExportATDService.exportATD('activities', activityID))
                             .eventually.to.have.property('URL')
-                            .that.contain('https://cdn.')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
                     });
                 }
@@ -123,13 +125,15 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         const exportATDResponse = await importExportATDService.exportATD('transactions', transactionID);
                         expect(exportATDResponse)
                             .to.have.property('URL')
-                            .that.contain('https://cdn.')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
                         const references = await fetch(exportATDResponse.URL)
                             .then((response) => response.json())
                             .then((atd) => atd.References);
+                        references[0].ID = 0;
                         const mappingResponse = await importExportATDService.exportMappingATD({
-                            references: references,
+                            References: references,
                         });
                         expect(mappingResponse).to.have.property('Mapping').that.is.an('array');
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('Origin');
@@ -146,13 +150,15 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         const exportATDResponse = await importExportATDService.exportATD('activities', activityID);
                         expect(exportATDResponse)
                             .to.have.property('URL')
-                            .that.contain('https://cdn.')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
                         const references = await fetch(exportATDResponse.URL)
                             .then((response) => response.json())
                             .then((atd) => atd.References);
+                        references[0].ID = 0;
                         const mappingResponse = await importExportATDService.exportMappingATD({
-                            references: references,
+                            References: references,
                         });
                         expect(mappingResponse).to.have.property('Mapping').that.is.an('array');
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('Origin');
