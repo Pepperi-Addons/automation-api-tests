@@ -15,7 +15,7 @@ interface FindOptions {
 }
 
 interface References {
-    references: { ID: string; Name: string; Type: string }[];
+    References: { ID: string; Name: string; Type: string }[];
 }
 
 export class ImportExportATDService {
