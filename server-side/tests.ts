@@ -9,7 +9,7 @@ import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-test
 import { ObjectsTests } from './api-tests/objects';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
-import { AddonsTests } from './api-tests/addons';
+import { BaseAddonsTests, SingleMaintenanceAndDependenciesAddonsTests, MaintenanceFullTests } from './api-tests/addons';
 import { ImportExportATDTests } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 
@@ -439,7 +439,7 @@ export async function var_api(client: Client, request: Request, testerFunctions:
     }
 }
 
-export async function addons(client: Client, testerFunctions: TesterFunctions) {
+export async function addons(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
@@ -467,13 +467,89 @@ export async function addons(client: Client, testerFunctions: TesterFunctions) {
         };
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
-            AddonsTests(service, testerFunctions),
+            BaseAddonsTests(service, request, testerFunctions),
         ]).then(() => testerFunctions.run());
         PrintMemoryUseToLog('End', testName);
         testName = '';
         return testResult;
     } else {
-        return AddonsTests(service, testerFunctions);
+        return BaseAddonsTests(service, request, testerFunctions);
+    }
+}
+
+export async function maintenance(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Addons' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Maintenance_and_Dependencies';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            SingleMaintenanceAndDependenciesAddonsTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return SingleMaintenanceAndDependenciesAddonsTests(service, request, testerFunctions);
+    }
+}
+
+export async function maintenance_full(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Addons' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Maintenance_Full';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            MaintenanceFullTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return MaintenanceFullTests(service, request, testerFunctions);
     }
 }
 

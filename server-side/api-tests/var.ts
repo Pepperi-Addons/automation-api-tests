@@ -14,6 +14,7 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
     };
 }
 
+//This was never used
 // function testDataNewAddonVersionBulk(addonUUID, testNumberArr) {
 //     for (let index = 0; index < testNumberArr.length; index++) {
 //         return [
@@ -25,15 +26,32 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 //     }
 // }
 
-function testDatagetBase64FileFromFileAtPath(pathOfFileToReadFrom) {
-    const request = new XMLHttpRequest();
-    request.open('GET', pathOfFileToReadFrom, false);
-    try {
-        request.send();
-    } catch (error) {
-        return error;
-    }
-    return btoa(unescape(encodeURIComponent(request.response)));
+//This was replaces to prevent file reading from the server (it might cause crashes of node.js)
+// function testDatagetBase64FileFromFileAtPath(pathOfFileToReadFrom) {
+//     const request = new XMLHttpRequest();
+//     request.open('GET', pathOfFileToReadFrom, false);
+//     try {
+//         request.send();
+//     } catch (error) {
+//         return error;
+//     }
+//     return btoa(unescape(encodeURIComponent(request.response)));
+// }
+
+//Changed to not use local files, but always the same file
+function testDatagetBase64FileFromFileAtPath() {
+    return Buffer.from(
+        'exports.install = async (Client, Request) => {\n' +
+            'return {success:true, resultObject:{}}\n};' +
+            '\n\nexports.uninstall = async (Client, Request) => {\n' +
+            'return {success:true, resultObject:{}}\n};' +
+            '\n\nexports.upgrade = async (Client, Request) => {\n' +
+            'return {success:true, resultObject:{}}\n};' +
+            '\n\nexports.downgrade = async (Client, Request) => {\n' +
+            'return {success:true, resultObject:{}}\n};' +
+            '\n\nexports.ThisIsJustTestFileWithTestFunctions = async (Client, Request) => {\n' +
+            'return {success:true, resultObject:{}}\n}',
+    ).toString('base64');
 }
 
 function createRandomUUID() {
@@ -44,32 +62,23 @@ function createRandomUUID() {
     });
 }
 
-//#endregion Prerequisites for Audit Logs Tests
+//#endregion Prerequisites for Var API Tests
 
 // All Var API Tests
 export async function VarTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    // const describe = tester.describe;
-    // const expect = tester.expect;
-    // const it = tester.it;
+    const describe = tester.describe;
+    const expect = tester.expect;
+    const it = tester.it;
 
     const setNewTestHeadline = tester.setNewTestHeadline;
     const addTestResultUnderHeadline = tester.addTestResultUnderHeadline;
     const printTestResults = tester.printTestResults;
-    //#region Endpoints
-    // describe('Endpoints', () => {
-    //     describe('Get', () => {
-    //         it('Get Array Of Var Addons', async () => {
-    //             const varResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-    //                 method: `GET`,
-    //                 headers: {
-    //                     Authorization: request.body.varKey,
-    //                 },
-    //             }).then((response) => response.json());
-    //             expect(varResponse).to.be.an('array').with.length.above(0);
-    //             console.log(varResponse);
-    //         });
-    //     });
-    // });
+
+    console.log('Initiate Var API Tests | ' + generalService.getTime());
+
+    if (!generalService.getClientData('Server').includes('sandbox')) {
+        throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
+    }
 
     //Prerequisites per test
     const crudAddonTest = 'CRUD Addon Test';
@@ -283,9 +292,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
     //#endregion Test Config area
     //Careful - This method can delete all the Addons!!!
-    /*//executeRemoveAllWrongAddonsAndVersions();*/
+    //Never change this, you can comment this out, but don't play with it.
+    await executeRemoveAllWrongAddonsAndVersions();
+
     //Print Report
-    printTestResults();
+    printTestResults(describe, expect, it, 'Var API');
 
     //#region Tests
     //Test CRUD var addon
@@ -340,9 +351,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Read: getAddonsApiResponse });
-        debugger;
+
         mandatoryStepsCRUDAddon.readTestResult = testDataBody.Name == getAddonsApiResponse.Name;
-        //mandatoryStepsCRUDAddon.readTestResult = testDataBody.Name == getAddonsApiResponse.result.Name;
+        //mandatoryStepsCRUDAddon.readTestResult = testDataBody.Name == getAddonsApiResponse.Name;
         addTestResultUnderHeadline(
             testName,
             'Read Addon Test',
@@ -368,15 +379,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Update
         const tempNewAddonBody = createApiResponse;
         tempNewAddonBody.Description = 'Update Test';
-        debugger;
-        getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
+        getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
             },
             body: JSON.stringify(tempNewAddonBody),
         }).then((response) => response.json());
-        debugger;
+
         console.log({ Post_Var_Addons_Update: getAddonsApiResponse });
         addTestResultUnderHeadline(
             testName,
@@ -412,7 +422,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -420,7 +430,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -429,7 +439,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -527,7 +537,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -535,7 +545,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -544,7 +554,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -606,14 +616,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(testDataBody),
         }).then((response) => response.json());
         console.log({ Respons_Create_Var_Addons_With_Non_Valid_UUID: createApiResponse });
-        mandatoryStepsCRUDAddon.createTestResult = createApiResponse.statusText.includes('is not vaild UUID');
+        mandatoryStepsCRUDAddon.createTestResult = JSON.stringify(createApiResponse).includes('is not vaild UUID');
         addTestResultUnderHeadline(
             testName,
             'Create Addon With Non Valid UUID Test',
             mandatoryStepsCRUDAddon.createTestResult
                 ? true
                 : 'The response is: ' +
-                      createApiResponse.statusText +
+                      JSON.stringify(createApiResponse) +
                       " Expected response is that Files > FileName > Includes 'is not vaild UUID'",
         );
 
@@ -658,7 +668,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -702,7 +712,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read
         const getAddonsApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -741,7 +751,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Update
         const tempNewAddonVersionBody = createVersionApiResponse;
         tempNewAddonVersionBody.Description = 'Update Version Test';
-        let getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        let getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -750,7 +760,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
         getAdonsVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + getAdonsVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + getAdonsVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -789,7 +799,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Delete Version
         const countAllAddonsVersionsBeforeDelete = await fetch(
             generalService['client'].BaseURL +
-                "var/addons/versions?where=AddonUUID='" +
+                "/var/addons/versions?where=AddonUUID='" +
                 getAdonsVersionApiResponse.AddonUUID +
                 "'",
             {
@@ -801,7 +811,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Versions_Before_Delete: countAllAddonsVersionsBeforeDelete });
         let deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + getAdonsVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + getAdonsVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -812,7 +822,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         console.log({ Post_Var_Addons_Version_Delete: deleteApiResponse });
         const countAllAddonsVersionsAfterDelete = await fetch(
             generalService['client'].BaseURL +
-                "var/addons/versions?where=AddonUUID='" +
+                "/var/addons/versions?where=AddonUUID='" +
                 getAdonsVersionApiResponse.AddonUUID +
                 "'",
             {
@@ -838,7 +848,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -851,21 +861,21 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
             },
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
-        deleteApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID, {
+        deleteApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
             method: `DELETE`,
             headers: {
                 Authorization: request.body.varKey,
             },
         }).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -921,7 +931,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -930,8 +940,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsGetDeletedAddonTest.deleteAddon = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsGetDeletedAddonTest.deleteAddon = !JSON.stringify(deleteApiResponse).includes('fault');
 
         //Get Delted Addon
         let getDeletedAddonTest;
@@ -955,7 +969,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             );
             mandatoryStepsGetDeletedAddonTest.getDeleteAddon = getDeletedAddonTest.Hidden;
         } else {
-            getDeletedAddonTest = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+            getDeletedAddonTest = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
                 method: `GET`,
                 headers: {
                     Authorization: request.body.varKey,
@@ -1013,7 +1027,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1025,7 +1039,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Version
         let deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1040,7 +1054,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         let getDeletedAddonVersionTest;
         if (isPositiveTest) {
             getDeletedAddonVersionTest = await fetch(
-                generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+                generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
                 {
                     method: `GET`,
                     headers: {
@@ -1061,7 +1075,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             );
             mandatoryStepsGetDeletedAddonVersionTest.correctHiddenStatusOfVersion = getDeletedAddonVersionTest.Hidden;
         } else {
-            getDeletedAddonVersionTest = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+            getDeletedAddonVersionTest = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
                 method: `GET`,
                 headers: {
                     Authorization: request.body.varKey,
@@ -1085,7 +1099,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1098,15 +1112,21 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        deleteApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID, {
+        deleteApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
             method: `DELETE`,
             headers: {
                 Authorization: request.body.varKey,
             },
         }).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsGetDeletedAddonVersionTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsGetDeletedAddonVersionTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes(
+            'fault',
+        );
 
         if (
             mandatoryStepsGetDeletedAddonVersionTest.createAddonVersion == true &&
@@ -1140,7 +1160,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
 
         const versionTestDataBody = {};
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1149,8 +1169,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Version_Create: createVersionApiResponse });
 
-        console.log({ Get_Var_Addons_Empty_Version_Create_Status_Text: createVersionApiResponse.statusText });
-        mandatoryStepsPostEmptyVersionTest.FailToCreateAddonVersion = createVersionApiResponse.statusText.includes(
+        console.log({ Get_Var_Addons_Empty_Version_Create_Status_Text: createVersionApiResponse });
+        mandatoryStepsPostEmptyVersionTest.FailToCreateAddonVersion = JSON.stringify(createVersionApiResponse).includes(
             'The mandatory field AddonUUID is missing',
         );
         addTestResultUnderHeadline(
@@ -1159,13 +1179,13 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             mandatoryStepsPostEmptyVersionTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse.statusText +
+                      JSON.stringify(createVersionApiResponse) +
                       " Expected response should include error mesage with the text : 'The mandatory field AddonUUID is missing'",
         );
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1174,8 +1194,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostEmptyVersionTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostEmptyVersionTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostEmptyVersionTest.FailToCreateAddonVersion == true &&
@@ -1214,7 +1238,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
 
         const versionTestDataBody = [{}];
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions/bulk', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions/bulk', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1223,23 +1247,23 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
 
-        console.log({ Get_Var_Addons_Empty_Versions_Array_Create_Status_Text: createVersionApiResponse.statusText });
-        mandatoryStepsPostEmptyVersionsArrayTest.FailToCreateAddonVersion = createVersionApiResponse.statusText.includes(
-            'The mandatory field AddonUUID is missing',
-        );
+        console.log({ Get_Var_Addons_Empty_Versions_Array_Create_Status_Text: createVersionApiResponse });
+        mandatoryStepsPostEmptyVersionsArrayTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiResponse,
+        ).includes('The mandatory field AddonUUID is missing');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon With Empty Versions Array Test',
             mandatoryStepsPostEmptyVersionsArrayTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse.statusText +
+                      JSON.stringify(createVersionApiResponse) +
                       " Expected response should include error mesage with the text : 'The mandatory field AddonUUID is missing'",
         );
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1248,8 +1272,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostEmptyVersionsArrayTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostEmptyVersionsArrayTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes(
+            'fault',
+        );
 
         if (
             mandatoryStepsPostEmptyVersionsArrayTest.FailToCreateAddonVersion == true &&
@@ -1296,7 +1326,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions/bulk', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions/bulk', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1324,7 +1354,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Delete Addon
         for (let index = 0; index < versionTestDataBody.length; index++) {
             const deleteVersionApiResponse = await fetch(
-                generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse[index].UUID,
+                generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse[index].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1338,7 +1368,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1347,8 +1377,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostVersionsInBulkTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostVersionsInBulkTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostVersionsInBulkTest.createAddonVersion == true &&
@@ -1385,7 +1419,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions/bulk', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions/bulk', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1393,23 +1427,23 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(versionTestDataBody) as any,
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
-
         console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //statusText.split('<h2>')[1].split('</h2>')[0] });
-        mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion =
-            createVersionApiResponse.success == false; //statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
+        mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiResponse,
+        ).includes('fault'); //statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
         addTestResultUnderHeadline(
             testName,
             'Create New Addon With Single Version In Bulk End Point Test',
             mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                  createVersionApiResponse.statusText + //.statusText.split('<h2>')[1].split('</h2>')[0] +
+                  JSON.stringify(createVersionApiResponse) + //.statusText.split('<h2>')[1].split('</h2>')[0] +
                       " Expected response should include error mesage with the text : '500 - Internal server error.'",
         );
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1418,8 +1452,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostSingleVersionInBulkEndPointTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostSingleVersionInBulkEndPointTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion == true &&
@@ -1466,7 +1506,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1476,21 +1516,22 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
 
         console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //.statusText.split('<h2>')[1].split('</h2>')[0] });
-        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion =
-            createVersionApiResponse.success == false; //.statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
+        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiResponse,
+        ).includes('fault'); //.statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
         addTestResultUnderHeadline(
             testName,
             'Create New Addon With Single Version In Bulk End Point Test',
             mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                  createVersionApiResponse.success + //.statusText.split('<h2>')[1].split('</h2>')[0] +
+                  createVersionApiResponse + //.statusText.split('<h2>')[1].split('</h2>')[0] +
                       " Expected response should include error mesage with the text : '500 - Internal server error.'",
         );
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1499,8 +1540,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion == true &&
@@ -1544,7 +1591,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1555,30 +1602,33 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         mandatoryStepsPostSameVersionNameTest.createAddonVersion =
             versionTestDataBody.Name == createVersionApiResponse.Name;
 
-        const createVersionApiNegativeResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiNegativeResponse = await fetch(
+            generalService['client'].BaseURL + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
-        console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse.statusText });
-        mandatoryStepsPostSameVersionNameTest.FailToCreateAddonVersion = createVersionApiNegativeResponse.statusText.includes(
-            'Addon version with name',
-        );
+        ).then((response) => response.json());
+        console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse });
+        mandatoryStepsPostSameVersionNameTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiNegativeResponse,
+        ).includes('Addon version with name');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version With Same Name Negative Test',
             mandatoryStepsPostSameVersionNameTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiNegativeResponse.statusText +
+                      JSON.stringify(createVersionApiNegativeResponse) +
                       " Expected response should include error mesage with the text : 'Addon version with name'",
         );
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1592,7 +1642,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1601,8 +1651,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostSameVersionNameTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostSameVersionNameTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostSameVersionNameTest.createAddonVersion == true &&
@@ -1634,8 +1688,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(testDataBody),
         }).then((response) => response.json());
         console.log({ Post_Addon_Without_Name_Test: createApiResponse });
-        mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion = !createApiResponse.success;
-        addTestResultUnderHeadline(testName, 'Post Addon Without Name Negative Test', !createApiResponse.success);
+        mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion = JSON.stringify(
+            createApiResponse,
+        ).includes('fault');
+        addTestResultUnderHeadline(
+            testName,
+            'Post Addon Without Name Negative Test',
+            JSON.stringify(createApiResponse).includes('fault'),
+        );
 
         if (mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion == true) {
             addTestResultUnderHeadline(testName, 'All Post Addon Without Name Test mandatory steps complete');
@@ -1668,35 +1728,38 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         } as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiNegativeResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiNegativeResponse = await fetch(
+            generalService['client'].BaseURL + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
-        console.log({ Post_Addon_Without_Version_ID_Test: createVersionApiNegativeResponse.statusText });
+        ).then((response) => response.json());
+        console.log({ Post_Addon_Without_Version_ID_Test: createVersionApiNegativeResponse });
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Without Version ID Negative Test',
-            !createVersionApiNegativeResponse.success,
+            JSON.stringify(createVersionApiNegativeResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithoutVersionTest.FailToCreateAddonVersion = createVersionApiNegativeResponse.statusText.includes(
-            'The mandatory field Version is missing',
-        );
+        mandatoryStepsPostAddonVersionWithoutVersionTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiNegativeResponse,
+        ).includes('The mandatory field Version is missing');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Without Version ID Error Text Test',
             mandatoryStepsPostAddonVersionWithoutVersionTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiNegativeResponse.statusText +
+                      JSON.stringify(createVersionApiNegativeResponse) +
                       " Expected response should include error mesage with the text : 'The mandatory field Version is missing'",
         );
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1705,8 +1768,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Delete_Addons: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostAddonVersionWithoutVersionTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostAddonVersionWithoutVersionTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithoutVersionTest.FailToCreateAddonVersion == true &&
@@ -1749,35 +1818,38 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         } as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiNegativeResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiNegativeResponse = await fetch(
+            generalService['client'].BaseURL + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
-        console.log({ Post_Addon_Version_Without_Addon_UUID_Test: createVersionApiNegativeResponse.statusText });
+        ).then((response) => response.json());
+        console.log({ Post_Addon_Version_Without_Addon_UUID_Test: createVersionApiNegativeResponse });
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Without Addon UUID Negative Test',
-            !createVersionApiNegativeResponse.success,
+            JSON.stringify(createVersionApiNegativeResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.FailToCreateAddonVersion = createVersionApiNegativeResponse.statusText.includes(
-            'The mandatory field AddonUUID is missing',
-        );
+        mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiNegativeResponse,
+        ).includes('The mandatory field AddonUUID is missing');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Without Addon UUID Error Text Test',
             mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiNegativeResponse.statusText +
+                      JSON.stringify(createVersionApiNegativeResponse) +
                       " Expected response should include error mesage with the text : 'The mandatory field Addon UUID is missing'",
         );
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1786,8 +1858,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Delete_Addons: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.FailToCreateAddonVersion == true &&
@@ -1826,7 +1904,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Addon_Created_For_Wrong_Version_Test: createApiResponse });
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1840,13 +1918,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             UUID: createVersionApiResponse.UUID,
         };
 
-        const createVersionApiNegativeResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiNegativeResponse = await fetch(
+            generalService['client'].BaseURL + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion =
             createVersionApiResponse.Version != versionTestDataBody.Version;
         addTestResultUnderHeadline(
@@ -1862,7 +1943,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1876,7 +1957,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1885,8 +1966,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Delete_Addons: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion == true &&
@@ -1925,7 +2012,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Addon_Created_For_Shorter_UUID_Test: createApiResponse });
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -1937,30 +2024,33 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const versionTestDataBody = {
             UUID: createVersionApiResponse.UUID.substring(0, createVersionApiResponse.UUID.length - 1),
         };
-        const createVersionApiNegativeResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiNegativeResponse = await fetch(
+            generalService['client'].BaseURL + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
-        console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse.statusText });
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion = createVersionApiNegativeResponse.statusText.includes(
-            'is not vaild UUID',
-        );
+        ).then((response) => response.json());
+        console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse });
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion = JSON.stringify(
+            createVersionApiNegativeResponse,
+        ).includes('is not vaild UUID');
         addTestResultUnderHeadline(
             testName,
             'Post Addon Version With Wrong (Short) UUID Error Message',
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiNegativeResponse.statusText +
+                      JSON.stringify(createVersionApiNegativeResponse) +
                       " Expected response is that Files > FileName > Includes 'is not vaild UUID'",
         );
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1974,7 +2064,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1983,8 +2073,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Delete_Addons: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion == true &&
@@ -2023,7 +2119,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Addon_Created_For_Wrong_UUID_Test: createApiResponse });
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2036,30 +2132,33 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
             UUID: createVersionApiResponse.UUID.substring(0, createVersionApiResponse.UUID.length - 2) + '00',
         };
-        const createVersionApiNegativeResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiNegativeResponse = await fetch(
+            generalService['client'].BaseURL + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
-        console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse.statusText });
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion = createVersionApiNegativeResponse.statusText.includes(
-            'does not exist',
-        );
+        ).then((response) => response.json());
+        console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse });
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion = JSON.stringify(
+            createVersionApiNegativeResponse,
+        ).includes('does not exist');
         addTestResultUnderHeadline(
             testName,
             'Post Addon Version With Wrong (Short) UUID Error Message',
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiNegativeResponse.statusText +
+                      JSON.stringify(createVersionApiNegativeResponse) +
                       " Expected response is that Files > FileName > Includes 'does not exist'",
         );
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2073,7 +2172,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2082,8 +2181,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Delete_Addons: deleteApiResponse });
-        addTestResultUnderHeadline(testName, 'Delete Addon - End Test', deleteApiResponse.Success);
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = deleteApiResponse.Success;
+        addTestResultUnderHeadline(
+            testName,
+            'Delete Addon - End Test',
+            !JSON.stringify(deleteApiResponse).includes('fault'),
+        );
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = !JSON.stringify(
+            deleteApiResponse,
+        ).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion == true &&
@@ -2125,7 +2230,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2148,7 +2253,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read file
         const getVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -2170,7 +2275,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2183,7 +2288,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2191,7 +2296,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2200,7 +2305,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2251,7 +2356,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(testDataBody),
         }).then((response) => response.json());
 
-        const fileAsSBase64 = testDatagetBase64FileFromFileAtPath('TestDataFileToBase64.js');
+        const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.UUID,
             Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
@@ -2260,7 +2365,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             Files: [{ FileName: 'installation.js', URL: '', Base64Content: fileAsSBase64 }],
         } as any;
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2268,7 +2373,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(versionTestDataBody),
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_File_Sent_Create: createVersionApiResponse });
-        mandatoryStepsvalidateInstallationFileSent.createVersionTestResult = createVersionApiResponse.Name;
+        mandatoryStepsvalidateInstallationFileSent.createVersionTestResult = !JSON.stringify(
+            createVersionApiResponse,
+        ).includes('fault');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Test',
@@ -2282,7 +2389,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read file
         const getVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -2304,7 +2411,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2317,7 +2424,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2325,7 +2432,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2334,7 +2441,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2390,7 +2497,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(testDataBody),
         }).then((response) => response.json());
 
-        const fileAsSBase64 = testDatagetBase64FileFromFileAtPath('TestDataFileToBase64.js');
+        const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.UUID,
             Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
@@ -2399,7 +2506,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 }],
         } as any;
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2407,7 +2514,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             body: JSON.stringify(versionTestDataBody),
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Other_File_Create: createVersionApiResponse });
-        mandatoryStepsvalidateOtherFileSent.createVersionTestResult = createVersionApiResponse.Name;
+        mandatoryStepsvalidateOtherFileSent.createVersionTestResult = !JSON.stringify(
+            createVersionApiResponse,
+        ).includes('fault');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Test',
@@ -2421,7 +2530,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read
         const getVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -2453,7 +2562,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2466,7 +2575,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2474,7 +2583,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2483,7 +2592,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2555,16 +2664,13 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonBody.Description = 'Update Description Test';
         tempNewAddonBody.Name = 'Update Name Test';
         tempNewAddonBody.Type = 'Update Type Tess';
-        let getAddonsApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
-            {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
-                },
-                body: JSON.stringify(tempNewAddonBody),
+        let getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
+            method: `POST`,
+            headers: {
+                Authorization: request.body.varKey,
             },
-        ).then((response) => response.json());
+            body: JSON.stringify(tempNewAddonBody),
+        }).then((response) => response.json());
         console.log({ Post_Var_Addons_Update: getAddonsApiResponse });
         getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
             method: `GET`,
@@ -2606,7 +2712,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2614,7 +2720,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2623,7 +2729,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2689,7 +2795,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2708,7 +2814,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonVersionBody.Phased = true;
         tempNewAddonVersionBody.PhasedFunction = 'Update Version PhasedFunction Test';
 
-        const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2790,7 +2896,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2803,7 +2909,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2811,7 +2917,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2820,7 +2926,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2886,7 +2992,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2904,7 +3010,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonVersionBody.Phased = true;
         tempNewAddonVersionBody.PhasedFunction = 'Update Version PhasedFunction Test';
 
-        const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + 'var/addons/versions', {
+        const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
             method: `POST`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2913,8 +3019,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
 
-        console.log({ Get_Var_Addons_Empty_Version_Create_Status_Text: getAdonsVersionApiResponse.statusText });
-        mandatoryStepsUpdatePhasedWithoutMandatoryField.FailToUpdateAddonVersion = getAdonsVersionApiResponse.statusText.includes(
+        console.log({ Get_Var_Addons_Empty_Version_Create_Status_Text: getAdonsVersionApiResponse });
+        mandatoryStepsUpdatePhasedWithoutMandatoryField.FailToUpdateAddonVersion = JSON.stringify(
+            getAdonsVersionApiResponse,
+        ).includes(
             "When changing the Phased field to true the field StartPhasedDateTime is mandatory and can't be null",
         );
         addTestResultUnderHeadline(
@@ -2923,13 +3031,13 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             mandatoryStepsUpdatePhasedWithoutMandatoryField.FailToUpdateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      getAdonsVersionApiResponse.statusText +
+                      JSON.stringify(getAdonsVersionApiResponse) +
                       " Expected response should include error mesage with the text : 'When changing the Phased field to true the field StartPhasedDateTime is mandatory and can't be null",
         );
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2942,7 +3050,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -2950,7 +3058,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + 'var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2959,7 +3067,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -3001,8 +3109,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
     }
 
     //Test Remove All Wrong Addons and Versions
-    /*async function executeRemoveAllWrongAddonsAndVersions() {
-        const getAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + 'var/addons?page_size=-1', {
+    //Don't Change it if your name is not Oren Vilderman! (You can delete it if you want)
+    async function executeRemoveAllWrongAddonsAndVersions() {
+        const getAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
             method: `GET`,
             headers: {
                 Authorization: request.body.varKey,
@@ -3011,11 +3120,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         for (let index = 0; index < getAllAddonsBeforeDelete.length; index++) {
             if (
                 getAllAddonsBeforeDelete[index].Name.startsWith('Test') &&
-                getAllAddonsBeforeDelete[index].SystemData == '{}' &&
+                (getAllAddonsBeforeDelete[index].SystemData == '{}' ||
+                    getAllAddonsBeforeDelete[index].SystemData.includes('Version Test')) &&
                 parseInt(getAllAddonsBeforeDelete[index].Name.split(' ')[1]) > 1000
             ) {
-                var deleteApiResponse = await fetch(
-                    generalService['client'].BaseURL + 'var/addons/' + getAllAddonsBeforeDelete[index].UUID,
+                const deleteApiResponse = await fetch(
+                    generalService['client'].BaseURL + '/var/addons/' + getAllAddonsBeforeDelete[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3027,26 +3137,25 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 console.log({ Post_Var_Addons_Delete: deleteApiResponse });
             }
         }
-        debugger;
 
-        //var deleteApiResponse = VarAPI.CallSync('DELETE', "var/addons/" + getAllInstalledAddonsBeforeDelete[index].Addon.UUID);
+        //var deleteApiResponse = VarAPI.CallSync('DELETE', "/var/addons/" + getAllInstalledAddonsBeforeDelete[index].Addon.UUID);
         //console.log({ Post_Var_Addons_Delete: deleteApiResponse });
         //var getAuditLogApiResponse = API.CallSync('GET', deleteApiResponse.URI);
         //console.log({ Get_Audit_Log_Uninstall: getAuditLogApiResponse });
 
         // These are not uninstallable and not deleteable, need to remove from sandbox DB
-        //     1bf3e1d6-8525-4dfc-a72a-7eb2a0fc0da9
-        //     8e04dd10-8f39-440c-a64d-72d5dfeab9ba
-        //     59496946-274e-4164-9362-861452fab01e
-        //     40f45d19-1b4e-4afc-a53f-85bb7a22c5fb
-        //     0d04aefe-6234-44c6-b5d9-3ac11ceb4f6a
-        //     adfd18db-9b35-459b-ae4a-9a847e4d0ba4
-        //     b632044e-a736-4528-a3a3-dda1aff82a87
-        //     f1e9c558-f3a3-4d03-8a59-cb3a7d500eba
-            
+        // 1bf3e1d6 - 8525 - 4dfc - a72a - 7eb2a0fc0da9
+        // 8e04dd10 - 8f39 - 440c - a64d - 72d5dfeab9ba
+        // 59496946 - 274e-4164 - 9362 - 861452fab01e
+        // 40f45d19 - 1b4e - 4afc - a53f - 85bb7a22c5fb
+        // 0d04aefe - 6234 - 44c6 - b5d9 - 3ac11ceb4f6a
+        // adfd18db - 9b35 - 459b - ae4a - 9a847e4d0ba4
+        // b632044e - a736 - 4528 - a3a3 - dda1aff82a87
+        // f1e9c558 - f3a3 - 4d03 - 8a59 - cb3a7d500eba
+
         generalService;
         const getAllInstalledAddonsBeforeDelete = await generalService.papiClient.get(
-            'addons/installed_addons?page_size=-1',
+            '/addons/installed_addons?page_size=-1',
         );
         for (let index = 0; index < getAllInstalledAddonsBeforeDelete.length; index++) {
             if (
@@ -3055,13 +3164,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 getAllInstalledAddonsBeforeDelete[index].Addon.SystemData == '{}' &&
                 parseInt(getAllInstalledAddonsBeforeDelete[index].Addon.Name.split(' ')[1]) > 1
             ) {
-                //var deleteApiResponse = VarAPI.CallSync('DELETE', "var/addons/" + getAllInstalledAddonsBeforeDelete[index].Addon.UUID);
-                 deleteApiResponse = await generalService.papiClient.post(
-                    'addons/installed_addons/' +
-                        getAllInstalledAddonsBeforeDelete[index].Addon.UUID +
-                        '/uninstall',
+                //var deleteApiResponse = VarAPI.CallSync('DELETE', "/var/addons/" + getAllInstalledAddonsBeforeDelete[index].Addon.UUID);
+                const deleteApiResponse = await generalService.papiClient.post(
+                    '/addons/installed_addons/' + getAllInstalledAddonsBeforeDelete[index].Addon.UUID + '/uninstall',
                 );
-
                 console.log('Addone deleted: ' + getAllInstalledAddonsBeforeDelete[index].Addon.Name);
                 console.log({ Post_Var_Addons_Delete: deleteApiResponse });
                 const getAuditLogApiResponse = await generalService.papiClient.get(deleteApiResponse.URI);
@@ -3070,19 +3176,17 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon Version
-    //     var deleteVersionApiResponse = await fetch(generalService['client'].BaseURL + "var/addons/versions/" + createVersionApiResponse.UUID, {
-    //     method: `DELETE`,
-    //     headers: {
-    //         Authorization: request.body.varKey,
-    //     },
-    // }).then((response) => response.json());
-    //     if (!deleteVersionApiResponse) {
-    //         console.log({ Post_Var_Addons_Versions_Delete: deleteVersionApiResponse });
-    //     }
+        //     var deleteVersionApiResponse = await fetch(generalService['client'].BaseURL + "/var/addons/versions/" + createVersionApiResponse.UUID, {
+        //     method: `DELETE`,
+        //     headers: {
+        //         Authorization: request.body.varKey,
+        //     },
+        // }).then((response) => response.json());
+        //     if (!deleteVersionApiResponse) {
+        //         console.log({ Post_Var_Addons_Versions_Delete: deleteVersionApiResponse });
+        //     }
 
         //This can be use to easily extract the token to the console
         //console.log({ Token: VarAPI._Token })
-    }*/
-
-    //#endregion Tests
+    }
 }
