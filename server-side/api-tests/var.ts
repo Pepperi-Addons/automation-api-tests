@@ -309,13 +309,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_CRUD_Create: createApiResponse });
         mandatoryStepsCRUDAddon.createTestResult = testDataBody.Name == createApiResponse.Name;
         addTestResultUnderHeadline(
@@ -342,7 +345,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read
         let getAddonsApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -379,13 +382,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Update
         const tempNewAddonBody = createApiResponse;
         tempNewAddonBody.Description = 'Update Test';
-        getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        getAddonsApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(tempNewAddonBody),
             },
-            body: JSON.stringify(tempNewAddonBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
 
         console.log({ Post_Var_Addons_Update: getAddonsApiResponse });
         addTestResultUnderHeadline(
@@ -402,12 +408,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 ? true
                 : 'The modification date response is: ' + getAddonsApiResponse.ModificationDate,
         );
-        getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        getAddonsApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Update_Read: getAddonsApiResponse });
         mandatoryStepsCRUDAddon.updateTestResult = tempNewAddonBody.Description == createApiResponse.Description;
         addTestResultUnderHeadline(
@@ -422,15 +431,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -439,12 +451,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsCRUDAddon.deleteTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -499,13 +514,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Create UUID with random UUID
         testDataBody.UUID = createRandomUUID();
         console.log({ Random_UUID: testDataBody.UUID });
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_No_UUID_Create: createApiResponse });
         mandatoryStepsCRUDAddon.createTestResult = testDataBody.Name == createApiResponse.Name;
         addTestResultUnderHeadline(
@@ -518,7 +536,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read
         const getAddonsApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -537,15 +555,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -554,12 +575,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsCRUDAddon.deleteTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -608,13 +632,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempUUID[2] = 'Test';
         testDataBody.UUID = tempUUID.toString().split(',').join('-');
         console.log({ Random_Non_Valid_UUID: testDataBody.UUID });
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Respons_Create_Var_Addons_With_Non_Valid_UUID: createApiResponse });
         mandatoryStepsCRUDAddon.createTestResult = JSON.stringify(createApiResponse).includes('is not vaild UUID');
         addTestResultUnderHeadline(
@@ -655,26 +682,32 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_CRUD_Create: createVersionApiResponse });
         mandatoryStepsCRUDAddonVersion.createVersionTestResult =
             versionTestDataBody.Name == createVersionApiResponse.Name;
@@ -712,7 +745,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read
         const getAddonsApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -751,16 +786,21 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Update
         const tempNewAddonVersionBody = createVersionApiResponse;
         tempNewAddonVersionBody.Description = 'Update Version Test';
-        let getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        let getAdonsVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(tempNewAddonVersionBody),
             },
-            body: JSON.stringify(tempNewAddonVersionBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
         getAdonsVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + getAdonsVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                getAdonsVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -798,7 +838,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Version
         const countAllAddonsVersionsBeforeDelete = await fetch(
-            generalService['client'].BaseURL +
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
                 "/var/addons/versions?where=AddonUUID='" +
                 getAdonsVersionApiResponse.AddonUUID +
                 "'",
@@ -811,7 +851,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Versions_Before_Delete: countAllAddonsVersionsBeforeDelete });
         let deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + getAdonsVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                getAdonsVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -821,7 +863,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Version_Delete: deleteApiResponse });
         const countAllAddonsVersionsAfterDelete = await fetch(
-            generalService['client'].BaseURL +
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
                 "/var/addons/versions?where=AddonUUID='" +
                 getAdonsVersionApiResponse.AddonUUID +
                 "'",
@@ -848,7 +890,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -861,26 +905,35 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
-        deleteApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
-            method: `DELETE`,
-            headers: {
-                Authorization: request.body.varKey,
+        deleteApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
+            {
+                method: `DELETE`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsCRUDAddonVersion.deleteAddonTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -920,18 +973,21 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         mandatoryStepsGetDeletedAddonTest.createAddon = testDataBody.Name == createApiResponse.Name;
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -951,7 +1007,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         let getDeletedAddonTest;
         if (isPositiveTest) {
             getDeletedAddonTest = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `GET`,
                     headers: {
@@ -969,12 +1025,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             );
             mandatoryStepsGetDeletedAddonTest.getDeleteAddon = getDeletedAddonTest.Hidden;
         } else {
-            getDeletedAddonTest = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-                method: `GET`,
-                headers: {
-                    Authorization: request.body.varKey,
+            getDeletedAddonTest = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
                 },
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             console.log({ Get_Var_Addons_After_Delete: getDeletedAddonTest });
             mandatoryStep: {
                 for (let index = 0; index < getDeletedAddonTest.length; index++) {
@@ -1014,32 +1073,40 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         mandatoryStepsGetDeletedAddonVersionTest.createAddonVersion =
             versionTestDataBody.Name == createVersionApiResponse.Name;
 
         //Delete Version
         let deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1054,7 +1121,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         let getDeletedAddonVersionTest;
         if (isPositiveTest) {
             getDeletedAddonVersionTest = await fetch(
-                generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    createVersionApiResponse.UUID,
                 {
                     method: `GET`,
                     headers: {
@@ -1075,12 +1144,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             );
             mandatoryStepsGetDeletedAddonVersionTest.correctHiddenStatusOfVersion = getDeletedAddonVersionTest.Hidden;
         } else {
-            getDeletedAddonVersionTest = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                method: `GET`,
-                headers: {
-                    Authorization: request.body.varKey,
+            getDeletedAddonVersionTest = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
                 },
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             console.log({ Get_Var_Addons_Versions_After_Delete: getDeletedAddonVersionTest });
             mandatoryStep: {
                 for (let index = 0; index < getDeletedAddonVersionTest.length; index++) {
@@ -1099,7 +1171,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1112,12 +1186,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        deleteApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
-            method: `DELETE`,
-            headers: {
-                Authorization: request.body.varKey,
+        deleteApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
+            {
+                method: `DELETE`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
         addTestResultUnderHeadline(
             testName,
@@ -1151,22 +1228,28 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
 
         const versionTestDataBody = {};
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Version_Create: createVersionApiResponse });
 
         console.log({ Get_Var_Addons_Empty_Version_Create_Status_Text: createVersionApiResponse });
@@ -1185,7 +1268,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1229,22 +1312,28 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
 
         const versionTestDataBody = [{}];
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions/bulk', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/bulk',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
 
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create_Status_Text: createVersionApiResponse });
@@ -1263,7 +1352,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1309,13 +1398,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = [, , ,] as any;
         for (let index = 0; index < versionTestDataBody.length; index++) {
             versionTestDataBody[index] = testDataNewAddonVersion(
@@ -1326,13 +1418,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions/bulk', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/bulk',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Versions_Array_Create: createVersionApiResponse });
         mandatoryStepsPostVersionsInBulkTest.createAddonVersion =
             versionTestDataBody[0].Name == createVersionApiResponse[0].Name;
@@ -1354,7 +1449,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //Delete Addon
         for (let index = 0; index < versionTestDataBody.length; index++) {
             const deleteVersionApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse[index].UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    createVersionApiResponse[index].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1368,7 +1465,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1405,13 +1502,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
 
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
@@ -1419,13 +1519,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions/bulk', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/bulk',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
         console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //statusText.split('<h2>')[1].split('</h2>')[0] });
         mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
@@ -1443,7 +1546,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1489,13 +1592,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = [, , ,] as any;
         for (let index = 0; index < versionTestDataBody.length; index++) {
             versionTestDataBody[index] = testDataNewAddonVersion(
@@ -1506,13 +1612,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
 
         console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //.statusText.split('<h2>')[1].split('</h2>')[0] });
@@ -1531,7 +1640,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1578,32 +1687,38 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Same_Name_Create: createVersionApiResponse });
         mandatoryStepsPostSameVersionNameTest.createAddonVersion =
             versionTestDataBody.Name == createVersionApiResponse.Name;
 
         const createVersionApiNegativeResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions',
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
                 method: `POST`,
                 headers: {
@@ -1628,7 +1743,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1642,7 +1759,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1680,13 +1797,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Addon_Without_Name_Test: createApiResponse });
         mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion = JSON.stringify(
             createApiResponse,
@@ -1715,13 +1835,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_No_Version_Test: createApiResponse });
         const versionTestDataBody = {
             AddonUUID: createApiResponse.UUID,
@@ -1729,7 +1852,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
         const createVersionApiNegativeResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions',
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
                 method: `POST`,
                 headers: {
@@ -1759,7 +1882,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1805,13 +1928,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_No_UUID_Test: createApiResponse });
         const versionTestDataBody = {
             Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
@@ -1819,7 +1945,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
         const createVersionApiNegativeResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions',
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
                 method: `POST`,
                 headers: {
@@ -1849,7 +1975,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1895,31 +2021,37 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_Wrong_Version_Test: createApiResponse });
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(
+                    testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
+                ) as any,
             },
-            body: JSON.stringify(
-                testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
-            ) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = {
             Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
             UUID: createVersionApiResponse.UUID,
         };
 
         const createVersionApiNegativeResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions',
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
                 method: `POST`,
                 headers: {
@@ -1943,7 +2075,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -1957,7 +2091,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2003,29 +2137,35 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_Shorter_UUID_Test: createApiResponse });
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(
+                    testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
+                ) as any,
             },
-            body: JSON.stringify(
-                testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
-            ) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = {
             UUID: createVersionApiResponse.UUID.substring(0, createVersionApiResponse.UUID.length - 1),
         };
         const createVersionApiNegativeResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions',
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
                 method: `POST`,
                 headers: {
@@ -2050,7 +2190,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2064,7 +2206,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2110,30 +2252,36 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_Wrong_UUID_Test: createApiResponse });
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(
+                    testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
+                ) as any,
             },
-            body: JSON.stringify(
-                testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
-            ) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = {
             Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
             UUID: createVersionApiResponse.UUID.substring(0, createVersionApiResponse.UUID.length - 2) + '00',
         };
         const createVersionApiNegativeResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions',
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
                 method: `POST`,
                 headers: {
@@ -2158,7 +2306,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2172,7 +2322,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2219,24 +2369,30 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_File_Creation_Create: createVersionApiResponse });
         mandatoryStepsvalidateInstallationFileCreated.createVersionTestResult =
             versionTestDataBody.Name == createVersionApiResponse.Name;
@@ -2253,7 +2409,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read file
         const getVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -2275,7 +2433,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2288,15 +2448,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2305,12 +2468,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsvalidateInstallationFileCreated.deleteAddonTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -2348,13 +2514,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
 
         const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
         const versionTestDataBody = {
@@ -2365,13 +2534,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             Files: [{ FileName: 'installation.js', URL: '', Base64Content: fileAsSBase64 }],
         } as any;
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody),
             },
-            body: JSON.stringify(versionTestDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_File_Sent_Create: createVersionApiResponse });
         mandatoryStepsvalidateInstallationFileSent.createVersionTestResult = !JSON.stringify(
             createVersionApiResponse,
@@ -2389,7 +2561,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read file
         const getVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -2411,7 +2585,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2424,15 +2600,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2441,12 +2620,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsvalidateInstallationFileSent.deleteAddonTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -2489,13 +2671,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
 
         const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
         const versionTestDataBody = {
@@ -2506,13 +2691,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 }],
         } as any;
 
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody),
             },
-            body: JSON.stringify(versionTestDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Other_File_Create: createVersionApiResponse });
         mandatoryStepsvalidateOtherFileSent.createVersionTestResult = !JSON.stringify(
             createVersionApiResponse,
@@ -2530,7 +2718,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Read
         const getVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `GET`,
                 headers: {
@@ -2562,7 +2752,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2575,15 +2767,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2592,12 +2787,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsvalidateOtherFileSent.deleteAddonTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -2642,13 +2840,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Update_Test_Create: createApiResponse });
         mandatoryStepsUpdateAllAddonDataMembers.createTestResult = testDataBody.Name == createApiResponse.Name;
         addTestResultUnderHeadline(
@@ -2664,20 +2865,26 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonBody.Description = 'Update Description Test';
         tempNewAddonBody.Name = 'Update Name Test';
         tempNewAddonBody.Type = 'Update Type Tess';
-        let getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        let getAddonsApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(tempNewAddonBody),
             },
-            body: JSON.stringify(tempNewAddonBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Var_Addons_Update: getAddonsApiResponse });
-        getAddonsApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID, {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        getAddonsApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Update_Read: getAddonsApiResponse });
         //Description
         mandatoryStepsUpdateAllAddonDataMembers.updateTestResultDescription =
@@ -2712,15 +2919,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2729,12 +2939,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsUpdateAllAddonDataMembers.deleteTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -2782,26 +2995,32 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_Update_Version_Test: createApiResponse });
 
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiResponse });
         mandatoryStepsUpdateAllAddonVersionDataMembers.createAddonVersion =
             versionTestDataBody.Name == createVersionApiResponse.Name;
@@ -2814,13 +3033,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonVersionBody.Phased = true;
         tempNewAddonVersionBody.PhasedFunction = 'Update Version PhasedFunction Test';
 
-        const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const getAdonsVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(tempNewAddonVersionBody),
             },
-            body: JSON.stringify(tempNewAddonVersionBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
 
         //Description
@@ -2896,7 +3118,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2909,15 +3133,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -2926,12 +3153,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsUpdateAllAddonVersionDataMembers.deleteTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -2979,26 +3209,32 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create
-        const createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
             },
-            body: JSON.stringify(testDataBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Addon_Created_For_Update_Version_Test: createApiResponse });
 
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
         ) as any;
-        const createVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody) as any,
             },
-            body: JSON.stringify(versionTestDataBody) as any,
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiResponse });
         mandatoryStepsUpdatePhasedWithoutMandatoryField.createAddonVersion =
             versionTestDataBody.Name == createVersionApiResponse.Name;
@@ -3010,13 +3246,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonVersionBody.Phased = true;
         tempNewAddonVersionBody.PhasedFunction = 'Update Version PhasedFunction Test';
 
-        const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-            method: `POST`,
-            headers: {
-                Authorization: request.body.varKey,
+        const getAdonsVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(tempNewAddonVersionBody),
             },
-            body: JSON.stringify(tempNewAddonVersionBody),
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
 
         console.log({ Get_Var_Addons_Empty_Version_Create_Status_Text: getAdonsVersionApiResponse });
@@ -3037,7 +3276,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Delete Addon Version
         const deleteVersionApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                '/var/addons/versions/' +
+                createVersionApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -3050,15 +3291,18 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete
-        const countAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
         const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
             {
                 method: `DELETE`,
                 headers: {
@@ -3067,12 +3311,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        const countAllAddonsAfterDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const countAllAddonsAfterDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
         mandatoryStepsUpdatePhasedWithoutMandatoryField.deleteTestResult =
             countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
@@ -3111,12 +3358,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
     //Test Remove All Wrong Addons and Versions
     //Don't Change it if your name is not Oren Vilderman! (You can delete it if you want)
     async function executeRemoveAllWrongAddonsAndVersions() {
-        const getAllAddonsBeforeDelete = await fetch(generalService['client'].BaseURL + '/var/addons?page_size=-1', {
-            method: `GET`,
-            headers: {
-                Authorization: request.body.varKey,
+        const getAllAddonsBeforeDelete = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
             },
-        }).then((response) => response.json());
+        ).then((response) => response.json());
         for (let index = 0; index < getAllAddonsBeforeDelete.length; index++) {
             if (
                 getAllAddonsBeforeDelete[index].Name.startsWith('Test') &&
@@ -3125,7 +3375,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 parseInt(getAllAddonsBeforeDelete[index].Name.split(' ')[1]) > 1000
             ) {
                 const deleteApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/' + getAllAddonsBeforeDelete[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/' +
+                        getAllAddonsBeforeDelete[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3176,7 +3428,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         }
 
         //Delete Addon Version
-        //     var deleteVersionApiResponse = await fetch(generalService['client'].BaseURL + "/var/addons/versions/" + createVersionApiResponse.UUID, {
+        //     var deleteVersionApiResponse = await fetch(generalService['client'].BaseURL.replace('papi-eu', 'papi') + "/var/addons/versions/" + createVersionApiResponse.UUID, {
         //     method: `DELETE`,
         //     headers: {
         //         Authorization: request.body.varKey,

@@ -33,7 +33,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
     const version = '1.';
 
     const varLatestVersion = await fetch(
-        `${generalService['client'].BaseURL}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%'&order_by=CreationDateTime DESC`,
+        `${generalService['client'].BaseURL.replace(
+            'papi-eu',
+            'papi',
+        )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%'&order_by=CreationDateTime DESC`,
         {
             method: `GET`,
             headers: {
