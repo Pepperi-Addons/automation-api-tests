@@ -822,13 +822,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
 
             mandatoryStepsInstallAddonWithoutVersionFiles.createAddon = testDataBody.Name == createApiResponse.Name;
 
@@ -859,7 +862,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         } finally {
             //Delete Addon
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -916,13 +919,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsInstallAddonWithoutExistingVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -935,13 +941,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install non existing version
@@ -972,7 +981,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -987,7 +998,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //Try to elso delete non exitting version if created
             const deleteVersionApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/versions/Non Existing Version',
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/Non Existing Version',
                 {
                     method: `DELETE`,
                     headers: {
@@ -1000,7 +1012,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1057,13 +1069,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsInstallAddonWithNonAvailableVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -1076,13 +1091,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install non available version
@@ -1113,7 +1131,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1127,7 +1147,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1186,13 +1206,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsInstallNewestAddonWithoutVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -1205,13 +1228,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install newest available without version
@@ -1299,7 +1325,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1312,7 +1340,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1373,13 +1401,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsInstallAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -1392,13 +1423,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install with available version
@@ -1487,7 +1521,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1500,7 +1536,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1558,13 +1594,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeAddonWithoutVersionFiles.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -1577,13 +1616,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
@@ -1603,7 +1645,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //Delete version 2
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[1].UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    versionsArr[1].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1695,7 +1739,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1708,7 +1754,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1767,13 +1813,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeAddonWithoutExistingVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -1786,13 +1835,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
                     },
-                    body: JSON.stringify(versionTestDataBody),
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -1892,7 +1944,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1905,7 +1959,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1964,13 +2018,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeAddonWithNonAvailableVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -1983,13 +2040,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -2090,7 +2150,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2103,7 +2165,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2162,13 +2224,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeToNewestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -2181,13 +2246,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -2287,7 +2355,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2300,7 +2370,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2359,13 +2429,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeToNewestAddonVersionWithoutVersion.createAddon =
                 testDataBody.Name == createApiResponse.Name;
 
@@ -2379,13 +2452,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -2486,7 +2562,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2499,7 +2577,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2558,13 +2636,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.createAddon =
                 testDataBody.Name == createApiResponse.Name;
 
@@ -2579,13 +2660,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -2607,13 +2691,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const tempNewAddonVersionBody = versionsArr[0];
             tempNewAddonVersionBody.Available = false;
 
-            const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            const getAdonsVersionApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(tempNewAddonVersionBody),
                 },
-                body: JSON.stringify(tempNewAddonVersionBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
 
             //Upgrade to new version Without Available version
@@ -2672,7 +2759,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2685,7 +2774,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2745,13 +2834,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.createAddon =
                 testDataBody.Name == createApiResponse.Name;
 
@@ -2770,13 +2862,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     versionTestDataBody.Phased = true;
                 }
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -2798,13 +2893,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const tempNewAddonVersionBody = versionsArr[0];
             tempNewAddonVersionBody.Phased = false;
 
-            const getAdonsVersionApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            const getAdonsVersionApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(tempNewAddonVersionBody),
                 },
-                body: JSON.stringify(tempNewAddonVersionBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             console.log({ Post_Var_Addons_Version_Update: getAdonsVersionApiResponse });
 
             //Upgrade to new version Without Phased
@@ -2872,7 +2970,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2885,7 +2985,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2945,13 +3045,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -2964,13 +3067,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -3070,7 +3176,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3083,7 +3191,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3140,13 +3248,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsDowngradeAddonWithoutVersionFiles.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -3159,13 +3270,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install with version
@@ -3185,7 +3299,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //Delete version 2
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[0].UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    versionsArr[0].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3277,7 +3393,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3290,7 +3408,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3349,13 +3467,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsDowngradeAddonWithoutExistingVersion.createAddon =
                 testDataBody.Name == createApiResponse.Name;
 
@@ -3369,13 +3490,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -3475,7 +3599,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3488,7 +3614,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3547,13 +3673,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsDowngradeAddonWithNonAvailableVersion.createAddon =
                 testDataBody.Name == createApiResponse.Name;
 
@@ -3567,13 +3696,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -3675,7 +3807,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3688,7 +3822,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3747,13 +3881,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsDowngradeToOldestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -3766,13 +3903,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -3872,7 +4012,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3885,7 +4027,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3944,13 +4086,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsDowngradeAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -3963,13 +4108,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -4069,7 +4217,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4082,7 +4232,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4140,13 +4290,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUninstallAddon.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -4159,13 +4312,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install newest available without version
@@ -4250,7 +4406,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4263,7 +4421,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4315,13 +4473,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUninstalAddonWithDeletedAddonVersion.createAddon =
                 testDataBody.Name == createApiResponse.Name;
 
@@ -4335,13 +4496,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install newest available without version
@@ -4402,7 +4566,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //Delete Addon version
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[1].UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    versionsArr[1].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4455,7 +4621,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4468,7 +4636,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4522,13 +4690,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUninstallAddonWithDeletedAddon.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -4541,13 +4712,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install newest available without version
@@ -4610,7 +4784,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4623,7 +4799,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4717,13 +4893,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUninstallAddonAndUpgrade.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -4736,13 +4915,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install newest available without version
@@ -4857,7 +5039,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4870,7 +5054,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4924,13 +5108,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUninstallAddonAndDowngrade.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -4943,13 +5130,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install newest available without version
@@ -5070,7 +5260,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5083,7 +5275,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5136,13 +5328,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsInstallAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -5199,13 +5394,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     });
                 }
 
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install with available version
@@ -5325,7 +5523,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5338,7 +5538,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5397,13 +5597,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsInstallAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -5483,13 +5686,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     });
                 }
 
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //https://{{server}}.pepperi.com/V1.0/addons/installed_addons?where=Version='0.0.38'
@@ -5649,7 +5855,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5662,7 +5870,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5722,13 +5930,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsUpgradeToNewestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -5784,13 +5995,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         },
                     });
                 }
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -5941,7 +6155,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5954,7 +6170,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -6017,13 +6233,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         let createApiResponse;
         try {
             //Create
-            createApiResponse = await fetch(generalService['client'].BaseURL + '/var/addons', {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
+            createApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(testDataBody),
                 },
-                body: JSON.stringify(testDataBody),
-            }).then((response) => response.json());
+            ).then((response) => response.json());
             mandatoryStepsDowngradeToOldestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
@@ -6079,13 +6298,16 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         },
                     });
                 }
-                versionsArr[index] = await fetch(generalService['client'].BaseURL + '/var/addons/versions', {
-                    method: `POST`,
-                    headers: {
-                        Authorization: request.body.varKey,
+                versionsArr[index] = await fetch(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: request.body.varKey,
+                        },
+                        body: JSON.stringify(versionTestDataBody) as any,
                     },
-                    body: JSON.stringify(versionTestDataBody) as any,
-                }).then((response) => response.json());
+                ).then((response) => response.json());
             }
 
             //Install addon with version
@@ -6236,7 +6458,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await fetch(
-                    generalService['client'].BaseURL + '/var/addons/versions/' + versionsArr[index].UUID,
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                        '/var/addons/versions/' +
+                        versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -6249,7 +6473,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
             }
             const deleteApiResponse = await fetch(
-                generalService['client'].BaseURL + '/var/addons/' + createApiResponse.UUID,
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -8425,7 +8649,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         // var postUpgradeAddonApiResponse = await generalService.papiClient.'POST', "addons/installed_addons/" + "bd629d5f-a7b4-4d03-9e7c-67865a6d82a9" + "/upgrade/0.0.26");
         // //oren.addons.framework
         // var postUpgradeAddonApiResponse1 = wait fetch(
-        //     generalService['client'].BaseURL + '/var/addons/versions/ccce8ae4-b889-45f0-97e8-bb8f0e0f631c',
+        //     generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/ccce8ae4-b889-45f0-97e8-bb8f0e0f631c',
         //     {
         //         method: `DELETE`,
         //         headers: {
@@ -8435,7 +8659,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         // ).then((response) => response.json());
         // //oren.v
         // var postUpgradeAddonApiResponse2 = wait fetch(
-        //     generalService['client'].BaseURL + '/var/addons/versions/38bf0bf7-e78f-4be5-a3b6-363b3e2d44a9',
+        //     generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/38bf0bf7-e78f-4be5-a3b6-363b3e2d44a9',
         //     {
         //         method: `DELETE`,
         //         headers: {
@@ -8445,7 +8669,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         // ).then((response) => response.json());
         // //Test 4
         // var postUpgradeAddonApiResponse3 = wait fetch(
-        //     generalService['client'].BaseURL + '/var/addons/versions/9fb5371a-724b-48c5-8ce7-b227819bb1ff',
+        //     generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/9fb5371a-724b-48c5-8ce7-b227819bb1ff',
         //     {
         //         method: `DELETE`,
         //         headers: {
@@ -8494,7 +8718,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 let getDeleteAuditLogApiResponse;
                 try {
                     deleteApiResponse = await fetch(
-                        generalService['client'].BaseURL +
+                        generalService['client'].BaseURL.replace('papi-eu', 'papi') +
                             '/var/addons/versions/' +
                             getInstalledAddonsApiResponse[index].Addon.UUID,
                         {
@@ -8530,7 +8754,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
         // //Delete Addon Version
         // const deleteVersionApiResponse = await fetch(
-        //     generalService['client'].BaseURL + '/var/addons/versions/' + createVersionApiResponse.UUID,
+        //     generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/' + createVersionApiResponse.UUID,
         //     {
         //         method: `DELETE`,
         //         headers: {
