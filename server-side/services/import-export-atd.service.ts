@@ -2,6 +2,18 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
+export interface MetaDataATD {
+    TypeID?: number;
+    InternalID?: number;
+    ExternalID: string;
+    Description: string;
+    Icon: string;
+    CreationDateTime?: string;
+    ModificationDateTime?: string;
+    Hidden?: boolean;
+    UUID?: string;
+}
+
 interface FindOptions {
     fields?: string[];
     where?: string;
@@ -21,17 +33,27 @@ interface References {
 export class ImportExportATDService {
     constructor(public papiClient: PapiClient) {}
 
-    //Files Storage API Calls
-    getFilesFromStorage(options?: FindOptions) {
-        return this.papiClient.fileStorage.find(options);
+    //ATD Types
+    //Transactions
+    postTransactionsATD(atd: MetaDataATD) {
+        return this.papiClient.post(`/meta_data/${'transactions' as ResourceTypes}/types`, atd);
     }
 
-    getAllFilesFromStorage(options?: FindOptions) {
-        return this.papiClient.fileStorage.iter(options).toArray();
+    getTransactionsATD(subTypeID: number) {
+        return this.papiClient.get(`/meta_data/${'transactions' as ResourceTypes}/types/${subTypeID}`);
     }
 
-    getFileConfigurationByID(id: number) {
-        return this.papiClient.fileStorage.get(id);
+    getAllTransactionsATD() {
+        return this.papiClient.get(`/meta_data/${'transactions' as ResourceTypes}/types`);
+    }
+
+    //Activities
+    postActivitiesATD(atd: MetaDataATD) {
+        return this.papiClient.post(`/meta_data/${'activities' as ResourceTypes}/types`, atd);
+    }
+
+    getActivitiesATD(subTypeID: number) {
+        return this.papiClient.get(`/meta_data/${'activities' as ResourceTypes}/types${subTypeID}`);
     }
 
     exportATD(type: ResourceTypes, subtype: number) {

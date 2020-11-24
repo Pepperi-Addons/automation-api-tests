@@ -1,9 +1,17 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
-import { ImportExportATDService } from '../services/import-export-atd.service';
+import { ImportExportATDService, MetaDataATD } from '../services/import-export-atd.service';
 import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+
+function testDataATD(externaID: string, description: string, icon: string) {
+    return {
+        ExternalID: `Test ATD ${externaID}`,
+        Description: description,
+        Icon: icon,
+    } as MetaDataATD;
+}
 
 export async function ImportExportATDTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
@@ -16,6 +24,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
     //Prerequisites Test Data
     const transactionsTypeArr = [] as any;
     const activitiesTypeArr = [] as any;
+
+    const testDataNewATD = await importExportATDService.postTransactionsATD(
+        testDataATD(Math.floor(Math.random() * 1000000).toString(), 'Description of Test ATD', 'icon1'),
+    );
 
     const transactionsArr = await generalService.getTypes('transactions');
     transactionsArr.forEach((element) => {
@@ -74,6 +86,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
             it(`Latest Version Is Installed`, () => {
                 expect(installedAddonVersion).to.have.property('Version').a('string').that.is.equal(varLatestVersion);
             });
+
+            it(`Create new ATD (DI-17195)`, async () => {
+                expect(testDataNewATD).to.have.property('Icon').a('string').that.contains('icon');
+            });
         });
 
         //Test Data
@@ -95,7 +111,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
 
         //#region Endpoints
         describe('Endpoints', () => {
-            describe('Get', () => {
+            describe('Get (DI-17200)', () => {
                 for (let index = 0; index < transactionsTypeArr.length; index++) {
                     const transactionName = transactionsTypeArr[index];
                     const transactionID = transactionsTypeArr[transactionsTypeArr[index]];
@@ -191,5 +207,36 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
             //     });
             // });
         });
+
+        //#region Clean
+        describe('Test Clean up', () => {
+            it('Make sure an ATD removed in the end of the tests', async () => {
+                //Make sure an ATD removed in the end of the tests
+                return expect(TestCleanUp(importExportATDService)).eventually.to.be.above(0);
+            });
+        });
     });
+}
+
+//Remove all test files from Files Storage
+async function TestCleanUp(service: ImportExportATDService) {
+    const allATDObject: MetaDataATD[] = await service.getAllTransactionsATD();
+    let deletedCounter = 0;
+    for (let index = 0; index < allATDObject.length; index++) {
+        if (
+            allATDObject[index].ExternalID?.toString().startsWith('Test ATD ') &&
+            Number(allATDObject[index].ExternalID?.toString().split(' ')[2].split('.')[0]) > 100
+        ) {
+            const tempBody: MetaDataATD = {
+                InternalID: allATDObject[index].InternalID,
+                ExternalID: allATDObject[index].ExternalID,
+                Description: allATDObject[index].Description,
+                Icon: allATDObject[index].Icon,
+                Hidden: true,
+            };
+            await service.postTransactionsATD(tempBody);
+            deletedCounter++;
+        }
+    }
+    return deletedCounter;
 }
