@@ -31,7 +31,8 @@ export interface TestExecutionData {
 //#region Test Config area
 const testConfigObj = {
     isOnlineServer: true, //Run on the online server
-    isAddonsAPI: false, //Addons API
+    isAddonsAPIInstallAndUpgrade: false, //Addons API Install and Upgrade
+    isAddonsAPIDowngradeAndUninstall: false, //Addons API Downgrade and Uninstall
     isAddonsWithDependenciesAPI: false, //Addons Dependencies API
     //isMaintenanceConsole: false, //Maintenance Console Table Print - can only work on browsers not on the server.
     isMaintenanceSingle: false, //Maintenance Single
@@ -41,13 +42,13 @@ const testConfigObj = {
 };
 
 function testDataNewAddon(testNumber) {
-    return { Name: 'Test ' + testNumber };
+    return { Name: 'Pepperitest Test ' + testNumber }; //Name here can't be changed or it will send messages VIA teams
 }
 
 function testDataNewAddonVersion(addonUUID, testNumber) {
     return {
         AddonUUID: addonUUID,
-        Version: 'Version Test ' + testNumber,
+        Version: 'Pepperitest Test Version ' + testNumber, //Name here can't be changed or it will send messages VIA teams
     };
 }
 
@@ -57,7 +58,7 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 //         return [
 //             {
 //                 AddonUUID: addonUUID,
-//                 Version: 'Version Test ' + testNumberArr[index],
+//                 Version: 'Pepperitest Test Version ' + testNumberArr[index],
 //             },
 //         ];
 //     }
@@ -184,7 +185,19 @@ function createNewMaintenanceTestDataObject(upgradeAfterDate, upgradeAfterPercen
 
 // All Addons API Tests
 export async function BaseAddonsTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    (testConfigObj.isAddonsAPI = true), //Addons API
+    (testConfigObj.isAddonsAPIInstallAndUpgrade = true), //Addons API Install and Upgrade
+        (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
+        (testConfigObj.isAddonsWithDependenciesAPI = false), //true, //Addons Dependencies API
+        (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
+        (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
+        (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
+        (testConfigObj.isMaintenanceFull = false), //Maintenance Full Distribution
+        await ExecuteAddonsTests(generalService, request, tester);
+}
+
+export async function UninstallAddonsTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
+        (testConfigObj.isAddonsAPIDowngradeAndUninstall = true), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = false), //true, //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
@@ -198,7 +211,8 @@ export async function SingleMaintenanceAndDependenciesAddonsTests(
     request,
     tester: TesterFunctions,
 ) {
-    (testConfigObj.isAddonsAPI = false), //Addons API
+    (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
+        (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = true), //true, //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = true), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
@@ -208,7 +222,8 @@ export async function SingleMaintenanceAndDependenciesAddonsTests(
 }
 
 export async function MaintenanceFullTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    (testConfigObj.isAddonsAPI = false), //Addons API
+    (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
+        (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = false), //true, //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = true), //Maintenance Upgrade Distribution
@@ -228,9 +243,10 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
     console.log('Initiate Addons Tests | ' + generalService.getTime());
 
-    if (!generalService.getClientData('Server').includes('sandbox')) {
-        throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
-    }
+    //Fixed by Shir in 25/11/2020 - now this test can run on all servers - if the version name start with Pepperitest Test
+    // if (!generalService.getClientData('Server').includes('sandbox')) {
+    //     throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
+    // }
 
     //Interval
     let intervalCounter = 0;
@@ -410,7 +426,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         'Full Phased Maintenance Distribution (AutomaticUpgrade = false) (Negative)';
     setNewTestHeadline(fullPhasedMaintenanceDistributionNegative);
 
-    if (testConfigObj.isAddonsAPI) {
+    if (testConfigObj.isAddonsAPIInstallAndUpgrade) {
         //Install
         await executeInstallAddonWithoutVersionFilesTest(
             installAddonWithoutVersionFiles,
@@ -477,7 +493,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             upgradeAddonWithOldVersion,
             testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
         );
+    }
 
+    if (testConfigObj.isAddonsAPIDowngradeAndUninstall) {
         //Downgrade
         await executeDowngradeAddonWithoutOldVersionFilesTest(
             downgradeAddonWithoutOldVersionFiles,
@@ -8693,9 +8711,10 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //debugger;
         for (let index = 0; index < getInstalledAddonsApiResponse.length; index++) {
             if (
-                getInstalledAddonsApiResponse[index].Version.startsWith('Version Test') &&
-                //getInstalledAddonsApiResponse[index].SystemData == "{}" &&
-                parseInt(getInstalledAddonsApiResponse[index].Version.split(' ')[2]) > 1000
+                (getInstalledAddonsApiResponse[index].Version.startsWith('Version Test') &&
+                    //getInstalledAddonsApiResponse[index].SystemData == "{}" &&
+                    parseInt(getInstalledAddonsApiResponse[index].Version.split(' ')[2]) > 1000) ||
+                getInstalledAddonsApiResponse[index].Version.startsWith('Pepperitest Test Version ')
             ) {
                 //Uninstall
                 const postUninstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
@@ -8704,6 +8723,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 let getUninstallAuditLogApiResponse;
                 let maxLoopsCounter = 90;
                 do {
+                    if (postUninstallAddonApiResponse.URI == undefined) {
+                        break;
+                    }
                     generalService.sleep(2000);
                     getUninstallAuditLogApiResponse = await generalService.papiClient.get(
                         postUninstallAddonApiResponse.URI as any,

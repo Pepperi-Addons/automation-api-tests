@@ -218,7 +218,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
     });
 }
 
-//Remove all test files from Files Storage
+//Remove all Test Data ATD
 async function TestCleanUp(service: ImportExportATDService) {
     const allATDObject: MetaDataATD[] = await service.getAllTransactionsATD();
     let deletedCounter = 0;

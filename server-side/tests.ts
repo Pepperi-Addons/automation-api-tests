@@ -3,13 +3,18 @@ import tester from './tester';
 import GeneralService, { TesterFunctions } from './services/general.service';
 import { TestDataTest } from './api-tests/test_data';
 import { FileStorageTests } from './api-tests/file_storage';
-import { DataViewsTests } from './api-tests/data_views';
+import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } from './api-tests/data_views';
 import { FieldsTests } from './api-tests/fields';
 import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
 import { ObjectsTests } from './api-tests/objects';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
-import { BaseAddonsTests, SingleMaintenanceAndDependenciesAddonsTests, MaintenanceFullTests } from './api-tests/addons';
+import {
+    BaseAddonsTests,
+    UninstallAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTests,
+    MaintenanceFullTests,
+} from './api-tests/addons';
 import { ImportExportATDTests } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 
@@ -177,15 +182,92 @@ export async function data_views(client: Client, testerFunctions: TesterFunction
         };
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
-            DataViewsTests(service, testerFunctions),
+            DataViewsTestsBase(service, testerFunctions),
         ]).then(() => testerFunctions.run());
         PrintMemoryUseToLog('End', testName);
         testName = '';
         return testResult;
     } else {
-        return DataViewsTests(service, testerFunctions);
+        return DataViewsTestsBase(service, testerFunctions);
     }
 }
+
+export async function data_views_positive(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Data_Views_Positive' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Data_Views_Positive';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            DataViewsTestsPositive(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return DataViewsTestsPositive(service, testerFunctions);
+    }
+}
+
+export async function data_views_negative(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Data_Views_Negative' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Data_Views_Negative';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            DataViewsTestsNegative(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return DataViewsTestsNegative(service, testerFunctions);
+    }
+}
+
 export async function fields(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     if (
@@ -474,6 +556,44 @@ export async function addons(client: Client, request: Request, testerFunctions: 
         return testResult;
     } else {
         return BaseAddonsTests(service, request, testerFunctions);
+    }
+}
+
+export async function addons_uninstall(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Addons_Uninstall' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Addons_Uninstall';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            UninstallAddonsTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return UninstallAddonsTests(service, request, testerFunctions);
     }
 }
 
