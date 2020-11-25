@@ -4,13 +4,13 @@ import fetch from 'node-fetch';
 //#region Prerequisites for Var API Tests
 //TestData
 function testDataNewAddon(testNumber) {
-    return { Name: 'Test ' + testNumber };
+    return { Name: 'Pepperitest Test ' + testNumber }; //Name here can't be changed or it will send messages VIA teams
 }
 
 function testDataNewAddonVersion(addonUUID, testNumber) {
     return {
         AddonUUID: addonUUID,
-        Version: 'Version Test ' + testNumber,
+        Version: 'Pepperitest Test Version ' + testNumber, //Name here can't be changed or it will send messages VIA teams
     };
 }
 
@@ -20,7 +20,7 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 //         return [
 //             {
 //                 AddonUUID: addonUUID,
-//                 Version: 'Version Test ' + testNumberArr[index],
+//                 Version: 'Pepperitest Test Version ' + testNumberArr[index],
 //             },
 //         ];
 //     }
@@ -76,9 +76,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
     console.log('Initiate Var API Tests | ' + generalService.getTime());
 
-    if (!generalService.getClientData('Server').includes('sandbox')) {
-        throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
-    }
+    //Fixed by Shir in 25/11/2020 - now this test can run on all servers - if the version name start with Pepperitest Test
+    // if (!generalService.getClientData('Server').includes('sandbox')) {
+    //     throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
+    // }
 
     //Prerequisites per test
     const crudAddonTest = 'CRUD Addon Test';
@@ -1940,7 +1941,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ).then((response) => response.json());
         console.log({ Addon_Created_For_No_UUID_Test: createApiResponse });
         const versionTestDataBody = {
-            Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
         } as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2046,7 +2047,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         const versionTestDataBody = {
-            Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
             UUID: createVersionApiResponse.UUID,
         };
 
@@ -2277,7 +2278,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         ).then((response) => response.json());
         const versionTestDataBody = {
-            Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
             UUID: createVersionApiResponse.UUID.substring(0, createVersionApiResponse.UUID.length - 2) + '00',
         };
         const createVersionApiNegativeResponse = await fetch(
@@ -2528,7 +2529,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.UUID,
-            Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
             //TODO: fix this capital letter when it will be decided
             //Capital letter no longer valid temp patch "installation" instead of "Installation"
             Files: [{ FileName: 'installation.js', URL: '', Base64Content: fileAsSBase64 }],
@@ -2685,7 +2686,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.UUID,
-            Version: 'Version Test ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
             //TODO: fix this capital letter when it will be decided
             //Capital letter no longer valid temp patch "other" instead of "Other"
             Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 }],
@@ -3369,10 +3370,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         ).then((response) => response.json());
         for (let index = 0; index < getAllAddonsBeforeDelete.length; index++) {
             if (
-                getAllAddonsBeforeDelete[index].Name.startsWith('Test') &&
-                (getAllAddonsBeforeDelete[index].SystemData == '{}' ||
-                    getAllAddonsBeforeDelete[index].SystemData.includes('Version Test')) &&
-                parseInt(getAllAddonsBeforeDelete[index].Name.split(' ')[1]) > 1000
+                (getAllAddonsBeforeDelete[index].Name.startsWith('Test') &&
+                    (getAllAddonsBeforeDelete[index].SystemData == '{}' ||
+                        getAllAddonsBeforeDelete[index].SystemData.includes('Version Test')) &&
+                    parseInt(getAllAddonsBeforeDelete[index].Name.split(' ')[1]) > 1000) ||
+                getAllAddonsBeforeDelete[index].Name.startsWith('Pepperitest Test ')
             ) {
                 const deleteApiResponse = await fetch(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
@@ -3411,10 +3413,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
         for (let index = 0; index < getAllInstalledAddonsBeforeDelete.length; index++) {
             if (
-                getAllInstalledAddonsBeforeDelete[index].Addon != null &&
-                getAllInstalledAddonsBeforeDelete[index].Addon.Name.startsWith('Test') &&
-                getAllInstalledAddonsBeforeDelete[index].Addon.SystemData == '{}' &&
-                parseInt(getAllInstalledAddonsBeforeDelete[index].Addon.Name.split(' ')[1]) > 1
+                (getAllInstalledAddonsBeforeDelete[index].Addon != null &&
+                    getAllInstalledAddonsBeforeDelete[index].Addon.Name.startsWith('Test') &&
+                    getAllInstalledAddonsBeforeDelete[index].Addon.SystemData == '{}' &&
+                    parseInt(getAllInstalledAddonsBeforeDelete[index].Addon.Name.split(' ')[1]) > 1) ||
+                getAllInstalledAddonsBeforeDelete[index].Addon.Name.startsWith('Pepperitest Test')
             ) {
                 //var deleteApiResponse = VarAPI.CallSync('DELETE', "/var/addons/" + getAllInstalledAddonsBeforeDelete[index].Addon.UUID);
                 const deleteApiResponse = await generalService.papiClient.post(
