@@ -5,11 +5,10 @@ import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
-function testDataATD(externaID: string, description: string, icon: string) {
+function testDataATD(externaID: string, description: string) {
     return {
         ExternalID: `Test ATD ${externaID}`,
         Description: description,
-        Icon: icon,
     } as MetaDataATD;
 }
 
@@ -26,7 +25,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
     const activitiesTypeArr = [] as any;
 
     const testDataNewATD = await importExportATDService.postTransactionsATD(
-        testDataATD(Math.floor(Math.random() * 1000000).toString(), 'Description of Test ATD', 'icon1'),
+        testDataATD(Math.floor(Math.random() * 1000000).toString(), 'Description of Test ATD'),
     );
 
     const transactionsArr = await generalService.getTypes('transactions');
@@ -231,7 +230,6 @@ async function TestCleanUp(service: ImportExportATDService) {
                 InternalID: allATDObject[index].InternalID,
                 ExternalID: allATDObject[index].ExternalID,
                 Description: allATDObject[index].Description,
-                Icon: allATDObject[index].Icon,
                 Hidden: true,
             };
             await service.postTransactionsATD(tempBody);
