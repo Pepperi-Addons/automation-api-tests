@@ -115,7 +115,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         [
                             _accountExternalIDStr,
                             new Date().getTime().toString(),
-                            Math.floor(Math.random() * 100000000000123).toString(),
+                            Math.floor(Math.random() * 100000000000).toString() +
+                                Math.random().toString(36).substring(10),
                             _activityTypeIDStr,
                             _agentExternalID,
                             _catalogExternalID,
@@ -125,7 +126,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         [
                             _accountExternalIDStr,
                             new Date().getTime().toString(),
-                            Math.floor(Math.random() * 100000000000321).toString(),
+                            Math.floor(Math.random() * 100000000000).toString() +
+                                Math.random().toString(36).substring(10),
                             _activityTypeIDStr,
                             _agentExternalID,
                             _catalogExternalID,
@@ -342,7 +344,9 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             syncDataArray[index] = [];
                             syncDataArray[index][0] = _accountExternalIDStr;
                             syncDataArray[index][1] = new Date().getTime().toString();
-                            syncDataArray[index][2] = Math.floor(Math.random() * 100000000000000).toString();
+                            syncDataArray[index][2] =
+                                Math.floor(Math.random() * 100000000000).toString() +
+                                Math.random().toString(36).substring(10);
                             syncDataArray[index][3] = _activityTypeIDStr;
                             syncDataArray[index][4] = _agentExternalID;
                             syncDataArray[index][5] = _catalogExternalID;
@@ -493,11 +497,11 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 };
                 countHiddenTransactions++;
                 try {
-                    /*if (index % 2 == 0) { //This can verify that DI-16911 is fixed, but its not yet developed by Maor Akav 17/09/2020
-                            await service.papiClient.post('/transactions', transaction);*/
-                    /*} else {*/
+                    // if (index % 2 == 0) { //This can verify that DI-16911 is fixed, but its not yet developed by Maor Akav 17/09/2020
+                    //         await service.papiClient.post('/transactions', transaction);
+                    // } else {
                     await service.papiClient.transactions.delete(activityToHide.InternalID as any);
-                    /*}*/
+                    //}
                 } catch (error) {
                     countFailedToHideTransactions++;
                     console.log(
@@ -589,7 +593,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             testBody['LocalDataUpdates' as any].jsonBody[2].Lines.push([
                 _localData.jsonBody[2].Lines[0][0],
                 new Date().getTime().toString(),
-                Math.floor(Math.random() * 100000000000000).toString(),
+                Math.floor(Math.random() * 1000000000000).toString() + Math.random().toString(36).substring(10),
                 _localData.jsonBody[2].Lines[0][3],
                 _agentExternalID,
                 _catalogExternalID,
@@ -659,10 +663,19 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 console.log({ In_the_Puts: getSyncDataResponse });
 
                 if (!isSyncLocalDataUpdatesValid) {
+                    for (let index = 0; index < tenPutResponsArr.length; index++) {
+                        tenPutResponsArr[index] = tenPutResponsArr[index].Status;
+                    }
                     tenPutDataResponsArr.push(
                         `Missmatch in the LocalDataUpdates, the get sync data response: ${JSON.stringify(
                             getSyncDataResponse.LocalDataUpdates,
-                        )}, not match to the sent data: ${JSON.stringify(testBody.LocalDataUpdates)}.`,
+                        )}, not match to the sent data: ${JSON.stringify(
+                            testBody.LocalDataUpdates,
+                        )}, the Sync UUID is: ${
+                            tempPostTenPutssPromiseArr[index].SyncJobUUID
+                        }, And the other ten put responses are: ${JSON.stringify(
+                            tempPostTenPutssPromiseArr,
+                        )}, With thess Sync Staus: ${JSON.stringify(tenPutResponsArr)}.`,
                     );
                 }
             }

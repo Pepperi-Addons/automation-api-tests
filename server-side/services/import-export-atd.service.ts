@@ -7,7 +7,7 @@ export interface MetaDataATD {
     InternalID?: number;
     ExternalID: string;
     Description: string;
-    Icon: string;
+    Icon?: string;
     CreationDateTime?: string;
     ModificationDateTime?: string;
     Hidden?: boolean;
