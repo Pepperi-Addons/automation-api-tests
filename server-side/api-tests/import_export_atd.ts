@@ -86,8 +86,16 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                 expect(installedAddonVersion).to.have.property('Version').a('string').that.is.equal(varLatestVersion);
             });
 
-            it(`Create new ATD (DI-17195)`, async () => {
+            it(`Create New ATD (DI-17195)`, async () => {
                 expect(testDataNewATD).to.have.property('Icon').a('string').that.contains('icon');
+            });
+
+            it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
+                const tempATD = testDataATD(Math.floor(Math.random() * 1000000).toString(), 'Description of Test ATD');
+                tempATD.Icon = 'icon1';
+                return expect(importExportATDService.postTransactionsATD(tempATD)).eventually.to.be.rejectedWith(
+                    'Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
+                );
             });
         });
 

@@ -218,9 +218,9 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.LocalDataUpdates = {} as any;
                     Object.assign(testBody.LocalDataUpdates, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] = Math.floor(
-                            Math.random() * 100000000000000,
-                        ).toString();
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] =
+                            Math.floor(Math.random() * 100000000000).toString() +
+                            Math.random().toString(36).substring(10);
                     }
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
@@ -298,9 +298,9 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.LocalDataUpdates = {} as any;
                     Object.assign(testBody.LocalDataUpdates, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] = Math.floor(
-                            Math.random() * 100000000000000,
-                        ).toString();
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] =
+                            Math.floor(Math.random() * 100000000000).toString() +
+                            Math.random().toString(36).substring(10);
                     }
                     testBody['LocalDataUpdates' as any] += 'Bug';
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
@@ -312,9 +312,9 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.LocalDataUpdates = {} as any;
                     Object.assign(testBody.LocalDataUpdates, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] = Math.floor(
-                            Math.random() * 100000000000000,
-                        ).toString();
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] =
+                            Math.floor(Math.random() * 100000000000).toString() +
+                            Math.random().toString(36).substring(10);
                     }
                     testBody.LastSyncDateTime = 0;
                     const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
