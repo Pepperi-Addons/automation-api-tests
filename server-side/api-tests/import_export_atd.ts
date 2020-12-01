@@ -1,6 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
-import { ImportExportATDService, MetaDataATD } from '../services/import-export-atd.service';
+import { ImportExportATDService, MetaDataATD, MetaDataUDT } from '../services/import-export-atd.service';
 import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -27,6 +27,13 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
     const testDataNewATD = await importExportATDService.postTransactionsATD(
         testDataATD(Math.floor(Math.random() * 1000000).toString(), 'Description of Test ATD'),
     );
+
+    const testDataPostUDT = await importExportATDService.postUDT({
+        TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+        MainKeyType: { ID: 23, Name: '' },
+        SecondaryKeyType: { ID: 35, Name: '' },
+        MemoryMode: {},
+    });
 
     const transactionsArr = await generalService.getTypes('transactions');
     transactionsArr.forEach((element) => {
@@ -85,17 +92,133 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
             it(`Latest Version Is Installed`, () => {
                 expect(installedAddonVersion).to.have.property('Version').a('string').that.is.equal(varLatestVersion);
             });
+            describe('Endpoints', () => {
+                describe('ATD', () => {
+                    it(`Create New ATD (DI-17195)`, async () => {
+                        expect(testDataNewATD)
+                            .to.have.property('Description')
+                            .a('string')
+                            .that.contains('Description of Test ATD');
+                        expect(testDataNewATD).to.have.property('TypeID').a('number').that.is.above(0);
+                        expect(testDataNewATD).to.have.property('InternalID').a('number').that.above(0);
+                        expect(testDataNewATD).to.have.property('ExternalID').a('string').that.contains('Test ATD ');
+                        expect(testDataNewATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        expect(testDataNewATD).to.have.property('Icon').a('string').that.contains('icon');
+                        expect(testDataNewATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataNewATD).to.have.property('ModificationDateTime').a('string').that.contains('Z');
+                        expect(testDataNewATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataNewATD).to.have.property('CreationDateTime').a('string').that.contains('Z');
+                        expect(testDataNewATD).to.have.property('UUID').a('string').that.have.lengthOf(36);
+                    });
 
-            it(`Create New ATD (DI-17195)`, async () => {
-                expect(testDataNewATD).to.have.property('Icon').a('string').that.contains('icon');
-            });
+                    it(`CRUD ATD`, async () => {
+                        //Update + Delete
+                        console.log({ ATD_Post_Response: testDataNewATD });
+                        const testDataUpdatedATD = await importExportATDService.postTransactionsATD({
+                            TypeID: 0,
+                            InternalID: testDataNewATD.InternalID,
+                            ExternalID: testDataNewATD.ExternalID + 1,
+                            UUID: 'Test String',
+                            Description: 'Updated Description of Test ATD',
+                            Icon: testDataNewATD.Icon.slice(0, -1) + 3,
+                            Hidden: true,
+                            CreationDateTime: testDataNewATD.CreationDateTime,
+                            ModificationDateTime: 'Test String',
+                        });
+                        console.log({ ATD_Update_Response: testDataUpdatedATD });
 
-            it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
-                const tempATD = testDataATD(Math.floor(Math.random() * 1000000).toString(), 'Description of Test ATD');
-                tempATD.Icon = 'icon1';
-                return expect(importExportATDService.postTransactionsATD(tempATD)).eventually.to.be.rejectedWith(
-                    'Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
-                );
+                        expect(testDataUpdatedATD)
+                            .to.have.property('Description')
+                            .a('string')
+                            .that.contains('Updated Description of Test ATD');
+                        expect(testDataNewATD)
+                            .to.have.property('TypeID')
+                            .a('number')
+                            .that.is.equal(testDataUpdatedATD.TypeID);
+                        expect(testDataNewATD)
+                            .to.have.property('InternalID')
+                            .a('number')
+                            .that.is.equal(testDataUpdatedATD.InternalID);
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ExternalID')
+                            .a('string')
+                            .that.contains(testDataNewATD.ExternalID + 1);
+                        expect(testDataUpdatedATD).to.have.property('Hidden').a('boolean').that.is.true;
+                        expect(testDataUpdatedATD).to.have.property('Icon').a('string').that.contains('icon3');
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains(testDataUpdatedATD.CreationDateTime);
+                        expect(testDataNewATD)
+                            .to.have.property('UUID')
+                            .a('string')
+                            .that.contains(testDataUpdatedATD.UUID);
+
+                        //Restore
+                        const testDataRestoreATD = await importExportATDService.postTransactionsATD({
+                            InternalID: testDataUpdatedATD.InternalID,
+                            ExternalID: testDataUpdatedATD.ExternalID,
+                            Description: testDataUpdatedATD.Description,
+                            Hidden: false,
+                        });
+
+                        expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        console.log({ ATD_Restore_Response: testDataRestoreATD });
+                    });
+
+                    it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
+                        const tempATD = testDataATD(
+                            Math.floor(Math.random() * 1000000).toString(),
+                            'Description of Test ATD',
+                        );
+                        tempATD.Icon = 'icon1';
+                        return expect(
+                            importExportATDService.postTransactionsATD(tempATD),
+                        ).eventually.to.be.rejectedWith(
+                            'Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
+                        );
+                    });
+                });
+
+                describe('UDT', () => {
+                    it('CRUD UDT', async () => {
+                        console.log({ UDT_Post_Response: testDataPostUDT });
+                        expect(testDataPostUDT).to.have.property('TableID');
+                    });
+
+                    it('Get Deleted UDT (DI-17251)', async () => {
+                        await importExportATDService.deleteUDT(testDataPostUDT.TableID);
+                        return expect(
+                            importExportATDService.getUDT(testDataPostUDT.TableID),
+                        ).eventually.to.have.property('TableID');
+                    });
+
+                    it('Restore Deleted UDT', async () => {
+                        await importExportATDService.postUDT({
+                            MainKeyType: testDataPostUDT.MainKeyType,
+                            SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                            TableID: testDataPostUDT.TableID,
+                            Hidden: false,
+                        });
+                        return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
+                            .eventually.to.have.property('Hidden')
+                            .a('boolean').that.is.false;
+                    });
+                });
             });
         });
 
@@ -195,38 +318,24 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                     });
                 }
             });
-
-            // describe('Get', () => {
-            //     it('Get Transaction With The Type Sales Order', async () => {
-            //         return expect(transactionsTypeArr).to.have.property('Sales Order');
-            //     });
-
-            //     it('Get Sales Order Fields', async () => {
-            //         const transactionTypes = await generalService.getTypes('transactions');
-            //         const salesOrderTypeID = transactionTypes[0].TypeID;
-            //         return expect(fieldsService.getFields('transactions', salesOrderTypeID))
-            //             .eventually.to.be.an('array')
-            //             .with.length.above(5);
-            //     });
-
-            //     it('Get An Activity TypeID', async () => {
-            //         return expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').and.is.above(0);
-            //     });
-            // });
         });
 
         //#region Clean
         describe('Test Clean up', () => {
             it('Make sure an ATD removed in the end of the tests', async () => {
                 //Make sure an ATD removed in the end of the tests
-                return expect(TestCleanUp(importExportATDService)).eventually.to.be.above(0);
+                return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
+            });
+            it('Make sure an UDT removed in the end of the tests', async () => {
+                //Make sure an ATD removed in the end of the tests
+                return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
             });
         });
     });
 }
 
 //Remove all Test Data ATD
-async function TestCleanUp(service: ImportExportATDService) {
+async function TestCleanUpATD(service: ImportExportATDService) {
     const allATDObject: MetaDataATD[] = await service.getAllTransactionsATD();
     let deletedCounter = 0;
     for (let index = 0; index < allATDObject.length; index++) {
@@ -241,6 +350,22 @@ async function TestCleanUp(service: ImportExportATDService) {
                 Hidden: true,
             };
             await service.postTransactionsATD(tempBody);
+            deletedCounter++;
+        }
+    }
+    return deletedCounter;
+}
+
+//Remove all Test Data UDT
+async function TestCleanUpUDT(service: ImportExportATDService) {
+    const allUDTObject: MetaDataUDT[] = await service.getAllUDT();
+    let deletedCounter = 0;
+    for (let index = 0; index < allUDTObject.length; index++) {
+        if (
+            allUDTObject[index].TableID?.toString().startsWith('Test UDT ') &&
+            Number(allUDTObject[index].TableID?.toString().split(' ')[2].split('.')[0]) > 100
+        ) {
+            await service.deleteUDT(allUDTObject[index].TableID);
             deletedCounter++;
         }
     }
