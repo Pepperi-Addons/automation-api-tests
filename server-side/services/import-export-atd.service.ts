@@ -1,6 +1,13 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+declare type ResourceTypes =
+    | 'activities'
+    | 'transactions'
+    | 'transaction_lines'
+    | 'catalogs'
+    | 'accounts'
+    | 'items'
+    | 'user_defined_tables';
 
 export interface MetaDataATD {
     TypeID?: number;
@@ -12,6 +19,23 @@ export interface MetaDataATD {
     ModificationDateTime?: string;
     Hidden?: boolean;
     UUID?: string;
+}
+
+export interface MetaDataUDT {
+    InternalID?: number;
+    TableID: string;
+    MainKeyType: {
+        ID: number;
+        Name: string;
+    };
+    SecondaryKeyType: {
+        ID: number;
+        Name: string;
+    };
+    CreationDateTime?: string;
+    ModificationDateTime?: string;
+    Hidden?: boolean;
+    MemoryMode?: Record<string, unknown>;
 }
 
 interface FindOptions {
@@ -67,5 +91,22 @@ export class ImportExportATDService {
             '/addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/build_references_mapping',
             references,
         );
+    }
+
+    //UDT
+    postUDT(udt: MetaDataUDT) {
+        return this.papiClient.post(`/meta_data/${'user_defined_tables' as ResourceTypes}`, udt);
+    }
+
+    getUDT(tableID: string) {
+        return this.papiClient.get(`/meta_data/${'user_defined_tables' as ResourceTypes}/${tableID}`);
+    }
+
+    getAllUDT() {
+        return this.papiClient.get(`/meta_data/${'user_defined_tables' as ResourceTypes}`);
+    }
+
+    deleteUDT(tableID: string) {
+        return this.papiClient.delete(`/meta_data/${'user_defined_tables' as ResourceTypes}/${tableID}`);
     }
 }
