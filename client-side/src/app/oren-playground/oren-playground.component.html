@@ -12,6 +12,12 @@
             (click)="pollExecution(apiEndpoint)">
             {{ 'Poll_Btn_Title' | translate }}
         </button>
+
+        <button type="button" class="btn pepperi-button mat-button weak color-main sm pull-right flip"
+            (click)="getTestsList()">
+            {{ 'Get_Tests_List_Btn_Title' | translate }}
+        </button>
+
     </mat-card>
 
     <mat-card *ngIf="data">
