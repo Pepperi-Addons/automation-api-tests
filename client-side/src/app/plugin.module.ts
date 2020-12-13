@@ -1,4 +1,4 @@
-import { NgModule  } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { PluginComponent } from './plugin.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -12,19 +12,21 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DynamicModule, DynamicComponent } from 'ng-dynamic-component';
 import { ignoreElements } from 'rxjs/operators';
 //@ts-ignore
-import {EnvVariables} from 'pepperi-environment-variables';
+import { EnvVariables } from 'pepperi-environment-variables';
 
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { AddonApiService } from './addon-api.service';
 import { ApiTesterComponent } from './api-tester/api-tester.component';
+import { OrenPlaygroundComponent } from './oren-playground/oren-playground.component';
 
-function getUrl(){
-    debugger;
+function getUrl() {
+  debugger;
 }
 @NgModule({
   declarations: [
     PluginComponent,
-    ApiTesterComponent
+    ApiTesterComponent,
+    OrenPlaygroundComponent
   ],
   imports: [
     CommonModule,
@@ -37,16 +39,16 @@ function getUrl(){
     MatDialogModule,
     MatCardModule,
     TranslateModule.forRoot({
-        loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AddonApiService]
-        }
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient, AddonApiService]
+      }
     }),
     FormsModule,
     ReactiveFormsModule,
     DynamicModule.withComponents([])
-    ],
+  ],
   exports: [
 
   ],
@@ -58,8 +60,8 @@ function getUrl(){
     }],
     multi: true
   },
-  AddonApiService
-],
+    AddonApiService
+  ],
   entryComponents: [
     PluginComponent,
     DynamicComponent
@@ -74,7 +76,5 @@ export function createTranslateLoader(http: HttpClient, apiService: AddonApiServ
   if (!url) {
     url = apiService.getAddonStaticFolderURL();
   }
-  return new TranslateHttpLoader(http, url , '.json');
+  return new TranslateHttpLoader(http, url, '.json');
 }
-
-

@@ -1,5 +1,7 @@
 {
-    "Plugin_Title": "Demo plugin",
-    "Test_Prompt_Title": "Enter the relative API you want to test (eg. /api/foo)",
-    "Submit_Btn_Title": "Test"
+    "Plugin_Title": "API Testing Addons",
+    "Test_Prompt_Title": "Please Enter Test Name: (example: test_data)",
+    "Submit_Btn_Title": "Test",
+    "Poll_Btn_Title": "Async Test",
+    "Get_Tests_List_Btn_Title": "Get Tests List"
 }

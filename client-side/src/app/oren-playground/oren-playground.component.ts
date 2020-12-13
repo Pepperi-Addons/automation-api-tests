@@ -5,11 +5,11 @@ import { AddonApiService } from '../addon-api.service';
 import { UserService } from "pepperi-user-service";
 
 @Component({
-  selector: 'app-api-tester',
-  templateUrl: './api-tester.component.html',
-  styleUrls: ['./api-tester.component.scss']
+  selector: 'app-oren-playground',
+  templateUrl: './oren-playground.component.html',
+  styleUrls: ['./oren-playground.component.scss']
 })
-export class ApiTesterComponent implements OnInit {
+export class OrenPlaygroundComponent implements OnInit {
 
   data: any
   apiEndpoint: string
@@ -93,6 +93,10 @@ export class ApiTesterComponent implements OnInit {
     });
   }
 
+  getTestsList() {
+    this.data = this.backendApiService.getTestsList();
+  }
+
   testSyncEndpoint(endpoint, successFunc = null, errorFunc = null) {
     const self = this;
     this.backendApiService.getApiEndpoint(`/tests/${endpoint}`, true).subscribe(
@@ -114,4 +118,5 @@ export class ApiTesterComponent implements OnInit {
       () => self.userService.setShowLoading(false)
     )
   }
+
 }

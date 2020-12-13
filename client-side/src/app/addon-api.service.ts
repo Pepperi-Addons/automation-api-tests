@@ -2,17 +2,15 @@ import { Injectable, Input } from "@angular/core";
 import { ActivatedRoute, Router } from '@angular/router';
 
 //@ts-ignore
-import {UserService} from 'pepperi-user-service';
+import { UserService } from 'pepperi-user-service';
 
 import jwt from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
-export class AddonApiService
-{
+export class AddonApiService {
     papiBaseURL = ''
     addonData: any = {}
-
 
     constructor(
         private userService: UserService,
@@ -32,17 +30,21 @@ export class AddonApiService
         return this.userService.getAddonStaticFolder();
     }
 
-    getApiEndpoint(url) {
-        const options = { 
+    getApiEndpoint(url, sync?) {
+        const options = {
             'headers': {
                 'Authorization': 'Bearer ' + this.userService.getUserToken()
             }
         };
-        return this.httpClient.get(this.getAddonApiBaseURL() + url, options);
+        if (sync) {
+            return this.httpClient.get(this.getAddonApiBaseURL().replace("/async/", "/") + url, options);
+        } else {
+            return this.httpClient.get(this.getAddonApiBaseURL() + url, options);
+        }
     }
 
     get(url) {
-        const options = { 
+        const options = {
             'headers': {
                 'Authorization': 'Bearer ' + this.userService.getUserToken()
             }
@@ -50,5 +52,7 @@ export class AddonApiService
         return this.httpClient.get(this.papiBaseURL + url, options);
     }
 
-    
+    getTestsList() {
+        return "all, sanity, test_data, file_storage, data_views, data_views_positive, data_views_negative, fields, sync, sync_big_data, sync_clean, objects, audit_logs";
+    }
 }

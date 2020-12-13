@@ -35,7 +35,10 @@ export interface MetaDataUDT {
     CreationDateTime?: string;
     ModificationDateTime?: string;
     Hidden?: boolean;
-    MemoryMode?: Record<string, unknown>;
+    MemoryMode?: {
+        Dormant?: boolean;
+        Volatile?: boolean;
+    };
 }
 
 interface FindOptions {
@@ -107,6 +110,9 @@ export class ImportExportATDService {
     }
 
     deleteUDT(tableID: string) {
-        return this.papiClient.delete(`/meta_data/${'user_defined_tables' as ResourceTypes}/${tableID}`);
+        return this.papiClient
+            .delete(`/meta_data/${'user_defined_tables' as ResourceTypes}/${tableID}`)
+            .then((res) => res.text())
+            .then((res) => (res ? JSON.parse(res) : ''));
     }
 }

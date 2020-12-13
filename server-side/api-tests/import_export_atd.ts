@@ -32,7 +32,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
         TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
         MainKeyType: { ID: 23, Name: '' },
         SecondaryKeyType: { ID: 35, Name: '' },
-        MemoryMode: {},
+        MemoryMode: {
+            Dormant: true,
+            Volatile: false,
+        },
     });
 
     const transactionsArr = await generalService.getTypes('transactions');
@@ -171,7 +174,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         //Restore
                         const testDataRestoreATD = await importExportATDService.postTransactionsATD({
                             InternalID: testDataUpdatedATD.InternalID,
-                            ExternalID: testDataUpdatedATD.ExternalID,
+                            ExternalID: testDataNewATD.ExternalID,
                             Description: testDataUpdatedATD.Description,
                             Hidden: false,
                         });
@@ -189,7 +192,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         return expect(
                             importExportATDService.postTransactionsATD(tempATD),
                         ).eventually.to.be.rejectedWith(
-                            'Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
                         );
                     });
                 });
@@ -207,6 +210,18 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         ).eventually.to.have.property('TableID');
                     });
 
+                    it('Delete Deleted UDT (DI-17265)', async () => {
+                        return expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be.false;
+                    });
+
+                    it('Delete Non Existing UDT (DI-17265)', async () => {
+                        return expect(
+                            importExportATDService.deleteUDT('Non Existing UDT 1234'),
+                        ).eventually.to.be.rejectedWith(
+                            `failed with status: 404 - Not Found error: {"fault":{"faultstring":"User defined table: Non Existing UDT 1234 doesn't exist.`,
+                        );
+                    });
+
                     it('Restore Deleted UDT', async () => {
                         await importExportATDService.postUDT({
                             MainKeyType: testDataPostUDT.MainKeyType,
@@ -217,6 +232,67 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
                             .eventually.to.have.property('Hidden')
                             .a('boolean').that.is.false;
+                    });
+
+                    it('Correct Error Message for MainKeyType (DI-17269)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 1, Name: '' },
+                                SecondaryKeyType: { ID: 35, Name: '' },
+                                MemoryMode: {},
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"MainKey: 1 is not valid"',
+                        );
+                    });
+
+                    it('Correct Error Message for SecondaryKeyType (DI-17332)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 35, Name: '' },
+                                SecondaryKeyType: { ID: 1, Name: '' },
+                                MemoryMode: {},
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"SecondaryKey: 1 is not valid"',
+                        );
+                    });
+
+                    it('Correct Error Message for Same MemoryMode Types true (DI-17271)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 0, Name: '' },
+                                SecondaryKeyType: { ID: 0, Name: '' },
+                                MemoryMode: {
+                                    Dormant: true,
+                                    Volatile: true,
+                                },
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"User defined table cannot be both volatile and dormant at the same time"',
+                        );
+                    });
+
+                    it("Don't Store Non Valid Data Members UDT (DI-17268)", async () => {
+                        const baseATD = await importExportATDService.getUDT(testDataPostUDT.TableID);
+                        const modifiedATD = await importExportATDService.postUDT({
+                            TableID: testDataPostUDT.TableID,
+                            MemoryMode: {
+                                sdas: 'dfsdf',
+                            },
+                        } as any);
+                        expect(baseATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that.is
+                            .true;
+                        expect(baseATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean').that.is
+                            .false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that
+                            .is.false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
+                            .that.is.false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.not.have.property('sdas');
                     });
                 });
             });
@@ -241,7 +317,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
 
         //#region Endpoints
         describe('Endpoints', () => {
-            describe('Get (DI-17200)', () => {
+            describe('Get (DI-17200, DI-17258)', () => {
                 for (let index = 0; index < transactionsTypeArr.length; index++) {
                     const transactionName = transactionsTypeArr[index];
                     const transactionID = transactionsTypeArr[transactionsTypeArr[index]];

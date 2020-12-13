@@ -34,4 +34,10 @@ export class FileStorageService {
     getFileConfigurationByID(id: number) {
         return this.papiClient.fileStorage.get(id);
     }
+
+    // Need to add to this test: rename to file using the Name endpoint in the SDK
+    // export declare class FileStorageEndpoint extends Endpoint<FileStorage> {
+    // constructor(service: PapiClient);
+    // name(fileName: string): Promise<FileStorage>;
+    // tmp(): Promise<TempUrlResponse>;
 }
