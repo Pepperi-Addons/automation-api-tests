@@ -466,22 +466,36 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         // console.log({ LineFields: copyExportATDObject.LineFields });
                         // console.log({ Settings: copyExportATDObject.Settings });
 
-                        if (JSON.stringify(copyExportATDObject).length != JSON.stringify(exportATDObject).length) {
+                        const regexStr = new RegExp(transactionName, 'g');
+                        const regexStrForCopy = new RegExp(testDataNewATDCopy.ExternalID, 'g');
+
+                        if (
+                            Math.abs(
+                                JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length -
+                                    JSON.stringify(exportATDObject).replace(regexStr, '').length,
+                            ) > 20
+                        ) {
                             expect(
-                                `The length of the new ATD is ${
-                                    JSON.stringify(copyExportATDObject).length
+                                `The length of the new ATD witout the ExternalID is ${
+                                    JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length
                                 }, expected to be in length of ${
-                                    JSON.stringify(exportATDObject).length
-                                }, Origina ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=transactions&subtype=${transactionID}, Origina ATD Export Response: ${
+                                    JSON.stringify(exportATDObject).replace(regexStr, '').length
+                                }, but the difference in length is: ${Math.abs(
+                                    JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length -
+                                        JSON.stringify(exportATDObject).replace(regexStr, '').length,
+                                )}, Existing ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=transactions&subtype=${transactionID}, Existing ATD Export Response: ${
                                     testDataExportATDToCopyResponse.URL
                                 }, New ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=transactions&subtype=${
                                     testDataNewATDCopy.InternalID
                                 }, New ATD Export Response: ${copyExportATDResponse.URL}`,
                             ).to.be.true;
                         } else {
-                            expect(JSON.stringify(copyExportATDObject).length).to.equal(
-                                JSON.stringify(exportATDObject).length,
-                            );
+                            expect(
+                                Math.abs(
+                                    JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length -
+                                        JSON.stringify(exportATDObject).replace(regexStr, '').length,
+                                ),
+                            ).to.be.below(20);
                         }
                     });
                 }
@@ -548,23 +562,36 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         // console.log({ DataViews: copyExportATDObject.DataViews });
                         // console.log({ LineFields: copyExportATDObject.LineFields });
                         // console.log({ Settings: copyExportATDObject.Settings });
+                        const regexStr = new RegExp(activityName, 'g');
+                        const regexStrForCopy = new RegExp(testDataNewATDCopy.ExternalID, 'g');
 
-                        if (JSON.stringify(copyExportATDObject).length != JSON.stringify(exportATDObject).length) {
+                        if (
+                            Math.abs(
+                                JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length -
+                                    JSON.stringify(exportATDObject).replace(regexStr, '').length,
+                            ) > 20
+                        ) {
                             expect(
-                                `The length of the new ATD is ${
-                                    JSON.stringify(copyExportATDObject).length
+                                `The length of the new ATD witout the ExternalID is ${
+                                    JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length
                                 }, expected to be in length of ${
-                                    JSON.stringify(exportATDObject).length
-                                }, Origina ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${activityID}, Origina ATD Export Response: ${
+                                    JSON.stringify(exportATDObject).replace(regexStr, '').length
+                                }, but the difference in length is: ${Math.abs(
+                                    JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length -
+                                        JSON.stringify(exportATDObject).replace(regexStr, '').length,
+                                )}, Existing ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${activityID}, Existing ATD Export Response: ${
                                     testDataExportATDToCopyResponse.URL
                                 }, New ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
                                     testDataNewATDCopy.InternalID
                                 }, New ATD Export Response: ${copyExportATDResponse.URL}`,
                             ).to.be.true;
                         } else {
-                            expect(JSON.stringify(copyExportATDObject).length).to.equal(
-                                JSON.stringify(exportATDObject).length,
-                            );
+                            expect(
+                                Math.abs(
+                                    JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').length -
+                                        JSON.stringify(exportATDObject).replace(regexStr, '').length,
+                                ),
+                            ).to.be.below(20);
                         }
                     });
                 }
