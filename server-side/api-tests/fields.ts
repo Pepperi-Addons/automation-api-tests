@@ -79,11 +79,11 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
             describe('Upsert', () => {
                 it('Upsert Fields', async () => {
-                    const fieldId = `TSATest Upsert 1234`;
+                    const fieldID = `TSATest Upsert 1234`;
                     const postField = await service.upsertField(
                         'transactions',
                         {
-                            FieldID: fieldId,
+                            FieldID: fieldID,
                             Label: '123',
                             UIType: {
                                 ID: 1,
@@ -95,7 +95,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     const upsertField = await service.upsertField(
                         'transactions',
                         {
-                            FieldID: fieldId,
+                            FieldID: fieldID,
                             Label: '1234',
                             UIType: {
                                 ID: 1,
@@ -118,13 +118,13 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
             describe('Delete', () => {
                 it('Delete Fields', async () => {
-                    const fieldId = `TSATest Delete 1234`;
+                    const fieldID = `TSATest Delete 1234`;
                     return Promise.all([
                         await expect(
                             service.upsertField(
                                 'transactions',
                                 {
-                                    FieldID: fieldId,
+                                    FieldID: fieldID,
                                     Label: '123',
                                     UIType: {
                                         ID: 1,
@@ -132,13 +132,13 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                                 },
                                 transactionsTypeArr[transactionsTypeArr[0]],
                             ),
-                        ).eventually.to.include({ FieldID: fieldId }),
-                        //expect(service.deleteField('transactions', fieldId, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
+                        ).eventually.to.include({ FieldID: fieldID }),
+                        //expect(service.deleteField('transactions', fieldID, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
                         expect(
                             service.upsertField(
                                 'transactions',
                                 {
-                                    FieldID: fieldId,
+                                    FieldID: fieldID,
                                     Label: '123',
                                     Hidden: true,
                                     UIType: {
@@ -155,13 +155,16 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
         describe('Scenarios', () => {
             describe('Positive', () => {
-                it('CRUD Transactions Of Sales Order', async () => {
-                    const fieldId = `TSATest transactions 1234`;
+                it('CRUD Transactions Of Sales Order (DI-17083)', async () => {
+                    const fieldID = `TSA Creation Test ${
+                        Math.floor(Math.random() * 10000).toString() + Math.random().toString(36).substring(10)
+                    }`;
                     const postField = await service.upsertField(
                         'transactions',
                         {
-                            FieldID: fieldId,
+                            FieldID: fieldID,
                             Label: '123',
+                            Description: `Description of ${fieldID}`,
                             UIType: {
                                 ID: 1,
                             },
@@ -172,7 +175,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     const upsertField = await service.upsertField(
                         'transactions',
                         {
-                            FieldID: fieldId,
+                            FieldID: fieldID,
                             Label: '1234',
                             UIType: {
                                 ID: 1,
@@ -181,6 +184,8 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         transactionsTypeArr[transactionsTypeArr[0]],
                     );
                     return Promise.all([
+                        expect(postField.Description).to.equals(`Description of ${fieldID}`),
+                        expect(upsertField.Description).to.equals(`Description of ${fieldID}`),
                         expect(postField.InternalID).not.to.be.undefined,
                         expect(postField['UIType'].Name).to.equals('TextBox'),
                         expect(postField.InternalID).not.to.be.undefined,
@@ -191,21 +196,21 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         expect(postField.ModificationDateTime).to.contain('Z'),
                         expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
                         expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
-                        //expect(service.deleteField('transactions', fieldId, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
-                        expect(
-                            service.upsertField(
-                                'transactions',
-                                {
-                                    FieldID: fieldId,
-                                    Label: '123',
-                                    Hidden: true,
-                                    UIType: {
-                                        ID: 1,
-                                    },
-                                },
-                                transactionsTypeArr[transactionsTypeArr[0]],
-                            ),
-                        ).eventually.to.be.fulfilled,
+                        //expect(service.deleteField('transactions', fieldID, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
+                        // expect(
+                        //     service.upsertField(
+                        //         'transactions',
+                        //         {
+                        //             FieldID: fieldID,
+                        //             Label: '123',
+                        //             Hidden: true,
+                        //             UIType: {
+                        //                 ID: 1,
+                        //             },
+                        //         },
+                        //         transactionsTypeArr[transactionsTypeArr[0]],
+                        //     ),
+                        // ).eventually.to.be.fulfilled,
                     ]);
                 });
 
@@ -217,24 +222,26 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     'transaction_lines',
                     'transactions',
                 ];
+
                 for (let index = 0; index < resourceTypesArray.length; index++) {
                     const resourceType = resourceTypesArray[index];
-                    it(`CRUD ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}`, async () => {
-                        const fieldId = `TSATest ${
-                            resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
-                        } 12345 (For-Positive)`;
+                    it(`CRUD ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} (DI-17083)`, async () => {
+                        const fieldID = `TSA Creation Test ${
+                            Math.floor(Math.random() * 10000).toString() + Math.random().toString(36).substring(10)
+                        } ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} 12345 (For-Positive)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
                             const postField = await service.upsertField(resourceType, {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '123',
+                                Description: `Description of ${fieldID}`,
                                 UIType: {
                                     ID: 1,
                                 },
                             });
 
                             const upsertField = await service.upsertField(resourceType, {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '1234',
                                 UIType: {
                                     ID: 1,
@@ -242,6 +249,8 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             });
 
                             return Promise.all([
+                                expect(postField.Description).to.equals(`Description of ${fieldID}`),
+                                expect(upsertField.Description).to.equals(`Description of ${fieldID}`),
                                 expect(postField.InternalID).not.to.be.undefined,
                                 expect(postField.InternalID).to.equals(upsertField.InternalID),
                                 expect(postField.Label).to.not.equals(upsertField.Label),
@@ -252,7 +261,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                                 expect(postField.ModificationDateTime).to.contain('Z'),
                                 expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
                                 expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
-                                expect(service.deleteField(resourceType, fieldId)).eventually.to.be.true,
+                                // expect(service.deleteField(resourceType, fieldID)).eventually.to.be.true,
                                 // expect(
                                 //     service.upsertField(resourceType, {
                                 //         FieldID: fieldId,
@@ -268,8 +277,9 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             const postField = await service.upsertField(
                                 resourceType,
                                 {
-                                    FieldID: fieldId,
+                                    FieldID: fieldID,
                                     Label: '123',
+                                    Description: `Description of ${fieldID}`,
                                     UIType: {
                                         ID: 1,
                                     },
@@ -282,7 +292,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             const upsertField = await service.upsertField(
                                 resourceType,
                                 {
-                                    FieldID: fieldId,
+                                    FieldID: fieldID,
                                     Label: '1234',
                                     UIType: {
                                         ID: 1,
@@ -294,6 +304,188 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             );
 
                             return Promise.all([
+                                expect(postField.Description).to.equals(`Description of ${fieldID}`),
+                                expect(upsertField.Description).to.equals(`Description of ${fieldID}`),
+                                expect(postField.InternalID).not.to.be.undefined,
+                                expect(postField.InternalID).to.equals(upsertField.InternalID),
+                                expect(postField.Label).to.not.equals(upsertField.Label),
+                                expect(postField.CreationDateTime).to.contain('Z'),
+                                expect(postField.ModificationDateTime).to.contain(
+                                    new Date().toISOString().split('T')[0],
+                                ),
+                                expect(postField.ModificationDateTime).to.contain('Z'),
+                                expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                                expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
+                                // expect(
+                                //     service.deleteField(
+                                //         resourceType,
+                                //         fieldID,
+                                //         resourceType.startsWith('transaction')
+                                //             ? transactionsTypeArr[transactionsTypeArr[0]]
+                                //             : activitiesTypeArr[activitiesTypeArr[0]],
+                                //     ),
+                                // ).eventually.to.be.true,
+                                // expect(
+                                //     service.upsertField(
+                                //         resourceType,
+                                //         {
+                                //             FieldID: fieldId,
+                                //             Label: '123',
+                                //             Hidden: true,
+                                //             UIType: {
+                                //                 ID: 1,
+                                //             },
+                                //         },
+                                //         resourceType.startsWith('transaction')
+                                //             ? transactionsTypeArr[transactionsTypeArr[0]]
+                                //             : activitiesTypeArr[activitiesTypeArr[0]],
+                                //     ),
+                                // ).eventually.to.be.fulfilled,
+                            ]);
+                        }
+                    });
+                }
+
+                it('RUD Existing Transactions Of Sales Order', async () => {
+                    const fieldID = `TSATest transactions 1234`;
+                    const postField = await service.upsertField(
+                        'transactions',
+                        {
+                            FieldID: fieldID,
+                            Label: '123',
+                            Description: `Description of ${fieldID}`,
+                            UIType: {
+                                ID: 1,
+                            },
+                        },
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+
+                    const upsertField = await service.upsertField(
+                        'transactions',
+                        {
+                            FieldID: fieldID,
+                            Label: '1234',
+                            UIType: {
+                                ID: 1,
+                            },
+                        },
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+                    return Promise.all([
+                        expect(postField.Description).to.equals(`Description of ${fieldID}`),
+                        expect(upsertField.Description).to.equals(`Description of ${fieldID}`),
+                        expect(postField.InternalID).not.to.be.undefined,
+                        expect(postField['UIType'].Name).to.equals('TextBox'),
+                        expect(postField.InternalID).not.to.be.undefined,
+                        expect(postField.InternalID).to.equals(upsertField.InternalID),
+                        expect(postField.Label).to.not.equals(upsertField.Label),
+                        expect(postField.CreationDateTime).to.contain('Z'),
+                        expect(postField.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                        expect(postField.ModificationDateTime).to.contain('Z'),
+                        expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                        expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
+                        //expect(service.deleteField('transactions', fieldID, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
+                        expect(
+                            service.upsertField(
+                                'transactions',
+                                {
+                                    FieldID: fieldID,
+                                    Label: '123',
+                                    Hidden: true,
+                                    UIType: {
+                                        ID: 1,
+                                    },
+                                },
+                                transactionsTypeArr[transactionsTypeArr[0]],
+                            ),
+                        ).eventually.to.be.fulfilled,
+                    ]);
+                });
+
+                for (let index = 0; index < resourceTypesArray.length; index++) {
+                    const resourceType = resourceTypesArray[index];
+                    it(`RUD Existing ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}`, async () => {
+                        const fieldID = `TSATest ${
+                            resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
+                        } 12345 (For-Positive)`;
+
+                        if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
+                            const postField = await service.upsertField(resourceType, {
+                                FieldID: fieldID,
+                                Label: '123',
+                                Description: `Description of ${fieldID}`,
+                                UIType: {
+                                    ID: 1,
+                                },
+                            });
+
+                            const upsertField = await service.upsertField(resourceType, {
+                                FieldID: fieldID,
+                                Label: '1234',
+                                UIType: {
+                                    ID: 1,
+                                },
+                            });
+
+                            return Promise.all([
+                                expect(postField.Description).to.equals(`Description of ${fieldID}`),
+                                expect(upsertField.Description).to.equals(`Description of ${fieldID}`),
+                                expect(postField.InternalID).not.to.be.undefined,
+                                expect(postField.InternalID).to.equals(upsertField.InternalID),
+                                expect(postField.Label).to.not.equals(upsertField.Label),
+                                expect(postField.CreationDateTime).to.contain('Z'),
+                                expect(postField.ModificationDateTime).to.contain(
+                                    new Date().toISOString().split('T')[0],
+                                ),
+                                expect(postField.ModificationDateTime).to.contain('Z'),
+                                expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                                expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
+                                expect(service.deleteField(resourceType, fieldID)).eventually.to.be.true,
+                                // expect(
+                                //     service.upsertField(resourceType, {
+                                //         FieldID: fieldId,
+                                //         Label: '123',
+                                //         Hidden: true,
+                                //         UIType: {
+                                //             ID: 1,
+                                //         },
+                                //     }),
+                                // ).eventually.to.be.fulfilled,
+                            ]);
+                        } else {
+                            const postField = await service.upsertField(
+                                resourceType,
+                                {
+                                    FieldID: fieldID,
+                                    Label: '123',
+                                    Description: `Description of ${fieldID}`,
+                                    UIType: {
+                                        ID: 1,
+                                    },
+                                },
+                                resourceType.startsWith('transaction')
+                                    ? transactionsTypeArr[transactionsTypeArr[0]]
+                                    : activitiesTypeArr[activitiesTypeArr[0]],
+                            );
+
+                            const upsertField = await service.upsertField(
+                                resourceType,
+                                {
+                                    FieldID: fieldID,
+                                    Label: '1234',
+                                    UIType: {
+                                        ID: 1,
+                                    },
+                                },
+                                resourceType.startsWith('transaction')
+                                    ? transactionsTypeArr[transactionsTypeArr[0]]
+                                    : activitiesTypeArr[activitiesTypeArr[0]],
+                            );
+
+                            return Promise.all([
+                                expect(postField.Description).to.equals(`Description of ${fieldID}`),
+                                expect(upsertField.Description).to.equals(`Description of ${fieldID}`),
                                 expect(postField.InternalID).not.to.be.undefined,
                                 expect(postField.InternalID).to.equals(upsertField.InternalID),
                                 expect(postField.Label).to.not.equals(upsertField.Label),
@@ -307,7 +499,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                                 expect(
                                     service.deleteField(
                                         resourceType,
-                                        fieldId,
+                                        fieldID,
                                         resourceType.startsWith('transaction')
                                             ? transactionsTypeArr[transactionsTypeArr[0]]
                                             : activitiesTypeArr[activitiesTypeArr[0]],
@@ -333,7 +525,65 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         }
                     });
                 }
+
+                it('Recreating flaky bug (DI-17083)', async () => {
+                    const fieldID = 'TSATestHadar SB12';
+                    const postField = await service.upsertField(
+                        'transactions',
+                        {
+                            FieldID: fieldID,
+                            Label: 'TSATestHadar SB12',
+                            Description: `TSATest bug reproduce 17/12/2020`,
+                            UIType: {
+                                ID: 1,
+                            },
+                        },
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+
+                    const upsertField = await service.upsertField(
+                        'transactions',
+                        {
+                            FieldID: fieldID,
+                            Label: 'TSATestHadar SB12',
+                            UIType: {
+                                ID: 1,
+                            },
+                        },
+                        transactionsTypeArr[transactionsTypeArr[0]],
+                    );
+                    return Promise.all([
+                        expect(postField.Description).to.equals(`TSATest bug reproduce 17/12/2020`),
+                        expect(upsertField.Description).to.equals(`TSATest bug reproduce 17/12/2020`),
+                        expect(postField.InternalID).not.to.be.undefined,
+                        expect(postField['UIType'].Name).to.equals('TextBox'),
+                        expect(postField.InternalID).not.to.be.undefined,
+                        expect(postField.InternalID).to.equals(upsertField.InternalID),
+                        expect(postField.Label).to.equals(upsertField.Label),
+                        expect(postField.CreationDateTime).to.contain('Z'),
+                        expect(postField.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                        expect(postField.ModificationDateTime).to.contain('Z'),
+                        expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
+                        expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
+                        //expect(service.deleteField('transactions', fieldID, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
+                        // expect(
+                        //     service.upsertField(
+                        //         'transactions',
+                        //         {
+                        //             FieldID: fieldID,
+                        //             Label: '123',
+                        //             Hidden: true,
+                        //             UIType: {
+                        //                 ID: 1,
+                        //             },
+                        //         },
+                        //         transactionsTypeArr[transactionsTypeArr[0]],
+                        //     ),
+                        // ).eventually.to.be.fulfilled,
+                    ]);
+                });
             });
+
             describe('Negative', () => {
                 const resourceTypesArray: ResourceTypes[] = [
                     'accounts',
@@ -349,14 +599,14 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     it(`Missing UITypeID or Sub TypeID ${
                         resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
                     }`, async () => {
-                        const fieldId = `TSATest ${
+                        const fieldID = `TSATest ${
                             resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
                         } 12345 (For-Negative)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
                             return expect(
                                 service.upsertField(resourceType, {
-                                    FieldID: fieldId,
+                                    FieldID: fieldID,
                                     Label: '123',
                                     UIType: {} as any,
                                 }),
@@ -367,7 +617,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             return Promise.all([
                                 await expect(
                                     service.upsertField(resourceType, {
-                                        FieldID: fieldId,
+                                        FieldID: fieldID,
                                         Label: '123',
                                         UIType: {
                                             ID: 1,
@@ -380,7 +630,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                                     service.upsertField(
                                         resourceType,
                                         {
-                                            FieldID: fieldId,
+                                            FieldID: fieldID,
                                             Label: '123',
                                             UIType: {} as any,
                                         },
@@ -397,13 +647,14 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 }
             });
         });
+
         describe('Known Bugs', () => {
             it('Temporary Property CRUD (DI-16194)', async () => {
-                const fieldId = `TSATest Temp 1234`;
+                const fieldID = `TSATest Temp 1234`;
                 const postField = await service.upsertField(
                     'transactions',
                     {
-                        FieldID: fieldId,
+                        FieldID: fieldID,
                         Label: '123',
                         UIType: {
                             ID: 1,
@@ -418,7 +669,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 const upsertField = await service.upsertField(
                     'transactions',
                     {
-                        FieldID: fieldId,
+                        FieldID: fieldID,
                         Label: '1234',
                         UIType: {
                             ID: 1,
@@ -440,12 +691,12 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     expect(postField.ModificationDateTime).to.contain('Z'),
                     expect(postField.CreationDateTime).to.equals(upsertField.CreationDateTime),
                     expect(postField.ModificationDateTime).to.not.equals(upsertField.ModificationDateTime),
-                    //expect(service.deleteField('transactions', fieldId, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
+                    //expect(service.deleteField('transactions', fieldID, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
                     expect(
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '123',
                                 Hidden: true,
                                 UIType: {
@@ -459,7 +710,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             it('Create Transaction from undefined to valid Field (DI-17012)', async () => {
-                const fieldId = `TSATest Steps 12345`;
+                const fieldID = `TSATest Steps 12345`;
                 return Promise.all([
                     await expect(
                         service.upsertField(
@@ -479,7 +730,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                             } as any,
                             transactionsTypeArr[transactionsTypeArr[0]],
                         ),
@@ -490,7 +741,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '1234',
                             } as any,
                             transactionsTypeArr[transactionsTypeArr[0]],
@@ -502,7 +753,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '1234',
                                 UIType: {
                                     ID: 2,
@@ -511,12 +762,12 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             transactionsTypeArr[transactionsTypeArr[0]],
                         ),
                     ).eventually.to.be.fulfilled,
-                    //expect(service.deleteField('transactions', fieldId, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
+                    //expect(service.deleteField('transactions', fieldID, transactionsTypeArr[transactionsTypeArr[0]])).eventually.to.be.true,
                     expect(
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '123',
                                 Hidden: true,
                                 UIType: {
@@ -530,13 +781,13 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             it('Reject With Correct Error Message (DI-17013)', async () => {
-                const fieldId = `TSATest 1234 (Negative)`;
+                const fieldID = `TSATest 1234 (Negative)`;
                 return Promise.all([
                     await expect(
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '1234',
                                 UIType: {
                                     ID: 'Throw Here' as any,
@@ -551,7 +802,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         service.upsertField(
                             'transactions',
                             {
-                                FieldID: fieldId,
+                                FieldID: fieldID,
                                 Label: '1234',
                                 UIType: {
                                     ID: 2,
@@ -569,17 +820,44 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 ]);
             });
         });
+
         describe('TSA DataBase Changes', () => {
-            it('Created 11 Testing TSA', () => {
+            it('Created only 7 testing TSA in the RUD Existing Tests', () => {
                 return expect(
                     service.papiClient.get(
-                        "/type_safe_attribute?where=Name LIKE 'TSATest %' AND Name NOT LIKE 'TSATest 1234'&fields=Name&include_deleted=1",
+                        `/type_safe_attribute?where=Name LIKE 'TSATest %' AND Name NOT LIKE 'TSATest 1234' AND ActivityTypeDefinitionID LIKE '${
+                            transactionsTypeArr[transactionsTypeArr[0]]
+                        }'&fields=Name&include_deleted=1`,
                     ),
                 )
                     .eventually.to.be.an('array')
-                    .with.lengthOf(11);
+                    .with.lengthOf(7);
             });
         });
+
+        describe('Test Clean up', () => {
+            it('Make sure the 7 Fields from the CRUD tests removed in the end of the tests', async () => {
+                return expect(TestCleanUp(service)).eventually.to.equal(7);
+            });
+        });
+
+        //Remove all CURD Tests Fields
+        async function TestCleanUp(service: FieldsService) {
+            const allFieldsObject = await service.papiClient.get(
+                `/type_safe_attribute?where=Name LIKE 'TSA Creation Test %'`,
+            );
+            let deletedCounter = 0;
+            for (let index = 0; index < allFieldsObject.length; index++) {
+                if (allFieldsObject[index].Name?.toString().startsWith('TSA Creation Test ')) {
+                    await service.papiClient.post('/type_safe_attribute', {
+                        InternalID: allFieldsObject[index].InternalID,
+                        Hidden: true,
+                    });
+                    deletedCounter++;
+                }
+            }
+            return deletedCounter;
+        }
     });
 }
 

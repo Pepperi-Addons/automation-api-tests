@@ -537,6 +537,24 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true,
                 ]);
             });
+
+            // it('Delete Account Message (DI-17285)', async () => {
+            //     const account = await service.createAccount({
+            //         ExternalID: 'Oren Test 12345',
+            //         City: 'City',
+            //         Country: 'US',
+            //     });
+            //     return Promise.all([
+            //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.true,
+            //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.false,
+            //         expect(service.deleteAccount((account.InternalID as any) + 123))
+            //             .eventually.to.be.rejectedWith
+            //             // Bug: 'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Upload file error, internal code = ST12',
+            //             // version 1: `The Account with InternalID: ${account.InternalID} that you are trying to update does not exist. Please verify and try again.`,
+            //             // version 2: `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The ${account.InternalID} you are trying to update does not exist. Please load it and then try again.`,
+            //             (),
+            //     ]);
+            // });
         });
     });
 }

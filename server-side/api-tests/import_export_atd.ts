@@ -80,7 +80,6 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
     }
     const installedAddonVersion = await service.addons.installedAddons.addonUUID(`${addonUUID}`).get();
 
-    //#region Tests
     describe('Import And Export ATD Tests Suites', () => {
         describe('Prerequisites Addon for ImportExportATD Tests', () => {
             it('Upgarde To Latest Version', async () => {
@@ -95,6 +94,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
             it(`Latest Version Is Installed`, () => {
                 expect(installedAddonVersion).to.have.property('Version').a('string').that.is.equal(varLatestVersion);
             });
+
             describe('Endpoints', () => {
                 describe('ATD', () => {
                     it(`Create New ATD (DI-17195)`, async () => {
@@ -276,7 +276,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         );
                     });
 
-                    it("Don't Store Non Valid Data Members UDT (DI-17268)", async () => {
+                    it("Don't Store Non Valid Data Members (DI-17268)", async () => {
                         const baseATD = await importExportATDService.getUDT(testDataPostUDT.TableID);
                         const modifiedATD = await importExportATDService.postUDT({
                             TableID: testDataPostUDT.TableID,
@@ -315,7 +315,6 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
             expect(installedAddonVersion.Version).to.be.a('string').that.is.contain('.');
         });
 
-        //#region Endpoints
         describe('Endpoints', () => {
             describe('Get (DI-17200, DI-17258)', () => {
                 for (let index = 0; index < transactionsTypeArr.length; index++) {
@@ -365,7 +364,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('ID');
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('Name');
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('Type');
-                        expect(JSON.stringify(mappingResponse.Mapping)).to.include('Destination');
+                        //Destination was removed and moved to another object in 15/12 - it was decided with Chasky and Oleg to not test the object,
+                        //The test continue from this point as a Black Box test, where the result will only be tested for their functionality,
+                        //But in case of bugs it will be hardr to find what went wrong in the process of import and export.
+                        //expect(JSON.stringify(mappingResponse.Mapping)).to.include('Destination');
                     });
                 }
                 for (let index = 0; index < activitiesTypeArr.length; index++) {
@@ -390,18 +392,191 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('ID');
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('Name');
                         expect(JSON.stringify(mappingResponse.Mapping)).to.include('Type');
-                        expect(JSON.stringify(mappingResponse.Mapping)).to.include('Destination');
+                        //Destination was removed and moved to another object in 15/12 - it was decided with Chasky and Oleg to not test the object,
+                        //The test continue from this point as a Black Box test, where the result will only be tested for their functionality,
+                        //But in case of bugs it will be hardr to find what went wrong in the process of import and export.
+                        //expect(JSON.stringify(mappingResponse.Mapping)).to.include('Destination');
                     });
                 }
             });
         });
 
-        //#region Clean
+        describe('Black Box Scenarios', () => {
+            describe('Import and Export ATD', () => {
+                for (let index = 0; index < transactionsTypeArr.length; index++) {
+                    const transactionName = transactionsTypeArr[index];
+                    const transactionID = transactionsTypeArr[transactionsTypeArr[index]];
+                    it(`Transaction: ${transactionName}`, async () => {
+                        const testDataExportATDToCopyResponse = await importExportATDService.exportATD(
+                            'transactions',
+                            transactionID,
+                        );
+                        console.log({ testDataExportATDToCopyResponse: testDataExportATDToCopyResponse });
+
+                        expect(testDataExportATDToCopyResponse)
+                            .to.have.property('URL')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
+                            .and.contain('/TemporaryFiles/');
+                        const exportATDObject = await fetch(testDataExportATDToCopyResponse.URL).then((response) =>
+                            response.json(),
+                        );
+
+                        // console.log({ exportATDObject: exportATDObject });
+                        // console.log({ Fields: exportATDObject.Fields });
+                        // console.log({ Workflow: exportATDObject.Workflow });
+                        // console.log({ References: exportATDObject.References });
+                        // console.log({ DataViews: exportATDObject.DataViews });
+                        // console.log({ LineFields: exportATDObject.LineFields });
+                        // console.log({ Settings: exportATDObject.Settings });
+
+                        const testDataNewATDCopy = await importExportATDService.postTransactionsATD(
+                            testDataATD(Math.floor(Math.random() * 1000000).toString(), `Copy of ${transactionName}`),
+                        );
+                        console.log({ testDataNewATDCopy: testDataNewATDCopy });
+
+                        await expect(
+                            importExportATDService.importATD(
+                                'transactions',
+                                testDataNewATDCopy.InternalID,
+                                testDataExportATDToCopyResponse,
+                            ),
+                        ).eventually.to.contains('success');
+
+                        const copyExportATDResponse = await importExportATDService.exportATD(
+                            'transactions',
+                            testDataNewATDCopy.InternalID,
+                        );
+                        console.log({ copyExportATDResponse: copyExportATDResponse });
+
+                        expect(copyExportATDResponse)
+                            .to.have.property('URL')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
+                            .and.contain('/TemporaryFiles/');
+                        const copyExportATDObject = await fetch(copyExportATDResponse.URL).then((response) =>
+                            response.json(),
+                        );
+
+                        // console.log({ copyExportATDObject: copyExportATDObject });
+                        // console.log({ Fields: copyExportATDObject.Fields });
+                        // console.log({ Workflow: copyExportATDObject.Workflow });
+                        // console.log({ References: copyExportATDObject.References });
+                        // console.log({ DataViews: copyExportATDObject.DataViews });
+                        // console.log({ LineFields: copyExportATDObject.LineFields });
+                        // console.log({ Settings: copyExportATDObject.Settings });
+
+                        if (JSON.stringify(copyExportATDObject).length != JSON.stringify(exportATDObject).length) {
+                            expect(
+                                `The length of the new ATD is ${
+                                    JSON.stringify(copyExportATDObject).length
+                                }, expected to be in length of ${
+                                    JSON.stringify(exportATDObject).length
+                                }, Origina ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=transactions&subtype=${transactionID}, Origina ATD Export Response: ${
+                                    testDataExportATDToCopyResponse.URL
+                                }, New ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=transactions&subtype=${
+                                    testDataNewATDCopy.InternalID
+                                }, New ATD Export Response: ${copyExportATDResponse.URL}`,
+                            ).to.be.true;
+                        } else {
+                            expect(JSON.stringify(copyExportATDObject).length).to.equal(
+                                JSON.stringify(exportATDObject).length,
+                            );
+                        }
+                    });
+                }
+
+                for (let index = 0; index < activitiesTypeArr.length; index++) {
+                    const activityName = activitiesTypeArr[index];
+                    const activityID = activitiesTypeArr[activitiesTypeArr[index]];
+                    it(`Activity: ${activityName}`, async () => {
+                        const testDataExportATDToCopyResponse = await importExportATDService.exportATD(
+                            'activities',
+                            activityID,
+                        );
+                        console.log({ testDataExportATDToCopyResponse: testDataExportATDToCopyResponse });
+
+                        expect(testDataExportATDToCopyResponse)
+                            .to.have.property('URL')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
+                            .and.contain('/TemporaryFiles/');
+                        const exportATDObject = await fetch(testDataExportATDToCopyResponse.URL).then((response) =>
+                            response.json(),
+                        );
+
+                        // console.log({ exportATDObject: exportATDObject });
+                        // console.log({ Fields: exportATDObject.Fields });
+                        // console.log({ Workflow: exportATDObject.Workflow });
+                        // console.log({ References: exportATDObject.References });
+                        // console.log({ DataViews: exportATDObject.DataViews });
+                        // console.log({ LineFields: exportATDObject.LineFields });
+                        // console.log({ Settings: exportATDObject.Settings });
+
+                        const testDataNewATDCopy = await importExportATDService.postActivitiesATD(
+                            testDataATD(Math.floor(Math.random() * 1000000).toString(), `Copy of ${activityName}`),
+                        );
+                        console.log({ testDataNewATDCopy: testDataNewATDCopy });
+
+                        await expect(
+                            importExportATDService.importATD(
+                                'activities',
+                                testDataNewATDCopy.InternalID,
+                                testDataExportATDToCopyResponse,
+                            ),
+                        ).eventually.to.contains('success');
+
+                        const copyExportATDResponse = await importExportATDService.exportATD(
+                            'activities',
+                            testDataNewATDCopy.InternalID,
+                        );
+                        console.log({ copyExportATDResponse: copyExportATDResponse });
+
+                        expect(copyExportATDResponse)
+                            .to.have.property('URL')
+                            .that.contain('https://')
+                            .and.contain('cdn.')
+                            .and.contain('/TemporaryFiles/');
+                        const copyExportATDObject = await fetch(copyExportATDResponse.URL).then((response) =>
+                            response.json(),
+                        );
+
+                        // console.log({ copyExportATDObject: copyExportATDObject });
+                        // console.log({ Fields: copyExportATDObject.Fields });
+                        // console.log({ Workflow: copyExportATDObject.Workflow });
+                        // console.log({ References: copyExportATDObject.References });
+                        // console.log({ DataViews: copyExportATDObject.DataViews });
+                        // console.log({ LineFields: copyExportATDObject.LineFields });
+                        // console.log({ Settings: copyExportATDObject.Settings });
+
+                        if (JSON.stringify(copyExportATDObject).length != JSON.stringify(exportATDObject).length) {
+                            expect(
+                                `The length of the new ATD is ${
+                                    JSON.stringify(copyExportATDObject).length
+                                }, expected to be in length of ${
+                                    JSON.stringify(exportATDObject).length
+                                }, Origina ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${activityID}, Origina ATD Export Response: ${
+                                    testDataExportATDToCopyResponse.URL
+                                }, New ATD Export URL: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
+                                    testDataNewATDCopy.InternalID
+                                }, New ATD Export Response: ${copyExportATDResponse.URL}`,
+                            ).to.be.true;
+                        } else {
+                            expect(JSON.stringify(copyExportATDObject).length).to.equal(
+                                JSON.stringify(exportATDObject).length,
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
         describe('Test Clean up', () => {
             it('Make sure an ATD removed in the end of the tests', async () => {
                 //Make sure an ATD removed in the end of the tests
                 return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
             });
+
             it('Make sure an UDT removed in the end of the tests', async () => {
                 //Make sure an ATD removed in the end of the tests
                 return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
@@ -412,20 +587,37 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
 
 //Remove all Test Data ATD
 async function TestCleanUpATD(service: ImportExportATDService) {
-    const allATDObject: MetaDataATD[] = await service.getAllTransactionsATD();
+    const allTransactionsATDObject: MetaDataATD[] = await service.getAllTransactionsATD();
     let deletedCounter = 0;
-    for (let index = 0; index < allATDObject.length; index++) {
+    for (let index = 0; index < allTransactionsATDObject.length; index++) {
         if (
-            allATDObject[index].ExternalID?.toString().startsWith('Test ATD ') &&
-            Number(allATDObject[index].ExternalID?.toString().split(' ')[2].split('.')[0]) > 100
+            allTransactionsATDObject[index].ExternalID?.toString().startsWith('Test ATD ') &&
+            Number(allTransactionsATDObject[index].ExternalID?.toString().split(' ')[2].split('.')[0]) > 100
         ) {
             const tempBody: MetaDataATD = {
-                InternalID: allATDObject[index].InternalID,
-                ExternalID: allATDObject[index].ExternalID,
-                Description: allATDObject[index].Description,
+                InternalID: allTransactionsATDObject[index].InternalID,
+                ExternalID: allTransactionsATDObject[index].ExternalID,
+                Description: allTransactionsATDObject[index].Description,
                 Hidden: true,
             };
             await service.postTransactionsATD(tempBody);
+            deletedCounter++;
+        }
+    }
+    const allActivitiesATDObject: MetaDataATD[] = await service.getAllActivitiesATD();
+    deletedCounter = 0;
+    for (let index = 0; index < allActivitiesATDObject.length; index++) {
+        if (
+            allActivitiesATDObject[index].ExternalID?.toString().startsWith('Test ATD ') &&
+            Number(allActivitiesATDObject[index].ExternalID?.toString().split(' ')[2].split('.')[0]) > 100
+        ) {
+            const tempBody: MetaDataATD = {
+                InternalID: allActivitiesATDObject[index].InternalID,
+                ExternalID: allActivitiesATDObject[index].ExternalID,
+                Description: allActivitiesATDObject[index].Description,
+                Hidden: true,
+            };
+            await service.postActivitiesATD(tempBody);
             deletedCounter++;
         }
     }
