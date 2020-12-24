@@ -15,6 +15,7 @@ let isBase = true;
 let isSkipMechanisem = false;
 let isSkipMechanisemHundredGets = false;
 let isSkipMechanisemHundredPuts = false;
+let isSkipMechanisemErrors = false;
 let isGetResync = false;
 let isPutResync = false;
 let isBigData = false;
@@ -54,6 +55,7 @@ export async function SyncLongTests(generalService: GeneralService, tester: Test
     isSkipMechanisem = true;
     isSkipMechanisemHundredGets = false;
     isSkipMechanisemHundredPuts = false;
+    isSkipMechanisemErrors = false;
     isGetResync = false;
     isPutResync = true;
     isBigData = false;
@@ -185,6 +187,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         await Promise.all([
             isSkipMechanisemHundredGets ? createOneHundredGets() : undefined,
             isSkipMechanisemHundredPuts ? createOneHundredPuts() : undefined,
+            isSkipMechanisemErrors ? fail50Syncs() : undefined,
             createTenPuts(),
         ]);
     }
@@ -538,6 +541,23 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         Object.assign(testBody, _body);
         testBody.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
         testBody['LocalDataUpdates' as any] = null;
+        testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+        for (let index = 0; index < getsSize; index++) {
+            //POST sync job
+            tempPostOneHundredGetsPromiseArr.push(await service.post(testBody));
+        }
+        for (let index = 0; index < getsSize; index++) {
+            oneHundredGetResponsArr.push(
+                await waitForSyncStatus(tempPostOneHundredGetsPromiseArr[index].SyncJobUUID, 3.5 * 60000),
+            );
+        }
+    }
+
+    async function fail50Syncs() {
+        const testBody = {} as SyncBody;
+        Object.assign(testBody, _body);
+        testBody.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
+        testBody['LocalDataUpdates' as any] = 'this sync should fail';
         testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
         for (let index = 0; index < getsSize; index++) {
             //POST sync job

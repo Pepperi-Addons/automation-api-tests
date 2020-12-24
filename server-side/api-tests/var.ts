@@ -219,10 +219,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
     );
 
-    await executePostSingleVersionInBulkEndPointTest(
-        postSingleVersionInBulkEndPointTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+    //Test was removed in 21/12/2020 since all the responses of 500 will return in HTML and are not formattable
+    // await executePostSingleVersionInBulkEndPointTest(
+    //     postSingleVersionInBulkEndPointTest,
+    //     testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+    // );
 
     await executePostVersionsWithoutBulkEndPointTest(
         postVersionsWithoutBulkEndPointTest,
@@ -1495,95 +1496,96 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //console.log({ Token: VarAPI._Token })
     }
 
+    //Test was removed in 21/12/2020 since all the responses of 500 will return in HTML and are not formattable
     //Test Post Single Version In Bulk End Point (Negative)
-    async function executePostSingleVersionInBulkEndPointTest(testName, testDataBody) {
-        const mandatoryStepsPostSingleVersionInBulkEndPointTest = {
-            FailToCreateAddonVersion: false,
-            RemoveAddonEndTest: false,
-        };
+    // async function executePostSingleVersionInBulkEndPointTest(testName, testDataBody) {
+    //     const mandatoryStepsPostSingleVersionInBulkEndPointTest = {
+    //         FailToCreateAddonVersion: false,
+    //         RemoveAddonEndTest: false,
+    //     };
 
-        //Create
-        const createApiResponse = await fetch(
-            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
-            {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
-                },
-                body: JSON.stringify(testDataBody),
-            },
-        ).then((response) => response.json());
+    //     //Create
+    //     const createApiResponse = await fetch(
+    //         generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+    //         {
+    //             method: `POST`,
+    //             headers: {
+    //                 Authorization: request.body.varKey,
+    //             },
+    //             body: JSON.stringify(testDataBody),
+    //         },
+    //     ).then((response) => response.json());
 
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
-        versionTestDataBody.Phased = true;
-        versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
-        const createVersionApiResponse = await fetch(
-            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/bulk',
-            {
-                method: `POST`,
-                headers: {
-                    Authorization: request.body.varKey,
-                },
-                body: JSON.stringify(versionTestDataBody) as any,
-            },
-        ).then((response) => response.json());
-        console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
-        console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //statusText.split('<h2>')[1].split('</h2>')[0] });
-        mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
-            createVersionApiResponse,
-        ).includes('fault'); //statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
-        addTestResultUnderHeadline(
-            testName,
-            'Create New Addon With Single Version In Bulk End Point Test',
-            mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion
-                ? true
-                : 'The response is: ' +
-                  JSON.stringify(createVersionApiResponse) + //.statusText.split('<h2>')[1].split('</h2>')[0] +
-                      " Expected response should include error mesage with the text : '500 - Internal server error.'",
-        );
+    //     const versionTestDataBody = testDataNewAddonVersion(
+    //         createApiResponse.UUID,
+    //         Math.floor(Math.random() * 1000000).toString(),
+    //     ) as any;
+    //     versionTestDataBody.Phased = true;
+    //     versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+    //     const createVersionApiResponse = await fetch(
+    //         generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions/bulk',
+    //         {
+    //             method: `POST`,
+    //             headers: {
+    //                 Authorization: request.body.varKey,
+    //             },
+    //             body: JSON.stringify(versionTestDataBody) as any,
+    //         },
+    //     ).then((response) => response.json());
+    //     console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
+    //     console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //statusText.split('<h2>')[1].split('</h2>')[0] });
+    //     mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
+    //         createVersionApiResponse,
+    //     ).includes('fault'); //statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
+    //     addTestResultUnderHeadline(
+    //         testName,
+    //         'Create New Addon With Single Version In Bulk End Point Test',
+    //         mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion
+    //             ? true
+    //             : 'The response is: ' +
+    //               JSON.stringify(createVersionApiResponse) + //.statusText.split('<h2>')[1].split('</h2>')[0] +
+    //                   " Expected response should include error mesage with the text : '500 - Internal server error.'",
+    //     );
 
-        //Delete Addon
-        const deleteApiResponse = await fetch(
-            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
-            {
-                method: `DELETE`,
-                headers: {
-                    Authorization: request.body.varKey,
-                },
-            },
-        ).then((response) => response.json());
-        console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-        addTestResultUnderHeadline(
-            testName,
-            'Delete Addon - End Test',
-            !JSON.stringify(deleteApiResponse).includes('fault'),
-        );
-        mandatoryStepsPostSingleVersionInBulkEndPointTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+    //     //Delete Addon
+    //     const deleteApiResponse = await fetch(
+    //         generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
+    //         {
+    //             method: `DELETE`,
+    //             headers: {
+    //                 Authorization: request.body.varKey,
+    //             },
+    //         },
+    //     ).then((response) => response.json());
+    //     console.log({ Post_Var_Addons_Delete: deleteApiResponse });
+    //     addTestResultUnderHeadline(
+    //         testName,
+    //         'Delete Addon - End Test',
+    //         !JSON.stringify(deleteApiResponse).includes('fault'),
+    //     );
+    //     mandatoryStepsPostSingleVersionInBulkEndPointTest.RemoveAddonEndTest = !JSON.stringify(
+    //         deleteApiResponse,
+    //     ).includes('fault');
 
-        if (
-            mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion == true &&
-            mandatoryStepsPostSingleVersionInBulkEndPointTest.RemoveAddonEndTest == true
-        ) {
-            addTestResultUnderHeadline(
-                testName,
-                'All Post Single Version In Bulk End Point Test (Negative) mandatory steps complete',
-            );
-        } else {
-            addTestResultUnderHeadline(
-                testName,
-                'All Post Single Version In Bulk End Point Test (Negative) mandatory steps complete',
-                false,
-            );
-        }
+    //     if (
+    //         mandatoryStepsPostSingleVersionInBulkEndPointTest.FailToCreateAddonVersion == true &&
+    //         mandatoryStepsPostSingleVersionInBulkEndPointTest.RemoveAddonEndTest == true
+    //     ) {
+    //         addTestResultUnderHeadline(
+    //             testName,
+    //             'All Post Single Version In Bulk End Point Test (Negative) mandatory steps complete',
+    //         );
+    //     } else {
+    //         addTestResultUnderHeadline(
+    //             testName,
+    //             'All Post Single Version In Bulk End Point Test (Negative) mandatory steps complete',
+    //             false,
+    //         );
+    //     }
 
-        //This can be use to easily extract the token to the console
-        //console.log({ Token: VarAPI._Token })
-    }
+    //     //This can be use to easily extract the token to the console
+    //     //console.log({ Token: VarAPI._Token })
+    // }
 
     //Test Post Versions Array Without Bulk (Negative)
     async function executePostVersionsWithoutBulkEndPointTest(testName, testDataBody) {
