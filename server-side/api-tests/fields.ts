@@ -78,8 +78,8 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             describe('Upsert', () => {
-                it('Upsert Fields', async () => {
-                    const fieldID = `TSATest Upsert 1234`;
+                it('Upsert Fields (DI-17371)', async () => {
+                    const fieldID = `TSATest 2 Upsert 1234`;
                     const postField = await service.upsertField(
                         'transactions',
                         {
@@ -118,7 +118,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
             describe('Delete', () => {
                 it('Delete Fields', async () => {
-                    const fieldID = `TSATest Delete 1234`;
+                    const fieldID = `TSATest 2 Delete 1234`;
                     return Promise.all([
                         await expect(
                             service.upsertField(
@@ -347,7 +347,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 }
 
                 it('RUD Existing Transactions Of Sales Order', async () => {
-                    const fieldID = `TSATest transactions 1234`;
+                    const fieldID = `TSATest 2 transactions 1234`;
                     const postField = await service.upsertField(
                         'transactions',
                         {
@@ -406,7 +406,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 for (let index = 0; index < resourceTypesArray.length; index++) {
                     const resourceType = resourceTypesArray[index];
                     it(`RUD Existing ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}`, async () => {
-                        const fieldID = `TSATest ${
+                        const fieldID = `TSATest 2 ${
                             resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
                         } 12345 (For-Positive)`;
 
@@ -599,7 +599,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     it(`Missing UITypeID or Sub TypeID ${
                         resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
                     }`, async () => {
-                        const fieldID = `TSATest ${
+                        const fieldID = `TSATest 2 ${
                             resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
                         } 12345 (For-Negative)`;
 
@@ -650,7 +650,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
         describe('Known Bugs', () => {
             it('Temporary Property CRUD (DI-16194)', async () => {
-                const fieldID = `TSATest Temp 1234`;
+                const fieldID = `TSATest 2 Temp 1234`;
                 const postField = await service.upsertField(
                     'transactions',
                     {
@@ -710,17 +710,18 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             it('Create Transaction from undefined to valid Field (DI-17012)', async () => {
-                const fieldID = `TSATest Steps 12345`;
+                const fieldID = `TSATest 2 Steps 12345`;
                 return Promise.all([
-                    await expect(
-                        service.upsertField(
-                            'transactions',
-                            undefined as any,
-                            transactionsTypeArr[transactionsTypeArr[0]],
-                        ),
-                    ).eventually.to.be.rejectedWith(
-                        'failed with status: 500 - Internal Server Error error: {"fault":{"faultstring":"Object reference not set to an instance of an object.',
-                    ),
+                    //Test was removed in 21/12/2020 since all the responses of 500 will return in HTML and are not formattable
+                    // await expect(
+                    //     service.upsertField(
+                    //         'transactions',
+                    //         undefined as any,
+                    //         transactionsTypeArr[transactionsTypeArr[0]],
+                    //     ),
+                    // ).eventually.to.be.rejectedWith(
+                    //     'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Object reference not set to an instance of an object.',
+                    // ),
                     await expect(
                         service.upsertField('transactions', {} as any, transactionsTypeArr[transactionsTypeArr[0]]),
                     ).eventually.to.be.rejectedWith(
@@ -781,7 +782,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             it('Reject With Correct Error Message (DI-17013)', async () => {
-                const fieldID = `TSATest 1234 (Negative)`;
+                const fieldID = `TSATest 2 1234 (Negative)`;
                 return Promise.all([
                     await expect(
                         service.upsertField(
@@ -796,7 +797,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             transactionsTypeArr[transactionsTypeArr[0]],
                         ),
                     ).eventually.to.be.rejectedWith(
-                        `failed with status: 500 - Internal Server Error error: {"fault":{"faultstring":"Could not convert string to integer: Throw Here. Path 'UIType.ID', line 5, position 22.`,
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Could not convert string to integer: Throw Here. Path 'UIType.ID', line 5, position 22.`,
                     ),
                     expect(
                         service.upsertField(
@@ -815,7 +816,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                             transactionsTypeArr[transactionsTypeArr[0]],
                         ),
                     ).eventually.to.be.rejectedWith(
-                        `failed with status: 500 - Internal Server Error error: {"fault":{"faultstring":"Could not convert string to boolean: Throw here for test. Path 'CalculatedRuleEngine.Temporary', line 9, position 38.`,
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Could not convert string to boolean: Throw here for test. Path 'CalculatedRuleEngine.Temporary', line 9, position 38.`,
                     ),
                 ]);
             });
@@ -825,7 +826,12 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             it('Created only 7 testing TSA in the RUD Existing Tests', () => {
                 return expect(
                     service.papiClient.get(
-                        `/type_safe_attribute?where=Name LIKE 'TSATest %' AND Name NOT LIKE 'TSATest 1234' AND ActivityTypeDefinitionID LIKE '${
+                        //Version 1 of Fields tests
+                        // `/type_safe_attribute?where=Name LIKE 'TSATest %' AND Name NOT LIKE 'TSATest 1234' AND ActivityTypeDefinitionID LIKE '${
+                        //     transactionsTypeArr[transactionsTypeArr[0]]
+                        // }'&fields=Name&include_deleted=1`,
+                        //Version 2 of Fields tests
+                        `/type_safe_attribute?where=Name LIKE 'TSATest 2 %' AND ActivityTypeDefinitionID LIKE '${
                             transactionsTypeArr[transactionsTypeArr[0]]
                         }'&fields=Name&include_deleted=1`,
                     ),
@@ -836,7 +842,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
         });
 
         describe('Test Clean up', () => {
-            it('Make sure the 7 Fields from the CRUD tests removed in the end of the tests', async () => {
+            it('Make sure the 7 Fields from the CRUD tests removed in the end of the tests (DI-17371)', async () => {
                 return expect(TestCleanUp(service)).eventually.to.equal(7);
             });
         });
