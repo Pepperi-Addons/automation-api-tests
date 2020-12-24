@@ -406,6 +406,30 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             .a('boolean').that.is.false;
                     });
 
+                    it('Restore Deleted UDT (DI-17304)', async () => {
+                        await importExportATDService.postUDT({
+                            MainKeyType: testDataPostUDT.MainKeyType,
+                            SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                            TableID: testDataPostUDT.TableID,
+                            Hidden: true,
+                        });
+
+                        const getUTDObject = await importExportATDService.getUDT(testDataPostUDT.TableID);
+
+                        await Promise.all([
+                            expect(getUTDObject).to.have.property('Hidden').a('boolean').that.is.true,
+                            expect(
+                                importExportATDService.postUDT({
+                                    MainKeyType: testDataPostUDT.MainKeyType,
+                                    SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                                    TableID: testDataPostUDT.TableID,
+                                }),
+                            )
+                                .eventually.to.have.property('Hidden')
+                                .a('boolean').that.is.false,
+                        ]);
+                    });
+
                     it('Correct Error Message for MainKeyType (DI-17269)', async () => {
                         return expect(
                             importExportATDService.postUDT({
@@ -591,6 +615,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             .that.contain('https://')
                             .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
+
                         let exportATDObject = await fetch(testDataExportATDToCopyResponse.URL).then((response) =>
                             response.json(),
                         );
@@ -627,6 +652,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             .that.contain('https://')
                             .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
+
                         let copyExportATDObject = await fetch(copyExportATDResponse.URL).then((response) =>
                             response.json(),
                         );
@@ -639,8 +665,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         // console.log({ LineFields: copyExportATDObject.LineFields });
                         // console.log({ Settings: copyExportATDObject.Settings });
 
-                        const regexStr = new RegExp(transactionName, 'g');
-                        const regexStrForCopy = new RegExp(testDataNewTransactionATDCopy.ExternalID, 'g');
+                        const regexStr = new RegExp(`"Name":"${transactionName}"`, 'g');
+                        const regexStrForCopy = new RegExp(`"Name":"${testDataNewTransactionATDCopy.ExternalID}"`, 'g');
+
+                        delete copyExportATDObject.ExternalID;
                         delete copyExportATDObject.Description;
                         for (let index = 0; index < copyExportATDObject.Fields.length; index++) {
                             delete copyExportATDObject.Fields[index].CreationDateTime;
@@ -650,6 +678,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             delete copyExportATDObject.DataViews[index].CreationDateTime;
                             delete copyExportATDObject.DataViews[index].ModificationDateTime;
                         }
+                        delete exportATDObject.ExternalID;
                         delete exportATDObject.Description;
                         for (let index = 0; index < exportATDObject.Fields.length; index++) {
                             delete exportATDObject.Fields[index].CreationDateTime;
@@ -661,10 +690,12 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         }
 
                         copyExportATDObject = JSON.parse(
-                            JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').replace(/\s/g, ''),
+                            JSON.stringify(copyExportATDObject)
+                                .replace(regexStrForCopy, '"Name":"test"')
+                                .replace(/\s/g, ''),
                         );
                         exportATDObject = JSON.parse(
-                            JSON.stringify(exportATDObject).replace(regexStr, '').replace(/\s/g, ''),
+                            JSON.stringify(exportATDObject).replace(regexStr, '"Name":"test"').replace(/\s/g, ''),
                         );
 
                         if (
@@ -737,6 +768,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             .that.contain('https://')
                             .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
+
                         let exportATDObject = await fetch(testDataExportATDToCopyResponse.URL).then((response) =>
                             response.json(),
                         );
@@ -773,6 +805,7 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             .that.contain('https://')
                             .and.contain('cdn.')
                             .and.contain('/TemporaryFiles/');
+
                         let copyExportATDObject = await fetch(copyExportATDResponse.URL).then((response) =>
                             response.json(),
                         );
@@ -785,8 +818,10 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         // console.log({ LineFields: copyExportATDObject.LineFields });
                         // console.log({ Settings: copyExportATDObject.Settings });
 
-                        const regexStr = new RegExp(activityName, 'g');
-                        const regexStrForCopy = new RegExp(testDataNewActivityATDCopy.ExternalID, 'g');
+                        const regexStr = new RegExp(`"Name":"${activityName}"`, 'g');
+                        const regexStrForCopy = new RegExp(`"Name":"${testDataNewActivityATDCopy.ExternalID}"`, 'g');
+
+                        delete copyExportATDObject.ExternalID;
                         delete copyExportATDObject.Description;
                         for (let index = 0; index < copyExportATDObject.Fields.length; index++) {
                             delete copyExportATDObject.Fields[index].CreationDateTime;
@@ -796,6 +831,8 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                             delete copyExportATDObject.DataViews[index].CreationDateTime;
                             delete copyExportATDObject.DataViews[index].ModificationDateTime;
                         }
+
+                        delete exportATDObject.ExternalID;
                         delete exportATDObject.Description;
                         for (let index = 0; index < exportATDObject.Fields.length; index++) {
                             delete exportATDObject.Fields[index].CreationDateTime;
@@ -807,10 +844,12 @@ export async function ImportExportATDTests(generalService: GeneralService, reque
                         }
 
                         copyExportATDObject = JSON.parse(
-                            JSON.stringify(copyExportATDObject).replace(regexStrForCopy, '').replace(/\s/g, ''),
+                            JSON.stringify(copyExportATDObject)
+                                .replace(regexStrForCopy, '"Name":"test"')
+                                .replace(/\s/g, ''),
                         );
                         exportATDObject = JSON.parse(
-                            JSON.stringify(exportATDObject).replace(regexStr, '').replace(/\s/g, ''),
+                            JSON.stringify(exportATDObject).replace(regexStr, '"Name":"test"').replace(/\s/g, ''),
                         );
 
                         if (
