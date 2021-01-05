@@ -556,5 +556,638 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             //     ]);
             // });
         });
+
+        describe('Contacts', () => {
+            it('CRUD', async () => {
+                const contactAccount = await service.createAccount({
+                    ExternalID: 'ContactTestAccount',
+                    Name: 'Contact Test Account',
+                });
+
+                let updatedContact;
+
+                const contactTSAs = await service.createBulkTSA('contacts', TSAarr);
+                console.log('The following fields were created:\n' + contactTSAs);
+                const contactExternalID: string = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+                const createdContact = await service.createContact({
+                    ExternalID: contactExternalID,
+                    Email: 'ContactTest@mail.com',
+                    Phone: '123-45678',
+                    Mobile: '123-45678',
+                    FirstName: 'Contact',
+                    LastName: 'Test',
+                    Account: {
+                        Data: {
+                            InternalID: contactAccount.InternalID,
+                        },
+                    },
+                    TSAAttachmentAPI: {
+                        URL: 'http://www.africau.edu/images/default/sample.pdf',
+                        Content: '',
+                    },
+                    TSACheckboxAPI: true,
+                    TSACurrencyAPI: 10.0,
+                    TSADateAPI: '2020-09-01Z',
+                    TSADateTimeAPI: '2020-08-31T21:00:00Z',
+                    TSADecimalNumberAPI: 5.5,
+                    TSADropdownAPI: '1',
+                    TSAEmailAPI: 'Test@test.com',
+                    TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+                    TSAImageAPI: {
+                        URL:
+                            'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+                        Content: '',
+                    },
+                    TSALimitedLineAPI: 'Limit text',
+                    TSALinkAPI: 'https://www.ynet.co.il',
+                    TSAMultiChoiceAPI: 'A',
+                    TSANumberAPI: 5,
+                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+                    TSAPhoneNumberAPI: '9725554325',
+                    TSASignatureAPI: {
+                        URL: 'https://capitalstars.com/qpay/assets/images/sign2.png',
+                        Content: '',
+                    },
+                    TSASingleLineAPI: 'Random text',
+                });
+
+                const getCreatedContact = await service.getContacts(createdContact.InternalID);
+
+                return Promise.all([
+                    expect(getCreatedContact[0]).to.include({
+                        ExternalID: contactExternalID,
+                        Email: 'ContactTest@mail.com',
+                        Phone: '123-45678',
+                        Mobile: '123-45678',
+                        FirstName: 'Contact',
+                        LastName: 'Test',
+                        Status: 2,
+                        TSACheckboxAPI: true,
+                        TSACurrencyAPI: 10.0,
+                        TSADateAPI: '2020-09-01Z',
+                        TSADateTimeAPI: '2020-08-31T21:00:00Z',
+                        TSADecimalNumberAPI: 5.5,
+                        TSADropdownAPI: '1',
+                        TSAEmailAPI: 'Test@test.com',
+                        TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+                        TSALimitedLineAPI: 'Limit text',
+                        TSALinkAPI: 'https://www.ynet.co.il',
+                        TSAMultiChoiceAPI: 'A',
+                        TSANumberAPI: 5,
+                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+                        TSAPhoneNumberAPI: '9725554325',
+                        TSASingleLineAPI: 'Random text',
+                    }),
+                    expect(getCreatedContact[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                    expect(getCreatedContact[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                    expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                    expect(JSON.stringify(getCreatedContact[0].Account)).equals(
+                        JSON.stringify({
+                            Data: {
+                                InternalID: contactAccount.InternalID,
+                                UUID: contactAccount.UUID,
+                                ExternalID: contactAccount.ExternalID,
+                            },
+                            URI: '/accounts/' + contactAccount.InternalID,
+                        }),
+                    ),
+                    expect(
+                        (updatedContact = await service.createContact({
+                            ExternalID: contactExternalID,
+                            Email: 'ContactUpdateTest@mail.com',
+                            Phone: '123-456789',
+                            Mobile: '123-456789',
+                            FirstName: 'Contact Update',
+                            LastName: 'Test Update',
+                            TSAAttachmentAPI: {
+                                URL: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                                Content: '',
+                            },
+                            TSACheckboxAPI: false,
+                            TSACurrencyAPI: 15.0,
+                            TSADateAPI: '2020-09-02Z',
+                            TSADateTimeAPI: '2020-07-31T21:00:00Z',
+                            TSADecimalNumberAPI: 6.2,
+                            TSADropdownAPI: '2',
+                            TSAEmailAPI: 'TestUpdate@test.com',
+                            TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+                            TSAImageAPI: {
+                                URL: 'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
+                                Content: '',
+                            },
+                            TSALimitedLineAPI: 'Update text',
+                            TSALinkAPI: 'https://www.mako.co.il',
+                            TSAMultiChoiceAPI: 'B',
+                            TSANumberAPI: 3,
+                            TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdate',
+                            TSAPhoneNumberAPI: '97255543251',
+                            TSASignatureAPI: {
+                                URL:
+                                    'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
+                                Content: '',
+                            },
+                            TSASingleLineAPI: 'Random Updated text',
+                        } as any)),
+                    ).to.be.include({
+                        ExternalID: contactExternalID,
+                        Email: 'ContactUpdateTest@mail.com',
+                        Phone: '123-456789',
+                        Mobile: '123-456789',
+                        FirstName: 'Contact Update',
+                        LastName: 'Test Update',
+                        TSACheckboxAPI: false,
+                        TSACurrencyAPI: 15.0,
+                        TSADateAPI: '2020-09-02Z',
+                        TSADateTimeAPI: '2020-07-31T21:00:00Z',
+                        TSADecimalNumberAPI: 6.2,
+                        TSADropdownAPI: '2',
+                        TSAEmailAPI: 'TestUpdate@test.com',
+                        TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+                        TSALimitedLineAPI: 'Update text',
+                        TSALinkAPI: 'https://www.mako.co.il',
+                        TSAMultiChoiceAPI: 'B',
+                        TSANumberAPI: 3,
+                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdate',
+                        TSAPhoneNumberAPI: '97255543251',
+                        TSASingleLineAPI: 'Random Updated text',
+                    }),
+
+                    expect(updatedContact.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                    expect(updatedContact.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                    expect(updatedContact.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                    expect(await service.deleteContact(createdContact.InternalID as any)).to.be.true,
+                    expect(await service.deleteContact(createdContact.InternalID as any)).to.be.false,
+                    expect(await service.getContacts(createdContact.InternalID))
+                        .to.be.an('array')
+                        .with.lengthOf(0),
+                    expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true,
+                ]);
+            });
+        });
+
+        describe('General Activities', () => {
+            it('CRUD', async () => {
+                const atds = await service.getATD('activities');
+
+                // Create TSAs for activity test
+                console.log('Creating TSAs for activity test');
+                const createdTSAs = await service.createBulkTSA('activities', TSAarr, atds[0].TypeID);
+                console.log('The following fields were created:\n' + createdTSAs);
+                const activityExternalID: string =
+                    'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
+                let updatedActivity;
+
+                // Create account for activity test
+
+                console.log('Creating account for activity test');
+
+                const activityAccount = await service.createAccount({
+                    ExternalID: 'ActivityTestAccount',
+                    Name: 'Activity Test Account',
+                });
+                console.log('Created account external ID: ' + activityAccount.ExternalID);
+                console.log('Created account internal ID: ' + activityAccount.InternalID);
+
+                // Create activity
+
+                console.log('Start activity CREATE test');
+
+                const createdActivity = await service.createActivity({
+                    ExternalID: activityExternalID,
+                    ActivityTypeID: atds[0].TypeID,
+                    Status: 1,
+                    Title: 'Testing',
+                    Account: {
+                        Data: {
+                            InternalID: activityAccount.InternalID,
+                        },
+                    },
+                    TSAAttachmentAPI: {
+                        URL: 'http://www.africau.edu/images/default/sample.pdf',
+                        Content: '',
+                    },
+                    TSACheckboxAPI: true,
+                    TSACurrencyAPI: 10.0,
+                    TSADateAPI: '2020-09-01Z',
+                    TSADateTimeAPI: '2020-08-31T21:00:00Z',
+                    TSADecimalNumberAPI: 5.5,
+                    TSADropdownAPI: '1',
+                    TSAEmailAPI: 'Test@test.com',
+                    TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+                    TSAImageAPI: {
+                        URL:
+                            'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+                        Content: '',
+                    },
+                    TSALimitedLineAPI: 'Limit text',
+                    TSALinkAPI: 'https://www.ynet.co.il',
+                    TSAMultiChoiceAPI: 'A',
+                    TSANumberAPI: 5,
+                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+                    TSAPhoneNumberAPI: '9725554325',
+                    TSASignatureAPI: {
+                        URL: 'https://capitalstars.com/qpay/assets/images/sign2.png',
+                        Content: '',
+                    },
+                    TSASingleLineAPI: 'Random text',
+                } as any);
+
+                const getCreatedActivity = (await service.getActivity({
+                    where: `InternalID=${createdActivity.InternalID}`,
+                })) as any;
+
+                return Promise.all([
+                    expect(getCreatedActivity[0]).to.include({
+                        ExternalID: activityExternalID,
+                        ActivityTypeID: atds[0].TypeID,
+                        Status: 1,
+                        Title: 'Testing',
+                        TSACheckboxAPI: true,
+                        TSACurrencyAPI: 10.0,
+                        TSADateAPI: '2020-09-01Z',
+                        TSADateTimeAPI: '2020-08-31T21:00:00Z',
+                        TSADecimalNumberAPI: 5.5,
+                        TSADropdownAPI: '1',
+                        TSAEmailAPI: 'Test@test.com',
+                        TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+                        TSALimitedLineAPI: 'Limit text',
+                        TSALinkAPI: 'https://www.ynet.co.il',
+                        TSAMultiChoiceAPI: 'A',
+                        TSANumberAPI: 5,
+                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+                        TSAPhoneNumberAPI: '9725554325',
+                        TSASingleLineAPI: 'Random text',
+                    }),
+                    expect(getCreatedActivity[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                    expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                    expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                    expect(JSON.stringify(getCreatedActivity[0].Account)).equals(
+                        JSON.stringify({
+                            Data: {
+                                InternalID: activityAccount.InternalID,
+                                UUID: activityAccount.UUID,
+                                ExternalID: activityAccount.ExternalID,
+                            },
+                            URI: '/accounts/' + activityAccount.InternalID,
+                        }),
+                    ),
+                    expect(getCreatedActivity[0].InternalID).to.equal(createdActivity.InternalID),
+                    expect(getCreatedActivity[0].UUID).to.include(createdActivity.UUID),
+                    expect(getCreatedActivity[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                    expect(getCreatedActivity[0].CreationDateTime).to.contain('Z'),
+                    expect(getCreatedActivity[0].ModificationDateTime).to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
+                    expect(getCreatedActivity[0].ModificationDateTime).to.contain('Z'),
+                    // expect(getCreatedActivity[0].Archive).to.be.false,   (waiting for DI-17121)
+                    expect(getCreatedActivity[0].Hidden).to.be.false,
+                    expect(getCreatedActivity[0].StatusName).to.include('InCreation'),
+                    expect(getCreatedActivity[0].Agent).to.be.null,
+                    expect(getCreatedActivity[0].ContactPerson).to.be.null,
+                    expect(getCreatedActivity[0].Creator).to.be.null,
+
+                    console.log('Finished CREATE test on activity internal ID: ' + createdActivity.InternalID),
+
+                    //Update activity
+
+                    console.log('Starting activity UPDATE test'),
+
+                    expect(
+                        (updatedActivity = await service.createActivity({
+                            ExternalID: activityExternalID,
+                            Status: 2,
+                            Title: 'Testing Update',
+                            Account: {
+                                Data: {
+                                    InternalID: activityAccount.InternalID,
+                                },
+                            },
+                            TSAAttachmentAPI: {
+                                URL: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                                Content: '',
+                            },
+                            TSACheckboxAPI: false,
+                            TSACurrencyAPI: 15.0,
+                            TSADateAPI: '2020-09-05Z',
+                            TSADateTimeAPI: '2020-09-30T21:00:00Z',
+                            TSADecimalNumberAPI: 0.5,
+                            TSADropdownAPI: '2',
+                            TSAEmailAPI: 'TestUpdate@test.com',
+                            TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+                            TSAImageAPI: {
+                                URL: 'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
+                                Content: '',
+                            },
+                            TSALimitedLineAPI: 'Limit Update',
+                            TSALinkAPI: 'https://www.google.com',
+                            TSAMultiChoiceAPI: 'B',
+                            TSANumberAPI: 2,
+                            TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
+                            TSAPhoneNumberAPI: '972555432512',
+                            TSASignatureAPI: {
+                                URL:
+                                    'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
+                                Content: '',
+                            },
+                            TSASingleLineAPI: 'Random updated text',
+                        } as any)),
+                    ).to.be.include({
+                        ExternalID: activityExternalID,
+                        ActivityTypeID: atds[0].TypeID,
+                        Status: 2,
+                        Title: 'Testing Update',
+                        TSACheckboxAPI: false,
+                        TSACurrencyAPI: 15.0,
+                        TSADateAPI: '2020-09-05Z',
+                        TSADateTimeAPI: '2020-09-30T21:00:00Z',
+                        TSADecimalNumberAPI: 0.5,
+                        TSADropdownAPI: '2',
+                        TSAEmailAPI: 'TestUpdate@test.com',
+                        TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+                        TSALimitedLineAPI: 'Limit Update',
+                        TSALinkAPI: 'https://www.google.com',
+                        TSAMultiChoiceAPI: 'B',
+                        TSANumberAPI: 2,
+                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
+                        TSAPhoneNumberAPI: '972555432512',
+                        TSASingleLineAPI: 'Random updated text',
+                    }),
+                    expect(updatedActivity.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                    expect(updatedActivity.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                    expect(updatedActivity.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                    expect(JSON.stringify(updatedActivity.Account)).equals(
+                        JSON.stringify({
+                            Data: {
+                                InternalID: activityAccount.InternalID,
+                                UUID: activityAccount.UUID,
+                                ExternalID: activityAccount.ExternalID,
+                            },
+                            URI: '/accounts/' + activityAccount.InternalID,
+                        }),
+                    ),
+                    expect(updatedActivity.InternalID).to.equal(createdActivity.InternalID),
+                    expect(updatedActivity.UUID).to.include(createdActivity.UUID),
+                    expect(updatedActivity.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                    expect(updatedActivity.CreationDateTime).to.contain('Z'),
+                    expect(updatedActivity.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+                    expect(updatedActivity.ModificationDateTime).to.contain('Z'),
+                    // expect(updatedActivity.Archive).to.be.false,   (waiting for DI-17121)
+                    expect(updatedActivity.Hidden).to.be.false,
+                    expect(updatedActivity.StatusName).to.include('Submitted'),
+                    expect(updatedActivity.Agent).to.be.null,
+                    expect(updatedActivity.ContactPerson).to.be.null,
+                    expect(updatedActivity.Creator).to.be.null,
+
+                    console.log('Finished activity UPDATE test'),
+
+                    // Delete activity and TSAs
+
+                    console.log('Starting activity DELETE test'),
+
+                    expect(await service.deleteActivity(createdActivity.InternalID as any)).to.be.true,
+                    expect(await service.deleteActivity(createdActivity.InternalID as any)).to.be.false,
+                    expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+                        .to.be.an('array')
+                        .with.lengthOf(0),
+
+                    console.log(
+                        'Finished activity DELETE test and deleted activity internalID: ' + createdActivity.InternalID,
+                    ),
+
+                    expect(
+                        createdTSAs.length ==
+                        (await service.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length,
+                    ).to.be.true,
+
+                    console.log('Deleted activity TSAs'),
+
+                    expect(await service.deleteAccount(activityAccount.InternalID as any)).to.be.true,
+                    expect(await service.deleteAccount(activityAccount.InternalID as any)).to.be.false,
+                    expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
+                        .to.be.an('array')
+                        .with.lengthOf(0),
+
+                    console.log('Deleted activity account with internalID: ' + activityAccount.InternalID),
+                ]);
+            });
+        });
+
+        //#region Transactions
+
+        // describe('Transactions', () => {
+        //     it('CRUD', async () => {
+        //         const atds = await service.getATD('transactions');
+
+        //         // Create TSAs for transactions test
+
+        //         const createdTSAs = await service.createBulkTSA('transactions', TSAarr, atds[0].TypeID);
+        //         console.log('The following fields were created:\n' + createdTSAs);
+        //         const transactionExternalID: string = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+        //         let updatedTransaction;
+
+        //         // Create account for transaction test
+
+        //         const transactionAccount = await service.createAccount({
+        //             ExternalID: "TransactionTestAccount",
+        //             Name: "Transaction Test Account",
+        //         });
+
+        //         // Create transaction
+
+        //         const createdActivity = await service.createTransaction({
+        //             ExternalID: transactionExternalID,
+        //             ActivityTypeID: atds[0].TypeID,
+        //             Status: 1,
+        //             Title: 'Testing',
+        //             Account: {
+        //                 Data: {
+        //                     InternalID: transactionAccount.InternalID,
+        //                 },
+        //             },
+        //             TSAAttachmentAPI: {
+        //                 URL: 'http://www.africau.edu/images/default/sample.pdf',
+        //                 Content: '',
+        //             },
+        //             TSACheckboxAPI: true,
+        //             TSACurrencyAPI: 10.0,
+        //             TSADateAPI: '2020-09-01Z',
+        //             TSADateTimeAPI: '2020-08-31T21:00:00Z',
+        //             TSADecimalNumberAPI: 5.5,
+        //             TSADropdownAPI: '1',
+        //             TSAEmailAPI: 'Test@test.com',
+        //             TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+        //             TSAImageAPI: {
+        //                 URL:
+        //                     'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+        //                 Content: '',
+        //             },
+        //             TSALimitedLineAPI: 'Limit text',
+        //             TSALinkAPI: 'https://www.ynet.co.il',
+        //             TSAMultiChoiceAPI: 'A',
+        //             TSANumberAPI: 5,
+        //             TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+        //             TSAPhoneNumberAPI: '9725554325',
+        //             TSASignatureAPI: {
+        //                 URL: 'https://capitalstars.com/qpay/assets/images/sign2.png',
+        //                 Content: '',
+        //             },
+        //             TSASingleLineAPI: 'Random text',
+        //         } as any);
+
+        //         const getCreatedActivity = (await service.getActivity({
+        //             where: `InternalID=${createdActivity.InternalID}`,
+        //         })) as any;
+
+        //         console.log(getCreatedActivity[0]);
+
+        //         return Promise.all([
+        //             expect(getCreatedActivity[0]).to.include({
+        //                 ExternalID: activityExternalID,
+        //                 ActivityTypeID: atds[0].TypeID,
+        //                 Status: 1,
+        //                 Title: 'Testing',
+        //                 TSACheckboxAPI: true,
+        //                 TSACurrencyAPI: 10.0,
+        //                 TSADateAPI: '2020-09-01Z',
+        //                 TSADateTimeAPI: '2020-08-31T21:00:00Z',
+        //                 TSADecimalNumberAPI: 5.5,
+        //                 TSADropdownAPI: '1',
+        //                 TSAEmailAPI: 'Test@test.com',
+        //                 TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+        //                 TSALimitedLineAPI: 'Limit text',
+        //                 TSALinkAPI: 'https://www.ynet.co.il',
+        //                 TSAMultiChoiceAPI: 'A',
+        //                 TSANumberAPI: 5,
+        //                 TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+        //                 TSAPhoneNumberAPI: '9725554325',
+        //                 TSASingleLineAPI: 'Random text',
+        //             }),
+        //             expect(getCreatedActivity[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+        //             expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('sign2.png'),
+        //             expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+        //             expect(JSON.stringify(getCreatedActivity[0].Account)).equals(JSON.stringify({
+        //                 Data: {
+        //                     InternalID: activityAccount.InternalID,
+        //                     UUID: activityAccount.UUID,
+        //                     ExternalID: activityAccount.ExternalID,
+        //                 },
+        //                 URI: '/accounts/' + activityAccount.InternalID
+        //             })),
+        //             expect(getCreatedActivity[0].InternalID).to.equal(createdActivity.InternalID),
+        //             expect(getCreatedActivity[0].UUID).to.include(createdActivity.UUID),
+        //             expect(getCreatedActivity[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+        //             expect(getCreatedActivity[0].CreationDateTime).to.contain('Z'),
+        //             expect(getCreatedActivity[0].ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+        //             expect(getCreatedActivity[0].ModificationDateTime).to.contain('Z'),
+        //             // expect(getCreatedActivity[0].Archive).to.be.false,   (waiting for DI-17121)
+        //             expect(getCreatedActivity[0].Hidden).to.be.false,
+        //             expect(getCreatedActivity[0].StatusName).to.include('InCreation'),
+        //             expect(getCreatedActivity[0].Agent).to.be.null,
+        //             expect(getCreatedActivity[0].ContactPerson).to.be.null,
+        //             expect(getCreatedActivity[0].Creator).to.be.null,
+
+        //             //Update activity
+
+        //             expect(updatedActivity = await service.createActivity({
+        //                 ExternalID: activityExternalID,
+        //                 Status: 2,
+        //                 Title: 'Testing Update',
+        //                 Account: {
+        //                     Data: {
+        //                         InternalID: activityAccount.InternalID,
+        //                     },
+        //                 },
+        //                 TSAAttachmentAPI: {
+        //                     URL: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+        //                     Content: '',
+        //                 },
+        //                 TSACheckboxAPI: false,
+        //                 TSACurrencyAPI: 15.0,
+        //                 TSADateAPI: '2020-09-05Z',
+        //                 TSADateTimeAPI: '2020-09-30T21:00:00Z',
+        //                 TSADecimalNumberAPI: 0.5,
+        //                 TSADropdownAPI: '2',
+        //                 TSAEmailAPI: 'TestUpdate@test.com',
+        //                 TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+        //                 TSAImageAPI: {
+        //                     URL:
+        //                         'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
+        //                     Content: '',
+        //                 },
+        //                 TSALimitedLineAPI: 'Limit Update',
+        //                 TSALinkAPI: 'https://www.google.com',
+        //                 TSAMultiChoiceAPI: 'B',
+        //                 TSANumberAPI: 2,
+        //                 TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
+        //                 TSAPhoneNumberAPI: '972555432512',
+        //                 TSASignatureAPI: {
+        //                     URL: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
+        //                     Content: '',
+        //                 },
+        //                 TSASingleLineAPI: 'Random updated text'
+        //             } as any))
+        //                 .to.be.include({
+        //                     ExternalID: activityExternalID,
+        //                     ActivityTypeID: atds[0].TypeID,
+        //                     Status: 2,
+        //                     Title: 'Testing Update',
+        //                     TSACheckboxAPI: false,
+        //                     TSACurrencyAPI: 15.0,
+        //                     TSADateAPI: '2020-09-05Z',
+        //                     TSADateTimeAPI: '2020-09-30T21:00:00Z',
+        //                     TSADecimalNumberAPI: 0.5,
+        //                     TSADropdownAPI: '2',
+        //                     TSAEmailAPI: 'TestUpdate@test.com',
+        //                     TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+        //                     TSALimitedLineAPI: 'Limit Update',
+        //                     TSALinkAPI: 'https://www.google.com',
+        //                     TSAMultiChoiceAPI: 'B',
+        //                     TSANumberAPI: 2,
+        //                     TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
+        //                     TSAPhoneNumberAPI: '972555432512',
+        //                     TSASingleLineAPI: 'Random updated text'
+        //                 }),
+        //             expect(updatedActivity.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+        //             expect(updatedActivity.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+        //             expect(updatedActivity.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+        //             expect(JSON.stringify(updatedActivity.Account)).equals(JSON.stringify({
+        //                 Data: {
+        //                     InternalID: activityAccount.InternalID,
+        //                     UUID: activityAccount.UUID,
+        //                     ExternalID: activityAccount.ExternalID,
+        //                 },
+        //                 URI: '/accounts/' + activityAccount.InternalID
+        //             })),
+        //             expect(updatedActivity.InternalID).to.equal(createdActivity.InternalID),
+        //             expect(updatedActivity.UUID).to.include(createdActivity.UUID),
+        //             expect(updatedActivity.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+        //             expect(updatedActivity.CreationDateTime).to.contain('Z'),
+        //             expect(updatedActivity.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+        //             expect(updatedActivity.ModificationDateTime).to.contain('Z'),
+        //             // expect(updatedActivity.Archive).to.be.false,   (waiting for DI-17121)
+        //             expect(updatedActivity.Hidden).to.be.false,
+        //             expect(updatedActivity.StatusName).to.include('Submitted'),
+        //             expect(updatedActivity.Agent).to.be.null,
+        //             expect(updatedActivity.ContactPerson).to.be.null,
+        //             expect(updatedActivity.Creator).to.be.null,
+
+        //             // Delete activity and TSAs
+
+        //             expect(await service.deleteActivity(createdActivity.InternalID as any)).to.be.true,
+        //             expect(await service.deleteActivity(createdActivity.InternalID as any)).to.be.false,
+        //             expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+        //                 .to.be.an('array')
+        //                 .with.lengthOf(0),
+        //             expect(createdTSAs.length == (await service.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length).to.be.true,
+        //             expect(await service.deleteAccount(activityAccount.InternalID as any)).to.be.true,
+        //             expect(await service.deleteAccount(activityAccount.InternalID as any)).to.be.false,
+        //             expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
+        //                 .to.be.an('array')
+        //                 .with.lengthOf(0)
+        //         ]);
+        //     });
+        // });
+
+        //#endregion
     });
 }
