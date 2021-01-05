@@ -1,4 +1,4 @@
-import { PapiClient, Account, ApiFieldObject } from '@pepperi-addons/papi-sdk';
+import { PapiClient, Account, ApiFieldObject, GeneralActivity, Transaction } from '@pepperi-addons/papi-sdk';
 
 interface FindOptions {
     fields?: string[];
@@ -14,6 +14,44 @@ interface FindOptions {
 
 export class ObjectsService {
     constructor(public papiClient: PapiClient) {}
+
+    getContacts(InternalID) {
+        return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
+    }
+
+    createContact(body: any) {
+        return this.papiClient.post('/contacts', body);
+    }
+
+    deleteContact(InternalID) {
+        return this.papiClient.delete('/contacts/' + InternalID)
+        .then((res) => res.text())
+        .then((res) => (res ? JSON.parse(res) : ''));
+    }
+
+    createActivity(body: GeneralActivity) {
+        return this.papiClient.activities.upsert(body);
+    }
+
+    getActivity(options?: FindOptions) {
+        return this.papiClient.activities.find(options);
+    }
+
+    deleteActivity(activityID: number) {
+        return this.papiClient.activities.delete(activityID);
+    }
+
+    createTransaction(body: Transaction) {
+        return this.papiClient.transactions.upsert(body);
+    }
+
+    getTransaction(options?: FindOptions) {
+        return this.papiClient.transactions.find(options);
+    }
+
+    deleteTransaction(transactionID: number) {
+        return this.papiClient.transactions.delete(transactionID);
+    }
 
     createAccount(body: Account) {
         return this.papiClient.accounts.upsert(body);
@@ -55,7 +93,7 @@ export class ObjectsService {
         }
     }
 
-    async createBulkTSA(type: string, body: ApiFieldObject[], ATD?: string) {
+    async createBulkTSA(type: string, body: ApiFieldObject[], ATD?: number) {
         const resultArr: any[] = [];
         if (type != 'accounts' && ATD != undefined) {
             for (let i = 0; i < body.length; i++) {
@@ -71,11 +109,11 @@ export class ObjectsService {
         return resultArr;
     }
 
-    async deleteBulkTSA(type: string, body: ApiFieldObject[], ATD?: string) {
+    async deleteBulkTSA(type: string, body: ApiFieldObject[], ATD?: number) {
         const resultArr: any[] = [];
         if (type != 'accounts' && ATD != undefined) {
             for (let i = 0; i < body.length; i++) {
-                await this.papiClient.metaData.type(type).types.subtype(ATD).fields.delete(body[i].FieldID);
+                await this.papiClient.metaData.type(type).types.subtype(ATD.toString()).fields.delete(body[i].FieldID);
                 resultArr.push(body[i].FieldID);
             }
         } else {
