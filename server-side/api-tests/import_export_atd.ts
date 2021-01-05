@@ -643,7 +643,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         describe('Endpoints', () => {
             describe('Get (DI-17200, DI-17258)', () => {
                 if (isActivitiesTests) {
-                    for (let index = 0; index < activitiesTypeArr.length - 1; index++) {
+                    for (let index = 0; index < activitiesTypeArr.length; index++) {
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
                         it(`Export Activities ATD ${activityName}`, async () => {
@@ -673,7 +673,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
             describe('Post', () => {
                 if (isActivitiesTests) {
-                    for (let index = 0; index < activitiesTypeArr.length - 1; index++) {
+                    for (let index = 0; index < activitiesTypeArr.length; index++) {
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
                         it(`Export Mapping Of Activities ATD ${activityName}`, async () => {
@@ -742,7 +742,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         describe('Black Box Scenarios', () => {
             describe('Import and Export ATD', () => {
                 if (isActivitiesTests) {
-                    for (let index = 0; index < activitiesTypeArr.length - 1; index++) {
+                    for (let index = 0; index < activitiesTypeArr.length; index++) {
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
                         it(`Activity: ${activityName}`, async () => {
