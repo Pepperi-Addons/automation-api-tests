@@ -725,7 +725,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
         });
 
-        describe('General Activities', () => {
+        /*describe('General Activities', () => {
             it('CRUD', async () => {
                 const atds = await service.getATD('activities');
 
@@ -751,7 +751,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 // Create activity
 
                 console.log('Start activity CREATE test');
-
+debugger;
                 const createdActivity = await service.createActivity({
                     ExternalID: activityExternalID,
                     ActivityTypeID: atds[0].TypeID,
@@ -970,7 +970,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     console.log('Deleted activity account with internalID: ' + activityAccount.InternalID),
                 ]);
             });
-        });
+        });*/
 
         //#region Transactions
 
