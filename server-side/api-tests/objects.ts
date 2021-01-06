@@ -321,7 +321,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
     describe('Objects Test Suites', () => {
         describe('Accounts', () => {
-
             let createdTSAs;
             let accountExternalID;
             let updatedAccount;
@@ -436,7 +435,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     }),
                     expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
                     expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('sign2.png'),
-                    expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf')
+                    expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
                 ]);
             });
 
@@ -553,7 +552,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete account TSAs', async () => {
-                expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true
+                expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true;
             });
 
             // it('Delete Account Message (DI-17285)', async () => {
@@ -576,7 +575,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
         });
 
         describe('Contacts', () => {
-
             let contactAccount;
             let updatedContact;
             let contactTSAs;
@@ -675,7 +673,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                             },
                             URI: '/accounts/' + contactAccount.InternalID,
                         }),
-                    )
+                    ),
                 ]);
             });
 
@@ -753,17 +751,16 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(await service.deleteContact(createdContact.InternalID as any)).to.be.false,
                     expect(await service.getContacts(createdContact.InternalID))
                         .to.be.an('array')
-                        .with.lengthOf(0)
+                        .with.lengthOf(0),
                 ]);
             });
 
             it('Delete contact test account and TSAs', async () => {
-                expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true
+                expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true;
             });
         });
 
         describe('General Activities', () => {
-
             let activityTSAs;
             let updatedActivity;
             let atds;
@@ -879,8 +876,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 ]);
             });
 
-
-
             it('Update activity', async () => {
                 return Promise.all([
                     expect(
@@ -967,7 +962,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(updatedActivity.StatusName).to.include('Submitted'),
                     expect(updatedActivity.Agent).to.be.null,
                     expect(updatedActivity.ContactPerson).to.be.null,
-                    expect(updatedActivity.Creator).to.be.null
+                    expect(updatedActivity.Creator).to.be.null,
                 ]);
             });
 
@@ -976,7 +971,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(await service.deleteActivity(createdActivity.InternalID as any)).to.be.false,
                     expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
                         .to.be.an('array')
-                        .with.lengthOf(0)
+                        .with.lengthOf(0);
             });
 
             it('Delete activity test account and TSAs', async () => {
@@ -987,12 +982,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(await service.deleteAccount(activityAccount.InternalID as any)).to.be.false,
                     expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
                         .to.be.an('array')
-                        .with.lengthOf(0)
+                        .with.lengthOf(0);
             });
-        });*/
-
+        });
     });
-
 
     // describe('Transactions', () => {
     //     it('CRUD', async () => {

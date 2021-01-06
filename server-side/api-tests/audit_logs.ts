@@ -139,12 +139,33 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         ),
         createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
             async (negativeCodeJobUUID) => {
-                await executeDraftCodeJobTest(
-                    codeJobNegativeTest,
-                    negativeCodeJobUUID,
-                    testDataDraftToExecuteInNegativeTest,
-                    false,
-                );
+                //The response objects in case of exceptions for sync calls - changed in 06/11/2021
+                // await executeDraftCodeJobTest(
+                //     codeJobNegativeTest,
+                //     negativeCodeJobUUID,
+                //     testDataDraftToExecuteInNegativeTest,
+                //     false,
+                // );
+                await generalService.papiClient
+                    .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
+                    .then((res) => {
+                        addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft', res);
+                    })
+                    .catch((err) => {
+                        if (
+                            err.message.includes(
+                                'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
+                            )
+                        ) {
+                            addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft');
+                        } else {
+                            addTestResultUnderHeadline(
+                                codeJobNegativeTest,
+                                'Post execute CodeJobe with draft',
+                                err.message,
+                            );
+                        }
+                    });
             },
         ),
         //These tests are for the new Async Enpoint
