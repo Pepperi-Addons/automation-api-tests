@@ -760,7 +760,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Delete contact test account and TSAs', async () => {
                 expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true
             });
-
         });
 
         describe('General Activities', () => {
@@ -990,7 +989,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         .to.be.an('array')
                         .with.lengthOf(0)
             });
-        });
+        });*/
 
     });
 
