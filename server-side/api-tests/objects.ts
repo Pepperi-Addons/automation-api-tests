@@ -1256,7 +1256,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Create transaction', async () => {
                 transactionExternalID = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
-
+                const catalogs = await generalService.getCatalogs();
                 createdTransaction = await service.createTransaction({
                     ExternalID: transactionExternalID,
                     ActivityTypeID: atds[0].TypeID,
@@ -1264,6 +1264,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     Account: {
                         Data: {
                             InternalID: transactionAccount.InternalID,
+                        },
+                    },
+                    Catalog: {
+                        Data: {
+                            ExternalID: catalogs[0].ExternalID,
                         },
                     },
                     TSAAttachmentAPI: {
