@@ -12,7 +12,7 @@ describe('learning about mocha in parallel (base)', function () {
         await new Promise((resolve) => {
             const intervalInPromiseBase = setInterval(() => {
                 clearInterval(intervalInPromiseBase);
-                resolve();
+                resolve(null);
                 console.log('wait 3 seconds in promise base');
                 base = true;
             }, 3000);
@@ -25,7 +25,7 @@ describe('learning about mocha in parallel (base)', function () {
         await new Promise((resolve) => {
             const intervalInPromiseOne = setInterval(() => {
                 clearInterval(intervalInPromiseOne);
-                resolve();
+                resolve(null);
                 console.log('wait 3 seconds in promise one');
                 base = false;
             }, 3000);
@@ -40,7 +40,7 @@ describe('learning about mocha parallel (two)', function () {
         await new Promise((resolve) => {
             const intervalInPromiseTwo = setInterval(() => {
                 clearInterval(intervalInPromiseTwo);
-                resolve();
+                resolve(null);
                 console.log('wait 3 seconds in promise two');
                 base = false;
             }, 3000);
@@ -53,7 +53,7 @@ describe('learning about mocha parallel (two)', function () {
         await new Promise((resolve) => {
             const intervalInPromiseThree = setInterval(() => {
                 clearInterval(intervalInPromiseThree);
-                resolve();
+                resolve(null);
                 console.log('wait 2 seconds in promise three');
                 base = false;
             }, 2000);
@@ -66,7 +66,7 @@ describe('learning about mocha parallel (two)', function () {
         await new Promise((resolve) => {
             const intervalInPromiseFour = setInterval(() => {
                 clearInterval(intervalInPromiseFour);
-                resolve();
+                resolve(null);
                 console.log('wait 4 seconds in promise four');
                 base = false;
             }, 4000);
@@ -79,7 +79,7 @@ describe('learning about mocha parallel (two)', function () {
         await new Promise((resolve) => {
             const intervalInPromiseFive = setInterval(() => {
                 clearInterval(intervalInPromiseFive);
-                resolve();
+                resolve(null);
                 console.log('wait 3 seconds in promise five');
                 base = true;
             }, 3000);
