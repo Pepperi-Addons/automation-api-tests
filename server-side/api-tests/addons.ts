@@ -7078,14 +7078,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     let isData = false;
@@ -7156,14 +7156,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     let isData = false;
@@ -7305,14 +7305,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
 
@@ -7463,14 +7463,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
 
@@ -7606,14 +7606,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
 
@@ -7821,14 +7821,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     for (const property in apiResponse.resultObject.install) {
@@ -8022,14 +8022,14 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const getResultObjectInterval = setInterval(() => {
                 inetrvalLimit -= SetIntervalEvery;
                 if (inetrvalLimit < 1) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
                 if (apiResponse != undefined) {
-                    resolve();
+                    resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
 

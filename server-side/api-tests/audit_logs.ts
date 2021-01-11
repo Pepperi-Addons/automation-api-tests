@@ -251,7 +251,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                         clearInterval(getResultObjectInterval);
                         await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
                         addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Interval Timer', false);
-                        return resolve();
+                        return resolve(null);
                     }
                     const getAuditLogURI =
                         "/audit_logs?Where=AuditInfo.JobMessageData.CodeJobUUID='" + codeJobUUID + "'";
@@ -266,7 +266,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
 
                         await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
                         addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Throwing Error: ', apiResponse);
-                        return resolve();
+                        return resolve(null);
                     }
 
                     if (JSON.stringify(apiResponse).includes('"ResultObject":')) {
@@ -300,7 +300,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                                 auditLogsResultObject,
                             );
                         }
-                        resolve();
+                        resolve(null);
                     }
                 }, SetIntervalEvery);
             });
@@ -397,7 +397,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                         clearInterval(getResultObjectInterval);
                         //Report test results
                         addTestResultUnderHeadline(testName, 'Audit Logs of Sync - Interval Timer', false);
-                        return resolve();
+                        return resolve(null);
                     }
                     const auditLogSyncResponse = await generalService.papiClient.get(syncURI);
                     if (JSON.stringify(auditLogSyncResponse).includes('"ProgressPercentage":')) {
@@ -441,7 +441,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                                 console.log({
                                     Audit_Log_Sync_Result_Object_Done: auditLogSyncResponse,
                                 });
-                                return resolve();
+                                return resolve(null);
                             } else if (
                                 JSON.stringify(auditLogSyncResponse).includes('SyncStart' as SyncStatus) ||
                                 JSON.stringify(auditLogSyncResponse).includes('New' as SyncStatus)
@@ -458,7 +458,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                                     'Audit Logs of Sync Is not Done - Error: ',
                                     auditLogSyncResponse,
                                 );
-                                return resolve();
+                                return resolve(null);
                             }
                         }
                     }
