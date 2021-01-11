@@ -15,6 +15,10 @@ interface FindOptions {
 export class ObjectsService {
     constructor(public papiClient: PapiClient) {}
 
+    getItems() {
+        return this.papiClient.get('/items');
+    }
+
     getContacts(InternalID) {
         return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
     }
@@ -26,6 +30,21 @@ export class ObjectsService {
     deleteContact(InternalID) {
         return this.papiClient
             .delete('/contacts/' + InternalID)
+            .then((res) => res.text())
+            .then((res) => (res ? JSON.parse(res) : ''));
+    }
+
+    getTransactionLines(InternalID) {
+        return this.papiClient.get('/transaction_lines?where=TransactionInternalID=' + InternalID);
+    }
+
+    createTransactionLine(body: any) {
+        return this.papiClient.post('/transaction_lines', body);
+    }
+
+    deleteTransactionLine(InternalID) {
+        return this.papiClient
+            .delete('/transaction_lines/' + InternalID)
             .then((res) => res.text())
             .then((res) => (res ? JSON.parse(res) : ''));
     }
