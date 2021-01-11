@@ -28,9 +28,10 @@ export class ObjectsService {
     }
 
     deleteContact(InternalID) {
-        return this.papiClient.delete('/contacts/' + InternalID)
-        .then((res) => res.text())
-        .then((res) => (res ? JSON.parse(res) : ''));
+        return this.papiClient
+            .delete('/contacts/' + InternalID)
+            .then((res) => res.text())
+            .then((res) => (res ? JSON.parse(res) : ''));
     }
 
     getTransactionLines(InternalID) {
