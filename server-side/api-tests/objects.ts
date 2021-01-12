@@ -1442,7 +1442,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         new Date().toISOString().split('T')[0],
                     ),
                     expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
-                    //expect(getCreatedTransactionLine[0].Archive).to.be.false,
+                    expect(getCreatedTransactionLine[0].Archive).to.be.false,
                     expect(getCreatedTransactionLine[0].Hidden).to.be.false,
                     expect(await service.getTransactionLines(createdTransaction.InternalID))
                         .to.be.an('array')
@@ -1530,7 +1530,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         new Date().toISOString().split('T')[0],
                     ),
                     expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
-                    //expect(updatedTransactionLines.Archive).to.be.false,
+                    expect(updatedTransactionLines.Archive).to.be.false,
                     expect(updatedTransactionLines.Hidden).to.be.false,
                     expect(await service.getTransactionLines(createdTransaction.InternalID))
                         .to.be.an('array')
