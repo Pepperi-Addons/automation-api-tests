@@ -34,6 +34,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                 '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
                 request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
             ],
+            ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.0'],
         };
 
         for (const addonName in testData) {

@@ -6,6 +6,8 @@ const installedAddons = {
     'Data Views API': '' as any,
     'Addons Manager': '' as any,
     'Cross Platforms API': '' as any,
+    'Settings Framework': '' as any,
+    ADAL: '' as any,
 };
 
 // Get the Tests Data
@@ -30,6 +32,8 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 installedAddons['Cross Platforms API'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Settings Framework')
                 installedAddons['Settings Framework'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'ADAL')
+                installedAddons['ADAL'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -66,6 +70,9 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
             });
             it(`Data Views API | Version: ${installedAddons['Data Views API']}`, () => {
                 expect(installedAddons['Data Views API']).to.not.be.null;
+            });
+            it(`ADAL | Version: ${installedAddons['ADAL']}`, () => {
+                expect(installedAddons['ADAL']).to.not.be.null;
             });
         });
     });
