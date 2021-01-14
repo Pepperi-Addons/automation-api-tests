@@ -1229,14 +1229,14 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let atds;
             let transactionTSAs;
             let transactionLinesTSAs;
-            let updatedTransaction;
+            //let updatedTransaction;
             let transactionAccount;
-            let createdTransaction;
-            let items;
-            let createdTransactionLines;
-            let updatedTransactionLines;
-            let addedTransactionLines;
-            let transactionExternalID;
+            //let createdTransaction;
+            //let items;
+            //let createdTransactionLines;
+            //let updatedTransactionLines;
+            //let addedTransactionLines;
+            //let transactionExternalID;
 
             it('Create account and TSAs for transactions CRUD', async () => {
                 atds = await service.getATD('transactions');
@@ -1254,409 +1254,409 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 });
             });
 
-            it('Create transaction', async () => {
-                transactionExternalID = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
-                const catalogs = await generalService.getCatalogs();
-                createdTransaction = await service.createTransaction({
-                    ExternalID: transactionExternalID,
-                    ActivityTypeID: atds[0].TypeID,
-                    Status: 1,
-                    Account: {
-                        Data: {
-                            InternalID: transactionAccount.InternalID,
-                        },
-                    },
-                    Catalog: {
-                        Data: {
-                            ExternalID: catalogs[0].ExternalID,
-                        },
-                    },
-                    TSAAttachmentAPI: {
-                        URL: 'http://www.africau.edu/images/default/sample.pdf',
-                        Content: '',
-                    },
-                    TSACheckboxAPI: true,
-                    TSACurrencyAPI: 10.0,
-                    TSADateAPI: '2020-09-01Z',
-                    TSADateTimeAPI: '2020-08-31T21:00:00Z',
-                    TSADecimalNumberAPI: 5.5,
-                    TSADropdownAPI: '1',
-                    TSAEmailAPI: 'Test@test.com',
-                    TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
-                    TSAImageAPI: {
-                        URL:
-                            'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
-                        Content: '',
-                    },
-                    TSALimitedLineAPI: 'Limit text',
-                    TSALinkAPI: 'https://www.ynet.co.il',
-                    TSAMultiChoiceAPI: 'A',
-                    TSANumberAPI: 5,
-                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
-                    TSAPhoneNumberAPI: '9725554325',
-                    TSASignatureAPI: {
-                        URL: 'https://capitalstars.com/qpay/assets/images/sign2.png',
-                        Content: '',
-                    },
-                    TSASingleLineAPI: 'Random text',
-                } as any);
+            // it('Create transaction', async () => {
+            //     transactionExternalID = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+            //     const catalogs = await generalService.getCatalogs();
+            //     createdTransaction = await service.createTransaction({
+            //         ExternalID: transactionExternalID,
+            //         ActivityTypeID: atds[0].TypeID,
+            //         Status: 1,
+            //         Account: {
+            //             Data: {
+            //                 InternalID: transactionAccount.InternalID,
+            //             },
+            //         },
+            //         Catalog: {
+            //             Data: {
+            //                 ExternalID: catalogs[0].ExternalID,
+            //             },
+            //         },
+            //         TSAAttachmentAPI: {
+            //             URL: 'http://www.africau.edu/images/default/sample.pdf',
+            //             Content: '',
+            //         },
+            //         TSACheckboxAPI: true,
+            //         TSACurrencyAPI: 10.0,
+            //         TSADateAPI: '2020-09-01Z',
+            //         TSADateTimeAPI: '2020-08-31T21:00:00Z',
+            //         TSADecimalNumberAPI: 5.5,
+            //         TSADropdownAPI: '1',
+            //         TSAEmailAPI: 'Test@test.com',
+            //         TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+            //         TSAImageAPI: {
+            //             URL:
+            //                 'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+            //             Content: '',
+            //         },
+            //         TSALimitedLineAPI: 'Limit text',
+            //         TSALinkAPI: 'https://www.ynet.co.il',
+            //         TSAMultiChoiceAPI: 'A',
+            //         TSANumberAPI: 5,
+            //         TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+            //         TSAPhoneNumberAPI: '9725554325',
+            //         TSASignatureAPI: {
+            //             URL: 'https://capitalstars.com/qpay/assets/images/sign2.png',
+            //             Content: '',
+            //         },
+            //         TSASingleLineAPI: 'Random text',
+            //     } as any);
 
-                const getCreatedTransaction = (await service.getTransaction({
-                    where: `InternalID=${createdTransaction.InternalID}`,
-                })) as any;
+            //     const getCreatedTransaction = (await service.getTransaction({
+            //         where: `InternalID=${createdTransaction.InternalID}`,
+            //     })) as any;
 
-                return Promise.all([
-                    expect(getCreatedTransaction[0]).to.include({
-                        ExternalID: transactionExternalID,
-                        ActivityTypeID: atds[0].TypeID,
-                        Status: 1,
-                        TSACheckboxAPI: true,
-                        TSACurrencyAPI: 10.0,
-                        TSADateAPI: '2020-09-01Z',
-                        TSADateTimeAPI: '2020-08-31T21:00:00Z',
-                        TSADecimalNumberAPI: 5.5,
-                        TSADropdownAPI: '1',
-                        TSAEmailAPI: 'Test@test.com',
-                        TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
-                        TSALimitedLineAPI: 'Limit text',
-                        TSALinkAPI: 'https://www.ynet.co.il',
-                        TSAMultiChoiceAPI: 'A',
-                        TSANumberAPI: 5,
-                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
-                        TSAPhoneNumberAPI: '9725554325',
-                        TSASingleLineAPI: 'Random text',
-                    }),
-                    expect(getCreatedTransaction[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
-                    expect(getCreatedTransaction[0].TSASignatureAPI.URL).to.include('sign2.png'),
-                    expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
-                    expect(JSON.stringify(getCreatedTransaction[0].Account)).equals(
-                        JSON.stringify({
-                            Data: {
-                                InternalID: transactionAccount.InternalID,
-                                UUID: transactionAccount.UUID,
-                                ExternalID: transactionAccount.ExternalID,
-                            },
-                            URI: '/accounts/' + transactionAccount.InternalID,
-                        }),
-                    ),
-                    expect(getCreatedTransaction[0].InternalID).to.equal(createdTransaction.InternalID),
-                    expect(getCreatedTransaction[0].UUID).to.include(createdTransaction.UUID),
-                    expect(getCreatedTransaction[0].CreationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(getCreatedTransaction[0].CreationDateTime).to.contain('Z'),
-                    expect(getCreatedTransaction[0].ModificationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(getCreatedTransaction[0].ModificationDateTime).to.contain('Z'),
-                    expect(getCreatedTransaction[0].Archive).to.be.false,
-                    expect(getCreatedTransaction[0].Hidden).to.be.false,
-                    expect(getCreatedTransaction[0].StatusName).to.include('InCreation'),
-                    expect(getCreatedTransaction[0].Agent).to.be.null,
-                    expect(getCreatedTransaction[0].ContactPerson).to.be.null,
-                    expect(getCreatedTransaction[0].Creator).to.be.null,
-                    expect(getCreatedTransaction[0].OriginAccount).to.be.null,
-                    expect(getCreatedTransaction[0].TransactionLines).to.include({
-                        URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
-                    }),
-                ]);
-            });
+            //     return Promise.all([
+            //         expect(getCreatedTransaction[0]).to.include({
+            //             ExternalID: transactionExternalID,
+            //             ActivityTypeID: atds[0].TypeID,
+            //             Status: 1,
+            //             TSACheckboxAPI: true,
+            //             TSACurrencyAPI: 10.0,
+            //             TSADateAPI: '2020-09-01Z',
+            //             TSADateTimeAPI: '2020-08-31T21:00:00Z',
+            //             TSADecimalNumberAPI: 5.5,
+            //             TSADropdownAPI: '1',
+            //             TSAEmailAPI: 'Test@test.com',
+            //             TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+            //             TSALimitedLineAPI: 'Limit text',
+            //             TSALinkAPI: 'https://www.ynet.co.il',
+            //             TSAMultiChoiceAPI: 'A',
+            //             TSANumberAPI: 5,
+            //             TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+            //             TSAPhoneNumberAPI: '9725554325',
+            //             TSASingleLineAPI: 'Random text',
+            //         }),
+            //         expect(getCreatedTransaction[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+            //         expect(getCreatedTransaction[0].TSASignatureAPI.URL).to.include('sign2.png'),
+            //         expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+            //         expect(JSON.stringify(getCreatedTransaction[0].Account)).equals(
+            //             JSON.stringify({
+            //                 Data: {
+            //                     InternalID: transactionAccount.InternalID,
+            //                     UUID: transactionAccount.UUID,
+            //                     ExternalID: transactionAccount.ExternalID,
+            //                 },
+            //                 URI: '/accounts/' + transactionAccount.InternalID,
+            //             }),
+            //         ),
+            //         expect(getCreatedTransaction[0].InternalID).to.equal(createdTransaction.InternalID),
+            //         expect(getCreatedTransaction[0].UUID).to.include(createdTransaction.UUID),
+            //         expect(getCreatedTransaction[0].CreationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         ),
+            //         expect(getCreatedTransaction[0].CreationDateTime).to.contain('Z'),
+            //         expect(getCreatedTransaction[0].ModificationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         ),
+            //         expect(getCreatedTransaction[0].ModificationDateTime).to.contain('Z'),
+            //         expect(getCreatedTransaction[0].Archive).to.be.false,
+            //         expect(getCreatedTransaction[0].Hidden).to.be.false,
+            //         expect(getCreatedTransaction[0].StatusName).to.include('InCreation'),
+            //         expect(getCreatedTransaction[0].Agent).to.be.null,
+            //         expect(getCreatedTransaction[0].ContactPerson).to.be.null,
+            //         expect(getCreatedTransaction[0].Creator).to.be.null,
+            //         expect(getCreatedTransaction[0].OriginAccount).to.be.null,
+            //         expect(getCreatedTransaction[0].TransactionLines).to.include({
+            //             URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
+            //         }),
+            //     ]);
+            // });
 
-            it('Create transaction lines', async () => {
-                items = await service.getItems();
+            // it('Create transaction lines', async () => {
+            //     items = await service.getItems();
 
-                createdTransactionLines = await service.createTransactionLine({
-                    TransactionInternalID: createdTransaction.InternalID,
-                    LineNumber: 0,
-                    ItemExternalID: items[0].ExternalID,
-                    UnitsQuantity: 1,
-                    TSACheckboxAPI: true,
-                    TSACurrencyAPI: 10.0,
-                    TSADateAPI: '2020-09-01Z',
-                    TSADateTimeAPI: '2020-08-31T21:00:00Z',
-                    TSADecimalNumberAPI: 5.5,
-                    TSADropdownAPI: '1',
-                    TSAEmailAPI: 'Test@test.com',
-                    TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
-                    TSALimitedLineAPI: 'Limit text',
-                    TSALinkAPI: 'https://www.ynet.co.il',
-                    TSAMultiChoiceAPI: 'A',
-                    TSANumberAPI: 5,
-                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
-                    TSASingleLineAPI: 'Random text',
-                } as any);
+            //     createdTransactionLines = await service.createTransactionLine({
+            //         TransactionInternalID: createdTransaction.InternalID,
+            //         LineNumber: 0,
+            //         ItemExternalID: items[0].ExternalID,
+            //         UnitsQuantity: 1,
+            //         TSACheckboxAPI: true,
+            //         TSACurrencyAPI: 10.0,
+            //         TSADateAPI: '2020-09-01Z',
+            //         TSADateTimeAPI: '2020-08-31T21:00:00Z',
+            //         TSADecimalNumberAPI: 5.5,
+            //         TSADropdownAPI: '1',
+            //         TSAEmailAPI: 'Test@test.com',
+            //         TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+            //         TSALimitedLineAPI: 'Limit text',
+            //         TSALinkAPI: 'https://www.ynet.co.il',
+            //         TSAMultiChoiceAPI: 'A',
+            //         TSANumberAPI: 5,
+            //         TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+            //         TSASingleLineAPI: 'Random text',
+            //     } as any);
 
-                const getCreatedTransactionLine = await service.getTransactionLines(createdTransaction.InternalID);
+            //     const getCreatedTransactionLine = await service.getTransactionLines(createdTransaction.InternalID);
 
-                return Promise.all([
-                    expect(getCreatedTransactionLine[0]).to.include({
-                        LineNumber: 0,
-                        UnitsQuantity: 1.0,
-                        TSACheckboxAPI: true,
-                        TSACurrencyAPI: 10.0,
-                        TSADateAPI: '2020-09-01Z',
-                        TSADateTimeAPI: '2020-08-31T21:00:00Z',
-                        TSADecimalNumberAPI: 5.5,
-                        TSADropdownAPI: '1',
-                        TSAEmailAPI: 'Test@test.com',
-                        TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
-                        TSALimitedLineAPI: 'Limit text',
-                        TSALinkAPI: 'https://www.ynet.co.il',
-                        TSAMultiChoiceAPI: 'A',
-                        TSANumberAPI: 5,
-                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
-                        TSASingleLineAPI: 'Random text',
-                        TotalUnitsPriceAfterDiscount: 0.0,
-                        TotalUnitsPriceBeforeDiscount: 0.0,
-                        UnitDiscountPercentage: 0.0,
-                        UnitPrice: 0.0,
-                        UnitPriceAfterDiscount: 0.0,
-                    }),
-                    expect(JSON.stringify(getCreatedTransactionLine[0].Item)).equals(
-                        JSON.stringify({
-                            Data: {
-                                InternalID: items[0].InternalID,
-                                UUID: items[0].UUID,
-                                ExternalID: items[0].ExternalID,
-                            },
-                            URI: '/items/' + items[0].InternalID,
-                        }),
-                    ),
-                    expect(JSON.stringify(getCreatedTransactionLine[0].Transaction)).equals(
-                        JSON.stringify({
-                            Data: {
-                                InternalID: createdTransaction.InternalID,
-                                UUID: createdTransaction.UUID,
-                                ExternalID: createdTransaction.ExternalID,
-                            },
-                            URI: '/transactions/' + createdTransaction.InternalID,
-                        }),
-                    ),
-                    expect(getCreatedTransactionLine[0].InternalID).to.equal(createdTransactionLines.InternalID),
-                    expect(getCreatedTransactionLine[0].UUID).to.include(createdTransactionLines.UUID),
-                    expect(getCreatedTransactionLine[0].CreationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(getCreatedTransactionLine[0].CreationDateTime).to.contain('Z'),
-                    expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
-                    expect(getCreatedTransactionLine[0].Archive).to.be.false,
-                    expect(getCreatedTransactionLine[0].Hidden).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
-                        .to.be.an('array')
-                        .with.lengthOf(1),
-                ]);
-            });
+            //     return Promise.all([
+            //         expect(getCreatedTransactionLine[0]).to.include({
+            //             LineNumber: 0,
+            //             UnitsQuantity: 1.0,
+            //             TSACheckboxAPI: true,
+            //             TSACurrencyAPI: 10.0,
+            //             TSADateAPI: '2020-09-01Z',
+            //             TSADateTimeAPI: '2020-08-31T21:00:00Z',
+            //             TSADecimalNumberAPI: 5.5,
+            //             TSADropdownAPI: '1',
+            //             TSAEmailAPI: 'Test@test.com',
+            //             TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
+            //             TSALimitedLineAPI: 'Limit text',
+            //             TSALinkAPI: 'https://www.ynet.co.il',
+            //             TSAMultiChoiceAPI: 'A',
+            //             TSANumberAPI: 5,
+            //             TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+            //             TSASingleLineAPI: 'Random text',
+            //             TotalUnitsPriceAfterDiscount: 0.0,
+            //             TotalUnitsPriceBeforeDiscount: 0.0,
+            //             UnitDiscountPercentage: 0.0,
+            //             UnitPrice: 0.0,
+            //             UnitPriceAfterDiscount: 0.0,
+            //         }),
+            //         expect(JSON.stringify(getCreatedTransactionLine[0].Item)).equals(
+            //             JSON.stringify({
+            //                 Data: {
+            //                     InternalID: items[0].InternalID,
+            //                     UUID: items[0].UUID,
+            //                     ExternalID: items[0].ExternalID,
+            //                 },
+            //                 URI: '/items/' + items[0].InternalID,
+            //             }),
+            //         ),
+            //         expect(JSON.stringify(getCreatedTransactionLine[0].Transaction)).equals(
+            //             JSON.stringify({
+            //                 Data: {
+            //                     InternalID: createdTransaction.InternalID,
+            //                     UUID: createdTransaction.UUID,
+            //                     ExternalID: createdTransaction.ExternalID,
+            //                 },
+            //                 URI: '/transactions/' + createdTransaction.InternalID,
+            //             }),
+            //         ),
+            //         expect(getCreatedTransactionLine[0].InternalID).to.equal(createdTransactionLines.InternalID),
+            //         expect(getCreatedTransactionLine[0].UUID).to.include(createdTransactionLines.UUID),
+            //         expect(getCreatedTransactionLine[0].CreationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         ),
+            //         expect(getCreatedTransactionLine[0].CreationDateTime).to.contain('Z'),
+            //         expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         ),
+            //         expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
+            //         expect(getCreatedTransactionLine[0].Archive).to.be.false,
+            //         expect(getCreatedTransactionLine[0].Hidden).to.be.false,
+            //         expect(await service.getTransactionLines(createdTransaction.InternalID))
+            //             .to.be.an('array')
+            //             .with.lengthOf(1),
+            //     ]);
+            // });
 
-            it('Update transaction lines', async () => {
-                items = await service.getItems();
+            // it('Update transaction lines', async () => {
+            //     items = await service.getItems();
 
-                expect(
-                    (updatedTransactionLines = await service.createTransactionLine({
-                        TransactionInternalID: createdTransaction.InternalID,
-                        LineNumber: 0,
-                        ItemExternalID: items[0].ExternalID,
-                        UnitsQuantity: 5.0,
-                        TSACheckboxAPI: false,
-                        TSACurrencyAPI: 15.0,
-                        TSADateAPI: '2020-10-01Z',
-                        TSADateTimeAPI: '2020-08-11T21:00:00Z',
-                        TSADecimalNumberAPI: 5.2,
-                        TSADropdownAPI: '2',
-                        TSAEmailAPI: 'Test1@test.com',
-                        TSAHtmlAPI: '<h1>My First Heading test</h1>\r\n<p>My first paragraph test.</p>',
-                        TSALimitedLineAPI: 'Limit text',
-                        TSALinkAPI: 'https://www.ynet.co.il',
-                        TSAMultiChoiceAPI: 'B',
-                        TSANumberAPI: 2,
-                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nTest',
-                        TSASingleLineAPI: 'Random text test',
-                        TotalUnitsPriceAfterDiscount: 0.0,
-                        TotalUnitsPriceBeforeDiscount: 0.0,
-                        UnitDiscountPercentage: 100.0,
-                        UnitPrice: 5.0,
-                        UnitPriceAfterDiscount: 0.0,
-                    } as any)),
-                ).to.be.include({
-                    LineNumber: 0,
-                    UnitsQuantity: 5.0,
-                    TSACheckboxAPI: false,
-                    TSACurrencyAPI: 15.0,
-                    TSADateAPI: '2020-10-01Z',
-                    TSADateTimeAPI: '2020-08-11T21:00:00Z',
-                    TSADecimalNumberAPI: 5.2,
-                    TSADropdownAPI: '2',
-                    TSAEmailAPI: 'Test1@test.com',
-                    TSAHtmlAPI: '<h1>My First Heading test</h1>\r\n<p>My first paragraph test.</p>',
-                    TSALimitedLineAPI: 'Limit text',
-                    TSALinkAPI: 'https://www.ynet.co.il',
-                    TSAMultiChoiceAPI: 'B',
-                    TSANumberAPI: 2,
-                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nTest',
-                    TSASingleLineAPI: 'Random text test',
-                    TotalUnitsPriceAfterDiscount: 0.0,
-                    TotalUnitsPriceBeforeDiscount: 25.0,
-                    UnitDiscountPercentage: 100.0,
-                    UnitPrice: 5.0,
-                    UnitPriceAfterDiscount: 0.0,
-                }),
-                    expect(JSON.stringify(updatedTransactionLines.Item)).equals(
-                        JSON.stringify({
-                            Data: {
-                                InternalID: items[0].InternalID,
-                                UUID: items[0].UUID,
-                                ExternalID: items[0].ExternalID,
-                            },
-                            URI: '/items/' + items[0].InternalID,
-                        }),
-                    ),
-                    expect(JSON.stringify(updatedTransactionLines.Transaction)).equals(
-                        JSON.stringify({
-                            Data: {
-                                InternalID: createdTransaction.InternalID,
-                                UUID: createdTransaction.UUID,
-                                ExternalID: createdTransaction.ExternalID,
-                            },
-                            URI: '/transactions/' + createdTransaction.InternalID,
-                        }),
-                    ),
-                    expect(updatedTransactionLines.InternalID).to.equal(createdTransactionLines.InternalID),
-                    expect(updatedTransactionLines.UUID).to.include(createdTransactionLines.UUID),
-                    expect(updatedTransactionLines.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                    expect(updatedTransactionLines.CreationDateTime).to.contain('Z'),
-                    expect(updatedTransactionLines.ModificationDateTime).to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
-                    expect(updatedTransactionLines.Archive).to.be.false,
-                    expect(updatedTransactionLines.Hidden).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
-                        .to.be.an('array')
-                        .with.lengthOf(1);
-            });
+            //     expect(
+            //         (updatedTransactionLines = await service.createTransactionLine({
+            //             TransactionInternalID: createdTransaction.InternalID,
+            //             LineNumber: 0,
+            //             ItemExternalID: items[0].ExternalID,
+            //             UnitsQuantity: 5.0,
+            //             TSACheckboxAPI: false,
+            //             TSACurrencyAPI: 15.0,
+            //             TSADateAPI: '2020-10-01Z',
+            //             TSADateTimeAPI: '2020-08-11T21:00:00Z',
+            //             TSADecimalNumberAPI: 5.2,
+            //             TSADropdownAPI: '2',
+            //             TSAEmailAPI: 'Test1@test.com',
+            //             TSAHtmlAPI: '<h1>My First Heading test</h1>\r\n<p>My first paragraph test.</p>',
+            //             TSALimitedLineAPI: 'Limit text',
+            //             TSALinkAPI: 'https://www.ynet.co.il',
+            //             TSAMultiChoiceAPI: 'B',
+            //             TSANumberAPI: 2,
+            //             TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nTest',
+            //             TSASingleLineAPI: 'Random text test',
+            //             TotalUnitsPriceAfterDiscount: 0.0,
+            //             TotalUnitsPriceBeforeDiscount: 0.0,
+            //             UnitDiscountPercentage: 100.0,
+            //             UnitPrice: 5.0,
+            //             UnitPriceAfterDiscount: 0.0,
+            //         } as any)),
+            //     ).to.be.include({
+            //         LineNumber: 0,
+            //         UnitsQuantity: 5.0,
+            //         TSACheckboxAPI: false,
+            //         TSACurrencyAPI: 15.0,
+            //         TSADateAPI: '2020-10-01Z',
+            //         TSADateTimeAPI: '2020-08-11T21:00:00Z',
+            //         TSADecimalNumberAPI: 5.2,
+            //         TSADropdownAPI: '2',
+            //         TSAEmailAPI: 'Test1@test.com',
+            //         TSAHtmlAPI: '<h1>My First Heading test</h1>\r\n<p>My first paragraph test.</p>',
+            //         TSALimitedLineAPI: 'Limit text',
+            //         TSALinkAPI: 'https://www.ynet.co.il',
+            //         TSAMultiChoiceAPI: 'B',
+            //         TSANumberAPI: 2,
+            //         TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nTest',
+            //         TSASingleLineAPI: 'Random text test',
+            //         TotalUnitsPriceAfterDiscount: 0.0,
+            //         TotalUnitsPriceBeforeDiscount: 25.0,
+            //         UnitDiscountPercentage: 100.0,
+            //         UnitPrice: 5.0,
+            //         UnitPriceAfterDiscount: 0.0,
+            //     }),
+            //         expect(JSON.stringify(updatedTransactionLines.Item)).equals(
+            //             JSON.stringify({
+            //                 Data: {
+            //                     InternalID: items[0].InternalID,
+            //                     UUID: items[0].UUID,
+            //                     ExternalID: items[0].ExternalID,
+            //                 },
+            //                 URI: '/items/' + items[0].InternalID,
+            //             }),
+            //         ),
+            //         expect(JSON.stringify(updatedTransactionLines.Transaction)).equals(
+            //             JSON.stringify({
+            //                 Data: {
+            //                     InternalID: createdTransaction.InternalID,
+            //                     UUID: createdTransaction.UUID,
+            //                     ExternalID: createdTransaction.ExternalID,
+            //                 },
+            //                 URI: '/transactions/' + createdTransaction.InternalID,
+            //             }),
+            //         ),
+            //         expect(updatedTransactionLines.InternalID).to.equal(createdTransactionLines.InternalID),
+            //         expect(updatedTransactionLines.UUID).to.include(createdTransactionLines.UUID),
+            //         expect(updatedTransactionLines.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+            //         expect(updatedTransactionLines.CreationDateTime).to.contain('Z'),
+            //         expect(updatedTransactionLines.ModificationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         ),
+            //         expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
+            //         expect(updatedTransactionLines.Archive).to.be.false,
+            //         expect(updatedTransactionLines.Hidden).to.be.false,
+            //         expect(await service.getTransactionLines(createdTransaction.InternalID))
+            //             .to.be.an('array')
+            //             .with.lengthOf(1);
+            // });
 
-            it('Add transaction lines', async () => {
-                items = await service.getItems();
+            // it('Add transaction lines', async () => {
+            //     items = await service.getItems();
 
-                addedTransactionLines = await service.createTransactionLine({
-                    TransactionInternalID: createdTransaction.InternalID,
-                    LineNumber: 1,
-                    ItemExternalID: items[1].ExternalID,
-                    UnitsQuantity: 1.0,
-                });
-                expect(await service.getTransactionLines(createdTransaction.InternalID))
-                    .to.be.an('array')
-                    .with.lengthOf(2);
-            });
+            //     addedTransactionLines = await service.createTransactionLine({
+            //         TransactionInternalID: createdTransaction.InternalID,
+            //         LineNumber: 1,
+            //         ItemExternalID: items[1].ExternalID,
+            //         UnitsQuantity: 1.0,
+            //     });
+            //     expect(await service.getTransactionLines(createdTransaction.InternalID))
+            //         .to.be.an('array')
+            //         .with.lengthOf(2);
+            // });
 
-            it('Delete transaction lines', async () => {
-                expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
-                        .to.be.an('array')
-                        .with.lengthOf(1),
-                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
-                        .to.be.an('array')
-                        .with.lengthOf(0);
-            });
+            // it('Delete transaction lines', async () => {
+            //     expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.true,
+            //         expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.false,
+            //         expect(await service.getTransactionLines(createdTransaction.InternalID))
+            //             .to.be.an('array')
+            //             .with.lengthOf(1),
+            //         expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.true,
+            //         expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.false,
+            //         expect(await service.getTransactionLines(createdTransaction.InternalID))
+            //             .to.be.an('array')
+            //             .with.lengthOf(0);
+            // });
 
-            it('Update transaction', async () => {
-                expect(
-                    (updatedTransaction = await service.createTransaction({
-                        ExternalID: transactionExternalID,
-                        Status: 2,
-                        Account: {
-                            Data: {
-                                InternalID: transactionAccount.InternalID,
-                            },
-                        },
-                        TSAAttachmentAPI: {
-                            URL: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                            Content: '',
-                        },
-                        TSACheckboxAPI: false,
-                        TSACurrencyAPI: 15.0,
-                        TSADateAPI: '2020-09-05Z',
-                        TSADateTimeAPI: '2020-09-30T21:00:00Z',
-                        TSADecimalNumberAPI: 0.5,
-                        TSADropdownAPI: '2',
-                        TSAEmailAPI: 'TestUpdate@test.com',
-                        TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
-                        TSAImageAPI: {
-                            URL: 'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
-                            Content: '',
-                        },
-                        TSALimitedLineAPI: 'Limit Update',
-                        TSALinkAPI: 'https://www.google.com',
-                        TSAMultiChoiceAPI: 'B',
-                        TSANumberAPI: 2,
-                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
-                        TSAPhoneNumberAPI: '972555432512',
-                        TSASignatureAPI: {
-                            URL:
-                                'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
-                            Content: '',
-                        },
-                        TSASingleLineAPI: 'Random updated text',
-                    } as any)),
-                ).to.be.include({
-                    ExternalID: transactionExternalID,
-                    ActivityTypeID: atds[0].TypeID,
-                    Status: 2,
-                    TSACheckboxAPI: false,
-                    TSACurrencyAPI: 15.0,
-                    TSADateAPI: '2020-09-05Z',
-                    TSADateTimeAPI: '2020-09-30T21:00:00Z',
-                    TSADecimalNumberAPI: 0.5,
-                    TSADropdownAPI: '2',
-                    TSAEmailAPI: 'TestUpdate@test.com',
-                    TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
-                    TSALimitedLineAPI: 'Limit Update',
-                    TSALinkAPI: 'https://www.google.com',
-                    TSAMultiChoiceAPI: 'B',
-                    TSANumberAPI: 2,
-                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
-                    TSAPhoneNumberAPI: '972555432512',
-                    TSASingleLineAPI: 'Random updated text',
-                }),
-                    expect(updatedTransaction.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
-                    expect(updatedTransaction.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
-                    expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
-                    expect(JSON.stringify(updatedTransaction.Account)).equals(
-                        JSON.stringify({
-                            Data: {
-                                InternalID: transactionAccount.InternalID,
-                                UUID: transactionAccount.UUID,
-                                ExternalID: transactionAccount.ExternalID,
-                            },
-                            URI: '/accounts/' + transactionAccount.InternalID,
-                        }),
-                    ),
-                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID),
-                    expect(updatedTransaction.UUID).to.include(createdTransaction.UUID),
-                    expect(updatedTransaction.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                    expect(updatedTransaction.CreationDateTime).to.contain('Z'),
-                    expect(updatedTransaction.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                    expect(updatedTransaction.ModificationDateTime).to.contain('Z'),
-                    expect(updatedTransaction.Archive).to.be.false,
-                    expect(updatedTransaction.Hidden).to.be.false,
-                    expect(updatedTransaction.StatusName).to.include('Submitted'),
-                    expect(updatedTransaction.Agent).to.be.null,
-                    expect(updatedTransaction.ContactPerson).to.be.null,
-                    expect(updatedTransaction.Creator).to.be.null;
-            });
+            // it('Update transaction', async () => {
+            //     expect(
+            //         (updatedTransaction = await service.createTransaction({
+            //             ExternalID: transactionExternalID,
+            //             Status: 2,
+            //             Account: {
+            //                 Data: {
+            //                     InternalID: transactionAccount.InternalID,
+            //                 },
+            //             },
+            //             TSAAttachmentAPI: {
+            //                 URL: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+            //                 Content: '',
+            //             },
+            //             TSACheckboxAPI: false,
+            //             TSACurrencyAPI: 15.0,
+            //             TSADateAPI: '2020-09-05Z',
+            //             TSADateTimeAPI: '2020-09-30T21:00:00Z',
+            //             TSADecimalNumberAPI: 0.5,
+            //             TSADropdownAPI: '2',
+            //             TSAEmailAPI: 'TestUpdate@test.com',
+            //             TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+            //             TSAImageAPI: {
+            //                 URL: 'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
+            //                 Content: '',
+            //             },
+            //             TSALimitedLineAPI: 'Limit Update',
+            //             TSALinkAPI: 'https://www.google.com',
+            //             TSAMultiChoiceAPI: 'B',
+            //             TSANumberAPI: 2,
+            //             TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
+            //             TSAPhoneNumberAPI: '972555432512',
+            //             TSASignatureAPI: {
+            //                 URL:
+            //                     'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
+            //                 Content: '',
+            //             },
+            //             TSASingleLineAPI: 'Random updated text',
+            //         } as any)),
+            //     ).to.be.include({
+            //         ExternalID: transactionExternalID,
+            //         ActivityTypeID: atds[0].TypeID,
+            //         Status: 2,
+            //         TSACheckboxAPI: false,
+            //         TSACurrencyAPI: 15.0,
+            //         TSADateAPI: '2020-09-05Z',
+            //         TSADateTimeAPI: '2020-09-30T21:00:00Z',
+            //         TSADecimalNumberAPI: 0.5,
+            //         TSADropdownAPI: '2',
+            //         TSAEmailAPI: 'TestUpdate@test.com',
+            //         TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
+            //         TSALimitedLineAPI: 'Limit Update',
+            //         TSALinkAPI: 'https://www.google.com',
+            //         TSAMultiChoiceAPI: 'B',
+            //         TSANumberAPI: 2,
+            //         TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
+            //         TSAPhoneNumberAPI: '972555432512',
+            //         TSASingleLineAPI: 'Random updated text',
+            //     }),
+            //         expect(updatedTransaction.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+            //         expect(updatedTransaction.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+            //         expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+            //         expect(JSON.stringify(updatedTransaction.Account)).equals(
+            //             JSON.stringify({
+            //                 Data: {
+            //                     InternalID: transactionAccount.InternalID,
+            //                     UUID: transactionAccount.UUID,
+            //                     ExternalID: transactionAccount.ExternalID,
+            //                 },
+            //                 URI: '/accounts/' + transactionAccount.InternalID,
+            //             }),
+            //         ),
+            //         expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID),
+            //         expect(updatedTransaction.UUID).to.include(createdTransaction.UUID),
+            //         expect(updatedTransaction.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+            //         expect(updatedTransaction.CreationDateTime).to.contain('Z'),
+            //         expect(updatedTransaction.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
+            //         expect(updatedTransaction.ModificationDateTime).to.contain('Z'),
+            //         expect(updatedTransaction.Archive).to.be.false,
+            //         expect(updatedTransaction.Hidden).to.be.false,
+            //         expect(updatedTransaction.StatusName).to.include('Submitted'),
+            //         expect(updatedTransaction.Agent).to.be.null,
+            //         expect(updatedTransaction.ContactPerson).to.be.null,
+            //         expect(updatedTransaction.Creator).to.be.null;
+            // });
 
-            it('Delete transaction', async () => {
-                expect(await service.deleteTransaction(createdTransaction.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransaction(createdTransaction.InternalID as any)).to.be.false,
-                    expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }))
-                        .to.be.an('array')
-                        .with.lengthOf(0);
-            });
+            // it('Delete transaction', async () => {
+            //     expect(await service.deleteTransaction(createdTransaction.InternalID as any)).to.be.true,
+            //         expect(await service.deleteTransaction(createdTransaction.InternalID as any)).to.be.false,
+            //         expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }))
+            //             .to.be.an('array')
+            //             .with.lengthOf(0);
+            // });
 
             it('Delete transaction test account and TSAs', async () => {
                 expect(
