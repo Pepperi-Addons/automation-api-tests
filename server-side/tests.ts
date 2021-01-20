@@ -15,7 +15,12 @@ import {
     SingleMaintenanceAndDependenciesAddonsTests,
     MaintenanceFullTests,
 } from './api-tests/addons';
-import { ImportExportATDActivitiesTests, ImportExportATDTransactionsTests } from './api-tests/import_export_atd';
+import {
+    ImportExportATDActivitiesTests,
+    ImportExportATDTransactionsTests,
+    ImportExportATDActivitiesBoxTests,
+    ImportExportATDTransactionsBoxTests,
+} from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 
 let testName = '';
@@ -51,8 +56,8 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         sync(client, testerFunctions),
-        file_storage(client, testerFunctions),
-        fields(client, testerFunctions),
+        //file_storage(client, testerFunctions),
+        //fields(client, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     testName = '';
@@ -750,6 +755,90 @@ export async function import_export_atd_transactions(
         return testResult;
     } else {
         return ImportExportATDTransactionsTests(service, request, testerFunctions);
+    }
+}
+
+export async function import_export_atd_activities_box(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Import_Export_Atd_Activities_Box' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Import_Export_Atd_Activities_Box';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ImportExportATDActivitiesBoxTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ImportExportATDActivitiesBoxTests(service, request, testerFunctions);
+    }
+}
+
+export async function import_export_atd_transactions_box(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Import_Export_Atd_Transactions_Box' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Import_Export_Atd_Transactions_Box';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ImportExportATDTransactionsBoxTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ImportExportATDTransactionsBoxTests(service, request, testerFunctions);
     }
 }
 

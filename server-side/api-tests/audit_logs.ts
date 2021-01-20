@@ -127,47 +127,48 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         //Sync Test
         await executeSyncTest(syncTest, testDataBodySyncTest),
         //These tests are for the old Sync Enpoint
-        createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
-            async (positiveCodeJobUUID) => {
-                await executeDraftCodeJobTest(
-                    codeJobPositiveTest,
-                    positiveCodeJobUUID,
-                    testDataDraftToExecuteInPositiveTest,
-                    false,
-                );
-            },
-        ),
-        createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
-            async (negativeCodeJobUUID) => {
-                //The response objects in case of exceptions for sync calls - changed in 06/11/2021
-                // await executeDraftCodeJobTest(
-                //     codeJobNegativeTest,
-                //     negativeCodeJobUUID,
-                //     testDataDraftToExecuteInNegativeTest,
-                //     false,
-                // );
-                await generalService.papiClient
-                    .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
-                    .then((res) => {
-                        addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft', res);
-                    })
-                    .catch((err) => {
-                        if (
-                            err.message.includes(
-                                'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
-                            )
-                        ) {
-                            addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft');
-                        } else {
-                            addTestResultUnderHeadline(
-                                codeJobNegativeTest,
-                                'Post execute CodeJobe with draft',
-                                err.message,
-                            );
-                        }
-                    });
-            },
-        ),
+        //The old Sync endpoint canceled at 17/01/2021 in PAPI version 9.5.378
+        // createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
+        //     async (positiveCodeJobUUID) => {
+        //         await executeDraftCodeJobTest(
+        //             codeJobPositiveTest,
+        //             positiveCodeJobUUID,
+        //             testDataDraftToExecuteInPositiveTest,
+        //             false,
+        //         );
+        //     },
+        // ),
+        // createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
+        //     async (negativeCodeJobUUID) => {
+        //         //The response objects in case of exceptions for sync calls - changed in 06/11/2021
+        //         // await executeDraftCodeJobTest(
+        //         //     codeJobNegativeTest,
+        //         //     negativeCodeJobUUID,
+        //         //     testDataDraftToExecuteInNegativeTest,
+        //         //     false,
+        //         // );
+        //         await generalService.papiClient
+        //             .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
+        //             .then((res) => {
+        //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft', res);
+        //             })
+        //             .catch((err) => {
+        //                 if (
+        //                     err.message.includes(
+        //                         'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
+        //                     )
+        //                 ) {
+        //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft');
+        //                 } else {
+        //                     addTestResultUnderHeadline(
+        //                         codeJobNegativeTest,
+        //                         'Post execute CodeJobe with draft',
+        //                         err.message,
+        //                     );
+        //                 }
+        //             });
+        //     },
+        // ),
         //These tests are for the new Async Enpoint
         createCodeJobUsingDraftTest(codeJobPositiveAsyncTest, testDataDraftToExecuteInPositiveTest).then(
             async (positiveAsyncCodeJobUUID) => {

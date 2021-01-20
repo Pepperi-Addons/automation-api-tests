@@ -47,7 +47,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                         `${generalService['client'].BaseURL.replace(
                             'papi-eu',
                             'papi',
-                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%'&order_by=CreationDateTime DESC`,
+                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%' AND Available Like 1&order_by=CreationDateTime DESC`,
                         {
                             method: `GET`,
                             headers: {

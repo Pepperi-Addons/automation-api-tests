@@ -101,14 +101,26 @@ export class ImportExportATDService {
     }
 
     importATD(type: ResourceTypes, subtype: number, body) {
-        return this.papiClient.post(
+        //18/01/2021 - the respons was changed to not contain object, this is why the response code will have to be verified
+        // return this.papiClient.post(
+        //     `/addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/import_type_definition?type=${type}&subtype=${subtype}`,
+        //     body,
+        // );
+        return this.papiClient.apiCall(
+            'POST',
             `/addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/import_type_definition?type=${type}&subtype=${subtype}`,
             body,
         );
     }
 
     importToNewATD(type: ResourceTypes, body) {
-        return this.papiClient.post(
+        //18/01/2021 - the respons was changed to not contain object, this is why the response code will have to be verified
+        // return this.papiClient.post(
+        //     `/addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/import_type_definition?type=${type}`,
+        //     body,
+        // );
+        return this.papiClient.apiCall(
+            'POST',
             `/addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/import_type_definition?type=${type}`,
             body,
         );
