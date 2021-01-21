@@ -56,8 +56,8 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         sync(client, testerFunctions),
-        //file_storage(client, testerFunctions),
-        //fields(client, testerFunctions),
+        file_storage(client, testerFunctions),
+        fields(client, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     testName = '';
