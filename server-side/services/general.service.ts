@@ -10,6 +10,18 @@ declare type ClientData =
     | 'DistributorUUID'
     | 'Server';
 
+interface FindOptions {
+    fields?: string[];
+    where?: string;
+    orderBy?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
+
 const UserDataObject = {
     UserEmail: 'email',
     UserName: 'name',
@@ -71,8 +83,8 @@ export default class GeneralService {
         return parseJwt(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
 
-    getAddons(): Promise<InstalledAddon[]> {
-        return this.papiClient.addons.installedAddons.find({});
+    getAddons(options?: FindOptions): Promise<InstalledAddon[]> {
+        return this.papiClient.addons.installedAddons.find(options);
     }
 
     getCatalogs(): Promise<Catalog[]> {
