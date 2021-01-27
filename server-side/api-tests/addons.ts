@@ -187,7 +187,7 @@ function createNewMaintenanceTestDataObject(upgradeAfterDate, upgradeAfterPercen
 export async function BaseAddonsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     (testConfigObj.isAddonsAPIInstallAndUpgrade = true), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
-        (testConfigObj.isAddonsWithDependenciesAPI = false), //true, //Addons Dependencies API
+        (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
@@ -198,7 +198,7 @@ export async function BaseAddonsTests(generalService: GeneralService, request, t
 export async function UninstallAddonsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = true), //Addons API Downgrade and Uninstall
-        (testConfigObj.isAddonsWithDependenciesAPI = false), //true, //Addons Dependencies API
+        (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
@@ -213,7 +213,7 @@ export async function SingleMaintenanceAndDependenciesAddonsTests(
 ) {
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
-        (testConfigObj.isAddonsWithDependenciesAPI = true), //true, //Addons Dependencies API
+        (testConfigObj.isAddonsWithDependenciesAPI = true), //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = true), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
@@ -224,7 +224,7 @@ export async function SingleMaintenanceAndDependenciesAddonsTests(
 export async function MaintenanceFullTests(generalService: GeneralService, request, tester: TesterFunctions) {
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
-        (testConfigObj.isAddonsWithDependenciesAPI = false), //true, //Addons Dependencies API
+        (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
         (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = true), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = true), //Maintenance Install Distribution
@@ -247,6 +247,28 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     // if (!generalService.getClientData('Server').includes('sandbox')) {
     //     throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
     // }
+
+    //Added in 27/01/2021 to fix "executeDependenciesInstallWithDependencyInstallationTest"
+    //Deleted WebApp Version so when maintenance run, a downgrade to older Phased webapp version will be triggered,
+    //in hope that the latest webapp version is not phased - or else the test won't pass and the mechanisem here will have to be changed
+    //const uninstallApiResponse =
+    await generalService.papiClient.addons.installedAddons
+        .addonUUID('00000000-0000-0000-1234-000000000b2b')
+        .uninstall();
+    //Get the latest VAR version of the Webapp Addon
+    let varLatestWebAppVersion = await fetch(
+        `${generalService['client'].BaseURL.replace(
+            'papi-eu',
+            'papi',
+        )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Phased Like 0&order_by=CreationDateTime DESC`,
+        {
+            method: `GET`,
+            headers: {
+                Authorization: `${request.body.varKey}`,
+            },
+        },
+    ).then((response) => response.json());
+    varLatestWebAppVersion = varLatestWebAppVersion[0].Version;
 
     //Interval
     let intervalCounter = 0;
@@ -5676,7 +5698,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             Dependencies: {
                                 papi: '9.5.301',
                                 cpapi: 'V141',
-                                webapp: '16.41.34',
+                                webapp: varLatestWebAppVersion,
                                 data_views: '0.0.38',
                             },
                         });
@@ -5799,7 +5821,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     mandatoryStepsInstallAddonWithVersion.InstallCorrectAddon = isErrorMessage;
                 } else {
                     const isErrorMessage = postAddonApiResponse.AuditInfo.ErrorMessage.includes(
-                        "The distributor installed addons don't answer the dependencies. Addon data_views needed version is >=0.0.38 but current version is 0.0.37",
+                        `The distributor installed addons don't answer the dependencies. Addon webapp needed version is >=${varLatestWebAppVersion} but current version is`,
                     );
                     addTestResultUnderHeadline(testName, 'Correct Dependency Error Message', isErrorMessage);
                     mandatoryStepsInstallAddonWithVersion.InstallCorrectAddon = isErrorMessage;
