@@ -50,10 +50,10 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                     }
                 }
                 if (!isInstalled) {
-                    isInstalled = false;
                     await service.addons.installedAddons.addonUUID(`${testData[addonName][0]}`).install();
                     generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
                 }
+                isInstalled = false;
             }
         });
 
