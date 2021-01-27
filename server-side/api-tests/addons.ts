@@ -248,28 +248,6 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     //     throw new Error(`Test can't run on: ${generalService.getClientData('Server')}`);
     // }
 
-    //Added in 27/01/2021 to fix "executeDependenciesInstallWithDependencyInstallationTest"
-    //Deleted WebApp Version so when maintenance run, a downgrade to older Phased webapp version will be triggered,
-    //in hope that the latest webapp version is not phased - or else the test won't pass and the mechanisem here will have to be changed
-    //const uninstallApiResponse =
-    await generalService.papiClient.addons.installedAddons
-        .addonUUID('00000000-0000-0000-1234-000000000b2b')
-        .uninstall();
-    //Get the latest VAR version of the Webapp Addon
-    let varLatestWebAppVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Phased Like 0&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    ).then((response) => response.json());
-    varLatestWebAppVersion = varLatestWebAppVersion[0].Version;
-
     //Interval
     let intervalCounter = 0;
 
@@ -5631,6 +5609,28 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         const versionsArr: AddonVersion[] = [];
         versionsArr.length = 3;
         let versionTestDataBody;
+
+        //Added in 27/01/2021 to fix "executeDependenciesInstallWithDependencyInstallationTest"
+        //Deleted WebApp Version so when maintenance run, a downgrade to older Phased webapp version will be triggered,
+        //in hope that the latest webapp version is not phased - or else the test won't pass and the mechanisem here will have to be changed
+        //const uninstallApiResponse =
+        await generalService.papiClient.addons.installedAddons
+            .addonUUID('00000000-0000-0000-1234-000000000b2b')
+            .uninstall();
+        //Get the latest VAR version of the Webapp Addon
+        let varLatestWebAppVersion = await fetch(
+            `${generalService['client'].BaseURL.replace(
+                'papi-eu',
+                'papi',
+            )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Phased Like 0&order_by=CreationDateTime DESC`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `${request.body.varKey}`,
+                },
+            },
+        ).then((response) => response.json());
+        varLatestWebAppVersion = varLatestWebAppVersion[0].Version;
 
         //Create
         //To make sure eddon is deleted no matter what

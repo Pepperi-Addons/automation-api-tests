@@ -20,7 +20,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             ],
             'WebApp Platform': [
                 '00000000-0000-0000-1234-000000000b2b',
-                request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.50',
+                request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.55',
             ],
             'Addons Manager': [
                 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
@@ -36,6 +36,26 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             ],
             ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.0'],
         };
+
+        it('Validate that all the needed addons are installed', async () => {
+            let isInstalled = false;
+            const installedAddonsArr = await generalService.getAddons();
+            for (const addonName in testData) {
+                for (let i = 0; i < installedAddonsArr.length; i++) {
+                    if (installedAddonsArr[i].Addon !== null) {
+                        if (installedAddonsArr[i].Addon.Name == addonName) {
+                            isInstalled = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isInstalled) {
+                    isInstalled = false;
+                    await service.addons.installedAddons.addonUUID(`${testData[addonName][0]}`).install();
+                    generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+                }
+            }
+        });
 
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];

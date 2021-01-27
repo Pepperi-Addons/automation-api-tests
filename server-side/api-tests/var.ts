@@ -152,6 +152,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
     const validateOtherFileSentTest = 'Validate Other File Sent Test';
     setNewTestHeadline(validateOtherFileSentTest);
 
+    const validateOtherFilesSentInFolderTest = 'Validate Other Files Sent In Folder Test';
+    setNewTestHeadline(validateOtherFilesSentInFolderTest);
+
+    const validateOtherFilesSentInFolderNegativeTest = 'Validate Other Files Sent In Folder Test (Negative)';
+    setNewTestHeadline(validateOtherFilesSentInFolderNegativeTest);
+
     const updateAllAddonDataMembersTest = 'Update All Addon Data Members';
     setNewTestHeadline(updateAllAddonDataMembersTest);
 
@@ -274,6 +280,16 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
     await executeValidateOtherFileSentTest(
         validateOtherFileSentTest,
+        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+    );
+
+    await executeValidateOtherFilesSentInFolderTest(
+        validateOtherFilesSentInFolderTest,
+        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+    );
+
+    await executeValidateOtherFilesSentInFolderTest(
+        validateOtherFilesSentInFolderNegativeTest,
         testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
     );
 
@@ -2830,6 +2846,249 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //This can be use to easily extract the token to the console
         //console.log({ Token: VarAPI._Token })
+    }
+
+    //Test Validate Other Files In Folder Sent
+    async function executeValidateOtherFilesSentInFolderTest(testName, testDataBody) {
+        const mandatoryStepsvalidateOtherFileSent = {
+            createVersionTestResult: false,
+            fileSent: false,
+            fileCreated: false,
+            deleteAddonTestResult: false,
+        };
+
+        //Create
+        const createApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(testDataBody),
+            },
+        ).then((response) => response.json());
+
+        const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
+
+        let versionTestDataBody;
+        // //Before Patch
+        // const versionTestDataBody = {
+        //     AddonUUID: createApiResponse.UUID,
+        //     Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+        //     //TODO: fix this capital letter when it will be decided
+        //     //Capital letter no longer valid temp patch "other" instead of "Other"
+        //     Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 },
+        //     { FileName: 'shirTheQueen/happy.txt', URL: '', Base64Content: fileAsSBase64 },
+        //     { FileName: 'oren.js', URL: '', Base64Content: fileAsSBase64 },
+        //     { FileName: 'oRen.txt', URL: '', Base64Content: fileAsSBase64 },
+        //     { FileName: 'folderName/Data.js', URL: '', Base64Content: fileAsSBase64 },
+        //     { FileName: 'folderName/savata.js', URL: '', Base64Content: fileAsSBase64 },
+        //     { FileName: 'folderName/savata.txt', URL: '', Base64Content: fileAsSBase64 }],
+        // } as any;
+        if (testName.includes('Negative')) {
+            versionTestDataBody = {
+                AddonUUID: createApiResponse.UUID,
+                Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+                //TODO: fix this capital letter when it will be decided
+                //Capital letter no longer valid temp patch "other" instead of "Other"
+                Files: [
+                    { FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'ShirTheQueen/happy.txt', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'oren.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'Oren.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'ORen.txt', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'folderName/Data.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'folderName/savata.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'folderName/savata.txt', URL: '', Base64Content: fileAsSBase64 },
+                ],
+            } as any;
+        } else {
+            versionTestDataBody = {
+                AddonUUID: createApiResponse.UUID,
+                Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+                //TODO: fix this capital letter when it will be decided
+                //Capital letter no longer valid temp patch "other" instead of "Other"
+                Files: [
+                    { FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'ShirTheQueen/happy.txt', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'oren.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'ORen.txt', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'folderName/Data.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'folderName/savata.js', URL: '', Base64Content: fileAsSBase64 },
+                    { FileName: 'folderName/savata.txt', URL: '', Base64Content: fileAsSBase64 },
+                ],
+            } as any;
+        }
+
+        const createVersionApiResponse = await fetch(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify(versionTestDataBody),
+            },
+        )
+            .then((response) => response.json())
+            .then((obj) => {
+                if (testName.includes('Negative')) {
+                    if (
+                        JSON.stringify(obj).includes(
+                            `fault":{"faultstring":"Server side file with name \'Oren.js\' must be in lower case","detail":{"errorcode":"InvalidData`,
+                        )
+                    ) {
+                        addTestResultUnderHeadline(
+                            testName,
+                            'Correct error when file not in lower case in root folder',
+                        );
+                    } else {
+                        addTestResultUnderHeadline(
+                            testName,
+                            'Correct error when file not in lower case in root folder',
+                            obj,
+                        );
+                    }
+                }
+                return obj;
+            });
+
+        console.log({ Get_Var_Addons_Version_Other_File_Create: createVersionApiResponse });
+
+        if (!testName.includes('Negative')) {
+            mandatoryStepsvalidateOtherFileSent.createVersionTestResult = !JSON.stringify(
+                createVersionApiResponse,
+            ).includes('fault');
+            addTestResultUnderHeadline(
+                testName,
+                'Create New Addon Version Test',
+                mandatoryStepsvalidateOtherFileSent.createVersionTestResult
+                    ? true
+                    : 'The response is: ' +
+                          createVersionApiResponse.Name +
+                          ' Expected response is: ' +
+                          versionTestDataBody.Name,
+            );
+
+            //Read
+            const getVersionApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    createVersionApiResponse.UUID,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                },
+            ).then((response) => response.json());
+            console.log({ Get_Version: getVersionApiResponse });
+
+            mandatoryStepsvalidateOtherFileSent.fileSent = JSON.stringify(getVersionApiResponse.Files).includes(
+                `${versionTestDataBody.Version}/installation.js`,
+            );
+            addTestResultUnderHeadline(
+                testName,
+                'Read Other File Sent Test',
+                mandatoryStepsvalidateOtherFileSent.fileSent
+                    ? true
+                    : 'The response is: ' +
+                          getVersionApiResponse +
+                          " Expected response is that Files > FileName > Includes 'other'",
+            );
+
+            mandatoryStepsvalidateOtherFileSent.fileCreated = JSON.stringify(getVersionApiResponse.Files).includes(
+                `${versionTestDataBody.Version}/other.js`,
+            );
+            addTestResultUnderHeadline(
+                testName,
+                'Read Installation File Created Test',
+                mandatoryStepsvalidateOtherFileSent.fileCreated
+                    ? true
+                    : 'The response is: ' +
+                          getVersionApiResponse +
+                          " Expected response is that Files > FileName > Includes 'installation'",
+            );
+
+            //Delete Addon Version
+            const deleteVersionApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+                    '/var/addons/versions/' +
+                    createVersionApiResponse.UUID,
+                {
+                    method: `DELETE`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                },
+            ).then((response) => response.json());
+            if (!deleteVersionApiResponse) {
+                console.log({ Post_Var_Addons_Versions_Delete: deleteVersionApiResponse });
+            }
+
+            //Delete Addon
+            const countAllAddonsBeforeDelete = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                },
+            ).then((response) => response.json());
+            console.log({ Get_Var_Addons_Before_Delete: countAllAddonsBeforeDelete });
+            const deleteApiResponse = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/' + createApiResponse.UUID,
+                {
+                    method: `DELETE`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                },
+            ).then((response) => response.json());
+            console.log({ Post_Var_Addons_Delete: deleteApiResponse });
+            const countAllAddonsAfterDelete = await fetch(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons?page_size=-1',
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                },
+            ).then((response) => response.json());
+            console.log({ Get_Var_Addons_After_Delete: countAllAddonsAfterDelete });
+            mandatoryStepsvalidateOtherFileSent.deleteAddonTestResult =
+                countAllAddonsBeforeDelete.length == countAllAddonsAfterDelete.length + 1;
+            addTestResultUnderHeadline(
+                testName,
+                'Delete Addon - End Test',
+                mandatoryStepsvalidateOtherFileSent.deleteAddonTestResult
+                    ? true
+                    : 'The response is: ' +
+                          countAllAddonsAfterDelete.length +
+                          ' Expected response is: ' +
+                          (countAllAddonsBeforeDelete.length - 1),
+            );
+
+            if (
+                mandatoryStepsvalidateOtherFileSent.createVersionTestResult == true &&
+                mandatoryStepsvalidateOtherFileSent.fileSent == true &&
+                mandatoryStepsvalidateOtherFileSent.fileCreated == true &&
+                mandatoryStepsvalidateOtherFileSent.deleteAddonTestResult == true
+            ) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'All Read Files In Other Files Sent Test mandatory steps complete',
+                );
+            } else {
+                addTestResultUnderHeadline(
+                    testName,
+                    'All Read Files In Other Files Sent Test mandatory steps complete',
+                    false,
+                );
+            }
+        }
     }
 
     //Test Update All Addon Data Members
