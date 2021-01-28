@@ -1,4 +1,6 @@
 import { PapiClient, Account, ApiFieldObject, GeneralActivity, Transaction } from '@pepperi-addons/papi-sdk';
+import jwt_decode from 'jwt-decode';
+const fetch = require('node-fetch');
 
 interface FindOptions {
     fields?: string[];
@@ -12,19 +14,108 @@ interface FindOptions {
     is_distinct?: boolean;
 }
 
+const apiCallsInterval = 400;
+
 export class ObjectsService {
-    constructor(public papiClient: PapiClient) {}
+    constructor(public papiClient: PapiClient) { }
 
     getItems() {
         return this.papiClient.get('/items');
+    }
+
+    getUsers(clause?) {
+        switch (clause) {
+            case undefined:
+                return this.papiClient.get('/users');
+            default:
+                return this.papiClient.get('/users' + clause)
+        }
+    }
+
+    createUser(body: any) {
+        return this.papiClient.post('/CreateUser', body);
+    }
+
+    updateUser(body: any) {
+        return this.papiClient.post('/users', body);
+    }
+
+    async getRepProfile(){
+        let profiles = await this.papiClient.get('/profiles');
+        for (let i in profiles){
+            if (profiles[i].Name == "Rep") {return profiles[i]};
+        }
+    }
+ 
+    getIDPurl(){
+        //@ts-ignore
+        let token = this.papiClient.options.token;
+        let decodedToken = jwt_decode(token);
+        return decodedToken.iss;
+    }
+
+
+    async getSecurityGroup(){
+        let idpBaseURL = await this.getIDPurl();
+        let securityGroups = await fetch(idpBaseURL + '/api/securitygroups', {
+            method: "GET",
+            headers: {
+                //@ts-ignore
+                'Authorization': 'Bearer ' + this.papiClient.options.token
+            },
+            json: true
+        }).then((data) => data.json());
+        return securityGroups;
+    }
+
+    getSingleUser(type, ID) {
+        switch (type) {
+            case 'UUID':
+                return this.papiClient.get('/users/uuid/' + ID)
+            case 'ExternalID':
+                return this.papiClient.get('/users/externalid/' + ID)
+            case 'InternalID':
+                return this.papiClient.get('/users/' + ID)
+        }
+    }
+
+    
+
+    deleteUser(type, ID) {
+        switch (type) {
+            case 'UUID':
+                return this.papiClient.delete('/users/uuid/' + ID)
+                    .then((res) => res.text())
+                    .then((res) => (res ? JSON.parse(res) : ''));
+            case 'ExternalID':
+                return this.papiClient.delete('/users/externalid/' + ID)
+                    .then((res) => res.text())
+                    .then((res) => (res ? JSON.parse(res) : ''));
+            case 'InternalID':
+                return this.papiClient.delete('/users/' + ID)
+                    .then((res) => res.text())
+                    .then((res) => (res ? JSON.parse(res) : ''));
+        }
     }
 
     getContacts(InternalID) {
         return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
     }
 
+    getBulk(type, clause) {
+        return this.papiClient.get('/' + type + clause);
+    }
+
     createContact(body: any) {
         return this.papiClient.post('/contacts', body);
+    }
+
+    connectAsBuyer(body: any){
+        return this.papiClient.post('/contacts/connectAsBuyer', body)
+    }
+
+    disconnectBuyer(body: any){
+        return this.papiClient.post('/contacts/DisconnectBuyer', body)
     }
 
     deleteContact(InternalID) {
@@ -73,6 +164,14 @@ export class ObjectsService {
         return this.papiClient.transactions.delete(transactionID);
     }
 
+    bulkCreate(type: string, body: any) {
+        return this.papiClient.post('/bulk/' + type + '/json', body);
+    }
+
+    getBulkJobInfo(ID) {
+        return this.papiClient.get('/bulk/jobinfo/' + ID);
+    }
+
     createAccount(body: Account) {
         return this.papiClient.accounts.upsert(body);
     }
@@ -87,6 +186,30 @@ export class ObjectsService {
 
     deleteAccount(accountID: number) {
         return this.papiClient.accounts.delete(accountID);
+    }
+
+    sleep(ms) {
+        const start = new Date().getTime(),
+            expire = start + ms;
+        while (new Date().getTime() < expire) { }
+        return;
+    };
+
+    async waitForBulkJobStatus(ID: number, maxTime: number) {
+        const maxLoops = maxTime / (apiCallsInterval * 10);
+        let counter = 0;
+        let apiGetResponse;
+        do {
+            if (apiGetResponse != undefined) {
+                this.sleep(apiCallsInterval * 10);
+            }
+            counter++;
+            apiGetResponse = await this.getBulkJobInfo(ID);
+        } while (
+            (apiGetResponse.Status == ('Not Started') || apiGetResponse.Status == ('In Progress')) &&
+            counter < maxLoops
+        );
+        return apiGetResponse;
     }
 
     async getATD(type: string) {
