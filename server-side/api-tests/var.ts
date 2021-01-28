@@ -723,21 +723,21 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_CRUD_Create: createVersionApiResponse });
         mandatoryStepsCRUDAddonVersion.createVersionTestResult =
-            versionTestDataBody.Name == createVersionApiResponse.Name;
+            versionTestDataBody.Version == createVersionApiResponse.Version;
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Test',
             mandatoryStepsCRUDAddonVersion.createVersionTestResult
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse.Name +
+                      createVersionApiResponse.Version +
                       ' Expected response is: ' +
-                      versionTestDataBody.Name,
+                      versionTestDataBody.Version,
         );
         addTestResultUnderHeadline(
             testName,
@@ -1114,11 +1114,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         mandatoryStepsGetDeletedAddonVersionTest.createAddonVersion =
-            versionTestDataBody.Name == createVersionApiResponse.Name;
+            versionTestDataBody.Version == createVersionApiResponse.Version;
 
         //Delete Version
         let deleteApiResponse = await fetch(
@@ -1265,7 +1265,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Version_Create: createVersionApiResponse });
@@ -1349,7 +1349,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
@@ -1431,7 +1431,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             versionTestDataBody[index] = testDataNewAddonVersion(
                 createApiResponse.UUID,
                 Math.floor(Math.random() * 1000000).toString(),
-            ) as any;
+            );
             versionTestDataBody[index].Phased = true;
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
@@ -1443,12 +1443,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Versions_Array_Create: createVersionApiResponse });
         mandatoryStepsPostVersionsInBulkTest.createAddonVersion =
-            versionTestDataBody[0].Name == createVersionApiResponse[0].Name;
+            versionTestDataBody[0].Version == createVersionApiResponse[0].Version;
         addTestResultUnderHeadline(
             testName,
             'Read Addon Bulk Versions Creation Date Create Test',
@@ -1545,7 +1545,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
     //             headers: {
     //                 Authorization: request.body.varKey,
     //             },
-    //             body: JSON.stringify(versionTestDataBody) as any,
+    //             body: JSON.stringify(versionTestDataBody),
     //         },
     //     ).then((response) => response.json());
     //     console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
@@ -1626,7 +1626,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             versionTestDataBody[index] = testDataNewAddonVersion(
                 createApiResponse.UUID,
                 Math.floor(Math.random() * 1000000).toString(),
-            ) as any;
+            );
             versionTestDataBody[index].Phased = true;
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
@@ -1638,7 +1638,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
@@ -1729,12 +1729,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Same_Name_Create: createVersionApiResponse });
         mandatoryStepsPostSameVersionNameTest.createAddonVersion =
-            versionTestDataBody.Name == createVersionApiResponse.Name;
+            versionTestDataBody.Version == createVersionApiResponse.Version;
 
         const createVersionApiNegativeResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
@@ -1743,7 +1743,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse });
@@ -1877,7 +1877,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Post_Addon_Without_Version_ID_Test: createVersionApiNegativeResponse });
@@ -1970,7 +1970,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Post_Addon_Version_Without_Addon_UUID_Test: createVersionApiNegativeResponse });
@@ -2061,7 +2061,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 },
                 body: JSON.stringify(
                     testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
-                ) as any,
+                ),
             },
         ).then((response) => response.json());
         const versionTestDataBody = {
@@ -2076,7 +2076,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion =
@@ -2177,7 +2177,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 },
                 body: JSON.stringify(
                     testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
-                ) as any,
+                ),
             },
         ).then((response) => response.json());
         const versionTestDataBody = {
@@ -2190,7 +2190,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse });
@@ -2292,7 +2292,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 },
                 body: JSON.stringify(
                     testDataNewAddonVersion(createApiResponse.UUID, Math.floor(Math.random() * 1000000).toString()),
-                ) as any,
+                ),
             },
         ).then((response) => response.json());
         const versionTestDataBody = {
@@ -2306,7 +2306,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiNegativeResponse });
@@ -2401,7 +2401,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
+        );
         const createVersionApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
@@ -2409,21 +2409,21 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_File_Creation_Create: createVersionApiResponse });
         mandatoryStepsvalidateInstallationFileCreated.createVersionTestResult =
-            versionTestDataBody.Name == createVersionApiResponse.Name;
+            versionTestDataBody.Version == createVersionApiResponse.Version;
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Test',
             mandatoryStepsvalidateInstallationFileCreated.createVersionTestResult
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse.Name +
+                      createVersionApiResponse.Version +
                       ' Expected response is: ' +
-                      versionTestDataBody.Name,
+                      versionTestDataBody.Version,
         );
 
         //Read file
@@ -2551,7 +2551,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             //TODO: fix this capital letter when it will be decided
             //Capital letter no longer valid temp patch "installation" instead of "Installation"
             Files: [{ FileName: 'installation.js', URL: '', Base64Content: fileAsSBase64 }],
-        } as any;
+        };
 
         const createVersionApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
@@ -2573,9 +2573,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             mandatoryStepsvalidateInstallationFileSent.createVersionTestResult
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse.Name +
+                      createVersionApiResponse.Version +
                       ' Expected response is: ' +
-                      versionTestDataBody.Name,
+                      versionTestDataBody.Version,
         );
 
         //Read file
@@ -2708,7 +2708,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             //TODO: fix this capital letter when it will be decided
             //Capital letter no longer valid temp patch "other" instead of "Other"
             Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 }],
-        } as any;
+        };
 
         const createVersionApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
@@ -2730,9 +2730,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             mandatoryStepsvalidateOtherFileSent.createVersionTestResult
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse.Name +
+                      createVersionApiResponse.Version +
                       ' Expected response is: ' +
-                      versionTestDataBody.Name,
+                      versionTestDataBody.Version,
         );
 
         //Read
@@ -2872,20 +2872,6 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
 
         let versionTestDataBody;
-        // //Before Patch
-        // const versionTestDataBody = {
-        //     AddonUUID: createApiResponse.UUID,
-        //     Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
-        //     //TODO: fix this capital letter when it will be decided
-        //     //Capital letter no longer valid temp patch "other" instead of "Other"
-        //     Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 },
-        //     { FileName: 'shirTheQueen/happy.txt', URL: '', Base64Content: fileAsSBase64 },
-        //     { FileName: 'oren.js', URL: '', Base64Content: fileAsSBase64 },
-        //     { FileName: 'oRen.txt', URL: '', Base64Content: fileAsSBase64 },
-        //     { FileName: 'folderName/Data.js', URL: '', Base64Content: fileAsSBase64 },
-        //     { FileName: 'folderName/savata.js', URL: '', Base64Content: fileAsSBase64 },
-        //     { FileName: 'folderName/savata.txt', URL: '', Base64Content: fileAsSBase64 }],
-        // } as any;
         if (testName.includes('Negative')) {
             versionTestDataBody = {
                 AddonUUID: createApiResponse.UUID,
@@ -2902,7 +2888,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                     { FileName: 'folderName/savata.js', URL: '', Base64Content: fileAsSBase64 },
                     { FileName: 'folderName/savata.txt', URL: '', Base64Content: fileAsSBase64 },
                 ],
-            } as any;
+            };
         } else {
             versionTestDataBody = {
                 AddonUUID: createApiResponse.UUID,
@@ -2918,7 +2904,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                     { FileName: 'folderName/savata.js', URL: '', Base64Content: fileAsSBase64 },
                     { FileName: 'folderName/savata.txt', URL: '', Base64Content: fileAsSBase64 },
                 ],
-            } as any;
+            };
         }
 
         const createVersionApiResponse = await fetch(
@@ -2966,9 +2952,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 mandatoryStepsvalidateOtherFileSent.createVersionTestResult
                     ? true
                     : 'The response is: ' +
-                          createVersionApiResponse.Name +
+                          createVersionApiResponse.Version +
                           ' Expected response is: ' +
-                          versionTestDataBody.Name,
+                          versionTestDataBody.Version,
             );
 
             //Read
@@ -3272,7 +3258,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
+        );
         const createVersionApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
@@ -3280,12 +3266,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiResponse });
         mandatoryStepsUpdateAllAddonVersionDataMembers.createAddonVersion =
-            versionTestDataBody.Name == createVersionApiResponse.Name;
+            versionTestDataBody.Version == createVersionApiResponse.Version;
 
         //Update
         const tempNewAddonVersionBody = createVersionApiResponse;
@@ -3486,7 +3472,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const versionTestDataBody = testDataNewAddonVersion(
             createApiResponse.UUID,
             Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
+        );
         const createVersionApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
@@ -3494,12 +3480,12 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(versionTestDataBody) as any,
+                body: JSON.stringify(versionTestDataBody),
             },
         ).then((response) => response.json());
         console.log({ Get_Var_Addons_Version_Create: createVersionApiResponse });
         mandatoryStepsUpdatePhasedWithoutMandatoryField.createAddonVersion =
-            versionTestDataBody.Name == createVersionApiResponse.Name;
+            versionTestDataBody.Version == createVersionApiResponse.Version;
 
         //Update
         const tempNewAddonVersionBody = createVersionApiResponse;
