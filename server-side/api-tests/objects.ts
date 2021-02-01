@@ -795,8 +795,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 ]);
             });
 
-
-
             it('Delete account TSAs', async () => {
                 expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true;
             });
@@ -804,17 +802,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Bulk create accounts', async () => {
                 bulkAccountExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateAccount = await service.bulkCreate('accounts', {
-                    "Headers": [
-                        "ExternalID", "Name"
+                    Headers: ['ExternalID', 'Name'],
+                    Lines: [
+                        [bulkAccountExternalID + ' 1', 'Bulk Account 1'],
+                        [bulkAccountExternalID + ' 2', 'Bulk Account 2'],
+                        [bulkAccountExternalID + ' 3', 'Bulk Account 3'],
+                        [bulkAccountExternalID + ' 4', 'Bulk Account 4'],
+                        [bulkAccountExternalID + ' 5', 'Bulk Account 5'],
                     ],
-                    "Lines": [
-                        [bulkAccountExternalID + " 1", "Bulk Account 1"], [bulkAccountExternalID + " 2", "Bulk Account 2"]
-                        , [bulkAccountExternalID + " 3", "Bulk Account 3"], [bulkAccountExternalID + " 4", "Bulk Account 4"]
-                        , [bulkAccountExternalID + " 5", "Bulk Account 5"]
-                    ]
                 });
                 expect(bulkCreateAccount.JobID).to.be.a('number'),
-                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID)
+                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
             });
 
             it('Verify bulk jobinfo', async () => {
@@ -822,7 +820,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -833,12 +833,12 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk created accounts', async () => {
                 return Promise.all([
-                    expect(await service.getAccounts({ where: 'ExternalID like \'%' + bulkAccountExternalID + '%\'' }))
+                    expect(await service.getAccounts({ where: "ExternalID like '%" + bulkAccountExternalID + "%'" }))
                         .to.be.an('array')
                         .with.lengthOf(5),
                 ]);
@@ -846,17 +846,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk update accounts', async () => {
                 bulkCreateAccount = await service.bulkCreate('accounts', {
-                    "Headers": [
-                        "ExternalID", "Name"
+                    Headers: ['ExternalID', 'Name'],
+                    Lines: [
+                        [bulkAccountExternalID + ' 1', 'Bulk Account 1 Update'],
+                        [bulkAccountExternalID + ' 2', 'Bulk Account 2 Update'],
+                        [bulkAccountExternalID + ' 3', 'Bulk Account 3 Update'],
+                        [bulkAccountExternalID + ' 4', 'Bulk Account 4 Update'],
+                        [bulkAccountExternalID + ' 5', 'Bulk Account 5 Update'],
                     ],
-                    "Lines": [
-                        [bulkAccountExternalID + " 1", "Bulk Account 1 Update"], [bulkAccountExternalID + " 2", "Bulk Account 2 Update"]
-                        , [bulkAccountExternalID + " 3", "Bulk Account 3 Update"], [bulkAccountExternalID + " 4", "Bulk Account 4 Update"]
-                        , [bulkAccountExternalID + " 5", "Bulk Account 5 Update"]
-                    ]
                 });
                 expect(bulkCreateAccount.JobID).to.be.a('number'),
-                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID)
+                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
             });
 
             it('Verify bulk update jobinfo', async () => {
@@ -864,7 +864,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -875,52 +877,54 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk accounts update', async () => {
-                bulkUpdateAccounts = await service.getAccounts({ where: 'ExternalID like \'%' + bulkAccountExternalID + '%\'' });
+                bulkUpdateAccounts = await service.getAccounts({
+                    where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                });
                 expect(bulkUpdateAccounts[0].Name).to.include('Update'),
                     expect(bulkUpdateAccounts[1].Name).to.include('Update'),
                     expect(bulkUpdateAccounts[2].Name).to.include('Update'),
                     expect(bulkUpdateAccounts[3].Name).to.include('Update'),
-                    expect(bulkUpdateAccounts[4].Name).to.include('Update')
+                    expect(bulkUpdateAccounts[4].Name).to.include('Update');
             });
 
             it('Delete bulk accounts', async () => {
-                bulkAccounts = await service.getAccounts({ where: 'ExternalID like \'%' + bulkAccountExternalID + '%\'' });
+                bulkAccounts = await service.getAccounts({
+                    where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                });
                 return Promise.all([
                     expect(await service.deleteAccount(bulkAccounts[0].InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(bulkAccounts[1].InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(bulkAccounts[2].InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(bulkAccounts[3].InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(bulkAccounts[4].InternalID as any)).to.be.true,
-                    expect(await service.getAccounts({ where: 'ExternalID like \'%' + bulkAccountExternalID + '%\'' }))
+                    expect(await service.getAccounts({ where: "ExternalID like '%" + bulkAccountExternalID + "%'" }))
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
             });
 
-        //     //     //     // it('Delete Account Message (DI-17285)', async () => {
-        //     //     //     //     const account = await service.createAccount({
-        //     //     //     //         ExternalID: 'Oren Test 12345',
-        //     //     //     //         City: 'City',
-        //     //     //     //         Country: 'US',
-        //     //     //     //     });
-        //     //     //     //     return Promise.all([
-        //     //     //     //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.true,
-        //     //     //     //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.false,
-        //     //     //     //         expect(service.deleteAccount((account.InternalID as any) + 123))
-        //     //     //     //             .eventually.to.be.rejectedWith
-        //     //     //     //             // Bug: 'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Upload file error, internal code = ST12',
-        //     //     //     //             // version 1: `The Account with InternalID: ${account.InternalID} that you are trying to update does not exist. Please verify and try again.`,
-        //     //     //     //             // version 2: `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The ${account.InternalID} you are trying to update does not exist. Please load it and then try again.`,
-        //     //     //     //             (),
-        //     //     //     //     ]);
-        //     //     //     // });
+            //     //     //     // it('Delete Account Message (DI-17285)', async () => {
+            //     //     //     //     const account = await service.createAccount({
+            //     //     //     //         ExternalID: 'Oren Test 12345',
+            //     //     //     //         City: 'City',
+            //     //     //     //         Country: 'US',
+            //     //     //     //     });
+            //     //     //     //     return Promise.all([
+            //     //     //     //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.true,
+            //     //     //     //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.false,
+            //     //     //     //         expect(service.deleteAccount((account.InternalID as any) + 123))
+            //     //     //     //             .eventually.to.be.rejectedWith
+            //     //     //     //             // Bug: 'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Upload file error, internal code = ST12',
+            //     //     //     //             // version 1: `The Account with InternalID: ${account.InternalID} that you are trying to update does not exist. Please verify and try again.`,
+            //     //     //     //             // version 2: `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The ${account.InternalID} you are trying to update does not exist. Please load it and then try again.`,
+            //     //     //     //             (),
+            //     //     //     //     ]);
+            //     //     //     // });
         });
-    
-
 
         describe('Contacts', () => {
             let contactAccount;
@@ -1112,19 +1116,62 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Bulk create contacts', async () => {
                 bulkContactExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateContact = await service.bulkCreate('contacts', {
-                    "Headers": [
-                        "ExternalID", "AccountExternalID", "FirstName", "Email"
+                    Headers: ['ExternalID', 'AccountExternalID', 'FirstName', 'Email'],
+                    Lines: [
+                        [
+                            bulkContactExternalID + ' 1',
+                            contactAccount.ExternalID,
+                            'Bulk Contact 1',
+                            'Email' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '@' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '.com',
+                        ],
+                        [
+                            bulkContactExternalID + ' 2',
+                            contactAccount.ExternalID,
+                            'Bulk Contact 2',
+                            'Email' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '@' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '.com',
+                        ],
+                        [
+                            bulkContactExternalID + ' 3',
+                            contactAccount.ExternalID,
+                            'Bulk Contact 3',
+                            'Email' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '@' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '.com',
+                        ],
+                        [
+                            bulkContactExternalID + ' 4',
+                            contactAccount.ExternalID,
+                            'Bulk Contact 4',
+                            'Email' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '@' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '.com',
+                        ],
+                        [
+                            bulkContactExternalID + ' 5',
+                            contactAccount.ExternalID,
+                            'Bulk Contact 5',
+                            'Email' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '@' +
+                                Math.floor(Math.random() * 1000000).toString() +
+                                '.com',
+                        ],
                     ],
-                    "Lines": [
-                        [bulkContactExternalID + " 1", contactAccount.ExternalID, "Bulk Contact 1", 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com'],
-                        [bulkContactExternalID + " 2", contactAccount.ExternalID, "Bulk Contact 2", 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com'],
-                        [bulkContactExternalID + " 3", contactAccount.ExternalID, "Bulk Contact 3", 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com'],
-                        [bulkContactExternalID + " 4", contactAccount.ExternalID, "Bulk Contact 4", 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com'],
-                        [bulkContactExternalID + " 5", contactAccount.ExternalID, "Bulk Contact 5", 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com']
-                    ]
                 });
                 expect(bulkCreateContact.JobID).to.be.a('number'),
-                    expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID)
+                    expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
             });
 
             it('Verify bulk jobinfo', async () => {
@@ -1132,7 +1179,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -1143,76 +1192,86 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk created contacts', async () => {
                 return Promise.all([
-                    expect(await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\''))
+                    expect(
+                        await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(5),
                 ]);
             });
 
             it('Connect bulk created contacts as buyers', async () => {
-                let connectAsBuyerContacts = await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\'&fields=SecurityGroupUUID,IsBuyer,UUID');
-                connectAsBuyerContacts.map(contact => {
+                const connectAsBuyerContacts = await service.getBulk(
+                    'contacts',
+                    "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+                );
+                connectAsBuyerContacts.map((contact) => {
                     expect(contact).to.not.have.property('SecurityGroupUUID'),
-                        expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false
-                })
+                        expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
+                });
 
-                contactUUIDArray = connectAsBuyerContacts.map(item => item['UUID']);
-                let connectAsBuyer = await service.connectAsBuyer({
-                    "UUIDs": contactUUIDArray,
-                    "SelectAll": false
+                contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
+                const connectAsBuyer = await service.connectAsBuyer({
+                    UUIDs: contactUUIDArray,
+                    SelectAll: false,
                 });
                 expect(connectAsBuyer).to.be.an('array').with.lengthOf(5),
-                    connectAsBuyer.map(buyer => {
+                    connectAsBuyer.map((buyer) => {
                         expect(buyer, 'Connect as buyer name').to.have.property('name').that.is.not.empty,
                             expect(buyer, 'Connect as buyer email').to.have.property('email').that.is.not.empty,
-                            expect(buyer, 'Connect as buyer message').to.have.property('message').that.is.a('string').and.is.empty,
-                            expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not.empty
+                            expect(buyer, 'Connect as buyer message').to.have.property('message').that.is.a('string')
+                                .and.is.empty,
+                            expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not.empty;
                     });
 
-
-                let connectedContacts = await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\'&fields=SecurityGroupUUID,IsBuyer');
-                connectedContacts.map(contact => {
-                    expect(contact, 'Buyer security group UUID').to.have.property('SecurityGroupUUID').that.is.a('string').and.is.not.empty,
-                        expect(contact, 'Buyer IsBuyer').to.have.property('IsBuyer').that.is.a('boolean').and.is.true
+                const connectedContacts = await service.getBulk(
+                    'contacts',
+                    "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer",
+                );
+                connectedContacts.map((contact) => {
+                    expect(contact, 'Buyer security group UUID')
+                        .to.have.property('SecurityGroupUUID')
+                        .that.is.a('string').and.is.not.empty,
+                        expect(contact, 'Buyer IsBuyer').to.have.property('IsBuyer').that.is.a('boolean').and.is.true;
                 });
             });
 
             it('Disconnect bulk created contacts as buyers', async () => {
-                let DisconnectBuyer = await service.disconnectBuyer({
-                    "UUIDs": contactUUIDArray,
-                    "SelectAll": false
+                const DisconnectBuyer = await service.disconnectBuyer({
+                    UUIDs: contactUUIDArray,
+                    SelectAll: false,
                 });
 
                 expect(DisconnectBuyer).to.be.true;
 
-                let DisconnectedBuyers = await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\'&fields=SecurityGroupUUID,IsBuyer,UUID');
-                DisconnectedBuyers.map(contact => {
+                const DisconnectedBuyers = await service.getBulk(
+                    'contacts',
+                    "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+                );
+                DisconnectedBuyers.map((contact) => {
                     expect(contact).to.not.have.property('SecurityGroupUUID'),
-                        expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false
+                        expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
                 });
-
             });
 
             it('Bulk update contacts', async () => {
                 bulkCreateContact = await service.bulkCreate('contacts', {
-                    "Headers": [
-                        "ExternalID", "AccountExternalID", "FirstName"
+                    Headers: ['ExternalID', 'AccountExternalID', 'FirstName'],
+                    Lines: [
+                        [bulkContactExternalID + ' 1', contactAccount.ExternalID, 'Bulk Contact 1 Update'],
+                        [bulkContactExternalID + ' 2', contactAccount.ExternalID, 'Bulk Contact 2 Update'],
+                        [bulkContactExternalID + ' 3', contactAccount.ExternalID, 'Bulk Contact 3 Update'],
+                        [bulkContactExternalID + ' 4', contactAccount.ExternalID, 'Bulk Contact 4 Update'],
+                        [bulkContactExternalID + ' 5', contactAccount.ExternalID, 'Bulk Contact 5 Update'],
                     ],
-                    "Lines": [
-                        [bulkContactExternalID + " 1", contactAccount.ExternalID, "Bulk Contact 1 Update"],
-                        [bulkContactExternalID + " 2", contactAccount.ExternalID, "Bulk Contact 2 Update"],
-                        [bulkContactExternalID + " 3", contactAccount.ExternalID, "Bulk Contact 3 Update"],
-                        [bulkContactExternalID + " 4", contactAccount.ExternalID, "Bulk Contact 4 Update"],
-                        [bulkContactExternalID + " 5", contactAccount.ExternalID, "Bulk Contact 5 Update"]
-                    ]
                 });
                 expect(bulkCreateContact.JobID).to.be.a('number'),
-                    expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID)
+                    expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
             });
 
             it('Verify bulk update jobinfo', async () => {
@@ -1220,7 +1279,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -1231,27 +1292,35 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk contacts update', async () => {
-                bulkUpdateContacts = await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\'');
+                bulkUpdateContacts = await service.getBulk(
+                    'contacts',
+                    "?where=ExternalID like '%" + bulkContactExternalID + "%'",
+                );
                 expect(bulkUpdateContacts[0].FirstName).to.include('Update'),
                     expect(bulkUpdateContacts[1].FirstName).to.include('Update'),
                     expect(bulkUpdateContacts[2].FirstName).to.include('Update'),
                     expect(bulkUpdateContacts[3].FirstName).to.include('Update'),
-                    expect(bulkUpdateContacts[4].FirstName).to.include('Update')
+                    expect(bulkUpdateContacts[4].FirstName).to.include('Update');
             });
 
             it('Delete bulk contacts', async () => {
-                bulkContacts = await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\'');
+                bulkContacts = await service.getBulk(
+                    'contacts',
+                    "?where=ExternalID like '%" + bulkContactExternalID + "%'",
+                );
                 return Promise.all([
                     expect(await service.deleteContact(bulkContacts[0].InternalID)).to.be.true,
                     expect(await service.deleteContact(bulkContacts[1].InternalID)).to.be.true,
                     expect(await service.deleteContact(bulkContacts[2].InternalID)).to.be.true,
                     expect(await service.deleteContact(bulkContacts[3].InternalID)).to.be.true,
                     expect(await service.deleteContact(bulkContacts[4].InternalID)).to.be.true,
-                    expect(await service.getBulk('contacts', '?where=ExternalID like \'%' + bulkContactExternalID + '%\''))
+                    expect(
+                        await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
@@ -1259,7 +1328,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Delete contact test account and TSAs', async () => {
                 expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true,
-                    expect(await service.deleteAccount(contactAccount.InternalID as any)).to.be.true
+                    expect(await service.deleteAccount(contactAccount.InternalID as any)).to.be.true;
             });
         });
 
@@ -1485,19 +1554,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Bulk create activity', async () => {
                 bulkActivityExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
-                    "Headers": [
-                        "ExternalID", "AccountExternalID", "Status"
+                    Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+                    Lines: [
+                        [bulkActivityExternalID + ' 1', activityAccount.ExternalID, '1'],
+                        [bulkActivityExternalID + ' 2', activityAccount.ExternalID, '1'],
+                        [bulkActivityExternalID + ' 3', activityAccount.ExternalID, '1'],
+                        [bulkActivityExternalID + ' 4', activityAccount.ExternalID, '1'],
+                        [bulkActivityExternalID + ' 5', activityAccount.ExternalID, '1'],
                     ],
-                    "Lines": [
-                        [bulkActivityExternalID + " 1", activityAccount.ExternalID, "1"],
-                        [bulkActivityExternalID + " 2", activityAccount.ExternalID, "1"],
-                        [bulkActivityExternalID + " 3", activityAccount.ExternalID, "1"],
-                        [bulkActivityExternalID + " 4", activityAccount.ExternalID, "1"],
-                        [bulkActivityExternalID + " 5", activityAccount.ExternalID, "1"]
-                    ]
                 });
                 expect(bulkCreateActivity.JobID).to.be.a('number'),
-                    expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID)
+                    expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
             });
 
             it('Verify bulk jobinfo', async () => {
@@ -1505,7 +1572,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -1516,12 +1585,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk created activities', async () => {
                 return Promise.all([
-                    expect(await service.getBulk('activities', '?where=ExternalID like \'%' + bulkActivityExternalID + '%\''))
+                    expect(
+                        await service.getBulk(
+                            'activities',
+                            "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+                        ),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(5),
                 ]);
@@ -1529,19 +1603,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk update activities', async () => {
                 bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
-                    "Headers": [
-                        "ExternalID", "AccountExternalID", "Status"
+                    Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+                    Lines: [
+                        [bulkActivityExternalID + ' 1', activityAccount.ExternalID, '2'],
+                        [bulkActivityExternalID + ' 2', activityAccount.ExternalID, '2'],
+                        [bulkActivityExternalID + ' 3', activityAccount.ExternalID, '2'],
+                        [bulkActivityExternalID + ' 4', activityAccount.ExternalID, '2'],
+                        [bulkActivityExternalID + ' 5', activityAccount.ExternalID, '2'],
                     ],
-                    "Lines": [
-                        [bulkActivityExternalID + " 1", activityAccount.ExternalID, "2"],
-                        [bulkActivityExternalID + " 2", activityAccount.ExternalID, "2"],
-                        [bulkActivityExternalID + " 3", activityAccount.ExternalID, "2"],
-                        [bulkActivityExternalID + " 4", activityAccount.ExternalID, "2"],
-                        [bulkActivityExternalID + " 5", activityAccount.ExternalID, "2"]
-                    ]
                 });
                 expect(bulkCreateActivity.JobID).to.be.a('number'),
-                    expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID)
+                    expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
             });
 
             it('Verify bulk update jobinfo', async () => {
@@ -1549,7 +1621,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -1560,27 +1634,38 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk activities update', async () => {
-                bulkUpdateActivities = await service.getBulk('activities', '?where=ExternalID like \'%' + bulkActivityExternalID + '%\'');
+                bulkUpdateActivities = await service.getBulk(
+                    'activities',
+                    "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+                );
                 expect(bulkUpdateActivities[0].Status).to.equal(2),
                     expect(bulkUpdateActivities[1].Status).to.equal(2),
                     expect(bulkUpdateActivities[2].Status).to.equal(2),
                     expect(bulkUpdateActivities[3].Status).to.equal(2),
-                    expect(bulkUpdateActivities[4].Status).to.equal(2)
+                    expect(bulkUpdateActivities[4].Status).to.equal(2);
             });
 
             it('Delete bulk activities', async () => {
-                bulkActivities = await service.getBulk('activities', '?where=ExternalID like \'%' + bulkActivityExternalID + '%\'');
+                bulkActivities = await service.getBulk(
+                    'activities',
+                    "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+                );
                 return Promise.all([
                     expect(await service.deleteActivity(bulkActivities[0].InternalID)).to.be.true,
                     expect(await service.deleteActivity(bulkActivities[1].InternalID)).to.be.true,
                     expect(await service.deleteActivity(bulkActivities[2].InternalID)).to.be.true,
                     expect(await service.deleteActivity(bulkActivities[3].InternalID)).to.be.true,
                     expect(await service.deleteActivity(bulkActivities[4].InternalID)).to.be.true,
-                    expect(await service.getBulk('activities', '?where=ExternalID like \'%' + bulkActivityExternalID + '%\''))
+                    expect(
+                        await service.getBulk(
+                            'activities',
+                            "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+                        ),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
@@ -1617,7 +1702,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkUpdateTransactions;
             let bulkCreateTransactionLines;
             let bulkUpdateTransactionsLines;
-            let bulkLinesTransaction;
             let bulkTransactionsLines;
 
             it('Create account and TSAs for transactions CRUD', async () => {
@@ -2043,19 +2127,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Bulk create transaction headers', async () => {
                 bulkTransactionExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateTransaction = await service.bulkCreate('transactions/' + atds[0].TypeID, {
-                    "Headers": [
-                        "ExternalID", "AccountExternalID", "Status"
+                    Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+                    Lines: [
+                        [bulkTransactionExternalID + ' 1', transactionAccount.ExternalID, '1'],
+                        [bulkTransactionExternalID + ' 2', transactionAccount.ExternalID, '1'],
+                        [bulkTransactionExternalID + ' 3', transactionAccount.ExternalID, '1'],
+                        [bulkTransactionExternalID + ' 4', transactionAccount.ExternalID, '1'],
+                        [bulkTransactionExternalID + ' 5', transactionAccount.ExternalID, '1'],
                     ],
-                    "Lines": [
-                        [bulkTransactionExternalID + " 1", transactionAccount.ExternalID, "1"],
-                        [bulkTransactionExternalID + " 2", transactionAccount.ExternalID, "1"],
-                        [bulkTransactionExternalID + " 3", transactionAccount.ExternalID, "1"],
-                        [bulkTransactionExternalID + " 4", transactionAccount.ExternalID, "1"],
-                        [bulkTransactionExternalID + " 5", transactionAccount.ExternalID, "1"]
-                    ]
                 });
                 expect(bulkCreateTransaction.JobID).to.be.a('number'),
-                    expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID)
+                    expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID);
             });
 
             it('Verify bulk jobinfo', async () => {
@@ -2063,7 +2145,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -2074,12 +2158,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk created transaction headers', async () => {
                 return Promise.all([
-                    expect(await service.getBulk('transactions', '?where=ExternalID like \'%' + bulkTransactionExternalID + '%\''))
+                    expect(
+                        await service.getBulk(
+                            'transactions',
+                            "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                        ),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(5),
                 ]);
@@ -2087,19 +2176,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk update transaction headers', async () => {
                 bulkCreateTransaction = await service.bulkCreate('transactions/' + atds[0].TypeID, {
-                    "Headers": [
-                        "ExternalID", "AccountExternalID", "Status"
+                    Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+                    Lines: [
+                        [bulkTransactionExternalID + ' 1', transactionAccount.ExternalID, '2'],
+                        [bulkTransactionExternalID + ' 2', transactionAccount.ExternalID, '2'],
+                        [bulkTransactionExternalID + ' 3', transactionAccount.ExternalID, '2'],
+                        [bulkTransactionExternalID + ' 4', transactionAccount.ExternalID, '2'],
+                        [bulkTransactionExternalID + ' 5', transactionAccount.ExternalID, '2'],
                     ],
-                    "Lines": [
-                        [bulkTransactionExternalID + " 1", transactionAccount.ExternalID, "2"],
-                        [bulkTransactionExternalID + " 2", transactionAccount.ExternalID, "2"],
-                        [bulkTransactionExternalID + " 3", transactionAccount.ExternalID, "2"],
-                        [bulkTransactionExternalID + " 4", transactionAccount.ExternalID, "2"],
-                        [bulkTransactionExternalID + " 5", transactionAccount.ExternalID, "2"]
-                    ]
                 });
                 expect(bulkCreateTransaction.JobID).to.be.a('number'),
-                    expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID)
+                    expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID);
             });
 
             it('Verify bulk update jobinfo', async () => {
@@ -2107,7 +2194,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -2118,33 +2207,36 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk transaction headers update', async () => {
-                bulkUpdateTransactions = await service.getBulk('transactions', '?where=ExternalID like \'%' + bulkTransactionExternalID + '%\'');
+                bulkUpdateTransactions = await service.getBulk(
+                    'transactions',
+                    "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                );
                 expect(bulkUpdateTransactions[0].Status).to.equal(2),
                     expect(bulkUpdateTransactions[1].Status).to.equal(2),
                     expect(bulkUpdateTransactions[2].Status).to.equal(2),
                     expect(bulkUpdateTransactions[3].Status).to.equal(2),
-                    expect(bulkUpdateTransactions[4].Status).to.equal(2)
+                    expect(bulkUpdateTransactions[4].Status).to.equal(2);
             });
 
             it('Bulk create transaction lines', async () => {
                 bulkCreateTransactionLines = await service.bulkCreate('transaction_lines/' + atds[0].TypeID, {
-                    "Headers": [
-                        "TransactionExternalID", "ItemExternalID", "UnitsQuantity"
+                    Headers: ['TransactionExternalID', 'ItemExternalID', 'UnitsQuantity'],
+                    Lines: [
+                        [bulkTransactionExternalID + ' 1', items[0].ExternalID, '1'],
+                        [bulkTransactionExternalID + ' 1', items[1].ExternalID, '2'],
+                        [bulkTransactionExternalID + ' 1', items[2].ExternalID, '3'],
+                        [bulkTransactionExternalID + ' 1', items[3].ExternalID, '4'],
+                        [bulkTransactionExternalID + ' 1', items[4].ExternalID, '5'],
                     ],
-                    "Lines": [
-                        [bulkTransactionExternalID + " 1", items[0].ExternalID, "1"],
-                        [bulkTransactionExternalID + " 1", items[1].ExternalID, "2"],
-                        [bulkTransactionExternalID + " 1", items[2].ExternalID, "3"],
-                        [bulkTransactionExternalID + " 1", items[3].ExternalID, "4"],
-                        [bulkTransactionExternalID + " 1", items[4].ExternalID, "5"]
-                    ]
                 });
                 expect(bulkCreateTransactionLines.JobID).to.be.a('number'),
-                    expect(bulkCreateTransactionLines.URI).to.include('/bulk/jobinfo/' + bulkCreateTransactionLines.JobID)
+                    expect(bulkCreateTransactionLines.URI).to.include(
+                        '/bulk/jobinfo/' + bulkCreateTransactionLines.JobID,
+                    );
             });
 
             it('Verify bulk jobinfo', async () => {
@@ -2152,7 +2244,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -2163,12 +2257,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk created transaction lines', async () => {
                 return Promise.all([
-                    expect(await service.getBulk('transaction_lines', '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID))
+                    expect(
+                        await service.getBulk(
+                            'transaction_lines',
+                            '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
+                        ),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(5),
                 ]);
@@ -2176,19 +2275,19 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk update transaction lines', async () => {
                 bulkCreateTransactionLines = await service.bulkCreate('transaction_lines/' + atds[0].TypeID, {
-                    "Headers": [
-                        "TransactionExternalID", "ItemExternalID", "UnitsQuantity"
+                    Headers: ['TransactionExternalID', 'ItemExternalID', 'UnitsQuantity'],
+                    Lines: [
+                        [bulkTransactionExternalID + ' 1', items[0].ExternalID, '2'],
+                        [bulkTransactionExternalID + ' 1', items[1].ExternalID, '3'],
+                        [bulkTransactionExternalID + ' 1', items[2].ExternalID, '4'],
+                        [bulkTransactionExternalID + ' 1', items[3].ExternalID, '5'],
+                        [bulkTransactionExternalID + ' 1', items[4].ExternalID, '6'],
                     ],
-                    "Lines": [
-                        [bulkTransactionExternalID + " 1", items[0].ExternalID, "2"],
-                        [bulkTransactionExternalID + " 1", items[1].ExternalID, "3"],
-                        [bulkTransactionExternalID + " 1", items[2].ExternalID, "4"],
-                        [bulkTransactionExternalID + " 1", items[3].ExternalID, "5"],
-                        [bulkTransactionExternalID + " 1", items[4].ExternalID, "6"]
-                    ]
                 });
                 expect(bulkCreateTransactionLines.JobID).to.be.a('number'),
-                    expect(bulkCreateTransactionLines.URI).to.include('/bulk/jobinfo/' + bulkCreateTransactionLines.JobID)
+                    expect(bulkCreateTransactionLines.URI).to.include(
+                        '/bulk/jobinfo/' + bulkCreateTransactionLines.JobID,
+                    );
             });
 
             it('Verify bulk update jobinfo', async () => {
@@ -2196,7 +2295,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
                     expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
                     expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
                     expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
@@ -2207,41 +2308,60 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
                     expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
                     expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('')
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk transaction lines update', async () => {
-                bulkUpdateTransactionsLines = await service.getBulk('transaction_lines', '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID);
+                bulkUpdateTransactionsLines = await service.getBulk(
+                    'transaction_lines',
+                    '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
+                );
                 expect(bulkUpdateTransactionsLines[0].UnitsQuantity).to.equal(2),
                     expect(bulkUpdateTransactionsLines[1].UnitsQuantity).to.equal(3),
                     expect(bulkUpdateTransactionsLines[2].UnitsQuantity).to.equal(4),
                     expect(bulkUpdateTransactionsLines[3].UnitsQuantity).to.equal(5),
-                    expect(bulkUpdateTransactionsLines[4].UnitsQuantity).to.equal(6)
+                    expect(bulkUpdateTransactionsLines[4].UnitsQuantity).to.equal(6);
             });
 
             it('Delete bulk transaction lines', async () => {
-                bulkTransactionsLines = await service.getBulk('transaction_lines', '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID);
+                bulkTransactionsLines = await service.getBulk(
+                    'transaction_lines',
+                    '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
+                );
                 return Promise.all([
                     expect(await service.deleteTransactionLine(bulkTransactionsLines[0].InternalID)).to.be.true,
                     expect(await service.deleteTransactionLine(bulkTransactionsLines[1].InternalID)).to.be.true,
                     expect(await service.deleteTransactionLine(bulkTransactionsLines[2].InternalID)).to.be.true,
                     expect(await service.deleteTransactionLine(bulkTransactionsLines[3].InternalID)).to.be.true,
                     expect(await service.deleteTransactionLine(bulkTransactionsLines[4].InternalID)).to.be.true,
-                    expect(await service.getBulk('transaction_lines', '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID))
+                    expect(
+                        await service.getBulk(
+                            'transaction_lines',
+                            '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
+                        ),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
             });
 
             it('Delete bulk transaction headers', async () => {
-                bulkTransactions = await service.getBulk('transactions', '?where=ExternalID like \'%' + bulkTransactionExternalID + '%\'');
+                bulkTransactions = await service.getBulk(
+                    'transactions',
+                    "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                );
                 return Promise.all([
                     expect(await service.deleteTransaction(bulkTransactions[0].InternalID)).to.be.true,
                     expect(await service.deleteTransaction(bulkTransactions[1].InternalID)).to.be.true,
                     expect(await service.deleteTransaction(bulkTransactions[2].InternalID)).to.be.true,
                     expect(await service.deleteTransaction(bulkTransactions[3].InternalID)).to.be.true,
                     expect(await service.deleteTransaction(bulkTransactions[4].InternalID)).to.be.true,
-                    expect(await service.getBulk('transactions', '?where=ExternalID like \'%' + bulkTransactionExternalID + '%\''))
+                    expect(
+                        await service.getBulk(
+                            'transactions',
+                            "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                        ),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
@@ -2250,12 +2370,12 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Delete transaction test account and TSAs', async () => {
                 expect(
                     transactionTSAs.length ==
-                    (await service.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
+                        (await service.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
                 ).to.be.true,
                     expect(
                         transactionLinesTSAs.length ==
-                        (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID))
-                            .length,
+                            (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID))
+                                .length,
                     ).to.be.true,
                     expect(await service.deleteAccount(transactionAccount.InternalID as any)).to.be.true,
                     expect(await service.deleteAccount(transactionAccount.InternalID as any)).to.be.false,
@@ -2266,7 +2386,6 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
         });
 
         describe('Users', () => {
-
             let currentUserQuantity;
             let initialUsersList;
             let createdUser;
@@ -2276,19 +2395,27 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Get initial user quantity and verify user object', async () => {
                 initialUsersList = await service.getUsers();
-                expect(initialUsersList).to.be.an('array')
-                    .with.lengthOf.above(0),
-                    expect(initialUsersList[0], 'InternalID').to.have.property('InternalID').that.is.a('number').and.is.above(0),
+                expect(initialUsersList).to.be.an('array').with.lengthOf.above(0),
+                    expect(initialUsersList[0], 'InternalID')
+                        .to.have.property('InternalID')
+                        .that.is.a('number')
+                        .and.is.above(0),
                     expect(initialUsersList[0], 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty,
                     expect(initialUsersList[0], 'ExternalID').to.have.property('ExternalID').that.is.a('string'),
                     expect(initialUsersList[0], 'Email').to.have.property('Email').that.is.a('string').and.is.not.empty,
                     expect(initialUsersList[0], 'FirstName').to.have.property('FirstName').that.is.a('string'),
                     expect(initialUsersList[0], 'LastName').to.have.property('LastName').that.is.a('string'),
                     expect(initialUsersList[0], 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(initialUsersList[0], 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean'),
+                    expect(initialUsersList[0], 'IsInTradeShowMode')
+                        .to.have.property('IsInTradeShowMode')
+                        .that.is.a('boolean'),
                     expect(initialUsersList[0], 'Mobile').to.have.property('Mobile').that.is.a('string'),
-                    expect(initialUsersList[0], 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(initialUsersList[0], 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(initialUsersList[0], 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains('Z'),
+                    expect(initialUsersList[0], 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
                     expect(initialUsersList[0], 'Phone').to.have.property('Phone').that.is.a('string'),
                     expect(initialUsersList[0], 'Profile').to.have.property('Profile').that.is.an('object'),
                     expect(initialUsersList[0], 'Role').to.have.property('Role'),
@@ -2297,26 +2424,44 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(initialUsersList[0].IsSupportAdminUser, 'IsSupportAdminUser').to.not.exist,
                     expect(initialUsersList[0].IsUnderMyRole, 'IsUnderMyRole').to.not.exist,
                     expect(initialUsersList[0].SecurityGroup, 'SecurityGroup').to.not.exist,
-
-                    currentUserQuantity = initialUsersList.length;
+                    (currentUserQuantity = initialUsersList.length);
             });
 
             it('Verify GET optional fields', async () => {
-                let optionalUsersFields = await service.getUsers('?fields=Name,EmployeeType,IsSupportAdminUser,IsUnderMyRole,SecurityGroupUUID,SecurityGroupName');
-                expect(optionalUsersFields).to.be.an('array')
-                    .with.lengthOf.above(0),
-                    expect(optionalUsersFields[0], 'Name').to.have.property('Name').that.is.a('string')
+                const optionalUsersFields = await service.getUsers(
+                    '?fields=Name,EmployeeType,IsSupportAdminUser,IsUnderMyRole,SecurityGroupUUID,SecurityGroupName',
+                );
+                expect(optionalUsersFields).to.be.an('array').with.lengthOf.above(0),
+                    expect(optionalUsersFields[0], 'Name')
+                        .to.have.property('Name')
+                        .that.is.a('string')
                         .and.equals(initialUsersList[0].FirstName + ' ' + initialUsersList[0].LastName),
-                    expect(optionalUsersFields[0], 'EmployeeType').to.have.property('EmployeeType').that.is.a('number').and.is.above(0),
-                    expect(optionalUsersFields[0], 'IsSupportAdminUser').to.have.property('IsSupportAdminUser').that.is.a('boolean'),
-                    expect(optionalUsersFields[0], 'IsUnderMyRole').to.have.property('IsUnderMyRole').that.is.a('boolean'),
-                    expect(optionalUsersFields[0], 'SecurityGroupUUID').to.have.property('SecurityGroupUUID').that.is.a('string').and.is.not.empty,
-                    expect(optionalUsersFields[0], 'SecurityGroupName').to.have.property('SecurityGroupName').that.is.a('string').and.is.not.empty
+                    expect(optionalUsersFields[0], 'EmployeeType')
+                        .to.have.property('EmployeeType')
+                        .that.is.a('number')
+                        .and.is.above(0),
+                    expect(optionalUsersFields[0], 'IsSupportAdminUser')
+                        .to.have.property('IsSupportAdminUser')
+                        .that.is.a('boolean'),
+                    expect(optionalUsersFields[0], 'IsUnderMyRole')
+                        .to.have.property('IsUnderMyRole')
+                        .that.is.a('boolean'),
+                    expect(optionalUsersFields[0], 'SecurityGroupUUID')
+                        .to.have.property('SecurityGroupUUID')
+                        .that.is.a('string').and.is.not.empty,
+                    expect(optionalUsersFields[0], 'SecurityGroupName')
+                        .to.have.property('SecurityGroupName')
+                        .that.is.a('string').and.is.not.empty;
             });
 
             it('Create User', async () => {
                 userExternalID = 'Automated API User ' + Math.floor(Math.random() * 1000000).toString();
-                userEmail = 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com';
+                userEmail =
+                    'Email' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '@' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '.com';
                 createdUser = await service.createUser({
                     ExternalID: userExternalID,
                     Email: userEmail,
@@ -2327,75 +2472,138 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     IsInTradeShowMode: true,
                 });
 
-                let repProfile = await service.getRepProfile();
-                let securityGroups = await service.getSecurityGroup();
+                const repProfile = await service.getRepProfile();
+                const securityGroups = await service.getSecurityGroup();
 
                 expect(createdUser, 'InternalID').to.have.property('InternalID').that.is.a('number').and.is.above(0),
                     expect(createdUser, 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty,
-                    expect(createdUser, 'ExternalID').to.have.property('ExternalID').that.is.a('string').and.equals(userExternalID),
+                    expect(createdUser, 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID),
                     expect(createdUser, 'Email').to.have.property('Email').that.is.a('string').and.equals(userEmail),
                     expect(createdUser, 'FirstName').to.have.property('FirstName').that.is.a('string').and.is.not.empty,
                     expect(createdUser, 'LastName').to.have.property('LastName').that.is.a('string').and.is.not.empty,
                     expect(createdUser, 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(createdUser, 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
+                    expect(createdUser, 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean')
+                        .and.is.true,
                     expect(createdUser, 'Mobile').to.have.property('Mobile').that.is.a('string').and.is.not.empty,
-                    expect(createdUser, 'CreationDateTime').to.have.property('CreationDateTime').that.contains(new Date().toISOString().split('T')[0]),
+                    expect(createdUser, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
                     expect(createdUser, 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(createdUser, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(createdUser, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(createdUser, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(createdUser, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
                     expect(createdUser, 'Phone').to.have.property('Phone').that.is.a('string').and.is.not.empty,
                     expect(createdUser, 'Profile').to.have.property('Profile').that.is.an('object'),
                     expect(createdUser.Profile, 'Profile data').to.deep.equal({
-                        "Data": {
-                            "InternalID": repProfile.InternalID,
-                            "Name": "Rep"
+                        Data: {
+                            InternalID: repProfile.InternalID,
+                            Name: 'Rep',
                         },
-                        "URI": "/profiles/" + repProfile.InternalID
+                        URI: '/profiles/' + repProfile.InternalID,
                     }),
                     expect(createdUser, 'Role').to.have.property('Role'),
                     expect(createdUser, 'SecurityGroup').to.have.property('SecurityGroup').that.is.an('object'),
                     expect(createdUser.SecurityGroup, 'SecurityGroup data').to.deep.equal({
-                        "Data": {
-                            "UUID": securityGroups[0].securityGroupID,
-                            "Name": securityGroups[0].name
-                        }
+                        Data: {
+                            UUID: securityGroups[0].securityGroupID,
+                            Name: securityGroups[0].name,
+                        },
                     });
 
-                let getCreatedUserOptional = await service.getUsers('?where=InternalID=' + createdUser.InternalID + '&fields=Name,EmployeeType,IsSupportAdminUser,IsUnderMyRole,SecurityGroupUUID,SecurityGroupName');
-                expect(getCreatedUserOptional[0], 'Name').to.have.property('Name').that.is.a('string')
+                const getCreatedUserOptional = await service.getUsers(
+                    '?where=InternalID=' +
+                        createdUser.InternalID +
+                        '&fields=Name,EmployeeType,IsSupportAdminUser,IsUnderMyRole,SecurityGroupUUID,SecurityGroupName',
+                );
+                expect(getCreatedUserOptional[0], 'Name')
+                    .to.have.property('Name')
+                    .that.is.a('string')
                     .and.equals(createdUser.FirstName + ' ' + createdUser.LastName),
-                    expect(getCreatedUserOptional[0], 'EmployeeType').to.have.property('EmployeeType').that.is.a('number').and.is.above(0),
-                    expect(getCreatedUserOptional[0], 'IsSupportAdminUser').to.have.property('IsSupportAdminUser').that.is.a('boolean'),
-                    expect(getCreatedUserOptional[0], 'IsUnderMyRole').to.have.property('IsUnderMyRole').that.is.a('boolean'),
-                    expect(getCreatedUserOptional[0], 'SecurityGroupUUID').to.have.property('SecurityGroupUUID').that.is.a('string').and.equals(securityGroups[0].securityGroupID),
-                    expect(getCreatedUserOptional[0], 'SecurityGroupName').to.have.property('SecurityGroupName').that.is.a('string').and.equals(securityGroups[0].name);
+                    expect(getCreatedUserOptional[0], 'EmployeeType')
+                        .to.have.property('EmployeeType')
+                        .that.is.a('number')
+                        .and.is.above(0),
+                    expect(getCreatedUserOptional[0], 'IsSupportAdminUser')
+                        .to.have.property('IsSupportAdminUser')
+                        .that.is.a('boolean'),
+                    expect(getCreatedUserOptional[0], 'IsUnderMyRole')
+                        .to.have.property('IsUnderMyRole')
+                        .that.is.a('boolean'),
+                    expect(getCreatedUserOptional[0], 'SecurityGroupUUID')
+                        .to.have.property('SecurityGroupUUID')
+                        .that.is.a('string')
+                        .and.equals(securityGroups[0].securityGroupID),
+                    expect(getCreatedUserOptional[0], 'SecurityGroupName')
+                        .to.have.property('SecurityGroupName')
+                        .that.is.a('string')
+                        .and.equals(securityGroups[0].name);
 
-                let getCreatedUser = await service.getUsers('?where=InternalID=' + createdUser.InternalID);
-                expect(getCreatedUser[0], 'InternalID').to.have.property('InternalID').that.is.a('number').and.equals(createdUser.InternalID),
-                    expect(getCreatedUser[0], 'UUID').to.have.property('UUID').that.is.a('string').and.equals(createdUser.UUID),
-                    expect(getCreatedUser[0], 'ExternalID').to.have.property('ExternalID').that.is.a('string').and.equals(userExternalID),
-                    expect(getCreatedUser[0], 'Email').to.have.property('Email').that.is.a('string').and.equals(userEmail),
-                    expect(getCreatedUser[0], 'FirstName').to.have.property('FirstName').that.is.a('string').and.equals(createdUser.FirstName),
-                    expect(getCreatedUser[0], 'LastName').to.have.property('LastName').that.is.a('string').and.equals(createdUser.LastName),
+                const getCreatedUser = await service.getUsers('?where=InternalID=' + createdUser.InternalID);
+                expect(getCreatedUser[0], 'InternalID')
+                    .to.have.property('InternalID')
+                    .that.is.a('number')
+                    .and.equals(createdUser.InternalID),
+                    expect(getCreatedUser[0], 'UUID')
+                        .to.have.property('UUID')
+                        .that.is.a('string')
+                        .and.equals(createdUser.UUID),
+                    expect(getCreatedUser[0], 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID),
+                    expect(getCreatedUser[0], 'Email')
+                        .to.have.property('Email')
+                        .that.is.a('string')
+                        .and.equals(userEmail),
+                    expect(getCreatedUser[0], 'FirstName')
+                        .to.have.property('FirstName')
+                        .that.is.a('string')
+                        .and.equals(createdUser.FirstName),
+                    expect(getCreatedUser[0], 'LastName')
+                        .to.have.property('LastName')
+                        .that.is.a('string')
+                        .and.equals(createdUser.LastName),
                     expect(getCreatedUser[0], 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(getCreatedUser[0], 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
-                    expect(getCreatedUser[0], 'Mobile').to.have.property('Mobile').that.is.a('string').and.equals(createdUser.Mobile),
-                    expect(getCreatedUser[0], 'CreationDateTime').to.have.property('CreationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getCreatedUser[0], 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(getCreatedUser[0], 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getCreatedUser[0], 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
-                    expect(getCreatedUser[0], 'Phone').to.have.property('Phone').that.is.a('string').and.equals(createdUser.Phone),
+                    expect(getCreatedUser[0], 'IsInTradeShowMode')
+                        .to.have.property('IsInTradeShowMode')
+                        .that.is.a('boolean').and.is.true,
+                    expect(getCreatedUser[0], 'Mobile')
+                        .to.have.property('Mobile')
+                        .that.is.a('string')
+                        .and.equals(createdUser.Mobile),
+                    expect(getCreatedUser[0], 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getCreatedUser[0], 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains('Z'),
+                    expect(getCreatedUser[0], 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getCreatedUser[0], 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
+                    expect(getCreatedUser[0], 'Phone')
+                        .to.have.property('Phone')
+                        .that.is.a('string')
+                        .and.equals(createdUser.Phone),
                     expect(getCreatedUser[0], 'Profile').to.have.property('Profile').that.is.an('object'),
                     expect(getCreatedUser[0].Profile, 'Profile data').to.deep.equal({
-                        "Data": {
-                            "InternalID": repProfile.InternalID,
-                            "Name": "Rep"
+                        Data: {
+                            InternalID: repProfile.InternalID,
+                            Name: 'Rep',
                         },
-                        "URI": "/profiles/" + repProfile.InternalID
+                        URI: '/profiles/' + repProfile.InternalID,
                     }),
                     expect(getCreatedUser[0], 'Role').to.have.property('Role');
 
-                let newQuantity = (await service.getUsers()).length;
+                const newQuantity = (await service.getUsers()).length;
                 expect(newQuantity == currentUserQuantity + 1);
             });
 
@@ -2409,84 +2617,222 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     Phone: Math.floor(Math.random() * 1000000).toString(),
                 });
 
-                let getUpdatedUser = await service.getUsers('?where=InternalID=' + updatedUser.InternalID);
-                expect(getUpdatedUser[0], 'InternalID').to.have.property('InternalID').that.is.a('number').and.equals(updatedUser.InternalID),
-                    expect(getUpdatedUser[0], 'UUID').to.have.property('UUID').that.is.a('string').and.equals(updatedUser.UUID),
-                    expect(getUpdatedUser[0], 'ExternalID').to.have.property('ExternalID').that.is.a('string').and.equals(userExternalID),
-                    expect(getUpdatedUser[0], 'Email').to.have.property('Email').that.is.a('string').and.equals(userEmail),
-                    expect(getUpdatedUser[0], 'FirstName').to.have.property('FirstName').that.is.a('string').and.equals(updatedUser.FirstName),
-                    expect(getUpdatedUser[0], 'LastName').to.have.property('LastName').that.is.a('string').and.equals(updatedUser.LastName),
+                const getUpdatedUser = await service.getUsers('?where=InternalID=' + updatedUser.InternalID);
+                expect(getUpdatedUser[0], 'InternalID')
+                    .to.have.property('InternalID')
+                    .that.is.a('number')
+                    .and.equals(updatedUser.InternalID),
+                    expect(getUpdatedUser[0], 'UUID')
+                        .to.have.property('UUID')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.UUID),
+                    expect(getUpdatedUser[0], 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID),
+                    expect(getUpdatedUser[0], 'Email')
+                        .to.have.property('Email')
+                        .that.is.a('string')
+                        .and.equals(userEmail),
+                    expect(getUpdatedUser[0], 'FirstName')
+                        .to.have.property('FirstName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.FirstName),
+                    expect(getUpdatedUser[0], 'LastName')
+                        .to.have.property('LastName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.LastName),
                     expect(getUpdatedUser[0], 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(getUpdatedUser[0], 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
-                    expect(getUpdatedUser[0], 'Mobile').to.have.property('Mobile').that.is.a('string').and.equals(updatedUser.Mobile),
-                    expect(getUpdatedUser[0], 'CreationDateTime').to.have.property('CreationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUser[0], 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(getUpdatedUser[0], 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUser[0], 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
-                    expect(getUpdatedUser[0], 'Phone').to.have.property('Phone').that.is.a('string').and.equals(updatedUser.Phone),
+                    expect(getUpdatedUser[0], 'IsInTradeShowMode')
+                        .to.have.property('IsInTradeShowMode')
+                        .that.is.a('boolean').and.is.true,
+                    expect(getUpdatedUser[0], 'Mobile')
+                        .to.have.property('Mobile')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Mobile),
+                    expect(getUpdatedUser[0], 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUser[0], 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUser[0], 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUser[0], 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUser[0], 'Phone')
+                        .to.have.property('Phone')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Phone),
                     expect(getUpdatedUser[0], 'Profile').to.have.property('Profile').that.is.an('object');
             });
 
             it('Get single user by UUID, ExternalID, InternalID', async () => {
-                let getUpdatedUserUUID = await service.getSingleUser('UUID', updatedUser.UUID);
-                expect(getUpdatedUserUUID, 'InternalID').to.have.property('InternalID').that.is.a('number').and.equals(updatedUser.InternalID),
-                    expect(getUpdatedUserUUID, 'UUID').to.have.property('UUID').that.is.a('string').and.equals(updatedUser.UUID),
-                    expect(getUpdatedUserUUID, 'ExternalID').to.have.property('ExternalID').that.is.a('string').and.equals(userExternalID),
-                    expect(getUpdatedUserUUID, 'Email').to.have.property('Email').that.is.a('string').and.equals(userEmail),
-                    expect(getUpdatedUserUUID, 'FirstName').to.have.property('FirstName').that.is.a('string').and.equals(updatedUser.FirstName),
-                    expect(getUpdatedUserUUID, 'LastName').to.have.property('LastName').that.is.a('string').and.equals(updatedUser.LastName),
+                const getUpdatedUserUUID = await service.getSingleUser('UUID', updatedUser.UUID);
+                expect(getUpdatedUserUUID, 'InternalID')
+                    .to.have.property('InternalID')
+                    .that.is.a('number')
+                    .and.equals(updatedUser.InternalID),
+                    expect(getUpdatedUserUUID, 'UUID')
+                        .to.have.property('UUID')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.UUID),
+                    expect(getUpdatedUserUUID, 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID),
+                    expect(getUpdatedUserUUID, 'Email')
+                        .to.have.property('Email')
+                        .that.is.a('string')
+                        .and.equals(userEmail),
+                    expect(getUpdatedUserUUID, 'FirstName')
+                        .to.have.property('FirstName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.FirstName),
+                    expect(getUpdatedUserUUID, 'LastName')
+                        .to.have.property('LastName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.LastName),
                     expect(getUpdatedUserUUID, 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(getUpdatedUserUUID, 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
-                    expect(getUpdatedUserUUID, 'Mobile').to.have.property('Mobile').that.is.a('string').and.equals(updatedUser.Mobile),
-                    expect(getUpdatedUserUUID, 'CreationDateTime').to.have.property('CreationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUserUUID, 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(getUpdatedUserUUID, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUserUUID, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
-                    expect(getUpdatedUserUUID, 'Phone').to.have.property('Phone').that.is.a('string').and.equals(updatedUser.Phone),
+                    expect(getUpdatedUserUUID, 'IsInTradeShowMode')
+                        .to.have.property('IsInTradeShowMode')
+                        .that.is.a('boolean').and.is.true,
+                    expect(getUpdatedUserUUID, 'Mobile')
+                        .to.have.property('Mobile')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Mobile),
+                    expect(getUpdatedUserUUID, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUserUUID, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUserUUID, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUserUUID, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUserUUID, 'Phone')
+                        .to.have.property('Phone')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Phone),
                     expect(getUpdatedUserUUID, 'Profile').to.have.property('Profile').that.is.an('object');
 
-                let getUpdatedUserExternalID = await service.getSingleUser('ExternalID', userExternalID);
-                expect(getUpdatedUserExternalID, 'InternalID').to.have.property('InternalID').that.is.a('number').and.equals(updatedUser.InternalID),
-                    expect(getUpdatedUserExternalID, 'UUID').to.have.property('UUID').that.is.a('string').and.equals(updatedUser.UUID),
-                    expect(getUpdatedUserExternalID, 'ExternalID').to.have.property('ExternalID').that.is.a('string').and.equals(userExternalID),
-                    expect(getUpdatedUserExternalID, 'Email').to.have.property('Email').that.is.a('string').and.equals(userEmail),
-                    expect(getUpdatedUserExternalID, 'FirstName').to.have.property('FirstName').that.is.a('string').and.equals(updatedUser.FirstName),
-                    expect(getUpdatedUserExternalID, 'LastName').to.have.property('LastName').that.is.a('string').and.equals(updatedUser.LastName),
-                    expect(getUpdatedUserExternalID, 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(getUpdatedUserExternalID, 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
-                    expect(getUpdatedUserExternalID, 'Mobile').to.have.property('Mobile').that.is.a('string').and.equals(updatedUser.Mobile),
-                    expect(getUpdatedUserExternalID, 'CreationDateTime').to.have.property('CreationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUserExternalID, 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(getUpdatedUserExternalID, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUserExternalID, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
-                    expect(getUpdatedUserExternalID, 'Phone').to.have.property('Phone').that.is.a('string').and.equals(updatedUser.Phone),
+                const getUpdatedUserExternalID = await service.getSingleUser('ExternalID', userExternalID);
+                expect(getUpdatedUserExternalID, 'InternalID')
+                    .to.have.property('InternalID')
+                    .that.is.a('number')
+                    .and.equals(updatedUser.InternalID),
+                    expect(getUpdatedUserExternalID, 'UUID')
+                        .to.have.property('UUID')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.UUID),
+                    expect(getUpdatedUserExternalID, 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID),
+                    expect(getUpdatedUserExternalID, 'Email')
+                        .to.have.property('Email')
+                        .that.is.a('string')
+                        .and.equals(userEmail),
+                    expect(getUpdatedUserExternalID, 'FirstName')
+                        .to.have.property('FirstName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.FirstName),
+                    expect(getUpdatedUserExternalID, 'LastName')
+                        .to.have.property('LastName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.LastName),
+                    expect(getUpdatedUserExternalID, 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is
+                        .false,
+                    expect(getUpdatedUserExternalID, 'IsInTradeShowMode')
+                        .to.have.property('IsInTradeShowMode')
+                        .that.is.a('boolean').and.is.true,
+                    expect(getUpdatedUserExternalID, 'Mobile')
+                        .to.have.property('Mobile')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Mobile),
+                    expect(getUpdatedUserExternalID, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUserExternalID, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUserExternalID, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUserExternalID, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUserExternalID, 'Phone')
+                        .to.have.property('Phone')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Phone),
                     expect(getUpdatedUserExternalID, 'Profile').to.have.property('Profile').that.is.an('object');
 
-                let getUpdatedUserInternalID = await service.getSingleUser('InternalID', updatedUser.InternalID);
-                expect(getUpdatedUserInternalID, 'InternalID').to.have.property('InternalID').that.is.a('number').and.equals(updatedUser.InternalID),
-                    expect(getUpdatedUserInternalID, 'UUID').to.have.property('UUID').that.is.a('string').and.equals(updatedUser.UUID),
-                    expect(getUpdatedUserInternalID, 'ExternalID').to.have.property('ExternalID').that.is.a('string').and.equals(userExternalID),
-                    expect(getUpdatedUserInternalID, 'Email').to.have.property('Email').that.is.a('string').and.equals(userEmail),
-                    expect(getUpdatedUserInternalID, 'FirstName').to.have.property('FirstName').that.is.a('string').and.equals(updatedUser.FirstName),
-                    expect(getUpdatedUserInternalID, 'LastName').to.have.property('LastName').that.is.a('string').and.equals(updatedUser.LastName),
-                    expect(getUpdatedUserInternalID, 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(getUpdatedUserInternalID, 'IsInTradeShowMode').to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
-                    expect(getUpdatedUserInternalID, 'Mobile').to.have.property('Mobile').that.is.a('string').and.equals(updatedUser.Mobile),
-                    expect(getUpdatedUserInternalID, 'CreationDateTime').to.have.property('CreationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUserInternalID, 'CreationDateTime').to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(getUpdatedUserInternalID, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains(new Date().toISOString().split('T')[0]),
-                    expect(getUpdatedUserInternalID, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z'),
-                    expect(getUpdatedUserInternalID, 'Phone').to.have.property('Phone').that.is.a('string').and.equals(updatedUser.Phone),
+                const getUpdatedUserInternalID = await service.getSingleUser('InternalID', updatedUser.InternalID);
+                expect(getUpdatedUserInternalID, 'InternalID')
+                    .to.have.property('InternalID')
+                    .that.is.a('number')
+                    .and.equals(updatedUser.InternalID),
+                    expect(getUpdatedUserInternalID, 'UUID')
+                        .to.have.property('UUID')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.UUID),
+                    expect(getUpdatedUserInternalID, 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID),
+                    expect(getUpdatedUserInternalID, 'Email')
+                        .to.have.property('Email')
+                        .that.is.a('string')
+                        .and.equals(userEmail),
+                    expect(getUpdatedUserInternalID, 'FirstName')
+                        .to.have.property('FirstName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.FirstName),
+                    expect(getUpdatedUserInternalID, 'LastName')
+                        .to.have.property('LastName')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.LastName),
+                    expect(getUpdatedUserInternalID, 'Hidden').to.have.property('Hidden').that.is.a('boolean').and.is
+                        .false,
+                    expect(getUpdatedUserInternalID, 'IsInTradeShowMode')
+                        .to.have.property('IsInTradeShowMode')
+                        .that.is.a('boolean').and.is.true,
+                    expect(getUpdatedUserInternalID, 'Mobile')
+                        .to.have.property('Mobile')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Mobile),
+                    expect(getUpdatedUserInternalID, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUserInternalID, 'CreationDateTime')
+                        .to.have.property('CreationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUserInternalID, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getUpdatedUserInternalID, 'ModificationDateTime')
+                        .to.have.property('ModificationDateTime')
+                        .that.contains('Z'),
+                    expect(getUpdatedUserInternalID, 'Phone')
+                        .to.have.property('Phone')
+                        .that.is.a('string')
+                        .and.equals(updatedUser.Phone),
                     expect(getUpdatedUserInternalID, 'Profile').to.have.property('Profile').that.is.an('object');
             });
 
-        //     // it('Delete Users', async () => {                                                      // Test removed because delete doesn't work and won't work
-        //     //     expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true,
-        //     //         expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false,
-        //     //         expect(await service.getUsers())
-        //     //             .to.be.an('array')
-        //     //             .with.lengthOf(currentUserQuantity);
-        //     // });
+            //     // it('Delete Users', async () => {                                                      // Test removed because delete doesn't work and won't work
+            //     //     expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true,
+            //     //         expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false,
+            //     //         expect(await service.getUsers())
+            //     //             .to.be.an('array')
+            //     //             .with.lengthOf(currentUserQuantity);
+            //     // });
         });
     });
 }
