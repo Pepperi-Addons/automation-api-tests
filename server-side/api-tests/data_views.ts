@@ -146,98 +146,201 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         ]);
                     });
 
-                    /*// Array endpoints are not yet supported and Batch SKD is not yet working
-            it('Upsert Data Views Batch Valid Response (DI-16869)', async () => {
-              const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-              return expect(
-                service.postDataViewBatch([
-                  {
-                    Type: 'Card',
-                    Title: testDataViewTitle,
-                    Context: {
-                      Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                      ScreenSize: 'Landscape',
-                      Profile: {
-                        Name: userTypeIDArr[1],
-                      },
-                    },
-                    Fields: [],
-                    Rows: [],
-                    Columns: [],
-                  },
-                  {
-                    Type: 'Card',
-                    Title: testDataViewTitle,
-                    Context: {
-                      Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
-                      ScreenSize: 'Landscape',
-                      Profile: {
-                        Name: userTypeIDArr[1],
-                      },
-                    },
-                    Fields: [],
-                    Rows: [],
-                    Columns: [],
-                  },
-                ]),
-              )
-                .eventually.to.include({
-                  Type: 'Card',
-                  Title: testDataViewTitle,
-                })
-                .and.to.have.property('InternalID')
-                .that.is.a('Number');
-            });
-    
-            it('Upsert Data Views Batch Valid Creation Amount (DI-16869)', async () => {
-              //Get All Before
-              const totalDataViewsBefore: number = await (await service.getDataViews()).length;
-              const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-              return Promise.all([
-                await expect(
-                  service.postDataViewBatch([
-                    {
-                      Type: 'Card',
-                      Title: testDataViewTitle,
-                      Context: {
-                        Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
-                        ScreenSize: 'Landscape',
-                        Profile: {
-                          Name: userTypeIDArr[0],
-                        },
-                      },
-                      Fields: [],
-                      Rows: [],
-                      Columns: [],
-                    },
-                    {
-                      Type: 'Card',
-                      Title: testDataViewTitle,
-                      Context: {
-                        Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
-                        ScreenSize: 'Landscape',
-                        Profile: {
-                          Name: userTypeIDArr[0],
-                        },
-                      },
-                      Fields: [],
-                      Rows: [],
-                      Columns: [],
-                    },
-                  ]),
-                )
-                  .eventually.to.include({
-                    Type: 'Card',
-                    Title: testDataViewTitle,
-                  })
-                  .and.to.have.property('InternalID')
-                  .that.is.a('Number'),
-                await expect(service.getDataViews())
-                  .eventually.to.be.an('array')
-                  .with.lengthOf(totalDataViewsBefore + 2),
-              ]);
-            });
-          */
+                    // Array endpoints are not yet supported and Batch SDK is not yet working
+                    let testCRUDataViewsArr: DataView[];
+                    let totalDataViewsBeforeCRU;
+                    let insertDataViewResponse;
+                    let upsertDataViewResponse;
+                    let ignoreDataViewResponse;
+                    it('Insert Data Views Batch Valid Response (DI-16869)', async () => {
+                        //Get All Before
+                        totalDataViewsBeforeCRU = await (await service.getDataViews()).length;
+                        const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                        testCRUDataViewsArr = [
+                            {
+                                Type: 'Card',
+                                Title: testDataViewTitle,
+                                Context: {
+                                    Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                    ScreenSize: 'Landscape',
+                                    Profile: {
+                                        Name: userTypeIDArr[1],
+                                    },
+                                },
+                                Fields: [],
+                                Rows: [],
+                                Columns: [],
+                            },
+                            {
+                                Type: 'Card',
+                                Title: testDataViewTitle,
+                                Context: {
+                                    Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
+                                    ScreenSize: 'Landscape',
+                                    Profile: {
+                                        Name: userTypeIDArr[1],
+                                    },
+                                },
+                                Fields: [],
+                                Rows: [],
+                                Columns: [],
+                            },
+                        ];
+                        insertDataViewResponse = await service.postDataViewBatch(testCRUDataViewsArr);
+                        return Promise.all([
+                            expect(insertDataViewResponse).to.be.an('array').with.lengthOf(2),
+                            expect(insertDataViewResponse[0].InternalID).to.be.a('number').that.is.above(0),
+                            expect(insertDataViewResponse[0].UUID).to.be.a('string').with.lengthOf(36),
+                            expect(insertDataViewResponse[0].ExternalID).to.be.a('string').that.equal(''),
+                            expect(insertDataViewResponse[0].Status).to.be.a('string').that.equal('Insert'),
+                            expect(insertDataViewResponse[0].Message).to.be.a('string').that.equal('Row inserted.'),
+                            expect(insertDataViewResponse[0].URI)
+                                .to.be.a('string')
+                                .that.contains(
+                                    `/meta_data/data_views?where=InternalID=${insertDataViewResponse[0].InternalID}`,
+                                ),
+                            expect(insertDataViewResponse[1].InternalID).to.be.a('number').that.is.above(0),
+                            expect(insertDataViewResponse[1].UUID).to.be.a('string').with.lengthOf(36),
+                            expect(insertDataViewResponse[1].ExternalID).to.be.a('string').that.equal(''),
+                            expect(insertDataViewResponse[1].Status).to.be.a('string').that.equal('Insert'),
+                            expect(insertDataViewResponse[1].Message).to.be.a('string').that.equal('Row inserted.'),
+                            expect(insertDataViewResponse[1].URI)
+                                .to.be.a('string')
+                                .that.contains(
+                                    `/meta_data/data_views?where=InternalID=${insertDataViewResponse[1].InternalID}`,
+                                ),
+                        ]);
+                    });
+
+                    it('Upsert Data Views Batch Valid Response (DI-16869)', async () => {
+                        upsertDataViewResponse = await service.postDataViewBatch(testCRUDataViewsArr);
+                        await Promise.all([
+                            expect(upsertDataViewResponse).to.be.an('array').with.lengthOf(2),
+                            expect(upsertDataViewResponse[0].InternalID)
+                                .to.be.a('number')
+                                .that.equal(insertDataViewResponse[0].InternalID),
+                            expect(upsertDataViewResponse[0].UUID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[0].UUID),
+                            expect(upsertDataViewResponse[0].ExternalID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[0].ExternalID),
+                            expect(upsertDataViewResponse[0].Status).to.be.a('string').that.equal('Update'),
+                            expect(upsertDataViewResponse[0].Message).to.be.a('string').that.equal('Row updated.'),
+                            expect(upsertDataViewResponse[0].URI)
+                                .to.be.a('string')
+                                .that.contains(
+                                    `/meta_data/data_views?where=InternalID=${insertDataViewResponse[0].InternalID}`,
+                                ),
+                            expect(upsertDataViewResponse[1].InternalID)
+                                .to.be.a('number')
+                                .that.equal(insertDataViewResponse[1].InternalID),
+                            expect(upsertDataViewResponse[1].UUID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[1].UUID),
+                            expect(upsertDataViewResponse[1].ExternalID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[1].ExternalID),
+                            expect(upsertDataViewResponse[1].Status).to.be.a('string').that.equal('Update'),
+                            expect(upsertDataViewResponse[1].Message).to.be.a('string').that.equal('Row updated.'),
+                            expect(upsertDataViewResponse[1].URI)
+                                .to.be.a('string')
+                                .that.contains(
+                                    `/meta_data/data_views?where=InternalID=${insertDataViewResponse[1].InternalID}`,
+                                ),
+                        ]);
+                    });
+
+                    it('Ignore Data Views Batch Valid Response (DI-16869)', async () => {
+                        ignoreDataViewResponse = await service.postDataViewBatch(testCRUDataViewsArr);
+                        await Promise.all([
+                            expect(ignoreDataViewResponse).to.be.an('array').with.lengthOf(2),
+                            expect(ignoreDataViewResponse[0].InternalID)
+                                .to.be.a('number')
+                                .that.equal(insertDataViewResponse[0].InternalID),
+                            expect(ignoreDataViewResponse[0].UUID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[0].UUID),
+                            expect(ignoreDataViewResponse[0].ExternalID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[0].ExternalID),
+                            expect(ignoreDataViewResponse[0].Status).to.be.a('string').that.equal('Ignore'),
+                            expect(ignoreDataViewResponse[0].Message)
+                                .to.be.a('string')
+                                .that.equal('No changes in this row. The row is being ignored.'),
+                            expect(ignoreDataViewResponse[0].URI)
+                                .to.be.a('string')
+                                .that.contains(
+                                    `/meta_data/data_views?where=InternalID=${insertDataViewResponse[0].InternalID}`,
+                                ),
+                            expect(ignoreDataViewResponse[1].InternalID)
+                                .to.be.a('number')
+                                .that.equal(insertDataViewResponse[1].InternalID),
+                            expect(ignoreDataViewResponse[1].UUID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[1].UUID),
+                            expect(ignoreDataViewResponse[1].ExternalID)
+                                .to.be.a('string')
+                                .that.equal(insertDataViewResponse[1].ExternalID),
+                            expect(ignoreDataViewResponse[1].Status).to.be.a('string').that.equal('Ignore'),
+                            expect(ignoreDataViewResponse[1].Message)
+                                .to.be.a('string')
+                                .that.equal('No changes in this row. The row is being ignored.'),
+                            expect(ignoreDataViewResponse[1].URI)
+                                .to.be.a('string')
+                                .that.contains(
+                                    `/meta_data/data_views?where=InternalID=${insertDataViewResponse[1].InternalID}`,
+                                ),
+                            await expect(service.getDataViews())
+                                .eventually.to.be.an('array')
+                                .with.lengthOf(totalDataViewsBeforeCRU + 2),
+                        ]);
+                    });
+
+                    it('Upsert Data Views Batch Valid Creation Amount (DI-16869)', async () => {
+                        //Get All Before
+                        const totalDataViewsBefore: number = await (await service.getDataViews()).length;
+                        const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                        return Promise.all([
+                            await expect(
+                                service.postDataViewBatch([
+                                    {
+                                        Type: 'Card',
+                                        Title: testDataViewTitle,
+                                        Context: {
+                                            Name: `Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                            ScreenSize: 'Landscape',
+                                            Profile: {
+                                                Name: userTypeIDArr[0],
+                                            },
+                                        },
+                                        Fields: [],
+                                        Rows: [],
+                                        Columns: [],
+                                    },
+                                    {
+                                        Type: 'Card',
+                                        Title: testDataViewTitle,
+                                        Context: {
+                                            Name: `Oren ${testDataViewTitle + 1}`.replace(/ /gi, '_'),
+                                            ScreenSize: 'Landscape',
+                                            Profile: {
+                                                Name: userTypeIDArr[0],
+                                            },
+                                        },
+                                        Fields: [],
+                                        Rows: [],
+                                        Columns: [],
+                                    },
+                                ]),
+                            )
+                                .eventually.to.be.an('array')
+                                .with.lengthOf(2),
+                            expect(service.getDataViews())
+                                .eventually.to.be.an('array')
+                                .with.lengthOf(totalDataViewsBefore + 2),
+                        ]);
+                    });
                 });
 
                 describe('Get', () => {
@@ -333,7 +436,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                             //where: "CreationDateTime = '2019-12-31Z'",
                             //where: "Type = 'Grid' AND Title = userTypeIDArr[userTypeIDArr[1]]",
                         });
-                        console.log(getDataViewResponseObj);
+                        //console.log(getDataViewResponseObj);
                         expect(getDataViewResponseObj[0].InternalID).to.be.above(0);
                         expect(getDataViewResponseObj[0]).to.include({
                             InternalID: testDataView.InternalID,
@@ -1805,7 +1908,32 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         );
                     });
 
-                    it('Upsert Data View (Menu) With Wrong Context.Object (DI-16872)', async () => {
+                    it('Upsert Data View (Configuration) With Wrong Context.Object (DI-16872)', async () => {
+                        const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
+                        return expect(
+                            service.postDataView({
+                                Type: 'Configuration',
+                                Title: testDataViewTitle,
+                                Context: {
+                                    Object: {
+                                        Resource: 'transactions',
+                                        InternalID: 268421, //8
+                                    },
+                                    Name: 'OrderCartSmartSearch',
+                                    ScreenSize: 'Landscape',
+                                    Profile: {
+                                        InternalID: userTypeIDArr[userTypeIDArr[1]],
+                                        Name: userTypeIDArr[1],
+                                    },
+                                },
+                                Fields: [],
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Object with InternalID = 268421 for Resource = 'transactions' not found"`,
+                        );
+                    });
+
+                    it('Validate Improvment To OrderCartSmartSearch (DI-17565)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
                         return expect(
                             service.postDataView({
@@ -1826,7 +1954,13 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                                 Fields: [],
                             }),
                         ).eventually.to.be.rejectedWith(
-                            "Failed due to exception: Object with InternalID = 268421 for Resource = 'transactions' not found",
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Expected Type = 'Configuration' for Context.Name = 'OrderCartSmartSearch'`,
+                        );
+                    });
+
+                    it('Post An Array To Addon Endpoint (DI-16894)', async () => {
+                        return expect(service.postDataViewBatch([])).eventually.to.be.rejectedWith(
+                            'failed with status: 404 - Not Found error',
                         );
                     });
 
