@@ -33,7 +33,7 @@ export async function DataViewsTestsNegative(generalService: GeneralService, tes
 
 export async function DataViewsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new DataViewsService(generalService.papiClient);
-    const clientService = generalService;
+    //const clientService = generalService; // only use to execute tests on specifc clients - canceled on 04/02/2021
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -1313,41 +1313,43 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         });
                     });
 
-                    if (clientService.getClientData('UserEmail').includes('oren.v@')) {
-                        it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
-                            const testDataViewArr: DataView[] = await service.getDataViews({
-                                where: 'InternalID = 4067228',
-                                include_deleted: true,
-                            });
-                            const testDataView = testDataViewArr[0];
-                            expect(testDataView).to.include({
-                                InternalID: 4067228,
-                                Type: 'Menu',
-                                Title: 'Rep', //userTypeIDArr[1], //Need to fix this Oren
-                                Hidden: true,
-                            });
-                            expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
-                            expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271439);
-                            expect(testDataView['Context' as any].Object.Name).to.eql('new');
-                            expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
-                            expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
-                            expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773); //userTypeIDArr[userTypeIDArr[1]]); //Need to fix this Oren
-                            expect(testDataView['Context' as any].Profile.Name).to.eql('Rep'); //userTypeIDArr[1]); //Need to fix this Oren
-                            expect(testDataView.CreationDateTime).to.contain('20');
-                            expect(testDataView.CreationDateTime).to.contain('T');
-                            expect(testDataView.CreationDateTime).to.contain('Z');
-                            expect(testDataView.ModificationDateTime).to.contain('Z');
-                            expect(testDataView.Fields).to.be.an('array');
-                            expect(testDataView['Fields' as any][0]).to.include({
-                                FieldID: 'Delete',
-                                Title: 'Delete',
-                            });
-                            expect(testDataView['Fields' as any][1]).to.include({
-                                FieldID: 'Edit',
-                                Title: 'Edit',
-                            });
-                        });
-                    }
+                    //This was manually removed from the DB by Ido in 04/02/2021 in atempt to remove "trash" from the DB,
+                    //So this will no longer be executed but this should stay here in case this bug will ever be reopen and then this test will be useful
+                    // if (clientService.getClientData('UserEmail').includes('oren.v@')) {
+                    //     it('Get Existing Data View With Hidden ATD (DI-16826)', async () => {
+                    //         const testDataViewArr: DataView[] = await service.getDataViews({
+                    //             where: 'InternalID = 4067228',
+                    //             include_deleted: true,
+                    //         });
+                    //         const testDataView = testDataViewArr[0];
+                    //         expect(testDataView).to.include({
+                    //             InternalID: 4067228,
+                    //             Type: 'Menu',
+                    //             Title: 'Rep', //userTypeIDArr[1], //Need to fix this Oren
+                    //             Hidden: true,
+                    //         });
+                    //         expect(testDataView['Context' as any].Object.Resource).to.be.eql('transactions');
+                    //         expect(testDataView['Context' as any].Object.InternalID).to.be.eql(271439);
+                    //         expect(testDataView['Context' as any].Object.Name).to.eql('new');
+                    //         expect(testDataView['Context' as any].Name).to.eql('CartBulkMenu');
+                    //         expect(testDataView['Context' as any].ScreenSize).to.eql('Tablet');
+                    //         expect(testDataView['Context' as any].Profile.InternalID).to.be.eql(67773); //userTypeIDArr[userTypeIDArr[1]]); //Need to fix this Oren
+                    //         expect(testDataView['Context' as any].Profile.Name).to.eql('Rep'); //userTypeIDArr[1]); //Need to fix this Oren
+                    //         expect(testDataView.CreationDateTime).to.contain('20');
+                    //         expect(testDataView.CreationDateTime).to.contain('T');
+                    //         expect(testDataView.CreationDateTime).to.contain('Z');
+                    //         expect(testDataView.ModificationDateTime).to.contain('Z');
+                    //         expect(testDataView.Fields).to.be.an('array');
+                    //         expect(testDataView['Fields' as any][0]).to.include({
+                    //             FieldID: 'Delete',
+                    //             Title: 'Delete',
+                    //         });
+                    //         expect(testDataView['Fields' as any][1]).to.include({
+                    //             FieldID: 'Edit',
+                    //             Title: 'Edit',
+                    //         });
+                    //     });
+                    // }
 
                     it('Upsert Data View (Large) (DI-16874)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
@@ -1557,6 +1559,10 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         expect(testDataView.ModificationDateTime).to.contain('Z');
                     });
                 }
+
+                it('Post An Array To Addon Endpoint (DI-16894)', async () => {
+                    return expect(service.postDataViewBatch([])).eventually.to.be.an('array').with.lengthOf(0);
+                });
             });
 
             describe('Negative', () => {
@@ -1955,12 +1961,6 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                             }),
                         ).eventually.to.be.rejectedWith(
                             `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Expected Type = 'Configuration' for Context.Name = 'OrderCartSmartSearch'`,
-                        );
-                    });
-
-                    it('Post An Array To Addon Endpoint (DI-16894)', async () => {
-                        return expect(service.postDataViewBatch([])).eventually.to.be.rejectedWith(
-                            'failed with status: 404 - Not Found error',
                         );
                     });
 
