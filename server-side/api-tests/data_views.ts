@@ -621,6 +621,10 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                             expect(getDataViewResponseObj[0].Fields).to.be.an('array');
                         });
                     });
+
+                    it('Post An Array To Addon Endpoint (DI-16894)', async () => {
+                        return expect(service.postDataViewBatch([])).eventually.to.be.an('array').with.lengthOf(0);
+                    });
                 }
 
                 if (testConfigObj.isPositiveScenarios) {
@@ -1559,10 +1563,6 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         expect(testDataView.ModificationDateTime).to.contain('Z');
                     });
                 }
-
-                it('Post An Array To Addon Endpoint (DI-16894)', async () => {
-                    return expect(service.postDataViewBatch([])).eventually.to.be.an('array').with.lengthOf(0);
-                });
             });
 
             describe('Negative', () => {

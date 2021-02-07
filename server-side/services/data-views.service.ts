@@ -30,7 +30,6 @@ export class DataViewsService {
     }
 
     postDataViewBatch(dataViewArr: DataView[]) {
-        //return this.papiClient.metaData.dataViews.batch(dataViewArr);
-        return this.papiClient.post('/meta_data/data_views_batch', dataViewArr);
+        return this.papiClient.metaData.dataViews.batch(dataViewArr);
     }
 }
