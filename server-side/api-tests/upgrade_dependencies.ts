@@ -63,11 +63,15 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             describe(`${addonName}`, () => {
                 let varLatestVersion;
                 it('Upgarde To Latest Version', async () => {
+                    let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
+                    if (addonName == 'Services Framework' || addonName == 'Cross Platforms API') {
+                        searchString = `AND Version Like '${version}%' AND Available Like 1`;
+                    }
                     varLatestVersion = await fetch(
                         `${generalService['client'].BaseURL.replace(
                             'papi-eu',
                             'papi',
-                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%' AND Available Like 1&order_by=CreationDateTime DESC`,
+                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' ${searchString}&order_by=CreationDateTime DESC`,
                         {
                             method: `GET`,
                             headers: {
