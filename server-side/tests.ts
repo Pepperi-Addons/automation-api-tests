@@ -20,6 +20,8 @@ import {
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,
     ImportExportATDTransactionsBoxTests,
+    ImportExportATDActivitiesOverrideTests,
+    ImportExportATDTransactionsOverrideTests,
 } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 
@@ -839,6 +841,90 @@ export async function import_export_atd_transactions_box(
         return testResult;
     } else {
         return ImportExportATDTransactionsBoxTests(service, request, testerFunctions);
+    }
+}
+
+export async function import_export_atd_activities_override(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Import_Export_Atd_Activities_Override' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Import_Export_Atd_Activities_Override';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ImportExportATDActivitiesOverrideTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ImportExportATDActivitiesOverrideTests(service, request, testerFunctions);
+    }
+}
+
+export async function import_export_atd_transactions_override(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Import_Export_Atd_Transactions_Override' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Import_Export_Atd_Transactions_Override';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ImportExportATDTransactionsOverrideTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ImportExportATDTransactionsOverrideTests(service, request, testerFunctions);
     }
 }
 

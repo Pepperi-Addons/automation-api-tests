@@ -5,6 +5,9 @@ import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
+// This is transaction ATD for testing
+// This is activity ATD for testing
+
 function testDataATD(externaID: string, description: string) {
     return {
         ExternalID: `Test ATD ${externaID}`,
@@ -16,6 +19,8 @@ let isActivitiesTests = false;
 let isTransactionsTests = false;
 let isActivitiesTestsBox = false;
 let isTransactionsTestsBox = false;
+let isActivitiesTestsOverride = false;
+let isTransactionsTestsOverride = false;
 
 // All Import Export ATD Tests
 export async function ImportExportATDActivitiesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -23,6 +28,8 @@ export async function ImportExportATDActivitiesTests(generalService: GeneralServ
     isTransactionsTests = false;
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverride = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -35,6 +42,8 @@ export async function ImportExportATDTransactionsTests(
     isTransactionsTests = true;
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverride = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -47,6 +56,8 @@ export async function ImportExportATDActivitiesBoxTests(
     isTransactionsTests = false;
     isActivitiesTestsBox = true;
     isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverride = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -59,6 +70,36 @@ export async function ImportExportATDTransactionsBoxTests(
     isTransactionsTests = false;
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = true;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverride = false;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDActivitiesOverrideTests(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = true;
+    isTransactionsTestsOverride = false;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDTransactionsOverrideTests(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverride = true;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -117,15 +158,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         );
     }
 
-    const testDataPostUDT = await importExportATDService.postUDT({
-        TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-        MainKeyType: { ID: 23, Name: '' },
-        SecondaryKeyType: { ID: 35, Name: '' },
-        MemoryMode: {
-            Dormant: true,
-            Volatile: false,
-        },
-    });
+    let testDataPostUDT;
+    if (!isActivitiesTestsOverride && !isTransactionsTestsOverride) {
+        testDataPostUDT = await importExportATDService.postUDT({
+            TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+            MainKeyType: { ID: 23, Name: '' },
+            SecondaryKeyType: { ID: 35, Name: '' },
+            MemoryMode: {
+                Dormant: true,
+                Volatile: false,
+            },
+        });
+    }
 
     const transactionsArr = await generalService.getTypes('transactions');
     transactionsArr.forEach((element) => {
@@ -674,6 +718,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             describe('Get (DI-17200, DI-17258)', () => {
                 if (isActivitiesTests) {
                     for (let index = 0; index < activitiesTypeArr.length; index++) {
+                        if (index > 0) {
+                            index = 999;
+                            break;
+                        }
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
                         it(`Export Activities ATD ${activityName}`, async () => {
@@ -688,6 +736,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                 if (isTransactionsTests) {
                     for (let index = 0; index < transactionsTypeArr.length - 1; index++) {
+                        if (index > 0) {
+                            index = 999;
+                            break;
+                        }
                         const transactionName = transactionsTypeArr[index];
                         const transactionID = transactionsTypeArr[transactionsTypeArr[index]];
                         it(`Export Transactions ATD ${transactionName}`, async () => {
@@ -704,6 +756,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             describe('Post', () => {
                 if (isActivitiesTests) {
                     for (let index = 0; index < activitiesTypeArr.length; index++) {
+                        if (index > 0) {
+                            index = 999;
+                            break;
+                        }
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
                         it(`Export Mapping Of Activities ATD ${activityName}`, async () => {
@@ -735,6 +791,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                 if (isTransactionsTests) {
                     for (let index = 0; index < transactionsTypeArr.length - 1; index++) {
+                        if (index > 0) {
+                            index = 999;
+                            break;
+                        }
                         const transactionName = transactionsTypeArr[index];
                         const transactionID = transactionsTypeArr[transactionsTypeArr[index]];
                         it(`Export Mapping Of Transactions ATD ${transactionName}`, async () => {
@@ -773,7 +833,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             describe('Import and Export ATD Scenarios', () => {
                 if (isActivitiesTestsBox) {
                     for (let index = 0; index < activitiesTypeArr.length; index++) {
-                        if (index > 5) {
+                        if (index > 0) {
                             index = 999;
                             break;
                         }
@@ -845,6 +905,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
 
+                                //TODO: add here a function to extract autdit log
                                 existingATDExportObj = await fetch(existingATDExportResponse.URL).then((response) =>
                                     response.json(),
                                 );
@@ -864,18 +925,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             let testDataRenameATD;
                             it('Rename new ATD', async () => {
                                 if (isNewATD) {
-                                    const testDataNewActivityATDNewCopy = await importExportATDService
+                                    const testDataNewActivityATDNewExport = await importExportATDService
                                         .getAllActivitiesATD()
                                         .then((responseArray) => responseArray.slice(-1).pop());
 
                                     testDataRenameATD = await importExportATDService.postActivitiesATD({
-                                        InternalID: testDataNewActivityATDNewCopy.InternalID,
+                                        InternalID: testDataNewActivityATDNewExport.InternalID,
                                         ExternalID: `Test ATD ${
                                             Math.floor(Math.random() * 10000000).toString() +
                                             ' ' +
                                             Math.random().toString(36).substring(10)
                                         }`,
-                                        Description: testDataNewActivityATDNewCopy.Description.replace(
+                                        Description: testDataNewActivityATDNewExport.Description.replace(
                                             'Override',
                                             'New',
                                         ),
@@ -951,98 +1012,19 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             });
 
                             it(`Activity: ${activityName}, Exported Objects Match`, async () => {
-                                const regexStr = new RegExp(`"Name":"${activityName}"`, 'g');
-                                const regexStrForCopy = new RegExp(
-                                    `"Name":"${testDataExistingActivityATD.ExternalID}"`,
-                                    'g',
+                                RemoveUntestedMembers(
+                                    new RegExp(`"Name":"${activityName}"`, 'g'),
+                                    originalATDExportObj,
                                 );
-                                const regexStrForNewCopy = new RegExp(`"Name":"${testDataRenameATD.ExternalID}"`, 'g');
 
-                                delete originalATDExportObj.ExternalID;
-                                delete originalATDExportObj.Description;
-                                delete originalATDExportObj.CreationDateTime;
-                                delete originalATDExportObj.ModificationDateTime;
-                                for (let index = 0; index < originalATDExportObj.Fields.length; index++) {
-                                    delete originalATDExportObj.Fields[index].CreationDateTime;
-                                    delete originalATDExportObj.Fields[index].ModificationDateTime;
-                                    delete originalATDExportObj.Fields[index].CSVMappedColumnName;
-                                    if (
-                                        originalATDExportObj.Fields[index].UserDefinedTableSource &&
-                                        originalATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey
-                                    ) {
-                                        delete originalATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey;
-                                    }
-                                    if (originalATDExportObj.Fields[index].Type == 'Boolean') {
-                                        delete originalATDExportObj.Fields[index].TypeSpecificFields;
-                                    }
-                                }
-                                for (let index = 0; index < originalATDExportObj.DataViews.length; index++) {
-                                    delete originalATDExportObj.DataViews[index].CreationDateTime;
-                                    delete originalATDExportObj.DataViews[index].ModificationDateTime;
-                                }
-                                delete existingATDExportObj.ExternalID;
-                                delete existingATDExportObj.Description;
-                                delete existingATDExportObj.CreationDateTime;
-                                delete existingATDExportObj.ModificationDateTime;
-                                for (let index = 0; index < existingATDExportObj.Fields.length; index++) {
-                                    delete existingATDExportObj.Fields[index].CreationDateTime;
-                                    delete existingATDExportObj.Fields[index].ModificationDateTime;
-                                    delete existingATDExportObj.Fields[index].CSVMappedColumnName;
-                                    if (
-                                        existingATDExportObj.Fields[index].UserDefinedTableSource &&
-                                        existingATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey
-                                    ) {
-                                        delete existingATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey;
-                                    }
-                                    if (existingATDExportObj.Fields[index].Type == 'Boolean') {
-                                        delete existingATDExportObj.Fields[index].TypeSpecificFields;
-                                    }
-                                }
-                                for (let index = 0; index < existingATDExportObj.DataViews.length; index++) {
-                                    delete existingATDExportObj.DataViews[index].CreationDateTime;
-                                    delete existingATDExportObj.DataViews[index].ModificationDateTime;
-                                }
+                                RemoveUntestedMembers(
+                                    new RegExp(`"Name":"${testDataExistingActivityATD.ExternalID}"`, 'g'),
+                                    existingATDExportObj,
+                                );
                                 if (isNewATD) {
-                                    delete newATDExportObj.ExternalID;
-                                    delete newATDExportObj.Description;
-                                    delete newATDExportObj.CreationDateTime;
-                                    delete newATDExportObj.ModificationDateTime;
-                                    for (let index = 0; index < newATDExportObj.Fields.length; index++) {
-                                        delete newATDExportObj.Fields[index].CreationDateTime;
-                                        delete newATDExportObj.Fields[index].ModificationDateTime;
-                                        delete newATDExportObj.Fields[index].CSVMappedColumnName;
-                                        if (
-                                            newATDExportObj.Fields[index].UserDefinedTableSource &&
-                                            newATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey
-                                        ) {
-                                            delete newATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey;
-                                        }
-                                        if (newATDExportObj.Fields[index].Type == 'Boolean') {
-                                            delete newATDExportObj.Fields[index].TypeSpecificFields;
-                                        }
-                                    }
-                                    for (let index = 0; index < newATDExportObj.DataViews.length; index++) {
-                                        delete newATDExportObj.DataViews[index].CreationDateTime;
-                                        delete newATDExportObj.DataViews[index].ModificationDateTime;
-                                    }
-                                }
-
-                                existingATDExportObj = JSON.parse(
-                                    JSON.stringify(existingATDExportObj)
-                                        .replace(regexStrForCopy, '"Name":"test"')
-                                        .replace(/\s/g, ''),
-                                );
-                                originalATDExportObj = JSON.parse(
-                                    JSON.stringify(originalATDExportObj)
-                                        .replace(regexStr, '"Name":"test"')
-                                        .replace(/\s/g, ''),
-                                );
-
-                                if (isNewATD) {
-                                    newATDExportObj = JSON.parse(
-                                        JSON.stringify(newATDExportObj)
-                                            .replace(regexStrForNewCopy, '"Name":"test"')
-                                            .replace(/\s/g, ''),
+                                    RemoveUntestedMembers(
+                                        new RegExp(`"Name":"${testDataRenameATD.ExternalID}"`, 'g'),
+                                        newATDExportObj,
                                     );
                                 }
 
@@ -1257,8 +1239,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                 }
 
                 if (isTransactionsTestsBox) {
-                    for (let index = 1; index < transactionsTypeArr.length; index++) {
-                        if (index > 5) {
+                    for (let index = 0; index < transactionsTypeArr.length; index++) {
+                        if (index > 0) {
                             index = 999;
                             break;
                         }
@@ -1330,6 +1312,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
 
+                                //TODO: add here a function to extract autdit log
                                 existingATDExportObj = await fetch(existingATDExportResponse.URL).then((response) =>
                                     response.json(),
                                 );
@@ -1349,18 +1332,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             let testDataRenameATD;
                             it('Rename new ATD', async () => {
                                 if (isNewATD) {
-                                    const testDataNewTransactionATDNewCopy = await importExportATDService
+                                    const testDataNewTransactionATDNewExport = await importExportATDService
                                         .getAllTransactionsATD()
                                         .then((responseArray) => responseArray.slice(-1).pop());
 
                                     testDataRenameATD = await importExportATDService.postTransactionsATD({
-                                        InternalID: testDataNewTransactionATDNewCopy.InternalID,
+                                        InternalID: testDataNewTransactionATDNewExport.InternalID,
                                         ExternalID: `Test ATD ${
                                             Math.floor(Math.random() * 10000000).toString() +
                                             ' ' +
                                             Math.random().toString(36).substring(10)
                                         }`,
-                                        Description: testDataNewTransactionATDNewCopy.Description.replace(
+                                        Description: testDataNewTransactionATDNewExport.Description.replace(
                                             'Override',
                                             'New',
                                         ),
@@ -1436,117 +1419,19 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             });
 
                             it(`Transaction: ${transactionName}, Exported Objects Match`, async () => {
-                                const regexStr = new RegExp(`"Name":"${transactionName}"`, 'g');
-                                const regexStrForCopy = new RegExp(
-                                    `"Name":"${testDataExistingTransactionATD.ExternalID}"`,
-                                    'g',
+                                RemoveUntestedMembers(
+                                    new RegExp(`"Name":"${transactionName}"`, 'g'),
+                                    originalATDExportObj,
                                 );
-                                let regexStrForNewCopy;
-                                if (isNewATD) {
-                                    regexStrForNewCopy = new RegExp(`"Name":"${testDataRenameATD.ExternalID}"`, 'g');
-                                }
-                                delete originalATDExportObj.ExternalID;
-                                delete originalATDExportObj.Description;
-                                delete originalATDExportObj.Settings.EPayment;
-                                delete originalATDExportObj.Settings.CatalogIDs;
-                                delete originalATDExportObj.CreationDateTime;
-                                delete originalATDExportObj.ModificationDateTime;
-                                for (let index = 0; index < originalATDExportObj.Fields.length; index++) {
-                                    delete originalATDExportObj.Fields[index].CreationDateTime;
-                                    delete originalATDExportObj.Fields[index].ModificationDateTime;
-                                    delete originalATDExportObj.Fields[index].CSVMappedColumnName;
-                                    if (
-                                        originalATDExportObj.Fields[index].UserDefinedTableSource &&
-                                        originalATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey
-                                    ) {
-                                        delete originalATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey;
-                                    }
-                                    if (originalATDExportObj.Fields[index].Type == 'Boolean') {
-                                        delete originalATDExportObj.Fields[index].TypeSpecificFields;
-                                    }
-                                }
-                                for (let index = 0; index < originalATDExportObj.DataViews.length; index++) {
-                                    delete originalATDExportObj.DataViews[index].CreationDateTime;
-                                    delete originalATDExportObj.DataViews[index].ModificationDateTime;
-                                }
-                                for (let index = 0; index < originalATDExportObj.LineFields.length; index++) {
-                                    delete originalATDExportObj.LineFields[index].CreationDateTime;
-                                    delete originalATDExportObj.LineFields[index].ModificationDateTime;
-                                }
-                                delete existingATDExportObj.ExternalID;
-                                delete existingATDExportObj.Description;
-                                delete existingATDExportObj.Settings.EPayment;
-                                delete existingATDExportObj.Settings.CatalogIDs;
-                                delete existingATDExportObj.CreationDateTime;
-                                delete existingATDExportObj.ModificationDateTime;
-                                for (let index = 0; index < existingATDExportObj.Fields.length; index++) {
-                                    delete existingATDExportObj.Fields[index].CreationDateTime;
-                                    delete existingATDExportObj.Fields[index].ModificationDateTime;
-                                    delete existingATDExportObj.Fields[index].CSVMappedColumnName;
-                                    if (
-                                        existingATDExportObj.Fields[index].UserDefinedTableSource &&
-                                        existingATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey
-                                    ) {
-                                        delete existingATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey;
-                                    }
-                                    if (existingATDExportObj.Fields[index].Type == 'Boolean') {
-                                        delete existingATDExportObj.Fields[index].TypeSpecificFields;
-                                    }
-                                }
-                                for (let index = 0; index < existingATDExportObj.DataViews.length; index++) {
-                                    delete existingATDExportObj.DataViews[index].CreationDateTime;
-                                    delete existingATDExportObj.DataViews[index].ModificationDateTime;
-                                }
-                                for (let index = 0; index < existingATDExportObj.LineFields.length; index++) {
-                                    delete existingATDExportObj.LineFields[index].CreationDateTime;
-                                    delete existingATDExportObj.LineFields[index].ModificationDateTime;
-                                }
-                                if (isNewATD) {
-                                    delete newATDExportObj.ExternalID;
-                                    delete newATDExportObj.Description;
-                                    delete newATDExportObj.Settings.EPayment;
-                                    delete newATDExportObj.Settings.CatalogIDs;
-                                    delete newATDExportObj.CreationDateTime;
-                                    delete newATDExportObj.ModificationDateTime;
-                                    for (let index = 0; index < newATDExportObj.Fields.length; index++) {
-                                        delete newATDExportObj.Fields[index].CreationDateTime;
-                                        delete newATDExportObj.Fields[index].ModificationDateTime;
-                                        delete newATDExportObj.Fields[index].CSVMappedColumnName;
-                                        if (
-                                            newATDExportObj.Fields[index].UserDefinedTableSource &&
-                                            newATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey
-                                        ) {
-                                            delete newATDExportObj.Fields[index].UserDefinedTableSource.SecondaryKey;
-                                        }
-                                        if (newATDExportObj.Fields[index].Type == 'Boolean') {
-                                            delete newATDExportObj.Fields[index].TypeSpecificFields;
-                                        }
-                                    }
-                                    for (let index = 0; index < newATDExportObj.DataViews.length; index++) {
-                                        delete newATDExportObj.DataViews[index].CreationDateTime;
-                                        delete newATDExportObj.DataViews[index].ModificationDateTime;
-                                    }
-                                    for (let index = 0; index < newATDExportObj.LineFields.length; index++) {
-                                        delete newATDExportObj.LineFields[index].CreationDateTime;
-                                        delete newATDExportObj.LineFields[index].ModificationDateTime;
-                                    }
-                                }
 
-                                existingATDExportObj = JSON.parse(
-                                    JSON.stringify(existingATDExportObj)
-                                        .replace(regexStrForCopy, '"Name":"test"')
-                                        .replace(/\s/g, ''),
-                                );
-                                originalATDExportObj = JSON.parse(
-                                    JSON.stringify(originalATDExportObj)
-                                        .replace(regexStr, '"Name":"test"')
-                                        .replace(/\s/g, ''),
+                                RemoveUntestedMembers(
+                                    new RegExp(`"Name":"${testDataExistingTransactionATD.ExternalID}"`, 'g'),
+                                    existingATDExportObj,
                                 );
                                 if (isNewATD) {
-                                    newATDExportObj = JSON.parse(
-                                        JSON.stringify(newATDExportObj)
-                                            .replace(regexStrForNewCopy, '"Name":"test"')
-                                            .replace(/\s/g, ''),
+                                    RemoveUntestedMembers(
+                                        new RegExp(`"Name":"${testDataRenameATD.ExternalID}"`, 'g'),
+                                        newATDExportObj,
                                     );
                                 }
 
@@ -1798,17 +1683,19 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             });
         });
 
-        describe('Test Clean up', () => {
-            it('Make sure an ATD removed in the end of the tests', async () => {
-                //Make sure an ATD removed in the end of the tests
-                return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
-            });
+        if (!isActivitiesTestsOverride && !isTransactionsTestsOverride) {
+            describe('Test Clean up', () => {
+                it('Make sure an ATD removed in the end of the tests', async () => {
+                    //Make sure an ATD removed in the end of the tests
+                    return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
+                });
 
-            it('Make sure an UDT removed in the end of the tests', async () => {
-                //Make sure an ATD removed in the end of the tests
-                return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
+                it('Make sure an UDT removed in the end of the tests', async () => {
+                    //Make sure an ATD removed in the end of the tests
+                    return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
+                });
             });
-        });
+        }
     });
 }
 
@@ -1869,4 +1756,38 @@ async function TestCleanUpUDT(service: ImportExportATDService) {
         }
     }
     return deletedCounter;
+}
+
+//Remove untested members from the tested Object
+function RemoveUntestedMembers(nameExpression: RegExp, testedObject) {
+    delete testedObject.Settings?.EPayment;
+    delete testedObject.Settings?.CatalogIDs;
+    delete testedObject.ExternalID;
+    delete testedObject.Description;
+    delete testedObject.CreationDateTime;
+    delete testedObject.ModificationDateTime;
+    for (let index = 0; index < testedObject.LineFields?.length; index++) {
+        delete testedObject.LineFields[index].CreationDateTime;
+        delete testedObject.LineFields[index].ModificationDateTime;
+    }
+    for (let index = 0; index < testedObject.Fields.length; index++) {
+        delete testedObject.Fields[index].CreationDateTime;
+        delete testedObject.Fields[index].ModificationDateTime;
+        delete testedObject.Fields[index].CSVMappedColumnName;
+        if (
+            testedObject.Fields[index].UserDefinedTableSource &&
+            testedObject.Fields[index].UserDefinedTableSource.SecondaryKey
+        ) {
+            delete testedObject.Fields[index].UserDefinedTableSource.SecondaryKey;
+        }
+        if (testedObject.Fields[index].Type == 'Boolean') {
+            delete testedObject.Fields[index].TypeSpecificFields;
+        }
+    }
+    for (let index = 0; index < testedObject.DataViews.length; index++) {
+        delete testedObject.DataViews[index].CreationDateTime;
+        delete testedObject.DataViews[index].ModificationDateTime;
+    }
+
+    testedObject = JSON.parse(JSON.stringify(testedObject).replace(nameExpression, '"Name":"test"').replace(/\s/g, ''));
 }

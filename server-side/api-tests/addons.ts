@@ -5612,7 +5612,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
         //Added in 27/01/2021 to fix "executeDependenciesInstallWithDependencyInstallationTest"
         //Deleted WebApp Version so when maintenance run, a downgrade to older Phased webapp version will be triggered,
-        //in hope that the latest webapp version is not phased - or else the test won't pass and the mechanisem here will have to be changed
+        //in hope that the latest webapp version is not phased - or else the test won't pass and then the test will changed to be positive test with isValidTest
         //const uninstallApiResponse =
         await generalService.papiClient.addons.installedAddons
             .addonUUID('00000000-0000-0000-1234-000000000b2b')
@@ -5630,6 +5630,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 },
             },
         ).then((response) => response.json());
+        const isValidTest = !varLatestWebAppVersion[0].phased;
         varLatestWebAppVersion = varLatestWebAppVersion[0].Version;
 
         //Create
@@ -5795,7 +5796,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             //Install results
-            if (testName.includes('Negative')) {
+            if (testName.includes('Negative') && isValidTest) {
                 mandatoryStepsInstallAddonWithVersion.installAddon = postAddonApiResponse.Status.Name == 'Failure';
                 addTestResultUnderHeadline(
                     testName,
