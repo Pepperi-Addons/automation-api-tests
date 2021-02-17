@@ -314,7 +314,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
     await executeRemoveAllWrongAddonsAndVersions();
 
     //Print Report
-    printTestResults(describe, expect, it, 'Var API');
+    printTestResults(describe, expect, it, 'Var API Tests Suites');
 
     //#region Tests
     //Test CRUD var addon

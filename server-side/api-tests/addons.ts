@@ -824,7 +824,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     //#endregion Test Config area
 
     //Print Report
-    printTestResults(describe, expect, it, 'Addons');
+    printTestResults(describe, expect, it, 'Addons Tests Suites');
 
     //#region Tests
     //#region Addons Tests

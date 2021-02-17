@@ -95,7 +95,7 @@ export class ImportExportATDService {
 
     exportMappingATD(references: References) {
         return this.papiClient.post(
-            '/addons/api/async/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/build_references_mapping',
+            '/addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/build_references_mapping',
             references,
         );
     }

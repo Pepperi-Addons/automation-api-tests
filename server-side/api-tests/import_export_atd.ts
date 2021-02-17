@@ -208,6 +208,21 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         .then((response) => response.json())
         .then((addon) => addon[0].Version);
 
+    let isInstalled = false;
+    let installedAddonsArr = await generalService.getAddons(dataViewsVarLatestVersion);
+    for (let i = 0; i < installedAddonsArr.length; i++) {
+        if (installedAddonsArr[i].Addon !== null) {
+            if (installedAddonsArr[i].Addon.Name == 'Data Views API') {
+                isInstalled = true;
+                break;
+            }
+        }
+    }
+    if (!isInstalled) {
+        await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).install();
+        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+    }
+
     const dataViewsUpgradeAuditLogResponse = await service.addons.installedAddons
         .addonUUID(`${dataViewsAddonUUID}`)
         .upgrade(dataViewsVarLatestVersion);
@@ -242,6 +257,21 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     )
         .then((response) => response.json())
         .then((addon) => addon[0].Version);
+
+    isInstalled = false;
+    installedAddonsArr = await generalService.getAddons(importExportATDVarLatestVersion);
+    for (let i = 0; i < installedAddonsArr.length; i++) {
+        if (installedAddonsArr[i].Addon !== null) {
+            if (installedAddonsArr[i].Addon.Name == 'ImportExportATD') {
+                isInstalled = true;
+                break;
+            }
+        }
+    }
+    if (!isInstalled) {
+        await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).install();
+        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+    }
 
     const importExportATDUpgradeAuditLogResponse = await service.addons.installedAddons
         .addonUUID(`${importExportATDAddonUUID}`)
@@ -724,9 +754,24 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         }
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
+                        let ATDExportObj;
+                        let ATDExportResponse;
                         it(`Export Activities ATD ${activityName}`, async () => {
-                            return expect(importExportATDService.exportATD('activities', activityID))
-                                .eventually.to.have.property('URL')
+                            expect(
+                                (ATDExportResponse = await importExportATDService.exportATD('activities', activityID)),
+                            )
+                                .to.have.property('URI')
+                                .that.contain('/audit_logs/');
+
+                            let maxLoopsCounter = 90;
+                            do {
+                                generalService.sleep(2000);
+                                ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                maxLoopsCounter--;
+                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                            expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
+                                .to.have.property('URL')
                                 .that.contain('https://')
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
@@ -742,9 +787,27 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         }
                         const transactionName = transactionsTypeArr[index];
                         const transactionID = transactionsTypeArr[transactionsTypeArr[index]];
+                        let ATDExportObj;
+                        let ATDExportResponse;
                         it(`Export Transactions ATD ${transactionName}`, async () => {
-                            return expect(importExportATDService.exportATD('transactions', transactionID))
-                                .eventually.to.have.property('URL')
+                            expect(
+                                (ATDExportResponse = await importExportATDService.exportATD(
+                                    'transactions',
+                                    transactionID,
+                                )),
+                            )
+                                .to.have.property('URI')
+                                .that.contain('/audit_logs/');
+
+                            let maxLoopsCounter = 90;
+                            do {
+                                generalService.sleep(2000);
+                                ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                maxLoopsCounter--;
+                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                            expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
+                                .to.have.property('URL')
                                 .that.contain('https://')
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
@@ -762,14 +825,29 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         }
                         const activityName = activitiesTypeArr[index];
                         const activityID = activitiesTypeArr[activitiesTypeArr[index]];
+                        let ATDExportObj;
+                        let ATDExportResponse;
                         it(`Export Mapping Of Activities ATD ${activityName}`, async () => {
-                            const exportATDResponse = await importExportATDService.exportATD('activities', activityID);
-                            expect(exportATDResponse)
+                            expect(
+                                (ATDExportResponse = await importExportATDService.exportATD('activities', activityID)),
+                            )
+                                .to.have.property('URI')
+                                .that.contain('/audit_logs/');
+
+                            let maxLoopsCounter = 90;
+                            do {
+                                generalService.sleep(2000);
+                                ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                maxLoopsCounter--;
+                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                            expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
                                 .to.have.property('URL')
                                 .that.contain('https://')
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
-                            const references = await fetch(exportATDResponse.URL)
+
+                            const references = await fetch(JSON.parse(ATDExportObj.AuditInfo.ResultObject).URL)
                                 .then((response) => response.json())
                                 .then((atd) => atd.References);
                             references[0].ID = 0;
@@ -797,17 +875,32 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         }
                         const transactionName = transactionsTypeArr[index];
                         const transactionID = transactionsTypeArr[transactionsTypeArr[index]];
+                        let ATDExportObj;
+                        let ATDExportResponse;
                         it(`Export Mapping Of Transactions ATD ${transactionName}`, async () => {
-                            const exportATDResponse = await importExportATDService.exportATD(
-                                'transactions',
-                                transactionID,
-                            );
-                            expect(exportATDResponse)
+                            expect(
+                                (ATDExportResponse = await importExportATDService.exportATD(
+                                    'transactions',
+                                    transactionID,
+                                )),
+                            )
+                                .to.have.property('URI')
+                                .that.contain('/audit_logs/');
+
+                            let maxLoopsCounter = 90;
+                            do {
+                                generalService.sleep(2000);
+                                ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                maxLoopsCounter--;
+                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                            expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
                                 .to.have.property('URL')
                                 .that.contain('https://')
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
-                            const references = await fetch(exportATDResponse.URL)
+
+                            const references = await fetch(JSON.parse(ATDExportObj.AuditInfo.ResultObject).URL)
                                 .then((response) => response.json())
                                 .then((atd) => atd.References);
                             references[0].ID = 0;
@@ -849,12 +942,27 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         let newATDExportObj;
                         let testDataExistingActivityATD;
                         let isNewATD = false;
+                        let ATDExportObj;
+                        let ATDExportResponse;
                         describe(`Import and Export ${activityName} ATD`, () => {
                             it(`Activity: ${activityName} copy to existing ATD`, async () => {
-                                originalATDExportResponse = await importExportATDService.exportATD(
-                                    'activities',
-                                    originalATDID,
-                                );
+                                expect(
+                                    (ATDExportResponse = await importExportATDService.exportATD(
+                                        'activities',
+                                        originalATDID,
+                                    )),
+                                )
+                                    .to.have.property('URI')
+                                    .that.contain('/audit_logs/');
+
+                                let maxLoopsCounter = 90;
+                                do {
+                                    generalService.sleep(2000);
+                                    ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                    maxLoopsCounter--;
+                                } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                                originalATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                 console.log({ TestData_Activity_Original_ATD_Export: originalATDExportResponse });
 
                                 expect(originalATDExportResponse)
@@ -862,7 +970,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-
                                 originalATDExportObj = await fetch(originalATDExportResponse.URL).then((response) =>
                                     response.json(),
                                 );
@@ -891,10 +998,23 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             });
 
                             it(`Activity: ${activityName} export from existing ATD`, async () => {
-                                existingATDExportResponse = await importExportATDService.exportATD(
-                                    'activities',
-                                    existingATDID,
-                                );
+                                expect(
+                                    (ATDExportResponse = await importExportATDService.exportATD(
+                                        'activities',
+                                        existingATDID,
+                                    )),
+                                )
+                                    .to.have.property('URI')
+                                    .that.contain('/audit_logs/');
+
+                                let maxLoopsCounter = 90;
+                                do {
+                                    generalService.sleep(2000);
+                                    ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                    maxLoopsCounter--;
+                                } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                                existingATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                 console.log({
                                     TestData_Activity_Existing_ATD_Export_Response: existingATDExportResponse,
                                 });
@@ -904,8 +1024,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-
-                                //TODO: add here a function to extract autdit log
                                 existingATDExportObj = await fetch(existingATDExportResponse.URL).then((response) =>
                                     response.json(),
                                 );
@@ -950,18 +1068,32 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                             it(`Activity: ${activityName} export from new ATD`, async () => {
                                 if (isNewATD) {
-                                    newATDExportResponse = await importExportATDService.exportATD(
-                                        'activities',
-                                        newATDID,
-                                    );
-                                    console.log({ TestData_Activity_New_ATD_Export_Response: newATDExportResponse });
+                                    expect(
+                                        (ATDExportResponse = await importExportATDService.exportATD(
+                                            'activities',
+                                            newATDID,
+                                        )),
+                                    )
+                                        .to.have.property('URI')
+                                        .that.contain('/audit_logs/');
+
+                                    let maxLoopsCounter = 90;
+                                    do {
+                                        generalService.sleep(2000);
+                                        ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                        maxLoopsCounter--;
+                                    } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                                    newATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
+                                    console.log({
+                                        TestData_Activity_New_ATD_Export_Response: newATDExportResponse,
+                                    });
 
                                     expect(newATDExportResponse)
                                         .to.have.property('URL')
                                         .that.contain('https://')
                                         .and.contain('cdn.')
                                         .and.contain('/TemporaryFiles/');
-
                                     newATDExportObj = await fetch(newATDExportResponse.URL).then((response) =>
                                         response.json(),
                                     );
@@ -1256,12 +1388,27 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         let newATDExportObj;
                         let testDataExistingTransactionATD;
                         let isNewATD = false;
+                        let ATDExportObj;
+                        let ATDExportResponse;
                         describe(`Import and Export ${transactionName} ATD`, () => {
                             it(`Transaction: ${transactionName} copy to existing ATD`, async () => {
-                                originalATDExportResponse = await importExportATDService.exportATD(
-                                    'transactions',
-                                    originalATDID,
-                                );
+                                expect(
+                                    (ATDExportResponse = await importExportATDService.exportATD(
+                                        'transactions',
+                                        originalATDID,
+                                    )),
+                                )
+                                    .to.have.property('URI')
+                                    .that.contain('/audit_logs/');
+
+                                let maxLoopsCounter = 90;
+                                do {
+                                    generalService.sleep(2000);
+                                    ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                    maxLoopsCounter--;
+                                } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                                originalATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                 console.log({ TestData_Transaction_Original_ATD_Export: originalATDExportResponse });
 
                                 expect(originalATDExportResponse)
@@ -1269,7 +1416,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-
                                 originalATDExportObj = await fetch(originalATDExportResponse.URL).then((response) =>
                                     response.json(),
                                 );
@@ -1302,6 +1448,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     'transactions',
                                     existingATDID,
                                 );
+
+                                expect(
+                                    (existingATDExportResponse = await importExportATDService.exportATD(
+                                        'transactions',
+                                        existingATDID,
+                                    )),
+                                )
+                                    .to.have.property('URI')
+                                    .that.contain('/audit_logs/');
+
+                                let maxLoopsCounter = 90;
+                                do {
+                                    generalService.sleep(2000);
+                                    existingATDExportObj = await generalService.papiClient.get(
+                                        existingATDExportResponse.URI,
+                                    );
+                                    maxLoopsCounter--;
+                                } while (existingATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                                existingATDExportResponse = JSON.parse(existingATDExportObj.AuditInfo.ResultObject);
                                 console.log({
                                     TestData_Transaction_Existing_ATD_Export_Response: existingATDExportResponse,
                                 });
@@ -1311,8 +1477,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-
-                                //TODO: add here a function to extract autdit log
                                 existingATDExportObj = await fetch(existingATDExportResponse.URL).then((response) =>
                                     response.json(),
                                 );
@@ -1357,18 +1521,32 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                             it(`Transaction: ${transactionName} export from new ATD`, async () => {
                                 if (isNewATD) {
-                                    newATDExportResponse = await importExportATDService.exportATD(
-                                        'transactions',
-                                        newATDID,
-                                    );
-                                    console.log({ TestData_Transaction_New_ATD_Export_Response: newATDExportResponse });
+                                    expect(
+                                        (ATDExportResponse = await importExportATDService.exportATD(
+                                            'transactions',
+                                            newATDID,
+                                        )),
+                                    )
+                                        .to.have.property('URI')
+                                        .that.contain('/audit_logs/');
+
+                                    let maxLoopsCounter = 90;
+                                    do {
+                                        generalService.sleep(2000);
+                                        ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                        maxLoopsCounter--;
+                                    } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+
+                                    newATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
+                                    console.log({
+                                        TestData_Transaction_New_ATD_Export_Response: newATDExportResponse,
+                                    });
 
                                     expect(newATDExportResponse)
                                         .to.have.property('URL')
                                         .that.contain('https://')
                                         .and.contain('cdn.')
                                         .and.contain('/TemporaryFiles/');
-
                                     newATDExportObj = await fetch(newATDExportResponse.URL).then((response) =>
                                         response.json(),
                                     );
