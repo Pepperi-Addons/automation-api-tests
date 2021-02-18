@@ -768,7 +768,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 generalService.sleep(2000);
                                 ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                 maxLoopsCounter--;
-                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                            } while (
+                                !ATDExportObj ||
+                                !ATDExportObj.Status ||
+                                (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                            );
 
                             expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
                                 .to.have.property('URL')
@@ -804,7 +808,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 generalService.sleep(2000);
                                 ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                 maxLoopsCounter--;
-                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                            } while (
+                                !ATDExportObj ||
+                                !ATDExportObj.Status ||
+                                (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                            );
 
                             expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
                                 .to.have.property('URL')
@@ -839,7 +847,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 generalService.sleep(2000);
                                 ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                 maxLoopsCounter--;
-                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                            } while (
+                                !ATDExportObj ||
+                                !ATDExportObj.Status ||
+                                (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                            );
 
                             expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
                                 .to.have.property('URL')
@@ -892,7 +904,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 generalService.sleep(2000);
                                 ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                 maxLoopsCounter--;
-                            } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                            } while (
+                                !ATDExportObj ||
+                                !ATDExportObj.Status ||
+                                (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                            );
 
                             expect(JSON.parse(ATDExportObj.AuditInfo.ResultObject))
                                 .to.have.property('URL')
@@ -967,7 +983,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     generalService.sleep(2000);
                                     ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                     maxLoopsCounter--;
-                                } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                                } while (
+                                    !ATDExportObj ||
+                                    !ATDExportObj.Status ||
+                                    (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                                );
 
                                 originalATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                 console.log({ TestData_Activity_Original_ATD_Export: originalATDExportResponse });
@@ -1019,7 +1039,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     generalService.sleep(2000);
                                     ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                     maxLoopsCounter--;
-                                } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                                } while (
+                                    !ATDExportObj ||
+                                    !ATDExportObj.Status ||
+                                    (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                                );
 
                                 existingATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                 console.log({
@@ -1091,7 +1115,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         generalService.sleep(2000);
                                         ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                         maxLoopsCounter--;
-                                    } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                                    } while (
+                                        !ATDExportObj ||
+                                        !ATDExportObj.Status ||
+                                        (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                                    );
 
                                     newATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                     console.log({
@@ -1427,7 +1455,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     generalService.sleep(2000);
                                     ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                     maxLoopsCounter--;
-                                } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                                } while (
+                                    !ATDExportObj ||
+                                    !ATDExportObj.Status ||
+                                    (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                                );
 
                                 originalATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                 console.log({ TestData_Transaction_Original_ATD_Export: originalATDExportResponse });
@@ -1486,7 +1518,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         existingATDExportResponse.URI,
                                     );
                                     maxLoopsCounter--;
-                                } while (existingATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                                } while (
+                                    !existingATDExportObj ||
+                                    !existingATDExportObj.Status ||
+                                    (existingATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                                );
 
                                 existingATDExportResponse = JSON.parse(existingATDExportObj.AuditInfo.ResultObject);
                                 console.log({
@@ -1561,7 +1597,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         generalService.sleep(2000);
                                         ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
                                         maxLoopsCounter--;
-                                    } while (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0);
+                                    } while (
+                                        !ATDExportObj ||
+                                        !ATDExportObj.Status ||
+                                        (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                                    );
 
                                     newATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
                                     console.log({
