@@ -188,7 +188,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     });
 
     const dataViewsAddonUUID = '484e7f22-796a-45f8-9082-12a734bac4e8';
-    const dataViewsVersion = '0.';
+    const dataViewsVersion = '1.';
     const importExportATDAddonUUID = 'e9029d7f-af32-4b0e-a513-8d9ced6f8186';
     const importExportATDVersion = '1.';
 
