@@ -547,7 +547,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length,
                             //     ) > 0.5
                             // ) {
-                            //     expect(
+                            //     expect.fail(
                             //         `The length of the ATD after the restore is ${
                             //             JSON.stringify(exportATDResponseAfterRestoreObject).length
                             //         }, expected to be in length of ${
@@ -588,7 +588,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             //         }, and Workflow in length of: ${
                             //             JSON.stringify(exportATDResponseAfterRestoreObject.Workflow).length
                             //         }`,
-                            //     ).to.be.true;
+                            //     );
                             // } else {
                             //     expect(
                             //         Math.abs(
@@ -1181,20 +1181,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             });
 
                             it(`Activity: ${activityName}, Exported Objects Match`, async () => {
-                                RemoveUntestedMembers(
-                                    new RegExp(`"Name":"${activityName}"`, 'g'),
-                                    originalATDExportObj,
-                                );
-
-                                RemoveUntestedMembers(
-                                    new RegExp(`"Name":"${testDataExistingActivityATD.ExternalID}"`, 'g'),
-                                    existingATDExportObj,
-                                );
+                                RemoveUntestedMembers(originalATDExportObj);
+                                RemoveUntestedMembers(existingATDExportObj);
                                 if (isNewATD) {
-                                    RemoveUntestedMembers(
-                                        new RegExp(`"Name":"${testDataRenameATD.ExternalID}"`, 'g'),
-                                        newATDExportObj,
-                                    );
+                                    RemoveUntestedMembers(newATDExportObj);
                                 }
 
                                 if (
@@ -1228,7 +1218,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     originalATDExportObj.Workflow.length == 0 ||
                                     originalATDExportObj.Settings.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin ATD length ${
                                             JSON.stringify(originalATDExportObj).length
                                         }, Copy to existing ATD length ${
@@ -1240,7 +1230,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         },  The copy to existing ATD Response was: ${
                                             existingATDExportResponse.URL
                                         }, The copy to new ATD Response was: ${newATDExportResponse.URL}.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1264,7 +1254,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.DataViews.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin DataViews length ${
                                             JSON.stringify(originalATDExportObj.DataViews).length
                                         }, Copy to existing DataViews length ${
@@ -1272,7 +1262,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new DataViews length ${
                                             JSON.stringify(newATDExportObj.DataViews).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1296,13 +1286,13 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.Fields.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin Fields length ${
                                             JSON.stringify(originalATDExportObj.Fields).length
                                         }, Copy to existing Fields length ${
                                             JSON.stringify(existingATDExportObj.Fields).length
                                         }, Created new Fields length ${JSON.stringify(newATDExportObj.Fields).length}.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1326,7 +1316,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.References.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin References length ${
                                             JSON.stringify(originalATDExportObj.References).length
                                         }, Copy to existing References length ${
@@ -1334,7 +1324,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new References length ${
                                             JSON.stringify(newATDExportObj.References).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1358,7 +1348,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.Workflow.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin Workflow length ${
                                             JSON.stringify(originalATDExportObj.Workflow).length
                                         }, Copy to existing Workflow length ${
@@ -1366,7 +1356,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new Workflow length ${
                                             JSON.stringify(newATDExportObj.Workflow).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1390,7 +1380,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.Settings.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin Settings length ${
                                             JSON.stringify(originalATDExportObj.Settings).length
                                         }, Copy to Settings DataViews length ${
@@ -1398,7 +1388,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new Settings length ${
                                             JSON.stringify(newATDExportObj.Settings).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1663,20 +1653,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             });
 
                             it(`Transaction: ${transactionName}, Exported Objects Match`, async () => {
-                                RemoveUntestedMembers(
-                                    new RegExp(`"Name":"${transactionName}"`, 'g'),
-                                    originalATDExportObj,
-                                );
-
-                                RemoveUntestedMembers(
-                                    new RegExp(`"Name":"${testDataExistingTransactionATD.ExternalID}"`, 'g'),
-                                    existingATDExportObj,
-                                );
+                                RemoveUntestedMembers(originalATDExportObj);
+                                RemoveUntestedMembers(existingATDExportObj);
                                 if (isNewATD) {
-                                    RemoveUntestedMembers(
-                                        new RegExp(`"Name":"${testDataRenameATD.ExternalID}"`, 'g'),
-                                        newATDExportObj,
-                                    );
+                                    RemoveUntestedMembers(newATDExportObj);
                                 }
 
                                 if (
@@ -1715,7 +1695,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     originalATDExportObj.Settings.length == 0 ||
                                     originalATDExportObj.Settings.LineFields == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin ATD length ${
                                             JSON.stringify(originalATDExportObj).length
                                         }, Copy to existing ATD length ${
@@ -1727,7 +1707,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         },  The copy to existing ATD Response was: ${
                                             existingATDExportResponse.URL
                                         }, The copy to new ATD Response was: ${newATDExportResponse.URL}.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1751,7 +1731,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.DataViews.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin DataViews length ${
                                             JSON.stringify(originalATDExportObj.DataViews).length
                                         }, Copy to existing DataViews length ${
@@ -1759,7 +1739,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new DataViews length ${
                                             JSON.stringify(newATDExportObj.DataViews).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1783,13 +1763,13 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.Fields.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin Fields length ${
                                             JSON.stringify(originalATDExportObj.Fields).length
                                         }, Copy to existing Fields length ${
                                             JSON.stringify(existingATDExportObj.Fields).length
                                         }, Created new Fields length ${JSON.stringify(newATDExportObj.Fields).length}.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1813,7 +1793,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.References.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin References length ${
                                             JSON.stringify(originalATDExportObj.References).length
                                         }, Copy to existing References length ${
@@ -1821,7 +1801,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new References length ${
                                             JSON.stringify(newATDExportObj.References).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1845,7 +1825,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.Workflow.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin Workflow length ${
                                             JSON.stringify(originalATDExportObj.Workflow).length
                                         }, Copy to existing Workflow length ${
@@ -1853,7 +1833,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new Workflow length ${
                                             JSON.stringify(newATDExportObj.Workflow).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1877,7 +1857,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.Settings.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin Settings length ${
                                             JSON.stringify(originalATDExportObj.Settings).length
                                         }, Copy to Settings DataViews length ${
@@ -1885,7 +1865,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new Settings length ${
                                             JSON.stringify(newATDExportObj.Settings).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1909,7 +1889,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         ) > 2) ||
                                     originalATDExportObj.LineFields.length == 0
                                 ) {
-                                    expect(
+                                    expect.fail(
                                         `Origin LineFields length ${
                                             JSON.stringify(originalATDExportObj.LineFields).length
                                         }, Copy to LineFields DataViews length ${
@@ -1917,7 +1897,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         }, Created new LineFields length ${
                                             JSON.stringify(newATDExportObj.LineFields).length
                                         }.`,
-                                    ).to.be.true;
+                                    );
                                 } else {
                                     expect(
                                         Math.abs(
@@ -1945,6 +1925,654 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
                 });
             });
+        }
+
+        if (isTransactionsTestsOverride) {
+            const testATDInternalID = 303802;
+            const testATDName = 'Test ATD 1.1.160 23.02.2021 3';
+            const TransactionsATDArr = [
+                {
+                    Title: testATDName,
+                    URL: 'https://cdn.staging.pepperi.com/TemporaryFiles/fdf4ad42-a043-4831-8137-87e88d3ffb0f',
+                },
+                {
+                    InternalID: 309354,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Winzer_Sales_Order_272248.json',
+                    MimeType: 'application/json',
+                    Title: 'Winzer Sales Order',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/ba72a445-adcc-4fc3-8e77-1d7089fba81b/Winzer Sales Order.json',
+                },
+                {
+                    InternalID: 309355,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Sales_Order_Winzer_DEV_(New)_278917.json',
+                    MimeType: 'application/json',
+                    Title: 'Sales Order Winzer DEV (New)',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/7c7b9a69-e78f-43b3-bc34-979bea10b061/Sales_Order_Winzer_DEV_(New)_278917.json',
+                },
+                {
+                    InternalID: 309356,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Sales_Order_Legacy_256743.json',
+                    MimeType: 'application/json',
+                    Title: 'Sales Order Legacy',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/34c91a76-8ddd-4f48-bd9b-be7a2bada162/Sales_Order_Legacy_256743.json',
+                },
+                {
+                    InternalID: 309357,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Sales_Order_New_Pricing_268998.json',
+                    MimeType: 'application/json',
+                    Title: 'Sales Order New Pricing',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4433db89-fc34-4a5d-895a-7c5d84e372f6/Sales_Order_New_Pricing_268998.json',
+                },
+                {
+                    InternalID: 309358,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'VSN_259467.json',
+                    MimeType: 'application/json',
+                    Title: 'VSN',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c510cd8c-e9b7-482a-9f86-090786768309/VSN_259467.json',
+                },
+                {
+                    InternalID: 309359,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'VSN_TEST_(268995)_268995.json',
+                    MimeType: 'application/json',
+                    Title: 'VSN TEST (268995)',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/607cc841-2112-4212-9019-511ec65d13e7/VSN_TEST_(268995)_268995.json',
+                },
+                {
+                    InternalID: 309360,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'CustomKits_259470.json',
+                    MimeType: 'application/json',
+                    Title: 'CustomKits',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bd37907a-e7d7-4df5-a073-a127b8ac6091/CustomKits_259470.json',
+                },
+                {
+                    InternalID: 309361,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Custom_Kit_TEST_(268997)_268997.json',
+                    MimeType: 'application/json',
+                    Title: 'Custom Kit TEST (268997)',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3c5d861-92f1-49c4-b726-d5f1164dd83a/Custom_Kit_TEST_(268997)_268997.json',
+                },
+                {
+                    InternalID: 309362,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'BillOnly_259469.json',
+                    MimeType: 'application/json',
+                    Title: 'BillOnly',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/00e31821-be85-4d89-bf4e-5b0594096427/BillOnly_259469.json',
+                },
+                {
+                    InternalID: 309363,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'FDP_259468.json',
+                    MimeType: 'application/json',
+                    Title: 'FDP',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/3c232b0c-f70a-437d-8a95-50569e344e12/FDP_259468.json',
+                },
+                {
+                    InternalID: 309364,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Label Only_261365.json',
+                    MimeType: 'application/json',
+                    Title: 'Label Only',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/dd9d02bf-be40-4875-b849-70a92598e70c/Label Only_261365.json',
+                },
+                {
+                    InternalID: 309365,
+                    Description: 'Exported from Winzer production in 24.02.2021',
+                    FileName: 'Update Prices_261683.json',
+                    MimeType: 'application/json',
+                    Title: 'Update Prices',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4bfcb129-6c1d-4075-828c-f3612912de63/Update Prices_261683.json',
+                },
+            ];
+            describe('Test Transactions Override', () => {
+                for (let index = 0; index < TransactionsATDArr.length; index++) {
+                    describe(`Tested ATD: ${TransactionsATDArr[index].Title}`, () => {
+                        let afterATDExportResponse;
+                        let beforeATDExportObj;
+                        let afterATDExportObj;
+                        let ATDExportObj;
+                        let ATDExportResponse;
+                        let ATDImportResponse;
+                        it('Post ATD to Override Existing ATD', async () => {
+                            const references = await fetch(TransactionsATDArr[index].URL)
+                                .then((response) => response.json())
+                                .then((atd) => atd.References);
+                            const mappingResponse = await importExportATDService.exportMappingATD({
+                                References: references,
+                            });
+
+                            ATDImportResponse = await importExportATDService
+                                .importATD('transactions', testATDInternalID, {
+                                    URL: TransactionsATDArr[index].URL,
+                                    References: mappingResponse,
+                                })
+                                .then((res) => res.text())
+                                .then((res) => (res ? JSON.parse(res) : ''));
+
+                            expect(ATDImportResponse).to.have.property('URI').that.contain('/audit_logs/');
+
+                            let maxLoopsCounter = 90;
+                            do {
+                                generalService.sleep(2000);
+                                ATDExportObj = await generalService.papiClient.get(ATDImportResponse.URI);
+                                maxLoopsCounter--;
+                            } while (
+                                !ATDExportObj ||
+                                !ATDExportObj.Status ||
+                                (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                            );
+
+                            expect(ATDExportObj)
+                                .to.have.property('AuditInfo')
+                                .that.have.property('ResultObject')
+                                .and.contain('{}');
+                        });
+
+                        it('Export The Overriden Transactions ATD', async () => {
+                            expect(
+                                (ATDExportResponse = await importExportATDService.exportATD(
+                                    'transactions',
+                                    testATDInternalID,
+                                )),
+                            )
+                                .to.have.property('URI')
+                                .that.contain('/audit_logs/');
+
+                            let maxLoopsCounter = 90;
+                            do {
+                                generalService.sleep(2000);
+                                ATDExportObj = await generalService.papiClient.get(ATDExportResponse.URI);
+                                maxLoopsCounter--;
+                            } while (
+                                !ATDExportObj ||
+                                !ATDExportObj.Status ||
+                                (ATDExportObj.Status.ID == 2 && maxLoopsCounter > 0)
+                            );
+
+                            afterATDExportResponse = JSON.parse(ATDExportObj.AuditInfo.ResultObject);
+
+                            expect(afterATDExportResponse)
+                                .to.have.property('URL')
+                                .that.contain('https://')
+                                .and.contain('cdn.')
+                                .and.contain('/TemporaryFiles/');
+
+                            beforeATDExportObj = await fetch(TransactionsATDArr[index].URL).then((response) =>
+                                response.json(),
+                            );
+
+                            afterATDExportObj = await fetch(afterATDExportResponse.URL).then((response) =>
+                                response.json(),
+                            );
+
+                            RemoveUntestedMembers(beforeATDExportObj);
+                            RemoveUntestedMembers(afterATDExportObj);
+
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj).length -
+                                        JSON.stringify(beforeATDExportObj).length,
+                                ) > 10
+                            ) {
+                                expect(`The Content Length of: ${afterATDExportResponse.URL}`).to.equal(
+                                    `The Content Length of: ${TransactionsATDArr[index].URL}`,
+                                );
+                            }
+                        });
+
+                        it(`New Total Length of: ${TransactionsATDArr[index].Title} is as expected`, async () => {
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj).length -
+                                        JSON.stringify(beforeATDExportObj).length,
+                                ) > 10
+                            ) {
+                                expect(JSON.stringify(afterATDExportObj).length).to.equal(
+                                    JSON.stringify(beforeATDExportObj).length,
+                                );
+                            }
+                        });
+
+                        it(`New Amount of: ${TransactionsATDArr[index].Title} - Data Views is as expected`, async () => {
+                            expect(afterATDExportObj.DataViews.length).to.equal(beforeATDExportObj.DataViews.length);
+                        });
+
+                        it(`New Length of: ${TransactionsATDArr[index].Title} - Data Views is as expected`, async () => {
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj.DataViews).length -
+                                        JSON.stringify(beforeATDExportObj.DataViews).length,
+                                ) > 2
+                            ) {
+                                beforeATDExportObj.DataViews.sort(compareByContextName);
+                                afterATDExportObj.DataViews.sort(compareByContextName);
+
+                                const beforeDataViewsArr = [] as any;
+                                beforeATDExportObj.DataViews.forEach((DataView) => {
+                                    beforeDataViewsArr.push({
+                                        Before_Name: DataView.Context.Name,
+                                        Length: JSON.stringify(DataView).length,
+                                        Obj: DataView,
+                                    });
+                                });
+
+                                const afterDataViewsArr = [] as any;
+                                afterATDExportObj.DataViews.forEach((DataView) => {
+                                    afterDataViewsArr.push({
+                                        After_Name: DataView.Context.Name,
+                                        Length: JSON.stringify(DataView).length,
+                                        Obj: DataView,
+                                    });
+                                });
+
+                                const forLoopSize =
+                                    beforeDataViewsArr.length > afterDataViewsArr.length
+                                        ? beforeDataViewsArr.length
+                                        : afterDataViewsArr.length;
+                                const errorsArr = [] as any;
+                                for (let index = 0; index < forLoopSize; index++) {
+                                    if (
+                                        beforeDataViewsArr[
+                                            index < beforeDataViewsArr.length ? index : beforeDataViewsArr.length - 1
+                                        ].Length !=
+                                        afterDataViewsArr[
+                                            index < afterDataViewsArr.length ? index : afterDataViewsArr.length - 1
+                                        ].Length
+                                    ) {
+                                        errorsArr.push(
+                                            {
+                                                Before:
+                                                    beforeDataViewsArr[
+                                                        index < beforeDataViewsArr.length
+                                                            ? index
+                                                            : beforeDataViewsArr.length - 1
+                                                    ],
+                                            },
+                                            {
+                                                After:
+                                                    afterDataViewsArr[
+                                                        index < afterDataViewsArr.length
+                                                            ? index
+                                                            : afterDataViewsArr.length - 1
+                                                    ],
+                                            },
+                                        );
+                                    }
+                                }
+                                expect(JSON.stringify(errorsArr)).to.equal('[]');
+                            }
+                        });
+
+                        it(`New Amount of: ${TransactionsATDArr[index].Title} - Fields is as expected`, async () => {
+                            expect(afterATDExportObj.Fields.length).to.equal(beforeATDExportObj.Fields.length);
+                        });
+
+                        it(`New Length of: ${TransactionsATDArr[index].Title} - Fields is as expected`, async () => {
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj.Fields).length -
+                                        JSON.stringify(beforeATDExportObj.Fields).length,
+                                ) > 2
+                            ) {
+                                beforeATDExportObj.Fields.sort(compareByFieldID);
+                                afterATDExportObj.Fields.sort(compareByFieldID);
+
+                                const beforeFieldsArr = [] as any;
+                                beforeATDExportObj.Fields.forEach((Field) => {
+                                    beforeFieldsArr.push({
+                                        Before_FieldID: Field.FieldID,
+                                        Length: JSON.stringify(Field).length,
+                                        Obj: Field,
+                                    });
+                                });
+
+                                const afterFieldsArr = [] as any;
+                                afterATDExportObj.Fields.forEach((Field) => {
+                                    afterFieldsArr.push({
+                                        After_FieldID: Field.FieldID,
+                                        Length: JSON.stringify(Field).length,
+                                        Obj: Field,
+                                    });
+                                });
+
+                                const forLoopSize =
+                                    beforeFieldsArr.length > afterFieldsArr.length
+                                        ? beforeFieldsArr.length
+                                        : afterFieldsArr.length;
+                                const errorsArr = [] as any;
+
+                                for (let index = 0; index < forLoopSize; index++) {
+                                    if (
+                                        beforeFieldsArr[
+                                            index < beforeFieldsArr.length ? index : beforeFieldsArr.length - 1
+                                        ].Length !=
+                                        afterFieldsArr[
+                                            index < afterFieldsArr.length ? index : afterFieldsArr.length - 1
+                                        ].Length
+                                    ) {
+                                        errorsArr.push(
+                                            {
+                                                Before:
+                                                    beforeFieldsArr[
+                                                        index < beforeFieldsArr.length
+                                                            ? index
+                                                            : beforeFieldsArr.length - 1
+                                                    ],
+                                            },
+                                            {
+                                                After:
+                                                    afterFieldsArr[
+                                                        index < afterFieldsArr.length
+                                                            ? index
+                                                            : afterFieldsArr.length - 1
+                                                    ],
+                                            },
+                                        );
+                                    }
+                                }
+                                expect(JSON.stringify(errorsArr)).to.equal('[]');
+                            }
+                        });
+
+                        it(`New Amount of: ${TransactionsATDArr[index].Title} - LineFields is as expected`, async () => {
+                            expect(afterATDExportObj.LineFields.length).to.equal(beforeATDExportObj.LineFields.length);
+                        });
+
+                        it(`New Length of: ${TransactionsATDArr[index].Title} - LineFields is as expected`, async () => {
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj.LineFields).length -
+                                        JSON.stringify(beforeATDExportObj.LineFields).length,
+                                ) > 2
+                            ) {
+                                beforeATDExportObj.LineFields.sort(compareByFieldID);
+                                afterATDExportObj.LineFields.sort(compareByFieldID);
+
+                                const beforeLineFieldsArr = [] as any;
+                                beforeATDExportObj.LineFields.forEach((LineField) => {
+                                    beforeLineFieldsArr.push({
+                                        Before_Name: LineField.FieldID,
+                                        Length: JSON.stringify(LineField).length,
+                                        Obj: LineField,
+                                    });
+                                });
+
+                                const afterLineFieldsArr = [] as any;
+                                afterATDExportObj.LineFields.forEach((LineField) => {
+                                    afterLineFieldsArr.push({
+                                        After_Name: LineField.FieldID,
+                                        Length: JSON.stringify(LineField).length,
+                                        Obj: LineField,
+                                    });
+                                });
+
+                                const forLoopSize =
+                                    beforeLineFieldsArr.length > afterLineFieldsArr.length
+                                        ? beforeLineFieldsArr.length
+                                        : afterLineFieldsArr.length;
+                                const errorsArr = [] as any;
+                                for (let index = 0; index < forLoopSize; index++) {
+                                    if (
+                                        beforeLineFieldsArr[
+                                            index < beforeLineFieldsArr.length ? index : beforeLineFieldsArr.length - 1
+                                        ].Length !=
+                                        afterLineFieldsArr[
+                                            index < afterLineFieldsArr.length ? index : afterLineFieldsArr.length - 1
+                                        ].Length
+                                    ) {
+                                        errorsArr.push(
+                                            {
+                                                Before:
+                                                    beforeLineFieldsArr[
+                                                        index < beforeLineFieldsArr.length
+                                                            ? index
+                                                            : beforeLineFieldsArr.length - 1
+                                                    ],
+                                            },
+                                            {
+                                                After:
+                                                    afterLineFieldsArr[
+                                                        index < afterLineFieldsArr.length
+                                                            ? index
+                                                            : afterLineFieldsArr.length - 1
+                                                    ],
+                                            },
+                                        );
+                                    }
+                                }
+                                expect(JSON.stringify(errorsArr)).to.equal('[]');
+                            }
+                        });
+
+                        it(`New Amount of: ${TransactionsATDArr[index].Title} - References is as expected`, async () => {
+                            expect(afterATDExportObj.References.length).to.equal(beforeATDExportObj.References.length);
+                        });
+
+                        it(`Hidden References of: ${TransactionsATDArr[index].Title} (DI-17304)`, async () => {
+                            for (let index = 0; index < beforeATDExportObj.References.length; index++) {
+                                if (beforeATDExportObj.References[index].Type == 'user_defined_table') {
+                                    const tmpContent = JSON.parse(beforeATDExportObj.References[index].Content);
+                                    if (tmpContent.Hidden) {
+                                        tmpContent.Hidden = false;
+                                        beforeATDExportObj.References[index].Content = JSON.stringify(tmpContent);
+
+                                        const beforeHiddenReference = beforeATDExportObj.References[index];
+
+                                        afterATDExportObj.References.forEach((Reference) => {
+                                            if (Reference.Name == beforeHiddenReference.Name) {
+                                                expect(JSON.parse(Reference.Content).Hidden).to.be.false;
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        });
+
+                        it(`New Length of: ${TransactionsATDArr[index].Title} - References is as expected`, async () => {
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj.References).length -
+                                        JSON.stringify(beforeATDExportObj.References).length,
+                                ) > 2
+                            ) {
+                                beforeATDExportObj.References.sort(compareByName);
+                                afterATDExportObj.References.sort(compareByName);
+
+                                const beforeReferenceArr = [] as any;
+                                beforeATDExportObj.References.forEach((Reference) => {
+                                    beforeReferenceArr.push({
+                                        Before_Name: Reference.Name,
+                                        Length: JSON.stringify(Reference).length,
+                                        Obj: Reference,
+                                    });
+                                });
+
+                                const afterReferenceArr = [] as any;
+                                afterATDExportObj.References.forEach((Reference) => {
+                                    afterReferenceArr.push({
+                                        After_Name: Reference.Name,
+                                        Length: JSON.stringify(Reference).length,
+                                        Obj: Reference,
+                                    });
+                                });
+
+                                const forLoopSize =
+                                    beforeReferenceArr.length > afterReferenceArr.length
+                                        ? beforeReferenceArr.length
+                                        : afterReferenceArr.length;
+
+                                const errorsArr = [] as any;
+                                for (let index = 0; index < forLoopSize; index++) {
+                                    if (
+                                        beforeReferenceArr[
+                                            index < beforeReferenceArr.length ? index : beforeReferenceArr.length - 1
+                                        ].Length !=
+                                        afterReferenceArr[
+                                            index < afterReferenceArr.length ? index : afterReferenceArr.length - 1
+                                        ].Length
+                                    ) {
+                                        errorsArr.push(
+                                            {
+                                                Before:
+                                                    beforeReferenceArr[
+                                                        index < beforeReferenceArr.length
+                                                            ? index
+                                                            : beforeReferenceArr.length - 1
+                                                    ],
+                                            },
+                                            {
+                                                After:
+                                                    afterReferenceArr[
+                                                        index < afterReferenceArr.length
+                                                            ? index
+                                                            : afterReferenceArr.length - 1
+                                                    ],
+                                            },
+                                        );
+                                    }
+                                }
+                                expect.fail(
+                                    `These items are not match: ${JSON.stringify(errorsArr)}, The URL Before: ${
+                                        TransactionsATDArr[index].URL
+                                    }, The URL After of: ${afterATDExportResponse.URL}`,
+                                );
+                            }
+                        });
+
+                        it(`New Amount of: ${TransactionsATDArr[index].Title} - Settings is as expected`, async () => {
+                            expect(afterATDExportObj.Settings.length).to.equal(beforeATDExportObj.Settings.length);
+                        });
+
+                        it(`New Length of: ${TransactionsATDArr[index].Title} - Settings is as expected`, async () => {
+                            const errorsArr = [] as any;
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj.Settings).length -
+                                        JSON.stringify(beforeATDExportObj.Settings).length,
+                                ) > 2
+                            ) {
+                                errorsArr.push(
+                                    {
+                                        Before_Settings: beforeATDExportObj.Settings,
+                                        Length: JSON.stringify(beforeATDExportObj.Settings).length,
+                                        Obj: beforeATDExportObj.Settings,
+                                    },
+                                    {
+                                        After_Settings: afterATDExportObj.Settings,
+                                        Length: JSON.stringify(afterATDExportObj.Settings).length,
+                                        Obj: afterATDExportObj.Settings,
+                                    },
+                                );
+                            }
+                            expect(JSON.stringify(errorsArr)).to.equal('[]');
+                        });
+
+                        it(`Test Icon of: ${TransactionsATDArr[index].Title}`, async () => {
+                            if (afterATDExportObj.Settings.Icon != beforeATDExportObj.Settings.Icon) {
+                                expect.fail(
+                                    `${afterATDExportObj.Settings.Icon} to equal ${beforeATDExportObj.Settings.Icon}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
+                                );
+                            }
+                        });
+
+                        it(`Test InventoryLimitation.Name of: ${TransactionsATDArr[index].Title}`, async () => {
+                            if (
+                                afterATDExportObj.Settings.InventoryLimitation?.Name !=
+                                beforeATDExportObj.Settings.InventoryLimitation?.Name
+                            ) {
+                                expect.fail(
+                                    `These items are not the same: Before: ${beforeATDExportObj.Settings.InventoryLimitation?.Name} and After: ${afterATDExportObj.Settings.InventoryLimitation?.Name}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
+                                );
+                            }
+                        });
+
+                        it(`Test CaseQuantityLimitation.Name of: ${TransactionsATDArr[index].Title}`, async () => {
+                            if (
+                                afterATDExportObj.Settings.CaseQuantityLimitation?.Name !=
+                                beforeATDExportObj.Settings.CaseQuantityLimitation?.Name
+                            ) {
+                                expect(afterATDExportObj.Settings.CaseQuantityLimitation?.Name).to.equal(
+                                    beforeATDExportObj.Settings.CaseQuantityLimitation?.Name,
+                                );
+                                expect.fail(
+                                    `These items are not the same: Before: ${beforeATDExportObj.Settings.CaseQuantityLimitation?.Name} and After: ${afterATDExportObj.Settings.CaseQuantityLimitation?.Name}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
+                                );
+                            }
+                        });
+
+                        it(`Test TransactionLinesFilter.advancedFormula of: ${TransactionsATDArr[index].Title}`, async () => {
+                            if (
+                                afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula !=
+                                beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula
+                            ) {
+                                expect.fail(
+                                    `These items are not the same: Before: ${beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula} and After: ${afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
+                                );
+                            }
+                        });
+
+                        it(`New Amount of: ${TransactionsATDArr[index].Title} - Workflow is as expected`, async () => {
+                            expect(afterATDExportObj.Workflow.length).to.equal(beforeATDExportObj.Workflow.length);
+                        });
+
+                        it(`New Length of: ${TransactionsATDArr[index].Title} - Workflow is as expected`, async () => {
+                            const errorsArr = [] as any;
+                            if (
+                                Math.abs(
+                                    JSON.stringify(afterATDExportObj.Workflow).length -
+                                        JSON.stringify(beforeATDExportObj.Workflow).length,
+                                ) > 2
+                            ) {
+                                errorsArr.push(
+                                    {
+                                        Before_Settings: beforeATDExportObj.Workflow,
+                                        Length: JSON.stringify(beforeATDExportObj.Workflow).length,
+                                        Obj: beforeATDExportObj.Workflow,
+                                    },
+                                    {
+                                        After_Settings: afterATDExportObj.Workflow,
+                                        Length: JSON.stringify(afterATDExportObj.Workflow).length,
+                                        Obj: afterATDExportObj.Workflow,
+                                    },
+                                );
+                            }
+                            expect(JSON.stringify(errorsArr)).to.equal('[]');
+                        });
+                    });
+                }
+            });
+        }
+        if (isActivitiesTestsOverride) {
+            // describe('Test Activities Override', () => {
+            //     it('Make sure an ATD removed in the end of the tests', async () => {
+            //         //Make sure an ATD removed in the end of the tests
+            //         return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
+            //     });
+            //     it('Make sure an UDT removed in the end of the tests', async () => {
+            //         //Make sure an ATD removed in the end of the tests
+            //         return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
+            //     });
+            // });
         }
     });
 }
@@ -2009,9 +2637,11 @@ async function TestCleanUpUDT(service: ImportExportATDService) {
 }
 
 //Remove untested members from the tested Object
-function RemoveUntestedMembers(nameExpression: RegExp, testedObject) {
+function RemoveUntestedMembers(testedObject) {
     delete testedObject.Settings?.EPayment;
     delete testedObject.Settings?.CatalogIDs;
+    delete testedObject.Settings?.TransactionItemsScopeFilterID;
+    delete testedObject.Settings?.DestinationAccountsData.IDs;
     delete testedObject.ExternalID;
     delete testedObject.Description;
     delete testedObject.CreationDateTime;
@@ -2019,6 +2649,7 @@ function RemoveUntestedMembers(nameExpression: RegExp, testedObject) {
     for (let index = 0; index < testedObject.LineFields?.length; index++) {
         delete testedObject.LineFields[index].CreationDateTime;
         delete testedObject.LineFields[index].ModificationDateTime;
+        delete testedObject.LineFields[index].InternalID;
     }
     for (let index = 0; index < testedObject.Fields.length; index++) {
         delete testedObject.Fields[index].CreationDateTime;
@@ -2037,7 +2668,64 @@ function RemoveUntestedMembers(nameExpression: RegExp, testedObject) {
     for (let index = 0; index < testedObject.DataViews.length; index++) {
         delete testedObject.DataViews[index].CreationDateTime;
         delete testedObject.DataViews[index].ModificationDateTime;
+        delete testedObject.DataViews[index].Context.Object.Name;
+        delete testedObject.DataViews[index].Context.Object.InternalID;
     }
+    for (let index = 0; index < testedObject.References.length; index++) {
+        delete testedObject.References[index].ID;
+        if (testedObject.References[index].Type == 'file_storage') {
+            delete testedObject.References[index].Path;
+        }
+        //Added in 24/02/2021 the 'Transaction Item Scope' is created automatically in the UI and won't be created in the API
+        //Have to add ref and creating will not help
+        if (testedObject.References[index].Name == 'Transaction Item Scope') {
+            testedObject.References.splice(index, 1);
+        }
+        if (testedObject.References[index].Type == 'user_defined_table') {
+            const tmpContent = JSON.parse(testedObject.References[index].Content);
+            delete tmpContent.InternalID;
+            delete tmpContent.CreationDateTime;
+            delete tmpContent.ModificationDateTime;
+            testedObject.References[index].Content = JSON.stringify(tmpContent);
+        }
+    }
+}
 
-    testedObject = JSON.parse(JSON.stringify(testedObject).replace(nameExpression, '"Name":"test"').replace(/\s/g, ''));
+function compareByName(a, b) {
+    const beforeName = a.Name;
+    const afterName = b.Name;
+
+    let comparison = 0;
+    if (beforeName > afterName) {
+        comparison = 1;
+    } else if (beforeName < afterName) {
+        comparison = -1;
+    }
+    return comparison;
+}
+
+function compareByContextName(a, b) {
+    const beforeName = a.Context.Name;
+    const afterName = b.Context.Name;
+
+    let comparison = 0;
+    if (beforeName > afterName) {
+        comparison = 1;
+    } else if (beforeName < afterName) {
+        comparison = -1;
+    }
+    return comparison;
+}
+
+function compareByFieldID(a, b) {
+    const beforeFieldID = a.FieldID;
+    const afterFieldID = b.FieldID;
+
+    let comparison = 0;
+    if (beforeFieldID > afterFieldID) {
+        comparison = 1;
+    } else if (beforeFieldID < afterFieldID) {
+        comparison = -1;
+    }
+    return comparison;
 }
