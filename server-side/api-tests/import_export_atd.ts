@@ -1928,12 +1928,16 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         }
 
         if (isTransactionsTestsOverride) {
-            const testATDInternalID = 303802;
-            const testATDName = 'Test ATD 1.1.160 23.02.2021 3';
+            const testATDInternalID = 303912;
             const TransactionsATDArr = [
                 {
-                    Title: testATDName,
-                    URL: 'https://cdn.staging.pepperi.com/TemporaryFiles/fdf4ad42-a043-4831-8137-87e88d3ffb0f',
+                    InternalID: 309512,
+                    Description: 'Exported from Sandbox in 28.02.2021',
+                    FileName: '1_28-02-2021_Test_ATD_303912.json',
+                    MimeType: 'application/json',
+                    Title: '1 28.02.2021 Test ATD',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
                 },
                 {
                     InternalID: 309354,
@@ -2046,6 +2050,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             ];
             describe('Test Transactions Override', () => {
                 for (let index = 0; index < TransactionsATDArr.length; index++) {
+                    if (index > 0) {
+                        index = 99;
+                        break;
+                    }
                     describe(`Tested ATD: ${TransactionsATDArr[index].Title}`, () => {
                         let afterATDExportResponse;
                         let beforeATDExportObj;
@@ -2520,16 +2528,17 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             }
                         });
 
-                        it(`Test TransactionLinesFilter.advancedFormula of: ${TransactionsATDArr[index].Title}`, async () => {
-                            if (
-                                afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula !=
-                                beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula
-                            ) {
-                                expect.fail(
-                                    `These items are not the same: Before: ${beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula} and After: ${afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
-                                );
-                            }
-                        });
+                        //TODO: 28.02.2021 it was decided with Hadar that this should be tested with the meta_data/filters/id tests
+                        // it(`Test TransactionLinesFilter.advancedFormula of: ${TransactionsATDArr[index].Title}`, async () => {
+                        //     if (
+                        //         afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula !=
+                        //         beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula
+                        //     ) {
+                        //         expect.fail(
+                        //             `These items are not the same: Before: ${beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula} and After: ${afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
+                        //         );
+                        //     }
+                        // });
 
                         it(`New Amount of: ${TransactionsATDArr[index].Title} - Workflow is as expected`, async () => {
                             expect(afterATDExportObj.Workflow.length).to.equal(beforeATDExportObj.Workflow.length);
