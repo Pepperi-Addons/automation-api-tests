@@ -21,6 +21,7 @@ let isActivitiesTestsBox = false;
 let isTransactionsTestsBox = false;
 let isActivitiesTestsOverride = false;
 let isTransactionsTestsOverride = false;
+let isLocalFilesComparison = false;
 
 // All Import Export ATD Tests
 export async function ImportExportATDActivitiesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -103,6 +104,17 @@ export async function ImportExportATDTransactionsOverrideTests(
     await ImportExportATDTests(generalService, request, tester);
 }
 
+export async function ImportExportATDLocalTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverride = false;
+    isLocalFilesComparison = true;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
 async function ImportExportATDTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
     //const fieldsService = new FieldsService(generalService.papiClient);
@@ -114,6 +126,14 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     //Prerequisites Test Data
     const transactionsTypeArr = [] as any;
     const activitiesTypeArr = [] as any;
+
+    //In case of local test
+    let beforeURL;
+    let afterURL;
+    if (isLocalFilesComparison) {
+        beforeURL = request.body.before;
+        afterURL = request.body.after;
+    }
 
     //Clean the ATD and UDT from failed tests before starting a new test
     await TestCleanUpATD(importExportATDService);
@@ -159,7 +179,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     }
 
     let testDataPostUDT;
-    if (!isActivitiesTestsOverride && !isTransactionsTestsOverride) {
+    if (!isActivitiesTestsOverride && !isTransactionsTestsOverride && !isLocalFilesComparison) {
         testDataPostUDT = await importExportATDService.postUDT({
             TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
             MainKeyType: { ID: 23, Name: '' },
@@ -1913,7 +1933,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             });
         });
 
-        if (!isActivitiesTestsOverride && !isTransactionsTestsOverride) {
+        if (!isActivitiesTestsOverride && !isTransactionsTestsOverride && !isLocalFilesComparison) {
             describe('Test Clean up', () => {
                 it('Make sure an ATD removed in the end of the tests', async () => {
                     //Make sure an ATD removed in the end of the tests
@@ -1930,59 +1950,104 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         if (isTransactionsTestsOverride) {
             const testATDInternalID = 303912;
             const TransactionsATDArr = [
+                // {
+                //     InternalID: 309512,
+                //     Description: 'Exported from Sandbox in 28.02.2021',
+                //     FileName: '1_28-02-2021_Test_ATD_303912.json',
+                //     MimeType: 'application/json',
+                //     Title: '1 28.02.2021 Test ATD',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
+                // },
+                // {
+                //     InternalID: 309354,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Winzer_Sales_Order_272248.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Winzer Sales Order',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/ba72a445-adcc-4fc3-8e77-1d7089fba81b/Winzer Sales Order.json',
+                // },\
                 {
-                    InternalID: 309512,
-                    Description: 'Exported from Sandbox in 28.02.2021',
-                    FileName: '1_28-02-2021_Test_ATD_303912.json',
-                    MimeType: 'application/json',
-                    Title: '1 28.02.2021 Test ATD',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
-                },
-                {
-                    InternalID: 309354,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Winzer_Sales_Order_272248.json',
+                    InternalID: 309544,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Winzer_Sales_Order_272248_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Winzer Sales Order',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/ba72a445-adcc-4fc3-8e77-1d7089fba81b/Winzer Sales Order.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c4c2caac-acc1-4ff1-8206-5165561c342b/Winzer_Sales_Order_272248_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309355,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Sales_Order_Winzer_DEV_(New)_278917.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Sales Order Winzer DEV (New)',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/7c7b9a69-e78f-43b3-bc34-979bea10b061/Sales_Order_Winzer_DEV_(New)_278917.json',
+                // },
                 {
-                    InternalID: 309355,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Sales_Order_Winzer_DEV_(New)_278917.json',
+                    InternalID: 309546,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Sales Order Winzer DEV (New)',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/7c7b9a69-e78f-43b3-bc34-979bea10b061/Sales_Order_Winzer_DEV_(New)_278917.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/23a3d144-6356-4e69-b55d-f35916ae868e/Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309356,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Sales_Order_Legacy_256743.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Sales Order Legacy',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/34c91a76-8ddd-4f48-bd9b-be7a2bada162/Sales_Order_Legacy_256743.json',
+                // },
                 {
-                    InternalID: 309356,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Sales_Order_Legacy_256743.json',
+                    InternalID: 309547,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Sales_Order_Legacy_256743_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Sales Order Legacy',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/34c91a76-8ddd-4f48-bd9b-be7a2bada162/Sales_Order_Legacy_256743.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c2c35582-e091-4478-986f-ea8af10ba004/Sales_Order_Legacy_256743_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309357,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Sales_Order_New_Pricing_268998.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Sales Order New Pricing',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4433db89-fc34-4a5d-895a-7c5d84e372f6/Sales_Order_New_Pricing_268998.json',
+                // },
                 {
-                    InternalID: 309357,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Sales_Order_New_Pricing_268998.json',
+                    InternalID: 309556,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Sales_Order_New_Pricing_268998_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Sales Order New Pricing',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4433db89-fc34-4a5d-895a-7c5d84e372f6/Sales_Order_New_Pricing_268998.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3a9c558-d835-4018-983e-5e70e7565786/Sales_Order_New_Pricing_268998_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309358,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'VSN_259467.json',
+                //     MimeType: 'application/json',
+                //     Title: 'VSN',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c510cd8c-e9b7-482a-9f86-090786768309/VSN_259467.json',
+                // },
                 {
-                    InternalID: 309358,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'VSN_259467.json',
+                    InternalID: 309557,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'VSN_259467_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'VSN',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c510cd8c-e9b7-482a-9f86-090786768309/VSN_259467.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/564da1f5-6ce5-48d5-a40d-f4d7409d6d5d/VSN_259467_Fix_01_03.json',
                 },
                 {
                     InternalID: 309359,
@@ -1993,32 +2058,59 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/607cc841-2112-4212-9019-511ec65d13e7/VSN_TEST_(268995)_268995.json',
                 },
+                // {
+                //     InternalID: 309360,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'CustomKits_259470.json',
+                //     MimeType: 'application/json',
+                //     Title: 'CustomKits',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bd37907a-e7d7-4df5-a073-a127b8ac6091/CustomKits_259470.json',
+                // },
                 {
-                    InternalID: 309360,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'CustomKits_259470.json',
+                    InternalID: 309559,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'CustomKits_259470_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'CustomKits',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bd37907a-e7d7-4df5-a073-a127b8ac6091/CustomKits_259470.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/28d95df7-5147-423a-b47d-020489f828e8/CustomKits_259470_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309361,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Custom_Kit_TEST_(268997)_268997.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Custom Kit TEST (268997)',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3c5d861-92f1-49c4-b726-d5f1164dd83a/Custom_Kit_TEST_(268997)_268997.json',
+                // },
                 {
-                    InternalID: 309361,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Custom_Kit_TEST_(268997)_268997.json',
+                    InternalID: 309560,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Custom_Kit_TEST_(268997)_268997_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Custom Kit TEST (268997)',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3c5d861-92f1-49c4-b726-d5f1164dd83a/Custom_Kit_TEST_(268997)_268997.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/8bec2403-ecbc-4743-b512-b73349a90e6f/Custom_Kit_TEST_(268997)_268997_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309362,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'BillOnly_259469.json',
+                //     MimeType: 'application/json',
+                //     Title: 'BillOnly',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/00e31821-be85-4d89-bf4e-5b0594096427/BillOnly_259469.json',
+                // },
                 {
-                    InternalID: 309362,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'BillOnly_259469.json',
+                    InternalID: 309561,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'BillOnly_259469_Fox_01_03.json',
                     MimeType: 'application/json',
                     Title: 'BillOnly',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/00e31821-be85-4d89-bf4e-5b0594096427/BillOnly_259469.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/5ad4043f-9f2a-4604-aa28-c10668b0c275/BillOnly_259469_Fox_01_03.json',
                 },
                 {
                     InternalID: 309363,
@@ -2029,23 +2121,41 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/3c232b0c-f70a-437d-8a95-50569e344e12/FDP_259468.json',
                 },
+                // {
+                //     InternalID: 309364,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Label Only_261365.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Label Only',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/dd9d02bf-be40-4875-b849-70a92598e70c/Label Only_261365.json',
+                // },
                 {
-                    InternalID: 309364,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Label Only_261365.json',
+                    InternalID: 309562,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Label Only_261365_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Label Only',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/dd9d02bf-be40-4875-b849-70a92598e70c/Label Only_261365.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/7a1f5c4c-4bdd-44c6-8543-21fd7737d8b5/Label Only_261365_Fix_01_03.json',
                 },
+                // {
+                //     InternalID: 309365,
+                //     Description: 'Exported from Winzer production in 24.02.2021',
+                //     FileName: 'Update Prices_261683.json',
+                //     MimeType: 'application/json',
+                //     Title: 'Update Prices',
+                //     URL:
+                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4bfcb129-6c1d-4075-828c-f3612912de63/Update Prices_261683.json',
+                // },
                 {
-                    InternalID: 309365,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'Update Prices_261683.json',
+                    InternalID: 309563,
+                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                    FileName: 'Update Prices_261683_Fix_01_03.json',
                     MimeType: 'application/json',
                     Title: 'Update Prices',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4bfcb129-6c1d-4075-828c-f3612912de63/Update Prices_261683.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4a108341-49bb-4ee0-92d5-4f1f2f017d3c/Update Prices_261683_Fix_01_03.json',
                 },
             ];
             describe('Test Transactions Override', () => {
@@ -2571,6 +2681,448 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                 }
             });
         }
+
+        if (isLocalFilesComparison) {
+            describe('Test Local Response URL', () => {
+                describe(`Tested ATD URL: ${beforeURL}`, () => {
+                    let beforeATDExportObj;
+                    let afterATDExportObj;
+
+                    it("Export JSON Objects From Both URL's", async () => {
+                        beforeATDExportObj = await fetch(beforeURL).then((response) => response.json());
+
+                        afterATDExportObj = await fetch(afterURL).then((response) => response.json());
+
+                        RemoveUntestedMembers(beforeATDExportObj);
+                        RemoveUntestedMembers(afterATDExportObj);
+
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj).length - JSON.stringify(beforeATDExportObj).length,
+                            ) > 10
+                        ) {
+                            expect(`The Content Length of: ${afterURL}`).to.equal(
+                                `The Content Length of: ${beforeURL}`,
+                            );
+                        }
+                    });
+
+                    it(`New Total Length of: ${beforeURL} is as expected`, async () => {
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj).length - JSON.stringify(beforeATDExportObj).length,
+                            ) > 10
+                        ) {
+                            expect(JSON.stringify(afterATDExportObj).length).to.equal(
+                                JSON.stringify(beforeATDExportObj).length,
+                            );
+                        }
+                    });
+
+                    it(`New Amount of: ${beforeURL} - Data Views is as expected`, async () => {
+                        expect(afterATDExportObj.DataViews.length).to.equal(beforeATDExportObj.DataViews.length);
+                    });
+
+                    it(`New Length of: ${beforeURL} - Data Views is as expected`, async () => {
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj.DataViews).length -
+                                    JSON.stringify(beforeATDExportObj.DataViews).length,
+                            ) > 2
+                        ) {
+                            beforeATDExportObj.DataViews.sort(compareByContextName);
+                            afterATDExportObj.DataViews.sort(compareByContextName);
+
+                            const beforeDataViewsArr = [] as any;
+                            beforeATDExportObj.DataViews.forEach((DataView) => {
+                                beforeDataViewsArr.push({
+                                    Before_Name: DataView.Context.Name,
+                                    Length: JSON.stringify(DataView).length,
+                                    Obj: DataView,
+                                });
+                            });
+
+                            const afterDataViewsArr = [] as any;
+                            afterATDExportObj.DataViews.forEach((DataView) => {
+                                afterDataViewsArr.push({
+                                    After_Name: DataView.Context.Name,
+                                    Length: JSON.stringify(DataView).length,
+                                    Obj: DataView,
+                                });
+                            });
+
+                            const forLoopSize =
+                                beforeDataViewsArr.length > afterDataViewsArr.length
+                                    ? beforeDataViewsArr.length
+                                    : afterDataViewsArr.length;
+                            const errorsArr = [] as any;
+                            for (let index = 0; index < forLoopSize; index++) {
+                                if (
+                                    beforeDataViewsArr[
+                                        index < beforeDataViewsArr.length ? index : beforeDataViewsArr.length - 1
+                                    ].Length !=
+                                    afterDataViewsArr[
+                                        index < afterDataViewsArr.length ? index : afterDataViewsArr.length - 1
+                                    ].Length
+                                ) {
+                                    errorsArr.push(
+                                        {
+                                            Before:
+                                                beforeDataViewsArr[
+                                                    index < beforeDataViewsArr.length
+                                                        ? index
+                                                        : beforeDataViewsArr.length - 1
+                                                ],
+                                        },
+                                        {
+                                            After:
+                                                afterDataViewsArr[
+                                                    index < afterDataViewsArr.length
+                                                        ? index
+                                                        : afterDataViewsArr.length - 1
+                                                ],
+                                        },
+                                    );
+                                }
+                            }
+                            expect(JSON.stringify(errorsArr)).to.equal('[]');
+                        }
+                    });
+
+                    it(`New Amount of: ${beforeURL} - Fields is as expected`, async () => {
+                        expect(afterATDExportObj.Fields.length).to.equal(beforeATDExportObj.Fields.length);
+                    });
+
+                    it(`New Length of: ${beforeURL} - Fields is as expected`, async () => {
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj.Fields).length -
+                                    JSON.stringify(beforeATDExportObj.Fields).length,
+                            ) > 2
+                        ) {
+                            beforeATDExportObj.Fields.sort(compareByFieldID);
+                            afterATDExportObj.Fields.sort(compareByFieldID);
+
+                            const beforeFieldsArr = [] as any;
+                            beforeATDExportObj.Fields.forEach((Field) => {
+                                beforeFieldsArr.push({
+                                    Before_FieldID: Field.FieldID,
+                                    Length: JSON.stringify(Field).length,
+                                    Obj: Field,
+                                });
+                            });
+
+                            const afterFieldsArr = [] as any;
+                            afterATDExportObj.Fields.forEach((Field) => {
+                                afterFieldsArr.push({
+                                    After_FieldID: Field.FieldID,
+                                    Length: JSON.stringify(Field).length,
+                                    Obj: Field,
+                                });
+                            });
+
+                            const forLoopSize =
+                                beforeFieldsArr.length > afterFieldsArr.length
+                                    ? beforeFieldsArr.length
+                                    : afterFieldsArr.length;
+                            const errorsArr = [] as any;
+
+                            for (let index = 0; index < forLoopSize; index++) {
+                                if (
+                                    beforeFieldsArr[index < beforeFieldsArr.length ? index : beforeFieldsArr.length - 1]
+                                        .Length !=
+                                    afterFieldsArr[index < afterFieldsArr.length ? index : afterFieldsArr.length - 1]
+                                        .Length
+                                ) {
+                                    errorsArr.push(
+                                        {
+                                            Before:
+                                                beforeFieldsArr[
+                                                    index < beforeFieldsArr.length ? index : beforeFieldsArr.length - 1
+                                                ],
+                                        },
+                                        {
+                                            After:
+                                                afterFieldsArr[
+                                                    index < afterFieldsArr.length ? index : afterFieldsArr.length - 1
+                                                ],
+                                        },
+                                    );
+                                }
+                            }
+                            expect(JSON.stringify(errorsArr)).to.equal('[]');
+                        }
+                    });
+
+                    it(`New Amount of: ${beforeURL} - LineFields is as expected`, async () => {
+                        expect(afterATDExportObj.LineFields.length).to.equal(beforeATDExportObj.LineFields.length);
+                    });
+
+                    it(`New Length of: ${beforeURL} - LineFields is as expected`, async () => {
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj.LineFields).length -
+                                    JSON.stringify(beforeATDExportObj.LineFields).length,
+                            ) > 2
+                        ) {
+                            beforeATDExportObj.LineFields.sort(compareByFieldID);
+                            afterATDExportObj.LineFields.sort(compareByFieldID);
+
+                            const beforeLineFieldsArr = [] as any;
+                            beforeATDExportObj.LineFields.forEach((LineField) => {
+                                beforeLineFieldsArr.push({
+                                    Before_Name: LineField.FieldID,
+                                    Length: JSON.stringify(LineField).length,
+                                    Obj: LineField,
+                                });
+                            });
+
+                            const afterLineFieldsArr = [] as any;
+                            afterATDExportObj.LineFields.forEach((LineField) => {
+                                afterLineFieldsArr.push({
+                                    After_Name: LineField.FieldID,
+                                    Length: JSON.stringify(LineField).length,
+                                    Obj: LineField,
+                                });
+                            });
+
+                            const forLoopSize =
+                                beforeLineFieldsArr.length > afterLineFieldsArr.length
+                                    ? beforeLineFieldsArr.length
+                                    : afterLineFieldsArr.length;
+                            const errorsArr = [] as any;
+                            for (let index = 0; index < forLoopSize; index++) {
+                                if (
+                                    beforeLineFieldsArr[
+                                        index < beforeLineFieldsArr.length ? index : beforeLineFieldsArr.length - 1
+                                    ].Length !=
+                                    afterLineFieldsArr[
+                                        index < afterLineFieldsArr.length ? index : afterLineFieldsArr.length - 1
+                                    ].Length
+                                ) {
+                                    errorsArr.push(
+                                        {
+                                            Before:
+                                                beforeLineFieldsArr[
+                                                    index < beforeLineFieldsArr.length
+                                                        ? index
+                                                        : beforeLineFieldsArr.length - 1
+                                                ],
+                                        },
+                                        {
+                                            After:
+                                                afterLineFieldsArr[
+                                                    index < afterLineFieldsArr.length
+                                                        ? index
+                                                        : afterLineFieldsArr.length - 1
+                                                ],
+                                        },
+                                    );
+                                }
+                            }
+                            expect(JSON.stringify(errorsArr)).to.equal('[]');
+                        }
+                    });
+
+                    it(`New Amount of: ${beforeURL} - References is as expected`, async () => {
+                        expect(afterATDExportObj.References.length).to.equal(beforeATDExportObj.References.length);
+                    });
+
+                    it(`Hidden References of: ${beforeURL} (DI-17304)`, async () => {
+                        for (let index = 0; index < beforeATDExportObj.References.length; index++) {
+                            if (beforeATDExportObj.References[index].Type == 'user_defined_table') {
+                                const tmpContent = JSON.parse(beforeATDExportObj.References[index].Content);
+                                if (tmpContent.Hidden) {
+                                    tmpContent.Hidden = false;
+                                    beforeATDExportObj.References[index].Content = JSON.stringify(tmpContent);
+
+                                    const beforeHiddenReference = beforeATDExportObj.References[index];
+
+                                    afterATDExportObj.References.forEach((Reference) => {
+                                        if (Reference.Name == beforeHiddenReference.Name) {
+                                            expect(JSON.parse(Reference.Content).Hidden).to.be.false;
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    it(`New Length of: ${beforeURL} - References is as expected`, async () => {
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj.References).length -
+                                    JSON.stringify(beforeATDExportObj.References).length,
+                            ) > 2
+                        ) {
+                            beforeATDExportObj.References.sort(compareByName);
+                            afterATDExportObj.References.sort(compareByName);
+
+                            const beforeReferenceArr = [] as any;
+                            beforeATDExportObj.References.forEach((Reference) => {
+                                beforeReferenceArr.push({
+                                    Before_Name: Reference.Name,
+                                    Length: JSON.stringify(Reference).length,
+                                    Obj: Reference,
+                                });
+                            });
+
+                            const afterReferenceArr = [] as any;
+                            afterATDExportObj.References.forEach((Reference) => {
+                                afterReferenceArr.push({
+                                    After_Name: Reference.Name,
+                                    Length: JSON.stringify(Reference).length,
+                                    Obj: Reference,
+                                });
+                            });
+
+                            const forLoopSize =
+                                beforeReferenceArr.length > afterReferenceArr.length
+                                    ? beforeReferenceArr.length
+                                    : afterReferenceArr.length;
+
+                            const errorsArr = [] as any;
+                            for (let index = 0; index < forLoopSize; index++) {
+                                if (
+                                    beforeReferenceArr[
+                                        index < beforeReferenceArr.length ? index : beforeReferenceArr.length - 1
+                                    ].Length !=
+                                    afterReferenceArr[
+                                        index < afterReferenceArr.length ? index : afterReferenceArr.length - 1
+                                    ].Length
+                                ) {
+                                    errorsArr.push(
+                                        {
+                                            Before:
+                                                beforeReferenceArr[
+                                                    index < beforeReferenceArr.length
+                                                        ? index
+                                                        : beforeReferenceArr.length - 1
+                                                ],
+                                        },
+                                        {
+                                            After:
+                                                afterReferenceArr[
+                                                    index < afterReferenceArr.length
+                                                        ? index
+                                                        : afterReferenceArr.length - 1
+                                                ],
+                                        },
+                                    );
+                                }
+                            }
+                            expect.fail(
+                                `These items are not match: ${JSON.stringify(
+                                    errorsArr,
+                                )}, The URL Before: ${beforeURL}, The URL After of: ${afterURL}`,
+                            );
+                        }
+                    });
+
+                    it(`New Amount of: ${beforeURL} - Settings is as expected`, async () => {
+                        expect(afterATDExportObj.Settings.length).to.equal(beforeATDExportObj.Settings.length);
+                    });
+
+                    it(`New Length of: ${beforeURL} - Settings is as expected`, async () => {
+                        const errorsArr = [] as any;
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj.Settings).length -
+                                    JSON.stringify(beforeATDExportObj.Settings).length,
+                            ) > 2
+                        ) {
+                            errorsArr.push(
+                                {
+                                    Before_Settings: beforeATDExportObj.Settings,
+                                    Length: JSON.stringify(beforeATDExportObj.Settings).length,
+                                    Obj: beforeATDExportObj.Settings,
+                                },
+                                {
+                                    After_Settings: afterATDExportObj.Settings,
+                                    Length: JSON.stringify(afterATDExportObj.Settings).length,
+                                    Obj: afterATDExportObj.Settings,
+                                },
+                            );
+                        }
+                        expect(JSON.stringify(errorsArr)).to.equal('[]');
+                    });
+
+                    it(`Test Icon of: ${beforeURL}`, async () => {
+                        if (afterATDExportObj.Settings.Icon != beforeATDExportObj.Settings.Icon) {
+                            expect.fail(
+                                `${afterATDExportObj.Settings.Icon} to equal ${beforeATDExportObj.Settings.Icon}, The URL Before: ${beforeURL}, The URL After of: ${afterURL}`,
+                            );
+                        }
+                    });
+
+                    it(`Test InventoryLimitation.Name of: ${beforeURL}`, async () => {
+                        if (
+                            afterATDExportObj.Settings.InventoryLimitation?.Name !=
+                            beforeATDExportObj.Settings.InventoryLimitation?.Name
+                        ) {
+                            expect.fail(
+                                `These items are not the same: Before: ${beforeATDExportObj.Settings.InventoryLimitation?.Name} and After: ${afterATDExportObj.Settings.InventoryLimitation?.Name}, The URL Before: ${beforeURL}, The URL After of: ${afterURL}`,
+                            );
+                        }
+                    });
+
+                    it(`Test CaseQuantityLimitation.Name of: ${beforeURL}`, async () => {
+                        if (
+                            afterATDExportObj.Settings.CaseQuantityLimitation?.Name !=
+                            beforeATDExportObj.Settings.CaseQuantityLimitation?.Name
+                        ) {
+                            expect(afterATDExportObj.Settings.CaseQuantityLimitation?.Name).to.equal(
+                                beforeATDExportObj.Settings.CaseQuantityLimitation?.Name,
+                            );
+                            expect.fail(
+                                `These items are not the same: Before: ${beforeATDExportObj.Settings.CaseQuantityLimitation?.Name} and After: ${afterATDExportObj.Settings.CaseQuantityLimitation?.Name}, The URL Before: ${beforeURL}, The URL After of: ${afterURL}`,
+                            );
+                        }
+                    });
+
+                    //TODO: 28.02.2021 it was decided with Hadar that this should be tested with the meta_data/filters/id tests
+                    // it(`Test TransactionLinesFilter.advancedFormula of: ${TransactionsATDArr[index].Title}`, async () => {
+                    //     if (
+                    //         afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula !=
+                    //         beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula
+                    //     ) {
+                    //         expect.fail(
+                    //             `These items are not the same: Before: ${beforeATDExportObj.Settings.TransactionLinesFilter?.advancedFormula} and After: ${afterATDExportObj.Settings.TransactionLinesFilter?.advancedFormula}, The URL Before: ${TransactionsATDArr[index].URL}, The URL After of: ${afterATDExportResponse.URL}`,
+                    //         );
+                    //     }
+                    // });
+
+                    it(`New Amount of: ${beforeURL} - Workflow is as expected`, async () => {
+                        expect(afterATDExportObj.Workflow.length).to.equal(beforeATDExportObj.Workflow.length);
+                    });
+
+                    it(`New Length of: ${beforeURL} - Workflow is as expected`, async () => {
+                        const errorsArr = [] as any;
+                        if (
+                            Math.abs(
+                                JSON.stringify(afterATDExportObj.Workflow).length -
+                                    JSON.stringify(beforeATDExportObj.Workflow).length,
+                            ) > 2
+                        ) {
+                            errorsArr.push(
+                                {
+                                    Before_Settings: beforeATDExportObj.Workflow,
+                                    Length: JSON.stringify(beforeATDExportObj.Workflow).length,
+                                    Obj: beforeATDExportObj.Workflow,
+                                },
+                                {
+                                    After_Settings: afterATDExportObj.Workflow,
+                                    Length: JSON.stringify(afterATDExportObj.Workflow).length,
+                                    Obj: afterATDExportObj.Workflow,
+                                },
+                            );
+                        }
+                        expect(JSON.stringify(errorsArr)).to.equal('[]');
+                    });
+                });
+            });
+        }
+
         if (isActivitiesTestsOverride) {
             // describe('Test Activities Override', () => {
             //     it('Make sure an ATD removed in the end of the tests', async () => {
@@ -2681,14 +3233,16 @@ function RemoveUntestedMembers(testedObject) {
         delete testedObject.DataViews[index].Context.Object.InternalID;
     }
     for (let index = 0; index < testedObject.References.length; index++) {
-        delete testedObject.References[index].ID;
-        if (testedObject.References[index].Type == 'file_storage') {
-            delete testedObject.References[index].Path;
-        }
         //Added in 24/02/2021 the 'Transaction Item Scope' is created automatically in the UI and won't be created in the API
         //Have to add ref and creating will not help
         if (testedObject.References[index].Name == 'Transaction Item Scope') {
             testedObject.References.splice(index, 1);
+        }
+    }
+    for (let index = 0; index < testedObject.References.length; index++) {
+        delete testedObject.References[index].ID;
+        if (testedObject.References[index].Type == 'file_storage') {
+            delete testedObject.References[index].Path;
         }
         if (testedObject.References[index].Type == 'user_defined_table') {
             const tmpContent = JSON.parse(testedObject.References[index].Content);

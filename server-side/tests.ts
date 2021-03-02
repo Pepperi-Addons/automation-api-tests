@@ -22,6 +22,7 @@ import {
     ImportExportATDTransactionsBoxTests,
     ImportExportATDActivitiesOverrideTests,
     ImportExportATDTransactionsOverrideTests,
+    ImportExportATDLocalTests,
 } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 
@@ -684,9 +685,9 @@ export async function import_export_atd_activities(client: Client, request: Requ
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Import_Export_Atd_Activities' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Import_Export_ATD_Activities' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Import_Export_Atd_Activities';
+        testName = 'Import_Export_ATD_Activities';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
@@ -726,9 +727,9 @@ export async function import_export_atd_transactions(
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Import_Export_Atd_Transactions' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Import_Export_ATD_Transactions' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Import_Export_Atd_Transactions';
+        testName = 'Import_Export_ATD_Transactions';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
@@ -768,9 +769,9 @@ export async function import_export_atd_activities_box(
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Import_Export_Atd_Activities_Box' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Import_Export_ATD_Activities_Box' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Import_Export_Atd_Activities_Box';
+        testName = 'Import_Export_ATD_Activities_Box';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
@@ -810,9 +811,9 @@ export async function import_export_atd_transactions_box(
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Import_Export_Atd_Transactions_Box' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Import_Export_ATD_Transactions_Box' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Import_Export_Atd_Transactions_Box';
+        testName = 'Import_Export_ATD_Transactions_Box';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
@@ -852,9 +853,9 @@ export async function import_export_atd_activities_override(
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Import_Export_Atd_Activities_Override' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Import_Export_ATD_Activities_Override' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Import_Export_Atd_Activities_Override';
+        testName = 'Import_Export_ATD_Activities_Override';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
@@ -894,9 +895,9 @@ export async function import_export_atd_transactions_override(
     const service = new GeneralService(client);
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Import_Export_Atd_Transactions_Override' && testName != 'All' && testName != 'Sanity')
+        (testName != 'Import_Export_ATD_Transactions_Override' && testName != 'All' && testName != 'Sanity')
     ) {
-        testName = 'Import_Export_Atd_Transactions_Override';
+        testName = 'Import_Export_ATD_Transactions_Override';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
@@ -925,6 +926,45 @@ export async function import_export_atd_transactions_override(
         return testResult;
     } else {
         return ImportExportATDTransactionsOverrideTests(service, request, testerFunctions);
+    }
+}
+
+export async function import_export_atd_local(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Import_Export_ATD_Local' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Import_Export_ATD_Local';
+        ImportExportATDLocalTests;
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ImportExportATDLocalTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ImportExportATDLocalTests(service, request, testerFunctions);
     }
 }
 
