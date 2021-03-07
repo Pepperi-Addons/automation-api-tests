@@ -1948,26 +1948,37 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         }
 
         if (isTransactionsTestsOverride) {
-            const testATDInternalID = 303912;
             const TransactionsATDArr = [
-                // {
-                //     InternalID: 309512,
-                //     Description: 'Exported from Sandbox in 28.02.2021',
-                //     FileName: '1_28-02-2021_Test_ATD_303912.json',
-                //     MimeType: 'application/json',
-                //     Title: '1 28.02.2021 Test ATD',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
-                // },
-                // {
-                //     InternalID: 309354,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Winzer_Sales_Order_272248.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Winzer Sales Order',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/ba72a445-adcc-4fc3-8e77-1d7089fba81b/Winzer Sales Order.json',
-                // },\
+                //Base Sandbox
+                {
+                    InternalID: 309512,
+                    Description: 'Exported from Sandbox in 28.02.2021',
+                    FileName: '1_28-02-2021_Test_ATD_303912.json',
+                    MimeType: 'application/json',
+                    Title: '1 28.02.2021 Test ATD',
+                    URL:
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
+                },
+                //Base Production
+                {
+                    InternalID: 303830,
+                    Description: 'Exported from Production in 02.03.2021',
+                    FileName: 'Automation_ATD_1_1_165_2.json',
+                    MimeType: 'application/json',
+                    Title: 'Automation ATD 1.1.165 2',
+                    URL:
+                        'https://cdn.pepperi.com/30013466/CustomizationFile/a9e069ea-542f-435c-a7a3-9e2748f5e24b/Automation_ATD_1_1_165_2.json',
+                },
+                //Base EU
+                {
+                    InternalID: 6282,
+                    Description: 'Base ATD from EU',
+                    FileName: 'Base_ATD_EU_-_1_1_168.json',
+                    MimeType: 'application/json',
+                    Title: 'Base ATD EU - 1.1.168',
+                    URL:
+                        'https://eucdn.pepperi.com/30010075/CustomizationFile/5b947341-c3a3-41ae-ad8c-ff77d3ada047/Base_ATD_EU_-_1_1_168.json',
+                },
                 {
                     InternalID: 309544,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -1977,15 +1988,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c4c2caac-acc1-4ff1-8206-5165561c342b/Winzer_Sales_Order_272248_Fix_01_03.json',
                 },
-                // {
-                //     InternalID: 309355,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Sales_Order_Winzer_DEV_(New)_278917.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Sales Order Winzer DEV (New)',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/7c7b9a69-e78f-43b3-bc34-979bea10b061/Sales_Order_Winzer_DEV_(New)_278917.json',
-                // },
                 {
                     InternalID: 309546,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -1995,15 +1997,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/23a3d144-6356-4e69-b55d-f35916ae868e/Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
                 },
-                // {
-                //     InternalID: 309356,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Sales_Order_Legacy_256743.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Sales Order Legacy',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/34c91a76-8ddd-4f48-bd9b-be7a2bada162/Sales_Order_Legacy_256743.json',
-                // },
                 {
                     InternalID: 309547,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -2013,15 +2006,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c2c35582-e091-4478-986f-ea8af10ba004/Sales_Order_Legacy_256743_Fix_01_03.json',
                 },
-                // {
-                //     InternalID: 309357,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Sales_Order_New_Pricing_268998.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Sales Order New Pricing',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4433db89-fc34-4a5d-895a-7c5d84e372f6/Sales_Order_New_Pricing_268998.json',
-                // },
                 {
                     InternalID: 309556,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -2031,15 +2015,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3a9c558-d835-4018-983e-5e70e7565786/Sales_Order_New_Pricing_268998_Fix_01_03.json',
                 },
-                // {
-                //     InternalID: 309358,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'VSN_259467.json',
-                //     MimeType: 'application/json',
-                //     Title: 'VSN',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c510cd8c-e9b7-482a-9f86-090786768309/VSN_259467.json',
-                // },
                 {
                     InternalID: 309557,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -2050,59 +2025,32 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/564da1f5-6ce5-48d5-a40d-f4d7409d6d5d/VSN_259467_Fix_01_03.json',
                 },
                 {
-                    InternalID: 309359,
-                    Description: 'Exported from Winzer production in 24.02.2021',
+                    InternalID: 309755,
+                    Description: 'Exported from Winzer production in 24.02.2023',
                     FileName: 'VSN_TEST_(268995)_268995.json',
                     MimeType: 'application/json',
                     Title: 'VSN TEST (268995)',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/607cc841-2112-4212-9019-511ec65d13e7/VSN_TEST_(268995)_268995.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/630bf362-7d01-4d31-81f6-c77912321fff/VSN_TEST_(268995)_268995.json',
                 },
-                // {
-                //     InternalID: 309360,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'CustomKits_259470.json',
-                //     MimeType: 'application/json',
-                //     Title: 'CustomKits',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bd37907a-e7d7-4df5-a073-a127b8ac6091/CustomKits_259470.json',
-                // },
                 {
-                    InternalID: 309559,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'CustomKits_259470_Fix_01_03.json',
+                    InternalID: 309805,
+                    Description: 'Exported from Winzer production in 04.03.2021',
+                    FileName: 'CustomKits_259470_Fix_04_03.json',
                     MimeType: 'application/json',
                     Title: 'CustomKits',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/28d95df7-5147-423a-b47d-020489f828e8/CustomKits_259470_Fix_01_03.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/54361873-193c-47ec-8c6d-81376fcabb50/CustomKits_259470_Fix_04_03.json',
                 },
-                // {
-                //     InternalID: 309361,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Custom_Kit_TEST_(268997)_268997.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Custom Kit TEST (268997)',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3c5d861-92f1-49c4-b726-d5f1164dd83a/Custom_Kit_TEST_(268997)_268997.json',
-                // },
                 {
-                    InternalID: 309560,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Custom_Kit_TEST_(268997)_268997_Fix_01_03.json',
+                    InternalID: 309804,
+                    Description: 'Exported from Winzer production in 04.03.2021',
+                    FileName: 'Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
                     MimeType: 'application/json',
                     Title: 'Custom Kit TEST (268997)',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/8bec2403-ecbc-4743-b512-b73349a90e6f/Custom_Kit_TEST_(268997)_268997_Fix_01_03.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c37e86e6-05bd-43d9-8bfa-1a23b7d1f284/Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
                 },
-                // {
-                //     InternalID: 309362,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'BillOnly_259469.json',
-                //     MimeType: 'application/json',
-                //     Title: 'BillOnly',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/00e31821-be85-4d89-bf4e-5b0594096427/BillOnly_259469.json',
-                // },
                 {
                     InternalID: 309561,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -2121,33 +2069,15 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/3c232b0c-f70a-437d-8a95-50569e344e12/FDP_259468.json',
                 },
-                // {
-                //     InternalID: 309364,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Label Only_261365.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Label Only',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/dd9d02bf-be40-4875-b849-70a92598e70c/Label Only_261365.json',
-                // },
                 {
-                    InternalID: 309562,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Label Only_261365_Fix_01_03.json',
+                    InternalID: 309803,
+                    Description: 'Exported from Winzer production in 04.03.2021',
+                    FileName: 'Label Only_261365_Fix_04_03.json',
                     MimeType: 'application/json',
                     Title: 'Label Only',
                     URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/7a1f5c4c-4bdd-44c6-8543-21fd7737d8b5/Label Only_261365_Fix_01_03.json',
+                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bc4e02b6-976f-4d67-b9ac-15c974aca5b6/Label Only_261365_Fix_04_03.json',
                 },
-                // {
-                //     InternalID: 309365,
-                //     Description: 'Exported from Winzer production in 24.02.2021',
-                //     FileName: 'Update Prices_261683.json',
-                //     MimeType: 'application/json',
-                //     Title: 'Update Prices',
-                //     URL:
-                //         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4bfcb129-6c1d-4075-828c-f3612912de63/Update Prices_261683.json',
-                // },
                 {
                     InternalID: 309563,
                     Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
@@ -2157,13 +2087,23 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     URL:
                         'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4a108341-49bb-4ee0-92d5-4f1f2f017d3c/Update Prices_261683_Fix_01_03.json',
                 },
+                {
+                    InternalID: 303998,
+                    Description: 'Exported from Winzer production in 04.03.2021',
+                    FileName: 'Sales_Order_DEV_V2_283071.json',
+                    MimeType: 'application/json',
+                    Title: 'Sales Order DEV V2',
+                    URL:
+                        'https://cdn.pepperi.com/30013466/CustomizationFile/9dad31bb-8f8c-4fe9-ba0a-a9b84460e724/Sales_Order_DEV_V2_283071.json',
+                },
             ];
-            describe('Test Transactions Override', () => {
+            describe('Test Transactions Override', async () => {
+                const testATD = await importExportATDService
+                    .getAllTransactionsATD()
+                    .then((res) => res.find((atd) => atd.ExternalID == 'Jenkins Automation ATD 1.1.168'));
+
+                const testATDInternalID = testATD.ExternalID; // 290418; //Production 'Automation ATD 1.1.165 2'
                 for (let index = 0; index < TransactionsATDArr.length; index++) {
-                    if (index > 0) {
-                        index = 99;
-                        break;
-                    }
                     describe(`Tested ATD: ${TransactionsATDArr[index].Title}`, () => {
                         let afterATDExportResponse;
                         let beforeATDExportObj;
@@ -3199,6 +3139,9 @@ async function TestCleanUpUDT(service: ImportExportATDService) {
 
 //Remove untested members from the tested Object
 function RemoveUntestedMembers(testedObject) {
+    if (testedObject.Addons) {
+        delete testedObject.Addons;
+    }
     delete testedObject.Settings?.EPayment;
     delete testedObject.Settings?.CatalogIDs;
     delete testedObject.Settings?.TransactionItemsScopeFilterID;
@@ -3211,10 +3154,28 @@ function RemoveUntestedMembers(testedObject) {
         delete testedObject.LineFields[index].CreationDateTime;
         delete testedObject.LineFields[index].ModificationDateTime;
         delete testedObject.LineFields[index].InternalID;
+        delete testedObject.LineFields[index].CSVMappedColumnName;
+        //This was removed since it was tested manually by Oren Vilderman and all values worked
+        //it can contianl objects and arrays but of they are emtpy then this comparison will fail since comparing empty array to nulll
+        if (testedObject.LineFields[index].Type == 'Boolean') {
+            delete testedObject.LineFields[index].TypeSpecificFields;
+        }
+        //readOnlyDisplayValue was an old field and if its value is null or empty then it will not be created
+        if (
+            testedObject.LineFields[index].TypeSpecificFields &&
+            testedObject.LineFields[index].TypeSpecificFields.readOnlyDisplayValue == ''
+        ) {
+            delete testedObject.LineFields[index].TypeSpecificFields;
+        }
+        //TypeSpecificFields is some times null with emtpy null data membes, so better to remove it from the comparison in case its null
+        if ((testedObject.LineFields[index].TypeSpecificFields = '')) {
+            delete testedObject.LineFields[index].TypeSpecificFields;
+        }
     }
     for (let index = 0; index < testedObject.Fields.length; index++) {
         delete testedObject.Fields[index].CreationDateTime;
         delete testedObject.Fields[index].ModificationDateTime;
+        delete testedObject.Fields[index].InternalID;
         delete testedObject.Fields[index].CSVMappedColumnName;
         if (
             testedObject.Fields[index].UserDefinedTableSource &&
@@ -3222,15 +3183,31 @@ function RemoveUntestedMembers(testedObject) {
         ) {
             delete testedObject.Fields[index].UserDefinedTableSource.SecondaryKey;
         }
+        //This was removed since it was tested manually by Oren Vilderman and all values worked
+        //it can contianl objects and arrays but of they are emtpy then this comparison will fail since comparing empty array to nulll
         if (testedObject.Fields[index].Type == 'Boolean') {
+            delete testedObject.Fields[index].TypeSpecificFields;
+        }
+        //readOnlyDisplayValue was an old field and if its value is null or empty then it will not be created
+        if (
+            testedObject.Fields[index].TypeSpecificFields &&
+            testedObject.Fields[index].TypeSpecificFields.readOnlyDisplayValue == ''
+        ) {
+            delete testedObject.Fields[index].TypeSpecificFields;
+        }
+        //TypeSpecificFields is some times null with emtpy null data membes, so better to remove it from the comparison in case its null
+        if ((testedObject.Fields[index].TypeSpecificFields = '')) {
             delete testedObject.Fields[index].TypeSpecificFields;
         }
     }
     for (let index = 0; index < testedObject.DataViews.length; index++) {
         delete testedObject.DataViews[index].CreationDateTime;
         delete testedObject.DataViews[index].ModificationDateTime;
+        delete testedObject.DataViews[index].Context.Object.InternalID;
         delete testedObject.DataViews[index].Context.Object.Name;
         delete testedObject.DataViews[index].Context.Object.InternalID;
+        delete testedObject.DataViews[index].InternalID;
+        delete testedObject.DataViews[index].Context.Profile.InternalID;
     }
     for (let index = 0; index < testedObject.References.length; index++) {
         //Added in 24/02/2021 the 'Transaction Item Scope' is created automatically in the UI and won't be created in the API
