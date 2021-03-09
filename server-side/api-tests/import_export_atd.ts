@@ -207,6 +207,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         }
     });
 
+    const testATD = await importExportATDService
+        .getAllTransactionsATD()
+        .then((res) => res.find((atd) => atd.ExternalID == 'Jenkins Automation ATD 1.1.168'));
+
     const dataViewsAddonUUID = '484e7f22-796a-45f8-9082-12a734bac4e8';
     const dataViewsVersion = '1.';
     const importExportATDAddonUUID = 'e9029d7f-af32-4b0e-a513-8d9ced6f8186';
@@ -2097,12 +2101,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         'https://cdn.pepperi.com/30013466/CustomizationFile/9dad31bb-8f8c-4fe9-ba0a-a9b84460e724/Sales_Order_DEV_V2_283071.json',
                 },
             ];
-            describe('Test Transactions Override', async () => {
-                const testATD = await importExportATDService
-                    .getAllTransactionsATD()
-                    .then((res) => res.find((atd) => atd.ExternalID == 'Jenkins Automation ATD 1.1.168'));
-
-                const testATDInternalID = testATD.ExternalID; // 290418; //Production 'Automation ATD 1.1.165 2'
+            describe('Test Transactions Override', () => {
+                const testATDInternalID = testATD.InternalID; // 290418; //Production 'Automation ATD 1.1.165 2'
                 for (let index = 0; index < TransactionsATDArr.length; index++) {
                     describe(`Tested ATD: ${TransactionsATDArr[index].Title}`, () => {
                         let afterATDExportResponse;
