@@ -22,6 +22,7 @@ import {
     ImportExportATDTransactionsBoxTests,
     ImportExportATDActivitiesOverrideTests,
     ImportExportATDTransactionsOverrideTests,
+    ImportExportATDTransactionsOverrideWinzerTests,
     ImportExportATDLocalTests,
 } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
@@ -926,6 +927,48 @@ export async function import_export_atd_transactions_override(
         return testResult;
     } else {
         return ImportExportATDTransactionsOverrideTests(service, request, testerFunctions);
+    }
+}
+
+export async function import_export_atd_transactions_override_winzer(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Import_Export_ATD_Transactions_Override_Winzer' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Import_Export_ATD_Transactions_Override_Winzer';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ImportExportATDTransactionsOverrideWinzerTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ImportExportATDTransactionsOverrideWinzerTests(service, request, testerFunctions);
     }
 }
 

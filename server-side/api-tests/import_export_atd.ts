@@ -20,7 +20,8 @@ let isTransactionsTests = false;
 let isActivitiesTestsBox = false;
 let isTransactionsTestsBox = false;
 let isActivitiesTestsOverride = false;
-let isTransactionsTestsOverride = false;
+let isTransactionsTestsOverrideBase = false;
+let isTransactionsTestsOverrideWinzer = false;
 let isLocalFilesComparison = false;
 
 // All Import Export ATD Tests
@@ -30,7 +31,8 @@ export async function ImportExportATDActivitiesTests(generalService: GeneralServ
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
     isActivitiesTestsOverride = false;
-    isTransactionsTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -44,7 +46,8 @@ export async function ImportExportATDTransactionsTests(
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
     isActivitiesTestsOverride = false;
-    isTransactionsTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -58,7 +61,8 @@ export async function ImportExportATDActivitiesBoxTests(
     isActivitiesTestsBox = true;
     isTransactionsTestsBox = false;
     isActivitiesTestsOverride = false;
-    isTransactionsTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -72,7 +76,8 @@ export async function ImportExportATDTransactionsBoxTests(
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = true;
     isActivitiesTestsOverride = false;
-    isTransactionsTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -86,7 +91,8 @@ export async function ImportExportATDActivitiesOverrideTests(
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
     isActivitiesTestsOverride = true;
-    isTransactionsTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -100,7 +106,23 @@ export async function ImportExportATDTransactionsOverrideTests(
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
     isActivitiesTestsOverride = false;
-    isTransactionsTestsOverride = true;
+    isTransactionsTestsOverrideBase = true;
+    isTransactionsTestsOverrideWinzer = false;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDTransactionsOverrideWinzerTests(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = true;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -110,7 +132,8 @@ export async function ImportExportATDLocalTests(generalService: GeneralService, 
     isActivitiesTestsBox = false;
     isTransactionsTestsBox = false;
     isActivitiesTestsOverride = false;
-    isTransactionsTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzer = false;
     isLocalFilesComparison = true;
     await ImportExportATDTests(generalService, request, tester);
 }
@@ -179,7 +202,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     }
 
     let testDataPostUDT;
-    if (!isActivitiesTestsOverride && !isTransactionsTestsOverride && !isLocalFilesComparison) {
+    if (
+        !isActivitiesTestsOverride &&
+        !isTransactionsTestsOverrideBase &&
+        !isLocalFilesComparison &&
+        !isTransactionsTestsOverrideWinzer
+    ) {
         testDataPostUDT = await importExportATDService.postUDT({
             TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
             MainKeyType: { ID: 23, Name: '' },
@@ -233,10 +261,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         .then((addon) => addon[0].Version);
 
     let isInstalled = false;
+    let installedAddonVersion;
     let installedAddonsArr = await generalService.getAddons(dataViewsVarLatestVersion);
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
             if (installedAddonsArr[i].Addon.Name == 'Data Views API') {
+                installedAddonVersion = installedAddonsArr[i].Version;
                 isInstalled = true;
                 break;
             }
@@ -247,23 +277,29 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
     }
 
-    const dataViewsUpgradeAuditLogResponse = await service.addons.installedAddons
-        .addonUUID(`${dataViewsAddonUUID}`)
-        .upgrade(dataViewsVarLatestVersion);
+    let dataViewsUpgradeAuditLogResponse;
+    let dataViewsInstalledAddonVersion;
+    let dataViewsAuditLogResponse;
+    if (installedAddonVersion != dataViewsVarLatestVersion) {
+        dataViewsUpgradeAuditLogResponse = await service.addons.installedAddons
+            .addonUUID(`${dataViewsAddonUUID}`)
+            .upgrade(dataViewsVarLatestVersion);
 
-    generalService.sleep(4000); //Test installation status only after 4 seconds.
-    let dataViewsAuditLogResponse = await service.auditLogs
-        .uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID as any)
-        .get();
-    if (dataViewsAuditLogResponse.Status.Name == 'InProgress') {
-        generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-        dataViewsAuditLogResponse = await service.auditLogs
-            .uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID as any)
-            .get();
+        generalService.sleep(4000); //Test installation status only after 4 seconds.
+        dataViewsAuditLogResponse = await service.auditLogs.uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID).get();
+        if (dataViewsAuditLogResponse.Status.Name == 'InProgress') {
+            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+            dataViewsAuditLogResponse = await service.auditLogs
+                .uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID)
+                .get();
+        }
+        dataViewsInstalledAddonVersion = await (
+            await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).get()
+        ).Version;
+    } else {
+        dataViewsUpgradeAuditLogResponse = 'Skipped';
+        dataViewsInstalledAddonVersion = installedAddonVersion;
     }
-    const dataViewsInstalledAddonVersion = await service.addons.installedAddons
-        .addonUUID(`${dataViewsAddonUUID}`)
-        .get();
     //#endregion Upgrade Data Views
 
     //#region Upgrade Import Export ATD
@@ -283,10 +319,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         .then((addon) => addon[0].Version);
 
     isInstalled = false;
+    installedAddonVersion = undefined;
     installedAddonsArr = await generalService.getAddons(importExportATDVarLatestVersion);
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
             if (installedAddonsArr[i].Addon.Name == 'ImportExportATD') {
+                installedAddonVersion = installedAddonsArr[i].Version;
                 isInstalled = true;
                 break;
             }
@@ -297,67 +335,73 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
     }
 
-    const importExportATDUpgradeAuditLogResponse = await service.addons.installedAddons
-        .addonUUID(`${importExportATDAddonUUID}`)
-        .upgrade(importExportATDVarLatestVersion);
+    let importExportATDUpgradeAuditLogResponse;
+    let importExportATDInstalledAddonVersion;
+    let importExportATDAuditLogResponse;
+    if (installedAddonVersion != importExportATDVarLatestVersion) {
+        importExportATDUpgradeAuditLogResponse = await service.addons.installedAddons
+            .addonUUID(`${importExportATDAddonUUID}`)
+            .upgrade(importExportATDVarLatestVersion);
 
-    generalService.sleep(4000); //Test installation status only after 4 seconds.
-    let importExportATDAuditLogResponse = await service.auditLogs
-        .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID as any)
-        .get();
-    if (importExportATDAuditLogResponse.Status.Name == 'InProgress') {
-        generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+        generalService.sleep(4000); //Test installation status only after 4 seconds.
         importExportATDAuditLogResponse = await service.auditLogs
-            .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID as any)
+            .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
             .get();
+        if (importExportATDAuditLogResponse.Status.Name == 'InProgress') {
+            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+            importExportATDAuditLogResponse = await service.auditLogs
+                .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
+                .get();
+        }
+        importExportATDInstalledAddonVersion = await (
+            await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).get()
+        ).Version;
+    } else {
+        importExportATDUpgradeAuditLogResponse = 'Skipped';
+        importExportATDInstalledAddonVersion = installedAddonVersion;
     }
-    const importExportATDInstalledAddonVersion = await service.addons.installedAddons
-        .addonUUID(`${importExportATDAddonUUID}`)
-        .get();
     //#endregion Upgrade Import Export ATD
 
     describe('Export And Import ATD Tests Suites', () => {
         describe('Prerequisites Addon for ImportExportATD Tests', () => {
             it('Upgarde To Latest Version of Data Views Addon', async () => {
-                expect(dataViewsUpgradeAuditLogResponse)
-                    .to.have.property('ExecutionUUID')
-                    .a('string')
-                    .with.lengthOf(36);
-                if (dataViewsAuditLogResponse.Status.Name == 'Failure') {
-                    expect(dataViewsAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                        'is already working on version',
-                    );
-                } else {
-                    expect(dataViewsAuditLogResponse.Status.Name).to.include('Success');
+                if (dataViewsUpgradeAuditLogResponse != 'Skipped') {
+                    expect(dataViewsUpgradeAuditLogResponse)
+                        .to.have.property('ExecutionUUID')
+                        .a('string')
+                        .with.lengthOf(36);
+                    if (dataViewsAuditLogResponse.Status.Name == 'Failure') {
+                        expect(dataViewsAuditLogResponse.AuditInfo.ErrorMessage).to.include(
+                            'is already working on version',
+                        );
+                    } else {
+                        expect(dataViewsAuditLogResponse.Status.Name).to.include('Success');
+                    }
                 }
             });
 
             it(`Latest Version Is Installed`, () => {
-                expect(dataViewsInstalledAddonVersion)
-                    .to.have.property('Version')
-                    .a('string')
-                    .that.is.equal(dataViewsVarLatestVersion);
+                expect(dataViewsInstalledAddonVersion).to.equal(dataViewsVarLatestVersion);
             });
 
             it('Upgarde To Latest Version of Import Export Addon', async () => {
-                expect(importExportATDUpgradeAuditLogResponse)
-                    .to.have.property('ExecutionUUID')
-                    .a('string')
-                    .with.lengthOf(36);
-                if (importExportATDAuditLogResponse.Status.Name == 'Failure') {
-                    expect(importExportATDAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                        'is already working on version',
-                    );
-                } else {
-                    expect(importExportATDAuditLogResponse.Status.Name).to.include('Success');
+                if (importExportATDUpgradeAuditLogResponse != 'Skipped') {
+                    expect(importExportATDUpgradeAuditLogResponse)
+                        .to.have.property('ExecutionUUID')
+                        .a('string')
+                        .with.lengthOf(36);
+                    if (importExportATDAuditLogResponse.Status.Name == 'Failure') {
+                        expect(importExportATDAuditLogResponse.AuditInfo.ErrorMessage).to.include(
+                            'is already working on version',
+                        );
+                    } else {
+                        expect(importExportATDAuditLogResponse.Status.Name).to.include('Success');
+                    }
                 }
             });
 
             it(`Latest Version Is Installed`, () => {
-                expect(importExportATDInstalledAddonVersion)
-                    .to.have.property('Version')
-                    .a('string')
-                    .that.is.equal(importExportATDVarLatestVersion);
+                expect(importExportATDInstalledAddonVersion).to.equal(importExportATDVarLatestVersion);
             });
 
             if (isTransactionsTests) {
@@ -764,8 +808,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
         });
 
-        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion.Version}`, () => {
-            expect(importExportATDInstalledAddonVersion.Version).to.be.a('string').that.is.contain('.');
+        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion}`, () => {
+            expect(importExportATDInstalledAddonVersion).to.contain('.');
         });
 
         describe('Endpoints', () => {
@@ -1937,7 +1981,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             });
         });
 
-        if (!isActivitiesTestsOverride && !isTransactionsTestsOverride && !isLocalFilesComparison) {
+        if (
+            !isActivitiesTestsOverride &&
+            !isTransactionsTestsOverrideBase &&
+            !isLocalFilesComparison &&
+            !isTransactionsTestsOverrideWinzer
+        ) {
             describe('Test Clean up', () => {
                 it('Make sure an ATD removed in the end of the tests', async () => {
                     //Make sure an ATD removed in the end of the tests
@@ -1951,156 +2000,163 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             });
         }
 
-        if (isTransactionsTestsOverride) {
-            const TransactionsATDArr = [
-                //Base Sandbox
-                {
-                    InternalID: 309512,
-                    Description: 'Exported from Sandbox in 28.02.2021',
-                    FileName: '1_28-02-2021_Test_ATD_303912.json',
-                    MimeType: 'application/json',
-                    Title: '1 28.02.2021 Test ATD',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
-                },
-                //Base Production
-                {
-                    InternalID: 303830,
-                    Description: 'Exported from Production in 02.03.2021',
-                    FileName: 'Automation_ATD_1_1_165_2.json',
-                    MimeType: 'application/json',
-                    Title: 'Automation ATD 1.1.165 2',
-                    URL:
-                        'https://cdn.pepperi.com/30013466/CustomizationFile/a9e069ea-542f-435c-a7a3-9e2748f5e24b/Automation_ATD_1_1_165_2.json',
-                },
-                //Base EU
-                {
-                    InternalID: 6282,
-                    Description: 'Base ATD from EU',
-                    FileName: 'Base_ATD_EU_-_1_1_168.json',
-                    MimeType: 'application/json',
-                    Title: 'Base ATD EU - 1.1.168',
-                    URL:
-                        'https://eucdn.pepperi.com/30010075/CustomizationFile/5b947341-c3a3-41ae-ad8c-ff77d3ada047/Base_ATD_EU_-_1_1_168.json',
-                },
-                {
-                    InternalID: 309544,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Winzer_Sales_Order_272248_Fix_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Winzer Sales Order',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c4c2caac-acc1-4ff1-8206-5165561c342b/Winzer_Sales_Order_272248_Fix_01_03.json',
-                },
-                {
-                    InternalID: 309546,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Sales Order Winzer DEV (New)',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/23a3d144-6356-4e69-b55d-f35916ae868e/Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
-                },
-                {
-                    InternalID: 309547,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Sales_Order_Legacy_256743_Fix_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Sales Order Legacy',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c2c35582-e091-4478-986f-ea8af10ba004/Sales_Order_Legacy_256743_Fix_01_03.json',
-                },
-                {
-                    InternalID: 309556,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Sales_Order_New_Pricing_268998_Fix_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Sales Order New Pricing',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3a9c558-d835-4018-983e-5e70e7565786/Sales_Order_New_Pricing_268998_Fix_01_03.json',
-                },
-                {
-                    InternalID: 309557,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'VSN_259467_Fix_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'VSN',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/564da1f5-6ce5-48d5-a40d-f4d7409d6d5d/VSN_259467_Fix_01_03.json',
-                },
-                {
-                    InternalID: 309755,
-                    Description: 'Exported from Winzer production in 24.02.2023',
-                    FileName: 'VSN_TEST_(268995)_268995.json',
-                    MimeType: 'application/json',
-                    Title: 'VSN TEST (268995)',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/630bf362-7d01-4d31-81f6-c77912321fff/VSN_TEST_(268995)_268995.json',
-                },
-                {
-                    InternalID: 309805,
-                    Description: 'Exported from Winzer production in 04.03.2021',
-                    FileName: 'CustomKits_259470_Fix_04_03.json',
-                    MimeType: 'application/json',
-                    Title: 'CustomKits',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/54361873-193c-47ec-8c6d-81376fcabb50/CustomKits_259470_Fix_04_03.json',
-                },
-                {
-                    InternalID: 309804,
-                    Description: 'Exported from Winzer production in 04.03.2021',
-                    FileName: 'Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Custom Kit TEST (268997)',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c37e86e6-05bd-43d9-8bfa-1a23b7d1f284/Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
-                },
-                {
-                    InternalID: 309561,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'BillOnly_259469_Fox_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'BillOnly',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/5ad4043f-9f2a-4604-aa28-c10668b0c275/BillOnly_259469_Fox_01_03.json',
-                },
-                {
-                    InternalID: 309363,
-                    Description: 'Exported from Winzer production in 24.02.2021',
-                    FileName: 'FDP_259468.json',
-                    MimeType: 'application/json',
-                    Title: 'FDP',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/3c232b0c-f70a-437d-8a95-50569e344e12/FDP_259468.json',
-                },
-                {
-                    InternalID: 309803,
-                    Description: 'Exported from Winzer production in 04.03.2021',
-                    FileName: 'Label Only_261365_Fix_04_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Label Only',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bc4e02b6-976f-4d67-b9ac-15c974aca5b6/Label Only_261365_Fix_04_03.json',
-                },
-                {
-                    InternalID: 309563,
-                    Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                    FileName: 'Update Prices_261683_Fix_01_03.json',
-                    MimeType: 'application/json',
-                    Title: 'Update Prices',
-                    URL:
-                        'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4a108341-49bb-4ee0-92d5-4f1f2f017d3c/Update Prices_261683_Fix_01_03.json',
-                },
-                {
-                    InternalID: 303998,
-                    Description: 'Exported from Winzer production in 04.03.2021',
-                    FileName: 'Sales_Order_DEV_V2_283071.json',
-                    MimeType: 'application/json',
-                    Title: 'Sales Order DEV V2',
-                    URL:
-                        'https://cdn.pepperi.com/30013466/CustomizationFile/9dad31bb-8f8c-4fe9-ba0a-a9b84460e724/Sales_Order_DEV_V2_283071.json',
-                },
-            ];
+        if (isTransactionsTestsOverrideBase || isTransactionsTestsOverrideWinzer) {
+            let TransactionsATDArr;
+            if (isTransactionsTestsOverrideBase) {
+                TransactionsATDArr = [
+                    //Base Sandbox
+                    {
+                        InternalID: 309512,
+                        Description: 'Exported from Sandbox in 28.02.2021',
+                        FileName: '1_28-02-2021_Test_ATD_303912.json',
+                        MimeType: 'application/json',
+                        Title: '1 28.02.2021 Test ATD',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
+                    },
+                    //Base Production
+                    {
+                        InternalID: 303830,
+                        Description: 'Exported from Production in 02.03.2021',
+                        FileName: 'Automation_ATD_1_1_165_2.json',
+                        MimeType: 'application/json',
+                        Title: 'Automation ATD 1.1.165 2',
+                        URL:
+                            'https://cdn.pepperi.com/30013466/CustomizationFile/a9e069ea-542f-435c-a7a3-9e2748f5e24b/Automation_ATD_1_1_165_2.json',
+                    },
+                    //Base EU
+                    {
+                        InternalID: 6282,
+                        Description: 'Base ATD from EU',
+                        FileName: 'Base_ATD_EU_-_1_1_168.json',
+                        MimeType: 'application/json',
+                        Title: 'Base ATD EU - 1.1.168',
+                        URL:
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/5b947341-c3a3-41ae-ad8c-ff77d3ada047/Base_ATD_EU_-_1_1_168.json',
+                    },
+                    {
+                        InternalID: 309544,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'Winzer_Sales_Order_272248_Fix_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Winzer Sales Order',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c4c2caac-acc1-4ff1-8206-5165561c342b/Winzer_Sales_Order_272248_Fix_01_03.json',
+                    },
+                    {
+                        InternalID: 309546,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Sales Order Winzer DEV (New)',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/23a3d144-6356-4e69-b55d-f35916ae868e/Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
+                    },
+                    {
+                        InternalID: 309547,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'Sales_Order_Legacy_256743_Fix_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Sales Order Legacy',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c2c35582-e091-4478-986f-ea8af10ba004/Sales_Order_Legacy_256743_Fix_01_03.json',
+                    },
+                    {
+                        InternalID: 309556,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'Sales_Order_New_Pricing_268998_Fix_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Sales Order New Pricing',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3a9c558-d835-4018-983e-5e70e7565786/Sales_Order_New_Pricing_268998_Fix_01_03.json',
+                    },
+                ];
+            }
+            if (isTransactionsTestsOverrideWinzer) {
+                TransactionsATDArr = [
+                    {
+                        InternalID: 309557,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'VSN_259467_Fix_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'VSN',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/564da1f5-6ce5-48d5-a40d-f4d7409d6d5d/VSN_259467_Fix_01_03.json',
+                    },
+                    {
+                        InternalID: 309755,
+                        Description: 'Exported from Winzer production in 24.02.2023',
+                        FileName: 'VSN_TEST_(268995)_268995.json',
+                        MimeType: 'application/json',
+                        Title: 'VSN TEST (268995)',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/630bf362-7d01-4d31-81f6-c77912321fff/VSN_TEST_(268995)_268995.json',
+                    },
+                    {
+                        InternalID: 309805,
+                        Description: 'Exported from Winzer production in 04.03.2021',
+                        FileName: 'CustomKits_259470_Fix_04_03.json',
+                        MimeType: 'application/json',
+                        Title: 'CustomKits',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/54361873-193c-47ec-8c6d-81376fcabb50/CustomKits_259470_Fix_04_03.json',
+                    },
+                    {
+                        InternalID: 309804,
+                        Description: 'Exported from Winzer production in 04.03.2021',
+                        FileName: 'Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Custom Kit TEST (268997)',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c37e86e6-05bd-43d9-8bfa-1a23b7d1f284/Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
+                    },
+                    {
+                        InternalID: 309561,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'BillOnly_259469_Fox_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'BillOnly',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/5ad4043f-9f2a-4604-aa28-c10668b0c275/BillOnly_259469_Fox_01_03.json',
+                    },
+                    {
+                        InternalID: 309363,
+                        Description: 'Exported from Winzer production in 24.02.2021',
+                        FileName: 'FDP_259468.json',
+                        MimeType: 'application/json',
+                        Title: 'FDP',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/3c232b0c-f70a-437d-8a95-50569e344e12/FDP_259468.json',
+                    },
+                    {
+                        InternalID: 309803,
+                        Description: 'Exported from Winzer production in 04.03.2021',
+                        FileName: 'Label Only_261365_Fix_04_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Label Only',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bc4e02b6-976f-4d67-b9ac-15c974aca5b6/Label Only_261365_Fix_04_03.json',
+                    },
+                    {
+                        InternalID: 309563,
+                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
+                        FileName: 'Update Prices_261683_Fix_01_03.json',
+                        MimeType: 'application/json',
+                        Title: 'Update Prices',
+                        URL:
+                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4a108341-49bb-4ee0-92d5-4f1f2f017d3c/Update Prices_261683_Fix_01_03.json',
+                    },
+                    {
+                        InternalID: 303998,
+                        Description: 'Exported from Winzer production in 04.03.2021',
+                        FileName: 'Sales_Order_DEV_V2_283071.json',
+                        MimeType: 'application/json',
+                        Title: 'Sales Order DEV V2',
+                        URL:
+                            'https://cdn.pepperi.com/30013466/CustomizationFile/9dad31bb-8f8c-4fe9-ba0a-a9b84460e724/Sales_Order_DEV_V2_283071.json',
+                    },
+                ];
+            }
             describe('Test Transactions Override', () => {
                 const testATDInternalID = testATD.InternalID; // 290418; //Production 'Automation ATD 1.1.165 2'
                 for (let index = 0; index < TransactionsATDArr.length; index++) {
@@ -3228,6 +3284,39 @@ function RemoveUntestedMembers(testedObject) {
             delete tmpContent.ModificationDateTime;
             testedObject.References[index].Content = JSON.stringify(tmpContent);
         }
+    }
+    for (let j = 0; j < testedObject.Workflow.WorkflowObject.WorkflowTransitions.length; j++) {
+        for (
+            let index = 0;
+            index < testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions.length;
+            index++
+        ) {
+            if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue) {
+                if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue.HTML_FILE_ID) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .HTML_FILE_ID;
+                }
+            }
+        }
+    }
+    for (let j = 0; j < testedObject.Workflow.WorkflowObject.WorkflowPrograms.length; j++) {
+        for (let index = 0; index < testedObject.Workflow.WorkflowObject.WorkflowPrograms[j].Actions.length; index++) {
+            if (testedObject.Workflow.WorkflowObject.WorkflowPrograms[j].Actions[index].KeyValue) {
+                if (testedObject.Workflow.WorkflowObject.WorkflowPrograms[j].Actions[index].KeyValue.HTML_FILE_ID) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowPrograms[j].Actions[index].KeyValue
+                        .HTML_FILE_ID;
+                }
+                if (
+                    testedObject.Workflow.WorkflowObject.WorkflowPrograms[j].Actions[index].KeyValue.DESTINATION_ATD_ID
+                ) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowPrograms[j].Actions[index].KeyValue
+                        .DESTINATION_ATD_ID;
+                }
+            }
+        }
+    }
+    for (let index = 0; index < testedObject.Workflow.WorkflowReferences.length; index++) {
+        delete testedObject.Workflow.WorkflowReferences[index].ID;
     }
 }
 
