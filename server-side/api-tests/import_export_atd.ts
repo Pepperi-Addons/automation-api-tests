@@ -2199,7 +2199,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             expect(ATDExportObj)
                                 .to.have.property('AuditInfo')
                                 .that.have.property('ResultObject')
-                                .and.contain('{}');
+                                .to.be.a('string')
+                                .that.contains('InternalID');
                         });
 
                         it('Export The Overriden Transactions ATD', async () => {
