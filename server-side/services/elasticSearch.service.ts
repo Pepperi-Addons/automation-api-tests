@@ -25,11 +25,11 @@ export class ElasticSearchService {
 
     postDeleteData(type, body) {
         const deleteData = { query: { bool: { must: { match: body } } } };
-        return this.papiClient.post('/elasticsearch/delete/' + type + '/' + deleteData);
+        return this.papiClient.post('/elasticsearch/delete/' + type, deleteData);
     }
 
     getTotals(type, agg) {
-        return this.papiClient.post('/elasticsearch/totals/' + type, agg);
+        return this.papiClient.post('/elasticsearch/totals/' + type + agg);
     }
 
     postSearchData(search, size) {

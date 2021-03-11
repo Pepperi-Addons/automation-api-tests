@@ -315,7 +315,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                 const searchData = await elasticSearchservice.postSearchData({ RetailPrice: 99 }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
-                    expect(searchData.hits.total).to.have.property('value').that.equals(1);
+                    expect(searchData.hits.total).to.have.property('value').that.equals(2);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('open_catalog_Test Data_'),
                         expect(item)
@@ -323,7 +323,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                             .that.equals('oc-' + distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1'),
                         expect(item._source).to.have.property('RetailPrice').that.equals(99);
-                    expect(searchData.hits.hits).to.be.an('array').with.lengthOf(1);
+                    expect(searchData.hits.hits).to.be.an('array').with.lengthOf(2);
                 });
             });
         });
@@ -331,7 +331,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
         describe('Get totals', () => {
             it('Get totals', async () => {
                 const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activites',
+                    'all_activities',
                     '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)',
                 );
                 expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(243.5),
@@ -343,11 +343,11 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
             it('Get totals with group by', async () => {
                 const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activites',
+                    'all_activities',
                     '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)&group_by=Color',
                 );
                 expect(getTotalsData[0]).to.have.property('Color').that.equals('Black'),
-                    expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(206.7),
+                    expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(206.75),
                     expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(827),
                     expect(getTotalsData[0]).to.have.property('min_RetailPrice').that.equals(99),
                     expect(getTotalsData[0]).to.have.property('max_RetailPrice').that.equals(500),
