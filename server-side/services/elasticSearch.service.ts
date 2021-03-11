@@ -25,7 +25,11 @@ export class ElasticSearchService {
 
     postDeleteData(type, body) {
         const deleteData = { query: { bool: { must: { match: body } } } };
-        return this.papiClient.post('/elasticsearch/delete/' + type, deleteData);
+        return this.papiClient.post('/elasticsearch/delete/' + type + '/' + deleteData);
+    }
+
+    getTotals(type, agg) {
+        return this.papiClient.post('/elasticsearch/totals/' + type, agg);
     }
 
     postSearchData(search, size) {
@@ -46,13 +50,4 @@ export class ElasticSearchService {
         };
         return this.papiClient.post('/elasticsearch/search/open_catalog', searchData);
     }
-
-    //Stop using this, you have this:
-    //generalService.getClientData('DistributorUUID')
-    //it have options in it for your selection
-    // getDistUUID() {
-    //     const token = this.papiClient['options'].token;
-    //     const decodedToken = jwt_decode(token);
-    //     return decodedToken['pepperi.distributoruuid'];
-    // }
 }

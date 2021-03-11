@@ -132,14 +132,13 @@ export async function ElasticSearchTests(generalService: GeneralService, request
     ];
 
     const elasticSearchAddonUUID = '00000000-0000-0000-0000-00000e1a571c';
-    const elasticSearcVersion = '.';
-
+    const elasticSearchVersion = '.';
     //#region Upgrade Elastic Search
     const elasticSearchVarLatestVersion = await fetch(
         `${generalService['client'].BaseURL.replace(
             'papi-eu',
             'papi',
-        )}/var/addons/versions?where=AddonUUID='${elasticSearchAddonUUID}' AND Version Like '%${elasticSearcVersion}%'&order_by=CreationDateTime DESC`,
+        )}/var/addons/versions?where=AddonUUID='${elasticSearchAddonUUID}' AND Version Like '%${elasticSearchVersion}%'&order_by=CreationDateTime DESC`,
         {
             method: `GET`,
             headers: {
@@ -326,6 +325,69 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                         expect(item._source).to.have.property('RetailPrice').that.equals(99);
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(1);
                 });
+            });
+        });
+
+        describe('Get totals', () => {
+            it('Get totals', async () => {
+                const getTotalsData = await elasticSearchservice.getTotals(
+                    'all_activites',
+                    '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)',
+                );
+                expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(243.5),
+                    expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(2435),
+                    expect(getTotalsData[0]).to.have.property('min_RetailPrice').that.equals(99),
+                    expect(getTotalsData[0]).to.have.property('max_RetailPrice').that.equals(500),
+                    expect(getTotalsData[0]).to.have.property('count_Brand').that.equals(10);
+            });
+
+            it('Get totals with group by', async () => {
+                const getTotalsData = await elasticSearchservice.getTotals(
+                    'all_activites',
+                    '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)&group_by=Color',
+                );
+                expect(getTotalsData[0]).to.have.property('Color').that.equals('Black'),
+                    expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(206.7),
+                    expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(827),
+                    expect(getTotalsData[0]).to.have.property('min_RetailPrice').that.equals(99),
+                    expect(getTotalsData[0]).to.have.property('max_RetailPrice').that.equals(500),
+                    expect(getTotalsData[0]).to.have.property('count_Brand').that.equals(4),
+                    expect(getTotalsData[1]).to.have.property('Color').that.equals('Blue'),
+                    expect(getTotalsData[1]).to.have.property('avg_RetailPrice').that.equals(289.5),
+                    expect(getTotalsData[1]).to.have.property('sum_RetailPrice').that.equals(579),
+                    expect(getTotalsData[1]).to.have.property('min_RetailPrice').that.equals(129),
+                    expect(getTotalsData[1]).to.have.property('max_RetailPrice').that.equals(450),
+                    expect(getTotalsData[1]).to.have.property('count_Brand').that.equals(2),
+                    expect(getTotalsData[2]).to.have.property('Color').that.equals('White'),
+                    expect(getTotalsData[2]).to.have.property('avg_RetailPrice').that.equals(289.5),
+                    expect(getTotalsData[2]).to.have.property('sum_RetailPrice').that.equals(579),
+                    expect(getTotalsData[2]).to.have.property('min_RetailPrice').that.equals(129),
+                    expect(getTotalsData[2]).to.have.property('max_RetailPrice').that.equals(450),
+                    expect(getTotalsData[2]).to.have.property('count_Brand').that.equals(2),
+                    expect(getTotalsData[3]).to.have.property('Color').that.equals('Green'),
+                    expect(getTotalsData[3]).to.have.property('avg_RetailPrice').that.equals(99),
+                    expect(getTotalsData[3]).to.have.property('sum_RetailPrice').that.equals(99),
+                    expect(getTotalsData[3]).to.have.property('min_RetailPrice').that.equals(99),
+                    expect(getTotalsData[3]).to.have.property('max_RetailPrice').that.equals(99),
+                    expect(getTotalsData[3]).to.have.property('count_Brand').that.equals(1),
+                    expect(getTotalsData[4]).to.have.property('Color').that.equals('Grey'),
+                    expect(getTotalsData[4]).to.have.property('avg_RetailPrice').that.equals(350),
+                    expect(getTotalsData[4]).to.have.property('sum_RetailPrice').that.equals(350),
+                    expect(getTotalsData[4]).to.have.property('min_RetailPrice').that.equals(350),
+                    expect(getTotalsData[4]).to.have.property('max_RetailPrice').that.equals(350),
+                    expect(getTotalsData[4]).to.have.property('count_Brand').that.equals(1),
+                    expect(getTotalsData[5]).to.have.property('Color').that.equals('Neon'),
+                    expect(getTotalsData[5]).to.have.property('avg_RetailPrice').that.equals(250),
+                    expect(getTotalsData[5]).to.have.property('sum_RetailPrice').that.equals(250),
+                    expect(getTotalsData[5]).to.have.property('min_RetailPrice').that.equals(250),
+                    expect(getTotalsData[5]).to.have.property('max_RetailPrice').that.equals(250),
+                    expect(getTotalsData[5]).to.have.property('count_Brand').that.equals(1),
+                    expect(getTotalsData[6]).to.have.property('Color').that.equals('Pink'),
+                    expect(getTotalsData[6]).to.have.property('avg_RetailPrice').that.equals(300),
+                    expect(getTotalsData[6]).to.have.property('sum_RetailPrice').that.equals(300),
+                    expect(getTotalsData[6]).to.have.property('min_RetailPrice').that.equals(300),
+                    expect(getTotalsData[6]).to.have.property('max_RetailPrice').that.equals(300),
+                    expect(getTotalsData[6]).to.have.property('count_Brand').that.equals(1);
             });
         });
 
