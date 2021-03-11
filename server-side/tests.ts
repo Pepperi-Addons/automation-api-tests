@@ -454,10 +454,7 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
 export async function elastic_search(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
 
-    if (
-        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
-        (testName != 'Elastic_Search')
-    ) {
+    if (client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') || testName != 'Elastic_Search') {
         testName = 'Elastic_Search';
         PrintMemoryUseToLog('Start', testName);
         testEnvironment = client.BaseURL.includes('staging')
