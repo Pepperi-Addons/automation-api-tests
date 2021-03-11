@@ -331,7 +331,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
         describe('Get totals', () => {
             it('Get totals', async () => {
                 const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activites',
+                    'all_activities',
                     '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)',
                 );
                 expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(243.5),
@@ -343,7 +343,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
             it('Get totals with group by', async () => {
                 const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activites',
+                    'all_activities',
                     '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)&group_by=Color',
                 );
                 expect(getTotalsData[0]).to.have.property('Color').that.equals('Black'),
