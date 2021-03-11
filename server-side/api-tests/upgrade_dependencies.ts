@@ -28,13 +28,13 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             ],
             'Data Views API': [
                 '484e7f22-796a-45f8-9082-12a734bac4e8',
-                request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '0.',
+                request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '1.',
             ],
             'Settings Framework': [
                 '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
                 request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
             ],
-            ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.0'],
+            ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
         };
 
         it('Validate that all the needed addons are installed', async () => {
@@ -63,11 +63,15 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             describe(`${addonName}`, () => {
                 let varLatestVersion;
                 it('Upgarde To Latest Version', async () => {
+                    let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
+                    if (addonName == 'Services Framework' || addonName == 'Cross Platforms API') {
+                        searchString = `AND Version Like '${version}%' AND Available Like 1`;
+                    }
                     varLatestVersion = await fetch(
                         `${generalService['client'].BaseURL.replace(
                             'papi-eu',
                             'papi',
-                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like '${version}%' AND Available Like 1&order_by=CreationDateTime DESC`,
+                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' ${searchString}&order_by=CreationDateTime DESC`,
                         {
                             method: `GET`,
                             headers: {
@@ -82,16 +86,40 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                         .a('string')
                         .with.lengthOf(36)
                         .then(async (executionUUID) => {
-                            generalService.sleep(4000); //Test installation status only after 4 seconds.
+                            generalService.sleep(4000); //Test upgrade status only after 4 seconds.
                             let auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
                             if (auditLogResponse.Status.Name == 'InProgress') {
                                 generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
                                 auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
                             }
                             if (auditLogResponse.Status.Name == 'Failure') {
-                                expect(auditLogResponse.AuditInfo.ErrorMessage).to.include(
-                                    'is already working on version',
-                                );
+                                if (
+                                    !auditLogResponse.AuditInfo.ErrorMessage.includes(
+                                        'is already working on newer version',
+                                    )
+                                ) {
+                                    expect(auditLogResponse.AuditInfo.ErrorMessage).to.include(
+                                        'is already working on version',
+                                    );
+                                } else {
+                                    await expect(
+                                        service.addons.installedAddons
+                                            .addonUUID(`${addonUUID}`)
+                                            .downgrade(varLatestVersion),
+                                    )
+                                        .eventually.to.have.property('ExecutionUUID')
+                                        .a('string')
+                                        .with.lengthOf(36)
+                                        .then(async (executionUUID) => {
+                                            generalService.sleep(4000); //Test downgrade status only after 4 seconds.
+                                            let auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
+                                            if (auditLogResponse.Status.Name == 'InProgress') {
+                                                generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                                                auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
+                                            }
+                                            expect(auditLogResponse.Status.Name).to.include('Success');
+                                        });
+                                }
                             } else {
                                 expect(auditLogResponse.Status.Name).to.include('Success');
                             }

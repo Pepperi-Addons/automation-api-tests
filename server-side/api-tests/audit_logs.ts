@@ -199,7 +199,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 );
             },
         ),
-    ]).then(() => printTestResults(describe, expect, it, 'Audit Logs'));
+    ]).then(() => printTestResults(describe, expect, it, 'Audit Logs Tests Suites'));
 
     //Test
     async function createCodeJobUsingDraftTest(testName, draftExecuteableCode) {

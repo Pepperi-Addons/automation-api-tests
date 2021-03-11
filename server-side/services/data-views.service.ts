@@ -29,7 +29,7 @@ export class DataViewsService {
         return this.papiClient.metaData.dataViews.upsert(dataView);
     }
 
-    postDataViewBatch(dataView: DataView[]) {
-        return this.papiClient.metaData.dataViews.batch(dataView);
+    postDataViewBatch(dataViewArr: DataView[]) {
+        return this.papiClient.metaData.dataViews.batch(dataViewArr);
     }
 }
