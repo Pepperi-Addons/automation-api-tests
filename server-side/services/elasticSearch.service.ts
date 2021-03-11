@@ -1,5 +1,4 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 
 export class ElasticSearchService {
@@ -48,9 +47,12 @@ export class ElasticSearchService {
         return this.papiClient.post('/elasticsearch/search/open_catalog', searchData);
     }
 
-    getDistUUID() {
-        const token = this.papiClient['options'].token;
-        const decodedToken = jwt_decode(token);
-        return decodedToken['pepperi.distributoruuid'];
-    }
+    //Stop using this, you have this:
+    //generalService.getClientData('DistributorUUID')
+    //it have options in it for your selection
+    // getDistUUID() {
+    //     const token = this.papiClient['options'].token;
+    //     const decodedToken = jwt_decode(token);
+    //     return decodedToken['pepperi.distributoruuid'];
+    // }
 }

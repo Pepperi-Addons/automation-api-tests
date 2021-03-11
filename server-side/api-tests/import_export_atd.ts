@@ -363,6 +363,23 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     //#endregion Upgrade Import Export ATD
 
     describe('Export And Import ATD Tests Suites', () => {
+        //Test Data
+        it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
+            transactionsTypeArr[transactionsTypeArr[0]]
+        }`, () => {
+            expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
+        });
+
+        it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
+            activitiesTypeArr[activitiesTypeArr[0]]
+        }`, () => {
+            expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
+        });
+
+        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion}`, () => {
+            expect(importExportATDInstalledAddonVersion).to.contain('.');
+        });
+
         describe('Prerequisites Addon for ImportExportATD Tests', () => {
             it('Upgarde To Latest Version of Data Views Addon', async () => {
                 if (dataViewsUpgradeAuditLogResponse != 'Skipped') {
@@ -793,23 +810,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     });
                 });
             }
-        });
-
-        //Test Data
-        it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
-            transactionsTypeArr[transactionsTypeArr[0]]
-        }`, () => {
-            expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
-        });
-
-        it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
-            activitiesTypeArr[activitiesTypeArr[0]]
-        }`, () => {
-            expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
-        });
-
-        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion}`, () => {
-            expect(importExportATDInstalledAddonVersion).to.contain('.');
         });
 
         describe('Endpoints', () => {

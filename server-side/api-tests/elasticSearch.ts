@@ -1,8 +1,9 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ElasticSearchService } from '../services/elasticSearch.service';
+import fetch from 'node-fetch';
 
-export async function ElasticSearchTests(generalService: GeneralService, tester: TesterFunctions) {
-    const service = new ElasticSearchService(generalService.papiClient);
+export async function ElasticSearchTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    const elasticSearchservice = new ElasticSearchService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -130,21 +131,110 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
         },
     ];
 
+    const elasticSearchAddonUUID = '00000000-0000-0000-0000-00000e1a571c';
+    const elasticSearcVersion = '.';
+
+    //#region Upgrade Elastic Search
+    const elasticSearchVarLatestVersion = await fetch(
+        `${generalService['client'].BaseURL.replace(
+            'papi-eu',
+            'papi',
+        )}/var/addons/versions?where=AddonUUID='${elasticSearchAddonUUID}' AND Version Like '%${elasticSearcVersion}%'&order_by=CreationDateTime DESC`,
+        {
+            method: `GET`,
+            headers: {
+                Authorization: `${request.body.varKey}`,
+            },
+        },
+    )
+        .then((response) => response.json())
+        .then((addon) => addon[0].Version);
+
+    let isInstalled = false;
+    let installedAddonVersion;
+    const installedAddonsArr = await generalService.getAddons(elasticSearchVarLatestVersion);
+    for (let i = 0; i < installedAddonsArr.length; i++) {
+        if (installedAddonsArr[i].Addon !== null) {
+            if (installedAddonsArr[i].Addon.Name == 'PepperiElasticSearch') {
+                installedAddonVersion = installedAddonsArr[i].Version;
+                isInstalled = true;
+                break;
+            }
+        }
+    }
+    if (!isInstalled) {
+        await generalService.papiClient.addons.installedAddons.addonUUID(`${elasticSearchAddonUUID}`).install();
+        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+    }
+
+    let elasticSearchUpgradeAuditLogResponse;
+    let elasticSearchInstalledAddonVersion;
+    let elasticSearchAuditLogResponse;
+    if (installedAddonVersion != elasticSearchVarLatestVersion) {
+        elasticSearchUpgradeAuditLogResponse = await generalService.papiClient.addons.installedAddons
+            .addonUUID(`${elasticSearchAddonUUID}`)
+            .upgrade(elasticSearchVarLatestVersion);
+
+        generalService.sleep(4000); //Test installation status only after 4 seconds.
+        elasticSearchAuditLogResponse = await generalService.papiClient.auditLogs
+            .uuid(elasticSearchUpgradeAuditLogResponse.ExecutionUUID)
+            .get();
+        if (elasticSearchAuditLogResponse.Status.Name == 'InProgress') {
+            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+            elasticSearchAuditLogResponse = await generalService.papiClient.auditLogs
+                .uuid(elasticSearchUpgradeAuditLogResponse.ExecutionUUID)
+                .get();
+        }
+        elasticSearchInstalledAddonVersion = await (
+            await generalService.papiClient.addons.installedAddons.addonUUID(`${elasticSearchAddonUUID}`).get()
+        ).Version;
+    } else {
+        elasticSearchUpgradeAuditLogResponse = 'Skipped';
+        elasticSearchInstalledAddonVersion = installedAddonVersion;
+    }
+    //#endregion Upgrade Elastic Search
+
     describe('Elastic Search Test Suites', () => {
+        it(`Test Data: Tested Addon: PepperiElasticSearch - Version: ${elasticSearchInstalledAddonVersion}`, () => {
+            expect(elasticSearchInstalledAddonVersion).to.contain('.');
+        });
+
+        describe('Prerequisites Addon for Elastic Search Tests', () => {
+            it('Upgarde To Latest Version of Elastic Search Addon', async () => {
+                if (elasticSearchUpgradeAuditLogResponse != 'Skipped') {
+                    expect(elasticSearchUpgradeAuditLogResponse)
+                        .to.have.property('ExecutionUUID')
+                        .a('string')
+                        .with.lengthOf(36);
+                    if (elasticSearchAuditLogResponse.Status.Name == 'Failure') {
+                        expect(elasticSearchAuditLogResponse.AuditInfo.ErrorMessage).to.include(
+                            'is already working on version',
+                        );
+                    } else {
+                        expect(elasticSearchAuditLogResponse.Status.Name).to.include('Success');
+                    }
+                }
+            });
+
+            it(`Latest Version Is Installed`, () => {
+                expect(elasticSearchInstalledAddonVersion).to.equal(elasticSearchVarLatestVersion);
+            });
+        });
+
         let distUUID;
 
         describe('Post Bulk Data', () => {
             let tempFile;
 
             it('Create temp file for bulk', async () => {
-                tempFile = await service.uploadTempFile(ElasticData);
+                tempFile = await elasticSearchservice.uploadTempFile(ElasticData);
                 expect(tempFile).to.include('https://cdn.'), expect(tempFile).to.include('pepperi.com/TemporaryFiles/');
             });
 
             it('Post bulk data', async () => {
-                distUUID = await service.getDistUUID();
-                await service.postBulkData('all_activities', { URL: tempFile });
-                const bulkData = await service.postBulkData('open_catalog', { URL: tempFile });
+                distUUID = generalService.getClientData('DistributorUUID');
+                await elasticSearchservice.postBulkData('all_activities', { URL: tempFile });
+                const bulkData = await elasticSearchservice.postBulkData('open_catalog', { URL: tempFile });
                 expect(bulkData).to.have.property('took').that.is.above(0),
                     expect(bulkData).to.have.property('errors').that.is.a('boolean').and.is.false,
                     expect(bulkData).to.have.property('items').that.is.an('array').with.lengthOf(10);
@@ -161,7 +251,7 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
 
         describe('Post search data', () => {
             it('Search data', async () => {
-                const searchData = await service.postSearchData({ Distributor: 'Test Dist 1' }, 10);
+                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
@@ -176,7 +266,7 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
             });
 
             it('Search data page size', async () => {
-                const searchData = await service.postSearchData({ Distributor: 'Test Dist 1' }, 1);
+                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 1);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
@@ -191,7 +281,7 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
             });
 
             it('Search data String', async () => {
-                const searchData = await service.postSearchData({ Color: 'Black' }, 10);
+                const searchData = await elasticSearchservice.postSearchData({ Color: 'Black' }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(4);
@@ -207,7 +297,7 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
             });
 
             it('Search data Boolean', async () => {
-                const searchData = await service.postSearchData({ IsInStock: false }, 10);
+                const searchData = await elasticSearchservice.postSearchData({ IsInStock: false }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(6);
@@ -223,7 +313,7 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
             });
 
             it('Search data Number', async () => {
-                const searchData = await service.postSearchData({ RetailPrice: 99 }, 10);
+                const searchData = await elasticSearchservice.postSearchData({ RetailPrice: 99 }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(1);
@@ -241,10 +331,12 @@ export async function ElasticSearchTests(generalService: GeneralService, tester:
 
         describe('Post delete data', () => {
             it('Delete data', async () => {
-                await service.postDeleteData('all_activities', {
+                await elasticSearchservice.postDeleteData('all_activities', {
                     ElasticSearchSubType: 'Test Data',
                 });
-                const deleteData = await service.postDeleteData('open_catalog', { ElasticSearchSubType: 'Test Data' });
+                const deleteData = await elasticSearchservice.postDeleteData('open_catalog', {
+                    ElasticSearchSubType: 'Test Data',
+                });
                 expect(deleteData).to.have.property('took').that.is.above(0),
                     expect(deleteData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(deleteData).to.have.property('total').that.is.equals(10),

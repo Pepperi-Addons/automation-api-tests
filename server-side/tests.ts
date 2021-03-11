@@ -455,7 +455,7 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
     }
 }
 
-export async function elastic_search(client: Client, testerFunctions: TesterFunctions) {
+export async function elastic_search(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
 
     if (client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') || testName != 'Elastic_Search') {
@@ -481,13 +481,13 @@ export async function elastic_search(client: Client, testerFunctions: TesterFunc
         };
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
-            ElasticSearchTests(service, testerFunctions),
+            ElasticSearchTests(service, request, testerFunctions),
         ]).then(() => testerFunctions.run());
         PrintMemoryUseToLog('End', testName);
         testName = '';
         return testResult;
     } else {
-        return ElasticSearchTests(service, testerFunctions);
+        return ElasticSearchTests(service, request, testerFunctions);
     }
 }
 
