@@ -7,6 +7,7 @@ import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } fr
 import { FieldsTests } from './api-tests/fields';
 import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
 import { ObjectsTests } from './api-tests/objects';
+import { ElasticSearchTests } from './api-tests/elasticSearch';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
 import {
@@ -451,6 +452,42 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
         return testResult;
     } else {
         return ObjectsTests(service, testerFunctions);
+    }
+}
+
+export async function elastic_search(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+
+    if (client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') || testName != 'Elastic_Search') {
+        testName = 'Elastic_Search';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ElasticSearchTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ElasticSearchTests(service, testerFunctions);
     }
 }
 
