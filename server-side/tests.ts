@@ -7,7 +7,7 @@ import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } fr
 import { FieldsTests } from './api-tests/fields';
 import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
 import { ObjectsTests } from './api-tests/objects';
-import { ElasticSearchTests } from './api-tests/elasticSearch';
+import { ElasticSearchTests } from './api-tests/elastic_search';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
 import {
