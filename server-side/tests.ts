@@ -27,6 +27,7 @@ import {
     ImportExportATDLocalTests,
 } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
+import { ADALTests } from './api-tests/adal';
 
 let testName = '';
 let testEnvironment = '';
@@ -1083,5 +1084,43 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
         return testResult;
     } else {
         return UpgradeDependenciesTests(service, request, testerFunctions);
+    }
+}
+
+export async function adal(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'ADAL' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'ADAL';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            ADALTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return ADALTests(service, request, testerFunctions);
     }
 }

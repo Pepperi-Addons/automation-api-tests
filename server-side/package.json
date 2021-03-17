@@ -16,6 +16,7 @@
         "start": "tsc -w app.local.ts",
         "lint": "eslint --ext .ts .",
         "fix-lint": "eslint --ext .ts . --fix",
+        "update": "npm install @pepperi-addons/debug-server@latest && npm install @pepperi-addons/papi-sdk@latest",
         "learn": "ts-mocha ./learn/baseTestExample.ts",
         "learn-p": "ts-mocha --reporter mochawesome ./learn/baseTestParallelExample.ts",
         "learn-i": "ts-mocha --j 4 --p false ./learn/intervalTestExample.ts",
@@ -41,8 +42,8 @@
         "typescript": "~3.8.0"
     },
     "dependencies": {
-        "@pepperi-addons/debug-server": "0.0.24",
-        "@pepperi-addons/papi-sdk": "^1.20.6",
+        "@pepperi-addons/debug-server": "^0.0.30",
+        "@pepperi-addons/papi-sdk": "^1.20.11",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
