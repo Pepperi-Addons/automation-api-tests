@@ -3,14 +3,11 @@ import { ADALService } from '../services/adal.service';
 
 export async function ADALTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
-    //const fieldsService = new FieldsService(generalService.papiClient);
     const adalService = new ADALService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    //ADAL 00000000-0000-0000-0000-00000000ada1
-    //TESTING eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
     //PNS 00000000-0000-0000-0000-000000040fa9
     const ADALAddonUUID = '00000000-0000-0000-0000-00000000ada1';
     const PepperiOwnerID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
@@ -37,7 +34,10 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(createSchemaResponse.Name).to.equal(schemaName);
                     expect(createSchemaResponse.Hidden).to.be.false;
                     expect(createSchemaResponse.Type).to.equal('meta_data');
-                    console.log({ createSchemaResponse: createSchemaResponse });
+                    //console.log({ createSchemaResponse: createSchemaResponse });
+                    const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
+                    expect(deleteSchemaResponse).to.equal('');
+                    //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
                 it(`Post Properties`, async () => {
@@ -68,7 +68,10 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(createSchemaResponse.Fields?.TestInteger.Type).to.equal('Integer');
                     expect(createSchemaResponse.Fields?.testString.Type).to.equal('String');
                     expect(createSchemaResponse.Fields?.TestMultipleStringValues.Type).to.equal('MultipleStringValues');
-                    console.log({ createSchemaResponse: createSchemaResponse });
+                    //console.log({ createSchemaResponse: createSchemaResponse });
+                    const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
+                    expect(deleteSchemaResponse).to.equal('');
+                    //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
                 it(`Insert Data To Table`, async () => {
@@ -95,7 +98,10 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(updateSchemaResponse.Column1[1]).to.equal('Value2');
                     expect(updateSchemaResponse.Column1[2]).to.equal('Value3');
                     expect(updateSchemaResponse.Key).to.equal('testKey1');
-                    console.log({ createSchemaResponse: createSchemaResponse });
+                    //console.log({ createSchemaResponse: createSchemaResponse });
+                    const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
+                    expect(deleteSchemaResponse).to.equal('');
+                    //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
             });
         });
