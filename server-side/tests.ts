@@ -28,6 +28,7 @@ import {
 } from './api-tests/import_export_atd';
 import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 import { ADALTests } from './api-tests/adal';
+import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
 
 let testName = '';
 let testEnvironment = '';
@@ -419,7 +420,6 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
 
 export async function objects(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-
     if (
         client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
         (testName != 'Objects' && testName != 'All' && testName != 'Sanity')
@@ -458,7 +458,6 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
 
 export async function elastic_search(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-
     if (client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') || testName != 'Elastic_Search') {
         testName = 'Elastic_Search';
         PrintMemoryUseToLog('Start', testName);
@@ -1122,5 +1121,43 @@ export async function adal(client: Client, request: Request, testerFunctions: Te
         return testResult;
     } else {
         return ADALTests(service, request, testerFunctions);
+    }
+}
+
+export async function pepperi_notification_service(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Pepperi_Notification_Service' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Pepperi_Notification_Service';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            PepperiNotificationServiceTests(service, request, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return PepperiNotificationServiceTests(service, request, testerFunctions);
     }
 }

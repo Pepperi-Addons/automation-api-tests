@@ -1,6 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
-import { ImportExportATDService } from '../services/import-export-atd.service';
+import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -12,22 +12,22 @@ export async function PepperiNotificationServiceTests(
 ) {
     const service = generalService.papiClient;
     //const fieldsService = new FieldsService(generalService.papiClient);
-    const importExportATDService = new ImportExportATDService(generalService.papiClient);
+    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    const dataViewsAddonUUID = '484e7f22-796a-45f8-9082-12a734bac4e8';
-    const dataViewsVersion = '1.';
-    const importExportATDAddonUUID = 'e9029d7f-af32-4b0e-a513-8d9ced6f8186';
-    const importExportATDVersion = '1.';
+    //00000000-0000-0000-0000-000000040fa9
 
-    //#region Upgrade Data Views
-    const dataViewsVarLatestVersion = await fetch(
+    const pepperiNotificationServiceAddonUUID = '00000000-0000-0000-0000-000000040fa9';
+    const pepperiNotificationServiceVersion = '1.';
+
+    //#region Upgrade Pepperi Notification Service
+    const pepperiNotificationServiceVarLatestVersion = await fetch(
         `${generalService['client'].BaseURL.replace(
             'papi-eu',
             'papi',
-        )}/var/addons/versions?where=AddonUUID='${dataViewsAddonUUID}' AND Version Like '${dataViewsVersion}%'&order_by=CreationDateTime DESC`,
+        )}/var/addons/versions?where=AddonUUID='${pepperiNotificationServiceAddonUUID}' AND Version Like '${pepperiNotificationServiceVersion}%'&order_by=CreationDateTime DESC`,
         {
             method: `GET`,
             headers: {
@@ -40,10 +40,10 @@ export async function PepperiNotificationServiceTests(
 
     let isInstalled = false;
     let installedAddonVersion;
-    let installedAddonsArr = await generalService.getAddons(dataViewsVarLatestVersion);
+    const installedAddonsArr = await generalService.getAddons(pepperiNotificationServiceVarLatestVersion);
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'Data Views API') {
+            if (installedAddonsArr[i].Addon.Name == 'Pepperi Notification Service API') {
                 installedAddonVersion = installedAddonsArr[i].Version;
                 isInstalled = true;
                 break;
@@ -51,125 +51,340 @@ export async function PepperiNotificationServiceTests(
         }
     }
     if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).install();
+        await service.addons.installedAddons.addonUUID(`${pepperiNotificationServiceAddonUUID}`).install();
         generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
     }
 
-    let dataViewsUpgradeAuditLogResponse;
-    let dataViewsInstalledAddonVersion;
-    let dataViewsAuditLogResponse;
-    if (installedAddonVersion != dataViewsVarLatestVersion) {
-        dataViewsUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${dataViewsAddonUUID}`)
-            .upgrade(dataViewsVarLatestVersion);
+    let pepperiNotificationServiceUpgradeAuditLogResponse;
+    let pepperiNotificationServiceInstalledAddonVersion;
+    let pepperiNotificationServiceAuditLogResponse;
+    if (installedAddonVersion != pepperiNotificationServiceVarLatestVersion) {
+        pepperiNotificationServiceUpgradeAuditLogResponse = await service.addons.installedAddons
+            .addonUUID(`${pepperiNotificationServiceAddonUUID}`)
+            .upgrade(pepperiNotificationServiceVarLatestVersion);
 
         generalService.sleep(4000); //Test installation status only after 4 seconds.
-        dataViewsAuditLogResponse = await service.auditLogs.uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID).get();
-        if (dataViewsAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            dataViewsAuditLogResponse = await service.auditLogs
-                .uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        dataViewsInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).get()
-        ).Version;
-    } else {
-        dataViewsUpgradeAuditLogResponse = 'Skipped';
-        dataViewsInstalledAddonVersion = installedAddonVersion;
-    }
-    //#endregion Upgrade Data Views
-
-    //#region Upgrade Import Export ATD
-    const importExportATDVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${importExportATDAddonUUID}' AND Version Like '${importExportATDVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    isInstalled = false;
-    installedAddonVersion = undefined;
-    installedAddonsArr = await generalService.getAddons(importExportATDVarLatestVersion);
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'ImportExportATD') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let importExportATDUpgradeAuditLogResponse;
-    let importExportATDInstalledAddonVersion;
-    let importExportATDAuditLogResponse;
-    if (installedAddonVersion != importExportATDVarLatestVersion) {
-        importExportATDUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${importExportATDAddonUUID}`)
-            .upgrade(importExportATDVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        importExportATDAuditLogResponse = await service.auditLogs
-            .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
+        pepperiNotificationServiceAuditLogResponse = await service.auditLogs
+            .uuid(pepperiNotificationServiceUpgradeAuditLogResponse.ExecutionUUID)
             .get();
-        if (importExportATDAuditLogResponse.Status.Name == 'InProgress') {
+        if (pepperiNotificationServiceAuditLogResponse.Status.Name == 'InProgress') {
             generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            importExportATDAuditLogResponse = await service.auditLogs
-                .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
+            pepperiNotificationServiceAuditLogResponse = await service.auditLogs
+                .uuid(pepperiNotificationServiceUpgradeAuditLogResponse.ExecutionUUID)
                 .get();
         }
-        importExportATDInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).get()
+        pepperiNotificationServiceInstalledAddonVersion = await (
+            await service.addons.installedAddons.addonUUID(`${pepperiNotificationServiceAddonUUID}`).get()
         ).Version;
     } else {
-        importExportATDUpgradeAuditLogResponse = 'Skipped';
-        importExportATDInstalledAddonVersion = installedAddonVersion;
+        pepperiNotificationServiceUpgradeAuditLogResponse = 'Skipped';
+        pepperiNotificationServiceInstalledAddonVersion = installedAddonVersion;
     }
-    //#endregion Upgrade Import Export ATD
+    //#endregion Upgrade Pepperi Notification Service
 
-    describe('Export And Import ATD Tests Suites', () => {
-        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion}`, () => {
-            expect(importExportATDInstalledAddonVersion).to.contain('.');
-        });
+    describe('Pepperi Notification Service Tests Suites', () => {
+        describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
+            //Test Data
+            it(`Test Data: Tested Addon: PNS - Version: ${pepperiNotificationServiceInstalledAddonVersion}`, () => {
+                expect(pepperiNotificationServiceInstalledAddonVersion).to.contain('.');
+            });
 
-        describe('Prerequisites Addon for ImportExportATD Tests', () => {
-            it('Upgarde To Latest Version of Data Views Addon', async () => {
-                expect(importExportATDService.exportATD('activities', 12312312))
-                    .to.have.property('URI')
-                    .that.contain('/audit_logs/');
+            it('Upgarde To Latest Version of Pepperi Notification Service Addon', async () => {
+                if (pepperiNotificationServiceUpgradeAuditLogResponse != 'Skipped') {
+                    expect(pepperiNotificationServiceUpgradeAuditLogResponse)
+                        .to.have.property('ExecutionUUID')
+                        .a('string')
+                        .with.lengthOf(36);
+                    if (pepperiNotificationServiceAuditLogResponse.Status.Name == 'Failure') {
+                        expect(pepperiNotificationServiceAuditLogResponse.AuditInfo.ErrorMessage).to.include(
+                            'is already working on version',
+                        );
+                    } else {
+                        expect(pepperiNotificationServiceAuditLogResponse.Status.Name).to.include('Success');
+                    }
+                }
             });
 
             it(`Latest Version Is Installed`, () => {
-                expect(dataViewsInstalledAddonVersion).to.equal(dataViewsVarLatestVersion);
+                expect(pepperiNotificationServiceInstalledAddonVersion).to.equal(
+                    pepperiNotificationServiceVarLatestVersion,
+                );
             });
         });
 
         describe('Endpoints', () => {
-            describe('Get (DI-17200, DI-17258)', () => {
-                it(`Export Activities ATD ${'dd'}`, async () => {
-                    expect(importExportATDService.exportATD('activities', 12312312))
-                        .to.have.property('URI')
-                        .that.contain('/audit_logs/');
-
-                    expect(JSON.parse('aaa'))
-                        .to.have.property('URL')
-                        .that.contain('https://')
-                        .and.contain('cdn.')
-                        .and.contain('/TemporaryFiles/');
+            describe('Post', () => {
+                const testID = Math.floor(Math.random() * 10000000);
+                it(`Post PUT that Stop After DB TestID: ${testID + 0}`, async () => {
+                    const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                        {
+                            putData: {
+                                10: {
+                                    SubType: '',
+                                    Headers: [
+                                        'CreationDateTime',
+                                        'DeliveryDate',
+                                        'Hidden',
+                                        'IsDuplicated',
+                                        'IsFixedDiscount',
+                                        'IsFixedUnitPriceAfterDiscount',
+                                        'ItemExternalID',
+                                        'ItemWrntyID',
+                                        'LineNumber',
+                                        'PortfolioItemTSAttributes',
+                                        'ReadOnly',
+                                        'Remark4',
+                                        'SpecialOfferLeadingOrderPortfolioItemUUID',
+                                        'SuppressedSpecialOffer',
+                                        'TSAttributes',
+                                        'TransactionUUID',
+                                        'UUID',
+                                        'UnitDiscountPercentage',
+                                        'UnitFinalPrice',
+                                        'UnitPrice',
+                                        'UnitPriceAfterDiscount',
+                                        'UnitsQuantity',
+                                        'WrntyID',
+                                    ],
+                                    Lines: [
+                                        [
+                                            '1594960700',
+                                            '18459',
+                                            '0',
+                                            '0',
+                                            '0',
+                                            '1',
+                                            'MCR00102',
+                                            '55316814',
+                                            '0',
+                                            '<A />\n',
+                                            '0',
+                                            '',
+                                            '',
+                                            '0',
+                                            '<A />\n',
+                                            'FB89438F-62BB-4904-B863-6BA757AF5337',
+                                            'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                                            '0',
+                                            '906366498589870',
+                                            '0',
+                                            '0',
+                                            '1',
+                                            '-8876',
+                                        ],
+                                    ],
+                                },
+                            },
+                            nucleus_crud_type: 'stop_after_db',
+                        },
+                        testID,
+                    );
+                    console.log({ putSyncResponse_stop_after_db: putSyncResponse });
+                    expect(putSyncResponse).to.be.true;
                 });
+
+                it(`Post PUT that dont stop After DB TestID: ${testID + 1}`, async () => {
+                    const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                        {
+                            putData: {
+                                10: {
+                                    SubType: '',
+                                    Headers: [
+                                        'CreationDateTime',
+                                        'DeliveryDate',
+                                        'Hidden',
+                                        'IsDuplicated',
+                                        'IsFixedDiscount',
+                                        'IsFixedUnitPriceAfterDiscount',
+                                        'ItemExternalID',
+                                        'ItemWrntyID',
+                                        'LineNumber',
+                                        'PortfolioItemTSAttributes',
+                                        'ReadOnly',
+                                        'Remark4',
+                                        'SpecialOfferLeadingOrderPortfolioItemUUID',
+                                        'SuppressedSpecialOffer',
+                                        'TSAttributes',
+                                        'TransactionUUID',
+                                        'UUID',
+                                        'UnitDiscountPercentage',
+                                        'UnitFinalPrice',
+                                        'UnitPrice',
+                                        'UnitPriceAfterDiscount',
+                                        'UnitsQuantity',
+                                        'WrntyID',
+                                    ],
+                                    Lines: [
+                                        [
+                                            '1594960700',
+                                            '18459',
+                                            '0',
+                                            '0',
+                                            '0',
+                                            '1',
+                                            'MCR00102',
+                                            '55316814',
+                                            '0',
+                                            '<A />\n',
+                                            '0',
+                                            '',
+                                            '',
+                                            '0',
+                                            '<A />\n',
+                                            'FB89438F-62BB-4904-B863-6BA757AF5337',
+                                            'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                                            '0',
+                                            '906366498589870',
+                                            '0',
+                                            '0',
+                                            '1',
+                                            '-8876',
+                                        ],
+                                    ],
+                                },
+                            },
+                        } as any,
+                        testID + 1,
+                    );
+                    console.log({ putSyncResponse: putSyncResponse });
+                    expect(putSyncResponse).to.be.true;
+                });
+
+                // it(`Post PUT that Stop After Nucleus TestID: ${testID + 1}`, async () => {
+                //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                //         {
+                //             putData: {
+                //                 10: {
+                //                     SubType: '',
+                //                     Headers: [
+                //                         'CreationDateTime',
+                //                         'DeliveryDate',
+                //                         'Hidden',
+                //                         'IsDuplicated',
+                //                         'IsFixedDiscount',
+                //                         'IsFixedUnitPriceAfterDiscount',
+                //                         'ItemExternalID',
+                //                         'ItemWrntyID',
+                //                         'LineNumber',
+                //                         'PortfolioItemTSAttributes',
+                //                         'ReadOnly',
+                //                         'Remark4',
+                //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
+                //                         'SuppressedSpecialOffer',
+                //                         'TSAttributes',
+                //                         'TransactionUUID',
+                //                         'UUID',
+                //                         'UnitDiscountPercentage',
+                //                         'UnitFinalPrice',
+                //                         'UnitPrice',
+                //                         'UnitPriceAfterDiscount',
+                //                         'UnitsQuantity',
+                //                         'WrntyID',
+                //                     ],
+                //                     Lines: [
+                //                         [
+                //                             '1594960700',
+                //                             '18459',
+                //                             '0',
+                //                             '0',
+                //                             '0',
+                //                             '1',
+                //                             'MCR00102',
+                //                             '55316814',
+                //                             '0',
+                //                             '<A />\n',
+                //                             '0',
+                //                             '',
+                //                             '',
+                //                             '0',
+                //                             '<A />\n',
+                //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
+                //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                //                             '0',
+                //                             '906366498589870',
+                //                             '0',
+                //                             '0',
+                //                             '1',
+                //                             '-8876',
+                //                         ],
+                //                     ],
+                //                 },
+                //             },
+                //             nucleus_crud_type: 'stop_after_nucleus',
+                //         },
+                //         testID + 1,
+                //     );
+                //     console.log({ putSyncResponse_stop_after_nucleus: putSyncResponse });
+                //     expect(putSyncResponse).to.be.true;
+                // });
+
+                // it(`Post PUT that Stop After Redis TestID: ${testID + 2}`, async () => {
+                //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                //         {
+                //             putData: {
+                //                 10: {
+                //                     SubType: '',
+                //                     Headers: [
+                //                         'CreationDateTime',
+                //                         'DeliveryDate',
+                //                         'Hidden',
+                //                         'IsDuplicated',
+                //                         'IsFixedDiscount',
+                //                         'IsFixedUnitPriceAfterDiscount',
+                //                         'ItemExternalID',
+                //                         'ItemWrntyID',
+                //                         'LineNumber',
+                //                         'PortfolioItemTSAttributes',
+                //                         'ReadOnly',
+                //                         'Remark4',
+                //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
+                //                         'SuppressedSpecialOffer',
+                //                         'TSAttributes',
+                //                         'TransactionUUID',
+                //                         'UUID',
+                //                         'UnitDiscountPercentage',
+                //                         'UnitFinalPrice',
+                //                         'UnitPrice',
+                //                         'UnitPriceAfterDiscount',
+                //                         'UnitsQuantity',
+                //                         'WrntyID',
+                //                     ],
+                //                     Lines: [
+                //                         [
+                //                             '1594960700',
+                //                             '18459',
+                //                             '0',
+                //                             '0',
+                //                             '0',
+                //                             '1',
+                //                             'MCR00102',
+                //                             '55316814',
+                //                             '0',
+                //                             '<A />\n',
+                //                             '0',
+                //                             '',
+                //                             '',
+                //                             '0',
+                //                             '<A />\n',
+                //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
+                //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                //                             '0',
+                //                             '906366498589870',
+                //                             '0',
+                //                             '0',
+                //                             '1',
+                //                             '-8876',
+                //                         ],
+                //                     ],
+                //                 },
+                //             },
+                //             nucleus_crud_type: 'stop_after_redis',
+                //         },
+                //         testID + 2,
+                //     );
+                //     console.log({ putSyncResponse_stop_after_redis: putSyncResponse });
+                //     expect(putSyncResponse).to.be.true;
+                // });
             });
         });
     });

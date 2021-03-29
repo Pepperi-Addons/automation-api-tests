@@ -1,7 +1,44 @@
 import { AddonDataScheme, PapiClient, AddonData } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
-//import fetch from 'node-fetch';
+import fetch from 'node-fetch';
 
+declare type NucleusCrudYype = 'stop_after_redis' | 'stop_after_db' | 'stop_after_nucleus' | null;
+declare type PutDataSubTypeHeaders =
+    | 'CreationDateTime'
+    | 'DeliveryDate'
+    | 'Hidden'
+    | 'IsDuplicated'
+    | 'IsFixedDiscount'
+    | 'IsFixedUnitPriceAfterDiscount'
+    | 'ItemExternalID'
+    | 'ItemWrntyID'
+    | 'LineNumber'
+    | 'PortfolioItemTSAttributes'
+    | 'ReadOnly'
+    | 'Remark4'
+    | 'SpecialOfferLeadingOrderPortfolioItemUUID'
+    | 'SuppressedSpecialOffer'
+    | 'TSAttributes'
+    | 'TransactionUUID'
+    | 'UUID'
+    | 'UnitDiscountPercentage'
+    | 'UnitFinalPrice'
+    | 'UnitPrice'
+    | 'UnitPriceAfterDiscount'
+    | 'UnitsQuantity'
+    | 'WrntyID';
+// | 'ObjectPutUUID';
+
+export interface PutData {
+    putData: {
+        [key: number]: {
+            SubType: string;
+            Headers: PutDataSubTypeHeaders[];
+            Lines: string[][];
+        };
+    };
+    nucleus_crud_type: NucleusCrudYype;
+}
 export class PepperiNotificationServiceService {
     papiClient: PapiClient;
     Authorization: string;
@@ -24,56 +61,22 @@ export class PepperiNotificationServiceService {
         return this.papiClient.post(`/addons/data/schemes/${tableName}/purge`);
     }
 
-    //This part is needed to test Maor new sync endpoints in EU
-    // jobInfo(uuid: string) {
-    //     return fetch(`https://j7m0zxw14k.execute-api.eu-central-1.amazonaws.com/application/sync/jobinfo/${uuid}`, {
-    //         method: `GET`,
-    //         headers: {
-    //             Authorization: this.Authorization,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             console.log(res.url);
-    //             return res.text();
-    //         })
-    //         .then((obj) => {
-    //             console.log(obj ? JSON.parse(obj) : '');
-    //             return obj ? JSON.parse(obj) : '';
-    //         });
-    // }
-
-    // post(body: SyncBody) {
-    //     return fetch(`https://j7m0zxw14k.execute-api.eu-central-1.amazonaws.com/application/sync`, {
-    //         method: `POST`,
-    //         headers: {
-    //             Authorization: this.Authorization,
-    //         },
-    //         body: JSON.stringify(body),
-    //     })
-    //         .then((res) => {
-    //             console.log(res.url);
-    //             return res.text();
-    //         })
-    //         .then((obj) => {
-    //             console.log(obj ? JSON.parse(obj) : '');
-    //             return obj ? JSON.parse(obj) : '';
-    //         });
-    // }
-
-    // SyncData(uuid: string) {
-    //     return fetch(`https://j7m0zxw14k.execute-api.eu-central-1.amazonaws.com/application/sync/data/${uuid}`, {
-    //         method: `GET`,
-    //         headers: {
-    //             Authorization: this.Authorization,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             console.log(res.url);
-    //             return res.text();
-    //         })
-    //         .then((obj) => {
-    //             console.log(obj ? JSON.parse(obj) : '');
-    //             return obj ? JSON.parse(obj) : '';
-    //         });
-    // }
+    putSync(putData: PutData, PutID: number) {
+        return fetch(`https://papi.staging.pepperi.com/V1.0/wacd/PutSync/${PutID}`, {
+            method: `POST`,
+            headers: {
+                Authorization: this.Authorization,
+                DeviceID: 'Oren_Test',
+            },
+            body: JSON.stringify(putData),
+        })
+            .then((res) => {
+                console.log(res.url);
+                return res.text();
+            })
+            .then((obj) => {
+                console.log(obj ? JSON.parse(obj) : '');
+                return obj ? JSON.parse(obj) : '';
+            });
+    }
 }
