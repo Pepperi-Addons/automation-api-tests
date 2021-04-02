@@ -1829,9 +1829,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Create transaction lines', async () => {
-                items = await service.getItems();
-
-                createdTransactionLines = await service.createTransactionLine({
+                items = await service.getItemsTODO();
+                createdTransactionLines = await service.createTransactionLineTODO({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 0,
                     ItemExternalID: items[0].ExternalID,
@@ -1917,10 +1916,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Update transaction lines', async () => {
-                items = await service.getItems();
+                items = await service.getItemsTODO();
 
                 expect(
-                    (updatedTransactionLines = await service.createTransactionLine({
+                    (updatedTransactionLines = await service.createTransactionLineTODO({
                         TransactionInternalID: createdTransaction.InternalID,
                         LineNumber: 0,
                         ItemExternalID: items[0].ExternalID,
@@ -2004,9 +2003,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Add transaction lines', async () => {
-                items = await service.getItems();
-
-                addedTransactionLines = await service.createTransactionLine({
+                items = await service.getItemsTODO();
+                addedTransactionLines = await service.createTransactionLineTODO({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 1,
                     ItemExternalID: items[1].ExternalID,

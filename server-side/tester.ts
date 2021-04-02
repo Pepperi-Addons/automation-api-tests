@@ -23,7 +23,7 @@ export default function Tester(testName?: string, environment?: string) {
         reporterOptions: {
             reportDir: mochaDir,
             reportFilename: fileName,
-            html: false,
+            html: true,
             consoleReporter: 'none',
         },
         timeout: 1200000,

@@ -89,8 +89,8 @@ export default class GeneralService {
         return this.papiClient.addons.installedAddons.find(options);
     }
 
-    getCatalogs(): Promise<Catalog[]> {
-        return this.papiClient.catalogs.find({});
+    getCatalogs(options?: FindOptions): Promise<Catalog[]> {
+        return this.papiClient.catalogs.find(options);
     }
 
     getTypes(resource_name: ResourceTypes) {

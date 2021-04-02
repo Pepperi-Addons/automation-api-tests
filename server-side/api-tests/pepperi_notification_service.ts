@@ -1,6 +1,7 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
+import { ObjectsService } from '../services/objects.service';
 import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -13,6 +14,7 @@ export async function PepperiNotificationServiceTests(
     const service = generalService.papiClient;
     //const fieldsService = new FieldsService(generalService.papiClient);
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
+    const objectsService = new ObjectsService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -83,6 +85,12 @@ export async function PepperiNotificationServiceTests(
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
+        let atdArr;
+        let itemArr;
+        let transactionAccount;
+        let createdTransaction;
+        let transactionExternalID;
+        let createdTransactionLines;
         describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
             //Test Data
             it(`Test Data: Tested Addon: PNS - Version: ${pepperiNotificationServiceInstalledAddonVersion}`, () => {
@@ -113,278 +121,465 @@ export async function PepperiNotificationServiceTests(
         });
 
         describe('Endpoints', () => {
-            describe('Post', () => {
-                const testID = Math.floor(Math.random() * 10000000);
-                it(`Post PUT that Stop After DB TestID: ${testID + 0}`, async () => {
-                    const putSyncResponse = await pepperiNotificationServiceService.putSync(
-                        {
-                            putData: {
-                                10: {
-                                    SubType: '',
-                                    Headers: [
-                                        'CreationDateTime',
-                                        'DeliveryDate',
-                                        'Hidden',
-                                        'IsDuplicated',
-                                        'IsFixedDiscount',
-                                        'IsFixedUnitPriceAfterDiscount',
-                                        'ItemExternalID',
-                                        'ItemWrntyID',
-                                        'LineNumber',
-                                        'PortfolioItemTSAttributes',
-                                        'ReadOnly',
-                                        'Remark4',
-                                        'SpecialOfferLeadingOrderPortfolioItemUUID',
-                                        'SuppressedSpecialOffer',
-                                        'TSAttributes',
-                                        'TransactionUUID',
-                                        'UUID',
-                                        'UnitDiscountPercentage',
-                                        'UnitFinalPrice',
-                                        'UnitPrice',
-                                        'UnitPriceAfterDiscount',
-                                        'UnitsQuantity',
-                                        'WrntyID',
-                                    ],
-                                    Lines: [
-                                        [
-                                            '1594960700',
-                                            '18459',
-                                            '0',
-                                            '0',
-                                            '0',
-                                            '1',
-                                            'MCR00102',
-                                            '55316814',
-                                            '0',
-                                            '<A />\n',
-                                            '0',
-                                            '',
-                                            '',
-                                            '0',
-                                            '<A />\n',
-                                            'FB89438F-62BB-4904-B863-6BA757AF5337',
-                                            'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
-                                            '0',
-                                            '906366498589870',
-                                            '0',
-                                            '0',
-                                            '1',
-                                            '-8876',
-                                        ],
-                                    ],
-                                },
+            describe('POST', () => {
+                it('Create transaction', async () => {
+                    atdArr = await objectsService.getATD('transactions');
+                    transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
+                        return res[0];
+                    });
+                    transactionExternalID =
+                        'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+                    const catalogs = await generalService.getCatalogs();
+                    createdTransaction = await objectsService.createTransaction({
+                        ExternalID: transactionExternalID,
+                        ActivityTypeID: atdArr[0].TypeID,
+                        Status: 1,
+                        Account: {
+                            Data: {
+                                InternalID: transactionAccount.InternalID,
                             },
-                            nucleus_crud_type: 'stop_after_db',
                         },
-                        testID,
-                    );
-                    console.log({ putSyncResponse_stop_after_db: putSyncResponse });
-                    expect(putSyncResponse).to.be.true;
-                });
-
-                it(`Post PUT that dont stop After DB TestID: ${testID + 1}`, async () => {
-                    const putSyncResponse = await pepperiNotificationServiceService.putSync(
-                        {
-                            putData: {
-                                10: {
-                                    SubType: '',
-                                    Headers: [
-                                        'CreationDateTime',
-                                        'DeliveryDate',
-                                        'Hidden',
-                                        'IsDuplicated',
-                                        'IsFixedDiscount',
-                                        'IsFixedUnitPriceAfterDiscount',
-                                        'ItemExternalID',
-                                        'ItemWrntyID',
-                                        'LineNumber',
-                                        'PortfolioItemTSAttributes',
-                                        'ReadOnly',
-                                        'Remark4',
-                                        'SpecialOfferLeadingOrderPortfolioItemUUID',
-                                        'SuppressedSpecialOffer',
-                                        'TSAttributes',
-                                        'TransactionUUID',
-                                        'UUID',
-                                        'UnitDiscountPercentage',
-                                        'UnitFinalPrice',
-                                        'UnitPrice',
-                                        'UnitPriceAfterDiscount',
-                                        'UnitsQuantity',
-                                        'WrntyID',
-                                    ],
-                                    Lines: [
-                                        [
-                                            '1594960700',
-                                            '18459',
-                                            '0',
-                                            '0',
-                                            '0',
-                                            '1',
-                                            'MCR00102',
-                                            '55316814',
-                                            '0',
-                                            '<A />\n',
-                                            '0',
-                                            '',
-                                            '',
-                                            '0',
-                                            '<A />\n',
-                                            'FB89438F-62BB-4904-B863-6BA757AF5337',
-                                            'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
-                                            '0',
-                                            '906366498589870',
-                                            '0',
-                                            '0',
-                                            '1',
-                                            '-8876',
-                                        ],
-                                    ],
-                                },
+                        Catalog: {
+                            Data: {
+                                ExternalID: catalogs[0].ExternalID,
                             },
-                        } as any,
-                        testID + 1,
-                    );
-                    console.log({ putSyncResponse: putSyncResponse });
-                    expect(putSyncResponse).to.be.true;
+                        },
+                    });
+                    const getCreatedTransaction = await objectsService.getTransaction({
+                        where: `InternalID=${createdTransaction.InternalID}`,
+                    });
+
+                    return Promise.all([
+                        expect(getCreatedTransaction[0]).to.include({
+                            ExternalID: transactionExternalID,
+                            ActivityTypeID: atdArr[0].TypeID,
+                            Status: 1,
+                        }),
+                        expect(JSON.stringify(getCreatedTransaction[0].Account)).equals(
+                            JSON.stringify({
+                                Data: {
+                                    InternalID: transactionAccount.InternalID,
+                                    UUID: transactionAccount.UUID,
+                                    ExternalID: transactionAccount.ExternalID,
+                                },
+                                URI: '/accounts/' + transactionAccount.InternalID,
+                            }),
+                        ),
+                        expect(getCreatedTransaction[0].InternalID).to.equal(createdTransaction.InternalID),
+                        expect(getCreatedTransaction[0].UUID).to.include(createdTransaction.UUID),
+                        expect(getCreatedTransaction[0].CreationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransaction[0].CreationDateTime).to.contain('Z'),
+                        expect(getCreatedTransaction[0].ModificationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransaction[0].ModificationDateTime).to.contain('Z'),
+                        expect(getCreatedTransaction[0].Archive).to.be.false,
+                        expect(getCreatedTransaction[0].Hidden).to.be.false,
+                        expect(getCreatedTransaction[0].StatusName).to.include('InCreation'),
+                        expect(getCreatedTransaction[0].Agent).to.be.null,
+                        expect(getCreatedTransaction[0].ContactPerson).to.be.null,
+                        expect(getCreatedTransaction[0].Creator).to.be.null,
+                        expect(getCreatedTransaction[0].OriginAccount).to.be.null,
+                        expect(getCreatedTransaction[0].TransactionLines).to.include({
+                            URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
+                        }),
+                    ]);
                 });
 
-                // it(`Post PUT that Stop After Nucleus TestID: ${testID + 1}`, async () => {
-                //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
-                //         {
-                //             putData: {
-                //                 10: {
-                //                     SubType: '',
-                //                     Headers: [
-                //                         'CreationDateTime',
-                //                         'DeliveryDate',
-                //                         'Hidden',
-                //                         'IsDuplicated',
-                //                         'IsFixedDiscount',
-                //                         'IsFixedUnitPriceAfterDiscount',
-                //                         'ItemExternalID',
-                //                         'ItemWrntyID',
-                //                         'LineNumber',
-                //                         'PortfolioItemTSAttributes',
-                //                         'ReadOnly',
-                //                         'Remark4',
-                //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
-                //                         'SuppressedSpecialOffer',
-                //                         'TSAttributes',
-                //                         'TransactionUUID',
-                //                         'UUID',
-                //                         'UnitDiscountPercentage',
-                //                         'UnitFinalPrice',
-                //                         'UnitPrice',
-                //                         'UnitPriceAfterDiscount',
-                //                         'UnitsQuantity',
-                //                         'WrntyID',
-                //                     ],
-                //                     Lines: [
-                //                         [
-                //                             '1594960700',
-                //                             '18459',
-                //                             '0',
-                //                             '0',
-                //                             '0',
-                //                             '1',
-                //                             'MCR00102',
-                //                             '55316814',
-                //                             '0',
-                //                             '<A />\n',
-                //                             '0',
-                //                             '',
-                //                             '',
-                //                             '0',
-                //                             '<A />\n',
-                //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
-                //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
-                //                             '0',
-                //                             '906366498589870',
-                //                             '0',
-                //                             '0',
-                //                             '1',
-                //                             '-8876',
-                //                         ],
-                //                     ],
-                //                 },
-                //             },
-                //             nucleus_crud_type: 'stop_after_nucleus',
-                //         },
-                //         testID + 1,
-                //     );
-                //     console.log({ putSyncResponse_stop_after_nucleus: putSyncResponse });
-                //     expect(putSyncResponse).to.be.true;
+                it('Create transaction line with SDK', async () => {
+                    itemArr = await objectsService.getItems({ page_size: 1 });
+                    createdTransactionLines = await objectsService.createTransactionLine({
+                        LineNumber: 0,
+                        UnitsQuantity: 77,
+                        Item: {
+                            Data: {
+                                ExternalID: itemArr[0].ExternalID,
+                            },
+                        },
+                        Transaction: {
+                            Data: {
+                                InternalID: createdTransaction.InternalID,
+                            },
+                        },
+                    });
+
+                    console.log({ createdTransactionLines: createdTransactionLines });
+                    const getCreatedTransactionLine = await objectsService.getTransactionLines(
+                        createdTransaction.InternalID,
+                    );
+
+                    return Promise.all([
+                        expect(getCreatedTransactionLine[0]).to.include({
+                            LineNumber: 0,
+                            UnitsQuantity: 77,
+                        }),
+                        expect(JSON.stringify(getCreatedTransactionLine[0].Item)).equals(
+                            JSON.stringify({
+                                Data: {
+                                    InternalID: itemArr[0].InternalID,
+                                    UUID: itemArr[0].UUID,
+                                    ExternalID: itemArr[0].ExternalID,
+                                },
+                                URI: '/items/' + itemArr[0].InternalID,
+                            }),
+                        ),
+                        expect(JSON.stringify(getCreatedTransactionLine[0].Transaction)).equals(
+                            JSON.stringify({
+                                Data: {
+                                    InternalID: createdTransaction.InternalID,
+                                    UUID: createdTransaction.UUID,
+                                    ExternalID: createdTransaction.ExternalID,
+                                },
+                                URI: '/transactions/' + createdTransaction.InternalID,
+                            }),
+                        ),
+                        expect(getCreatedTransactionLine[0].InternalID).to.equal(createdTransactionLines.InternalID),
+                        expect(getCreatedTransactionLine[0].UUID).to.include(createdTransactionLines.UUID),
+                        expect(getCreatedTransactionLine[0].CreationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransactionLine[0].CreationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionLine[0].Archive).to.be.false,
+                        expect(getCreatedTransactionLine[0].Hidden).to.be.false,
+                        expect(await objectsService.getTransactionLines(createdTransaction.InternalID))
+                            .to.be.an('array')
+                            .with.lengthOf(1),
+                    ]);
+                });
+
                 // });
 
-                // it(`Post PUT that Stop After Redis TestID: ${testID + 2}`, async () => {
-                //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
-                //         {
-                //             putData: {
-                //                 10: {
-                //                     SubType: '',
-                //                     Headers: [
-                //                         'CreationDateTime',
-                //                         'DeliveryDate',
-                //                         'Hidden',
-                //                         'IsDuplicated',
-                //                         'IsFixedDiscount',
-                //                         'IsFixedUnitPriceAfterDiscount',
-                //                         'ItemExternalID',
-                //                         'ItemWrntyID',
-                //                         'LineNumber',
-                //                         'PortfolioItemTSAttributes',
-                //                         'ReadOnly',
-                //                         'Remark4',
-                //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
-                //                         'SuppressedSpecialOffer',
-                //                         'TSAttributes',
-                //                         'TransactionUUID',
-                //                         'UUID',
-                //                         'UnitDiscountPercentage',
-                //                         'UnitFinalPrice',
-                //                         'UnitPrice',
-                //                         'UnitPriceAfterDiscount',
-                //                         'UnitsQuantity',
-                //                         'WrntyID',
-                //                     ],
-                //                     Lines: [
-                //                         [
-                //                             '1594960700',
-                //                             '18459',
-                //                             '0',
-                //                             '0',
-                //                             '0',
-                //                             '1',
-                //                             'MCR00102',
-                //                             '55316814',
-                //                             '0',
-                //                             '<A />\n',
-                //                             '0',
-                //                             '',
-                //                             '',
-                //                             '0',
-                //                             '<A />\n',
-                //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
-                //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
-                //                             '0',
-                //                             '906366498589870',
-                //                             '0',
-                //                             '0',
-                //                             '1',
-                //                             '-8876',
-                //                         ],
-                //                     ],
-                //                 },
-                //             },
-                //             nucleus_crud_type: 'stop_after_redis',
-                //         },
-                //         testID + 2,
-                //     );
-                //     console.log({ putSyncResponse_stop_after_redis: putSyncResponse });
-                //     expect(putSyncResponse).to.be.true;
+                // it('Create transaction line with WAKAD', () => {
+
+                //     let oren = {
+                //         "putData": {
+                //             "10": {
+                //                 "SubType": "",
+                //                 "Headers": [
+                //                     "ItemWrntyID",
+                //                     "ItemExternalID",
+                //                     "LineNumber",
+                //                     "TransactionUUID",
+                //                     "UnitsQuantity",
+                //                     "WrntyID",
+                //                     "Hidden"
+                //                 ],
+                //                 "Lines": [
+                //                     [
+                //                         "55305754",
+                //                         "BPT1114",
+                //                         "0",
+                //                         "5a7c0e3f-5988-4198-8081-482bf3bbef1e",
+                //                         "6",
+                //                         "-333771",
+                //                         0
+                //                     ]
+                //                 ]
+                //             }
+                //         }
+                //     }
+
                 // });
+            });
+
+            describe('GET', () => {
+                it('Read from PNS', () => {
+                    expect(true).to.be.true;
+                });
+            });
+
+            describe('WACD', () => {
+                describe('PNS Tests Scenarios', () => {
+                    // const testID = Math.floor(Math.random() * 10000000);
+                    // it(`Post PUT that Stop After DB TestID: ${testID + 0}`, async () => {
+                    //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                    //         {
+                    //             putData: {
+                    //                 10: {
+                    //                     SubType: '',
+                    //                     Headers: [
+                    //                         'CreationDateTime',
+                    //                         'DeliveryDate',
+                    //                         'Hidden',
+                    //                         'IsDuplicated',
+                    //                         'IsFixedDiscount',
+                    //                         'IsFixedUnitPriceAfterDiscount',
+                    //                         'ItemExternalID',
+                    //                         'ItemWrntyID',
+                    //                         'LineNumber',
+                    //                         'PortfolioItemTSAttributes',
+                    //                         'ReadOnly',
+                    //                         'Remark4',
+                    //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
+                    //                         'SuppressedSpecialOffer',
+                    //                         'TSAttributes',
+                    //                         'TransactionUUID',
+                    //                         'UUID',
+                    //                         'UnitDiscountPercentage',
+                    //                         'UnitFinalPrice',
+                    //                         'UnitPrice',
+                    //                         'UnitPriceAfterDiscount',
+                    //                         'UnitsQuantity',
+                    //                         'WrntyID',
+                    //                     ],
+                    //                     Lines: [
+                    //                         [
+                    //                             '1594960700',
+                    //                             '18459',
+                    //                             '0',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             'MCR00102',
+                    //                             '55316814',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             '0',
+                    //                             '',
+                    //                             '',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
+                    //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                    //                             '0',
+                    //                             '906366498589870',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             '-8876',
+                    //                         ],
+                    //                     ],
+                    //                 },
+                    //             },
+                    //             nucleus_crud_type: 'stop_after_db',
+                    //         },
+                    //         testID,
+                    //     );
+                    //     console.log({ putSyncResponse_stop_after_db: putSyncResponse });
+                    //     expect(putSyncResponse).to.be.true;
+                    // });
+                    // it(`Post PUT that dont stop After DB TestID: ${testID + 1}`, async () => {
+                    //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                    //         {
+                    //             putData: {
+                    //                 10: {
+                    //                     SubType: '',
+                    //                     Headers: [
+                    //                         'CreationDateTime',
+                    //                         'DeliveryDate',
+                    //                         'Hidden',
+                    //                         'IsDuplicated',
+                    //                         'IsFixedDiscount',
+                    //                         'IsFixedUnitPriceAfterDiscount',
+                    //                         'ItemExternalID',
+                    //                         'ItemWrntyID',
+                    //                         'LineNumber',
+                    //                         'PortfolioItemTSAttributes',
+                    //                         'ReadOnly',
+                    //                         'Remark4',
+                    //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
+                    //                         'SuppressedSpecialOffer',
+                    //                         'TSAttributes',
+                    //                         'TransactionUUID',
+                    //                         'UUID',
+                    //                         'UnitDiscountPercentage',
+                    //                         'UnitFinalPrice',
+                    //                         'UnitPrice',
+                    //                         'UnitPriceAfterDiscount',
+                    //                         'UnitsQuantity',
+                    //                         'WrntyID',
+                    //                     ],
+                    //                     Lines: [
+                    //                         [
+                    //                             '1594960700',
+                    //                             '18459',
+                    //                             '0',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             'MCR00102',
+                    //                             '55316814',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             '0',
+                    //                             '',
+                    //                             '',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
+                    //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                    //                             '0',
+                    //                             '906366498589870',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             '-8876',
+                    //                         ],
+                    //                     ],
+                    //                 },
+                    //             },
+                    //         } as any,
+                    //         testID + 1,
+                    //     );
+                    //     console.log({ putSyncResponse: putSyncResponse });
+                    //     expect(putSyncResponse).to.be.true;
+                    // });
+                    // it(`Post PUT that Stop After Nucleus TestID: ${testID + 1}`, async () => {
+                    //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                    //         {
+                    //             putData: {
+                    //                 10: {
+                    //                     SubType: '',
+                    //                     Headers: [
+                    //                         'CreationDateTime',
+                    //                         'DeliveryDate',
+                    //                         'Hidden',
+                    //                         'IsDuplicated',
+                    //                         'IsFixedDiscount',
+                    //                         'IsFixedUnitPriceAfterDiscount',
+                    //                         'ItemExternalID',
+                    //                         'ItemWrntyID',
+                    //                         'LineNumber',
+                    //                         'PortfolioItemTSAttributes',
+                    //                         'ReadOnly',
+                    //                         'Remark4',
+                    //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
+                    //                         'SuppressedSpecialOffer',
+                    //                         'TSAttributes',
+                    //                         'TransactionUUID',
+                    //                         'UUID',
+                    //                         'UnitDiscountPercentage',
+                    //                         'UnitFinalPrice',
+                    //                         'UnitPrice',
+                    //                         'UnitPriceAfterDiscount',
+                    //                         'UnitsQuantity',
+                    //                         'WrntyID',
+                    //                     ],
+                    //                     Lines: [
+                    //                         [
+                    //                             '1594960700',
+                    //                             '18459',
+                    //                             '0',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             'MCR00102',
+                    //                             '55316814',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             '0',
+                    //                             '',
+                    //                             '',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
+                    //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                    //                             '0',
+                    //                             '906366498589870',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             '-8876',
+                    //                         ],
+                    //                     ],
+                    //                 },
+                    //             },
+                    //             nucleus_crud_type: 'stop_after_nucleus',
+                    //         },
+                    //         testID + 1,
+                    //     );
+                    //     console.log({ putSyncResponse_stop_after_nucleus: putSyncResponse });
+                    //     expect(putSyncResponse).to.be.true;
+                    // });
+                    // it(`Post PUT that Stop After Redis TestID: ${testID + 2}`, async () => {
+                    //     const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                    //         {
+                    //             putData: {
+                    //                 10: {
+                    //                     SubType: '',
+                    //                     Headers: [
+                    //                         'CreationDateTime',
+                    //                         'DeliveryDate',
+                    //                         'Hidden',
+                    //                         'IsDuplicated',
+                    //                         'IsFixedDiscount',
+                    //                         'IsFixedUnitPriceAfterDiscount',
+                    //                         'ItemExternalID',
+                    //                         'ItemWrntyID',
+                    //                         'LineNumber',
+                    //                         'PortfolioItemTSAttributes',
+                    //                         'ReadOnly',
+                    //                         'Remark4',
+                    //                         'SpecialOfferLeadingOrderPortfolioItemUUID',
+                    //                         'SuppressedSpecialOffer',
+                    //                         'TSAttributes',
+                    //                         'TransactionUUID',
+                    //                         'UUID',
+                    //                         'UnitDiscountPercentage',
+                    //                         'UnitFinalPrice',
+                    //                         'UnitPrice',
+                    //                         'UnitPriceAfterDiscount',
+                    //                         'UnitsQuantity',
+                    //                         'WrntyID',
+                    //                     ],
+                    //                     Lines: [
+                    //                         [
+                    //                             '1594960700',
+                    //                             '18459',
+                    //                             '0',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             'MCR00102',
+                    //                             '55316814',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             '0',
+                    //                             '',
+                    //                             '',
+                    //                             '0',
+                    //                             '<A />\n',
+                    //                             'FB89438F-62BB-4904-B863-6BA757AF5337',
+                    //                             'b87278de-e1cc-52c2-a771-9796fd8bbe4f',
+                    //                             '0',
+                    //                             '906366498589870',
+                    //                             '0',
+                    //                             '0',
+                    //                             '1',
+                    //                             '-8876',
+                    //                         ],
+                    //                     ],
+                    //                 },
+                    //             },
+                    //             nucleus_crud_type: 'stop_after_redis',
+                    //         },
+                    //         testID + 2,
+                    //     );
+                    //     console.log({ putSyncResponse_stop_after_redis: putSyncResponse });
+                    //     expect(putSyncResponse).to.be.true;
+                    // });
+                });
+            });
+
+            describe('Delete', () => {
+                it('Delete transaction', async () => {
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID as any)).to.be.true,
+                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID as any)).to.be
+                            .false,
+                        expect(
+                            await objectsService.getTransaction({
+                                where: `InternalID=${createdTransaction.InternalID}`,
+                            }),
+                        )
+                            .to.be.an('array')
+                            .with.lengthOf(0);
+                });
             });
         });
     });

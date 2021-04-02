@@ -1,4 +1,12 @@
-import { PapiClient, Account, ApiFieldObject, GeneralActivity, Transaction } from '@pepperi-addons/papi-sdk';
+import {
+    PapiClient,
+    Account,
+    ApiFieldObject,
+    GeneralActivity,
+    Transaction,
+    Item,
+    TransactionLines,
+} from '@pepperi-addons/papi-sdk';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 
@@ -19,7 +27,16 @@ const apiCallsInterval = 400;
 export class ObjectsService {
     constructor(public papiClient: PapiClient) {}
 
-    getItems() {
+    getItems(options?: FindOptions): Promise<Item[]> {
+        return this.papiClient.items.find(options);
+    }
+
+    //TODO: This function should not exist:
+    //1) it get nothing instead of type option for the FindOptions
+    //2) it use wrong endpoint
+    //3) it return wrong type
+    //This is why I refactor it and added TODO in it's end
+    getItemsTODO() {
         return this.papiClient.get('/items');
     }
 
@@ -128,7 +145,16 @@ export class ObjectsService {
         return this.papiClient.get('/transaction_lines?where=TransactionInternalID=' + InternalID);
     }
 
-    createTransactionLine(body: any) {
+    createTransactionLine(body: TransactionLines): Promise<TransactionLines> {
+        return this.papiClient.transactionLines.upsert(body);
+    }
+
+    //TODO: This function should not exist:
+    //1) it get type "any" instead of type "Transaction"
+    //2) it use wrong endpoint
+    //3) it return wrong type
+    //This is why I refactor it and added TODO in it's end
+    createTransactionLineTODO(body: any) {
         return this.papiClient.post('/transaction_lines', body);
     }
 
