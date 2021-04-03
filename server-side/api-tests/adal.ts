@@ -8,9 +8,8 @@ export async function ADALTests(generalService: GeneralService, request, tester:
     const expect = tester.expect;
     const it = tester.it;
 
-    //PNS 00000000-0000-0000-0000-000000040fa9
     const ADALAddonUUID = '00000000-0000-0000-0000-00000000ada1';
-    const PepperiOwnerID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
     const ADALInstalledAddonVersion = await service.addons.installedAddons.addonUUID(`${ADALAddonUUID}`).get();
 
@@ -77,7 +76,7 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                 it(`Insert Data To Table`, async () => {
                     const schemaName = `Oren111`;
                     const createSchemaResponse = await adalService.postSchema({ Name: schemaName });
-                    console.log({ createSchemaResponse: createSchemaResponse });
+                    //console.log({ createSchemaResponse: createSchemaResponse });
 
                     const updateSchemaResponse = await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
                         Key: 'testKey1',
@@ -92,15 +91,15 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(createSchemaResponse.Name).to.equal(schemaName);
                     expect(createSchemaResponse.Hidden).to.be.false;
                     expect(createSchemaResponse.Type).to.equal('meta_data');
-                    console.log({ createSchemaResponse: createSchemaResponse });
+                    //console.log({ createSchemaResponse: createSchemaResponse });
 
                     expect(updateSchemaResponse.Column1[0]).to.equal('Value1');
                     expect(updateSchemaResponse.Column1[1]).to.equal('Value2');
                     expect(updateSchemaResponse.Column1[2]).to.equal('Value3');
                     expect(updateSchemaResponse.Key).to.equal('testKey1');
                     //console.log({ createSchemaResponse: createSchemaResponse });
-                    const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
-                    expect(deleteSchemaResponse).to.equal('');
+                    //const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
+                    //expect(deleteSchemaResponse).to.equal('');
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
             });

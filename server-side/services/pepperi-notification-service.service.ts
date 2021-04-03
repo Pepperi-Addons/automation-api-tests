@@ -37,7 +37,7 @@ export interface PutData {
             Lines: string[][];
         };
     };
-    nucleus_crud_type: NucleusCrudYype;
+    nucleus_crud_type?: NucleusCrudYype;
 }
 export class PepperiNotificationServiceService {
     papiClient: PapiClient;

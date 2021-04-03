@@ -1,3 +1,4 @@
+import { Catalog, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
@@ -12,14 +13,11 @@ export async function PepperiNotificationServiceTests(
     tester: TesterFunctions,
 ) {
     const service = generalService.papiClient;
-    //const fieldsService = new FieldsService(generalService.papiClient);
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
     const objectsService = new ObjectsService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-
-    //00000000-0000-0000-0000-000000040fa9
 
     const pepperiNotificationServiceAddonUUID = '00000000-0000-0000-0000-000000040fa9';
     const pepperiNotificationServiceVersion = '1.';
@@ -86,7 +84,8 @@ export async function PepperiNotificationServiceTests(
 
     describe('Pepperi Notification Service Tests Suites', () => {
         let atdArr;
-        let itemArr;
+        let catalogArr: Catalog[];
+        let itemArr: Item[];
         let transactionAccount;
         let createdTransaction;
         let transactionExternalID;
@@ -129,7 +128,7 @@ export async function PepperiNotificationServiceTests(
                     });
                     transactionExternalID =
                         'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
-                    const catalogs = await generalService.getCatalogs();
+                    catalogArr = await generalService.getCatalogs();
                     createdTransaction = await objectsService.createTransaction({
                         ExternalID: transactionExternalID,
                         ActivityTypeID: atdArr[0].TypeID,
@@ -141,21 +140,21 @@ export async function PepperiNotificationServiceTests(
                         },
                         Catalog: {
                             Data: {
-                                ExternalID: catalogs[0].ExternalID,
+                                ExternalID: catalogArr[0].ExternalID,
                             },
                         },
                     });
-                    const getCreatedTransaction = await objectsService.getTransaction({
+                    const getCreatedTransactionResponse = await objectsService.getTransaction({
                         where: `InternalID=${createdTransaction.InternalID}`,
                     });
 
                     return Promise.all([
-                        expect(getCreatedTransaction[0]).to.include({
+                        expect(getCreatedTransactionResponse[0]).to.include({
                             ExternalID: transactionExternalID,
                             ActivityTypeID: atdArr[0].TypeID,
                             Status: 1,
                         }),
-                        expect(JSON.stringify(getCreatedTransaction[0].Account)).equals(
+                        expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
                             JSON.stringify({
                                 Data: {
                                     InternalID: transactionAccount.InternalID,
@@ -165,24 +164,24 @@ export async function PepperiNotificationServiceTests(
                                 URI: '/accounts/' + transactionAccount.InternalID,
                             }),
                         ),
-                        expect(getCreatedTransaction[0].InternalID).to.equal(createdTransaction.InternalID),
-                        expect(getCreatedTransaction[0].UUID).to.include(createdTransaction.UUID),
-                        expect(getCreatedTransaction[0].CreationDateTime).to.contain(
+                        expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
+                        expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
+                        expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
                             new Date().toISOString().split('T')[0],
                         ),
-                        expect(getCreatedTransaction[0].CreationDateTime).to.contain('Z'),
-                        expect(getCreatedTransaction[0].ModificationDateTime).to.contain(
+                        expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
                             new Date().toISOString().split('T')[0],
                         ),
-                        expect(getCreatedTransaction[0].ModificationDateTime).to.contain('Z'),
-                        expect(getCreatedTransaction[0].Archive).to.be.false,
-                        expect(getCreatedTransaction[0].Hidden).to.be.false,
-                        expect(getCreatedTransaction[0].StatusName).to.include('InCreation'),
-                        expect(getCreatedTransaction[0].Agent).to.be.null,
-                        expect(getCreatedTransaction[0].ContactPerson).to.be.null,
-                        expect(getCreatedTransaction[0].Creator).to.be.null,
-                        expect(getCreatedTransaction[0].OriginAccount).to.be.null,
-                        expect(getCreatedTransaction[0].TransactionLines).to.include({
+                        expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionResponse[0].Archive).to.be.false,
+                        expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
+                        expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
+                        expect(getCreatedTransactionResponse[0].Agent).to.be.null,
+                        expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
+                        expect(getCreatedTransactionResponse[0].Creator).to.be.null,
+                        expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
+                        expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
                             URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
                         }),
                     ]);
@@ -192,7 +191,7 @@ export async function PepperiNotificationServiceTests(
                     itemArr = await objectsService.getItems({ page_size: 1 });
                     createdTransactionLines = await objectsService.createTransactionLine({
                         LineNumber: 0,
-                        UnitsQuantity: 77,
+                        UnitsQuantity: 25,
                         Item: {
                             Data: {
                                 ExternalID: itemArr[0].ExternalID,
@@ -206,16 +205,17 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     console.log({ createdTransactionLines: createdTransactionLines });
-                    const getCreatedTransactionLine = await objectsService.getTransactionLines(
+                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLines(
                         createdTransaction.InternalID,
                     );
+                    console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
                     return Promise.all([
-                        expect(getCreatedTransactionLine[0]).to.include({
+                        expect(getCreatedTransactionLineResponse[0]).to.include({
                             LineNumber: 0,
-                            UnitsQuantity: 77,
+                            UnitsQuantity: 25,
                         }),
-                        expect(JSON.stringify(getCreatedTransactionLine[0].Item)).equals(
+                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
                             JSON.stringify({
                                 Data: {
                                     InternalID: itemArr[0].InternalID,
@@ -225,7 +225,7 @@ export async function PepperiNotificationServiceTests(
                                 URI: '/items/' + itemArr[0].InternalID,
                             }),
                         ),
-                        expect(JSON.stringify(getCreatedTransactionLine[0].Transaction)).equals(
+                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Transaction)).equals(
                             JSON.stringify({
                                 Data: {
                                     InternalID: createdTransaction.InternalID,
@@ -235,57 +235,111 @@ export async function PepperiNotificationServiceTests(
                                 URI: '/transactions/' + createdTransaction.InternalID,
                             }),
                         ),
-                        expect(getCreatedTransactionLine[0].InternalID).to.equal(createdTransactionLines.InternalID),
-                        expect(getCreatedTransactionLine[0].UUID).to.include(createdTransactionLines.UUID),
-                        expect(getCreatedTransactionLine[0].CreationDateTime).to.contain(
+                        expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
+                            createdTransactionLines.InternalID,
+                        ),
+                        expect(getCreatedTransactionLineResponse[0].UUID).to.include(createdTransactionLines.UUID),
+                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
                             new Date().toISOString().split('T')[0],
                         ),
-                        expect(getCreatedTransactionLine[0].CreationDateTime).to.contain('Z'),
-                        expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain(
+                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
                             new Date().toISOString().split('T')[0],
                         ),
-                        expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
-                        expect(getCreatedTransactionLine[0].Archive).to.be.false,
-                        expect(getCreatedTransactionLine[0].Hidden).to.be.false,
+                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
+                        expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
                         expect(await objectsService.getTransactionLines(createdTransaction.InternalID))
                             .to.be.an('array')
                             .with.lengthOf(1),
                     ]);
                 });
 
-                // });
+                const testID = Math.floor(Math.random() * 10000000);
+                it(`Create transaction line with WAKAD ${testID + 0}`, async () => {
+                    const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                        {
+                            putData: {
+                                10: {
+                                    SubType: '',
+                                    Headers: [
+                                        'ItemWrntyID',
+                                        'ItemExternalID',
+                                        'LineNumber',
+                                        'TransactionUUID',
+                                        'UnitsQuantity',
+                                        'WrntyID',
+                                        'Hidden',
+                                    ],
+                                    Lines: [
+                                        [
+                                            String(itemArr[0].InternalID),
+                                            itemArr[0].ExternalID,
+                                            '0',
+                                            String(createdTransaction.UUID),
+                                            '77',
+                                            String(Math.floor(Math.random() * -1000000)),
+                                            '0',
+                                        ],
+                                    ],
+                                },
+                            },
+                        },
+                        testID,
+                    );
 
-                // it('Create transaction line with WAKAD', () => {
+                    console.log({ putSyncResponse_stop_after_db: putSyncResponse });
+                    expect(putSyncResponse).to.be.true;
 
-                //     let oren = {
-                //         "putData": {
-                //             "10": {
-                //                 "SubType": "",
-                //                 "Headers": [
-                //                     "ItemWrntyID",
-                //                     "ItemExternalID",
-                //                     "LineNumber",
-                //                     "TransactionUUID",
-                //                     "UnitsQuantity",
-                //                     "WrntyID",
-                //                     "Hidden"
-                //                 ],
-                //                 "Lines": [
-                //                     [
-                //                         "55305754",
-                //                         "BPT1114",
-                //                         "0",
-                //                         "5a7c0e3f-5988-4198-8081-482bf3bbef1e",
-                //                         "6",
-                //                         "-333771",
-                //                         0
-                //                     ]
-                //                 ]
-                //             }
-                //         }
-                //     }
+                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLines(
+                        createdTransaction.InternalID,
+                    );
+                    console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
-                // });
+                    return Promise.all([
+                        expect(getCreatedTransactionLineResponse[0]).to.include({
+                            LineNumber: 0,
+                            UnitsQuantity: 77,
+                        }),
+                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
+                            JSON.stringify({
+                                Data: {
+                                    InternalID: itemArr[0].InternalID,
+                                    UUID: itemArr[0].UUID,
+                                    ExternalID: itemArr[0].ExternalID,
+                                },
+                                URI: '/items/' + itemArr[0].InternalID,
+                            }),
+                        ),
+                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Transaction)).equals(
+                            JSON.stringify({
+                                Data: {
+                                    InternalID: createdTransaction.InternalID,
+                                    UUID: createdTransaction.UUID,
+                                    ExternalID: createdTransaction.ExternalID,
+                                },
+                                URI: '/transactions/' + createdTransaction.InternalID,
+                            }),
+                        ),
+                        expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
+                            createdTransactionLines.InternalID,
+                        ),
+                        expect(getCreatedTransactionLineResponse[0].UUID).to.include(createdTransactionLines.UUID),
+                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
+                        expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                        expect(await objectsService.getTransactionLines(createdTransaction.InternalID))
+                            .to.be.an('array')
+                            .with.lengthOf(1),
+                    ]);
+                });
             });
 
             describe('GET', () => {
@@ -569,9 +623,8 @@ export async function PepperiNotificationServiceTests(
 
             describe('Delete', () => {
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID as any)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID as any)).to.be
-                            .false,
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
+                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
                         expect(
                             await objectsService.getTransaction({
                                 where: `InternalID=${createdTransaction.InternalID}`,
@@ -579,6 +632,17 @@ export async function PepperiNotificationServiceTests(
                         )
                             .to.be.an('array')
                             .with.lengthOf(0);
+                });
+
+                it('Delete transaction lines', async () => {
+                    expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false;
+                    expect(await objectsService.getTransactionByID(createdTransaction.InternalID))
+                        .to.have.property('TransactionLines')
+                        .to.deep.equal({
+                            Data: [],
+                            URI: `/transaction_lines?where=TransactionInternalID=${createdTransaction.InternalID}`,
+                        });
                 });
             });
         });

@@ -158,7 +158,16 @@ export class ObjectsService {
         return this.papiClient.post('/transaction_lines', body);
     }
 
-    deleteTransactionLine(InternalID) {
+    deleteTransactionLine(id: number): Promise<boolean> {
+        return this.papiClient.transactionLines.delete(id);
+    }
+
+    //TODO: This function should not exist:
+    //1) it get type "any" instead of type "Number"
+    //2) it use wrong endpoint
+    //3) it return wrong type
+    //This is why I refactor it and added TODO in it's end
+    deleteTransactionLineTODO(InternalID) {
         return this.papiClient
             .delete('/transaction_lines/' + InternalID)
             .then((res) => res.text())
@@ -179,6 +188,10 @@ export class ObjectsService {
 
     createTransaction(body: Transaction) {
         return this.papiClient.transactions.upsert(body);
+    }
+
+    getTransactionByID(transactionID: number) {
+        return this.papiClient.transactions.get(transactionID);
     }
 
     getTransaction(options?: FindOptions) {
