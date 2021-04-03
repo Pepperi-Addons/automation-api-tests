@@ -16,7 +16,6 @@ export async function insert_pns(client: Client) {
         order_by: 'ModificationDateTime DESC',
     });
 
-    console.log({ lastTransactionLine: lastTransactionLine });
     const insertedObject = {
         Key: `Transaction ${service.getServer()} ${service.getTime()} ${service.getDate()}`,
         TransactioInfo: {
@@ -27,8 +26,10 @@ export async function insert_pns(client: Client) {
         },
     };
 
-    const updateSchemaResponse = await adalService.postDataToSchema(PepperiOwnerID, schemaName, insertedObject);
-    console.log({ updateSchemaResponse: updateSchemaResponse });
+    //This might be needed later but for now ill use the same schema every test
+    // const createNewSchema = await adalService.postSchema({ Name: schemaName });
+    // console.log({ createNewSchema: createNewSchema });
+    await adalService.postDataToSchema(PepperiOwnerID, schemaName, insertedObject);
     return {
         'PNS Insertion Logged': {
             'Pepperi Owner ID': PepperiOwnerID,
