@@ -1851,7 +1851,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 } as any);
 
-                const getCreatedTransactionLine = await service.getTransactionLines(createdTransaction.InternalID);
+                const getCreatedTransactionLine = await service.getTransactionLinesTODO(createdTransaction.InternalID);
 
                 return Promise.all([
                     expect(getCreatedTransactionLine[0]).to.include({
@@ -1909,7 +1909,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
                     expect(getCreatedTransactionLine[0].Archive).to.be.false,
                     expect(getCreatedTransactionLine[0].Hidden).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1),
                 ]);
@@ -1997,7 +1997,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
                     expect(updatedTransactionLines.Archive).to.be.false,
                     expect(updatedTransactionLines.Hidden).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1);
             });
@@ -2010,7 +2010,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     ItemExternalID: items[1].ExternalID,
                     UnitsQuantity: 1.0,
                 });
-                expect(await service.getTransactionLines(createdTransaction.InternalID))
+                expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                     .to.be.an('array')
                     .with.lengthOf(2);
             });
@@ -2019,13 +2019,13 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 expect(await service.deleteTransactionLineTODO(createdTransactionLines.InternalID as any)).to.be.true,
                     expect(await service.deleteTransactionLineTODO(createdTransactionLines.InternalID as any)).to.be
                         .false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1),
                     expect(await service.deleteTransactionLineTODO(addedTransactionLines.InternalID as any)).to.be.true,
                     expect(await service.deleteTransactionLineTODO(addedTransactionLines.InternalID as any)).to.be
                         .false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });

@@ -6,21 +6,10 @@ import {
     Transaction,
     Item,
     TransactionLines,
+    FindOptions,
 } from '@pepperi-addons/papi-sdk';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
-
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
 
 const apiCallsInterval = 400;
 
@@ -141,7 +130,17 @@ export class ObjectsService {
             .then((res) => (res ? JSON.parse(res) : ''));
     }
 
-    getTransactionLines(InternalID) {
+    getTransactionLines(options?: FindOptions): Promise<TransactionLines[]> {
+        return this.papiClient.transactionLines.find(options);
+    }
+
+    //TODO: This function should not exist:
+    //1) it get type "any" instead of type "Number"
+    //2) it use wrong endpoint
+    //3) it return wrong type
+    //4) it have wrong name if it should return one line by id
+    //This is why I refactor it and added TODO in it's end
+    getTransactionLinesTODO(InternalID) {
         return this.papiClient.get('/transaction_lines?where=TransactionInternalID=' + InternalID);
     }
 

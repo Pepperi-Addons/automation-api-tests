@@ -98,8 +98,8 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(updateSchemaResponse.Column1[2]).to.equal('Value3');
                     expect(updateSchemaResponse.Key).to.equal('testKey1');
                     //console.log({ createSchemaResponse: createSchemaResponse });
-                    //const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
-                    //expect(deleteSchemaResponse).to.equal('');
+                    const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
+                    expect(deleteSchemaResponse).to.equal('');
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
             });

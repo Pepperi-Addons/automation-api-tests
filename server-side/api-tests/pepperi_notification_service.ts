@@ -205,7 +205,7 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     console.log({ createdTransactionLines: createdTransactionLines });
-                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLines(
+                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesTODO(
                         createdTransaction.InternalID,
                     );
                     console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
@@ -249,7 +249,7 @@ export async function PepperiNotificationServiceTests(
                         expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                        expect(await objectsService.getTransactionLines(createdTransaction.InternalID))
+                        expect(await objectsService.getTransactionLinesTODO(createdTransaction.InternalID))
                             .to.be.an('array')
                             .with.lengthOf(1),
                     ]);
@@ -291,7 +291,7 @@ export async function PepperiNotificationServiceTests(
                     console.log({ putSyncResponse_stop_after_db: putSyncResponse });
                     expect(putSyncResponse).to.be.true;
 
-                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLines(
+                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesTODO(
                         createdTransaction.InternalID,
                     );
                     console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
@@ -335,7 +335,7 @@ export async function PepperiNotificationServiceTests(
                         expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                        expect(await objectsService.getTransactionLines(createdTransaction.InternalID))
+                        expect(await objectsService.getTransactionLinesTODO(createdTransaction.InternalID))
                             .to.be.an('array')
                             .with.lengthOf(1),
                     ]);

@@ -493,7 +493,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         const allActivitiesArr: GeneralActivity | Transaction = (await service.papiClient.allActivities.find({
             where: "CreationDateTime>'2020-07-07Z'",
             page_size: -1,
-            orderBy: 'ModificationDateTime DESC',
+            order_by: 'ModificationDateTime DESC',
         })) as any;
 
         for (let index = 0; index < allActivitiesArr.length; index++) {

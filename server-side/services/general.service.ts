@@ -1,4 +1,4 @@
-import { PapiClient, InstalledAddon, Catalog } from '@pepperi-addons/papi-sdk';
+import { PapiClient, InstalledAddon, Catalog, FindOptions } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 
 declare type ClientData =
@@ -9,18 +9,6 @@ declare type ClientData =
     | 'DistributorID'
     | 'DistributorUUID'
     | 'Server';
-
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
 
 const UserDataObject = {
     UserEmail: 'email',

@@ -41,18 +41,6 @@ export interface MetaDataUDT {
     };
 }
 
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
-
 interface References {
     References: { ID: string; Name: string; Type: string }[];
 }
