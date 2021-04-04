@@ -1,5 +1,6 @@
 import { PapiClient, InstalledAddon, Catalog, FindOptions } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
+import jwt_decode from 'jwt-decode';
 
 declare type ClientData =
     | 'UserEmail'
@@ -8,7 +9,8 @@ declare type ClientData =
     | 'UserUUID'
     | 'DistributorID'
     | 'DistributorUUID'
-    | 'Server';
+    | 'Server'
+    | 'IdpURL';
 
 const UserDataObject = {
     UserEmail: 'email',
@@ -18,6 +20,7 @@ const UserDataObject = {
     DistributorID: 'pepperi.distributorid',
     DistributorUUID: 'pepperi.distributoruuid',
     Server: 'pepperi.datacenter',
+    IdpURL: 'iss',
 };
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -70,7 +73,7 @@ export default class GeneralService {
     }
 
     getClientData(data: ClientData): string {
-        return parseJwt(this.client.OAuthAccessToken)[UserDataObject[data]];
+        return jwt_decode(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
 
     getAddons(options?: FindOptions): Promise<InstalledAddon[]> {
@@ -165,21 +168,6 @@ export default class GeneralService {
             return v.toString(16);
         });
     }
-}
-
-function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-        Buffer.from(base64, 'base64')
-            .toString()
-            .split('')
-            .map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join(''),
-    );
-    return JSON.parse(jsonPayload);
 }
 
 export interface TesterFunctions {

@@ -8,7 +8,6 @@ import {
     TransactionLines,
     FindOptions,
 } from '@pepperi-addons/papi-sdk';
-import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 
 const apiCallsInterval = 400;
@@ -55,14 +54,7 @@ export class ObjectsService {
         }
     }
 
-    getIDPurl() {
-        const token = this.papiClient['options'].token;
-        const decodedToken = jwt_decode(token);
-        return decodedToken.iss;
-    }
-
-    async getSecurityGroup() {
-        const idpBaseURL = await this.getIDPurl();
+    async getSecurityGroup(idpBaseURL: string) {
         const securityGroups = await fetch(idpBaseURL + '/api/securitygroups', {
             method: 'GET',
             headers: {

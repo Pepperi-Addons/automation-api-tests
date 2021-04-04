@@ -4,11 +4,11 @@ import GeneralService from './services/general.service';
 import { ADALService } from './services/adal.service';
 
 export async function insert_pns(client: Client) {
-    const service = new GeneralService(client);
-    const adalService = new ADALService(service.papiClient);
-    const objectsService = new ObjectsService(service.papiClient);
+    const generalService = new GeneralService(client);
+    const adalService = new ADALService(generalService.papiClient);
+    const objectsService = new ObjectsService(generalService.papiClient);
 
-    const PepperiOwnerID = service.papiClient['options'].addonUUID;
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const schemaName = `PNS Test`;
     const lastTransactionLine = await objectsService.getTransactionLines({
         include_deleted: true,
@@ -17,7 +17,7 @@ export async function insert_pns(client: Client) {
     });
 
     const insertedObject = {
-        Key: `Transaction ${service.getServer()} ${service.getTime()} ${service.getDate()}`,
+        Key: `Transaction ${generalService.getServer()} ${generalService.getTime()} ${generalService.getDate()}`,
         TransactioInfo: {
             ModificationDateTime: lastTransactionLine[0].ModificationDateTime,
             Hidden: lastTransactionLine[0].Hidden,
