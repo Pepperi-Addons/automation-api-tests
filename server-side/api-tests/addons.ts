@@ -8778,7 +8778,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
 
                 maxLoopsCounter = 90;
-                if (deleteApiResponse.URI != null) {
+                if (deleteApiResponse.URI == null || JSON.stringify(deleteApiResponse).includes('fault')) {
                     getDeleteAuditLogApiResponse = deleteApiResponse;
                 } else {
                     do {
@@ -8794,6 +8794,18 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 console.log({ 'Addone deleted: ': getInstalledAddonsApiResponse[index] });
                 console.log({ Post_Var_Addons_Delete: getDeleteAuditLogApiResponse });
+
+                //Added special delete function 04/04/2021
+                try {
+                    const secondDeleteApiResponse = await generalService.papiClient.delete(
+                        `/addons/installed_addons/${getInstalledAddonsApiResponse[index].UUID}`,
+                    );
+                    console.log('Addone deleted with direct delete: ' + getInstalledAddonsApiResponse[index].Name);
+                    console.log({ Second_Delete_Api_Response: secondDeleteApiResponse });
+                } catch (error) {
+                    console.log('Direct delete failed of addon named: ' + getInstalledAddonsApiResponse[index].Name);
+                    console.log({ Failed_Delete_Response: error });
+                }
             }
         }
 
