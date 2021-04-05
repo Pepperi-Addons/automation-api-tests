@@ -5797,7 +5797,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             //Install results
-            if (testName.includes('Negative') && isValidTest) {
+            if (testName.includes('Negative') && (isValidTest || testName.includes('Exist'))) {
                 mandatoryStepsInstallAddonWithVersion.installAddon = postAddonApiResponse.Status.Name == 'Failure';
                 addTestResultUnderHeadline(
                     testName,
@@ -5814,7 +5814,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             //Installed version results
-            if (testName.includes('Negative') && isValidTest) {
+            if (testName.includes('Negative') && (isValidTest || testName.includes('Exist'))) {
                 if (testName.includes('Exist')) {
                     const isErrorMessage = postAddonApiResponse.AuditInfo.ErrorMessage.includes(
                         'Invalid dependencies configuration - data_views dependency version 0.0.37.1 does not exists',
@@ -5873,7 +5873,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 } while (postAddonApiResponse.Status.ID == 2 && maxLoopsCounter > 0);
                 console.log({ Audit_Log_Addon_Uninstall: postAddonApiResponse });
                 //Uninstall results
-                if (testName.includes('Negative') && isValidTest) {
+                if (testName.includes('Negative') && (isValidTest || testName.includes('Exist'))) {
                     mandatoryStepsInstallAddonWithVersion.unInstallAddon = postAddonApiResponse.Status.ID == 0;
                     addTestResultUnderHeadline(
                         testName,
