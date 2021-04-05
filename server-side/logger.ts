@@ -16,7 +16,7 @@ async function insertLog(client: Client, type: string) {
     const adalService = new ADALService(generalService.papiClient);
     const objectsService = new ObjectsService(generalService.papiClient);
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
-    const schemaName = `PNS Test`;
+    const schemaName = 'PNS Test';
     const lastTransactionLine = await objectsService.getTransactionLines({
         include_deleted: true,
         page_size: 1,

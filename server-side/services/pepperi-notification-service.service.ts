@@ -2,7 +2,7 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 import fetch from 'node-fetch';
 
-declare type NucleusCrudYype = 'stop_after_redis' | 'stop_after_db' | 'stop_after_nucleus' | null;
+export declare type NucleusFlagType = 'stop_after_redis' | 'stop_after_db' | 'stop_after_nucleus' | null;
 declare type PutDataSubTypeHeaders =
     | 'CreationDateTime'
     | 'DeliveryDate'
@@ -37,7 +37,7 @@ export interface PutData {
             Lines: string[][];
         };
     };
-    nucleus_crud_type?: NucleusCrudYype;
+    nucleus_crud_type?: NucleusFlagType;
 }
 export class PepperiNotificationServiceService {
     papiClient: PapiClient;
