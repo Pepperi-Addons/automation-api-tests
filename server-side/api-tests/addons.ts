@@ -5622,7 +5622,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             `${generalService['client'].BaseURL.replace(
                 'papi-eu',
                 'papi',
-            )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Phased Like 0&order_by=CreationDateTime DESC`,
+            )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Available Like 1&order_by=CreationDateTime DESC`,
             {
                 method: `GET`,
                 headers: {
@@ -5630,7 +5630,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 },
             },
         ).then((response) => response.json());
-        const isValidTest = !varLatestWebAppVersion[0].phased;
+        const isValidTest = !varLatestWebAppVersion[0].Phased;
+        console.log({ isValidTest: `Version: ${varLatestWebAppVersion[0].Version}, isValidTest: ${isValidTest}` });
         varLatestWebAppVersion = varLatestWebAppVersion[0].Version;
 
         //Create
