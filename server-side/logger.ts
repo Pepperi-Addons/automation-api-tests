@@ -3,12 +3,12 @@ import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from './services/general.service';
 import { ADALService } from './services/adal.service';
 
-export async function insert_pns(client: Client) {
-    await insertLog(client, 'Insert');
+export async function insert_pns(client: Client): Promise<any> {
+    return insertLog(client, 'Insert');
 }
 
-export async function update_pns(client: Client) {
-    await insertLog(client, 'Updaet');
+export async function update_pns(client: Client): Promise<any> {
+    return insertLog(client, 'Updaet');
 }
 
 async function insertLog(client: Client, type: string) {
@@ -39,8 +39,8 @@ async function insertLog(client: Client, type: string) {
     };
 
     //This might be needed later but for now ill use the same schema every test
-    // const createNewSchema = await adalService.postSchema({ Name: schemaName });
-    // console.log({ createNewSchema: createNewSchema });
+    //const createNewSchema = await adalService.postSchema({ Name: schemaName });
+    //console.log({ createNewSchema: createNewSchema });
     await adalService.postDataToSchema(PepperiOwnerID, schemaName, insertedObject);
     return {
         'PNS Insertion Logged': {
