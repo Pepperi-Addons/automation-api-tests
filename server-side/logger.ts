@@ -8,7 +8,7 @@ export async function insert_pns(client: Client): Promise<any> {
 }
 
 export async function update_pns(client: Client): Promise<any> {
-    return insertLog(client, 'Updaet');
+    return insertLog(client, 'Update');
 }
 
 async function insertLog(client: Client, type: string) {

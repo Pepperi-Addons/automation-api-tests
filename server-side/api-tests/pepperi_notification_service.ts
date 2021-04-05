@@ -3,6 +3,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ObjectsService } from '../services/objects.service';
+import { ADALService } from '../services/adal.service';
 import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -15,9 +16,13 @@ export async function PepperiNotificationServiceTests(
     const service = generalService.papiClient;
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
     const objectsService = new ObjectsService(generalService.papiClient);
+    const adalService = new ADALService(generalService.papiClient);
+
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
     const pepperiNotificationServiceAddonUUID = '00000000-0000-0000-0000-000000040fa9';
     const pepperiNotificationServiceVersion = '1.';
@@ -255,6 +260,26 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
+                it('Validate PNS OF Insert', async () => {
+                    let schema;
+                    const maxLoopsCounter = 30;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, 'PNS Test', {
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                    } while (
+                        (!schema[0].Key.startsWith('Insert') ||
+                            schema[0].TransactioInfo.UnitsQuantity != 25 ||
+                            schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
+                        maxLoopsCounter > 0
+                    );
+
+                    expect(schema[0].Key).to.startsWith('Insert');
+                    expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(25);
+                    expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
+                });
+
                 const testID = Math.floor(Math.random() * 10000000);
                 it(`Create transaction line with WAKAD ${testID + 0}`, async () => {
                     const putSyncResponse = await pepperiNotificationServiceService.putSync(
@@ -339,6 +364,26 @@ export async function PepperiNotificationServiceTests(
                             .to.be.an('array')
                             .with.lengthOf(1),
                     ]);
+                });
+
+                it('Validate PNS OF Update', async () => {
+                    let schema;
+                    const maxLoopsCounter = 30;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, 'PNS Test', {
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                    } while (
+                        (!schema[0].Key.startsWith('Update') ||
+                            schema[0].TransactioInfo.UnitsQuantity != 77 ||
+                            schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
+                        maxLoopsCounter > 0
+                    );
+
+                    expect(schema[0].Key).to.startsWith('Update');
+                    expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(77);
+                    expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
                 });
             });
 

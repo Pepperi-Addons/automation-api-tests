@@ -1,4 +1,4 @@
-import { AddonDataScheme, PapiClient, AddonData } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 import fetch from 'node-fetch';
 
@@ -47,18 +47,6 @@ export class PepperiNotificationServiceService {
         this.papiClient = generalService.papiClient;
         //console.log({ Authorization: 'Bearer ' + generalService['client'].OAuthAccessToken });
         this.Authorization = 'Bearer ' + generalService['client'].OAuthAccessToken;
-    }
-
-    postSchema(addonDataScheme: AddonDataScheme) {
-        return this.papiClient.addons.data.schemes.post(addonDataScheme);
-    }
-
-    postDataToSchema(uuid: string, tableName: string, addonData: AddonData) {
-        return this.papiClient.addons.data.uuid(uuid).table(tableName).upsert(addonData);
-    }
-
-    deleteSchema(tableName: string) {
-        return this.papiClient.post(`/addons/data/schemes/${tableName}/purge`);
     }
 
     putSync(putData: PutData, PutID: number) {
