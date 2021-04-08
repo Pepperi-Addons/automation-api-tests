@@ -70,7 +70,7 @@ async function insertLog(client: Client, type: string) {
 async function indexLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const schemaName = 'Index Logs';
-    const logUUID = uuidv4().replaceAll('-', '_');
+    const logUUID = uuidv4().replace(/-/g, '_');
     const insertedObject = {
         Key: `PNS Messages`,
         [`Log_${type}_${generalService.getServer()}_${logUUID}`]: {
