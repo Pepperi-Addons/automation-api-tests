@@ -1,6 +1,7 @@
 import { AddonVersion, InstalledAddon } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface TestDataBody {
     ApiData: {
@@ -64,14 +65,6 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 //     }
 // }
 
-function createRandomUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0,
-            v = c == 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
-
 //Prerequisites for test
 let testDate = new Date();
 //const isCallBackArr = [] as any;
@@ -80,9 +73,9 @@ function addInstalledAddonTestObject(testDataBody, installedVersionName) {
     //installedAddons
     testDataBody.ApiData.installedAddons.push({
         SystemData: '{"Version":"5.5.8","AutomaticUpgrade":"true"}',
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
         Version: installedVersionName,
-        Addon: { UUID: createRandomUUID() },
+        Addon: { UUID: uuidv4() },
     } as InstalledAddon);
 }
 
@@ -97,7 +90,7 @@ function addInstalledAddonVersionsTestObject(testDataBody, installedAddons, newV
         CreationDateTime: newVersionDate.toISOString(),
         StartPhasedDateTime: newVersionDate.toISOString(),
         //ModificationDateTime: testDate.toISOString(),
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
         Addon: { UUID: installedAddons.Addon.UUID },
     } as AddonVersion);
 }
@@ -105,7 +98,7 @@ function addInstalledAddonVersionsTestObject(testDataBody, installedAddons, newV
 function addSystemAddonsToInstallTestObject(testDataBody) {
     //installedAddons
     testDataBody.ApiData.systemAddonsToInstall.push({
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
     } as InstalledAddon);
 }
 
@@ -120,7 +113,7 @@ function addSystemAddonsPhasedVersionsTestObject(testDataBody, installedAddons, 
         CreationDateTime: newVersionDate.toISOString(),
         StartPhasedDateTime: newVersionDate.toISOString(),
         //ModificationDateTime: testDate.toISOString(),
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
         Addon: { UUID: installedAddons.UUID },
     } as AddonVersion);
 }
