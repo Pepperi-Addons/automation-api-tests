@@ -3,7 +3,7 @@ import { ElasticSearchService } from '../services/elastic-search.service';
 import fetch from 'node-fetch';
 
 export async function ElasticSearchTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const elasticSearchservice = new ElasticSearchService(generalService.papiClient);
+    const elasticSearchService = new ElasticSearchService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -226,14 +226,14 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             let tempFile;
 
             it('Create temp file for bulk', async () => {
-                tempFile = await elasticSearchservice.uploadTempFile(ElasticData);
+                tempFile = await elasticSearchService.uploadTempFile(ElasticData);
                 expect(tempFile).to.include('https://cdn.'), expect(tempFile).to.include('pepperi.com/TemporaryFiles/');
             });
 
             it('Post bulk data', async () => {
                 distUUID = generalService.getClientData('DistributorUUID');
-                await elasticSearchservice.postBulkData('all_activities', { URL: tempFile });
-                const bulkData = await elasticSearchservice.postBulkData('open_catalog', { URL: tempFile });
+                await elasticSearchService.postBulkData('all_activities', { URL: tempFile });
+                const bulkData = await elasticSearchService.postBulkData('open_catalog', { URL: tempFile });
                 expect(bulkData).to.have.property('took').that.is.above(0),
                     expect(bulkData).to.have.property('errors').that.is.a('boolean').and.is.false,
                     expect(bulkData).to.have.property('items').that.is.an('array').with.lengthOf(10);
@@ -250,7 +250,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post search data', () => {
             it('Search data', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10);
+                const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
@@ -265,7 +265,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data page size', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 1);
+                const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 1);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
@@ -280,7 +280,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data String', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Color: 'Black' }, 10);
+                const searchData = await elasticSearchService.postSearchData({ Color: 'Black' }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(4);
@@ -296,7 +296,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data Boolean', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ IsInStock: false }, 10);
+                const searchData = await elasticSearchService.postSearchData({ IsInStock: false }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(6);
@@ -312,7 +312,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data Number', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ RetailPrice: 99 }, 10);
+                const searchData = await elasticSearchService.postSearchData({ RetailPrice: 99 }, 10);
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(2);
@@ -330,10 +330,15 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Get totals', () => {
             it('Get totals', async () => {
-                const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activities',
-                    '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)',
-                );
+                const getTotalsData = await elasticSearchService.getTotals('all_activities', {
+                    select: [
+                        'sum(RetailPrice)',
+                        'avg(RetailPrice)',
+                        'min(RetailPrice)',
+                        'max(RetailPrice)',
+                        'count(Brand)',
+                    ],
+                });
                 expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(243.5),
                     expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(2435),
                     expect(getTotalsData[0]).to.have.property('min_RetailPrice').that.equals(99),
@@ -342,10 +347,16 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Get totals with group by', async () => {
-                const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activities',
-                    '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)&group_by=Color',
-                );
+                const getTotalsData = await elasticSearchService.getTotals('all_activities', {
+                    select: [
+                        'sum(RetailPrice)',
+                        'avg(RetailPrice)',
+                        'min(RetailPrice)',
+                        'max(RetailPrice)',
+                        'count(Brand)',
+                    ],
+                    group_by: 'Color',
+                });
                 expect(getTotalsData[0]).to.have.property('Color').that.equals('Black'),
                     expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(206.75),
                     expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(827),
@@ -393,10 +404,10 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post delete data', () => {
             it('Delete data', async () => {
-                await elasticSearchservice.postDeleteData('all_activities', {
+                await elasticSearchService.postDeleteData('all_activities', {
                     ElasticSearchSubType: 'Test Data',
                 });
-                const deleteData = await elasticSearchservice.postDeleteData('open_catalog', {
+                const deleteData = await elasticSearchService.postDeleteData('open_catalog', {
                     ElasticSearchSubType: 'Test Data',
                 });
                 expect(deleteData).to.have.property('took').that.is.above(0),

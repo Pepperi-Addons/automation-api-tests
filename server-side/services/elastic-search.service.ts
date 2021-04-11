@@ -1,6 +1,29 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 
+interface QueryOptions {
+    select?: string[];
+    group_by?: string;
+    fields?: string[];
+    where?: string;
+    order_by?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
+
+function addQueryAndOptions(url: string, options: QueryOptions = {}) {
+    const optionsArr: string[] = [];
+    Object.keys(options).forEach((key) => {
+        optionsArr.push(key + '=' + encodeURIComponent(options[key]));
+    });
+    const query = optionsArr.join('&');
+    return query ? url + '?' + query : url;
+}
+
 export class ElasticSearchService {
     constructor(public papiClient: PapiClient) {}
 
@@ -28,8 +51,16 @@ export class ElasticSearchService {
         return this.papiClient.post('/elasticsearch/delete/' + type, deleteData);
     }
 
-    getTotals(type, agg) {
-        return this.papiClient.post('/elasticsearch/totals/' + type + agg);
+    getTotals(type, options: QueryOptions = {}) {
+        let url = `/elasticsearch/totals/${type}`;
+        url = addQueryAndOptions(url, options);
+        return this.papiClient.get(url);
+    }
+
+    getElasticSearch(type, options: QueryOptions = {}) {
+        let url = `/elasticsearch/${type}`;
+        url = addQueryAndOptions(url, options);
+        return this.papiClient.get(url);
     }
 
     postSearchData(search, size) {
