@@ -44,6 +44,7 @@ async function insertLog(client: Client, type: string) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService.papiClient);
     const schemaName = 'PNS Test';
+    const logUUID = uuidv4().replaceAll('-', '_');
     const lastTransactionLine = await objectsService.getTransactionLines({
         include_deleted: true,
         page_size: 1,
@@ -51,17 +52,13 @@ async function insertLog(client: Client, type: string) {
     });
 
     const insertedObject = {
-        Key: `${type} Transaction ${generalService.getServer()} ${generalService.getTime()} ${generalService.getDate()}`,
+        Key: `Log_${type}_Transaction_${generalService.getServer()}_${logUUID}`,
         TransactioInfo: {
             ModificationDateTime: lastTransactionLine[0].ModificationDateTime,
             InternalID: lastTransactionLine[0].InternalID,
             Hidden: lastTransactionLine[0].Hidden,
             ItemData: lastTransactionLine[0].Item.Data,
             UnitsQuantity: lastTransactionLine[0].UnitsQuantity,
-        },
-        ClientInfo: {
-            CurrentServerHost: client.AssetsBaseUrl,
-            ServerBaseURL: client.BaseURL,
         },
     };
     return sendResponse(client, schemaName, insertedObject);
@@ -70,19 +67,10 @@ async function insertLog(client: Client, type: string) {
 async function indexLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const schemaName = 'Index Logs';
-    const logUUID = uuidv4().replace(/-/g, '_');
+    const logUUID = uuidv4().replaceAll('-', '_');
     const insertedObject = {
-        Key: `PNS Messages`,
-        [`Log_${type}_${generalService.getServer()}_${logUUID}`]: {
-            ClientInfo: {
-                CurrentServerHost: client.AssetsBaseUrl,
-                ServerBaseURL: client.BaseURL,
-            },
-            MessageInfo: {
-                Type: `${type} ${generalService.getServer()} ${generalService.getTime()} ${generalService.getDate()}`,
-                Message: request.body,
-            },
-        },
+        Key: `Log_${type}_PNS_Message_${generalService.getServer()}_${logUUID}`,
+        Message: request.body,
     };
     return sendResponse(client, schemaName, insertedObject);
 }
@@ -92,9 +80,15 @@ async function sendResponse(client: Client, schemaName: string, insertedObject) 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const adalService = new ADALService(generalService.papiClient);
 
+    insertedObject.ClientInfo = {
+        CurrentServerHost: client.AssetsBaseUrl,
+        ServerBaseURL: client.BaseURL,
+        ServerTime: `${generalService.getServer()} ${generalService.getTime()} ${generalService.getDate()}`,
+    };
+
     //This might be needed later but for now ill use the same schema every test
-    // const createNewSchema = await adalService.postSchema({ Name: schemaName });
-    // console.log({ createNewSchema: createNewSchema });
+    //const createNewSchema = await adalService.postSchema({ Name: schemaName });
+    //console.log({ createNewSchema: createNewSchema });
     await adalService.postDataToSchema(PepperiOwnerID, schemaName, insertedObject);
     return {
         'PNS Insertion Logged': {
