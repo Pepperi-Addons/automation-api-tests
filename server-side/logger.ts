@@ -44,7 +44,7 @@ async function insertLog(client: Client, type: string) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService.papiClient);
     const schemaName = 'PNS Test';
-    const logUUID = uuidv4().replaceAll('-', '_');
+    const logUUID = uuidv4().replace(/-/g, '_');
     const lastTransactionLine = await objectsService.getTransactionLines({
         include_deleted: true,
         page_size: 1,
@@ -67,7 +67,7 @@ async function insertLog(client: Client, type: string) {
 async function indexLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const schemaName = 'Index Logs';
-    const logUUID = uuidv4().replaceAll('-', '_');
+    const logUUID = uuidv4().replace(/-/g, '_');
     const insertedObject = {
         Key: `Log_${type}_PNS_Message_${generalService.getServer()}_${logUUID}`,
         Message: request.body,
