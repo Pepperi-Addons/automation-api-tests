@@ -10,6 +10,7 @@ import { ObjectsTests } from './api-tests/objects';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
+import { OpenCatalogTests } from './api-tests/openCatalog';
 import {
     BaseAddonsTests,
     UninstallAddonsTests,
@@ -489,6 +490,45 @@ export async function elastic_search(client: Client, request: Request, testerFun
         return testResult;
     } else {
         return ElasticSearchTests(service, request, testerFunctions);
+    }
+}
+
+export async function open_catalog(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'Open_catalog' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'Open_catalog';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            OpenCatalogTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return OpenCatalogTests(service, testerFunctions);
     }
 }
 
