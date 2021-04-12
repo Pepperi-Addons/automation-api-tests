@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { ElasticSearchService } from '../services/elasticSearch.service';
+import { ElasticSearchService } from '../services/elastic-search.service';
 import fetch from 'node-fetch';
 
 export async function ElasticSearchTests(generalService: GeneralService, request, tester: TesterFunctions) {
