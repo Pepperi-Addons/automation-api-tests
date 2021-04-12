@@ -32,22 +32,59 @@ export class ElasticSearchService {
         return this.papiClient.post('/elasticsearch/totals/' + type + agg);
     }
 
-    postSearchData(search, size) {
-        const searchData = {
-            size: size,
-            from: 0,
-            track_total_hits: true,
-            query: {
-                bool: {
-                    must: [
-                        {
-                            match: search,
-                        },
-                    ],
-                },
-            },
-            sort: [{ Sort: { order: 'asc' } }],
+    whereClause(fields, clause) {
+        return this.papiClient.post('/elasticsearch/all_activities?fields=' + fields + '&where=' + clause);
+    }
+
+    postUpdateData(terms, field, update) {
+        const updateData = {
+            query: { bool: { must: { terms: terms } } },
+            script: { source: `ctx._source[${field}]${update}` },
         };
-        return this.papiClient.post('/elasticsearch/search/open_catalog', searchData);
+        return this.papiClient.post('/elasticsearch/update/all_activities', updateData);
+    }
+
+    postSearchData(search, size, sort?) {
+        let searchData;
+        switch (sort) {
+            case undefined:
+                searchData = {
+                    size: size,
+                    from: 0,
+                    track_total_hits: true,
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    match: search,
+                                },
+                            ],
+                        },
+                    },
+                };
+                return this.papiClient.post('/elasticsearch/search/all_activities', searchData);
+
+            default:
+                searchData = {
+                    size: size,
+                    from: 0,
+                    track_total_hits: true,
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    match: search,
+                                },
+                            ],
+                        },
+                    },
+                    sort: [sort],
+                };
+                return this.papiClient.post('/elasticsearch/search/all_activities', searchData);
+        }
+    }
+
+    clearIndex(type) {
+        return this.papiClient.get('/elasticsearch/clear/' + type);
     }
 }
