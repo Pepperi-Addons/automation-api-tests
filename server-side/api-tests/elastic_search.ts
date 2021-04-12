@@ -3,7 +3,7 @@ import { ElasticSearchService } from '../services/elastic-search.service';
 import fetch from 'node-fetch';
 
 export async function ElasticSearchTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const elasticSearchservice = new ElasticSearchService(generalService.papiClient);
+    const elasticSearchService = new ElasticSearchService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -226,13 +226,13 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             let tempFile;
 
             it('Create temp file for bulk', async () => {
-                tempFile = await elasticSearchservice.uploadTempFile(ElasticData);
+                tempFile = await elasticSearchService.uploadTempFile(ElasticData);
                 expect(tempFile).to.include('https://cdn.'), expect(tempFile).to.include('pepperi.com/TemporaryFiles/');
             });
 
             it('Post bulk data', async () => {
                 distUUID = generalService.getClientData('DistributorUUID');
-                const bulkData = await elasticSearchservice.postBulkData('all_activities', { URL: tempFile });
+                const bulkData = await elasticSearchService.postBulkData('all_activities', { URL: tempFile });
                 expect(bulkData).to.have.property('took').that.is.above(0),
                     expect(bulkData).to.have.property('errors').that.is.a('boolean').and.is.false,
                     expect(bulkData).to.have.property('items').that.is.an('array').with.lengthOf(10);
@@ -247,7 +247,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post search data', () => {
             it('Search data', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
+                const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
                     Sort: { order: 'asc' },
                 });
                 expect(searchData).to.have.property('took').that.is.above(0),
@@ -262,7 +262,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data page size', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 1, {
+                const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 1, {
                     Sort: { order: 'asc' },
                 });
                 expect(searchData).to.have.property('took').that.is.above(0),
@@ -277,7 +277,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data String', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Color: 'Black' }, 10, {
+                const searchData = await elasticSearchService.postSearchData({ Color: 'Black' }, 10, {
                     Sort: { order: 'asc' },
                 });
                 expect(searchData).to.have.property('took').that.is.above(0),
@@ -293,7 +293,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data Boolean', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ IsInStock: false }, 10, {
+                const searchData = await elasticSearchService.postSearchData({ IsInStock: false }, 10, {
                     Sort: { order: 'asc' },
                 });
                 expect(searchData).to.have.property('took').that.is.above(0),
@@ -309,7 +309,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data Number', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ RetailPrice: 99.5 }, 10, {
+                const searchData = await elasticSearchService.postSearchData({ RetailPrice: 99.5 }, 10, {
                     Sort: { order: 'asc' },
                 });
                 expect(searchData).to.have.property('took').that.is.above(0),
@@ -327,7 +327,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Get totals', () => {
             it('Get totals', async () => {
-                const getTotalsData = await elasticSearchservice.getTotals('all_activities', {
+                const getTotalsData = await elasticSearchService.getTotals('all_activities', {
                     select: [
                         'sum(RetailPrice)',
                         'avg(RetailPrice)',
@@ -344,7 +344,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Get totals with group by', async () => {
-                const getTotalsData = await elasticSearchservice.getTotals('all_activities', {
+                const getTotalsData = await elasticSearchService.getTotals('all_activities', {
                     select: [
                         'sum(RetailPrice)',
                         'avg(RetailPrice)',
@@ -401,7 +401,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Where clause', () => {
             it('Number field =', async () => {
-                const getWhereData = await elasticSearchservice.whereClause(
+                const getWhereData = await elasticSearchService.whereClause(
                     'Distributor,ElasticSearchSubType,UUID,Brand,RetailPrice,PriceLevel,IsInStock',
                     'RetailPrice=99.5',
                 );
@@ -415,7 +415,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Number field >', async () => {
-                const getWhereData = await elasticSearchservice.whereClause(
+                const getWhereData = await elasticSearchService.whereClause(
                     'Distributor,ElasticSearchSubType,UUID,Brand,RetailPrice,PriceLevel,IsInStock',
                     'RetailPrice>400',
                 );
@@ -436,7 +436,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Number field <', async () => {
-                const getWhereData = await elasticSearchservice.whereClause(
+                const getWhereData = await elasticSearchService.whereClause(
                     'Distributor,ElasticSearchSubType,UUID,Brand,RetailPrice,PriceLevel,IsInStock',
                     'RetailPrice<100',
                 );
@@ -457,7 +457,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('String', async () => {
-                const getWhereData = await elasticSearchservice.whereClause(
+                const getWhereData = await elasticSearchService.whereClause(
                     'Distributor,ElasticSearchSubType,UUID,Brand,RetailPrice,PriceLevel,IsInStock',
                     "Brand='Google'",
                 );
@@ -471,7 +471,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Boolean', async () => {
-                const getWhereData = await elasticSearchservice.whereClause(
+                const getWhereData = await elasticSearchService.whereClause(
                     'Distributor,ElasticSearchSubType,UUID,Brand,RetailPrice,PriceLevel,IsInStock',
                     'IsInStock=true',
                 );
@@ -484,7 +484,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post Update Data', () => {
             it('Update retail price', async () => {
-                const postUpdateData = await elasticSearchservice.postUpdateData(
+                const postUpdateData = await elasticSearchService.postUpdateData(
                     { UUID: ['ps4'] },
                     "'RetailPrice'",
                     '=50',
@@ -496,7 +496,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Verify updated retail price', async () => {
-                const getWhereData = await elasticSearchservice.whereClause('UUID,RetailPrice', "UUID='ps4'");
+                const getWhereData = await elasticSearchService.whereClause('UUID,RetailPrice', "UUID='ps4'");
                 expect(getWhereData[0]).to.have.property('RetailPrice').that.equals(50),
                     expect(getWhereData[0]).to.have.property('UUID').that.equals('ps4');
             });
@@ -504,7 +504,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post delete data', () => {
             it('Delete data', async () => {
-                const deleteData = await elasticSearchservice.postDeleteData('all_activities', {
+                const deleteData = await elasticSearchService.postDeleteData('all_activities', {
                     ElasticSearchSubType: 'Test Data',
                 });
                 expect(deleteData).to.have.property('took').that.is.above(0),
@@ -518,13 +518,13 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             let tempFile;
 
             it('Create temp file for clear index', async () => {
-                tempFile = await elasticSearchservice.uploadTempFile(ElasticData);
+                tempFile = await elasticSearchService.uploadTempFile(ElasticData);
                 expect(tempFile).to.include('https://cdn.'), expect(tempFile).to.include('pepperi.com/TemporaryFiles/');
             });
 
             it('Post bulk data for clear index', async () => {
                 distUUID = generalService.getClientData('DistributorUUID');
-                const bulkData = await elasticSearchservice.postBulkData('all_activities', { URL: tempFile });
+                const bulkData = await elasticSearchService.postBulkData('all_activities', { URL: tempFile });
                 expect(bulkData).to.have.property('took').that.is.above(0),
                     expect(bulkData).to.have.property('errors').that.is.a('boolean').and.is.false,
                     expect(bulkData).to.have.property('items').that.is.an('array').with.lengthOf(10);
@@ -537,7 +537,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
+                const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
                     Sort: { order: 'asc' },
                 });
                 expect(searchData).to.have.property('took').that.is.above(0),
@@ -552,13 +552,13 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Clear index', async () => {
-                const clearIndexResponse = await elasticSearchservice.clearIndex('data_index');
+                const clearIndexResponse = await elasticSearchService.clearIndex('data_index');
                 expect(clearIndexResponse).to.have.property('success').that.is.true,
                     expect(clearIndexResponse).to.have.property('resultObject');
             });
 
             it('Verify index is cleared', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10);
+                const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 10);
                 expect(searchData).to.have.property('took'),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(0);
