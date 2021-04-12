@@ -15,7 +15,15 @@ export async function DataIndexTests(generalService: GeneralService, tester: Tes
             describe('POST', () => {
                 it('Create transaction', async () => {
                     const oren = await elasticSearchService.getElasticSearch('all_activities', {
-                        select: ['sum(Status)', 'avg(Status)', 'min(Status)', 'max(Status)', 'count(Status)'],
+                        page_size: -1,
+                    });
+                    console.log({ oren: oren });
+                    expect(JSON.stringify(oren)).to.include('oren');
+                });
+
+                it('Create transaction', async () => {
+                    const oren = await elasticSearchService.getElasticSearch('transaction_lines', {
+                        page_size: -1,
                     });
                     console.log({ oren: oren });
                     expect(JSON.stringify(oren)).to.include('oren');
