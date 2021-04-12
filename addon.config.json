@@ -6,7 +6,8 @@
   "DefaultEditor": "editor",
   "Endpoints": [
     "installation.js",
-    "tests.ts"
+    "tests.ts",
+    "logger.ts"
   ],
   "Editors": [
     "editor"

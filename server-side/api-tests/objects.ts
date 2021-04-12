@@ -907,23 +907,23 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 ]);
             });
 
-            //     //     //     // it('Delete Account Message (DI-17285)', async () => {
-            //     //     //     //     const account = await service.createAccount({
-            //     //     //     //         ExternalID: 'Oren Test 12345',
-            //     //     //     //         City: 'City',
-            //     //     //     //         Country: 'US',
-            //     //     //     //     });
-            //     //     //     //     return Promise.all([
-            //     //     //     //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.true,
-            //     //     //     //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.false,
-            //     //     //     //         expect(service.deleteAccount((account.InternalID as any) + 123))
-            //     //     //     //             .eventually.to.be.rejectedWith
-            //     //     //     //             // Bug: 'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Upload file error, internal code = ST12',
-            //     //     //     //             // version 1: `The Account with InternalID: ${account.InternalID} that you are trying to update does not exist. Please verify and try again.`,
-            //     //     //     //             // version 2: `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The ${account.InternalID} you are trying to update does not exist. Please load it and then try again.`,
-            //     //     //     //             (),
-            //     //     //     //     ]);
-            //     //     //     // });
+            // it('Delete Account Message (DI-17285)', async () => {
+            //     const account = await service.createAccount({
+            //         ExternalID: 'Oren Test 12345',
+            //         City: 'City',
+            //         Country: 'US',
+            //     });
+            //     return Promise.all([
+            //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.true,
+            //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.false,
+            //         expect(service.deleteAccount((account.InternalID as any) + 123))
+            //             .eventually.to.be.rejectedWith
+            //             // Bug: 'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Upload file error, internal code = ST12',
+            //             // version 1: `The Account with InternalID: ${account.InternalID} that you are trying to update does not exist. Please verify and try again.`,
+            //             // version 2: `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The ${account.InternalID} you are trying to update does not exist. Please load it and then try again.`,
+            //             (),
+            //     ]);
+            // });
         });
 
         describe('Contacts', () => {
@@ -1830,9 +1830,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Create transaction lines', async () => {
-                items = await service.getItems();
-
-                createdTransactionLines = await service.createTransactionLine({
+                items = await service.getItemsTODO();
+                createdTransactionLines = await service.createTransactionLineTODO({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 0,
                     ItemExternalID: items[0].ExternalID,
@@ -1853,7 +1852,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 } as any);
 
-                const getCreatedTransactionLine = await service.getTransactionLines(createdTransaction.InternalID);
+                const getCreatedTransactionLine = await service.getTransactionLinesTODO(createdTransaction.InternalID);
 
                 return Promise.all([
                     expect(getCreatedTransactionLine[0]).to.include({
@@ -1911,17 +1910,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
                     expect(getCreatedTransactionLine[0].Archive).to.be.false,
                     expect(getCreatedTransactionLine[0].Hidden).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1),
                 ]);
             });
 
             it('Update transaction lines', async () => {
-                items = await service.getItems();
+                items = await service.getItemsTODO();
 
                 expect(
-                    (updatedTransactionLines = await service.createTransactionLine({
+                    (updatedTransactionLines = await service.createTransactionLineTODO({
                         TransactionInternalID: createdTransaction.InternalID,
                         LineNumber: 0,
                         ItemExternalID: items[0].ExternalID,
@@ -1999,34 +1998,35 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
                     expect(updatedTransactionLines.Archive).to.be.false,
                     expect(updatedTransactionLines.Hidden).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1);
             });
 
             it('Add transaction lines', async () => {
-                items = await service.getItems();
-
-                addedTransactionLines = await service.createTransactionLine({
+                items = await service.getItemsTODO();
+                addedTransactionLines = await service.createTransactionLineTODO({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 1,
                     ItemExternalID: items[1].ExternalID,
                     UnitsQuantity: 1.0,
                 });
-                expect(await service.getTransactionLines(createdTransaction.InternalID))
+                expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                     .to.be.an('array')
                     .with.lengthOf(2);
             });
 
             it('Delete transaction lines', async () => {
-                expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                expect(await service.deleteTransactionLineTODO(createdTransactionLines.InternalID as any)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(createdTransactionLines.InternalID as any)).to.be
+                        .false,
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1),
-                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.false,
-                    expect(await service.getTransactionLines(createdTransaction.InternalID))
+                    expect(await service.deleteTransactionLineTODO(addedTransactionLines.InternalID as any)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(addedTransactionLines.InternalID as any)).to.be
+                        .false,
+                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });
@@ -2381,11 +2381,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
                 );
                 return Promise.all([
-                    expect(await service.deleteTransactionLine(bulkTransactionsLines[0].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLine(bulkTransactionsLines[1].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLine(bulkTransactionsLines[2].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLine(bulkTransactionsLines[3].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLine(bulkTransactionsLines[4].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[0].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[1].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[2].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[3].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[4].InternalID)).to.be.true,
                     expect(
                         await service.getBulk(
                             'transaction_lines',
@@ -2525,7 +2525,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 });
 
                 const repProfile = await service.getRepProfile();
-                const securityGroups = await service.getSecurityGroup();
+                const securityGroups = await service.getSecurityGroup(generalService.getClientData('IdpURL'));
 
                 expect(createdUser, 'InternalID').to.have.property('InternalID').that.is.a('number').and.is.above(0),
                     expect(createdUser, 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty,
@@ -2878,13 +2878,14 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(getUpdatedUserInternalID, 'Profile').to.have.property('Profile').that.is.an('object');
             });
 
-            //     // it('Delete Users', async () => {                                                      // Test removed because delete doesn't work and won't work
-            //     //     expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true,
-            //     //         expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false,
-            //     //         expect(await service.getUsers())
-            //     //             .to.be.an('array')
-            //     //             .with.lengthOf(currentUserQuantity);
-            //     // });
+            // Test removed because delete doesn't work and won't work
+            // it('Delete Users', async () => {
+            //     expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true,
+            //         expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false,
+            //         expect(await service.getUsers())
+            //             .to.be.an('array')
+            //             .with.lengthOf(currentUserQuantity);
+            // });
         });
     });
 }

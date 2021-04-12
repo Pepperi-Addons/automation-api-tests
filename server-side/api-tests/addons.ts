@@ -1,6 +1,7 @@
 import { AddonVersion, InstalledAddon } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface TestDataBody {
     ApiData: {
@@ -64,14 +65,6 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 //     }
 // }
 
-function createRandomUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0,
-            v = c == 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
-
 //Prerequisites for test
 let testDate = new Date();
 //const isCallBackArr = [] as any;
@@ -80,9 +73,9 @@ function addInstalledAddonTestObject(testDataBody, installedVersionName) {
     //installedAddons
     testDataBody.ApiData.installedAddons.push({
         SystemData: '{"Version":"5.5.8","AutomaticUpgrade":"true"}',
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
         Version: installedVersionName,
-        Addon: { UUID: createRandomUUID() },
+        Addon: { UUID: uuidv4() },
     } as InstalledAddon);
 }
 
@@ -97,7 +90,7 @@ function addInstalledAddonVersionsTestObject(testDataBody, installedAddons, newV
         CreationDateTime: newVersionDate.toISOString(),
         StartPhasedDateTime: newVersionDate.toISOString(),
         //ModificationDateTime: testDate.toISOString(),
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
         Addon: { UUID: installedAddons.Addon.UUID },
     } as AddonVersion);
 }
@@ -105,7 +98,7 @@ function addInstalledAddonVersionsTestObject(testDataBody, installedAddons, newV
 function addSystemAddonsToInstallTestObject(testDataBody) {
     //installedAddons
     testDataBody.ApiData.systemAddonsToInstall.push({
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
     } as InstalledAddon);
 }
 
@@ -120,7 +113,7 @@ function addSystemAddonsPhasedVersionsTestObject(testDataBody, installedAddons, 
         CreationDateTime: newVersionDate.toISOString(),
         StartPhasedDateTime: newVersionDate.toISOString(),
         //ModificationDateTime: testDate.toISOString(),
-        UUID: createRandomUUID(),
+        UUID: uuidv4(),
         Addon: { UUID: installedAddons.UUID },
     } as AddonVersion);
 }
@@ -5622,7 +5615,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             `${generalService['client'].BaseURL.replace(
                 'papi-eu',
                 'papi',
-            )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Phased Like 0&order_by=CreationDateTime DESC`,
+            )}/var/addons/versions?where=AddonUUID='00000000-0000-0000-1234-000000000b2b' AND Available Like 1&order_by=CreationDateTime DESC`,
             {
                 method: `GET`,
                 headers: {
@@ -5630,7 +5623,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 },
             },
         ).then((response) => response.json());
-        const isValidTest = !varLatestWebAppVersion[0].phased;
+        const isValidTest = !varLatestWebAppVersion[0].Phased;
+        console.log({ isValidTest: `Version: ${varLatestWebAppVersion[0].Version}, isValidTest: ${isValidTest}` });
         varLatestWebAppVersion = varLatestWebAppVersion[0].Version;
 
         //Create
@@ -5796,7 +5790,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             //Install results
-            if (testName.includes('Negative') && isValidTest) {
+            if (testName.includes('Negative') && (isValidTest || testName.includes('Exist'))) {
                 mandatoryStepsInstallAddonWithVersion.installAddon = postAddonApiResponse.Status.Name == 'Failure';
                 addTestResultUnderHeadline(
                     testName,
@@ -5813,7 +5807,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             //Installed version results
-            if (testName.includes('Negative') && isValidTest) {
+            if (testName.includes('Negative') && (isValidTest || testName.includes('Exist'))) {
                 if (testName.includes('Exist')) {
                     const isErrorMessage = postAddonApiResponse.AuditInfo.ErrorMessage.includes(
                         'Invalid dependencies configuration - data_views dependency version 0.0.37.1 does not exists',
@@ -5872,7 +5866,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 } while (postAddonApiResponse.Status.ID == 2 && maxLoopsCounter > 0);
                 console.log({ Audit_Log_Addon_Uninstall: postAddonApiResponse });
                 //Uninstall results
-                if (testName.includes('Negative') && isValidTest) {
+                if (testName.includes('Negative') && (isValidTest || testName.includes('Exist'))) {
                     mandatoryStepsInstallAddonWithVersion.unInstallAddon = postAddonApiResponse.Status.ID == 0;
                     addTestResultUnderHeadline(
                         testName,
@@ -8778,7 +8772,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
 
                 maxLoopsCounter = 90;
-                if (deleteApiResponse.URI != null) {
+                if (deleteApiResponse.URI == null || JSON.stringify(deleteApiResponse).includes('fault')) {
                     getDeleteAuditLogApiResponse = deleteApiResponse;
                 } else {
                     do {
@@ -8794,6 +8788,18 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 }
                 console.log({ 'Addone deleted: ': getInstalledAddonsApiResponse[index] });
                 console.log({ Post_Var_Addons_Delete: getDeleteAuditLogApiResponse });
+
+                //Added special delete function 04/04/2021
+                try {
+                    const secondDeleteApiResponse = await generalService.papiClient.delete(
+                        `/addons/installed_addons/${getInstalledAddonsApiResponse[index].UUID}`,
+                    );
+                    console.log('Addone deleted with direct delete: ' + getInstalledAddonsApiResponse[index].Name);
+                    console.log({ Second_Delete_Api_Response: secondDeleteApiResponse });
+                } catch (error) {
+                    console.log('Direct delete failed of addon named: ' + getInstalledAddonsApiResponse[index].Name);
+                    console.log({ Failed_Delete_Response: error });
+                }
             }
         }
 

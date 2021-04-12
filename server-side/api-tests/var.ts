@@ -1,5 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
+import { v4 as uuidv4 } from 'uuid';
 
 //#region Prerequisites for Var API Tests
 //TestData
@@ -522,7 +523,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create UUID with random UUID
-        testDataBody.UUID = generalService.createRandomUUID();
+        testDataBody.UUID = uuidv4();
         console.log({ Random_UUID: testDataBody.UUID });
         const createApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
@@ -636,7 +637,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create UUID with random UUID
-        testDataBody.UUID = generalService.createRandomUUID();
+        testDataBody.UUID = uuidv4();
         const tempUUID = testDataBody.UUID.split('-');
         tempUUID[1] = 'Oren';
         tempUUID[2] = 'Test';

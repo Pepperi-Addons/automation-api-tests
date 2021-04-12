@@ -1,5 +1,6 @@
-import { PapiClient, InstalledAddon, Catalog } from '@pepperi-addons/papi-sdk';
+import { PapiClient, InstalledAddon, Catalog, FindOptions } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
+import jwt_decode from 'jwt-decode';
 
 declare type ClientData =
     | 'UserEmail'
@@ -8,19 +9,8 @@ declare type ClientData =
     | 'UserUUID'
     | 'DistributorID'
     | 'DistributorUUID'
-    | 'Server';
-
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
+    | 'Server'
+    | 'IdpURL';
 
 const UserDataObject = {
     UserEmail: 'email',
@@ -30,6 +20,7 @@ const UserDataObject = {
     DistributorID: 'pepperi.distributorid',
     DistributorUUID: 'pepperi.distributoruuid',
     Server: 'pepperi.datacenter',
+    IdpURL: 'iss',
 };
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
@@ -82,15 +73,15 @@ export default class GeneralService {
     }
 
     getClientData(data: ClientData): string {
-        return parseJwt(this.client.OAuthAccessToken)[UserDataObject[data]];
+        return jwt_decode(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
 
     getAddons(options?: FindOptions): Promise<InstalledAddon[]> {
         return this.papiClient.addons.installedAddons.find(options);
     }
 
-    getCatalogs(): Promise<Catalog[]> {
-        return this.papiClient.catalogs.find({});
+    getCatalogs(options?: FindOptions): Promise<Catalog[]> {
+        return this.papiClient.catalogs.find(options);
     }
 
     getTypes(resource_name: ResourceTypes) {
@@ -169,29 +160,6 @@ export default class GeneralService {
         }
         return auditLogResponse;
     }
-
-    createRandomUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            const r = (Math.random() * 16) | 0,
-                v = c == 'x' ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
-        });
-    }
-}
-
-function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-        Buffer.from(base64, 'base64')
-            .toString()
-            .split('')
-            .map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join(''),
-    );
-    return JSON.parse(jsonPayload);
 }
 
 export interface TesterFunctions {

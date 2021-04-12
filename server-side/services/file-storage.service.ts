@@ -1,15 +1,5 @@
-import { PapiClient, FileStorage } from '@pepperi-addons/papi-sdk';
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
+import { PapiClient, FileStorage, FindOptions } from '@pepperi-addons/papi-sdk';
+
 export class FileStorageService {
     constructor(public papiClient: PapiClient) {}
 
