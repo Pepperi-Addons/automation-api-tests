@@ -238,9 +238,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                     expect(bulkData).to.have.property('items').that.is.an('array').with.lengthOf(10);
                 bulkData.items.map((item) => {
                     expect(item.index).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item.index)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item.index).to.have.property('_index').that.equals(distUUID),
                         expect(item.index).to.have.property('result').that.equals('created'),
                         expect(item.index).to.have.property('status').that.equals(201);
                 });
@@ -249,45 +247,45 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post search data', () => {
             it('Search data', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10, { Sort: { order: 'asc' } });
+                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
+                    Sort: { order: 'asc' },
+                });
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item).to.have.property('_index').that.equals(distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1');
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(10);
                 });
             });
 
             it('Search data page size', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 1, { Sort: { order: 'asc' } });
+                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 1, {
+                    Sort: { order: 'asc' },
+                });
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item).to.have.property('_index').that.equals(distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1');
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(1);
                 });
             });
 
             it('Search data String', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Color: 'Black' }, 10, { Sort: { order: 'asc' } });
+                const searchData = await elasticSearchservice.postSearchData({ Color: 'Black' }, 10, {
+                    Sort: { order: 'asc' },
+                });
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(4);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item).to.have.property('_index').that.equals(distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1'),
                         expect(item._source).to.have.property('Color').that.includes('Black');
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(4);
@@ -295,15 +293,15 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data Boolean', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ IsInStock: false }, 10, { Sort: { order: 'asc' } });
+                const searchData = await elasticSearchservice.postSearchData({ IsInStock: false }, 10, {
+                    Sort: { order: 'asc' },
+                });
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(6);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item).to.have.property('_index').that.equals(distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1'),
                         expect(item._source).to.have.property('IsInStock').that.is.false;
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(6);
@@ -311,15 +309,15 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data Number', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ RetailPrice: 99.5 }, 10, { Sort: { order: 'asc' } });
+                const searchData = await elasticSearchservice.postSearchData({ RetailPrice: 99.5 }, 10, {
+                    Sort: { order: 'asc' },
+                });
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(1);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item).to.have.property('_index').that.equals(distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1'),
                         expect(item._source).to.have.property('RetailPrice').that.equals(99.5);
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(1);
@@ -402,7 +400,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                     expect(getWhereData[0]).to.have.property('RetailPrice').that.equals(99.5),
                     expect(getWhereData[0]).to.have.property('ElasticSearchSubType').that.equals('Test Data'),
                     expect(getWhereData[0]).to.have.property('IsInStock').that.equals(false),
-                    expect(getWhereData[0]).to.have.property('UUID').that.equals('xbox 360')
+                    expect(getWhereData[0]).to.have.property('UUID').that.equals('xbox 360');
             });
 
             it('Number field >', async () => {
@@ -423,7 +421,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                     expect(getWhereData[1]).to.have.property('RetailPrice').that.equals(450.5),
                     expect(getWhereData[1]).to.have.property('ElasticSearchSubType').that.equals('Test Data'),
                     expect(getWhereData[1]).to.have.property('IsInStock').that.equals(false),
-                    expect(getWhereData[1]).to.have.property('UUID').that.equals('ps5')
+                    expect(getWhereData[1]).to.have.property('UUID').that.equals('ps5');
             });
 
             it('Number field <', async () => {
@@ -444,13 +442,13 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                     expect(getWhereData[0]).to.have.property('RetailPrice').that.equals(99.99),
                     expect(getWhereData[0]).to.have.property('ElasticSearchSubType').that.equals('Test Data'),
                     expect(getWhereData[0]).to.have.property('IsInStock').that.equals(false),
-                    expect(getWhereData[0]).to.have.property('UUID').that.equals('ps3')
+                    expect(getWhereData[0]).to.have.property('UUID').that.equals('ps3');
             });
 
             it('String', async () => {
                 const getWhereData = await elasticSearchservice.whereClause(
                     'Distributor,ElasticSearchSubType,UUID,Brand,RetailPrice,PriceLevel,IsInStock',
-                    'Brand=\'Google\'',
+                    "Brand='Google'",
                 );
                 expect(getWhereData[0]).to.have.property('Brand').that.equals('Google'),
                     expect(getWhereData[0]).to.have.property('PriceLevel').that.equals(100),
@@ -458,7 +456,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                     expect(getWhereData[0]).to.have.property('RetailPrice').that.equals(129.99),
                     expect(getWhereData[0]).to.have.property('ElasticSearchSubType').that.equals('Test Data'),
                     expect(getWhereData[0]).to.have.property('IsInStock').that.equals(false),
-                    expect(getWhereData[0]).to.have.property('UUID').that.equals('stadia')
+                    expect(getWhereData[0]).to.have.property('UUID').that.equals('stadia');
             });
 
             it('Boolean', async () => {
@@ -469,27 +467,27 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                 expect(getWhereData[0]).to.have.property('IsInStock').that.equals(true),
                     expect(getWhereData[1]).to.have.property('IsInStock').that.equals(true),
                     expect(getWhereData[2]).to.have.property('IsInStock').that.equals(true),
-                    expect(getWhereData[3]).to.have.property('IsInStock').that.equals(true)
+                    expect(getWhereData[3]).to.have.property('IsInStock').that.equals(true);
             });
-
         });
 
         describe('Post Update Data', () => {
             it('Update retail price', async () => {
-                const postUpdateData = await elasticSearchservice.postUpdateData({ UUID: ['ps4'] }, '\'RetailPrice\'', '=50');
+                const postUpdateData = await elasticSearchservice.postUpdateData(
+                    { UUID: ['ps4'] },
+                    "'RetailPrice'",
+                    '=50',
+                );
                 expect(postUpdateData).to.have.property('took').that.is.above(0),
                     expect(postUpdateData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(postUpdateData).to.have.property('total').that.equals(1),
-                    expect(postUpdateData).to.have.property('updated').that.equals(1)
+                    expect(postUpdateData).to.have.property('updated').that.equals(1);
             });
 
             it('Verify updated retail price', async () => {
-                const getWhereData = await elasticSearchservice.whereClause(
-                    'UUID,RetailPrice',
-                    'UUID=\'ps4\'',
-                );
+                const getWhereData = await elasticSearchservice.whereClause('UUID,RetailPrice', "UUID='ps4'");
                 expect(getWhereData[0]).to.have.property('RetailPrice').that.equals(50),
-                    expect(getWhereData[0]).to.have.property('UUID').that.equals('ps4')
+                    expect(getWhereData[0]).to.have.property('UUID').that.equals('ps4');
             });
         });
 
@@ -521,24 +519,22 @@ export async function ElasticSearchTests(generalService: GeneralService, request
                     expect(bulkData).to.have.property('items').that.is.an('array').with.lengthOf(10);
                 bulkData.items.map((item) => {
                     expect(item.index).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item.index)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item.index).to.have.property('_index').that.equals(distUUID),
                         expect(item.index).to.have.property('result').that.equals('created'),
                         expect(item.index).to.have.property('status').that.equals(201);
                 });
             });
 
             it('Search data', async () => {
-                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10, { Sort: { order: 'asc' } });
+                const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
+                    Sort: { order: 'asc' },
+                });
                 expect(searchData).to.have.property('took').that.is.above(0),
                     expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
                     expect(searchData.hits.total).to.have.property('value').that.equals(10);
                 searchData.hits.hits.map((item) => {
                     expect(item).to.have.property('_id').that.includes('all_activities_Test Data_'),
-                        expect(item)
-                            .to.have.property('_index')
-                            .that.equals(distUUID),
+                        expect(item).to.have.property('_index').that.equals(distUUID),
                         expect(item._source).to.have.property('Distributor').that.equals('Test Dist 1');
                     expect(searchData.hits.hits).to.be.an('array').with.lengthOf(10);
                 });
@@ -547,18 +543,15 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             it('Clear index', async () => {
                 const clearIndexResponse = await elasticSearchservice.clearIndex('data_index');
                 expect(clearIndexResponse).to.have.property('success').that.is.true,
-                    expect(clearIndexResponse).to.have.property('resultObject')
+                    expect(clearIndexResponse).to.have.property('resultObject');
             });
 
             it('Verify index is cleared', async () => {
                 const searchData = await elasticSearchservice.postSearchData({ Distributor: 'Test Dist 1' }, 10);
                 expect(searchData).to.have.property('took'),
-                expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
-                expect(searchData.hits.total).to.have.property('value').that.equals(0);
+                    expect(searchData).to.have.property('timed_out').that.is.a('boolean').and.is.false,
+                    expect(searchData.hits.total).to.have.property('value').that.equals(0);
             });
-
         });
-
-
     });
 }

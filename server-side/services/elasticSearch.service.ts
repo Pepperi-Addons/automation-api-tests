@@ -2,7 +2,7 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 
 export class ElasticSearchService {
-    constructor(public papiClient: PapiClient) { }
+    constructor(public papiClient: PapiClient) {}
 
     async uploadTempFile(body: any) {
         const tempFileURLs = await this.papiClient.post('/file_storage/tmp');
@@ -39,13 +39,13 @@ export class ElasticSearchService {
     postUpdateData(terms, field, update) {
         const updateData = {
             query: { bool: { must: { terms: terms } } },
-            script: { source: `ctx._source[${field}]${update}` }
+            script: { source: `ctx._source[${field}]${update}` },
         };
         return this.papiClient.post('/elasticsearch/update/all_activities', updateData);
     }
 
     postSearchData(search, size, sort?) {
-        let searchData
+        let searchData;
         switch (sort) {
             case undefined:
                 searchData = {
@@ -63,7 +63,7 @@ export class ElasticSearchService {
                     },
                 };
                 return this.papiClient.post('/elasticsearch/search/all_activities', searchData);
-                
+
             default:
                 searchData = {
                     size: size,
@@ -82,7 +82,6 @@ export class ElasticSearchService {
                 };
                 return this.papiClient.post('/elasticsearch/search/all_activities', searchData);
         }
-         
     }
 
     clearIndex(type) {

@@ -5,9 +5,7 @@ import jwt_decode from 'jwt-decode';
 const apiCallsInterval = 400;
 
 export class OpenCatalogService {
-    constructor(public papiClient: PapiClient) { }
-
-    
+    constructor(public papiClient: PapiClient) {}
 
     getIDPurl() {
         const token = this.papiClient['options'].token;
@@ -17,10 +15,15 @@ export class OpenCatalogService {
 
     async getOpenCatalogToken() {
         const idpBaseURL = await this.getIDPurl();
-        const openCatalogSettings = await this.papiClient.get('/addons/data/00000000-0000-0000-0000-00000ca7a109/OpenCatalogSettings');
-        const openCatalogToken = await fetch(idpBaseURL + '/api/AddonUserToken?key=' + openCatalogSettings[0].AccessKey, {
-            method: 'GET',
-        }).then((data) => data.json());
+        const openCatalogSettings = await this.papiClient.get(
+            '/addons/data/00000000-0000-0000-0000-00000ca7a109/OpenCatalogSettings',
+        );
+        const openCatalogToken = await fetch(
+            idpBaseURL + '/api/AddonUserToken?key=' + openCatalogSettings[0].AccessKey,
+            {
+                method: 'GET',
+            },
+        ).then((data) => data.json());
         return openCatalogToken.access_token;
     }
 
@@ -28,7 +31,7 @@ export class OpenCatalogService {
         const openCatalogItems = await fetch(this.papiClient['options'].baseURL + '/open_catalog/items' + parameters, {
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + await this.getOpenCatalogToken(),
+                Authorization: 'Bearer ' + (await this.getOpenCatalogToken()),
             },
         }).then((data) => data.json());
         return openCatalogItems;
@@ -38,7 +41,7 @@ export class OpenCatalogService {
         const openCatalogItem = await fetch(this.papiClient['options'].baseURL + '/open_catalog/items/' + itemUUID, {
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + await this.getOpenCatalogToken(),
+                Authorization: 'Bearer ' + (await this.getOpenCatalogToken()),
             },
         }).then((data) => data.json());
         return openCatalogItem;
@@ -48,7 +51,7 @@ export class OpenCatalogService {
         const configurationsURL = await fetch(this.papiClient['options'].baseURL + '/open_catalog/configurations', {
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + await this.getOpenCatalogToken(),
+                Authorization: 'Bearer ' + (await this.getOpenCatalogToken()),
             },
         }).then((data) => data.json());
         return configurationsURL;
@@ -59,15 +62,17 @@ export class OpenCatalogService {
             method: 'GET',
         }).then((data) => data.json());
         return configurations;
-    } 
+    }
 
-    async getDataViews(view){
-        const dataView = await this.papiClient.get('/meta_data/data_views?where=Context.Object.InternalID=304550 and Context.Name=\'' + view + '\'')
+    async getDataViews(view) {
+        const dataView = await this.papiClient.get(
+            "/meta_data/data_views?where=Context.Object.InternalID=304550 and Context.Name='" + view + "'",
+        );
         return dataView;
     }
 
-    async postDataView(body){
-        const dataView = await this.papiClient.post('/meta_data/data_views', body)
+    async postDataView(body) {
+        const dataView = await this.papiClient.post('/meta_data/data_views', body);
         return dataView;
     }
 
@@ -78,19 +83,22 @@ export class OpenCatalogService {
         return;
     }
 
-    async getAuditLog(UUID){
-        return this.papiClient.get('/audit_logs/' + UUID)
+    async getAuditLog(UUID) {
+        return this.papiClient.get('/audit_logs/' + UUID);
     }
 
-    async getAdalLog(UUID){
-        return this.papiClient.get('/addons/data/00000000-0000-0000-0000-00000ca7a109/OpenCatalogData/' + UUID)
+    async getAdalLog(UUID) {
+        return this.papiClient.get('/addons/data/00000000-0000-0000-0000-00000ca7a109/OpenCatalogData/' + UUID);
     }
 
-    async publishOpenCatalog(body){
-        const publishOpenCatalog = await this.papiClient.post('/addons/api/async/00000000-0000-0000-0000-00000ca7a109/settings/publishOpenCatalog', body)
-        const auditLogStatus = await this.waitForAuditLogStatus(publishOpenCatalog.ExecutionUUID, 80000)
-        const ElasticSearchSubTypeObject = JSON.parse(auditLogStatus.AuditInfo.ResultObject)
-        const adalLogStatus = await this.waitForAdalLogStatus(ElasticSearchSubTypeObject.ElasticSearchSubType, 80000)
+    async publishOpenCatalog(body) {
+        const publishOpenCatalog = await this.papiClient.post(
+            '/addons/api/async/00000000-0000-0000-0000-00000ca7a109/settings/publishOpenCatalog',
+            body,
+        );
+        const auditLogStatus = await this.waitForAuditLogStatus(publishOpenCatalog.ExecutionUUID, 80000);
+        const ElasticSearchSubTypeObject = JSON.parse(auditLogStatus.AuditInfo.ResultObject);
+        const adalLogStatus = await this.waitForAdalLogStatus(ElasticSearchSubTypeObject.ElasticSearchSubType, 80000);
         return adalLogStatus;
     }
 
@@ -123,22 +131,22 @@ export class OpenCatalogService {
             }
             counter++;
             apiGetResponse = await this.getAdalLog(ID);
-        } while (
-            (apiGetResponse.Status != 'Done' || !apiGetResponse.Status.includes('Failed')) &&
-            counter < maxLoops
-        );
+        } while ((apiGetResponse.Status != 'Done' || !apiGetResponse.Status.includes('Failed')) && counter < maxLoops);
         this.sleep(apiCallsInterval * 10);
         apiGetResponse = await this.getAdalLog(ID);
         return apiGetResponse;
     }
 
     async getOpenCatalogFilters(parameters) {
-        const openCatalogFilters = await fetch(this.papiClient['options'].baseURL + '/open_catalog/filters' + parameters, {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + await this.getOpenCatalogToken(),
+        const openCatalogFilters = await fetch(
+            this.papiClient['options'].baseURL + '/open_catalog/filters' + parameters,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + (await this.getOpenCatalogToken()),
+                },
             },
-        }).then((data) => data.json());
+        ).then((data) => data.json());
         return openCatalogFilters;
     }
 
@@ -146,8 +154,4 @@ export class OpenCatalogService {
         if (parameters) return this.papiClient.get('/items' + parameters);
         else return this.papiClient.get('/items');
     }
-
-
-
-
 }
