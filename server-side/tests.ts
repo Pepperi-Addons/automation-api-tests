@@ -10,7 +10,7 @@ import { ObjectsTests } from './api-tests/objects';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { AuditLogsTests } from './api-tests/audit_logs';
 import { VarTests } from './api-tests/var';
-import { OpenCatalogTests } from './api-tests/openCatalog';
+import { OpenCatalogTests } from './api-tests/open_catalog';
 import {
     BaseAddonsTests,
     UninstallAddonsTests,

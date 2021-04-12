@@ -327,10 +327,15 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Get totals', () => {
             it('Get totals', async () => {
-                const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activities',
-                    '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)',
-                );
+                const getTotalsData = await elasticSearchservice.getTotals('all_activities', {
+                    select: [
+                        'sum(RetailPrice)',
+                        'avg(RetailPrice)',
+                        'min(RetailPrice)',
+                        'max(RetailPrice)',
+                        'count(Brand)',
+                    ],
+                });
                 expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(244.196),
                     expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(2441.96),
                     expect(getTotalsData[0]).to.have.property('min_RetailPrice').that.equals(99.5),
@@ -339,10 +344,16 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Get totals with group by', async () => {
-                const getTotalsData = await elasticSearchservice.getTotals(
-                    'all_activities',
-                    '?select=sum(RetailPrice),avg(RetailPrice),min(RetailPrice),max(RetailPrice),count(Brand)&group_by=Color',
-                );
+                const getTotalsData = await elasticSearchservice.getTotals('all_activities', {
+                    select: [
+                        'sum(RetailPrice)',
+                        'avg(RetailPrice)',
+                        'min(RetailPrice)',
+                        'max(RetailPrice)',
+                        'count(Brand)',
+                    ],
+                    group_by: 'Color',
+                });
                 expect(getTotalsData[0]).to.have.property('Color').that.equals('Black'),
                     expect(getTotalsData[0]).to.have.property('avg_RetailPrice').that.equals(207.495),
                     expect(getTotalsData[0]).to.have.property('sum_RetailPrice').that.equals(829.98),
