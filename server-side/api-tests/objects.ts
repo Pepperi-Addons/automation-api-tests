@@ -1703,6 +1703,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkCreateTransactionLines;
             let bulkUpdateTransactionsLines;
             let bulkTransactionsLines;
+            let defaultCatalog;
 
             it('Create account and TSAs for transactions CRUD', async () => {
                 atds = await service.getATD('transactions');
@@ -2125,15 +2126,41 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk create transaction headers', async () => {
+                defaultCatalog = await service.getDefaultCatalog();
                 bulkTransactionExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateTransaction = await service.bulkCreate('transactions/' + atds[0].TypeID, {
-                    Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+                    Headers: ['ExternalID', 'AccountExternalID', 'Status', 'CatalogExternalID'],
                     Lines: [
-                        [bulkTransactionExternalID + ' 1', transactionAccount.ExternalID, '1'],
-                        [bulkTransactionExternalID + ' 2', transactionAccount.ExternalID, '1'],
-                        [bulkTransactionExternalID + ' 3', transactionAccount.ExternalID, '1'],
-                        [bulkTransactionExternalID + ' 4', transactionAccount.ExternalID, '1'],
-                        [bulkTransactionExternalID + ' 5', transactionAccount.ExternalID, '1'],
+                        [
+                            bulkTransactionExternalID + ' 1',
+                            transactionAccount.ExternalID,
+                            '1',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 2',
+                            transactionAccount.ExternalID,
+                            '1',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 3',
+                            transactionAccount.ExternalID,
+                            '1',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 4',
+                            transactionAccount.ExternalID,
+                            '1',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 5',
+                            transactionAccount.ExternalID,
+                            '1',
+                            defaultCatalog[0].ExternalID,
+                        ],
                     ],
                 });
                 expect(bulkCreateTransaction.JobID).to.be.a('number'),
@@ -2176,13 +2203,38 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk update transaction headers', async () => {
                 bulkCreateTransaction = await service.bulkCreate('transactions/' + atds[0].TypeID, {
-                    Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+                    Headers: ['ExternalID', 'AccountExternalID', 'Status', 'CatalogExternalID'],
                     Lines: [
-                        [bulkTransactionExternalID + ' 1', transactionAccount.ExternalID, '2'],
-                        [bulkTransactionExternalID + ' 2', transactionAccount.ExternalID, '2'],
-                        [bulkTransactionExternalID + ' 3', transactionAccount.ExternalID, '2'],
-                        [bulkTransactionExternalID + ' 4', transactionAccount.ExternalID, '2'],
-                        [bulkTransactionExternalID + ' 5', transactionAccount.ExternalID, '2'],
+                        [
+                            bulkTransactionExternalID + ' 1',
+                            transactionAccount.ExternalID,
+                            '2',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 2',
+                            transactionAccount.ExternalID,
+                            '2',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 3',
+                            transactionAccount.ExternalID,
+                            '2',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 4',
+                            transactionAccount.ExternalID,
+                            '2',
+                            defaultCatalog[0].ExternalID,
+                        ],
+                        [
+                            bulkTransactionExternalID + ' 5',
+                            transactionAccount.ExternalID,
+                            '2',
+                            defaultCatalog[0].ExternalID,
+                        ],
                     ],
                 });
                 expect(bulkCreateTransaction.JobID).to.be.a('number'),
