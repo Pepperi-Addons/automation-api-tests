@@ -1852,7 +1852,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 });
 
-                const getCreatedTransactionLine = await service.getTransactionLinesByID(createdTransaction.InternalID);
+                const getCreatedTransactionLine = await service.getTransactionLines({
+                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                });
 
                 return Promise.all([
                     expect(getCreatedTransactionLine[0]).to.include({
@@ -1910,7 +1912,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
                     expect(getCreatedTransactionLine[0].Archive).to.be.false,
                     expect(getCreatedTransactionLine[0].Hidden).to.be.false,
-                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
+                    expect(
+                        await service.getTransactionLines({
+                            where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(1),
                 ]);
@@ -1998,7 +2004,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
                     expect(updatedTransactionLines.Archive).to.be.false,
                     expect(updatedTransactionLines.Hidden).to.be.false,
-                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
+                    expect(
+                        await service.getTransactionLines({
+                            where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(1);
             });
@@ -2011,7 +2021,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     ItemExternalID: items[1].ExternalID,
                     UnitsQuantity: 1.0,
                 });
-                expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
+                expect(
+                    await service.getTransactionLines({
+                        where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                    }),
+                )
                     .to.be.an('array')
                     .with.lengthOf(2);
             });
@@ -2019,12 +2033,20 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Delete transaction lines', async () => {
                 expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.true,
                     expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.false,
-                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
+                    expect(
+                        await service.getTransactionLines({
+                            where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(1),
                     expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.true,
                     expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.false,
-                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
+                    expect(
+                        await service.getTransactionLines({
+                            where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
                         .to.be.an('array')
                         .with.lengthOf(0);
             });

@@ -57,7 +57,7 @@ async function insertLog(client: Client, type: string) {
             ModificationDateTime: lastTransactionLine[0].ModificationDateTime,
             InternalID: lastTransactionLine[0].InternalID,
             Hidden: lastTransactionLine[0].Hidden,
-            ItemData: lastTransactionLine[0].Item.Data,
+            ItemData: lastTransactionLine[0].Item?.Data,
             UnitsQuantity: lastTransactionLine[0].UnitsQuantity,
         },
     };

@@ -121,7 +121,7 @@ export class ObjectsService {
         return this.papiClient.transactionLines.find(options);
     }
 
-    getTransactionLinesByID(id): Promise<TransactionLines[]> {
+    getTransactionLinesByID(id: number): Promise<TransactionLines[]> {
         return this.papiClient.transactionLines.get(id);
     }
 
