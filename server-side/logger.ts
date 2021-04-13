@@ -42,7 +42,7 @@ export async function index_test_index_decimal_number(client: Client, request: R
 
 async function insertLog(client: Client, type: string) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService.papiClient);
+    const objectsService = new ObjectsService(generalService);
     const schemaName = 'PNS Test';
     const logUUID = uuidv4().replace(/-/g, '_');
     const lastTransactionLine = await objectsService.getTransactionLines({

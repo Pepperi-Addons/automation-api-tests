@@ -1,20 +1,20 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
-import jwt_decode from 'jwt-decode';
+import GeneralService from './general.service';
 
 const apiCallsInterval = 400;
 
 export class OpenCatalogService {
-    constructor(public papiClient: PapiClient) {}
+    papiClient: PapiClient;
+    generalService: GeneralService;
 
-    getIDPurl() {
-        const token = this.papiClient['options'].token;
-        const decodedToken = jwt_decode(token);
-        return decodedToken.iss;
+    constructor(public service: GeneralService) {
+        this.papiClient = service.papiClient;
+        this.generalService = service;
     }
 
     async getOpenCatalogToken() {
-        const idpBaseURL = await this.getIDPurl();
+        const idpBaseURL = await this.generalService.getClientData('IdpURL');
         const openCatalogSettings = await this.papiClient.get(
             '/addons/data/00000000-0000-0000-0000-00000ca7a109/OpenCatalogSettings',
         );
@@ -76,13 +76,6 @@ export class OpenCatalogService {
         return dataView;
     }
 
-    sleep(ms) {
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
-    }
-
     async getAuditLog(UUID) {
         return this.papiClient.get('/audit_logs/' + UUID);
     }
@@ -108,7 +101,7 @@ export class OpenCatalogService {
         let apiGetResponse;
         do {
             if (apiGetResponse != undefined) {
-                this.sleep(apiCallsInterval * 10);
+                this.generalService.sleep(apiCallsInterval * 10);
             }
             counter++;
             apiGetResponse = await this.getAuditLog(ID);
@@ -116,7 +109,7 @@ export class OpenCatalogService {
             (apiGetResponse.Status.Name == 'New' || apiGetResponse.Status.Name == 'InProgress') &&
             counter < maxLoops
         );
-        this.sleep(apiCallsInterval * 10);
+        this.generalService.sleep(apiCallsInterval * 10);
         apiGetResponse = await this.getAuditLog(ID);
         return apiGetResponse;
     }
@@ -127,12 +120,12 @@ export class OpenCatalogService {
         let apiGetResponse;
         do {
             if (apiGetResponse != undefined) {
-                this.sleep(apiCallsInterval * 10);
+                this.generalService.sleep(apiCallsInterval * 10);
             }
             counter++;
             apiGetResponse = await this.getAdalLog(ID);
         } while ((apiGetResponse.Status != 'Done' || !apiGetResponse.Status.includes('Failed')) && counter < maxLoops);
-        this.sleep(apiCallsInterval * 10);
+        this.generalService.sleep(apiCallsInterval * 10);
         apiGetResponse = await this.getAdalLog(ID);
         return apiGetResponse;
     }
