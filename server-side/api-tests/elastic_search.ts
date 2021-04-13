@@ -151,7 +151,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
     let isInstalled = false;
     let installedAddonVersion;
-    const installedAddonsArr = await generalService.getAddons(elasticSearchVarLatestVersion);
+    const installedAddonsArr = await generalService.getAddons();
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
             if (installedAddonsArr[i].Addon.Name == 'PepperiElasticSearch') {
