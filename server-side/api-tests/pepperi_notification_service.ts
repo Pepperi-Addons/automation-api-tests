@@ -14,7 +14,7 @@ export async function PepperiNotificationServiceTests(
 ) {
     const service = generalService.papiClient;
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
-    const objectsService = new ObjectsService(generalService.papiClient);
+    const objectsService = new ObjectsService(generalService);
     const adalService = new ADALService(generalService.papiClient);
 
     const describe = tester.describe;

@@ -9,11 +9,18 @@ import {
     FindOptions,
 } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
+import GeneralService from './general.service';
 
 const apiCallsInterval = 400;
 
 export class ObjectsService {
-    constructor(public papiClient: PapiClient) {}
+    papiClient: PapiClient;
+    generalService: GeneralService;
+
+    constructor(public service: GeneralService) {
+        this.papiClient = service.papiClient;
+        this.generalService = service;
+    }
 
     getItems(options?: FindOptions): Promise<Item[]> {
         return this.papiClient.items.find(options);
@@ -185,20 +192,13 @@ export class ObjectsService {
         return this.papiClient.accounts.delete(accountID);
     }
 
-    sleep(ms) {
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
-    }
-
     async waitForBulkJobStatus(ID: number, maxTime: number) {
         const maxLoops = maxTime / (apiCallsInterval * 10);
         let counter = 0;
         let apiGetResponse;
         do {
             if (apiGetResponse != undefined) {
-                this.sleep(apiCallsInterval * 10);
+                this.generalService.sleep(apiCallsInterval * 10);
             }
             counter++;
             apiGetResponse = await this.getBulkJobInfo(ID);
@@ -206,7 +206,7 @@ export class ObjectsService {
             (apiGetResponse.Status == 'Not Started' || apiGetResponse.Status == 'In Progress') &&
             counter < maxLoops
         );
-        this.sleep(apiCallsInterval * 10);
+        this.generalService.sleep(apiCallsInterval * 10);
         apiGetResponse = await this.getBulkJobInfo(ID);
         return apiGetResponse;
     }

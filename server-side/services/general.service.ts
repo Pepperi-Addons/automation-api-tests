@@ -37,15 +37,15 @@ export default class GeneralService {
         });
     }
 
-    sleep = function (ms) {
+    sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
         while (new Date().getTime() < expire) {}
         return;
-    };
+    }
 
     //#region getDate
-    getTime = function () {
+    getTime() {
         const getDate = new Date();
         return (
             getDate.getHours().toString().padStart(2, '0') +
@@ -54,9 +54,9 @@ export default class GeneralService {
             ':' +
             getDate.getSeconds().toString().padStart(2, '0')
         );
-    };
+    }
 
-    getDate = function () {
+    getDate() {
         const getDate = new Date();
         return (
             getDate.getDate().toString().padStart(2, '0') +
@@ -65,7 +65,7 @@ export default class GeneralService {
             '/' +
             getDate.getFullYear().toString().padStart(4, '0')
         );
-    };
+    }
     //#endregion getDate
 
     getServer() {
