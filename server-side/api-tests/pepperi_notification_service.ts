@@ -44,7 +44,7 @@ export async function PepperiNotificationServiceTests(
 
     let isInstalled = false;
     let installedAddonVersion;
-    const installedAddonsArr = await generalService.getAddons(pepperiNotificationServiceVarLatestVersion);
+    const installedAddonsArr = await generalService.getAddons();
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
             if (installedAddonsArr[i].Addon.Name == 'Pepperi Notification Service API') {

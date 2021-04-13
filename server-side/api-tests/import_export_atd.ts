@@ -259,7 +259,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
     let isInstalled = false;
     let installedAddonVersion;
-    let installedAddonsArr = await generalService.getAddons(dataViewsVarLatestVersion);
+    const installedAddonsArr = await generalService.getAddons();
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
             if (installedAddonsArr[i].Addon.Name == 'Data Views API') {
@@ -317,7 +317,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
     isInstalled = false;
     installedAddonVersion = undefined;
-    installedAddonsArr = await generalService.getAddons(importExportATDVarLatestVersion);
     for (let i = 0; i < installedAddonsArr.length; i++) {
         if (installedAddonsArr[i].Addon !== null) {
             if (installedAddonsArr[i].Addon.Name == 'ImportExportATD') {
