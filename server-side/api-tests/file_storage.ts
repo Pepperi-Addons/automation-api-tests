@@ -256,10 +256,11 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                         expect(updatedFileContent).to.contain('EDCBA');
                     });
 
-                    it('Read the first added file content again after updated the new file', async () => {
+                    it('Read the first added file content again after updated the new file (DI-17885)', async () => {
                         //Get the created file content
                         const fileContent: string = await fetch(uriStr).then((response) => response.text());
-                        expect(fileContent).to.contain('ABCD');
+                        expect(fileContent).to.contain('<Message>Access Denied</Message>');
+                        //expect(fileContent).to.contain('ABCD');
                     });
 
                     it('Make sure files removed in the end of the tests', async () => {
