@@ -211,7 +211,7 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     console.log({ createdTransactionLines: createdTransactionLines });
-                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesTODO(
+                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesByID(
                         createdTransaction.InternalID,
                     );
                     console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
@@ -255,7 +255,7 @@ export async function PepperiNotificationServiceTests(
                         expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                        expect(await objectsService.getTransactionLinesTODO(createdTransaction.InternalID))
+                        expect(await objectsService.getTransactionLinesByID(createdTransaction.InternalID))
                             .to.be.an('array')
                             .with.lengthOf(1),
                     ]);
@@ -317,7 +317,7 @@ export async function PepperiNotificationServiceTests(
                     console.log({ putSyncResponse_create_from_wacd: putSyncResponse });
                     expect(putSyncResponse).to.be.true;
 
-                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesTODO(
+                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesByID(
                         createdTransaction.InternalID,
                     );
                     console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
@@ -361,7 +361,7 @@ export async function PepperiNotificationServiceTests(
                         expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                        expect(await objectsService.getTransactionLinesTODO(createdTransaction.InternalID))
+                        expect(await objectsService.getTransactionLinesByID(createdTransaction.InternalID))
                             .to.be.an('array')
                             .with.lengthOf(1),
                     ]);
@@ -448,7 +448,7 @@ export async function PepperiNotificationServiceTests(
                                 expect(putSyncResponse).to.be.true;
                             }
 
-                            const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesTODO(
+                            const getCreatedTransactionLineResponse = await objectsService.getTransactionLinesByID(
                                 createdTransaction.InternalID,
                             );
                             console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
@@ -500,7 +500,7 @@ export async function PepperiNotificationServiceTests(
                                     expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                                     expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                                     expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                                    expect(await objectsService.getTransactionLinesTODO(createdTransaction.InternalID))
+                                    expect(await objectsService.getTransactionLinesByID(createdTransaction.InternalID))
                                         .to.be.an('array')
                                         .with.lengthOf(1),
                                 ]);

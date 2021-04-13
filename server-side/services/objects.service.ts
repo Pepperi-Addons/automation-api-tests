@@ -19,15 +19,6 @@ export class ObjectsService {
         return this.papiClient.items.find(options);
     }
 
-    //TODO: This function should not exist:
-    //1) it get nothing instead of type option for the FindOptions
-    //2) it use wrong endpoint
-    //3) it return wrong type
-    //This is why I refactor it and added TODO in it's end
-    getItemsTODO() {
-        return this.papiClient.get('/items');
-    }
-
     getUsers(clause?) {
         switch (clause) {
             case undefined:
@@ -130,43 +121,16 @@ export class ObjectsService {
         return this.papiClient.transactionLines.find(options);
     }
 
-    //TODO: This function should not exist:
-    //1) it get type "any" instead of type "Number"
-    //2) it use wrong endpoint
-    //3) it return wrong type
-    //4) it have wrong name if it should return one line by id
-    //This is why I refactor it and added TODO in it's end
-    getTransactionLinesTODO(InternalID) {
-        return this.papiClient.get('/transaction_lines?where=TransactionInternalID=' + InternalID);
+    getTransactionLinesByID(id): Promise<TransactionLines[]> {
+        return this.papiClient.transactionLines.get(id);
     }
 
     createTransactionLine(body: TransactionLines): Promise<TransactionLines> {
         return this.papiClient.transactionLines.upsert(body);
     }
 
-    //TODO: This function should not exist:
-    //1) it get type "any" instead of type "Transaction"
-    //2) it use wrong endpoint
-    //3) it return wrong type
-    //This is why I refactor it and added TODO in it's end
-    createTransactionLineTODO(body: any) {
-        return this.papiClient.post('/transaction_lines', body);
-    }
-
     deleteTransactionLine(id: number): Promise<boolean> {
         return this.papiClient.transactionLines.delete(id);
-    }
-
-    //TODO: This function should not exist:
-    //1) it get type "any" instead of type "Number"
-    //2) it use wrong endpoint
-    //3) it return wrong type
-    //This is why I refactor it and added TODO in it's end
-    deleteTransactionLineTODO(InternalID) {
-        return this.papiClient
-            .delete('/transaction_lines/' + InternalID)
-            .then((res) => res.text())
-            .then((res) => (res ? JSON.parse(res) : ''));
     }
 
     createActivity(body: GeneralActivity) {

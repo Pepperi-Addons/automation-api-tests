@@ -1830,8 +1830,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Create transaction lines', async () => {
-                items = await service.getItemsTODO();
-                createdTransactionLines = await service.createTransactionLineTODO({
+                items = await service.getItems();
+                createdTransactionLines = await service.createTransactionLine({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 0,
                     ItemExternalID: items[0].ExternalID,
@@ -1850,9 +1850,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSANumberAPI: 5,
                     TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
                     TSASingleLineAPI: 'Random text',
-                } as any);
+                });
 
-                const getCreatedTransactionLine = await service.getTransactionLinesTODO(createdTransaction.InternalID);
+                const getCreatedTransactionLine = await service.getTransactionLinesByID(createdTransaction.InternalID);
 
                 return Promise.all([
                     expect(getCreatedTransactionLine[0]).to.include({
@@ -1910,17 +1910,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z'),
                     expect(getCreatedTransactionLine[0].Archive).to.be.false,
                     expect(getCreatedTransactionLine[0].Hidden).to.be.false,
-                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1),
                 ]);
             });
 
             it('Update transaction lines', async () => {
-                items = await service.getItemsTODO();
+                items = await service.getItems();
 
                 expect(
-                    (updatedTransactionLines = await service.createTransactionLineTODO({
+                    (updatedTransactionLines = await service.createTransactionLine({
                         TransactionInternalID: createdTransaction.InternalID,
                         LineNumber: 0,
                         ItemExternalID: items[0].ExternalID,
@@ -1998,35 +1998,33 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
                     expect(updatedTransactionLines.Archive).to.be.false,
                     expect(updatedTransactionLines.Hidden).to.be.false,
-                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
+                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1);
             });
 
             it('Add transaction lines', async () => {
-                items = await service.getItemsTODO();
-                addedTransactionLines = await service.createTransactionLineTODO({
+                items = await service.getItems();
+                addedTransactionLines = await service.createTransactionLine({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 1,
                     ItemExternalID: items[1].ExternalID,
                     UnitsQuantity: 1.0,
                 });
-                expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
+                expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
                     .to.be.an('array')
                     .with.lengthOf(2);
             });
 
             it('Delete transaction lines', async () => {
-                expect(await service.deleteTransactionLineTODO(createdTransactionLines.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransactionLineTODO(createdTransactionLines.InternalID as any)).to.be
-                        .false,
-                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
+                expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.true,
+                    expect(await service.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be.false,
+                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(1),
-                    expect(await service.deleteTransactionLineTODO(addedTransactionLines.InternalID as any)).to.be.true,
-                    expect(await service.deleteTransactionLineTODO(addedTransactionLines.InternalID as any)).to.be
-                        .false,
-                    expect(await service.getTransactionLinesTODO(createdTransaction.InternalID))
+                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.true,
+                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be.false,
+                    expect(await service.getTransactionLinesByID(createdTransaction.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });
@@ -2381,11 +2379,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
                 );
                 return Promise.all([
-                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[0].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[1].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[2].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[3].InternalID)).to.be.true,
-                    expect(await service.deleteTransactionLineTODO(bulkTransactionsLines[4].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[0].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[1].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[2].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[3].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[4].InternalID)).to.be.true,
                     expect(
                         await service.getBulk(
                             'transaction_lines',
