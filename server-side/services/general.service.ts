@@ -1,4 +1,11 @@
-import { PapiClient, InstalledAddon, Catalog, FindOptions } from '@pepperi-addons/papi-sdk';
+import {
+    PapiClient,
+    InstalledAddon,
+    Catalog,
+    FindOptions,
+    GeneralActivity,
+    Transaction,
+} from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
 
@@ -82,6 +89,10 @@ export default class GeneralService {
 
     getCatalogs(options?: FindOptions): Promise<Catalog[]> {
         return this.papiClient.catalogs.find(options);
+    }
+
+    getAllActivities(options?: FindOptions): Promise<GeneralActivity[] | Transaction[]> {
+        return this.papiClient.allActivities.find(options);
     }
 
     getTypes(resource_name: ResourceTypes) {
