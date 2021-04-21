@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { CPINodeService } from '../services/cpi_node.service';
+import { CPINodeService } from '../services/cpi-node.service';
 import { Item, User } from '@pepperi-addons/papi-sdk';
 
 export async function CPINodeTests(generalService: GeneralService, tester: TesterFunctions) {
