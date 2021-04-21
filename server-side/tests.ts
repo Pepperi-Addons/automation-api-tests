@@ -31,6 +31,7 @@ import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
 import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
 import { DataIndexTests } from './api-tests/data_index';
+import { CPINodeTests } from './api-tests/cpi_node';
 
 let testName = '';
 let testEnvironment = '';
@@ -1238,5 +1239,43 @@ export async function data_index(client: Client, request: Request, testerFunctio
         return testResult;
     } else {
         return DataIndexTests(service, testerFunctions);
+    }
+}
+
+export async function cpi_node(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (
+        client.BaseURL.includes('staging') != testEnvironment.includes('Sandbox') ||
+        (testName != 'CPI_Node' && testName != 'All' && testName != 'Sanity')
+    ) {
+        testName = 'CPI_Node';
+        PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            CPINodeTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return CPINodeTests(service, testerFunctions);
     }
 }
