@@ -1231,12 +1231,12 @@ export async function data_index(client: Client, request: Request, testerFunctio
         };
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
-            DataIndexTests(service, testerFunctions),
+            DataIndexTests(service, request, testerFunctions),
         ]).then(() => testerFunctions.run());
         PrintMemoryUseToLog('End', testName);
         testName = '';
         return testResult;
     } else {
-        return DataIndexTests(service, testerFunctions);
+        return DataIndexTests(service, request, testerFunctions);
     }
 }

@@ -1,96 +1,211 @@
 //import { ObjectsService } from './../services/objects.service';
 //import { ElasticSearchService } from './../services/elastic-search.service';
 import { DataIndexService } from './../services/data-index.service';
-
 import GeneralService, { TesterFunctions } from '../services/general.service';
+import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
-export async function DataIndexTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
     //const elasticSearchService = new ElasticSearchService(generalService.papiClient);
     //const objectsService = new ObjectsService(generalService);
     const dataIndexService = new DataIndexService(generalService);
+    const service = generalService.papiClient;
 
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    // const transactionLinesIndexFieldsArr = [
-    //     'InternalID',
-    //     'UUID',
-    //     'LineNumber',
-    //     'DeliveryDate',
-    //     'Archive',
-    //     'UnitsQuantity',
-    //     'UnitDiscountPercentage',
-    //     'TSATestIndexString',
-    //     'TSATestIndexTime',
-    //     'TSATestIndexCalculated',
-    //     'TSATestIndexNumber',
-    //     'TSATestIndexDecimalNumber',
-    //     'Item.InternalID',
-    //     'Item.Name',
-    //     'Transaction.InternalID',
-    //     'Transaction.Status',
-    //     'Transaction.ActionDateTime',
-    //     'Transaction.ActivityTypeID',
-    //     'Transaction.Account.InternalID',
-    //     'Transaction.Account.ExternalID',
-    //     'Transaction.Account.TSAPaymentMethod',
-    //     'Transaction.Account.ZipCode',
-    //     'Transaction.Account.Status',
-    //     'Transaction.ContactPerson.ExternalID',
-    //     'Transaction.ContactPerson.FirstName',
-    //     'Transaction.ContactPerson.Mobile',
-    //     'Transaction.Agent.ExternalID',
-    //     'Transaction.Agent.FirstName',
-    //     'Transaction.Agent.Mobile',
-    // ];
-
+    // all_activities_fields
     const allActivitiesIndexFieldsArr = [
-        // 'InternalID',
-        // 'Status',
-        // 'UUID',
-        // 'ActionDateTime',
-        // 'ActivityTypeID',
-        // 'ExternalID',
-        // 'Archive',
-        // 'BillToCity',
-        // 'BillToCountry',
-        // 'BillToFax',
-        // 'Type',
-        // 'TaxPercentage',
-        // 'TSATestIndexString',
-        // 'TSATestIndexTime',
-        // 'TSATestIndexCalculated',
-        // 'TSATestIndexAttachment',
-        // 'TSATestIndexNumber',
-        // 'TSATestIndexDecimalNumber',
-        // 'Account.InternalID',
-        // 'Account.ExternalID',
+        //     'ExternalID',
+        //     'TaxPercentage',
+        //     'Remark',
+        //     'CreationDateTime',
+        //     'SubTotal',
+        //     'Status',
+        //     'DiscountPercentage',
+        //     'TSATestIndexString',
+        //     'TSATestIndexTime',
+        //     'TSATestIndexCalculated',
+        //     'TSATestIndexAttachment',
+        //     'TSATestIndexNumber',
+        //     'TSATestIndexDecimalNumber',
+        //     'Account.ExternalID',
         'Account.City',
-        // 'Account.Country',
-        // 'Account.Status',
-        // 'Catalog.InternalID',
-        // 'Catalog.ExternalID',
-        // 'Catalog.Description',
-        // 'Catalog.TSAImage',
-        // 'ContactPerson.InternalID',
-        // 'ContactPerson.ExternalID',
-        // 'ContactPerson.FirstName',
-        // 'ContactPerson.Mobile',
-        // 'Creator.InternalID',
-        // 'Creator.ExternalID',
-        // 'Creator.FirstName',
-        // 'Creator.Mobile',
+        //     'Account.Country',
+        //     'Account.Status',
+        //     'Catalog.Description',
+        //     'Catalog.ExternalID',
+        //     'Catalog.TSAImage',
+        //     'ContactPerson.ExternalID',
+        //     'ContactPerson.FirstName',
+        //     'ContactPerson.Mobile',
+        //     'Creator.ExternalID',
+        //     'Creator.FirstName',
+        //     'Creator.Mobile',
     ];
+
+    // transaction_lines_fields
+    //const transactionLinesIndexFieldsArr = [
+    /*'TSATestIndexString',
+    'TSATestIndexTime',
+    'TSATestIndexCalculated',
+    'TSATestIndexNumber',
+    'TSATestIndexDecimalNumber',
+    'LineNumber',
+    'DeliveryDate',*/
+    // Replace with next 'UnitsQuantity',
+    //TotalUnitsPriceAfterDiscount - Don't ask for UnitQuantity and UnitPriceAfterDiscount
+    //TotalUnitsPriceBeforeDiscount - Don't ask for UnitQuantity and UnitPrice
+    /*'Item.ExternalID',
+    'Item.Name',
+    'UnitDiscountPercentage',
+    'CreationDateTime',
+    'Transaction.ExternalID',
+    'Transaction.InternalID',
+    'Transaction.Remark',
+    'Transaction.CreationDateTime',
+    'Transaction.SubTotal',
+    'Transaction.Status',
+    'Transaction.DiscountPercentage',
+    'Transaction.Account.ExternalID',
+    'Transaction.Account.TSAPaymentMethod',
+    'Transaction.Account.ZipCode',
+    'Transaction.Account.Status',*/
+    // Shuold work 'Transaction.Agent.ExternalID',
+    // Shuold work 'Transaction.Agent.FirstName',
+    // Shuold work 'Transaction.Agent.Mobile',
+    // Shuold work 'Transaction.ContactPerson.ExternalID',
+    // Shuold work 'Transaction.ContactPerson.FirstName',
+    // Shuold work 'Transaction.ContactPerson.Mobile',
+    //];
 
     const allActivitiesArr = await generalService.getAllActivities({
         page_size: -1,
         fields: ['InternalID', ...allActivitiesIndexFieldsArr],
     });
+    //Data Index Addon 10979a11-d7f4-41df-8993-f06bfd778304
+    const pepperiNotificationServiceAddonUUID = '00000000-0000-0000-0000-000000040fa9';
+    //TODO: Remove this (1.0.50) and work on the actually latest version
+    //when shir or meital will refactor Data Index to work with the new framework changes
+    const pepperiNotificationServiceVersion = '';
+
+    //#region Upgrade Pepperi Notification Service
+    const pepperiNotificationServiceVarLatestVersion = await fetch(
+        `${generalService['client'].BaseURL.replace(
+            'papi-eu',
+            'papi',
+        )}/var/addons/versions?where=AddonUUID='${pepperiNotificationServiceAddonUUID}' AND Version Like '${pepperiNotificationServiceVersion}%'&order_by=CreationDateTime DESC`,
+        {
+            method: `GET`,
+            headers: {
+                Authorization: `${request.body.varKey}`,
+            },
+        },
+    )
+        .then((response) => response.json())
+        .then((addon) => addon[0].Version);
+
+    let isInstalled = false;
+    let installedAddonVersion;
+    const installedAddonsArr = await generalService.getAddons();
+    for (let i = 0; i < installedAddonsArr.length; i++) {
+        if (installedAddonsArr[i].Addon !== null) {
+            if (installedAddonsArr[i].Addon.Name == 'Pepperi Notification Service API') {
+                installedAddonVersion = installedAddonsArr[i].Version;
+                isInstalled = true;
+                break;
+            }
+        }
+    }
+    if (!isInstalled) {
+        await service.addons.installedAddons.addonUUID(`${pepperiNotificationServiceAddonUUID}`).install();
+        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+    }
+
+    let pepperiNotificationServiceUpgradeAuditLogResponse;
+    let pepperiNotificationServiceInstalledAddonVersion;
+    let pepperiNotificationServiceAuditLogResponse;
+    if (installedAddonVersion != pepperiNotificationServiceVarLatestVersion) {
+        pepperiNotificationServiceUpgradeAuditLogResponse = await service.addons.installedAddons
+            .addonUUID(`${pepperiNotificationServiceAddonUUID}`)
+            .upgrade(pepperiNotificationServiceVarLatestVersion);
+
+        generalService.sleep(4000); //Test installation status only after 4 seconds.
+        pepperiNotificationServiceAuditLogResponse = await service.auditLogs
+            .uuid(pepperiNotificationServiceUpgradeAuditLogResponse.ExecutionUUID)
+            .get();
+        if (pepperiNotificationServiceAuditLogResponse.Status.Name == 'InProgress') {
+            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+            pepperiNotificationServiceAuditLogResponse = await service.auditLogs
+                .uuid(pepperiNotificationServiceUpgradeAuditLogResponse.ExecutionUUID)
+                .get();
+        }
+        pepperiNotificationServiceInstalledAddonVersion = await (
+            await service.addons.installedAddons.addonUUID(`${pepperiNotificationServiceAddonUUID}`).get()
+        ).Version;
+    } else {
+        pepperiNotificationServiceUpgradeAuditLogResponse = 'Skipped';
+        pepperiNotificationServiceInstalledAddonVersion = installedAddonVersion;
+    }
+    //#endregion Upgrade Pepperi Notification Service
 
     describe('Data Index Tests Suites', () => {
+        describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
+            //Test Data
+            it(`Test Data: Tested Addon: PNS - Version: ${pepperiNotificationServiceInstalledAddonVersion}`, () => {
+                expect(pepperiNotificationServiceInstalledAddonVersion).to.contain('.');
+            });
+
+            it('Upgarde To Latest Version of Pepperi Notification Service Addon', async () => {
+                if (pepperiNotificationServiceUpgradeAuditLogResponse != 'Skipped') {
+                    expect(pepperiNotificationServiceUpgradeAuditLogResponse)
+                        .to.have.property('ExecutionUUID')
+                        .a('string')
+                        .with.lengthOf(36);
+                    if (pepperiNotificationServiceAuditLogResponse.Status.Name == 'Failure') {
+                        if (
+                            !pepperiNotificationServiceAuditLogResponse.AuditInfo.ErrorMessage.includes(
+                                'is already working on newer version',
+                            )
+                        ) {
+                            expect(pepperiNotificationServiceAuditLogResponse.AuditInfo.ErrorMessage).to.include(
+                                'is already working on version',
+                            );
+                        } else {
+                            await expect(
+                                service.addons.installedAddons
+                                    .addonUUID(`${pepperiNotificationServiceAddonUUID}`)
+                                    .downgrade(pepperiNotificationServiceVarLatestVersion),
+                            )
+                                .eventually.to.have.property('ExecutionUUID')
+                                .a('string')
+                                .with.lengthOf(36)
+                                .then(async (executionUUID) => {
+                                    generalService.sleep(4000); //Test downgrade status only after 4 seconds.
+                                    let auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
+                                    if (auditLogResponse.Status.Name == 'InProgress') {
+                                        generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                                        auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
+                                    }
+                                    pepperiNotificationServiceInstalledAddonVersion;
+                                    expect(auditLogResponse.Status.Name).to.include('Success');
+                                });
+                        }
+                    } else {
+                        expect(pepperiNotificationServiceAuditLogResponse.Status.Name).to.include('Success');
+                    }
+                }
+            });
+
+            it(`Latest Version Is Installed`, () => {
+                expect(pepperiNotificationServiceInstalledAddonVersion).to.equal(
+                    pepperiNotificationServiceVarLatestVersion,
+                );
+            });
+        });
+
         describe('All Activities', () => {
             it(`Test Data: Amount of All Activities: ${allActivitiesArr.length}`, async () => {
                 expect(allActivitiesArr.length).to.be.above(0);
@@ -128,7 +243,7 @@ export async function DataIndexTests(generalService: GeneralService, tester: Tes
                             it(`Create ${allActivitiesIndexFieldsArrName.split('.')[0]} With New ${
                                 allActivitiesIndexFieldsArrName.split('.')[1]
                             }`, async () => {
-                                testDataAccount = await dataIndexService.apiCallWithFetch('POST', '/accounts', {
+                                testDataAccount = await dataIndexService.fetchStatus('POST', '/accounts', {
                                     ExternalID: 'oren test 11111',
                                     City: 'oren city',
                                 });
@@ -137,24 +252,20 @@ export async function DataIndexTests(generalService: GeneralService, tester: Tes
                         }
 
                         it(`Create Transaction With The New ${allActivitiesIndexFieldsArrName}`, async () => {
-                            const testDataTransaction = await dataIndexService.apiCallWithFetch(
-                                'POST',
-                                '/transactions',
-                                {
-                                    ExternalID: 'Automated API Transaction 46500388818',
-                                    ActivityTypeID: 268428,
-                                    Account: {
-                                        Data: {
-                                            InternalID: 20527148,
-                                        },
-                                    },
-                                    Catalog: {
-                                        Data: {
-                                            InternalID: 76449,
-                                        },
+                            const testDataTransaction = await dataIndexService.fetchStatus('POST', '/transactions', {
+                                ExternalID: 'Automated API Transaction 46500388818',
+                                ActivityTypeID: 268428,
+                                Account: {
+                                    Data: {
+                                        InternalID: 20527148,
                                     },
                                 },
-                            );
+                                Catalog: {
+                                    Data: {
+                                        InternalID: 76449,
+                                    },
+                                },
+                            });
                             expect(testDataTransaction.Status).to.equal(201);
                         });
 

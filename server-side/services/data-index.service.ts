@@ -13,13 +13,15 @@ export class DataIndexService {
         this.generalService = service;
     }
 
-    apiCallWithFetch(method: HttpMethod, URI: string, body?: any) {
+    fetchStatus(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
         return fetch(`${this.generalService['client'].BaseURL}${URI}`, {
             method: `${method}`,
+            body: JSON.stringify(body),
             headers: {
                 Authorization: `Bearer ${this.generalService.papiClient['options'].token}`,
             },
-            body: JSON.stringify(body),
+            timeout: timeout,
+            size: size,
         })
             .then(async (response) => {
                 return {
