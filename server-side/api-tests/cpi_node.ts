@@ -1,7 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { CPINodeService } from '../services/cpi_node.service';
-import { DataView, Item, User } from '@pepperi-addons/papi-sdk';
-import { debug } from 'console';
+import { Item, User } from '@pepperi-addons/papi-sdk';
 
 export async function CPINodeTests(generalService: GeneralService, tester: TesterFunctions) {
     const cpiNodeService = new CPINodeService(generalService.papiClient);
@@ -66,7 +65,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
             describe('Get Transactions tests', () => {
                 it('Checking items count', async () => {
-                    const Dor: Number = await cpiNodeService.countTransactions({
+                    const Dor: number = await cpiNodeService.countTransactions({
                         where: `Hidden = 0`,
                         include_deleted: false,
                     });
@@ -79,7 +78,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             describe('Account object tests', () => {
                 it('Account Creation', async () => {
                     const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
-                    let createdAccount = await cpiNodeService.postAccount({
+                    const createdAccount = await cpiNodeService.postAccount({
                         ExternalID: accountExternalID,
                         City: 'City',
                         Country: 'US',
@@ -146,22 +145,17 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 //     });
 
                 //     const ExternalID = gottenAccount[0].ExternalID;
-                    
 
                 //     let gottenAccountNewData = await cpiNodeService.postAccount({
                 //         ExternalID: ExternalID,
                 //         Country: 'Israel',
                 //     });
 
-              
-
                 //     let gottenAccountFromServer = await cpiNodeService.findAccount({
                 //         where: `ExternalID = ${ExternalID}`,
                 //         order_by: 'CreationDate',
                 //     });
-                    
-                   
-                    
+
                 //     expect(gottenAccountFromServer[0]).to.be.not.null,
                 //         expect(gottenAccountFromServer[0].Country).to.be.equal('Israel');
                 // });

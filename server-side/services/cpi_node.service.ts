@@ -1,4 +1,4 @@
-import { PapiClient, DataView, FindOptions, User, Item, Transaction, Account } from '@pepperi-addons/papi-sdk';
+import { PapiClient, DataView, FindOptions, User, Item, Account } from '@pepperi-addons/papi-sdk';
 
 export class CPINodeService {
     constructor(public papiClient: PapiClient) {}
@@ -34,7 +34,7 @@ export class CPINodeService {
     getUserData(options?: FindOptions): Promise<User[]> {
         return this.papiClient.users.find(options);
     }
-    
+
     getItemData(options?: FindOptions): Promise<Item[]> {
         return this.papiClient.items.find(options);
     }
@@ -42,7 +42,7 @@ export class CPINodeService {
     countTransactions(options?: FindOptions): Promise<number> {
         return this.papiClient.transactions.count(options);
     }
-    
+
     postAccount(body: Account) {
         return this.papiClient.accounts.upsert(body);
     }
@@ -54,5 +54,4 @@ export class CPINodeService {
     updateAccount(body: Account): Promise<Account> {
         return this.papiClient.accounts.upsert(body);
     }
-
 }

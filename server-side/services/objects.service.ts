@@ -176,7 +176,7 @@ export class ObjectsService {
         return this.papiClient.get('/bulk/jobinfo/' + ID);
     }
 
-    createAccount(body: Account): Promise<Account>  {
+    createAccount(body: Account): Promise<Account> {
         return this.papiClient.accounts.upsert(body);
     }
 
