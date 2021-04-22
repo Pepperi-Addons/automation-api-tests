@@ -52,7 +52,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             const varLatestVersion = chnageVersionResponseArr[addonName][2];
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, () => {
-                it(`${changeType} To Latest Version That Start With: ${version}`, () => {
+                it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
                     if (chnageVersionResponseArr[addonName][4] == 'Failure') {
                         expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
                     } else {

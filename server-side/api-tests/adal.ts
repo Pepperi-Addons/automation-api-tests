@@ -2,21 +2,53 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ADALService } from '../services/adal.service';
 
 export async function ADALTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const service = generalService.papiClient;
     const adalService = new ADALService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    const ADALAddonUUID = '00000000-0000-0000-0000-00000000ada1';
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
-    const ADALInstalledAddonVersion = await service.addons.installedAddons.addonUUID(`${ADALAddonUUID}`).get();
+    //#region ADAL
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#endregion ADAL
 
     describe('ADAL Tests Suites', () => {
-        //Test Data
-        it(`Test Data: Tested Addon: ADAL - Version: ${ADALInstalledAddonVersion.Version}`, () => {
-            expect(ADALInstalledAddonVersion.Version).to.contain('.');
+        describe('Prerequisites Addon for ADAL Tests', () => {
+            //Test Data
+            //ADAL
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
 
         describe('Endpoints', () => {
