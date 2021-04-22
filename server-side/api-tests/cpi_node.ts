@@ -17,6 +17,26 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
     //#region Tests for practive
     describe('CPI Node Tests Suites', () => {
         describe('Endpoints', async () => {
+            it('Validate GET', async () => {
+                const res = await generalService.fetchStatus('GET', '/Users');
+                expect(res.Status).to.be.an('number').equal(200),
+                    expect(res.Body.length).to.be.above(0),
+                    expect(res.Body[0].UUID).that.is.a('string').and.is.not.empty,
+                    expect(res.Body[0].ExternalID).that.is.a('string'),
+                    expect(res.Body[0].Email).that.is.a('string').and.is.not.empty,
+                    expect(res.Body[0].FirstName).that.is.a('string'),
+                    expect(res.Body[0].LastName).that.is.a('string'),
+                    expect(res.Body[0].Hidden).that.is.a('boolean').and.is.false;
+            });
+
+            it('Validate POST', async () => {
+                //  const user = await generalService.fetchStatus("POST","/Users");
+            });
+        });
+        // describe('Scenarios', async () => {});
+        // describe('Bug verifications', async () => {});
+
+        describe('Endpoints', async () => {
             describe('Get Dor', () => {
                 it('Validating Dor is awesome', async () => {
                     expect(cpiNodeService.getDorIsAwesome()).include('Cool');
@@ -74,7 +94,6 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             });
 
             ///accounts
-
             describe('Account object tests', () => {
                 it('Account Creation', async () => {
                     const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();

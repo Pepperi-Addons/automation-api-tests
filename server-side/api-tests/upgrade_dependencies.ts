@@ -43,7 +43,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         it('Validate that all the needed addons are installed', async () => {
             isInstalledArr.forEach((isInstalled) => {
                 expect(isInstalled).to.be.true;
-            })
+            });
         });
 
         for (const addonName in testData) {
@@ -53,11 +53,8 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, () => {
                 it(`${changeType} To Latest Version That Start With: ${version}`, () => {
-
                     if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                        expect(chnageVersionResponseArr[addonName][5]).to.include(
-                            'is already working on version',
-                        );
+                        expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
                     } else {
                         expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
                     }
