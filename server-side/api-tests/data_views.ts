@@ -57,8 +57,10 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
     const usersArr = await service.papiClient.get('/users');
     usersArr.forEach((element) => {
-        userTypeIDArr.push(element.Profile.Data.Name);
-        userTypeIDArr[element.Profile.Data.Name] = element.Profile.Data.InternalID;
+        if (!userTypeIDArr.includes(element.Profile.Data.Name)) {
+            userTypeIDArr.push(element.Profile.Data.Name);
+            userTypeIDArr[element.Profile.Data.Name] = element.Profile.Data.InternalID;
+        }
     });
 
     //#region Tests
