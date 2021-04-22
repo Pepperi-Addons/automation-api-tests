@@ -8,6 +8,7 @@ import {
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
+import fetch from 'node-fetch';
 
 declare type ClientData =
     | 'UserEmail'
@@ -47,7 +48,7 @@ export default class GeneralService {
     sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
 
@@ -170,6 +171,91 @@ export default class GeneralService {
             return e;
         }
         return auditLogResponse;
+    }
+
+    async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
+        const isInstalledArr: boolean[] = [];
+        const installedAddonsArr = await this.getAddons();
+        for (const addonName in testData) {
+            let isInstalled: boolean = false;
+            for (let i = 0; i < installedAddonsArr.length; i++) {
+                if (installedAddonsArr[i].Addon !== null) {
+                    if (installedAddonsArr[i].Addon.Name == addonName) {
+                        isInstalled = true;
+                        break;
+                    }
+                }
+            }
+            if (!isInstalled) {
+                await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonName][0]}`).install();
+                this.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.  
+            }
+            isInstalledArr.push(true);
+        }
+        return isInstalledArr
+    }
+
+    async chnageVersion(varKey: string, testData: { [any: string]: string[] }, isPhased: boolean): Promise<{ [any: string]: string[] }> {
+        for (const addonName in testData) {
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
+            let changeType = 'Upgrade';
+            let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
+            if (addonName == 'Services Framework' || addonName == 'Cross Platforms API' || !isPhased) {
+                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            }
+            let varLatestVersion = await fetch(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `${varKey}`,
+                    },
+                },
+            ).then((response) => response.json());
+            varLatestVersion = varLatestVersion[0].Version;
+
+            testData[addonName].push(varLatestVersion)
+
+            let upgradeResponse = await this.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).upgrade(varLatestVersion);
+            this.sleep(4000); //Test upgrade status only after 4 seconds.
+            let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID!).get();
+            if (auditLogResponse.Status.Name == 'InProgress') {
+                this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID!).get();
+            }
+            if (auditLogResponse.Status.Name == 'Failure') {
+                if (
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes(
+                        'is already working on newer version',
+                    )
+                ) {
+                    testData[addonName].push(changeType)
+                    testData[addonName].push(auditLogResponse.Status.Name)
+                    testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage)
+                } else {
+                    changeType = "Downgrade"
+                    upgradeResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .downgrade(varLatestVersion);
+                    this.sleep(4000); //Test downgrade status only after 4 seconds.
+                    let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID!).get();
+                    if (auditLogResponse.Status.Name == 'InProgress') {
+                        this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                        auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID!).get();
+                    }
+                    testData[addonName].push(changeType)
+                    testData[addonName].push(auditLogResponse.Status.Name)
+                };
+            } else {
+                testData[addonName].push(changeType)
+                testData[addonName].push(auditLogResponse.Status.Name)
+            }
+        }
+        return testData;
     }
 }
 

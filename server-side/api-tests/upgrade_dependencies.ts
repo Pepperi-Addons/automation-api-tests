@@ -1,5 +1,4 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import fetch from 'node-fetch';
 
 export async function UpgradeDependenciesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
@@ -7,126 +6,64 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
     const expect = tester.expect;
     const it = tester.it;
 
-    //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework
-    describe('Upgrade Dependencies Addons', () => {
-        const testData = {
-            'Services Framework': [
-                '00000000-0000-0000-0000-000000000a91',
-                request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5',
-            ],
-            'Cross Platforms API': [
-                '00000000-0000-0000-0000-000000abcdef',
-                request.body.crossPlatformsAPI ? `${request.body.crossPlatformsAPI}` : 'V',
-            ],
-            'WebApp Platform': [
-                '00000000-0000-0000-1234-000000000b2b',
-                request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.55',
-            ],
-            'Addons Manager': [
-                'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
-                request.body.addonsManager ? `${request.body.addonsManager}` : '0.',
-            ],
-            'Data Views API': [
-                '484e7f22-796a-45f8-9082-12a734bac4e8',
-                request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '1.',
-            ],
-            'Settings Framework': [
-                '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
-                request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
-            ],
-            ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
-        };
+    const testData = {
+        'Services Framework': [
+            '00000000-0000-0000-0000-000000000a91',
+            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5',
+        ],
+        'Cross Platforms API': [
+            '00000000-0000-0000-0000-000000abcdef',
+            request.body.crossPlatformsAPI ? `${request.body.crossPlatformsAPI}` : 'V',
+        ],
+        'WebApp Platform': [
+            '00000000-0000-0000-1234-000000000b2b',
+            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.55',
+        ],
+        'Addons Manager': [
+            'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
+            request.body.addonsManager ? `${request.body.addonsManager}` : '0.',
+        ],
+        'Data Views API': [
+            '484e7f22-796a-45f8-9082-12a734bac4e8',
+            request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '1.',
+        ],
+        'Settings Framework': [
+            '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
+            request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
+        ],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
+    };
 
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, true);
+
+    //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
+    describe('Upgrade Dependencies Addons', () => {
         it('Validate that all the needed addons are installed', async () => {
-            let isInstalled = false;
-            const installedAddonsArr = await generalService.getAddons();
-            for (const addonName in testData) {
-                for (let i = 0; i < installedAddonsArr.length; i++) {
-                    if (installedAddonsArr[i].Addon !== null) {
-                        if (installedAddonsArr[i].Addon.Name == addonName) {
-                            isInstalled = true;
-                            break;
-                        }
-                    }
-                }
-                if (!isInstalled) {
-                    await service.addons.installedAddons.addonUUID(`${testData[addonName][0]}`).install();
-                    generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-                }
-                isInstalled = false;
-            }
+            isInstalledArr.forEach((isInstalled) => {
+                expect(isInstalled).to.be.true;
+            })
         });
 
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
+            const varLatestVersion = chnageVersionResponseArr[addonName][2];
+            const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, () => {
-                let varLatestVersion;
-                it('Upgarde To Latest Version', async () => {
-                    let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
-                    if (addonName == 'Services Framework' || addonName == 'Cross Platforms API') {
-                        searchString = `AND Version Like '${version}%' AND Available Like 1`;
-                    }
-                    varLatestVersion = await fetch(
-                        `${generalService['client'].BaseURL.replace(
-                            'papi-eu',
-                            'papi',
-                        )}/var/addons/versions?where=AddonUUID='${addonUUID}' ${searchString}&order_by=CreationDateTime DESC`,
-                        {
-                            method: `GET`,
-                            headers: {
-                                Authorization: `${request.body.varKey}`,
-                            },
-                        },
-                    ).then((response) => response.json());
-                    varLatestVersion = varLatestVersion[0].Version;
+                it(`${changeType} To Latest Version That Start With: ${version}`, () => {
 
-                    await expect(service.addons.installedAddons.addonUUID(`${addonUUID}`).upgrade(varLatestVersion))
-                        .eventually.to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36)
-                        .then(async (executionUUID) => {
-                            generalService.sleep(4000); //Test upgrade status only after 4 seconds.
-                            let auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
-                            if (auditLogResponse.Status.Name == 'InProgress') {
-                                generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                                auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
-                            }
-                            if (auditLogResponse.Status.Name == 'Failure') {
-                                if (
-                                    !auditLogResponse.AuditInfo.ErrorMessage.includes(
-                                        'is already working on newer version',
-                                    )
-                                ) {
-                                    expect(auditLogResponse.AuditInfo.ErrorMessage).to.include(
-                                        'is already working on version',
-                                    );
-                                } else {
-                                    await expect(
-                                        service.addons.installedAddons
-                                            .addonUUID(`${addonUUID}`)
-                                            .downgrade(varLatestVersion),
-                                    )
-                                        .eventually.to.have.property('ExecutionUUID')
-                                        .a('string')
-                                        .with.lengthOf(36)
-                                        .then(async (executionUUID) => {
-                                            generalService.sleep(4000); //Test downgrade status only after 4 seconds.
-                                            let auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
-                                            if (auditLogResponse.Status.Name == 'InProgress') {
-                                                generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                                                auditLogResponse = await service.auditLogs.uuid(executionUUID).get();
-                                            }
-                                            expect(auditLogResponse.Status.Name).to.include('Success');
-                                        });
-                                }
-                            } else {
-                                expect(auditLogResponse.Status.Name).to.include('Success');
-                            }
-                        });
+                    if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                        expect(chnageVersionResponseArr[addonName][5]).to.include(
+                            'is already working on version',
+                        );
+                    } else {
+                        expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                    }
                 });
 
-                it(`Latest Version Is Installed`, async () => {
+                it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
                     await expect(service.addons.installedAddons.addonUUID(`${addonUUID}`).get())
                         .eventually.to.have.property('Version')
                         .a('string')

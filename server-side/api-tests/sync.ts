@@ -490,11 +490,11 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     async function cleanUpTest() {
         let countHiddenTransactions = 0;
         let countFailedToHideTransactions = 0;
-        const allActivitiesArr: GeneralActivity | Transaction = (await service.papiClient.allActivities.find({
+        const allActivitiesArr: GeneralActivity | Transaction = await service.papiClient.allActivities.find({
             where: "CreationDateTime>'2020-07-07Z'",
             page_size: -1,
             order_by: 'ModificationDateTime DESC',
-        })) as any;
+        });
 
         for (let index = 0; index < allActivitiesArr.length; index++) {
             const activityToHide: GeneralActivity | Transaction = allActivitiesArr[index];
