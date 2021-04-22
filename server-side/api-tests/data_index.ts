@@ -1,6 +1,6 @@
 //import { ObjectsService } from './../services/objects.service';
 //import { ElasticSearchService } from './../services/elastic-search.service';
-import { DataIndexService } from './../services/data-index.service';
+//import { DataIndexService } from './../services/data-index.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
 
@@ -9,7 +9,7 @@ declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines'
 export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
     //const elasticSearchService = new ElasticSearchService(generalService.papiClient);
     //const objectsService = new ObjectsService(generalService);
-    const dataIndexService = new DataIndexService(generalService);
+    //  const dataIndexService = new DataIndexService(generalService.papiClient);
     const service = generalService.papiClient;
 
     const describe = tester.describe;
@@ -243,7 +243,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             it(`Create ${allActivitiesIndexFieldsArrName.split('.')[0]} With New ${
                                 allActivitiesIndexFieldsArrName.split('.')[1]
                             }`, async () => {
-                                testDataAccount = await dataIndexService.fetchStatus('POST', '/accounts', {
+                                testDataAccount = await generalService.fetchStatus('POST', '/accounts', {
                                     ExternalID: 'oren test 11111',
                                     City: 'oren city',
                                 });
@@ -252,7 +252,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         }
 
                         it(`Create Transaction With The New ${allActivitiesIndexFieldsArrName}`, async () => {
-                            const testDataTransaction = await dataIndexService.fetchStatus('POST', '/transactions', {
+                            const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
                                 ExternalID: 'Automated API Transaction 46500388818',
                                 ActivityTypeID: 268428,
                                 Account: {
