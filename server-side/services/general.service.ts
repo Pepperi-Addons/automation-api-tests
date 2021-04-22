@@ -8,6 +8,7 @@ import {
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
+import fetch from 'node-fetch';
 
 declare type ClientData =
     | 'UserEmail'
@@ -29,6 +30,7 @@ const UserDataObject = {
     Server: 'pepperi.datacenter',
     IdpURL: 'iss',
 };
+type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -170,6 +172,31 @@ export default class GeneralService {
             return e;
         }
         return auditLogResponse;
+    }
+
+    fetchStatus(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
+        return fetch(`${this['client'].BaseURL}${URI}`, {
+            method: `${method}`,
+            body: JSON.stringify(body),
+            headers: {
+                Authorization: `Bearer ${this.papiClient['options'].token}`,
+            },
+            timeout: timeout,
+            size: size,
+        })
+            .then(async (response) => {
+                return {
+                    Status: response.status,
+                    Body: await response.json(),
+                };
+            })
+            .then((res) => {
+                return {
+                    Status: res.Status,
+                    Size: res.Body.length,
+                    Body: res.Body,
+                };
+            });
     }
 }
 
