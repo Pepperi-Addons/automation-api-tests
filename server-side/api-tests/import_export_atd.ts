@@ -155,6 +155,15 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         afterURL = request.body.after;
     }
 
+    //#region Upgrade ImportExportATD and Data Views API
+    const testData = {
+        'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
+        ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', '1.'],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#endregion Upgrade ImportExportATD and Data Views API
+
     //Clean the ATD and UDT from failed tests before starting a new test
     await TestCleanUpATD(importExportATDService);
     await TestCleanUpUDT(importExportATDService);
@@ -236,577 +245,433 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         .getAllTransactionsATD()
         .then((res) => res.find((atd) => atd.ExternalID == 'Jenkins Automation ATD 1.1.168'));
 
-    const dataViewsAddonUUID = '484e7f22-796a-45f8-9082-12a734bac4e8';
-    const dataViewsVersion = '1.';
-    const importExportATDAddonUUID = 'e9029d7f-af32-4b0e-a513-8d9ced6f8186';
-    const importExportATDVersion = '1.';
-
-    //#region Upgrade Data Views
-    const dataViewsVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${dataViewsAddonUUID}' AND Version Like '${dataViewsVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    let isInstalled = false;
-    let installedAddonVersion;
-    const installedAddonsArr = await generalService.getAddons();
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'Data Views API') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let dataViewsUpgradeAuditLogResponse;
-    let dataViewsInstalledAddonVersion;
-    let dataViewsAuditLogResponse;
-    if (installedAddonVersion != dataViewsVarLatestVersion) {
-        dataViewsUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${dataViewsAddonUUID}`)
-            .upgrade(dataViewsVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        dataViewsAuditLogResponse = await service.auditLogs.uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID).get();
-        if (dataViewsAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            dataViewsAuditLogResponse = await service.auditLogs
-                .uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        dataViewsInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).get()
-        ).Version;
-    } else {
-        dataViewsUpgradeAuditLogResponse = 'Skipped';
-        dataViewsInstalledAddonVersion = installedAddonVersion;
-    }
-    //#endregion Upgrade Data Views
-
-    //#region Upgrade Import Export ATD
-    const importExportATDVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${importExportATDAddonUUID}' AND Version Like '${importExportATDVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    isInstalled = false;
-    installedAddonVersion = undefined;
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'ImportExportATD') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let importExportATDUpgradeAuditLogResponse;
-    let importExportATDInstalledAddonVersion;
-    let importExportATDAuditLogResponse;
-    if (installedAddonVersion != importExportATDVarLatestVersion) {
-        importExportATDUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${importExportATDAddonUUID}`)
-            .upgrade(importExportATDVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        importExportATDAuditLogResponse = await service.auditLogs
-            .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
-            .get();
-        if (importExportATDAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            importExportATDAuditLogResponse = await service.auditLogs
-                .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        importExportATDInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).get()
-        ).Version;
-    } else {
-        importExportATDUpgradeAuditLogResponse = 'Skipped';
-        importExportATDInstalledAddonVersion = installedAddonVersion;
-    }
-    //#endregion Upgrade Import Export ATD
-
     describe('Export And Import ATD Tests Suites', () => {
-        //Test Data
-        it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
-            transactionsTypeArr[transactionsTypeArr[0]]
-        }`, () => {
-            expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
-        });
-
-        it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
-            activitiesTypeArr[activitiesTypeArr[0]]
-        }`, () => {
-            expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
-        });
-
-        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion}`, () => {
-            expect(importExportATDInstalledAddonVersion).to.contain('.');
-        });
-
         describe('Prerequisites Addon for ImportExportATD Tests', () => {
-            it('Upgarde To Latest Version of Data Views Addon', async () => {
-                if (dataViewsUpgradeAuditLogResponse != 'Skipped') {
-                    expect(dataViewsUpgradeAuditLogResponse)
-                        .to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36);
-                    if (dataViewsAuditLogResponse.Status.Name == 'Failure') {
-                        expect(dataViewsAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                            'is already working on version',
-                        );
-                    } else {
-                        expect(dataViewsAuditLogResponse.Status.Name).to.include('Success');
-                    }
-                }
+            //Test Data
+            it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
+                transactionsTypeArr[transactionsTypeArr[0]]
+            }`, () => {
+                expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
             });
 
-            it(`Latest Version Is Installed`, () => {
-                expect(dataViewsInstalledAddonVersion).to.equal(dataViewsVarLatestVersion);
+            it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
+                activitiesTypeArr[activitiesTypeArr[0]]
+            }`, () => {
+                expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
             });
 
-            it('Upgarde To Latest Version of Import Export Addon', async () => {
-                if (importExportATDUpgradeAuditLogResponse != 'Skipped') {
-                    expect(importExportATDUpgradeAuditLogResponse)
-                        .to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36);
-                    if (importExportATDAuditLogResponse.Status.Name == 'Failure') {
-                        expect(importExportATDAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                            'is already working on version',
-                        );
-                    } else {
-                        expect(importExportATDAuditLogResponse.Status.Name).to.include('Success');
-                    }
-                }
+            //ImportExportATD, Data Views API
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
             });
 
-            it(`Latest Version Is Installed`, () => {
-                expect(importExportATDInstalledAddonVersion).to.equal(importExportATDVarLatestVersion);
-            });
-
-            if (isTransactionsTests) {
-                describe('Endpoints', () => {
-                    describe('ATD', () => {
-                        it(`Create New ATD (DI-17195)`, async () => {
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('Description')
-                                .a('string')
-                                .that.contains('Description of Test ATD');
-                            expect(testDataNewTransactionATD).to.have.property('TypeID').a('number').that.is.above(0);
-                            expect(testDataNewTransactionATD).to.have.property('InternalID').a('number').that.above(0);
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('ExternalID')
-                                .a('string')
-                                .that.contains('Test ATD ');
-                            expect(testDataNewTransactionATD).to.have.property('Hidden').a('boolean').that.is.false;
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('Icon')
-                                .a('string')
-                                .that.contains('icon');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains(new Date().toISOString().substring(0, 11));
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains('Z');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('CreationDateTime')
-                                .a('string')
-                                .that.contains(new Date().toISOString().substring(0, 11));
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('CreationDateTime')
-                                .a('string')
-                                .that.contains('Z');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('UUID')
-                                .a('string')
-                                .that.have.lengthOf(36);
-                        });
-
-                        it(`CRUD ATD`, async () => {
-                            //Update + Delete
-                            console.log({ CRUD_ATD_Post_Response: testDataNewTransactionATD });
-                            const testDataUpdatedATD = await importExportATDService.postTransactionsATD({
-                                TypeID: 0,
-                                InternalID: testDataNewTransactionATD.InternalID,
-                                ExternalID: testDataNewTransactionATD.ExternalID + 1,
-                                UUID: 'Test String',
-                                Description: 'Updated Description of Test ATD',
-                                Icon: testDataNewTransactionATD.Icon.slice(0, -1) + 3,
-                                Hidden: true,
-                                CreationDateTime: testDataNewTransactionATD.CreationDateTime,
-                                ModificationDateTime: 'Test String',
-                            });
-                            console.log({ CRUD_ATD_Update_Response: testDataUpdatedATD });
-
-                            expect(testDataUpdatedATD)
-                                .to.have.property('Description')
-                                .a('string')
-                                .that.contains('Updated Description of Test ATD');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('TypeID')
-                                .a('number')
-                                .that.is.equal(testDataUpdatedATD.TypeID);
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('InternalID')
-                                .a('number')
-                                .that.is.equal(testDataUpdatedATD.InternalID);
-                            expect(testDataUpdatedATD)
-                                .to.have.property('ExternalID')
-                                .a('string')
-                                .that.contains(testDataNewTransactionATD.ExternalID + 1);
-                            expect(testDataUpdatedATD).to.have.property('Hidden').a('boolean').that.is.true;
-                            expect(testDataUpdatedATD).to.have.property('Icon').a('string').that.contains('icon3');
-                            expect(testDataUpdatedATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains(new Date().toISOString().substring(0, 11));
-                            expect(testDataUpdatedATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains('Z');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('CreationDateTime')
-                                .a('string')
-                                .that.contains(testDataUpdatedATD.CreationDateTime);
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('UUID')
-                                .a('string')
-                                .that.contains(testDataUpdatedATD.UUID);
-
-                            //Restore
-                            const testDataRestoreATD = await importExportATDService.postTransactionsATD({
-                                InternalID: testDataUpdatedATD.InternalID,
-                                ExternalID: testDataNewTransactionATD.ExternalID,
-                                Description: testDataUpdatedATD.Description,
-                                Hidden: false,
-                            });
-
-                            expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
-                            console.log({ CRUD_ATD_Restore_Response: testDataRestoreATD });
-
-                            //Hide the ATD - Full restore is not yet supported - see:
-                            //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
-                            const testDataRestoreATDTemp = await importExportATDService.postTransactionsATD({
-                                InternalID: testDataUpdatedATD.InternalID,
-                                ExternalID: testDataNewTransactionATD.ExternalID,
-                                Description: testDataUpdatedATD.Description,
-                                Hidden: true,
-                            });
-                            expect(testDataRestoreATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
-                        });
-
-                        it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
-                            const tempATD = testDataATD(
-                                Math.floor(Math.random() * 1000000).toString(),
-                                'Description of Test ATD',
-                            );
-                            tempATD.Icon = 'icon1';
-                            return expect(
-                                importExportATDService.postTransactionsATD(tempATD),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
-                            );
-                        });
-
-                        it(`Get Hidden ATD (DI-17049)`, async () => {
-                            //DI-17369 was changed from bug to improvment
-                            //it(`Get Hidden ATD (DI-17049, DI-17369)`, async () => {
-
-                            //importToNewATD
-
-                            //Test Data
-                            expect(testDataNewActivitiesATD).to.have.property('Hidden').a('boolean').that.is.false;
-                            //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
-                            // const exportATDResponseBeforeHidden = await importExportATDService.exportATD(
-                            //     'activities',
-                            //     testDataNewActivitiesATD.TypeID,
-                            // );
-
-                            // expect(exportATDResponseBeforeHidden)
-                            //     .to.have.property('URL')
-                            //     .that.contain('https://')
-                            //     .and.contain('cdn.')
-                            //     .and.contain('/TemporaryFiles/');
-                            // const exportATDResponseBeforeHiddenObject = await fetch(
-                            //     exportATDResponseBeforeHidden.URL,
-                            // ).then((response) => response.json());
-
-                            //Delete
-                            const testDeleteATD = await importExportATDService.postActivitiesATD({
-                                InternalID: testDataNewActivitiesATD.InternalID,
-                                ExternalID: testDataNewActivitiesATD.ExternalID,
-                                Description: testDataNewActivitiesATD.Description,
-                                Hidden: true,
-                            });
-                            expect(testDeleteATD).to.have.property('Hidden').a('boolean').that.is.true;
-
-                            //GET
-                            const getDeletedATD = await importExportATDService.getActivitiesATD(
-                                testDataNewActivitiesATD.TypeID,
-                            );
-                            expect(getDeletedATD).to.have.property('Hidden').a('boolean').that.is.true;
-
-                            //Restore
-                            const testDataRestoreATD = await importExportATDService.postActivitiesATD({
-                                InternalID: testDataNewActivitiesATD.InternalID,
-                                ExternalID: testDataNewActivitiesATD.ExternalID,
-                                Description: testDataNewActivitiesATD.Description,
-                                Hidden: false,
-                            });
-                            expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
-
-                            //Delete - this can be removed from here once DI-17369 will be ready and this test can be executed again
-                            const testDeleteATDTemp = await importExportATDService.postActivitiesATD({
-                                InternalID: testDataNewActivitiesATD.InternalID,
-                                ExternalID: testDataNewActivitiesATD.ExternalID,
-                                Description: testDataNewActivitiesATD.Description,
-                                Hidden: true,
-                            });
-                            expect(testDeleteATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
-
-                            //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
-                            // const exportATDResponseAfterRestore = await importExportATDService.exportATD(
-                            //     'activities',
-                            //     testDataNewActivitiesATD.TypeID,
-                            // );
-
-                            // expect(exportATDResponseAfterRestore)
-                            //     .to.have.property('URL')
-                            //     .that.contain('https://')
-                            //     .and.contain('cdn.')
-                            //     .and.contain('/TemporaryFiles/');
-                            // const exportATDResponseAfterRestoreObject = await fetch(
-                            //     exportATDResponseAfterRestore.URL,
-                            // ).then((response) => response.json());
-                            // if (
-                            //     Math.abs(
-                            //         JSON.stringify(exportATDResponseBeforeHiddenObject).length -
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length,
-                            //     ) > 0.5 ||
-                            //     Math.abs(
-                            //         JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length -
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length,
-                            //     ) > 0.5 ||
-                            //     Math.abs(
-                            //         JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length -
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length,
-                            //     ) > 0.5
-                            // ) {
-                            //     expect.fail(
-                            //         `The length of the ATD after the restore is ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length
-                            //         }, expected to be in length of ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject).length
-                            //         }, but the difference in length is: ${Math.abs(
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
-                            //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
-                            //         )}, Before the ATD was Hidden, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
-                            //             testDataNewActivitiesATD.InternalID
-                            //         }, and the Export Response was: ${
-                            //             exportATDResponseBeforeHidden.URL
-                            //         }, After the ATD restored, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
-                            //             testDataNewActivitiesATD.InternalID
-                            //         }, and the Export Response was: ${
-                            //             exportATDResponseAfterRestore.URL
-                            //         }, Before there was: ${
-                            //             exportATDResponseBeforeHiddenObject.DataViews.length
-                            //         } DataViews in total length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length
-                            //         },  ${exportATDResponseBeforeHiddenObject.Fields.length} Fields in total length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length
-                            //         }, ${
-                            //             exportATDResponseBeforeHiddenObject.References.length
-                            //         } References in total length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.References).length
-                            //         }, and Workflow in length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.Workflow).length
-                            //         }, After there was: ${
-                            //             exportATDResponseAfterRestoreObject.DataViews.length
-                            //         } DataViews in total length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length
-                            //         },  ${exportATDResponseAfterRestoreObject.Fields.length} Fields in total length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length
-                            //         }, ${
-                            //             exportATDResponseAfterRestoreObject.References.length
-                            //         } References in total length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.References).length
-                            //         }, and Workflow in length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.Workflow).length
-                            //         }`,
-                            //     );
-                            // } else {
-                            //     expect(
-                            //         Math.abs(
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
-                            //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
-                            //         ),
-                            //     ).to.be.below(20);
-                            // }
-                        });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
                     });
 
-                    describe('UDT', () => {
-                        it('CRUD UDT', async () => {
-                            console.log({ CRUD_UDT_Post_Response: testDataPostUDT });
-                            expect(testDataPostUDT).to.have.property('TableID');
-                        });
-
-                        it('Get Deleted UDT (DI-17251)', async () => {
-                            await importExportATDService.deleteUDT(testDataPostUDT.TableID);
-                            return expect(
-                                importExportATDService.getUDT(testDataPostUDT.TableID),
-                            ).eventually.to.have.property('TableID');
-                        });
-
-                        it('Delete Deleted UDT (DI-17265)', async () => {
-                            return expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be
-                                .false;
-                        });
-
-                        it('Delete Non Existing UDT (DI-17265)', async () => {
-                            return expect(
-                                importExportATDService.deleteUDT('Non Existing UDT 1234'),
-                            ).eventually.to.be.rejectedWith(
-                                `failed with status: 404 - Not Found error: {"fault":{"faultstring":"User defined table: Non Existing UDT 1234 doesn't exist.`,
-                            );
-                        });
-
-                        it('Restore Deleted UDT', async () => {
-                            await importExportATDService.postUDT({
-                                MainKeyType: testDataPostUDT.MainKeyType,
-                                SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
-                                TableID: testDataPostUDT.TableID,
-                                Hidden: false,
-                            });
-                            return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
-                                .eventually.to.have.property('Hidden')
-                                .a('boolean').that.is.false;
-                        });
-
-                        it('Restore Deleted UDT (DI-17304)', async () => {
-                            await importExportATDService.postUDT({
-                                MainKeyType: testDataPostUDT.MainKeyType,
-                                SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
-                                TableID: testDataPostUDT.TableID,
-                                Hidden: true,
-                            });
-
-                            const getUTDObject = await importExportATDService.getUDT(testDataPostUDT.TableID);
-
-                            await Promise.all([
-                                expect(getUTDObject).to.have.property('Hidden').a('boolean').that.is.true,
-                                expect(
-                                    importExportATDService.postUDT({
-                                        MainKeyType: testDataPostUDT.MainKeyType,
-                                        SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
-                                        TableID: testDataPostUDT.TableID,
-                                    }),
-                                )
-                                    .eventually.to.have.property('Hidden')
-                                    .a('boolean').that.is.false,
-                            ]);
-                        });
-
-                        it('Correct Error Message for MainKeyType (DI-17269)', async () => {
-                            return expect(
-                                importExportATDService.postUDT({
-                                    TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-                                    MainKeyType: { ID: 1, Name: '' },
-                                    SecondaryKeyType: { ID: 35, Name: '' },
-                                    MemoryMode: {},
-                                }),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"MainKey: 1 is not valid"',
-                            );
-                        });
-
-                        it('Correct Error Message for SecondaryKeyType (DI-17332)', async () => {
-                            return expect(
-                                importExportATDService.postUDT({
-                                    TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-                                    MainKeyType: { ID: 35, Name: '' },
-                                    SecondaryKeyType: { ID: 1, Name: '' },
-                                    MemoryMode: {},
-                                }),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"SecondaryKey: 1 is not valid"',
-                            );
-                        });
-
-                        it('Correct Error Message for Same MemoryMode Types true (DI-17271)', async () => {
-                            return expect(
-                                importExportATDService.postUDT({
-                                    TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-                                    MainKeyType: { ID: 0, Name: '' },
-                                    SecondaryKeyType: { ID: 0, Name: '' },
-                                    MemoryMode: {
-                                        Dormant: true,
-                                        Volatile: true,
-                                    },
-                                }),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"User defined table cannot be both volatile and dormant at the same time"',
-                            );
-                        });
-
-                        it("Don't Store Non Valid Data Members (DI-17268)", async () => {
-                            const baseATD = await importExportATDService.getUDT(testDataPostUDT.TableID);
-                            const modifiedATD = await importExportATDService.postUDT({
-                                TableID: testDataPostUDT.TableID,
-                                MemoryMode: {
-                                    sdas: 'dfsdf',
-                                },
-                            } as any);
-                            expect(baseATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that
-                                .is.true;
-                            expect(baseATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
-                                .that.is.false;
-                            expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean')
-                                .that.is.false;
-                            expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
-                                .that.is.false;
-                            expect(modifiedATD).to.have.property('MemoryMode').to.not.have.property('sdas');
-                        });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(service.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
                     });
                 });
             }
         });
+        if (isTransactionsTests) {
+            describe('External Endpoints', () => {
+                describe('ATD', () => {
+                    it(`Create New ATD (DI-17195)`, async () => {
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('Description')
+                            .a('string')
+                            .that.contains('Description of Test ATD');
+                        expect(testDataNewTransactionATD).to.have.property('TypeID').a('number').that.is.above(0);
+                        expect(testDataNewTransactionATD).to.have.property('InternalID').a('number').that.above(0);
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('ExternalID')
+                            .a('string')
+                            .that.contains('Test ATD ');
+                        expect(testDataNewTransactionATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        expect(testDataNewTransactionATD).to.have.property('Icon').a('string').that.contains('icon');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewTransactionATD).to.have.property('UUID').a('string').that.have.lengthOf(36);
+                    });
+
+                    it(`CRUD ATD`, async () => {
+                        //Update + Delete
+                        console.log({ CRUD_ATD_Post_Response: testDataNewTransactionATD });
+                        const testDataUpdatedATD = await importExportATDService.postTransactionsATD({
+                            TypeID: 0,
+                            InternalID: testDataNewTransactionATD.InternalID,
+                            ExternalID: testDataNewTransactionATD.ExternalID + 1,
+                            UUID: 'Test String',
+                            Description: 'Updated Description of Test ATD',
+                            Icon: testDataNewTransactionATD.Icon.slice(0, -1) + 3,
+                            Hidden: true,
+                            CreationDateTime: testDataNewTransactionATD.CreationDateTime,
+                            ModificationDateTime: 'Test String',
+                        });
+                        console.log({ CRUD_ATD_Update_Response: testDataUpdatedATD });
+
+                        expect(testDataUpdatedATD)
+                            .to.have.property('Description')
+                            .a('string')
+                            .that.contains('Updated Description of Test ATD');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('TypeID')
+                            .a('number')
+                            .that.is.equal(testDataUpdatedATD.TypeID);
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('InternalID')
+                            .a('number')
+                            .that.is.equal(testDataUpdatedATD.InternalID);
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ExternalID')
+                            .a('string')
+                            .that.contains(testDataNewTransactionATD.ExternalID + 1);
+                        expect(testDataUpdatedATD).to.have.property('Hidden').a('boolean').that.is.true;
+                        expect(testDataUpdatedATD).to.have.property('Icon').a('string').that.contains('icon3');
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains(testDataUpdatedATD.CreationDateTime);
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('UUID')
+                            .a('string')
+                            .that.contains(testDataUpdatedATD.UUID);
+
+                        //Restore
+                        const testDataRestoreATD = await importExportATDService.postTransactionsATD({
+                            InternalID: testDataUpdatedATD.InternalID,
+                            ExternalID: testDataNewTransactionATD.ExternalID,
+                            Description: testDataUpdatedATD.Description,
+                            Hidden: false,
+                        });
+
+                        expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        console.log({ CRUD_ATD_Restore_Response: testDataRestoreATD });
+
+                        //Hide the ATD - Full restore is not yet supported - see:
+                        //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
+                        const testDataRestoreATDTemp = await importExportATDService.postTransactionsATD({
+                            InternalID: testDataUpdatedATD.InternalID,
+                            ExternalID: testDataNewTransactionATD.ExternalID,
+                            Description: testDataUpdatedATD.Description,
+                            Hidden: true,
+                        });
+                        expect(testDataRestoreATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
+                    });
+
+                    it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
+                        const tempATD = testDataATD(
+                            Math.floor(Math.random() * 1000000).toString(),
+                            'Description of Test ATD',
+                        );
+                        tempATD.Icon = 'icon1';
+                        return expect(
+                            importExportATDService.postTransactionsATD(tempATD),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
+                        );
+                    });
+
+                    it(`Get Hidden ATD (DI-17049)`, async () => {
+                        //DI-17369 was changed from bug to improvment
+                        //it(`Get Hidden ATD (DI-17049, DI-17369)`, async () => {
+
+                        //importToNewATD
+
+                        //Test Data
+                        expect(testDataNewActivitiesATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
+                        // const exportATDResponseBeforeHidden = await importExportATDService.exportATD(
+                        //     'activities',
+                        //     testDataNewActivitiesATD.TypeID,
+                        // );
+
+                        // expect(exportATDResponseBeforeHidden)
+                        //     .to.have.property('URL')
+                        //     .that.contain('https://')
+                        //     .and.contain('cdn.')
+                        //     .and.contain('/TemporaryFiles/');
+                        // const exportATDResponseBeforeHiddenObject = await fetch(
+                        //     exportATDResponseBeforeHidden.URL,
+                        // ).then((response) => response.json());
+
+                        //Delete
+                        const testDeleteATD = await importExportATDService.postActivitiesATD({
+                            InternalID: testDataNewActivitiesATD.InternalID,
+                            ExternalID: testDataNewActivitiesATD.ExternalID,
+                            Description: testDataNewActivitiesATD.Description,
+                            Hidden: true,
+                        });
+                        expect(testDeleteATD).to.have.property('Hidden').a('boolean').that.is.true;
+
+                        //GET
+                        const getDeletedATD = await importExportATDService.getActivitiesATD(
+                            testDataNewActivitiesATD.TypeID,
+                        );
+                        expect(getDeletedATD).to.have.property('Hidden').a('boolean').that.is.true;
+
+                        //Restore
+                        const testDataRestoreATD = await importExportATDService.postActivitiesATD({
+                            InternalID: testDataNewActivitiesATD.InternalID,
+                            ExternalID: testDataNewActivitiesATD.ExternalID,
+                            Description: testDataNewActivitiesATD.Description,
+                            Hidden: false,
+                        });
+                        expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
+
+                        //Delete - this can be removed from here once DI-17369 will be ready and this test can be executed again
+                        const testDeleteATDTemp = await importExportATDService.postActivitiesATD({
+                            InternalID: testDataNewActivitiesATD.InternalID,
+                            ExternalID: testDataNewActivitiesATD.ExternalID,
+                            Description: testDataNewActivitiesATD.Description,
+                            Hidden: true,
+                        });
+                        expect(testDeleteATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
+
+                        //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
+                        // const exportATDResponseAfterRestore = await importExportATDService.exportATD(
+                        //     'activities',
+                        //     testDataNewActivitiesATD.TypeID,
+                        // );
+
+                        // expect(exportATDResponseAfterRestore)
+                        //     .to.have.property('URL')
+                        //     .that.contain('https://')
+                        //     .and.contain('cdn.')
+                        //     .and.contain('/TemporaryFiles/');
+                        // const exportATDResponseAfterRestoreObject = await fetch(
+                        //     exportATDResponseAfterRestore.URL,
+                        // ).then((response) => response.json());
+                        // if (
+                        //     Math.abs(
+                        //         JSON.stringify(exportATDResponseBeforeHiddenObject).length -
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length,
+                        //     ) > 0.5 ||
+                        //     Math.abs(
+                        //         JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length -
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length,
+                        //     ) > 0.5 ||
+                        //     Math.abs(
+                        //         JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length -
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length,
+                        //     ) > 0.5
+                        // ) {
+                        //     expect.fail(
+                        //         `The length of the ATD after the restore is ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length
+                        //         }, expected to be in length of ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject).length
+                        //         }, but the difference in length is: ${Math.abs(
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
+                        //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
+                        //         )}, Before the ATD was Hidden, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
+                        //             testDataNewActivitiesATD.InternalID
+                        //         }, and the Export Response was: ${
+                        //             exportATDResponseBeforeHidden.URL
+                        //         }, After the ATD restored, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
+                        //             testDataNewActivitiesATD.InternalID
+                        //         }, and the Export Response was: ${
+                        //             exportATDResponseAfterRestore.URL
+                        //         }, Before there was: ${
+                        //             exportATDResponseBeforeHiddenObject.DataViews.length
+                        //         } DataViews in total length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length
+                        //         },  ${exportATDResponseBeforeHiddenObject.Fields.length} Fields in total length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length
+                        //         }, ${
+                        //             exportATDResponseBeforeHiddenObject.References.length
+                        //         } References in total length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.References).length
+                        //         }, and Workflow in length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.Workflow).length
+                        //         }, After there was: ${
+                        //             exportATDResponseAfterRestoreObject.DataViews.length
+                        //         } DataViews in total length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length
+                        //         },  ${exportATDResponseAfterRestoreObject.Fields.length} Fields in total length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length
+                        //         }, ${
+                        //             exportATDResponseAfterRestoreObject.References.length
+                        //         } References in total length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.References).length
+                        //         }, and Workflow in length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.Workflow).length
+                        //         }`,
+                        //     );
+                        // } else {
+                        //     expect(
+                        //         Math.abs(
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
+                        //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
+                        //         ),
+                        //     ).to.be.below(20);
+                        // }
+                    });
+                });
+
+                describe('UDT', () => {
+                    it('CRUD UDT', async () => {
+                        console.log({ CRUD_UDT_Post_Response: testDataPostUDT });
+                        expect(testDataPostUDT).to.have.property('TableID');
+                    });
+
+                    it('Get Deleted UDT (DI-17251)', async () => {
+                        await importExportATDService.deleteUDT(testDataPostUDT.TableID);
+                        return expect(
+                            importExportATDService.getUDT(testDataPostUDT.TableID),
+                        ).eventually.to.have.property('TableID');
+                    });
+
+                    it('Delete Deleted UDT (DI-17265)', async () => {
+                        return expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be.false;
+                    });
+
+                    it('Delete Non Existing UDT (DI-17265)', async () => {
+                        return expect(
+                            importExportATDService.deleteUDT('Non Existing UDT 1234'),
+                        ).eventually.to.be.rejectedWith(
+                            `failed with status: 404 - Not Found error: {"fault":{"faultstring":"User defined table: Non Existing UDT 1234 doesn't exist.`,
+                        );
+                    });
+
+                    it('Restore Deleted UDT', async () => {
+                        await importExportATDService.postUDT({
+                            MainKeyType: testDataPostUDT.MainKeyType,
+                            SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                            TableID: testDataPostUDT.TableID,
+                            Hidden: false,
+                        });
+                        return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
+                            .eventually.to.have.property('Hidden')
+                            .a('boolean').that.is.false;
+                    });
+
+                    it('Restore Deleted UDT (DI-17304)', async () => {
+                        await importExportATDService.postUDT({
+                            MainKeyType: testDataPostUDT.MainKeyType,
+                            SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                            TableID: testDataPostUDT.TableID,
+                            Hidden: true,
+                        });
+
+                        const getUTDObject = await importExportATDService.getUDT(testDataPostUDT.TableID);
+
+                        await Promise.all([
+                            expect(getUTDObject).to.have.property('Hidden').a('boolean').that.is.true,
+                            expect(
+                                importExportATDService.postUDT({
+                                    MainKeyType: testDataPostUDT.MainKeyType,
+                                    SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                                    TableID: testDataPostUDT.TableID,
+                                }),
+                            )
+                                .eventually.to.have.property('Hidden')
+                                .a('boolean').that.is.false,
+                        ]);
+                    });
+
+                    it('Correct Error Message for MainKeyType (DI-17269)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 1, Name: '' },
+                                SecondaryKeyType: { ID: 35, Name: '' },
+                                MemoryMode: {},
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"MainKey: 1 is not valid"',
+                        );
+                    });
+
+                    it('Correct Error Message for SecondaryKeyType (DI-17332)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 35, Name: '' },
+                                SecondaryKeyType: { ID: 1, Name: '' },
+                                MemoryMode: {},
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"SecondaryKey: 1 is not valid"',
+                        );
+                    });
+
+                    it('Correct Error Message for Same MemoryMode Types true (DI-17271)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 0, Name: '' },
+                                SecondaryKeyType: { ID: 0, Name: '' },
+                                MemoryMode: {
+                                    Dormant: true,
+                                    Volatile: true,
+                                },
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"User defined table cannot be both volatile and dormant at the same time"',
+                        );
+                    });
+
+                    it("Don't Store Non Valid Data Members (DI-17268)", async () => {
+                        const baseATD = await importExportATDService.getUDT(testDataPostUDT.TableID);
+                        const modifiedATD = await importExportATDService.postUDT({
+                            TableID: testDataPostUDT.TableID,
+                            MemoryMode: {
+                                sdas: 'dfsdf',
+                            },
+                        } as any);
+                        expect(baseATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that.is
+                            .true;
+                        expect(baseATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean').that.is
+                            .false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that
+                            .is.false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
+                            .that.is.false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.not.have.property('sdas');
+                    });
+                });
+            });
+        }
 
         describe('Endpoints', () => {
             describe('Get (DI-17200, DI-17258)', () => {

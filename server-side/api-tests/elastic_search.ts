@@ -1,6 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ElasticSearchService } from '../services/elastic-search.service';
-import fetch from 'node-fetch';
 
 export async function ElasticSearchTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const elasticSearchService = new ElasticSearchService(generalService.papiClient);
@@ -131,97 +130,49 @@ export async function ElasticSearchTests(generalService: GeneralService, request
         },
     ];
 
-    const elasticSearchAddonUUID = '00000000-0000-0000-0000-00000e1a571c';
-    const elasticSearchVersion = '.';
-    //#region Upgrade Elastic Search
-    const elasticSearchVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${elasticSearchAddonUUID}' AND Version Like '%${elasticSearchVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    let isInstalled = false;
-    let installedAddonVersion;
-    const installedAddonsArr = await generalService.getAddons();
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'PepperiElasticSearch') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await generalService.papiClient.addons.installedAddons.addonUUID(`${elasticSearchAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let elasticSearchUpgradeAuditLogResponse;
-    let elasticSearchInstalledAddonVersion;
-    let elasticSearchAuditLogResponse;
-    if (installedAddonVersion != elasticSearchVarLatestVersion) {
-        elasticSearchUpgradeAuditLogResponse = await generalService.papiClient.addons.installedAddons
-            .addonUUID(`${elasticSearchAddonUUID}`)
-            .upgrade(elasticSearchVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        elasticSearchAuditLogResponse = await generalService.papiClient.auditLogs
-            .uuid(elasticSearchUpgradeAuditLogResponse.ExecutionUUID)
-            .get();
-        if (elasticSearchAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            elasticSearchAuditLogResponse = await generalService.papiClient.auditLogs
-                .uuid(elasticSearchUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        elasticSearchInstalledAddonVersion = await (
-            await generalService.papiClient.addons.installedAddons.addonUUID(`${elasticSearchAddonUUID}`).get()
-        ).Version;
-    } else {
-        elasticSearchUpgradeAuditLogResponse = 'Skipped';
-        elasticSearchInstalledAddonVersion = installedAddonVersion;
-    }
-    //#endregion Upgrade Elastic Search
+    //#region Upgrade PepperiElasticSearch
+    const testData = {
+        PepperiElasticSearch: ['00000000-0000-0000-0000-00000e1a571c', '.'],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#endregion Upgrade PepperiElasticSearch
 
     describe('Elastic Search Test Suites', () => {
-        it(`Test Data: Tested Addon: PepperiElasticSearch - Version: ${elasticSearchInstalledAddonVersion}`, () => {
-            expect(elasticSearchInstalledAddonVersion).to.contain('.');
-        });
-
         describe('Prerequisites Addon for Elastic Search Tests', () => {
-            it('Upgrade To Latest Version of Elastic Search Addon', async () => {
-                if (elasticSearchUpgradeAuditLogResponse != 'Skipped') {
-                    expect(elasticSearchUpgradeAuditLogResponse)
-                        .to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36);
-                    if (elasticSearchAuditLogResponse.Status.Name == 'Failure') {
-                        expect(elasticSearchAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                            'is already working on version',
-                        );
-                    } else {
-                        expect(elasticSearchAuditLogResponse.Status.Name).to.include('Success');
-                    }
-                }
+            //Test Data
+            //PepperiElasticSearch
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
             });
 
-            it(`Latest Version Is Installed`, () => {
-                expect(elasticSearchInstalledAddonVersion).to.equal(elasticSearchVarLatestVersion);
-            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
 
         let distUUID;
-
         describe('Post Bulk Data', () => {
             let tempFile;
 
