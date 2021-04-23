@@ -296,7 +296,7 @@ export interface TesterFunctions {
     expect: any;
     it: any;
     run: any;
-    setNewTestHeadline: any;
-    addTestResultUnderHeadline: any;
-    printTestResults: any;
+    setNewTestHeadline?: any;
+    addTestResultUnderHeadline?: any;
+    printTestResults?: any;
 }
