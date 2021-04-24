@@ -916,23 +916,24 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 ]);
             });
 
-            // it('Delete Account Message (DI-17285)', async () => {
-            //     const account = await service.createAccount({
-            //         ExternalID: 'Oren Test 12345',
-            //         City: 'City',
-            //         Country: 'US',
-            //     });
-            //     return Promise.all([
-            //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.true,
-            //         expect(service.deleteAccount(account.InternalID as any)).eventually.to.be.false,
-            //         expect(service.deleteAccount((account.InternalID as any) + 123))
-            //             .eventually.to.be.rejectedWith
-            //             // Bug: 'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Upload file error, internal code = ST12',
-            //             // version 1: `The Account with InternalID: ${account.InternalID} that you are trying to update does not exist. Please verify and try again.`,
-            //             // version 2: `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The ${account.InternalID} you are trying to update does not exist. Please load it and then try again.`,
-            //             (),
-            //     ]);
-            // });
+            it('Delete Account Message (DI-17285)', async () => {
+                const account = await objectsService.createAccount({
+                    ExternalID: 'Delete Account Test 12345',
+                    City: 'City',
+                    Country: 'US',
+                });
+                return Promise.all([
+                    expect(objectsService.deleteAccount(account.InternalID as any)).eventually.to.be.true,
+                    expect(objectsService.deleteAccount(account.InternalID as any)).eventually.to.be.false,
+                    expect(
+                        objectsService.deleteAccount((account.InternalID as any) + 123456789),
+                    ).eventually.to.be.rejectedWith(
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
+                            (account.InternalID as any) + 123456789
+                        } you are trying to update does not exist. Please load it and then try again."`,
+                    ),
+                ]);
+            });
         });
 
         describe('Contacts', () => {
@@ -2169,7 +2170,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk create transaction headers', async () => {
-                defaultCatalog = await objectsService.getDefaultCatalog();
+                defaultCatalog = await objectsService.getCatalogs({ where: 'ExternalID=Default Catalog' });
                 bulkTransactionExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateTransaction = await objectsService.bulkCreate('transactions/' + atds[0].TypeID, {
                     Headers: ['ExternalID', 'AccountExternalID', 'Status', 'CatalogExternalID'],

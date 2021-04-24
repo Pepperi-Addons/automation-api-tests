@@ -92,16 +92,19 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
 
     //Test Prerequisites
     try {
-        accounts = await service.papiClient.accounts.find({ page: 1 });
+        accounts = await service.papiClient.accounts.find({ page_size: 1 });
         _accountExternalIDStr = accounts[0].ExternalID?.toString();
         let transaction: Transaction;
         try {
-            transactions = await service.papiClient.transactions.find({ where: `Type='Sales Order'`, page: 1 });
+            transactions = await service.papiClient.transactions.find({ where: `Type='Sales Order'`, page_size: 1 });
             transaction = transactions[0];
             _activityTypeIDStr = transaction.ActivityTypeID;
         } catch (error) {
             console.log(error);
-            transactions = await service.papiClient.transactions.find({ where: `Type LIKE '%Sales Order%'`, page: 1 });
+            transactions = await service.papiClient.transactions.find({
+                where: `Type LIKE '%Sales Order%'`,
+                page_size: 1,
+            });
             transaction = transactions[0];
             _activityTypeIDStr = transaction.ActivityTypeID;
         }

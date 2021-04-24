@@ -15,6 +15,8 @@ interface QueryOptions {
     is_distinct?: boolean;
 }
 
+type ElasticSearchType = 'all_activities' | 'transaction_lines';
+
 function addQueryAndOptions(url: string, options: QueryOptions = {}) {
     const optionsArr: string[] = [];
     Object.keys(options).forEach((key) => {
@@ -51,13 +53,13 @@ export class ElasticSearchService {
         return this.papiClient.post('/elasticsearch/delete/' + type, deleteData);
     }
 
-    getTotals(type, options: QueryOptions = {}) {
+    getTotals(type: ElasticSearchType, options: QueryOptions = {}) {
         let url = `/elasticsearch/totals/${type}`;
         url = addQueryAndOptions(url, options);
         return this.papiClient.get(url);
     }
 
-    getElasticSearch(type, options: QueryOptions = {}) {
+    getElasticSearch(type: ElasticSearchType, options: QueryOptions = {}) {
         let url = `/elasticsearch/${type}`;
         url = addQueryAndOptions(url, options);
         return this.papiClient.get(url);
