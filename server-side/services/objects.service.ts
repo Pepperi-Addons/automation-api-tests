@@ -73,8 +73,8 @@ export class ObjectsService {
         }
     }
 
-    getDefaultCatalog() {
-        return this.papiClient.get("/catalogs?where=ExternalID='Default Catalog'");
+    getCatalogs(options?: FindOptions) {
+        return this.papiClient.catalogs.find(options);
     }
 
     deleteUser(type, ID) {

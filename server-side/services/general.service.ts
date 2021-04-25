@@ -46,7 +46,7 @@ export default class GeneralService {
         });
     }
 
-    sleep(ms) {
+    sleep(ms: number) {
         const start = new Date().getTime(),
             expire = start + ms;
         while (new Date().getTime() < expire) {}
@@ -296,7 +296,7 @@ export interface TesterFunctions {
     expect: any;
     it: any;
     run: any;
-    setNewTestHeadline: any;
-    addTestResultUnderHeadline: any;
-    printTestResults: any;
+    setNewTestHeadline?: any;
+    addTestResultUnderHeadline?: any;
+    printTestResults?: any;
 }

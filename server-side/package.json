@@ -18,9 +18,10 @@
         "fix-lint": "eslint --ext .ts . --fix",
         "update": "npm install @pepperi-addons/debug-server@latest && npm install @pepperi-addons/papi-sdk@latest",
         "learn": "ts-mocha ./learn/baseTestExample.ts",
-        "learn-p": "ts-mocha --reporter mochawesome ./learn/baseTestParallelExample.ts",
-        "learn-i": "ts-mocha --j 4 --p false ./learn/intervalTestExample.ts",
-        "learn-ip": "ts-mocha --reporter mochawesome --timeout 1200000 ./learn/intervalTestParallelExample.ts"
+        "learn-i": "ts-mocha ./learn/intervalTestExample.ts",
+        "learn-p": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_All' --parallel --timeout 20000 ./learn/*Test.ts",
+        "learn-pb": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Base' --timeout 20000 ./learn/parallelBaseTest.ts",
+        "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn/parallelIntervalTest.ts"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",

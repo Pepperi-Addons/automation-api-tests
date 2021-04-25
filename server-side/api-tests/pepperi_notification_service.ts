@@ -3,7 +3,6 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { NucleusFlagType, PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
-import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -12,7 +11,6 @@ export async function PepperiNotificationServiceTests(
     request,
     tester: TesterFunctions,
 ) {
-    const service = generalService.papiClient;
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
     const objectsService = new ObjectsService(generalService);
     const adalService = new ADALService(generalService.papiClient);
@@ -23,67 +21,12 @@ export async function PepperiNotificationServiceTests(
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
-    const pepperiNotificationServiceAddonUUID = '00000000-0000-0000-0000-000000040fa9';
-    const pepperiNotificationServiceVersion = '1.';
-
     //#region Upgrade Pepperi Notification Service
-    const pepperiNotificationServiceVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${pepperiNotificationServiceAddonUUID}' AND Version Like '${pepperiNotificationServiceVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    let isInstalled = false;
-    let installedAddonVersion;
-    const installedAddonsArr = await generalService.getAddons();
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'Pepperi Notification Service API') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${pepperiNotificationServiceAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let pepperiNotificationServiceUpgradeAuditLogResponse;
-    let pepperiNotificationServiceInstalledAddonVersion;
-    let pepperiNotificationServiceAuditLogResponse;
-    if (installedAddonVersion != pepperiNotificationServiceVarLatestVersion) {
-        pepperiNotificationServiceUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${pepperiNotificationServiceAddonUUID}`)
-            .upgrade(pepperiNotificationServiceVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        pepperiNotificationServiceAuditLogResponse = await service.auditLogs
-            .uuid(pepperiNotificationServiceUpgradeAuditLogResponse.ExecutionUUID)
-            .get();
-        if (pepperiNotificationServiceAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            pepperiNotificationServiceAuditLogResponse = await service.auditLogs
-                .uuid(pepperiNotificationServiceUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        pepperiNotificationServiceInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${pepperiNotificationServiceAddonUUID}`).get()
-        ).Version;
-    } else {
-        pepperiNotificationServiceUpgradeAuditLogResponse = 'Skipped';
-        pepperiNotificationServiceInstalledAddonVersion = installedAddonVersion;
-    }
+    const testData = {
+        'server-side': ['00000000-0000-0000-0000-000000040fa9', '1.'],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
@@ -98,31 +41,35 @@ export async function PepperiNotificationServiceTests(
         let createdTransactionLines;
         describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
             //Test Data
-            it(`Test Data: Tested Addon: PNS - Version: ${pepperiNotificationServiceInstalledAddonVersion}`, () => {
-                expect(pepperiNotificationServiceInstalledAddonVersion).to.contain('.');
+            //server-side
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
             });
 
-            it('Upgarde To Latest Version of Pepperi Notification Service Addon', async () => {
-                if (pepperiNotificationServiceUpgradeAuditLogResponse != 'Skipped') {
-                    expect(pepperiNotificationServiceUpgradeAuditLogResponse)
-                        .to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36);
-                    if (pepperiNotificationServiceAuditLogResponse.Status.Name == 'Failure') {
-                        expect(pepperiNotificationServiceAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                            'is already working on version',
-                        );
-                    } else {
-                        expect(pepperiNotificationServiceAuditLogResponse.Status.Name).to.include('Success');
-                    }
-                }
-            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
 
-            it(`Latest Version Is Installed`, () => {
-                expect(pepperiNotificationServiceInstalledAddonVersion).to.equal(
-                    pepperiNotificationServiceVarLatestVersion,
-                );
-            });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
 
         describe('Endpoints', () => {
