@@ -29,9 +29,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     expect(res.Body[0].Hidden).that.is.a('boolean').and.is.false;
             });
 
-            it('Validate POST', async () => {
-                //  const user = await generalService.fetchStatus("POST","/Users");
-            });
+            // it('Validate POST', async () => {
+            //     const userBody = {};
+            //       const user = await generalService.fetchStatus("POST","/Users", userBody);
+
+            // });
         });
         // describe('Scenarios', async () => {});
         // describe('Bug verifications', async () => {});
