@@ -180,6 +180,10 @@ export class ObjectsService {
         return this.papiClient.accounts.upsert(body);
     }
 
+    getAccountByID(accountID: number) {
+        return this.papiClient.accounts.get(accountID);
+    }
+
     getAccounts(options?: FindOptions) {
         return this.papiClient.accounts.find(options);
     }
