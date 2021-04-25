@@ -170,21 +170,22 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         });
 
                         if (allActivitiesFieldName.includes('.')) {
-                            it(`Create ${allActivitiesFieldName.split('.')[0]} With New ${allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    createdField = dataIndexService.createTestDataForField(
-                                        allActivitiesFieldName.split('.')[1],
-                                    );
-                                    const createAccountResponse = await generalService.fetchStatus('POST', '/accounts', {
-                                        ExternalID: accountExternalID,
-                                        [allActivitiesFieldName.split('.')[1]]: createdField,
-                                    });
-                                    accountInternalID = createAccountResponse.Body.InternalID;
-                                    expect(createAccountResponse.Status).to.equal(201);
+                            it(`Create ${allActivitiesFieldName.split('.')[0]} With New ${
+                                allActivitiesFieldName.split('.')[1]
+                            }`, async () => {
+                                if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                    throw new Error('NotImplementedException');
+                                }
+                                createdField = dataIndexService.createTestDataForField(
+                                    allActivitiesFieldName.split('.')[1],
+                                );
+                                const createAccountResponse = await generalService.fetchStatus('POST', '/accounts', {
+                                    ExternalID: accountExternalID,
+                                    [allActivitiesFieldName.split('.')[1]]: createdField,
                                 });
+                                accountInternalID = createAccountResponse.Body.InternalID;
+                                expect(createAccountResponse.Status).to.equal(201);
+                            });
                         }
 
                         it(`Create Transaction With The New ${allActivitiesFieldName}`, async () => {
@@ -214,7 +215,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 },
                             });
                             debugger;
-                            transactionInternalID = testDataTransaction.Body.InternalID
+                            transactionInternalID = testDataTransaction.Body.InternalID;
                             expect(testDataTransaction.Status).to.equal(201);
                         });
 
@@ -275,16 +276,17 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         });
 
                         if (allActivitiesFieldName.includes('.')) {
-                            it(`Get Existing ${allActivitiesFieldName.split('.')[0]} With Existing ${allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    const accountsArr = await objectsService.getAccounts({ page_size: 1 });
-                                    tempAccountInternalID = accountsArr[0].InternalID as number;
-                                    existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
-                                    expect(accountsArr.length).to.be.above(0);
-                                });
+                            it(`Get Existing ${allActivitiesFieldName.split('.')[0]} With Existing ${
+                                allActivitiesFieldName.split('.')[1]
+                            }`, async () => {
+                                if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                    throw new Error('NotImplementedException');
+                                }
+                                const accountsArr = await objectsService.getAccounts({ page_size: 1 });
+                                tempAccountInternalID = accountsArr[0].InternalID as number;
+                                existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
+                                expect(accountsArr.length).to.be.above(0);
+                            });
                         }
 
                         it(`Update Transaction With Existing ${allActivitiesFieldName}`, async () => {
@@ -366,18 +368,19 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         });
 
                         if (allActivitiesFieldName.includes('.')) {
-                            it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    const updateAccountResponse = await generalService.fetchStatus('POST', '/accounts', {
-                                        InternalID: accountInternalID,
-                                        [allActivitiesFieldName.split('.')[1]]: null,
-                                    });
-                                    emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
-                                    expect(updateAccountResponse.Status).to.equal(200);
+                            it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${
+                                allActivitiesFieldName.split('.')[1]
+                            }`, async () => {
+                                if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                    throw new Error('NotImplementedException');
+                                }
+                                const updateAccountResponse = await generalService.fetchStatus('POST', '/accounts', {
+                                    InternalID: accountInternalID,
+                                    [allActivitiesFieldName.split('.')[1]]: null,
                                 });
+                                emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
+                                expect(updateAccountResponse.Status).to.equal(200);
+                            });
                         }
 
                         it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
@@ -410,7 +413,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     updatedSortedAndCountedMap.has(emptyField) &&
                                     baseSortedAndCountedMap.has(emptyField) &&
                                     (updatedSortedAndCountedMap.get(emptyField) as number) ==
-                                    (baseSortedAndCountedMap.get(emptyField) as number)
+                                        (baseSortedAndCountedMap.get(emptyField) as number)
                                 ) {
                                     maxLoopsCounter--;
                                     generalService.sleep(_INTERVAL_TIMER);
@@ -507,19 +510,20 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         });
 
                         if (allActivitiesFieldName.includes('.')) {
-                            it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    debugger;
-                                    const isAccountDeleted = await objectsService.deleteAccount(accountInternalID);
-                                    expect(isAccountDeleted).to.be.true;
+                            it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${
+                                allActivitiesFieldName.split('.')[1]
+                            }`, async () => {
+                                if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                    throw new Error('NotImplementedException');
+                                }
+                                debugger;
+                                const isAccountDeleted = await objectsService.deleteAccount(accountInternalID);
+                                expect(isAccountDeleted).to.be.true;
 
-                                    debugger;
-                                    const getDeletedAccount = await objectsService.getAccountByID(accountInternalID);
-                                    expect(getDeletedAccount[0].Hidden).to.be.true;
-                                });
+                                debugger;
+                                const getDeletedAccount = await objectsService.getAccountByID(accountInternalID);
+                                expect(getDeletedAccount[0].Hidden).to.be.true;
+                            });
                         }
                         //#endregion Clean Up
 
