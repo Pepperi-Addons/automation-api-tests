@@ -23,7 +23,7 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        'server-side': ['00000000-0000-0000-0000-000000040fa9', '1.'],
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', '1.'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -41,7 +41,7 @@ export async function PepperiNotificationServiceTests(
         let createdTransactionLines;
         describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
             //Test Data
-            //server-side
+            //Pepperi Notification Service
             it('Validate that all the needed addons are installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
