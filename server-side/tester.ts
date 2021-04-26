@@ -133,11 +133,11 @@ export default function Tester(testName?: string, environment?: string) {
         },
 
         printTestResults(describe, expect, it, testSuitesName) {
-            describe(`${testSuitesName} Tests Suites`, function () {
+            describe(`${testSuitesName} Tests Suites`, () => {
                 for (const key in testObject) {
-                    describe(key, function () {
+                    describe(key, () => {
                         for (let i = 0; i < testObject[key]['testsNamesArr'].length; i++) {
-                            it(i + 1 + ') ' + testObject[key]['testsNamesArr'][i], function () {
+                            it(i + 1 + ') ' + testObject[key]['testsNamesArr'][i], () => {
                                 expect(testObject[key]['errorsArr'][i].toString()).to.not.contain(' ');
                             });
                         }

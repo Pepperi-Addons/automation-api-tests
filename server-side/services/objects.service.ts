@@ -4,31 +4,29 @@ import {
     ApiFieldObject,
     GeneralActivity,
     Transaction,
+    Item,
+    TransactionLines,
+    FindOptions,
+    User,
     UserDefinedTableMetaData,
     UserDefinedTableRow,
 } from '@pepperi-addons/papi-sdk';
-import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
-
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
+import GeneralService from './general.service';
 
 const apiCallsInterval = 400;
 
 export class ObjectsService {
-    constructor(public papiClient: PapiClient) {}
+    papiClient: PapiClient;
+    generalService: GeneralService;
 
-    getItems() {
-        return this.papiClient.get('/items');
+    constructor(public service: GeneralService) {
+        this.papiClient = service.papiClient;
+        this.generalService = service;
+    }
+
+    getItems(options?: FindOptions): Promise<Item[]> {
+        return this.papiClient.items.find(options);
     }
 
     getUsers(clause?) {
@@ -40,7 +38,7 @@ export class ObjectsService {
         }
     }
 
-    createUser(body: any) {
+    createUser(body: User): Promise<User> {
         return this.papiClient.post('/CreateUser', body);
     }
 
@@ -57,14 +55,7 @@ export class ObjectsService {
         }
     }
 
-    getIDPurl() {
-        const token = this.papiClient['options'].token;
-        const decodedToken = jwt_decode(token);
-        return decodedToken.iss;
-    }
-
-    async getSecurityGroup() {
-        const idpBaseURL = await this.getIDPurl();
+    async getSecurityGroup(idpBaseURL: string) {
         const securityGroups = await fetch(idpBaseURL + '/api/securitygroups', {
             method: 'GET',
             headers: {
@@ -85,8 +76,8 @@ export class ObjectsService {
         }
     }
 
-    getDefaultCatalog() {
-        return this.papiClient.get("/catalogs?where=ExternalID='Default Catalog'");
+    getCatalogs(options?: FindOptions) {
+        return this.papiClient.catalogs.find(options);
     }
 
     deleteUser(type, ID) {
@@ -136,19 +127,20 @@ export class ObjectsService {
             .then((res) => (res ? JSON.parse(res) : ''));
     }
 
-    getTransactionLines(InternalID) {
-        return this.papiClient.get('/transaction_lines?where=TransactionInternalID=' + InternalID);
+    getTransactionLines(options?: FindOptions): Promise<TransactionLines[]> {
+        return this.papiClient.transactionLines.find(options);
     }
 
-    createTransactionLine(body: any) {
-        return this.papiClient.post('/transaction_lines', body);
+    getTransactionLinesByID(id: number): Promise<TransactionLines> {
+        return this.papiClient.transactionLines.get(id);
     }
 
-    deleteTransactionLine(InternalID) {
-        return this.papiClient
-            .delete('/transaction_lines/' + InternalID)
-            .then((res) => res.text())
-            .then((res) => (res ? JSON.parse(res) : ''));
+    createTransactionLine(body: TransactionLines): Promise<TransactionLines> {
+        return this.papiClient.transactionLines.upsert(body);
+    }
+
+    deleteTransactionLine(id: number): Promise<boolean> {
+        return this.papiClient.transactionLines.delete(id);
     }
 
     createActivity(body: GeneralActivity) {
@@ -167,6 +159,10 @@ export class ObjectsService {
         return this.papiClient.transactions.upsert(body);
     }
 
+    getTransactionByID(transactionID: number): Promise<Transaction> {
+        return this.papiClient.transactions.get(transactionID);
+    }
+
     getTransaction(options?: FindOptions) {
         return this.papiClient.transactions.find(options);
     }
@@ -183,8 +179,12 @@ export class ObjectsService {
         return this.papiClient.get('/bulk/jobinfo/' + ID);
     }
 
-    createAccount(body: Account) {
+    createAccount(body: Account): Promise<Account> {
         return this.papiClient.accounts.upsert(body);
+    }
+
+    getAccountByID(accountID: number): Promise<Account> {
+        return this.papiClient.accounts.get(accountID);
     }
 
     getAccounts(options?: FindOptions) {
@@ -197,13 +197,6 @@ export class ObjectsService {
 
     deleteAccount(accountID: number) {
         return this.papiClient.accounts.delete(accountID);
-    }
-
-    sleep(ms) {
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
     }
 
     postUDTMetaData(body: UserDefinedTableMetaData): Promise<UserDefinedTableMetaData>{
@@ -236,7 +229,7 @@ export class ObjectsService {
         let apiGetResponse;
         do {
             if (apiGetResponse != undefined) {
-                this.sleep(apiCallsInterval * 10);
+                this.generalService.sleep(apiCallsInterval * 10);
             }
             counter++;
             apiGetResponse = await this.getBulkJobInfo(ID);
@@ -244,7 +237,7 @@ export class ObjectsService {
             (apiGetResponse.Status == 'Not Started' || apiGetResponse.Status == 'In Progress') &&
             counter < maxLoops
         );
-        this.sleep(apiCallsInterval * 10);
+        this.generalService.sleep(apiCallsInterval * 10);
         apiGetResponse = await this.getBulkJobInfo(ID);
         return apiGetResponse;
     }

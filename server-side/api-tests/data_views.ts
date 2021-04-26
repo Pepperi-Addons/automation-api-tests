@@ -57,8 +57,10 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
     const usersArr = await service.papiClient.get('/users');
     usersArr.forEach((element) => {
-        userTypeIDArr.push(element.Profile.Data.Name);
-        userTypeIDArr[element.Profile.Data.Name] = element.Profile.Data.InternalID;
+        if (!userTypeIDArr.includes(element.Profile.Data.Name)) {
+            userTypeIDArr.push(element.Profile.Data.Name);
+            userTypeIDArr[element.Profile.Data.Name] = element.Profile.Data.InternalID;
+        }
     });
 
     //#region Tests
@@ -461,6 +463,23 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         expect(getDataViewResponseObj[0].ModificationDateTime).to.contain('Z');
                         expect(getDataViewResponseObj[0]['Columns']).to.be.an('array');
                         expect(getDataViewResponseObj[0].Fields).to.be.an('array');
+                    });
+
+                    it('Get Data View Where "IN" Valid Response (DI-17834)', async () => {
+                        const testDataViewsArr = await service.getDataViews();
+                        const dataViewsINArr = await service.getDataViews({
+                            where: `InternalID IN (${testDataViewsArr[0].InternalID},${testDataViewsArr[1].InternalID})`,
+                        });
+                        expect(dataViewsINArr[0].InternalID).to.equal(testDataViewsArr[0].InternalID);
+                        expect(dataViewsINArr[1].InternalID).to.equal(testDataViewsArr[1].InternalID);
+                    });
+
+                    it('Get Data View Where "LIKE" Valid Response (DI-17865)', async () => {
+                        const testDataViewsArr = await service.getDataViews();
+                        const dataViewsINArr = await service.getDataViews({
+                            where: `Title LIKE '${testDataViewsArr[0].Title}'`,
+                        });
+                        expect(dataViewsINArr[0].InternalID).to.equal(testDataViewsArr[0].InternalID);
                     });
                 });
             });

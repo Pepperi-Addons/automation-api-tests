@@ -5,9 +5,6 @@ import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
-// This is transaction ATD for testing
-// This is activity ATD for testing
-
 function testDataATD(externaID: string, description: string) {
     return {
         ExternalID: `Test ATD ${externaID}`,
@@ -158,6 +155,15 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         afterURL = request.body.after;
     }
 
+    //#region Upgrade ImportExportATD and Data Views API
+    const testData = {
+        'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
+        ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', '1.'],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#endregion Upgrade ImportExportATD and Data Views API
+
     //Clean the ATD and UDT from failed tests before starting a new test
     await TestCleanUpATD(importExportATDService);
     await TestCleanUpUDT(importExportATDService);
@@ -239,578 +245,433 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         .getAllTransactionsATD()
         .then((res) => res.find((atd) => atd.ExternalID == 'Jenkins Automation ATD 1.1.168'));
 
-    const dataViewsAddonUUID = '484e7f22-796a-45f8-9082-12a734bac4e8';
-    const dataViewsVersion = '1.';
-    const importExportATDAddonUUID = 'e9029d7f-af32-4b0e-a513-8d9ced6f8186';
-    const importExportATDVersion = '1.';
-
-    //#region Upgrade Data Views
-    const dataViewsVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${dataViewsAddonUUID}' AND Version Like '${dataViewsVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    let isInstalled = false;
-    let installedAddonVersion;
-    let installedAddonsArr = await generalService.getAddons(dataViewsVarLatestVersion);
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'Data Views API') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let dataViewsUpgradeAuditLogResponse;
-    let dataViewsInstalledAddonVersion;
-    let dataViewsAuditLogResponse;
-    if (installedAddonVersion != dataViewsVarLatestVersion) {
-        dataViewsUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${dataViewsAddonUUID}`)
-            .upgrade(dataViewsVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        dataViewsAuditLogResponse = await service.auditLogs.uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID).get();
-        if (dataViewsAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            dataViewsAuditLogResponse = await service.auditLogs
-                .uuid(dataViewsUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        dataViewsInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${dataViewsAddonUUID}`).get()
-        ).Version;
-    } else {
-        dataViewsUpgradeAuditLogResponse = 'Skipped';
-        dataViewsInstalledAddonVersion = installedAddonVersion;
-    }
-    //#endregion Upgrade Data Views
-
-    //#region Upgrade Import Export ATD
-    const importExportATDVarLatestVersion = await fetch(
-        `${generalService['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${importExportATDAddonUUID}' AND Version Like '${importExportATDVersion}%'&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `${request.body.varKey}`,
-            },
-        },
-    )
-        .then((response) => response.json())
-        .then((addon) => addon[0].Version);
-
-    isInstalled = false;
-    installedAddonVersion = undefined;
-    installedAddonsArr = await generalService.getAddons(importExportATDVarLatestVersion);
-    for (let i = 0; i < installedAddonsArr.length; i++) {
-        if (installedAddonsArr[i].Addon !== null) {
-            if (installedAddonsArr[i].Addon.Name == 'ImportExportATD') {
-                installedAddonVersion = installedAddonsArr[i].Version;
-                isInstalled = true;
-                break;
-            }
-        }
-    }
-    if (!isInstalled) {
-        await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).install();
-        generalService.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
-    }
-
-    let importExportATDUpgradeAuditLogResponse;
-    let importExportATDInstalledAddonVersion;
-    let importExportATDAuditLogResponse;
-    if (installedAddonVersion != importExportATDVarLatestVersion) {
-        importExportATDUpgradeAuditLogResponse = await service.addons.installedAddons
-            .addonUUID(`${importExportATDAddonUUID}`)
-            .upgrade(importExportATDVarLatestVersion);
-
-        generalService.sleep(4000); //Test installation status only after 4 seconds.
-        importExportATDAuditLogResponse = await service.auditLogs
-            .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
-            .get();
-        if (importExportATDAuditLogResponse.Status.Name == 'InProgress') {
-            generalService.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            importExportATDAuditLogResponse = await service.auditLogs
-                .uuid(importExportATDUpgradeAuditLogResponse.ExecutionUUID)
-                .get();
-        }
-        importExportATDInstalledAddonVersion = await (
-            await service.addons.installedAddons.addonUUID(`${importExportATDAddonUUID}`).get()
-        ).Version;
-    } else {
-        importExportATDUpgradeAuditLogResponse = 'Skipped';
-        importExportATDInstalledAddonVersion = installedAddonVersion;
-    }
-    //#endregion Upgrade Import Export ATD
-
     describe('Export And Import ATD Tests Suites', () => {
-        //Test Data
-        it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
-            transactionsTypeArr[transactionsTypeArr[0]]
-        }`, () => {
-            expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
-        });
-
-        it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
-            activitiesTypeArr[activitiesTypeArr[0]]
-        }`, () => {
-            expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
-        });
-
-        it(`Test Data: Tested Addon: ImportExportATD - Version: ${importExportATDInstalledAddonVersion}`, () => {
-            expect(importExportATDInstalledAddonVersion).to.contain('.');
-        });
-
         describe('Prerequisites Addon for ImportExportATD Tests', () => {
-            it('Upgarde To Latest Version of Data Views Addon', async () => {
-                if (dataViewsUpgradeAuditLogResponse != 'Skipped') {
-                    expect(dataViewsUpgradeAuditLogResponse)
-                        .to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36);
-                    if (dataViewsAuditLogResponse.Status.Name == 'Failure') {
-                        expect(dataViewsAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                            'is already working on version',
-                        );
-                    } else {
-                        expect(dataViewsAuditLogResponse.Status.Name).to.include('Success');
-                    }
-                }
+            //Test Data
+            it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
+                transactionsTypeArr[transactionsTypeArr[0]]
+            }`, () => {
+                expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
             });
 
-            it(`Latest Version Is Installed`, () => {
-                expect(dataViewsInstalledAddonVersion).to.equal(dataViewsVarLatestVersion);
+            it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
+                activitiesTypeArr[activitiesTypeArr[0]]
+            }`, () => {
+                expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
             });
 
-            it('Upgarde To Latest Version of Import Export Addon', async () => {
-                if (importExportATDUpgradeAuditLogResponse != 'Skipped') {
-                    expect(importExportATDUpgradeAuditLogResponse)
-                        .to.have.property('ExecutionUUID')
-                        .a('string')
-                        .with.lengthOf(36);
-                    if (importExportATDAuditLogResponse.Status.Name == 'Failure') {
-                        expect(importExportATDAuditLogResponse.AuditInfo.ErrorMessage).to.include(
-                            'is already working on version',
-                        );
-                    } else {
-                        expect(importExportATDAuditLogResponse.Status.Name).to.include('Success');
-                    }
-                }
+            //ImportExportATD, Data Views API
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
             });
 
-            it(`Latest Version Is Installed`, () => {
-                expect(importExportATDInstalledAddonVersion).to.equal(importExportATDVarLatestVersion);
-            });
-
-            if (isTransactionsTests) {
-                describe('Endpoints', () => {
-                    describe('ATD', () => {
-                        it(`Create New ATD (DI-17195)`, async () => {
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('Description')
-                                .a('string')
-                                .that.contains('Description of Test ATD');
-                            expect(testDataNewTransactionATD).to.have.property('TypeID').a('number').that.is.above(0);
-                            expect(testDataNewTransactionATD).to.have.property('InternalID').a('number').that.above(0);
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('ExternalID')
-                                .a('string')
-                                .that.contains('Test ATD ');
-                            expect(testDataNewTransactionATD).to.have.property('Hidden').a('boolean').that.is.false;
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('Icon')
-                                .a('string')
-                                .that.contains('icon');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains(new Date().toISOString().substring(0, 11));
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains('Z');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('CreationDateTime')
-                                .a('string')
-                                .that.contains(new Date().toISOString().substring(0, 11));
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('CreationDateTime')
-                                .a('string')
-                                .that.contains('Z');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('UUID')
-                                .a('string')
-                                .that.have.lengthOf(36);
-                        });
-
-                        it(`CRUD ATD`, async () => {
-                            //Update + Delete
-                            console.log({ CRUD_ATD_Post_Response: testDataNewTransactionATD });
-                            const testDataUpdatedATD = await importExportATDService.postTransactionsATD({
-                                TypeID: 0,
-                                InternalID: testDataNewTransactionATD.InternalID,
-                                ExternalID: testDataNewTransactionATD.ExternalID + 1,
-                                UUID: 'Test String',
-                                Description: 'Updated Description of Test ATD',
-                                Icon: testDataNewTransactionATD.Icon.slice(0, -1) + 3,
-                                Hidden: true,
-                                CreationDateTime: testDataNewTransactionATD.CreationDateTime,
-                                ModificationDateTime: 'Test String',
-                            });
-                            console.log({ CRUD_ATD_Update_Response: testDataUpdatedATD });
-
-                            expect(testDataUpdatedATD)
-                                .to.have.property('Description')
-                                .a('string')
-                                .that.contains('Updated Description of Test ATD');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('TypeID')
-                                .a('number')
-                                .that.is.equal(testDataUpdatedATD.TypeID);
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('InternalID')
-                                .a('number')
-                                .that.is.equal(testDataUpdatedATD.InternalID);
-                            expect(testDataUpdatedATD)
-                                .to.have.property('ExternalID')
-                                .a('string')
-                                .that.contains(testDataNewTransactionATD.ExternalID + 1);
-                            expect(testDataUpdatedATD).to.have.property('Hidden').a('boolean').that.is.true;
-                            expect(testDataUpdatedATD).to.have.property('Icon').a('string').that.contains('icon3');
-                            expect(testDataUpdatedATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains(new Date().toISOString().substring(0, 11));
-                            expect(testDataUpdatedATD)
-                                .to.have.property('ModificationDateTime')
-                                .a('string')
-                                .that.contains('Z');
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('CreationDateTime')
-                                .a('string')
-                                .that.contains(testDataUpdatedATD.CreationDateTime);
-                            expect(testDataNewTransactionATD)
-                                .to.have.property('UUID')
-                                .a('string')
-                                .that.contains(testDataUpdatedATD.UUID);
-
-                            //Restore
-                            const testDataRestoreATD = await importExportATDService.postTransactionsATD({
-                                InternalID: testDataUpdatedATD.InternalID,
-                                ExternalID: testDataNewTransactionATD.ExternalID,
-                                Description: testDataUpdatedATD.Description,
-                                Hidden: false,
-                            });
-
-                            expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
-                            console.log({ CRUD_ATD_Restore_Response: testDataRestoreATD });
-
-                            //Hide the ATD - Full restore is not yet supported - see:
-                            //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
-                            const testDataRestoreATDTemp = await importExportATDService.postTransactionsATD({
-                                InternalID: testDataUpdatedATD.InternalID,
-                                ExternalID: testDataNewTransactionATD.ExternalID,
-                                Description: testDataUpdatedATD.Description,
-                                Hidden: true,
-                            });
-                            expect(testDataRestoreATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
-                        });
-
-                        it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
-                            const tempATD = testDataATD(
-                                Math.floor(Math.random() * 1000000).toString(),
-                                'Description of Test ATD',
-                            );
-                            tempATD.Icon = 'icon1';
-                            return expect(
-                                importExportATDService.postTransactionsATD(tempATD),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
-                            );
-                        });
-
-                        it(`Get Hidden ATD (DI-17049)`, async () => {
-                            //DI-17369 was changed from bug to improvment
-                            //it(`Get Hidden ATD (DI-17049, DI-17369)`, async () => {
-
-                            //importToNewATD
-
-                            //Test Data
-                            expect(testDataNewActivitiesATD).to.have.property('Hidden').a('boolean').that.is.false;
-                            //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
-                            // const exportATDResponseBeforeHidden = await importExportATDService.exportATD(
-                            //     'activities',
-                            //     testDataNewActivitiesATD.TypeID,
-                            // );
-
-                            // expect(exportATDResponseBeforeHidden)
-                            //     .to.have.property('URL')
-                            //     .that.contain('https://')
-                            //     .and.contain('cdn.')
-                            //     .and.contain('/TemporaryFiles/');
-                            // const exportATDResponseBeforeHiddenObject = await fetch(
-                            //     exportATDResponseBeforeHidden.URL,
-                            // ).then((response) => response.json());
-
-                            //Delete
-                            const testDeleteATD = await importExportATDService.postActivitiesATD({
-                                InternalID: testDataNewActivitiesATD.InternalID,
-                                ExternalID: testDataNewActivitiesATD.ExternalID,
-                                Description: testDataNewActivitiesATD.Description,
-                                Hidden: true,
-                            });
-                            expect(testDeleteATD).to.have.property('Hidden').a('boolean').that.is.true;
-
-                            //GET
-                            const getDeletedATD = await importExportATDService.getActivitiesATD(
-                                testDataNewActivitiesATD.TypeID,
-                            );
-                            expect(getDeletedATD).to.have.property('Hidden').a('boolean').that.is.true;
-
-                            //Restore
-                            const testDataRestoreATD = await importExportATDService.postActivitiesATD({
-                                InternalID: testDataNewActivitiesATD.InternalID,
-                                ExternalID: testDataNewActivitiesATD.ExternalID,
-                                Description: testDataNewActivitiesATD.Description,
-                                Hidden: false,
-                            });
-                            expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
-
-                            //Delete - this can be removed from here once DI-17369 will be ready and this test can be executed again
-                            const testDeleteATDTemp = await importExportATDService.postActivitiesATD({
-                                InternalID: testDataNewActivitiesATD.InternalID,
-                                ExternalID: testDataNewActivitiesATD.ExternalID,
-                                Description: testDataNewActivitiesATD.Description,
-                                Hidden: true,
-                            });
-                            expect(testDeleteATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
-
-                            //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
-                            // const exportATDResponseAfterRestore = await importExportATDService.exportATD(
-                            //     'activities',
-                            //     testDataNewActivitiesATD.TypeID,
-                            // );
-
-                            // expect(exportATDResponseAfterRestore)
-                            //     .to.have.property('URL')
-                            //     .that.contain('https://')
-                            //     .and.contain('cdn.')
-                            //     .and.contain('/TemporaryFiles/');
-                            // const exportATDResponseAfterRestoreObject = await fetch(
-                            //     exportATDResponseAfterRestore.URL,
-                            // ).then((response) => response.json());
-                            // if (
-                            //     Math.abs(
-                            //         JSON.stringify(exportATDResponseBeforeHiddenObject).length -
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length,
-                            //     ) > 0.5 ||
-                            //     Math.abs(
-                            //         JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length -
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length,
-                            //     ) > 0.5 ||
-                            //     Math.abs(
-                            //         JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length -
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length,
-                            //     ) > 0.5
-                            // ) {
-                            //     expect.fail(
-                            //         `The length of the ATD after the restore is ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length
-                            //         }, expected to be in length of ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject).length
-                            //         }, but the difference in length is: ${Math.abs(
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
-                            //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
-                            //         )}, Before the ATD was Hidden, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
-                            //             testDataNewActivitiesATD.InternalID
-                            //         }, and the Export Response was: ${
-                            //             exportATDResponseBeforeHidden.URL
-                            //         }, After the ATD restored, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
-                            //             testDataNewActivitiesATD.InternalID
-                            //         }, and the Export Response was: ${
-                            //             exportATDResponseAfterRestore.URL
-                            //         }, Before there was: ${
-                            //             exportATDResponseBeforeHiddenObject.DataViews.length
-                            //         } DataViews in total length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length
-                            //         },  ${exportATDResponseBeforeHiddenObject.Fields.length} Fields in total length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length
-                            //         }, ${
-                            //             exportATDResponseBeforeHiddenObject.References.length
-                            //         } References in total length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.References).length
-                            //         }, and Workflow in length of: ${
-                            //             JSON.stringify(exportATDResponseBeforeHiddenObject.Workflow).length
-                            //         }, After there was: ${
-                            //             exportATDResponseAfterRestoreObject.DataViews.length
-                            //         } DataViews in total length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length
-                            //         },  ${exportATDResponseAfterRestoreObject.Fields.length} Fields in total length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length
-                            //         }, ${
-                            //             exportATDResponseAfterRestoreObject.References.length
-                            //         } References in total length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.References).length
-                            //         }, and Workflow in length of: ${
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject.Workflow).length
-                            //         }`,
-                            //     );
-                            // } else {
-                            //     expect(
-                            //         Math.abs(
-                            //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
-                            //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
-                            //         ),
-                            //     ).to.be.below(20);
-                            // }
-                        });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
                     });
 
-                    describe('UDT', () => {
-                        it('CRUD UDT', async () => {
-                            console.log({ CRUD_UDT_Post_Response: testDataPostUDT });
-                            expect(testDataPostUDT).to.have.property('TableID');
-                        });
-
-                        it('Get Deleted UDT (DI-17251)', async () => {
-                            await importExportATDService.deleteUDT(testDataPostUDT.TableID);
-                            return expect(
-                                importExportATDService.getUDT(testDataPostUDT.TableID),
-                            ).eventually.to.have.property('TableID');
-                        });
-
-                        it('Delete Deleted UDT (DI-17265)', async () => {
-                            return expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be
-                                .false;
-                        });
-
-                        it('Delete Non Existing UDT (DI-17265)', async () => {
-                            return expect(
-                                importExportATDService.deleteUDT('Non Existing UDT 1234'),
-                            ).eventually.to.be.rejectedWith(
-                                `failed with status: 404 - Not Found error: {"fault":{"faultstring":"User defined table: Non Existing UDT 1234 doesn't exist.`,
-                            );
-                        });
-
-                        it('Restore Deleted UDT', async () => {
-                            await importExportATDService.postUDT({
-                                MainKeyType: testDataPostUDT.MainKeyType,
-                                SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
-                                TableID: testDataPostUDT.TableID,
-                                Hidden: false,
-                            });
-                            return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
-                                .eventually.to.have.property('Hidden')
-                                .a('boolean').that.is.false;
-                        });
-
-                        it('Restore Deleted UDT (DI-17304)', async () => {
-                            await importExportATDService.postUDT({
-                                MainKeyType: testDataPostUDT.MainKeyType,
-                                SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
-                                TableID: testDataPostUDT.TableID,
-                                Hidden: true,
-                            });
-
-                            const getUTDObject = await importExportATDService.getUDT(testDataPostUDT.TableID);
-
-                            await Promise.all([
-                                expect(getUTDObject).to.have.property('Hidden').a('boolean').that.is.true,
-                                expect(
-                                    importExportATDService.postUDT({
-                                        MainKeyType: testDataPostUDT.MainKeyType,
-                                        SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
-                                        TableID: testDataPostUDT.TableID,
-                                    }),
-                                )
-                                    .eventually.to.have.property('Hidden')
-                                    .a('boolean').that.is.false,
-                            ]);
-                        });
-
-                        it('Correct Error Message for MainKeyType (DI-17269)', async () => {
-                            return expect(
-                                importExportATDService.postUDT({
-                                    TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-                                    MainKeyType: { ID: 1, Name: '' },
-                                    SecondaryKeyType: { ID: 35, Name: '' },
-                                    MemoryMode: {},
-                                }),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"MainKey: 1 is not valid"',
-                            );
-                        });
-
-                        it('Correct Error Message for SecondaryKeyType (DI-17332)', async () => {
-                            return expect(
-                                importExportATDService.postUDT({
-                                    TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-                                    MainKeyType: { ID: 35, Name: '' },
-                                    SecondaryKeyType: { ID: 1, Name: '' },
-                                    MemoryMode: {},
-                                }),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"SecondaryKey: 1 is not valid"',
-                            );
-                        });
-
-                        it('Correct Error Message for Same MemoryMode Types true (DI-17271)', async () => {
-                            return expect(
-                                importExportATDService.postUDT({
-                                    TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
-                                    MainKeyType: { ID: 0, Name: '' },
-                                    SecondaryKeyType: { ID: 0, Name: '' },
-                                    MemoryMode: {
-                                        Dormant: true,
-                                        Volatile: true,
-                                    },
-                                }),
-                            ).eventually.to.be.rejectedWith(
-                                'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"User defined table cannot be both volatile and dormant at the same time"',
-                            );
-                        });
-
-                        it("Don't Store Non Valid Data Members (DI-17268)", async () => {
-                            const baseATD = await importExportATDService.getUDT(testDataPostUDT.TableID);
-                            const modifiedATD = await importExportATDService.postUDT({
-                                TableID: testDataPostUDT.TableID,
-                                MemoryMode: {
-                                    sdas: 'dfsdf',
-                                },
-                            } as any);
-                            expect(baseATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that
-                                .is.true;
-                            expect(baseATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
-                                .that.is.false;
-                            expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean')
-                                .that.is.false;
-                            expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
-                                .that.is.false;
-                            expect(modifiedATD).to.have.property('MemoryMode').to.not.have.property('sdas');
-                        });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(service.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
                     });
                 });
             }
         });
+        if (isTransactionsTests) {
+            describe('External Endpoints', () => {
+                describe('ATD', () => {
+                    it(`Create New ATD (DI-17195)`, async () => {
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('Description')
+                            .a('string')
+                            .that.contains('Description of Test ATD');
+                        expect(testDataNewTransactionATD).to.have.property('TypeID').a('number').that.is.above(0);
+                        expect(testDataNewTransactionATD).to.have.property('InternalID').a('number').that.above(0);
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('ExternalID')
+                            .a('string')
+                            .that.contains('Test ATD ');
+                        expect(testDataNewTransactionATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        expect(testDataNewTransactionATD).to.have.property('Icon').a('string').that.contains('icon');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewTransactionATD).to.have.property('UUID').a('string').that.have.lengthOf(36);
+                    });
+
+                    it(`CRUD ATD`, async () => {
+                        //Update + Delete
+                        console.log({ CRUD_ATD_Post_Response: testDataNewTransactionATD });
+                        const testDataUpdatedATD = await importExportATDService.postTransactionsATD({
+                            TypeID: 0,
+                            InternalID: testDataNewTransactionATD.InternalID,
+                            ExternalID: testDataNewTransactionATD.ExternalID + 1,
+                            UUID: 'Test String',
+                            Description: 'Updated Description of Test ATD',
+                            Icon: testDataNewTransactionATD.Icon.slice(0, -1) + 3,
+                            Hidden: true,
+                            CreationDateTime: testDataNewTransactionATD.CreationDateTime,
+                            ModificationDateTime: 'Test String',
+                        });
+                        console.log({ CRUD_ATD_Update_Response: testDataUpdatedATD });
+
+                        expect(testDataUpdatedATD)
+                            .to.have.property('Description')
+                            .a('string')
+                            .that.contains('Updated Description of Test ATD');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('TypeID')
+                            .a('number')
+                            .that.is.equal(testDataUpdatedATD.TypeID);
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('InternalID')
+                            .a('number')
+                            .that.is.equal(testDataUpdatedATD.InternalID);
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ExternalID')
+                            .a('string')
+                            .that.contains(testDataNewTransactionATD.ExternalID + 1);
+                        expect(testDataUpdatedATD).to.have.property('Hidden').a('boolean').that.is.true;
+                        expect(testDataUpdatedATD).to.have.property('Icon').a('string').that.contains('icon3');
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains(new Date().toISOString().substring(0, 11));
+                        expect(testDataUpdatedATD)
+                            .to.have.property('ModificationDateTime')
+                            .a('string')
+                            .that.contains('Z');
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('CreationDateTime')
+                            .a('string')
+                            .that.contains(testDataUpdatedATD.CreationDateTime);
+                        expect(testDataNewTransactionATD)
+                            .to.have.property('UUID')
+                            .a('string')
+                            .that.contains(testDataUpdatedATD.UUID);
+
+                        //Restore
+                        const testDataRestoreATD = await importExportATDService.postTransactionsATD({
+                            InternalID: testDataUpdatedATD.InternalID,
+                            ExternalID: testDataNewTransactionATD.ExternalID,
+                            Description: testDataUpdatedATD.Description,
+                            Hidden: false,
+                        });
+
+                        expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        console.log({ CRUD_ATD_Restore_Response: testDataRestoreATD });
+
+                        //Hide the ATD - Full restore is not yet supported - see:
+                        //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
+                        const testDataRestoreATDTemp = await importExportATDService.postTransactionsATD({
+                            InternalID: testDataUpdatedATD.InternalID,
+                            ExternalID: testDataNewTransactionATD.ExternalID,
+                            Description: testDataUpdatedATD.Description,
+                            Hidden: true,
+                        });
+                        expect(testDataRestoreATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
+                    });
+
+                    it(`Create New ATD With Wrong Icon (DI-17201)`, async () => {
+                        const tempATD = testDataATD(
+                            Math.floor(Math.random() * 1000000).toString(),
+                            'Description of Test ATD',
+                        );
+                        tempATD.Icon = 'icon1';
+                        return expect(
+                            importExportATDService.postTransactionsATD(tempATD),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
+                        );
+                    });
+
+                    it(`Get Hidden ATD (DI-17049)`, async () => {
+                        //DI-17369 was changed from bug to improvment
+                        //it(`Get Hidden ATD (DI-17049, DI-17369)`, async () => {
+
+                        //importToNewATD
+
+                        //Test Data
+                        expect(testDataNewActivitiesATD).to.have.property('Hidden').a('boolean').that.is.false;
+                        //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
+                        // const exportATDResponseBeforeHidden = await importExportATDService.exportATD(
+                        //     'activities',
+                        //     testDataNewActivitiesATD.TypeID,
+                        // );
+
+                        // expect(exportATDResponseBeforeHidden)
+                        //     .to.have.property('URL')
+                        //     .that.contain('https://')
+                        //     .and.contain('cdn.')
+                        //     .and.contain('/TemporaryFiles/');
+                        // const exportATDResponseBeforeHiddenObject = await fetch(
+                        //     exportATDResponseBeforeHidden.URL,
+                        // ).then((response) => response.json());
+
+                        //Delete
+                        const testDeleteATD = await importExportATDService.postActivitiesATD({
+                            InternalID: testDataNewActivitiesATD.InternalID,
+                            ExternalID: testDataNewActivitiesATD.ExternalID,
+                            Description: testDataNewActivitiesATD.Description,
+                            Hidden: true,
+                        });
+                        expect(testDeleteATD).to.have.property('Hidden').a('boolean').that.is.true;
+
+                        //GET
+                        const getDeletedATD = await importExportATDService.getActivitiesATD(
+                            testDataNewActivitiesATD.TypeID,
+                        );
+                        expect(getDeletedATD).to.have.property('Hidden').a('boolean').that.is.true;
+
+                        //Restore
+                        const testDataRestoreATD = await importExportATDService.postActivitiesATD({
+                            InternalID: testDataNewActivitiesATD.InternalID,
+                            ExternalID: testDataNewActivitiesATD.ExternalID,
+                            Description: testDataNewActivitiesATD.Description,
+                            Hidden: false,
+                        });
+                        expect(testDataRestoreATD).to.have.property('Hidden').a('boolean').that.is.false;
+
+                        //Delete - this can be removed from here once DI-17369 will be ready and this test can be executed again
+                        const testDeleteATDTemp = await importExportATDService.postActivitiesATD({
+                            InternalID: testDataNewActivitiesATD.InternalID,
+                            ExternalID: testDataNewActivitiesATD.ExternalID,
+                            Description: testDataNewActivitiesATD.Description,
+                            Hidden: true,
+                        });
+                        expect(testDeleteATDTemp).to.have.property('Hidden').a('boolean').that.is.true;
+
+                        //DI-17369 was changed from bug to improvment - then this part is not relevant for now 23/12/2020
+                        // const exportATDResponseAfterRestore = await importExportATDService.exportATD(
+                        //     'activities',
+                        //     testDataNewActivitiesATD.TypeID,
+                        // );
+
+                        // expect(exportATDResponseAfterRestore)
+                        //     .to.have.property('URL')
+                        //     .that.contain('https://')
+                        //     .and.contain('cdn.')
+                        //     .and.contain('/TemporaryFiles/');
+                        // const exportATDResponseAfterRestoreObject = await fetch(
+                        //     exportATDResponseAfterRestore.URL,
+                        // ).then((response) => response.json());
+                        // if (
+                        //     Math.abs(
+                        //         JSON.stringify(exportATDResponseBeforeHiddenObject).length -
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length,
+                        //     ) > 0.5 ||
+                        //     Math.abs(
+                        //         JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length -
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length,
+                        //     ) > 0.5 ||
+                        //     Math.abs(
+                        //         JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length -
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length,
+                        //     ) > 0.5
+                        // ) {
+                        //     expect.fail(
+                        //         `The length of the ATD after the restore is ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length
+                        //         }, expected to be in length of ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject).length
+                        //         }, but the difference in length is: ${Math.abs(
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
+                        //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
+                        //         )}, Before the ATD was Hidden, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
+                        //             testDataNewActivitiesATD.InternalID
+                        //         }, and the Export Response was: ${
+                        //             exportATDResponseBeforeHidden.URL
+                        //         }, After the ATD restored, the Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${
+                        //             testDataNewActivitiesATD.InternalID
+                        //         }, and the Export Response was: ${
+                        //             exportATDResponseAfterRestore.URL
+                        //         }, Before there was: ${
+                        //             exportATDResponseBeforeHiddenObject.DataViews.length
+                        //         } DataViews in total length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.DataViews).length
+                        //         },  ${exportATDResponseBeforeHiddenObject.Fields.length} Fields in total length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.Fields).length
+                        //         }, ${
+                        //             exportATDResponseBeforeHiddenObject.References.length
+                        //         } References in total length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.References).length
+                        //         }, and Workflow in length of: ${
+                        //             JSON.stringify(exportATDResponseBeforeHiddenObject.Workflow).length
+                        //         }, After there was: ${
+                        //             exportATDResponseAfterRestoreObject.DataViews.length
+                        //         } DataViews in total length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.DataViews).length
+                        //         },  ${exportATDResponseAfterRestoreObject.Fields.length} Fields in total length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.Fields).length
+                        //         }, ${
+                        //             exportATDResponseAfterRestoreObject.References.length
+                        //         } References in total length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.References).length
+                        //         }, and Workflow in length of: ${
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject.Workflow).length
+                        //         }`,
+                        //     );
+                        // } else {
+                        //     expect(
+                        //         Math.abs(
+                        //             JSON.stringify(exportATDResponseAfterRestoreObject).length -
+                        //                 JSON.stringify(exportATDResponseBeforeHiddenObject).length,
+                        //         ),
+                        //     ).to.be.below(20);
+                        // }
+                    });
+                });
+
+                describe('UDT', () => {
+                    it('CRUD UDT', async () => {
+                        console.log({ CRUD_UDT_Post_Response: testDataPostUDT });
+                        expect(testDataPostUDT).to.have.property('TableID');
+                    });
+
+                    it('Get Deleted UDT (DI-17251)', async () => {
+                        await importExportATDService.deleteUDT(testDataPostUDT.TableID);
+                        return expect(
+                            importExportATDService.getUDT(testDataPostUDT.TableID),
+                        ).eventually.to.have.property('TableID');
+                    });
+
+                    it('Delete Deleted UDT (DI-17265)', async () => {
+                        return expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be.false;
+                    });
+
+                    it('Delete Non Existing UDT (DI-17265)', async () => {
+                        return expect(
+                            importExportATDService.deleteUDT('Non Existing UDT 1234'),
+                        ).eventually.to.be.rejectedWith(
+                            `failed with status: 404 - Not Found error: {"fault":{"faultstring":"User defined table: Non Existing UDT 1234 doesn't exist.`,
+                        );
+                    });
+
+                    it('Restore Deleted UDT', async () => {
+                        await importExportATDService.postUDT({
+                            MainKeyType: testDataPostUDT.MainKeyType,
+                            SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                            TableID: testDataPostUDT.TableID,
+                            Hidden: false,
+                        });
+                        return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
+                            .eventually.to.have.property('Hidden')
+                            .a('boolean').that.is.false;
+                    });
+
+                    it('Restore Deleted UDT (DI-17304)', async () => {
+                        await importExportATDService.postUDT({
+                            MainKeyType: testDataPostUDT.MainKeyType,
+                            SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                            TableID: testDataPostUDT.TableID,
+                            Hidden: true,
+                        });
+
+                        const getUTDObject = await importExportATDService.getUDT(testDataPostUDT.TableID);
+
+                        await Promise.all([
+                            expect(getUTDObject).to.have.property('Hidden').a('boolean').that.is.true,
+                            expect(
+                                importExportATDService.postUDT({
+                                    MainKeyType: testDataPostUDT.MainKeyType,
+                                    SecondaryKeyType: testDataPostUDT.SecondaryKeyType,
+                                    TableID: testDataPostUDT.TableID,
+                                }),
+                            )
+                                .eventually.to.have.property('Hidden')
+                                .a('boolean').that.is.false,
+                        ]);
+                    });
+
+                    it('Correct Error Message for MainKeyType (DI-17269)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 1, Name: '' },
+                                SecondaryKeyType: { ID: 35, Name: '' },
+                                MemoryMode: {},
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"MainKey: 1 is not valid"',
+                        );
+                    });
+
+                    it('Correct Error Message for SecondaryKeyType (DI-17332)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 35, Name: '' },
+                                SecondaryKeyType: { ID: 1, Name: '' },
+                                MemoryMode: {},
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"SecondaryKey: 1 is not valid"',
+                        );
+                    });
+
+                    it('Correct Error Message for Same MemoryMode Types true (DI-17271)', async () => {
+                        return expect(
+                            importExportATDService.postUDT({
+                                TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
+                                MainKeyType: { ID: 0, Name: '' },
+                                SecondaryKeyType: { ID: 0, Name: '' },
+                                MemoryMode: {
+                                    Dormant: true,
+                                    Volatile: true,
+                                },
+                            }),
+                        ).eventually.to.be.rejectedWith(
+                            'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"User defined table cannot be both volatile and dormant at the same time"',
+                        );
+                    });
+
+                    it("Don't Store Non Valid Data Members (DI-17268)", async () => {
+                        const baseATD = await importExportATDService.getUDT(testDataPostUDT.TableID);
+                        const modifiedATD = await importExportATDService.postUDT({
+                            TableID: testDataPostUDT.TableID,
+                            MemoryMode: {
+                                sdas: 'dfsdf',
+                            },
+                        } as any);
+                        expect(baseATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that.is
+                            .true;
+                        expect(baseATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean').that.is
+                            .false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Dormant').a('boolean').that
+                            .is.false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.have.property('Volatile').a('boolean')
+                            .that.is.false;
+                        expect(modifiedATD).to.have.property('MemoryMode').to.not.have.property('sdas');
+                    });
+                });
+            });
+        }
 
         describe('Endpoints', () => {
             describe('Get (DI-17200, DI-17258)', () => {
@@ -2004,159 +1865,182 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             let TransactionsATDArr;
             if (isTransactionsTestsOverrideBase) {
                 TransactionsATDArr = [
-                    //Base Sandbox
+                    //Base Sandbox - S3
                     {
-                        InternalID: 309512,
-                        Description: 'Exported from Sandbox in 28.02.2021',
-                        FileName: '1_28-02-2021_Test_ATD_303912.json',
+                        InternalID: 320562,
+                        Description: 'Exported from Sandbox in 30.03.2021',
+                        FileName: 'Base_ATD_SB_1_1_176.json',
                         MimeType: 'application/json',
-                        Title: '1 28.02.2021 Test ATD',
+                        Title: 'Base ATD SB - 1.1.176',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/514f1996-a5d1-4c2d-b16b-63f92021165e/1_28-02-2021_Test_ATD_303912.json',
+                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/aeda4ee7-11be-4577-bbb8-c7484f4ced1b/Base_ATD_SB_1_1_176.json',
                     },
-                    //Base Production
+                    //Base Production - S3
                     {
-                        InternalID: 303830,
-                        Description: 'Exported from Production in 02.03.2021',
-                        FileName: 'Automation_ATD_1_1_165_2.json',
+                        InternalID: 305084,
+                        Description: 'Exported from Production in 30.03.2021',
+                        FileName: 'Base_ATD_PRO_1_1_176.json',
                         MimeType: 'application/json',
-                        Title: 'Automation ATD 1.1.165 2',
+                        Title: 'Base ATD PRO - 1.1.177',
                         URL:
-                            'https://cdn.pepperi.com/30013466/CustomizationFile/a9e069ea-542f-435c-a7a3-9e2748f5e24b/Automation_ATD_1_1_165_2.json',
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/83e55247-fd6b-45d9-8cd8-248cf963ed43/Base_ATD_PRO_1_1_176.json',
                     },
-                    //Base EU
+                    //Base EU - S3
                     {
-                        InternalID: 6282,
-                        Description: 'Base ATD from EU',
-                        FileName: 'Base_ATD_EU_-_1_1_168.json',
+                        InternalID: 6716,
+                        Description: 'Exported from EU in 30.03.2021',
+                        FileName: 'Base_ATD_EU_1_1_168.json',
                         MimeType: 'application/json',
                         Title: 'Base ATD EU - 1.1.168',
                         URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/5b947341-c3a3-41ae-ad8c-ff77d3ada047/Base_ATD_EU_-_1_1_168.json',
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/04fb286e-580c-4dbd-ba7d-c878b271459b/Base_ATD_EU_1_1_168.json',
                     },
+                    //Sandbox - S3
                     {
-                        InternalID: 309544,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'Winzer_Sales_Order_272248_Fix_01_03.json',
+                        InternalID: 320563,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Winzer_Sales_Order_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Winzer Sales Order',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c4c2caac-acc1-4ff1-8206-5165561c342b/Winzer_Sales_Order_272248_Fix_01_03.json',
+                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/18c11539-7e65-4615-80f3-1340079426b7/Winzer_Sales_Order_1_1_176.json',
                     },
+                    //Production - S3
                     {
-                        InternalID: 309546,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
+                        InternalID: 305085,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order Winzer DEV (New)',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/23a3d144-6356-4e69-b55d-f35916ae868e/Sales_Order_Winzer_DEV_(New)_278917_Fix_01_03.json',
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/08914b6b-372c-42ed-b5af-052fbf1f3e34/Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                     },
+                    //Production - S3
                     {
-                        InternalID: 309547,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'Sales_Order_Legacy_256743_Fix_01_03.json',
+                        InternalID: 305086,
+
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Sales_Order_Legacy_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order Legacy',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c2c35582-e091-4478-986f-ea8af10ba004/Sales_Order_Legacy_256743_Fix_01_03.json',
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/c05d52b8-9e14-470c-907c-7943032cd2f5/Sales_Order_Legacy_1_1_176.json',
                     },
+                    //EU - S3
                     {
-                        InternalID: 309556,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'Sales_Order_New_Pricing_268998_Fix_01_03.json',
+                        InternalID: 6717,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Sales_Order_New_Pricing_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order New Pricing',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/b3a9c558-d835-4018-983e-5e70e7565786/Sales_Order_New_Pricing_268998_Fix_01_03.json',
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/b735eeca-dc7a-43e5-9ecf-fcd8623c95df/Sales_Order_New_Pricing_1_1_176.json',
                     },
                 ];
             }
             if (isTransactionsTestsOverrideWinzer) {
                 TransactionsATDArr = [
+                    //Sandbox - S3
                     {
-                        InternalID: 309557,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'VSN_259467_Fix_01_03.json',
+                        InternalID: 320566,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'VSN_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'VSN',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/564da1f5-6ce5-48d5-a40d-f4d7409d6d5d/VSN_259467_Fix_01_03.json',
+                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/c1b2e701-9e56-4be6-ab98-d4980b90daad/VSN_1_1_176.json',
                     },
+                    //Sandbox - S3
                     {
-                        InternalID: 309755,
-                        Description: 'Exported from Winzer production in 24.02.2023',
-                        FileName: 'VSN_TEST_(268995)_268995.json',
+                        InternalID: 320567,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'VSN_TEST_(268995)_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'VSN TEST (268995)',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/630bf362-7d01-4d31-81f6-c77912321fff/VSN_TEST_(268995)_268995.json',
+                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/3435332d-21b1-4d7c-a5fa-a6a6923972fc/VSN_TEST_(268995)_1_1_176.json',
                     },
+                    //Production - S3
                     {
-                        InternalID: 309805,
-                        Description: 'Exported from Winzer production in 04.03.2021',
-                        FileName: 'CustomKits_259470_Fix_04_03.json',
+                        InternalID: 305087,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'CustomKits_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'CustomKits',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/54361873-193c-47ec-8c6d-81376fcabb50/CustomKits_259470_Fix_04_03.json',
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/9e7b4493-c34f-457f-8ae7-553b9a9e7f5c/CustomKits_1_1_176.json',
                     },
+                    //Production - S3
                     {
-                        InternalID: 309804,
-                        Description: 'Exported from Winzer production in 04.03.2021',
-                        FileName: 'Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
+                        InternalID: 305088,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Custom_Kit_TEST_(268997)_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Custom Kit TEST (268997)',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/c37e86e6-05bd-43d9-8bfa-1a23b7d1f284/Custom_Kit_TEST_(268997)_268997_Fix_04_03.json',
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/7beb1317-4ed5-42c7-b89f-87ae2a46ed09/Custom_Kit_TEST_(268997)_1_1_176.json',
                     },
+                    //Production - S3
                     {
-                        InternalID: 309561,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'BillOnly_259469_Fox_01_03.json',
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'BillOnly_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'BillOnly',
-                        URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/5ad4043f-9f2a-4604-aa28-c10668b0c275/BillOnly_259469_Fox_01_03.json',
+                        URL: 'https://cdn.pepperi.com/TemporaryFiles/f0bd8e22-b31b-489e-accf-6f574f484325',
                     },
+                    //Production - S3
                     {
-                        InternalID: 309363,
-                        Description: 'Exported from Winzer production in 24.02.2021',
-                        FileName: 'FDP_259468.json',
+                        InternalID: 305090,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'FDP_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'FDP',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/3c232b0c-f70a-437d-8a95-50569e344e12/FDP_259468.json',
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/01c06a53-4617-4241-9855-89f40610893b/FDP_1_1_176.json',
                     },
+                    //EU - S3
                     {
-                        InternalID: 309803,
-                        Description: 'Exported from Winzer production in 04.03.2021',
-                        FileName: 'Label Only_261365_Fix_04_03.json',
+                        InternalID: 6718,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Label_Only_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Label Only',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/bc4e02b6-976f-4d67-b9ac-15c974aca5b6/Label Only_261365_Fix_04_03.json',
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/7c44ef18-6c35-4109-8d7d-ce4cb5adb4e3/Label_Only_1_1_176.json',
                     },
+                    //EU - S3
                     {
-                        InternalID: 309563,
-                        Description: 'Exported from Winzer production in 24.02.2021 Fix_01.03',
-                        FileName: 'Update Prices_261683_Fix_01_03.json',
+                        InternalID: 6719,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Update_Prices_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Update Prices',
                         URL:
-                            'https://cdn.staging.pepperi.com/30013175/CustomizationFile/4a108341-49bb-4ee0-92d5-4f1f2f017d3c/Update Prices_261683_Fix_01_03.json',
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/bd46cc94-dc56-47af-bd23-345b45016315/Update_Prices_1_1_176.json',
                     },
+                    //EU - S3
                     {
-                        InternalID: 303998,
-                        Description: 'Exported from Winzer production in 04.03.2021',
-                        FileName: 'Sales_Order_DEV_V2_283071.json',
+                        InternalID: 6721,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Winzer_Sales_Order_V2_1_1_176.json',
                         MimeType: 'application/json',
-                        Title: 'Sales Order DEV V2',
+                        Title: 'Winzer Sales Order V2',
                         URL:
-                            'https://cdn.pepperi.com/30013466/CustomizationFile/9dad31bb-8f8c-4fe9-ba0a-a9b84460e724/Sales_Order_DEV_V2_283071.json',
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/7579ae17-b5c3-45e2-82cb-fff397d860e0/Winzer_Sales_Order_V2_1_1_176.json',
+                    },
+                    //EU - S3
+                    {
+                        InternalID: 6722,
+                        Description: 'Exported from Winzer in 30.03.2021',
+                        FileName: 'Sales_Order_DEV_V3_1_1_176.json',
+                        MimeType: 'application/json',
+                        Title: 'Sales Order DEV V3',
+                        URL:
+                            'https://eucdn.pepperi.com/30010075/CustomizationFile/bfd1b6c1-62a1-4b5f-958f-bbc95991a087/Sales_Order_DEV_V3_1_1_176.json',
                     },
                 ];
             }
+
             describe('Test Transactions Override', () => {
                 const testATDInternalID = testATD.InternalID; // 290418; //Production 'Automation ATD 1.1.165 2'
                 for (let index = 0; index < TransactionsATDArr.length; index++) {

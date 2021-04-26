@@ -1,5 +1,14 @@
-import { PapiClient, InstalledAddon, Catalog } from '@pepperi-addons/papi-sdk';
+import {
+    PapiClient,
+    InstalledAddon,
+    Catalog,
+    FindOptions,
+    GeneralActivity,
+    Transaction,
+} from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
+import jwt_decode from 'jwt-decode';
+import fetch from 'node-fetch';
 
 declare type ClientData =
     | 'UserEmail'
@@ -8,19 +17,8 @@ declare type ClientData =
     | 'UserUUID'
     | 'DistributorID'
     | 'DistributorUUID'
-    | 'Server';
-
-interface FindOptions {
-    fields?: string[];
-    where?: string;
-    orderBy?: string;
-    page?: number;
-    page_size?: number;
-    include_nested?: boolean;
-    full_mode?: boolean;
-    include_deleted?: boolean;
-    is_distinct?: boolean;
-}
+    | 'Server'
+    | 'IdpURL';
 
 const UserDataObject = {
     UserEmail: 'email',
@@ -30,7 +28,9 @@ const UserDataObject = {
     DistributorID: 'pepperi.distributorid',
     DistributorUUID: 'pepperi.distributoruuid',
     Server: 'pepperi.datacenter',
+    IdpURL: 'iss',
 };
+type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -41,18 +41,20 @@ export default class GeneralService {
         this.papiClient = new PapiClient({
             baseURL: client.BaseURL,
             token: client.OAuthAccessToken,
+            addonUUID: client.AddonUUID.length > 10 ? client.AddonUUID : 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            addonSecretKey: client.AddonSecretKey,
         });
     }
 
-    sleep = function (ms) {
+    sleep(ms: number) {
         const start = new Date().getTime(),
             expire = start + ms;
         while (new Date().getTime() < expire) {}
         return;
-    };
+    }
 
     //#region getDate
-    getTime = function () {
+    getTime() {
         const getDate = new Date();
         return (
             getDate.getHours().toString().padStart(2, '0') +
@@ -61,9 +63,9 @@ export default class GeneralService {
             ':' +
             getDate.getSeconds().toString().padStart(2, '0')
         );
-    };
+    }
 
-    getDate = function () {
+    getDate() {
         const getDate = new Date();
         return (
             getDate.getDate().toString().padStart(2, '0') +
@@ -72,7 +74,7 @@ export default class GeneralService {
             '/' +
             getDate.getFullYear().toString().padStart(4, '0')
         );
-    };
+    }
     //#endregion getDate
 
     getServer() {
@@ -80,15 +82,19 @@ export default class GeneralService {
     }
 
     getClientData(data: ClientData): string {
-        return parseJwt(this.client.OAuthAccessToken)[UserDataObject[data]];
+        return jwt_decode(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
 
     getAddons(options?: FindOptions): Promise<InstalledAddon[]> {
         return this.papiClient.addons.installedAddons.find(options);
     }
 
-    getCatalogs(): Promise<Catalog[]> {
-        return this.papiClient.catalogs.find({});
+    getCatalogs(options?: FindOptions): Promise<Catalog[]> {
+        return this.papiClient.catalogs.find(options);
+    }
+
+    getAllActivities(options?: FindOptions): Promise<GeneralActivity[] | Transaction[]> {
+        return this.papiClient.allActivities.find(options);
     }
 
     getTypes(resource_name: ResourceTypes) {
@@ -167,21 +173,122 @@ export default class GeneralService {
         }
         return auditLogResponse;
     }
-}
 
-function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-        Buffer.from(base64, 'base64')
-            .toString()
-            .split('')
-            .map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
+        const isInstalledArr: boolean[] = [];
+        const installedAddonsArr = await this.getAddons();
+        for (const addonName in testData) {
+            let isInstalled = false;
+            for (let i = 0; i < installedAddonsArr.length; i++) {
+                if (installedAddonsArr[i].Addon !== null) {
+                    if (installedAddonsArr[i].Addon.Name == addonName) {
+                        isInstalled = true;
+                        break;
+                    }
+                }
+            }
+            if (!isInstalled) {
+                await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonName][0]}`).install();
+                this.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+            }
+            isInstalledArr.push(true);
+        }
+        return isInstalledArr;
+    }
+
+    async chnageVersion(
+        varKey: string,
+        testData: { [any: string]: string[] },
+        isPhased: boolean,
+    ): Promise<{ [any: string]: string[] }> {
+        for (const addonName in testData) {
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
+            let changeType = 'Upgrade';
+            let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
+            if (addonName == 'Services Framework' || addonName == 'Cross Platforms API' || !isPhased) {
+                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            }
+            let varLatestVersion = await fetch(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `${varKey}`,
+                    },
+                },
+            ).then((response) => response.json());
+            varLatestVersion = varLatestVersion[0].Version;
+
+            testData[addonName].push(varLatestVersion);
+
+            let upgradeResponse = await this.papiClient.addons.installedAddons
+                .addonUUID(`${addonUUID}`)
+                .upgrade(varLatestVersion);
+            this.sleep(4000); //Test upgrade status only after 4 seconds.
+            let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
+            if (auditLogResponse.Status.Name == 'InProgress') {
+                this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
+            }
+            if (auditLogResponse.Status.Name == 'Failure') {
+                if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                    testData[addonName].push(changeType);
+                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                } else {
+                    changeType = 'Downgrade';
+                    upgradeResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .downgrade(varLatestVersion);
+                    this.sleep(4000); //Test downgrade status only after 4 seconds.
+                    let auditLogResponse = await this.papiClient.auditLogs
+                        .uuid(upgradeResponse.ExecutionUUID as any)
+                        .get();
+                    if (auditLogResponse.Status.Name == 'InProgress') {
+                        this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                        auditLogResponse = await this.papiClient.auditLogs
+                            .uuid(upgradeResponse.ExecutionUUID as any)
+                            .get();
+                    }
+                    testData[addonName].push(changeType);
+                    testData[addonName].push(auditLogResponse.Status.Name);
+                }
+            } else {
+                testData[addonName].push(changeType);
+                testData[addonName].push(auditLogResponse.Status.Name);
+            }
+        }
+        return testData;
+    }
+
+    fetchStatus(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
+        return fetch(`${this['client'].BaseURL}${URI}`, {
+            method: `${method}`,
+            body: JSON.stringify(body),
+            headers: {
+                Authorization: `Bearer ${this.papiClient['options'].token}`,
+            },
+            timeout: timeout,
+            size: size,
+        })
+            .then(async (response) => {
+                return {
+                    Status: response.status,
+                    Body: await response.json(),
+                };
             })
-            .join(''),
-    );
-    return JSON.parse(jsonPayload);
+            .then((res) => {
+                return {
+                    Status: res.Status,
+                    Size: res.Body.length,
+                    Body: res.Body,
+                };
+            });
+    }
 }
 
 export interface TesterFunctions {
@@ -189,7 +296,7 @@ export interface TesterFunctions {
     expect: any;
     it: any;
     run: any;
-    setNewTestHeadline: any;
-    addTestResultUnderHeadline: any;
-    printTestResults: any;
+    setNewTestHeadline?: any;
+    addTestResultUnderHeadline?: any;
+    printTestResults?: any;
 }

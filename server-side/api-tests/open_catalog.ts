@@ -1,8 +1,8 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { OpenCatalogService } from '../services/openCatalog.service';
+import { OpenCatalogService } from '../services/open-catalog.service';
 
 export async function OpenCatalogTests(generalService: GeneralService, tester: TesterFunctions) {
-    const openCatalogService = new OpenCatalogService(generalService.papiClient);
+    const openCatalogService = new OpenCatalogService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;

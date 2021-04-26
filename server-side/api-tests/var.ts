@@ -1,5 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
+import { v4 as uuidv4 } from 'uuid';
 
 //#region Prerequisites for Var API Tests
 //TestData
@@ -52,14 +53,6 @@ function testDatagetBase64FileFromFileAtPath() {
             '\n\nexports.ThisIsJustTestFileWithTestFunctions = async (Client, Request) => {\n' +
             'return {success:true, resultObject:{}}\n}',
     ).toString('base64');
-}
-
-function createRandomUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0,
-            v = c == 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
 }
 
 //#endregion Prerequisites for Var API Tests
@@ -530,7 +523,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create UUID with random UUID
-        testDataBody.UUID = createRandomUUID();
+        testDataBody.UUID = uuidv4();
         console.log({ Random_UUID: testDataBody.UUID });
         const createApiResponse = await fetch(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
@@ -644,7 +637,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         };
 
         //Create UUID with random UUID
-        testDataBody.UUID = createRandomUUID();
+        testDataBody.UUID = uuidv4();
         const tempUUID = testDataBody.UUID.split('-');
         tempUUID[1] = 'Oren';
         tempUUID[2] = 'Test';
