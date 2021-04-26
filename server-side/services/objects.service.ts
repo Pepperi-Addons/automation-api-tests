@@ -199,11 +199,11 @@ export class ObjectsService {
         return this.papiClient.accounts.delete(accountID);
     }
 
-    postUDTMetaData(body: UserDefinedTableMetaData): Promise<UserDefinedTableMetaData>{
+    postUDTMetaData(body: UserDefinedTableMetaData): Promise<UserDefinedTableMetaData> {
         return this.papiClient.metaData.userDefinedTables.upsert(body);
     }
 
-    getUDTMetaData(id: number){
+    getUDTMetaData(id: number) {
         return this.papiClient.metaData.userDefinedTables.get(id);
     }
 
