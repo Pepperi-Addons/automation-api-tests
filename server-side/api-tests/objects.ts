@@ -4,7 +4,7 @@ import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
 // All Sanity Tests
 export async function ObjectsTests(generalService: GeneralService, tester: TesterFunctions) {
-    const objectsService = new ObjectsService(generalService);
+    const service = new ObjectsService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -571,14 +571,14 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkUpdateAccounts;
 
             it('Create TSAs for account CRUD', async () => {
-                createdTSAs = await objectsService.createBulkTSA('accounts', TSAarr);
+                createdTSAs = await service.createBulkTSA('accounts', TSAarr);
                 console.log('The following fields created:\n' + createdTSAs);
             });
 
             it('Create account', async () => {
                 accountExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
 
-                createdAccount = await objectsService.createAccount({
+                createdAccount = await service.createAccount({
                     ExternalID: accountExternalID,
                     City: 'City',
                     Country: 'US',
@@ -632,7 +632,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 });
 
-                const getCreatedAccount = await objectsService.getAccounts({
+                const getCreatedAccount = await service.getAccounts({
                     where: `InternalID=${createdAccount.InternalID}`,
                 });
 
@@ -686,7 +686,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Update account', async () => {
                 return Promise.all([
                     expect(
-                        (updatedAccount = await objectsService.createAccount({
+                        (updatedAccount = await service.createAccount({
                             ExternalID: accountExternalID,
                             City: 'City update',
                             Country: 'US',
@@ -787,22 +787,21 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Delete account', async () => {
                 return Promise.all([
-                    expect(await objectsService.deleteAccount(createdAccount.InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(createdAccount.InternalID)).to.be.false,
-                    expect(await objectsService.getAccounts({ where: `InternalID=${createdAccount.InternalID}` }))
+                    expect(await service.deleteAccount(createdAccount.InternalID)).to.be.true,
+                    expect(await service.deleteAccount(createdAccount.InternalID)).to.be.false,
+                    expect(await service.getAccounts({ where: `InternalID=${createdAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
             });
 
             it('Delete account TSAs', async () => {
-                expect(createdTSAs.length == (await objectsService.deleteBulkTSA('accounts', TSAarr)).length).to.be
-                    .true;
+                expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true;
             });
 
             it('Bulk create accounts', async () => {
                 bulkAccountExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
-                bulkCreateAccount = await objectsService.bulkCreate('accounts', {
+                bulkCreateAccount = await service.bulkCreate('accounts', {
                     Headers: ['ExternalID', 'Name'],
                     Lines: [
                         [bulkAccountExternalID + ' 1', 'Bulk Account 1'],
@@ -817,7 +816,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -840,7 +839,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Verify bulk created accounts', async () => {
                 return Promise.all([
                     expect(
-                        await objectsService.getAccounts({
+                        await service.getAccounts({
                             where: "ExternalID like '%" + bulkAccountExternalID + "%'",
                         }),
                     )
@@ -850,7 +849,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk update accounts', async () => {
-                bulkCreateAccount = await objectsService.bulkCreate('accounts', {
+                bulkCreateAccount = await service.bulkCreate('accounts', {
                     Headers: ['ExternalID', 'Name'],
                     Lines: [
                         [bulkAccountExternalID + ' 1', 'Bulk Account 1 Update'],
@@ -865,7 +864,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk update jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -886,7 +885,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk accounts update', async () => {
-                bulkUpdateAccounts = await objectsService.getAccounts({
+                bulkUpdateAccounts = await service.getAccounts({
                     where: "ExternalID like '%" + bulkAccountExternalID + "%'",
                 });
                 expect(bulkUpdateAccounts[0].Name).to.include('Update'),
@@ -897,17 +896,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete bulk accounts', async () => {
-                bulkAccounts = await objectsService.getAccounts({
+                bulkAccounts = await service.getAccounts({
                     where: "ExternalID like '%" + bulkAccountExternalID + "%'",
                 });
                 return Promise.all([
-                    expect(await objectsService.deleteAccount(bulkAccounts[0].InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[1].InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[2].InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[3].InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[4].InternalID)).to.be.true,
+                    expect(await service.deleteAccount(bulkAccounts[0].InternalID)).to.be.true,
+                    expect(await service.deleteAccount(bulkAccounts[1].InternalID)).to.be.true,
+                    expect(await service.deleteAccount(bulkAccounts[2].InternalID)).to.be.true,
+                    expect(await service.deleteAccount(bulkAccounts[3].InternalID)).to.be.true,
+                    expect(await service.deleteAccount(bulkAccounts[4].InternalID)).to.be.true,
                     expect(
-                        await objectsService.getAccounts({
+                        await service.getAccounts({
                             where: "ExternalID like '%" + bulkAccountExternalID + "%'",
                         }),
                     )
@@ -917,16 +916,16 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete Account Message (DI-17285)', async () => {
-                const account = await objectsService.createAccount({
+                const account = await service.createAccount({
                     ExternalID: 'Delete Account Test 12345',
                     City: 'City',
                     Country: 'US',
                 });
                 return Promise.all([
-                    expect(objectsService.deleteAccount(account.InternalID as number)).eventually.to.be.true,
-                    expect(objectsService.deleteAccount(account.InternalID as number)).eventually.to.be.false,
+                    expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.true,
+                    expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.false,
                     expect(
-                        objectsService.deleteAccount((account.InternalID as number) + 123456789),
+                        service.deleteAccount((account.InternalID as number) + 123456789),
                     ).eventually.to.be.rejectedWith(
                         `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
                             (account.InternalID as number) + 123456789
@@ -950,17 +949,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let contactUUIDArray;
 
             it('Create account and TSAs for contact CRUD', async () => {
-                contactAccount = await objectsService.createAccount({
+                contactAccount = await service.createAccount({
                     ExternalID: 'ContactTestAccount',
                     Name: 'Contact Test Account',
                 });
-                contactTSAs = await objectsService.createBulkTSA('contacts', TSAarr);
+                contactTSAs = await service.createBulkTSA('contacts', TSAarr);
                 console.log('The following fields were created:\n' + contactTSAs);
             });
 
             it('Create contact', async () => {
                 contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
-                createdContact = await objectsService.createContact({
+                createdContact = await service.createContact({
                     ExternalID: contactExternalID,
                     Email: 'ContactTest@mail.com',
                     Phone: '123-45678',
@@ -1002,7 +1001,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 });
 
-                const getCreatedContact = await objectsService.getContacts(createdContact.InternalID);
+                const getCreatedContact = await service.getContacts(createdContact.InternalID);
 
                 return Promise.all([
                     expect(getCreatedContact[0]).to.include({
@@ -1048,7 +1047,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Update contact', async () => {
                 return Promise.all([
                     expect(
-                        (updatedContact = await objectsService.createContact({
+                        (updatedContact = await service.createContact({
                             ExternalID: contactExternalID,
                             Email: 'ContactUpdateTest@mail.com',
                             Phone: '123-456789',
@@ -1115,9 +1114,9 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Delete contact', async () => {
                 return Promise.all([
-                    expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.true,
-                    expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.false,
-                    expect(await objectsService.getContacts(createdContact.InternalID))
+                    expect(await service.deleteContact(createdContact.InternalID)).to.be.true,
+                    expect(await service.deleteContact(createdContact.InternalID)).to.be.false,
+                    expect(await service.getContacts(createdContact.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
@@ -1125,7 +1124,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk create contacts', async () => {
                 bulkContactExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
-                bulkCreateContact = await objectsService.bulkCreate('contacts', {
+                bulkCreateContact = await service.bulkCreate('contacts', {
                     Headers: ['ExternalID', 'AccountExternalID', 'FirstName', 'Email'],
                     Lines: [
                         [
@@ -1185,7 +1184,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -1208,10 +1207,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Verify bulk created contacts', async () => {
                 return Promise.all([
                     expect(
-                        await objectsService.getBulk(
-                            'contacts',
-                            "?where=ExternalID like '%" + bulkContactExternalID + "%'",
-                        ),
+                        await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"),
                     )
                         .to.be.an('array')
                         .with.lengthOf(5),
@@ -1219,7 +1215,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Connect bulk created contacts as buyers', async () => {
-                const connectAsBuyerContacts = await objectsService.getBulk(
+                const connectAsBuyerContacts = await service.getBulk(
                     'contacts',
                     "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
                 );
@@ -1229,7 +1225,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 });
 
                 contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
-                const connectAsBuyer = await objectsService.connectAsBuyer({
+                const connectAsBuyer = await service.connectAsBuyer({
                     UUIDs: contactUUIDArray,
                     SelectAll: false,
                 });
@@ -1242,7 +1238,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                             expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not.empty;
                     });
 
-                const connectedContacts = await objectsService.getBulk(
+                const connectedContacts = await service.getBulk(
                     'contacts',
                     "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer",
                 );
@@ -1255,14 +1251,14 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Disconnect bulk created contacts as buyers', async () => {
-                const DisconnectBuyer = await objectsService.disconnectBuyer({
+                const DisconnectBuyer = await service.disconnectBuyer({
                     UUIDs: contactUUIDArray,
                     SelectAll: false,
                 });
 
                 expect(DisconnectBuyer).to.be.true;
 
-                const DisconnectedBuyers = await objectsService.getBulk(
+                const DisconnectedBuyers = await service.getBulk(
                     'contacts',
                     "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
                 );
@@ -1273,7 +1269,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk update contacts', async () => {
-                bulkCreateContact = await objectsService.bulkCreate('contacts', {
+                bulkCreateContact = await service.bulkCreate('contacts', {
                     Headers: ['ExternalID', 'AccountExternalID', 'FirstName'],
                     Lines: [
                         [bulkContactExternalID + ' 1', contactAccount.ExternalID, 'Bulk Contact 1 Update'],
@@ -1288,7 +1284,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk update jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -1309,7 +1305,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk contacts update', async () => {
-                bulkUpdateContacts = await objectsService.getBulk(
+                bulkUpdateContacts = await service.getBulk(
                     'contacts',
                     "?where=ExternalID like '%" + bulkContactExternalID + "%'",
                 );
@@ -1321,21 +1317,18 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete bulk contacts', async () => {
-                bulkContacts = await objectsService.getBulk(
+                bulkContacts = await service.getBulk(
                     'contacts',
                     "?where=ExternalID like '%" + bulkContactExternalID + "%'",
                 );
                 return Promise.all([
-                    expect(await objectsService.deleteContact(bulkContacts[0].InternalID)).to.be.true,
-                    expect(await objectsService.deleteContact(bulkContacts[1].InternalID)).to.be.true,
-                    expect(await objectsService.deleteContact(bulkContacts[2].InternalID)).to.be.true,
-                    expect(await objectsService.deleteContact(bulkContacts[3].InternalID)).to.be.true,
-                    expect(await objectsService.deleteContact(bulkContacts[4].InternalID)).to.be.true,
+                    expect(await service.deleteContact(bulkContacts[0].InternalID)).to.be.true,
+                    expect(await service.deleteContact(bulkContacts[1].InternalID)).to.be.true,
+                    expect(await service.deleteContact(bulkContacts[2].InternalID)).to.be.true,
+                    expect(await service.deleteContact(bulkContacts[3].InternalID)).to.be.true,
+                    expect(await service.deleteContact(bulkContacts[4].InternalID)).to.be.true,
                     expect(
-                        await objectsService.getBulk(
-                            'contacts',
-                            "?where=ExternalID like '%" + bulkContactExternalID + "%'",
-                        ),
+                        await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"),
                     )
                         .to.be.an('array')
                         .with.lengthOf(0),
@@ -1343,9 +1336,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete contact test account and TSAs', async () => {
-                expect(contactTSAs.length == (await objectsService.deleteBulkTSA('contacts', TSAarr)).length).to.be
-                    .true,
-                    expect(await objectsService.deleteAccount(contactAccount.InternalID)).to.be.true;
+                expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true,
+                    expect(await service.deleteAccount(contactAccount.InternalID)).to.be.true;
             });
         });
 
@@ -1363,10 +1355,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkUpdateActivities;
 
             it('Create account and TSAs for activity CRUD', async () => {
-                atds = await objectsService.getATD('activities');
-                activityTSAs = await objectsService.createBulkTSA('activities', TSAarr, atds[0].TypeID);
+                atds = await service.getATD('activities');
+                activityTSAs = await service.createBulkTSA('activities', TSAarr, atds[0].TypeID);
                 console.log('The following fields were created:\n' + activityTSAs);
-                activityAccount = await objectsService.createAccount({
+                activityAccount = await service.createAccount({
                     ExternalID: 'ActivityTestAccount',
                     Name: 'Activity Test Account',
                 });
@@ -1374,7 +1366,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Create activity', async () => {
                 activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
-                createdActivity = await objectsService.createActivity({
+                createdActivity = await service.createActivity({
                     ExternalID: activityExternalID,
                     ActivityTypeID: atds[0].TypeID,
                     Status: 1,
@@ -1414,7 +1406,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 });
 
-                const getCreatedActivity = await objectsService.getActivity({
+                const getCreatedActivity = await service.getActivity({
                     where: `InternalID=${createdActivity.InternalID}`,
                 });
 
@@ -1473,7 +1465,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Update activity', async () => {
                 return Promise.all([
                     expect(
-                        (updatedActivity = await objectsService.createActivity({
+                        (updatedActivity = await service.createActivity({
                             ExternalID: activityExternalID,
                             Status: 2,
                             Title: 'Testing Update',
@@ -1561,16 +1553,16 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete activity', async () => {
-                expect(await objectsService.deleteActivity(createdActivity.InternalID)).to.be.true,
-                    expect(await objectsService.deleteActivity(createdActivity.InternalID)).to.be.false,
-                    expect(await objectsService.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.true,
+                    expect(await service.deleteActivity(createdActivity.InternalID)).to.be.false,
+                    expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });
 
             it('Bulk create activity', async () => {
                 bulkActivityExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
-                bulkCreateActivity = await objectsService.bulkCreate('activities/' + atds[0].TypeID, {
+                bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
                     Headers: ['ExternalID', 'AccountExternalID', 'Status'],
                     Lines: [
                         [bulkActivityExternalID + ' 1', activityAccount.ExternalID, '1'],
@@ -1585,7 +1577,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -1608,7 +1600,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Verify bulk created activities', async () => {
                 return Promise.all([
                     expect(
-                        await objectsService.getBulk(
+                        await service.getBulk(
                             'activities',
                             "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
                         ),
@@ -1619,7 +1611,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk update activities', async () => {
-                bulkCreateActivity = await objectsService.bulkCreate('activities/' + atds[0].TypeID, {
+                bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
                     Headers: ['ExternalID', 'AccountExternalID', 'Status'],
                     Lines: [
                         [bulkActivityExternalID + ' 1', activityAccount.ExternalID, '2'],
@@ -1634,7 +1626,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk update jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -1655,7 +1647,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk activities update', async () => {
-                bulkUpdateActivities = await objectsService.getBulk(
+                bulkUpdateActivities = await service.getBulk(
                     'activities',
                     "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
                 );
@@ -1667,18 +1659,18 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete bulk activities', async () => {
-                bulkActivities = await objectsService.getBulk(
+                bulkActivities = await service.getBulk(
                     'activities',
                     "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
                 );
                 return Promise.all([
-                    expect(await objectsService.deleteActivity(bulkActivities[0].InternalID)).to.be.true,
-                    expect(await objectsService.deleteActivity(bulkActivities[1].InternalID)).to.be.true,
-                    expect(await objectsService.deleteActivity(bulkActivities[2].InternalID)).to.be.true,
-                    expect(await objectsService.deleteActivity(bulkActivities[3].InternalID)).to.be.true,
-                    expect(await objectsService.deleteActivity(bulkActivities[4].InternalID)).to.be.true,
+                    expect(await service.deleteActivity(bulkActivities[0].InternalID)).to.be.true,
+                    expect(await service.deleteActivity(bulkActivities[1].InternalID)).to.be.true,
+                    expect(await service.deleteActivity(bulkActivities[2].InternalID)).to.be.true,
+                    expect(await service.deleteActivity(bulkActivities[3].InternalID)).to.be.true,
+                    expect(await service.deleteActivity(bulkActivities[4].InternalID)).to.be.true,
                     expect(
-                        await objectsService.getBulk(
+                        await service.getBulk(
                             'activities',
                             "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
                         ),
@@ -1690,12 +1682,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Delete activity test account and TSAs', async () => {
                 expect(
-                    activityTSAs.length ==
-                        (await objectsService.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length,
+                    activityTSAs.length == (await service.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length,
                 ).to.be.true,
-                    expect(await objectsService.deleteAccount(activityAccount.InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(activityAccount.InternalID)).to.be.false,
-                    expect(await objectsService.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
+                    expect(await service.deleteAccount(activityAccount.InternalID)).to.be.true,
+                    expect(await service.deleteAccount(activityAccount.InternalID)).to.be.false,
+                    expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });
@@ -1724,16 +1715,16 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let defaultCatalog;
 
             it('Create account and TSAs for transactions CRUD', async () => {
-                atds = await objectsService.getATD('transactions');
-                transactionTSAs = await objectsService.createBulkTSA('transactions', TSAarr, atds[0].TypeID);
+                atds = await service.getATD('transactions');
+                transactionTSAs = await service.createBulkTSA('transactions', TSAarr, atds[0].TypeID);
                 console.log('The following fields were created:\n' + transactionTSAs);
-                transactionLinesTSAs = await objectsService.createBulkTSA(
+                transactionLinesTSAs = await service.createBulkTSA(
                     'transaction_lines',
                     transactionLineTSAarr,
                     atds[0].TypeID,
                 );
                 console.log('The following fields were created:\n' + transactionLinesTSAs);
-                transactionAccount = await objectsService.createAccount({
+                transactionAccount = await service.createAccount({
                     ExternalID: 'TransactionTestAccount',
                     Name: 'Transaction Test Account',
                 });
@@ -1742,7 +1733,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Create transaction', async () => {
                 transactionExternalID = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
                 const catalogs = await generalService.getCatalogs();
-                createdTransaction = await objectsService.createTransaction({
+                createdTransaction = await service.createTransaction({
                     ExternalID: transactionExternalID,
                     ActivityTypeID: atds[0].TypeID,
                     Status: 1,
@@ -1786,7 +1777,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 });
 
-                const getCreatedTransaction = await objectsService.getTransaction({
+                const getCreatedTransaction = await service.getTransaction({
                     where: `InternalID=${createdTransaction.InternalID}`,
                 });
 
@@ -1848,8 +1839,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Create transaction lines', async () => {
-                items = await objectsService.getItems();
-                createdTransactionLines = await objectsService.createTransactionLine({
+                items = await service.getItems();
+                createdTransactionLines = await service.createTransactionLine({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 0,
                     ItemExternalID: items[0].ExternalID,
@@ -1870,7 +1861,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     TSASingleLineAPI: 'Random text',
                 });
 
-                const getCreatedTransactionLine = await objectsService.getTransactionLines({
+                const getCreatedTransactionLine = await service.getTransactionLines({
                     where: `TransactionInternalID=${createdTransaction.InternalID}`,
                 });
 
@@ -1931,7 +1922,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(getCreatedTransactionLine[0].Archive).to.be.false,
                     expect(getCreatedTransactionLine[0].Hidden).to.be.false,
                     expect(
-                        await objectsService.getTransactionLines({
+                        await service.getTransactionLines({
                             where: `TransactionInternalID=${createdTransaction.InternalID}`,
                         }),
                     )
@@ -1941,10 +1932,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Update transaction lines', async () => {
-                items = await objectsService.getItems();
+                items = await service.getItems();
 
                 expect(
-                    (updatedTransactionLines = await objectsService.createTransactionLine({
+                    (updatedTransactionLines = await service.createTransactionLine({
                         TransactionInternalID: createdTransaction.InternalID,
                         LineNumber: 0,
                         ItemExternalID: items[0].ExternalID,
@@ -2023,7 +2014,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(updatedTransactionLines.Archive).to.be.false,
                     expect(updatedTransactionLines.Hidden).to.be.false,
                     expect(
-                        await objectsService.getTransactionLines({
+                        await service.getTransactionLines({
                             where: `TransactionInternalID=${createdTransaction.InternalID}`,
                         }),
                     )
@@ -2032,15 +2023,15 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Add transaction lines', async () => {
-                items = await objectsService.getItems();
-                addedTransactionLines = await objectsService.createTransactionLine({
+                items = await service.getItems();
+                addedTransactionLines = await service.createTransactionLine({
                     TransactionInternalID: createdTransaction.InternalID,
                     LineNumber: 1,
                     ItemExternalID: items[1].ExternalID,
                     UnitsQuantity: 1.0,
                 });
                 expect(
-                    await objectsService.getTransactionLines({
+                    await service.getTransactionLines({
                         where: `TransactionInternalID=${createdTransaction.InternalID}`,
                     }),
                 )
@@ -2049,19 +2040,19 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete transaction lines', async () => {
-                expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false,
+                expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false,
                     expect(
-                        await objectsService.getTransactionLines({
+                        await service.getTransactionLines({
                             where: `TransactionInternalID=${createdTransaction.InternalID}`,
                         }),
                     )
                         .to.be.an('array')
                         .with.lengthOf(1),
-                    expect(await objectsService.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.false,
+                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.false,
                     expect(
-                        await objectsService.getTransactionLines({
+                        await service.getTransactionLines({
                             where: `TransactionInternalID=${createdTransaction.InternalID}`,
                         }),
                     )
@@ -2071,7 +2062,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Update transaction', async () => {
                 expect(
-                    (updatedTransaction = await objectsService.createTransaction({
+                    (updatedTransaction = await service.createTransaction({
                         ExternalID: transactionExternalID,
                         Status: 2,
                         Account: {
@@ -2156,19 +2147,17 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete transaction', async () => {
-                expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                    expect(
-                        await objectsService.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }),
-                    )
+                expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.true,
+                    expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.false,
+                    expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });
 
             it('Bulk create transaction headers', async () => {
-                defaultCatalog = await objectsService.getCatalogs({ where: `ExternalID='Default Catalog'` });
+                defaultCatalog = await service.getCatalogs({ where: `ExternalID='Default Catalog'` });
                 bulkTransactionExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
-                bulkCreateTransaction = await objectsService.bulkCreate('transactions/' + atds[0].TypeID, {
+                bulkCreateTransaction = await service.bulkCreate('transactions/' + atds[0].TypeID, {
                     Headers: ['ExternalID', 'AccountExternalID', 'Status', 'CatalogExternalID'],
                     Lines: [
                         [
@@ -2208,7 +2197,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -2231,7 +2220,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Verify bulk created transaction headers', async () => {
                 return Promise.all([
                     expect(
-                        await objectsService.getBulk(
+                        await service.getBulk(
                             'transactions',
                             "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
                         ),
@@ -2242,7 +2231,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk update transaction headers', async () => {
-                bulkCreateTransaction = await objectsService.bulkCreate('transactions/' + atds[0].TypeID, {
+                bulkCreateTransaction = await service.bulkCreate('transactions/' + atds[0].TypeID, {
                     Headers: ['ExternalID', 'AccountExternalID', 'Status', 'CatalogExternalID'],
                     Lines: [
                         [
@@ -2282,7 +2271,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk update jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -2303,7 +2292,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk transaction headers update', async () => {
-                bulkUpdateTransactions = await objectsService.getBulk(
+                bulkUpdateTransactions = await service.getBulk(
                     'transactions',
                     "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
                 );
@@ -2315,7 +2304,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk create transaction lines', async () => {
-                bulkCreateTransactionLines = await objectsService.bulkCreate('transaction_lines/' + atds[0].TypeID, {
+                bulkCreateTransactionLines = await service.bulkCreate('transaction_lines/' + atds[0].TypeID, {
                     Headers: ['TransactionExternalID', 'ItemExternalID', 'UnitsQuantity'],
                     Lines: [
                         [bulkTransactionExternalID + ' 1', items[0].ExternalID, '1'],
@@ -2332,7 +2321,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -2355,7 +2344,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Verify bulk created transaction lines', async () => {
                 return Promise.all([
                     expect(
-                        await objectsService.getBulk(
+                        await service.getBulk(
                             'transaction_lines',
                             '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
                         ),
@@ -2366,7 +2355,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk update transaction lines', async () => {
-                bulkCreateTransactionLines = await objectsService.bulkCreate('transaction_lines/' + atds[0].TypeID, {
+                bulkCreateTransactionLines = await service.bulkCreate('transaction_lines/' + atds[0].TypeID, {
                     Headers: ['TransactionExternalID', 'ItemExternalID', 'UnitsQuantity'],
                     Lines: [
                         [bulkTransactionExternalID + ' 1', items[0].ExternalID, '2'],
@@ -2383,7 +2372,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk update jobinfo', async () => {
-                bulkJobInfo = await objectsService.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
                 expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -2404,7 +2393,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify bulk transaction lines update', async () => {
-                bulkUpdateTransactionsLines = await objectsService.getBulk(
+                bulkUpdateTransactionsLines = await service.getBulk(
                     'transaction_lines',
                     '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
                 );
@@ -2416,18 +2405,18 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete bulk transaction lines', async () => {
-                bulkTransactionsLines = await objectsService.getBulk(
+                bulkTransactionsLines = await service.getBulk(
                     'transaction_lines',
                     '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
                 );
                 return Promise.all([
-                    expect(await objectsService.deleteTransactionLine(bulkTransactionsLines[0].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransactionLine(bulkTransactionsLines[1].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransactionLine(bulkTransactionsLines[2].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransactionLine(bulkTransactionsLines[3].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransactionLine(bulkTransactionsLines[4].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[0].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[1].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[2].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[3].InternalID)).to.be.true,
+                    expect(await service.deleteTransactionLine(bulkTransactionsLines[4].InternalID)).to.be.true,
                     expect(
-                        await objectsService.getBulk(
+                        await service.getBulk(
                             'transaction_lines',
                             '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
                         ),
@@ -2438,18 +2427,18 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete bulk transaction headers', async () => {
-                bulkTransactions = await objectsService.getBulk(
+                bulkTransactions = await service.getBulk(
                     'transactions',
                     "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
                 );
                 return Promise.all([
-                    expect(await objectsService.deleteTransaction(bulkTransactions[0].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransaction(bulkTransactions[1].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransaction(bulkTransactions[2].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransaction(bulkTransactions[3].InternalID)).to.be.true,
-                    expect(await objectsService.deleteTransaction(bulkTransactions[4].InternalID)).to.be.true,
+                    expect(await service.deleteTransaction(bulkTransactions[0].InternalID)).to.be.true,
+                    expect(await service.deleteTransaction(bulkTransactions[1].InternalID)).to.be.true,
+                    expect(await service.deleteTransaction(bulkTransactions[2].InternalID)).to.be.true,
+                    expect(await service.deleteTransaction(bulkTransactions[3].InternalID)).to.be.true,
+                    expect(await service.deleteTransaction(bulkTransactions[4].InternalID)).to.be.true,
                     expect(
-                        await objectsService.getBulk(
+                        await service.getBulk(
                             'transactions',
                             "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
                         ),
@@ -2462,21 +2451,16 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Delete transaction test account and TSAs', async () => {
                 expect(
                     transactionTSAs.length ==
-                        (await objectsService.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
+                        (await service.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
                 ).to.be.true,
                     expect(
                         transactionLinesTSAs.length ==
-                            (
-                                await objectsService.deleteBulkTSA(
-                                    'transaction_lines',
-                                    transactionLineTSAarr,
-                                    atds[0].TypeID,
-                                )
-                            ).length,
+                            (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID))
+                                .length,
                     ).to.be.true,
-                    expect(await objectsService.deleteAccount(transactionAccount.InternalID)).to.be.true,
-                    expect(await objectsService.deleteAccount(transactionAccount.InternalID)).to.be.false,
-                    expect(await objectsService.getAccounts({ where: `InternalID=${transactionAccount.InternalID}` }))
+                    expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.true,
+                    expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.false,
+                    expect(await service.getAccounts({ where: `InternalID=${transactionAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);
             });
@@ -2491,7 +2475,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let userEmail;
 
             it('Get initial user quantity and verify user object', async () => {
-                initialUsersList = await objectsService.getUsers();
+                initialUsersList = await service.getUsers();
                 expect(initialUsersList).to.be.an('array').with.lengthOf.above(0),
                     expect(initialUsersList[0], 'InternalID')
                         .to.have.property('InternalID')
@@ -2525,7 +2509,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Verify GET optional fields', async () => {
-                const optionalUsersFields = await objectsService.getUsers(
+                const optionalUsersFields = await service.getUsers(
                     '?fields=Name,EmployeeType,IsSupportAdminUser,IsUnderMyRole,SecurityGroupUUID,SecurityGroupName',
                 );
                 expect(optionalUsersFields).to.be.an('array').with.lengthOf.above(0),
@@ -2559,7 +2543,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     '@' +
                     Math.floor(Math.random() * 1000000).toString() +
                     '.com';
-                createdUser = await objectsService.createUser({
+                createdUser = await service.createUser({
                     ExternalID: userExternalID,
                     Email: userEmail,
                     FirstName: Math.random().toString(36).substring(7),
@@ -2569,8 +2553,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     IsInTradeShowMode: true,
                 });
 
-                const repProfile = await objectsService.getRepProfile();
-                const securityGroups = await objectsService.getSecurityGroup(generalService.getClientData('IdpURL'));
+                const repProfile = await service.getRepProfile();
+                const securityGroups = await service.getSecurityGroup(generalService.getClientData('IdpURL'));
 
                 expect(createdUser, 'InternalID').to.have.property('InternalID').that.is.a('number').and.is.above(0),
                     expect(createdUser, 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty,
@@ -2613,7 +2597,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         },
                     });
 
-                const getCreatedUserOptional = await objectsService.getUsers(
+                const getCreatedUserOptional = await service.getUsers(
                     '?where=InternalID=' +
                         createdUser.InternalID +
                         '&fields=Name,EmployeeType,IsSupportAdminUser,IsUnderMyRole,SecurityGroupUUID,SecurityGroupName',
@@ -2641,7 +2625,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         .that.is.a('string')
                         .and.equals(securityGroups[0].name);
 
-                const getCreatedUser = await objectsService.getUsers('?where=InternalID=' + createdUser.InternalID);
+                const getCreatedUser = await service.getUsers('?where=InternalID=' + createdUser.InternalID);
                 expect(getCreatedUser[0], 'InternalID')
                     .to.have.property('InternalID')
                     .that.is.a('number')
@@ -2700,12 +2684,12 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     }),
                     expect(getCreatedUser[0], 'Role').to.have.property('Role');
 
-                const newQuantity = (await objectsService.getUsers()).length;
+                const newQuantity = (await service.getUsers()).length;
                 expect(newQuantity == currentUserQuantity + 1);
             });
 
             it('Update User', async () => {
-                updatedUser = await objectsService.updateUser({
+                updatedUser = await service.updateUser({
                     ExternalID: userExternalID,
                     Email: userEmail,
                     FirstName: Math.random().toString(36).substring(7),
@@ -2714,7 +2698,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     Phone: Math.floor(Math.random() * 1000000).toString(),
                 });
 
-                const getUpdatedUser = await objectsService.getUsers('?where=InternalID=' + updatedUser.InternalID);
+                const getUpdatedUser = await service.getUsers('?where=InternalID=' + updatedUser.InternalID);
                 expect(getUpdatedUser[0], 'InternalID')
                     .to.have.property('InternalID')
                     .that.is.a('number')
@@ -2767,7 +2751,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Get single user by UUID, ExternalID, InternalID', async () => {
-                const getUpdatedUserUUID = await objectsService.getSingleUser('UUID', updatedUser.UUID);
+                const getUpdatedUserUUID = await service.getSingleUser('UUID', updatedUser.UUID);
                 expect(getUpdatedUserUUID, 'InternalID')
                     .to.have.property('InternalID')
                     .that.is.a('number')
@@ -2818,7 +2802,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         .and.equals(updatedUser.Phone),
                     expect(getUpdatedUserUUID, 'Profile').to.have.property('Profile').that.is.an('object');
 
-                const getUpdatedUserExternalID = await objectsService.getSingleUser('ExternalID', userExternalID);
+                const getUpdatedUserExternalID = await service.getSingleUser('ExternalID', userExternalID);
                 expect(getUpdatedUserExternalID, 'InternalID')
                     .to.have.property('InternalID')
                     .that.is.a('number')
@@ -2870,10 +2854,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         .and.equals(updatedUser.Phone),
                     expect(getUpdatedUserExternalID, 'Profile').to.have.property('Profile').that.is.an('object');
 
-                const getUpdatedUserInternalID = await objectsService.getSingleUser(
-                    'InternalID',
-                    updatedUser.InternalID,
-                );
+                const getUpdatedUserInternalID = await service.getSingleUser('InternalID', updatedUser.InternalID);
                 expect(getUpdatedUserInternalID, 'InternalID')
                     .to.have.property('InternalID')
                     .that.is.a('number')
@@ -2934,6 +2915,242 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             //             .to.be.an('array')
             //             .with.lengthOf(currentUserQuantity);
             // });
+        });
+
+        describe('UDT', () => {
+            let UDTRandom;
+            let updatedUDT;
+            let createdUDT;
+            let bulkUpdateUDT;
+            let updatedUDTRow;
+            let bulkJobInfo;
+            let updatedUDTRowPOST;
+            let updatedUDTRowUPDATE;
+
+            it('Create UDT meta data', async () => {
+                UDTRandom = 'Automated API test UDT ' + Math.floor(Math.random() * 1000000).toString();
+
+                createdUDT = await service.postUDTMetaData({
+                    TableID: UDTRandom,
+                    MainKeyType: {
+                        ID: 35,
+                        Name: 'Account External ID',
+                    },
+                    SecondaryKeyType: {
+                        ID: 0,
+                        Name: 'Any',
+                    },
+                });
+
+                const getCreatedUDT = await service.getUDTMetaData(createdUDT.TableID);
+
+                return Promise.all([
+                    expect(getCreatedUDT).to.deep.include({
+                        TableID: UDTRandom,
+                        MainKeyType: {
+                            ID: 35,
+                            Name: 'Account External ID',
+                        },
+                        SecondaryKeyType: {
+                            ID: 0,
+                            Name: 'Any',
+                        },
+                    }),
+                    expect(getCreatedUDT)
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getCreatedUDT).to.have.property('CreationDateTime').that.contains('Z'),
+                    expect(getCreatedUDT)
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(getCreatedUDT).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(getCreatedUDT).to.have.property('Hidden').that.is.false,
+                    expect(getCreatedUDT['MemoryMode']).to.have.property('Dormant').that.is.false,
+                    expect(getCreatedUDT['MemoryMode']).to.have.property('Volatile').that.is.false,
+                ]);
+            });
+
+            it('Update UDT meta data', async () => {
+                (updatedUDT = await service.postUDTMetaData({
+                    TableID: UDTRandom,
+                    MainKeyType: {
+                        ID: 0,
+                        Name: 'Any',
+                    },
+                    SecondaryKeyType: {
+                        ID: 0,
+                        Name: 'Any',
+                    },
+                    MemoryMode: {
+                        Dormant: true,
+                        Volatile: false,
+                    },
+                })),
+                    expect(updatedUDT).to.deep.include({
+                        TableID: UDTRandom,
+                        MainKeyType: {
+                            ID: 0,
+                            Name: 'Any',
+                        },
+                        SecondaryKeyType: {
+                            ID: 0,
+                            Name: 'Any',
+                        },
+                        MemoryMode: {
+                            Dormant: true,
+                            Volatile: false,
+                        },
+                    }),
+                    expect(updatedUDT).to.have.property('CreationDateTime').that.contains('Z'),
+                    expect(updatedUDT)
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(updatedUDT).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(updatedUDT).to.have.property('Hidden').that.is.false,
+                    expect(updatedUDT['MemoryMode']).to.have.property('Dormant').that.is.true,
+                    expect(updatedUDT['MemoryMode']).to.have.property('Volatile').that.is.false;
+            });
+
+            it('Bulk update UDT', async () => {
+                bulkUpdateUDT = await service.bulkCreate('user_defined_tables', {
+                    Headers: ['MapDataExternalID', 'MainKey', 'SecondaryKey', 'Values'],
+                    Lines: [
+                        [UDTRandom, 'Test 1', '', 'Value 1'],
+                        [UDTRandom, 'Test 2', '', 'Value 2'],
+                        [UDTRandom, 'Test 3', '', 'Value 3'],
+                        [UDTRandom, 'Test 4', '', 'Value 4'],
+                        [UDTRandom, 'Test 5', '', 'Value 5'],
+                    ],
+                });
+                expect(bulkUpdateUDT.JobID).to.be.a('number'),
+                    expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
+            });
+
+            it('Verify bulk jobinfo', async () => {
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
+                expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                    expect(bulkJobInfo.Records, 'Records').to.equal(5),
+                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5),
+                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
+                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
+                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+            });
+
+            it('Verify bulk UDT update', async () => {
+                const bulkUpdatedUDT = await service.getUDT({ where: "MapDataExternalID='" + UDTRandom + "'" });
+                expect(bulkUpdatedUDT).to.be.an('array').with.lengthOf(5),
+                    expect(bulkUpdatedUDT[0])
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(bulkUpdatedUDT[0]).to.have.property('CreationDateTime').that.contain('Z'),
+                    expect(bulkUpdatedUDT[0])
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(bulkUpdatedUDT[0]).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(bulkUpdatedUDT[0]).to.have.property('MainKey').that.contains('Test'),
+                    expect(bulkUpdatedUDT[0]).to.have.property('SecondaryKey').that.equals(null),
+                    expect(bulkUpdatedUDT[0]).to.have.property('MapDataExternalID').that.equals(UDTRandom),
+                    expect(bulkUpdatedUDT[0]).to.have.property('Values').that.is.an('array').with.lengthOf(1),
+                    expect(bulkUpdatedUDT[0].Values[0]).to.contain('Value');
+            });
+
+            it('POST UDT row', async () => {
+                (updatedUDTRowPOST = await service.postUDT({
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'API Test row',
+                    SecondaryKey: '',
+                    Values: ['Api Test value'],
+                })),
+                    expect(updatedUDTRowPOST).to.deep.include({
+                        MapDataExternalID: UDTRandom,
+                        MainKey: 'API Test row',
+                        SecondaryKey: null,
+                        Values: ['Api Test value'],
+                    }),
+                    expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z'),
+                    expect(updatedUDTRowPOST)
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false,
+                    expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+            });
+
+            it('Verify POST UDT row', async () => {
+                const UpdatedUDT = await service.getUDT({ where: "MapDataExternalID='" + UDTRandom + "'" });
+                expect(UpdatedUDT).to.be.an('array').with.lengthOf(6);
+            });
+
+            it('UPDATE UDT row', async () => {
+                (updatedUDTRowUPDATE = await service.postUDT({
+                    InternalID: updatedUDTRowPOST.InternalID,
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'API Test row UPDATE',
+                    SecondaryKey: '',
+                    Values: ['Api Test value UPDATE'],
+                })),
+                    expect(updatedUDTRowUPDATE).to.deep.include({
+                        MapDataExternalID: UDTRandom,
+                        MainKey: 'API Test row UPDATE',
+                        SecondaryKey: null,
+                        Values: ['Api Test value UPDATE'],
+                    }),
+                    expect(updatedUDTRowUPDATE).to.have.property('CreationDateTime').that.contains('Z'),
+                    expect(updatedUDTRowUPDATE)
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(updatedUDTRowUPDATE).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(updatedUDTRowUPDATE).to.have.property('Hidden').that.is.false,
+                    expect(updatedUDTRowUPDATE)
+                        .to.have.property('InternalID')
+                        .that.equals(updatedUDTRowPOST.InternalID);
+            });
+
+            it('Verify POST UDT row', async () => {
+                updatedUDTRow = await service.getUDT({ where: "MapDataExternalID='" + UDTRandom + "'" });
+                expect(updatedUDTRow).to.be.an('array').with.lengthOf(6),
+                    (updatedUDTRow = await service.getUDT({ where: 'InternalID=' + updatedUDTRowPOST.InternalID }));
+                expect(updatedUDTRow).to.be.an('array').with.lengthOf(1),
+                    expect(updatedUDTRow[0]).to.have.property('CreationDateTime').that.contains('Z'),
+                    expect(updatedUDTRow[0])
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(updatedUDTRow[0]).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(updatedUDTRow[0]).to.have.property('Hidden').that.is.false,
+                    expect(updatedUDTRow[0]).to.have.property('InternalID').that.equals(updatedUDTRowPOST.InternalID),
+                    expect(updatedUDTRow[0]).to.have.property('Values').that.is.an('array').with.lengthOf(1),
+                    expect(updatedUDTRow[0].Values[0]).to.contain('Api Test value UPDATE'),
+                    expect(updatedUDTRow[0]).to.have.property('MainKey').that.equals('API Test row UPDATE');
+            });
+
+            it('Delete UDT row', async () => {
+                return Promise.all([
+                    expect(await service.deleteUDT(updatedUDTRowPOST.InternalID as number)).to.be.true,
+                    expect(await service.deleteUDT(updatedUDTRowPOST.InternalID as number)).to.be.false,
+                    expect(await service.getUDT({ where: 'InternalID=' + updatedUDTRowPOST.InternalID }))
+                        .to.be.an('array')
+                        .with.lengthOf(0),
+                ]);
+            });
+
+            it('Delete UDT meta data', async () => {
+                return Promise.all([
+                    expect(await service.deleteUDTMetaData(createdUDT.TableID as number)).to.be.true,
+                    expect(await service.deleteUDTMetaData(createdUDT.TableID as number)).to.be.false,
+                    expect(await service.getUDTMetaData(createdUDT.TableID)).to.be.have.property('Hidden').that.is.true,
+                ]);
+            });
         });
     });
 }

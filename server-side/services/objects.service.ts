@@ -8,6 +8,8 @@ import {
     TransactionLines,
     FindOptions,
     User,
+    UserDefinedTableMetaData,
+    UserDefinedTableRow,
 } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 import GeneralService from './general.service';
@@ -195,6 +197,30 @@ export class ObjectsService {
 
     deleteAccount(accountID: number) {
         return this.papiClient.accounts.delete(accountID);
+    }
+
+    postUDTMetaData(body: UserDefinedTableMetaData): Promise<UserDefinedTableMetaData> {
+        return this.papiClient.metaData.userDefinedTables.upsert(body);
+    }
+
+    getUDTMetaData(id: number) {
+        return this.papiClient.metaData.userDefinedTables.get(id);
+    }
+
+    postUDT(body: UserDefinedTableRow) {
+        return this.papiClient.userDefinedTables.upsert(body);
+    }
+
+    getUDT(options?: FindOptions) {
+        return this.papiClient.userDefinedTables.find(options);
+    }
+
+    deleteUDT(id: number) {
+        return this.papiClient.userDefinedTables.delete(id);
+    }
+
+    deleteUDTMetaData(id: number) {
+        return this.papiClient.metaData.userDefinedTables.delete(id);
     }
 
     async waitForBulkJobStatus(ID: number, maxTime: number) {
