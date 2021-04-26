@@ -7,6 +7,7 @@ import {
     Item,
     TransactionLines,
     FindOptions,
+    User,
 } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 import GeneralService from './general.service';
@@ -35,7 +36,7 @@ export class ObjectsService {
         }
     }
 
-    createUser(body: any) {
+    createUser(body: User): Promise<User> {
         return this.papiClient.post('/CreateUser', body);
     }
 
@@ -128,7 +129,7 @@ export class ObjectsService {
         return this.papiClient.transactionLines.find(options);
     }
 
-    getTransactionLinesByID(id: number): Promise<TransactionLines[]> {
+    getTransactionLinesByID(id: number): Promise<TransactionLines> {
         return this.papiClient.transactionLines.get(id);
     }
 
@@ -156,7 +157,7 @@ export class ObjectsService {
         return this.papiClient.transactions.upsert(body);
     }
 
-    getTransactionByID(transactionID: number) {
+    getTransactionByID(transactionID: number): Promise<Transaction> {
         return this.papiClient.transactions.get(transactionID);
     }
 
@@ -180,7 +181,7 @@ export class ObjectsService {
         return this.papiClient.accounts.upsert(body);
     }
 
-    getAccountByID(accountID: number) {
+    getAccountByID(accountID: number): Promise<Account> {
         return this.papiClient.accounts.get(accountID);
     }
 

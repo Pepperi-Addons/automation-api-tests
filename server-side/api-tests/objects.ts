@@ -630,11 +630,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         Content: '',
                     },
                     TSASingleLineAPI: 'Random text',
-                } as any);
+                });
 
-                const getCreatedAccount = (await objectsService.getAccounts({
+                const getCreatedAccount = await objectsService.getAccounts({
                     where: `InternalID=${createdAccount.InternalID}`,
-                })) as any;
+                });
 
                 return Promise.all([
                     expect(getCreatedAccount[0]).to.include({
@@ -738,7 +738,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                                 Content: '',
                             },
                             TSASingleLineAPI: 'Random TEXT',
-                        } as any)),
+                        })),
                     ).to.be.include({
                         ExternalID: accountExternalID,
                         City: 'City update',
@@ -787,8 +787,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Delete account', async () => {
                 return Promise.all([
-                    expect(await objectsService.deleteAccount(createdAccount.InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(createdAccount.InternalID as any)).to.be.false,
+                    expect(await objectsService.deleteAccount(createdAccount.InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(createdAccount.InternalID)).to.be.false,
                     expect(await objectsService.getAccounts({ where: `InternalID=${createdAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0),
@@ -901,11 +901,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     where: "ExternalID like '%" + bulkAccountExternalID + "%'",
                 });
                 return Promise.all([
-                    expect(await objectsService.deleteAccount(bulkAccounts[0].InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[1].InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[2].InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[3].InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(bulkAccounts[4].InternalID as any)).to.be.true,
+                    expect(await objectsService.deleteAccount(bulkAccounts[0].InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(bulkAccounts[1].InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(bulkAccounts[2].InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(bulkAccounts[3].InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(bulkAccounts[4].InternalID)).to.be.true,
                     expect(
                         await objectsService.getAccounts({
                             where: "ExternalID like '%" + bulkAccountExternalID + "%'",
@@ -923,13 +923,13 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     Country: 'US',
                 });
                 return Promise.all([
-                    expect(objectsService.deleteAccount(account.InternalID as any)).eventually.to.be.true,
-                    expect(objectsService.deleteAccount(account.InternalID as any)).eventually.to.be.false,
+                    expect(objectsService.deleteAccount(account.InternalID as number)).eventually.to.be.true,
+                    expect(objectsService.deleteAccount(account.InternalID as number)).eventually.to.be.false,
                     expect(
-                        objectsService.deleteAccount((account.InternalID as any) + 123456789),
+                        objectsService.deleteAccount((account.InternalID as number) + 123456789),
                     ).eventually.to.be.rejectedWith(
                         `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
-                            (account.InternalID as any) + 123456789
+                            (account.InternalID as number) + 123456789
                         } you are trying to update does not exist. Please load it and then try again."`,
                     ),
                 ]);
@@ -1083,7 +1083,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                                 Content: '',
                             },
                             TSASingleLineAPI: 'Random Updated text',
-                        } as any)),
+                        })),
                     ).to.be.include({
                         ExternalID: contactExternalID,
                         Email: 'ContactUpdateTest@mail.com',
@@ -1115,8 +1115,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Delete contact', async () => {
                 return Promise.all([
-                    expect(await objectsService.deleteContact(createdContact.InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteContact(createdContact.InternalID as any)).to.be.false,
+                    expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.true,
+                    expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.false,
                     expect(await objectsService.getContacts(createdContact.InternalID))
                         .to.be.an('array')
                         .with.lengthOf(0),
@@ -1345,7 +1345,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Delete contact test account and TSAs', async () => {
                 expect(contactTSAs.length == (await objectsService.deleteBulkTSA('contacts', TSAarr)).length).to.be
                     .true,
-                    expect(await objectsService.deleteAccount(contactAccount.InternalID as any)).to.be.true;
+                    expect(await objectsService.deleteAccount(contactAccount.InternalID)).to.be.true;
             });
         });
 
@@ -1412,11 +1412,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         Content: '',
                     },
                     TSASingleLineAPI: 'Random text',
-                } as any);
+                });
 
-                const getCreatedActivity = (await objectsService.getActivity({
+                const getCreatedActivity = await objectsService.getActivity({
                     where: `InternalID=${createdActivity.InternalID}`,
-                })) as any;
+                });
 
                 return Promise.all([
                     expect(getCreatedActivity[0]).to.include({
@@ -1510,7 +1510,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                                 Content: '',
                             },
                             TSASingleLineAPI: 'Random updated text',
-                        } as any)),
+                        })),
                     ).to.be.include({
                         ExternalID: activityExternalID,
                         ActivityTypeID: atds[0].TypeID,
@@ -1561,8 +1561,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete activity', async () => {
-                expect(await objectsService.deleteActivity(createdActivity.InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteActivity(createdActivity.InternalID as any)).to.be.false,
+                expect(await objectsService.deleteActivity(createdActivity.InternalID)).to.be.true,
+                    expect(await objectsService.deleteActivity(createdActivity.InternalID)).to.be.false,
                     expect(await objectsService.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);
@@ -1693,8 +1693,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     activityTSAs.length ==
                         (await objectsService.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length,
                 ).to.be.true,
-                    expect(await objectsService.deleteAccount(activityAccount.InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(activityAccount.InternalID as any)).to.be.false,
+                    expect(await objectsService.deleteAccount(activityAccount.InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(activityAccount.InternalID)).to.be.false,
                     expect(await objectsService.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);
@@ -1784,11 +1784,11 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         Content: '',
                     },
                     TSASingleLineAPI: 'Random text',
-                } as any);
+                });
 
-                const getCreatedTransaction = (await objectsService.getTransaction({
+                const getCreatedTransaction = await objectsService.getTransaction({
                     where: `InternalID=${createdTransaction.InternalID}`,
-                })) as any;
+                });
 
                 return Promise.all([
                     expect(getCreatedTransaction[0]).to.include({
@@ -1968,7 +1968,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         UnitDiscountPercentage: 100.0,
                         UnitPrice: 5.0,
                         UnitPriceAfterDiscount: 0.0,
-                    } as any)),
+                    })),
                 ).to.be.include({
                     LineNumber: 0,
                     UnitsQuantity: 5.0,
@@ -2049,10 +2049,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete transaction lines', async () => {
-                expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be
-                    .true,
-                    expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID as any)).to.be
-                        .false,
+                expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true,
+                    expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false,
                     expect(
                         await objectsService.getTransactionLines({
                             where: `TransactionInternalID=${createdTransaction.InternalID}`,
@@ -2060,10 +2058,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     )
                         .to.be.an('array')
                         .with.lengthOf(1),
-                    expect(await objectsService.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be
-                        .true,
-                    expect(await objectsService.deleteTransactionLine(addedTransactionLines.InternalID as any)).to.be
-                        .false,
+                    expect(await objectsService.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.true,
+                    expect(await objectsService.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.false,
                     expect(
                         await objectsService.getTransactionLines({
                             where: `TransactionInternalID=${createdTransaction.InternalID}`,
@@ -2111,7 +2107,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                             Content: '',
                         },
                         TSASingleLineAPI: 'Random updated text',
-                    } as any)),
+                    })),
                 ).to.be.include({
                     ExternalID: transactionExternalID,
                     ActivityTypeID: atds[0].TypeID,
@@ -2160,8 +2156,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Delete transaction', async () => {
-                expect(await objectsService.deleteTransaction(createdTransaction.InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID as any)).to.be.false,
+                expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
                     expect(
                         await objectsService.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }),
                     )
@@ -2170,7 +2166,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             });
 
             it('Bulk create transaction headers', async () => {
-                defaultCatalog = await objectsService.getCatalogs({ where: 'ExternalID=Default Catalog' });
+                defaultCatalog = await objectsService.getCatalogs({ where: `ExternalID='Default Catalog'` });
                 bulkTransactionExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
                 bulkCreateTransaction = await objectsService.bulkCreate('transactions/' + atds[0].TypeID, {
                     Headers: ['ExternalID', 'AccountExternalID', 'Status', 'CatalogExternalID'],
@@ -2478,8 +2474,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                                 )
                             ).length,
                     ).to.be.true,
-                    expect(await objectsService.deleteAccount(transactionAccount.InternalID as any)).to.be.true,
-                    expect(await objectsService.deleteAccount(transactionAccount.InternalID as any)).to.be.false,
+                    expect(await objectsService.deleteAccount(transactionAccount.InternalID)).to.be.true,
+                    expect(await objectsService.deleteAccount(transactionAccount.InternalID)).to.be.false,
                     expect(await objectsService.getAccounts({ where: `InternalID=${transactionAccount.InternalID}` }))
                         .to.be.an('array')
                         .with.lengthOf(0);

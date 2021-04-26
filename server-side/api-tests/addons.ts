@@ -959,7 +959,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -1109,7 +1109,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -1246,7 +1246,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -1441,7 +1441,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -1634,7 +1634,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -2058,7 +2058,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -2264,7 +2264,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -2470,7 +2470,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -2678,7 +2678,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -2880,7 +2880,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -3085,7 +3085,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -3288,7 +3288,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -3508,7 +3508,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -3714,7 +3714,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -3921,7 +3921,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -4126,7 +4126,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -4330,7 +4330,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -4514,7 +4514,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -4730,7 +4730,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -4933,7 +4933,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -5148,7 +5148,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -5412,7 +5412,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -5728,7 +5728,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -6037,7 +6037,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
@@ -6340,7 +6340,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         headers: {
                             Authorization: request.body.varKey,
                         },
-                        body: JSON.stringify(versionTestDataBody) as any,
+                        body: JSON.stringify(versionTestDataBody),
                     },
                 ).then((response) => response.json());
             }
