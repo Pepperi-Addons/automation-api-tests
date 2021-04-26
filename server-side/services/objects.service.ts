@@ -1,4 +1,12 @@
-import { PapiClient, Account, ApiFieldObject, GeneralActivity, Transaction } from '@pepperi-addons/papi-sdk';
+import {
+    PapiClient,
+    Account,
+    ApiFieldObject,
+    GeneralActivity,
+    Transaction,
+    UserDefinedTableMetaData,
+    UserDefinedTableRow,
+} from '@pepperi-addons/papi-sdk';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 
@@ -196,6 +204,30 @@ export class ObjectsService {
             expire = start + ms;
         while (new Date().getTime() < expire) {}
         return;
+    }
+
+    postUDTMetaData(body: UserDefinedTableMetaData): Promise<UserDefinedTableMetaData>{
+        return this.papiClient.metaData.userDefinedTables.upsert(body);
+    }
+
+    getUDTMetaData(id: number){
+        return this.papiClient.metaData.userDefinedTables.get(id);
+    }
+
+    postUDT(body: UserDefinedTableRow) {
+        return this.papiClient.userDefinedTables.upsert(body);
+    }
+
+    getUDT(options?: FindOptions) {
+        return this.papiClient.userDefinedTables.find(options);
+    }
+
+    deleteUDT(id: number) {
+        return this.papiClient.userDefinedTables.delete(id);
+    }
+
+    deleteUDTMetaData(id: number) {
+        return this.papiClient.metaData.userDefinedTables.delete(id);
     }
 
     async waitForBulkJobStatus(ID: number, maxTime: number) {
