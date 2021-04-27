@@ -209,19 +209,28 @@ export default class GeneralService {
             if (addonName == 'Services Framework' || addonName == 'Cross Platforms API' || !isPhased) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
-            let varLatestVersion = await fetch(
-                `${this.client.BaseURL.replace(
-                    'papi-eu',
-                    'papi',
-                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
-                {
-                    method: `GET`,
-                    headers: {
-                        Authorization: `${varKey}`,
+            let varLatestVersion;
+            try {
+                varLatestVersion = await fetch(
+                    `${this.client.BaseURL.replace(
+                        'papi-eu',
+                        'papi',
+                    )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                    {
+                        method: `GET`,
+                        headers: {
+                            Authorization: `${varKey}`,
+                        },
                     },
-                },
-            ).then((response) => response.json());
-            varLatestVersion = varLatestVersion[0].Version;
+                ).then((response) => response.json());
+            } catch (error) {
+                throw new Error(`Fetch Error - Verify The varKey, error: ${error}`);
+            }
+            try {
+                varLatestVersion = varLatestVersion[0].Version;
+            } catch (error) {
+                throw new Error(`No Version That Start With: ${version}, error: ${error}`);
+            }
 
             testData[addonName].push(varLatestVersion);
 
