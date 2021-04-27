@@ -37,6 +37,16 @@ export class DataIndexService {
             throw new Error('NotImplementedException');
         }
     }
+
+    createTestDataForField(fieldName: string): any {
+        if (stringFieldsArr.includes(fieldName)) {
+            return Math.floor(Math.random() * 100000000000).toString(36);
+        } else if (numberFieldsArr.includes(fieldName)) {
+            return Math.floor(Math.random() * 1000000);
+        } else {
+            throw new Error('NotImplementedException');
+        }
+    }
     // getDataViewByID(id: number) {
     //     return this.papiClient.metaData.dataViews.get(id);
     // }

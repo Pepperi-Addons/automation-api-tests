@@ -7,6 +7,11 @@ import {
     Item,
     TransactionLines,
     FindOptions,
+    User,
+    UserDefinedTableMetaData,
+    UserDefinedTableRow,
+    Catalog,
+    Contact,
 } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 import GeneralService from './general.service';
@@ -26,21 +31,16 @@ export class ObjectsService {
         return this.papiClient.items.find(options);
     }
 
-    getUsers(clause?) {
-        switch (clause) {
-            case undefined:
-                return this.papiClient.get('/users');
-            default:
-                return this.papiClient.get('/users' + clause);
-        }
+    getUsers(options?: FindOptions): Promise<User[]> {
+        return this.papiClient.users.find(options);
     }
 
-    createUser(body: any) {
+    createUser(body: User): Promise<User> {
         return this.papiClient.post('/CreateUser', body);
     }
 
-    updateUser(body: any) {
-        return this.papiClient.post('/users', body);
+    updateUser(body: User): Promise<User> {
+        return this.papiClient.users.upsert(body);
     }
 
     async getRepProfile() {
@@ -73,7 +73,7 @@ export class ObjectsService {
         }
     }
 
-    getCatalogs(options?: FindOptions) {
+    getCatalogs(options?: FindOptions): Promise<Catalog[]> {
         return this.papiClient.catalogs.find(options);
     }
 
@@ -105,8 +105,8 @@ export class ObjectsService {
         return this.papiClient.get('/' + type + clause);
     }
 
-    createContact(body: any) {
-        return this.papiClient.post('/contacts', body);
+    createContact(body: Contact): Promise<Contact> {
+        return this.papiClient.contacts.upsert(body);
     }
 
     connectAsBuyer(body: any) {
@@ -128,7 +128,7 @@ export class ObjectsService {
         return this.papiClient.transactionLines.find(options);
     }
 
-    getTransactionLinesByID(id: number): Promise<TransactionLines[]> {
+    getTransactionLinesByID(id: number): Promise<TransactionLines> {
         return this.papiClient.transactionLines.get(id);
     }
 
@@ -156,7 +156,7 @@ export class ObjectsService {
         return this.papiClient.transactions.upsert(body);
     }
 
-    getTransactionByID(transactionID: number) {
+    getTransactionByID(transactionID: number): Promise<Transaction> {
         return this.papiClient.transactions.get(transactionID);
     }
 
@@ -180,6 +180,10 @@ export class ObjectsService {
         return this.papiClient.accounts.upsert(body);
     }
 
+    getAccountByID(accountID: number): Promise<Account> {
+        return this.papiClient.accounts.get(accountID);
+    }
+
     getAccounts(options?: FindOptions) {
         return this.papiClient.accounts.find(options);
     }
@@ -188,8 +192,32 @@ export class ObjectsService {
         return this.papiClient.accounts.iter(options).toArray();
     }
 
-    deleteAccount(accountID: number) {
+    deleteAccount(accountID: number): Promise<boolean> {
         return this.papiClient.accounts.delete(accountID);
+    }
+
+    postUDTMetaData(body: UserDefinedTableMetaData): Promise<UserDefinedTableMetaData> {
+        return this.papiClient.metaData.userDefinedTables.upsert(body);
+    }
+
+    getUDTMetaData(id: number): Promise<UserDefinedTableMetaData> {
+        return this.papiClient.metaData.userDefinedTables.get(id);
+    }
+
+    postUDT(body: UserDefinedTableRow): Promise<UserDefinedTableRow> {
+        return this.papiClient.userDefinedTables.upsert(body);
+    }
+
+    getUDT(options?: FindOptions): Promise<UserDefinedTableRow[]> {
+        return this.papiClient.userDefinedTables.find(options);
+    }
+
+    deleteUDT(id: number): Promise<boolean> {
+        return this.papiClient.userDefinedTables.delete(id);
+    }
+
+    deleteUDTMetaData(id: number): Promise<boolean> {
+        return this.papiClient.metaData.userDefinedTables.delete(id);
     }
 
     async waitForBulkJobStatus(ID: number, maxTime: number) {
