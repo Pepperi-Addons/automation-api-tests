@@ -6,8 +6,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const objectsService = new ObjectsService(generalService);
     const dataIndexService = new DataIndexService(generalService.papiClient);
 
-    const _MAX_LOOPS_COUNTER = 2; //10;
-    const _INTERVAL_TIMER = 500; //5000;
+    const _MAX_LOOPS_COUNTER = 10;
+    const _INTERVAL_TIMER = 5000;
 
     const describe = tester.describe;
     const expect = tester.expect;
@@ -97,9 +97,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //TODO: Remove this (1.0.50) and work on the actually latest version
     //when shir or meital will refactor Data Index to work with the new framework changes
     const testData = {
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''], //1.0.62
-        'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //0.0.89//0.0.104
-        PepperiElasticSearch: ['00000000-0000-0000-0000-00000e1a571c', ''], //0.0.66
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        PepperiElasticSearch: ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -131,9 +131,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     describe('Data Index Tests Suites', () => {
         //Test Data
         const accountExternalID: string =
-            'Test Data Account - Data Index Test' + Math.floor(Math.random() * 1000000).toString();
+            'Test Data Account - Data Index Test ' + Math.floor(Math.random() * 1000000).toString();
         const transactionExternalID: string =
-            'Test Data Transaction - Data Index Test' + Math.floor(Math.random() * 1000000).toString();
+            'Test Data Transaction - Data Index Test ' + Math.floor(Math.random() * 1000000).toString();
         describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
             //Test Datas
             //Data Index, Pepperi Notification Service
