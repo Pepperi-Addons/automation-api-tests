@@ -1132,50 +1132,50 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                             contactAccount.ExternalID,
                             'Bulk Contact 1',
                             'Email' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '@' +
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '.com',
                         ],
                         [
                             bulkContactExternalID + ' 2',
                             contactAccount.ExternalID,
                             'Bulk Contact 2',
                             'Email' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '@' +
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '.com',
                         ],
                         [
                             bulkContactExternalID + ' 3',
                             contactAccount.ExternalID,
                             'Bulk Contact 3',
                             'Email' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '@' +
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '.com',
                         ],
                         [
                             bulkContactExternalID + ' 4',
                             contactAccount.ExternalID,
                             'Bulk Contact 4',
                             'Email' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '@' +
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '.com',
                         ],
                         [
                             bulkContactExternalID + ' 5',
                             contactAccount.ExternalID,
                             'Bulk Contact 5',
                             'Email' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '@' +
+                            Math.floor(Math.random() * 1000000).toString() +
+                            '.com',
                         ],
                     ],
                 });
@@ -2451,12 +2451,12 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             it('Delete transaction test account and TSAs', async () => {
                 expect(
                     transactionTSAs.length ==
-                        (await service.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
+                    (await service.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
                 ).to.be.true,
                     expect(
                         transactionLinesTSAs.length ==
-                            (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID))
-                                .length,
+                        (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID))
+                            .length,
                     ).to.be.true,
                     expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.true,
                     expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.false,
@@ -2940,10 +2940,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkJobInfo;
             let updatedUDTRowPOST;
             let updatedUDTRowUPDATE;
+            let batchUDTresponse;
 
             it('Create UDT meta data', async () => {
                 UDTRandom = 'Automated API test UDT ' + Math.floor(Math.random() * 1000000).toString();
-
                 createdUDT = await service.postUDTMetaData({
                     TableID: UDTRandom,
                     MainKeyType: {
@@ -3131,7 +3131,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         .that.equals(updatedUDTRowPOST.InternalID);
             });
 
-            it('Verify POST UDT row', async () => {
+            it('Verify UPDATE UDT row', async () => {
                 updatedUDTRow = await service.getUDT({ where: "MapDataExternalID='" + UDTRandom + "'" });
                 expect(updatedUDTRow).to.be.an('array').with.lengthOf(6),
                     (updatedUDTRow = await service.getUDT({ where: 'InternalID=' + updatedUDTRowPOST.InternalID }));
@@ -3156,6 +3156,91 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                         .to.be.an('array')
                         .with.lengthOf(0),
                 ]);
+            });
+
+            it('BATCH UDT Insert', async () => {
+                batchUDTresponse = await service.postBatchUDT([{
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 1',
+                    SecondaryKey: '1',
+                    Values: ['Api Test value 1'],
+                },
+                {
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 2',
+                    SecondaryKey: '2',
+                    Values: ['Api Test value 2'],
+                },
+                {
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 3',
+                    SecondaryKey: '3',
+                    Values: ['Api Test value 3'],
+                },
+                {
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 4',
+                    SecondaryKey: '4',
+                    Values: ['Api Test value 4'],
+                }
+                ])
+                expect(batchUDTresponse).to.be.an('array').with.lengthOf(4),
+                    batchUDTresponse.map((row) => {
+                        expect(row).to.have.property('InternalID').that.is.above(0),
+                            expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
+                            expect(row).to.have.property('Status').that.equals('Insert'),
+                            expect(row).to.have.property('Message').that.equals('Row inserted.'),
+                            expect(row).to.have.property('URI').that.equals('/user_defined_tables/' + row.InternalID)
+                    });
+
+            });
+
+            it('BATCH UDT statuses', async () => {
+                batchUDTresponse = await service.postBatchUDT([{
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 1',
+                    SecondaryKey: '1',
+                    Values: ['Api Test value 1'],
+                },
+                {
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 2',
+                    SecondaryKey: '2',
+                    Values: ['Api Test value 222'],
+                },
+                {
+                    MapDataExternalID: UDTRandom,
+                    MainKey: 'batch API Test row 33',
+                    SecondaryKey: '33',
+                    Values: ['Api Test value 33'],
+                },
+                {
+                    MapDataExternalID: 'This is need to get error status',
+                    MainKey: 'batch API Test row 4',
+                    SecondaryKey: '4',
+                    Values: ['Api Test value 4'],
+                }])
+                expect(batchUDTresponse).to.be.an('array').with.lengthOf(4),
+                    expect(batchUDTresponse[0]).have.property('InternalID').that.is.above(0),
+                    expect(batchUDTresponse[0]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
+                    expect(batchUDTresponse[0]).to.have.property('Status').that.equals('Ignore'),
+                    expect(batchUDTresponse[0]).to.have.property('Message').that.equals('No changes in this row. The row is being ignored.'),
+                    expect(batchUDTresponse[0]).to.have.property('URI').that.equals('/user_defined_tables/' + batchUDTresponse[0].InternalID),
+                    expect(batchUDTresponse[1]).have.property('InternalID').that.is.above(0),
+                    expect(batchUDTresponse[1]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
+                    expect(batchUDTresponse[1]).to.have.property('Status').that.equals('Update'),
+                    expect(batchUDTresponse[1]).to.have.property('Message').that.equals('Row updated.'),
+                    expect(batchUDTresponse[1]).to.have.property('URI').that.equals('/user_defined_tables/' + batchUDTresponse[1].InternalID),
+                    expect(batchUDTresponse[2]).have.property('InternalID').that.is.above(0),
+                    expect(batchUDTresponse[2]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
+                    expect(batchUDTresponse[2]).to.have.property('Status').that.equals('Insert'),
+                    expect(batchUDTresponse[2]).to.have.property('Message').that.equals('Row inserted.'),
+                    expect(batchUDTresponse[2]).to.have.property('URI').that.equals('/user_defined_tables/' + batchUDTresponse[2].InternalID),
+                    expect(batchUDTresponse[3]).have.property('InternalID').that.equals(0),
+                    expect(batchUDTresponse[3]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
+                    expect(batchUDTresponse[3]).to.have.property('Status').that.equals('Error'),
+                    expect(batchUDTresponse[3]).to.have.property('Message').that.equals('@MapDataExternalID does not exist.value: This is need to get error status'),
+                    expect(batchUDTresponse[3]).to.have.property('URI').that.equals('')
             });
 
             it('Delete UDT meta data', async () => {
