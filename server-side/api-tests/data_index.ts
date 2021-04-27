@@ -96,12 +96,13 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //#region Upgrade Data Index
     //TODO: Remove this (1.0.50) and work on the actually latest version
     //when shir or meital will refactor Data Index to work with the new framework changes
-    // const testData = {
-    //     'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', '1.0.62'], //1.0.62
-    //     'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '0.0.91'], //0.0.89
-    // };
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    // const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const testData = {
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''], //1.0.62
+        'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //0.0.89//0.0.104
+        PepperiElasticSearch: ['00000000-0000-0000-0000-00000e1a571c', ''], //0.0.66
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Data Index
 
     // var date = new Date();
@@ -133,38 +134,38 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             'Test Data Account - Data Index Test' + Math.floor(Math.random() * 1000000).toString();
         const transactionExternalID: string =
             'Test Data Transaction - Data Index Test' + Math.floor(Math.random() * 1000000).toString();
-        // describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
-        //     //Test Datas
-        //     //Data Index, Pepperi Notification Service
-        //     it('Validate that all the needed addons are installed', async () => {
-        //         isInstalledArr.forEach((isInstalled) => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
+        describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
+            //Test Datas
+            //Data Index, Pepperi Notification Service
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
 
-        //     for (const addonName in testData) {
-        //         const addonUUID = testData[addonName][0];
-        //         const version = testData[addonName][1];
-        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         const changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
 
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
 
         describe('All Activities', () => {
             describe('CRUD Index of Fields', () => {

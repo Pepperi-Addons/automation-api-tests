@@ -1,6 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { CPINodeService } from '../services/cpi-node.service';
-import { Item, User } from '@pepperi-addons/papi-sdk';
+import { Item, User, Account } from '@pepperi-addons/papi-sdk';
 
 export async function CPINodeTests(generalService: GeneralService, tester: TesterFunctions) {
     const cpiNodeService = new CPINodeService(generalService.papiClient);
@@ -17,9 +17,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
     //#region Tests for practive
     describe('CPI Node Tests Suites', () => {
         describe('Endpoints', async () => {
-            it('Validate GET', async () => {
+            it('Validate GET Users', async () => {
                 const res = await generalService.fetchStatus('GET', '/Users');
-                expect(res.Status).to.be.an('number').equal(200),
+                expect(res.Status).to.be.a('number').equal(200),
                     expect(res.Body.length).to.be.above(0),
                     expect(res.Body[0].UUID).that.is.a('string').and.is.not.empty,
                     expect(res.Body[0].ExternalID).that.is.a('string'),
@@ -29,11 +29,109 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     expect(res.Body[0].Hidden).that.is.a('boolean').and.is.false;
             });
 
-            it('Validate POST', async () => {
-                //  const user = await generalService.fetchStatus("POST","/Users");
+            const userExternalID = 'Automated API User ' + Math.floor(Math.random() * 1000000).toString();
+            const userEmail =
+                'Email' +
+                Math.floor(Math.random() * 1000000).toString() +
+                '@' +
+                Math.floor(Math.random() * 1000000).toString() +
+                '.com';
+            const userBody = {
+                ExternalID: userExternalID,
+                Email: userEmail,
+                FirstName: Math.random().toString(36).substring(7),
+                LastName: Math.random().toString(36).substring(7),
+                Mobile: Math.floor(Math.random() * 1000000).toString(),
+                Phone: Math.floor(Math.random() * 1000000).toString(),
+                IsInTradeShowMode: true,
+            };
+
+            it('Validate CreateUser Post', async () => {
+                const user = await generalService.fetchStatus('POST', '/CreateUser', userBody);
+                //debugger;
+                expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200), //should return 201 on creation - DI-18052
+                    expect(user.Body).to.have.property('InternalID').that.is.a('number').and.is.above(0),
+                    expect(user.Body).to.have.property('UUID').that.is.a('string').and.is.not.empty,
+                    expect(user.Body).to.have.property('ExternalID').that.is.a('string').and.is.equal(userExternalID),
+                    expect(user.Body).to.have.property('FirstName').that.is.a('string').and.is.not.empty,
+                    expect(user.Body).to.have.property('LastName').that.is.a('string').and.is.not.empty,
+                    expect(user.Body).to.have.property('Mobile').that.is.a('string').and.is.not.empty,
+                    expect(user.Body).to.have.property('Email').that.is.a('string').and.is.not.empty,
+                    expect(user.Body).to.have.property('Hidden').that.is.a('boolean').and.is.false,
+                    expect(user.Body).to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
+                    expect(user.Body)
+                        .to.have.property('CreationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(user.Body).to.have.property('CreationDateTime').that.contains('Z'),
+                    expect(user.Body)
+                        .to.have.property('ModificationDateTime')
+                        .that.contains(new Date().toISOString().split('T')[0]),
+                    expect(user.Body).to.have.property('ModificationDateTime').that.contains('Z'),
+                    expect(user.Body).to.have.property('Phone').that.is.a('string').and.is.not.empty,
+                    expect(user.Body).to.have.property('Profile').that.is.an('object').and.is.not.empty,
+                    expect(user.Body.Profile).to.deep.equal({
+                        Data: {
+                            InternalID: user.Body.Profile.Data.InternalID,
+                            Name: 'Rep',
+                        },
+                        URI: '/profiles/' + user.Body.Profile.Data.InternalID,
+                    }),
+                    expect(user.Body, 'Role').to.have.property('Role');
+            });
+
+            it('Validate update user', async () => {
+                (userBody.FirstName = Math.random().toString(36).substring(7)),
+                    (userBody.LastName = Math.random().toString(36).substring(7)),
+                    (userBody.Mobile = Math.floor(Math.random() * 1000000).toString()),
+                    (userBody.Phone = Math.floor(Math.random() * 1000000).toString());
+
+                const user = await generalService.fetchStatus(
+                    'POST',
+                    '/Users?where=ExternalID=' + userBody.ExternalID,
+                    userBody,
+                );
+
+                expect(user.Status).to.be.a('number').equal(200),
+                    expect(user.Body).to.have.property('FirstName').to.be.an('string').and.equals(userBody.FirstName),
+                    expect(user.Body).to.have.property('LastName').to.be.an('string').and.equals(userBody.LastName),
+                    expect(user.Body).to.have.property('Mobile').to.be.an('string').and.equals(userBody.Mobile),
+                    expect(user.Body).to.have.property('Phone').to.be.an('string').and.equals(userBody.Phone);
             });
         });
-        // describe('Scenarios', async () => {});
+
+        // describe('Scenarios', async () => {
+        //     it('Validating Account Insertion Scenarios', async () => {
+        //         const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
+        //         const accountObj: Account = {
+        //             ExternalID: accountExternalID,
+        //             City: 'City',
+        //             Country: 'US',
+        //             Debts30: 30,
+        //             Debts60: 60,
+        //             Debts90: 90,
+        //             DebtsAbove90: 100,
+        //             Discount: 10,
+        //             Email: 'Test1@test.com',
+        //             Mobile: '555-1234',
+        //             Name: accountExternalID,
+        //             Note: 'Note 1',
+        //             Phone: '555-4321',
+        //             Prop1: 'Prop 1',
+        //             Prop2: 'Prop 2',
+        //             Prop3: 'Prop 3',
+        //             Prop4: 'Prop 4',
+        //             Prop5: 'Prop 5',
+        //             State: 'NY',
+        //             Status: 2,
+        //             Street: 'Street 1',
+        //             Type: 'Customer',
+        //             ZipCode: '12345',
+        //         };
+
+        //         //const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
+        //     });
+        // });
+
         // describe('Bug verifications', async () => {});
 
         describe('Endpoints', async () => {
@@ -89,7 +187,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                         where: `Hidden = 0`,
                         include_deleted: false,
                     });
-                    expect(Dor).to.be.an('number').and.is.above(0);
+                    expect(Dor).to.be.a('number').and.is.above(0);
                 });
             });
 
@@ -97,7 +195,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             describe('Account object tests', () => {
                 it('Account Creation', async () => {
                     const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
-                    const createdAccount = await cpiNodeService.postAccount({
+                    const accountObj: Account = {
                         ExternalID: accountExternalID,
                         City: 'City',
                         Country: 'US',
@@ -121,40 +219,18 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                         Street: 'Street 1',
                         Type: 'Customer',
                         ZipCode: '12345',
-                    });
+                    };
+
+                    const createdAccount = await cpiNodeService.postAccount(accountObj);
 
                     const gottenAccount = await cpiNodeService.findAccount({
                         where: `InternalID=${createdAccount.InternalID}`,
                         order_by: 'CreationDate',
                     });
 
-                    return Promise.all([
-                        expect(gottenAccount[0]).to.include({
-                            ExternalID: accountExternalID,
-                            City: createdAccount.City,
-                            Country: createdAccount.Country,
-                            Debts30: createdAccount.Debts30,
-                            Debts60: createdAccount.Debts60,
-                            Debts90: createdAccount.Debts90,
-                            DebtsAbove90: createdAccount.DebtsAbove90,
-                            Discount: createdAccount.Discount,
-                            Email: createdAccount.Email,
-                            Mobile: createdAccount.Mobile,
-                            Name: accountExternalID,
-                            Note: createdAccount.Note,
-                            Phone: createdAccount.Phone,
-                            Prop1: createdAccount.Prop1,
-                            Prop2: createdAccount.Prop2,
-                            Prop3: createdAccount.Prop3,
-                            Prop4: createdAccount.Prop4,
-                            Prop5: createdAccount.Prop5,
-                            State: createdAccount.State,
-                            Status: createdAccount.Status,
-                            Street: createdAccount.Street,
-                            Type: createdAccount.Type,
-                            ZipCode: createdAccount.ZipCode,
-                        }),
-                    ]);
+                    expect(gottenAccount[0].State).to.include('New York');
+                    gottenAccount[0].State = 'NY';
+                    expect(gottenAccount[0]).to.include(accountObj);
                 });
 
                 // it('Account Data update test', async () => {
