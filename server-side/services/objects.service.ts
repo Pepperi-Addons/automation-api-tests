@@ -12,7 +12,7 @@ import {
     UserDefinedTableRow,
     Catalog,
     Contact,
-    BatchApiResponse
+    BatchApiResponse,
 } from '@pepperi-addons/papi-sdk';
 import fetch from 'node-fetch';
 import GeneralService from './general.service';
@@ -213,8 +213,8 @@ export class ObjectsService {
         return this.papiClient.userDefinedTables.find(options);
     }
 
-    postBatchUDT(body: UserDefinedTableRow[]): Promise<BatchApiResponse[]>{
-        return this.papiClient.userDefinedTables.batch(body)
+    postBatchUDT(body: UserDefinedTableRow[]): Promise<BatchApiResponse[]> {
+        return this.papiClient.userDefinedTables.batch(body);
     }
 
     deleteUDT(id: number): Promise<boolean> {
