@@ -6,8 +6,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const objectsService = new ObjectsService(generalService);
     const dataIndexService = new DataIndexService(generalService.papiClient);
 
-    const _MAX_LOOPS_COUNTER = 10;
-    const _INTERVAL_TIMER = 5000;
+    const _MAX_LOOPS_COUNTER = 2; //10;
+    const _INTERVAL_TIMER = 200; //5000;
 
     const describe = tester.describe;
     const expect = tester.expect;
@@ -128,6 +128,17 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //     }
     // })
 
+    // const accounts = await objectsService.getAccounts({ page_size: -1 });
+    // const transactions = await objectsService.getTransaction({ page_size: -1 });
+
+    // it(`Pre Test Counter Accounts: ${accounts.length}`, async () => {
+    //     expect(true).to.be.true;
+    // });
+
+    // it(`Pre Test Counter Transactions: ${transactions.length}`, async () => {
+    //     expect(true).to.be.true;
+    // });
+
     describe('Data Index Tests Suites', () => {
         //Test Data
         const accountExternalID: string =
@@ -187,8 +198,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -264,8 +275,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     }
                                 } while (!updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -297,8 +308,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -354,8 +365,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     }
                                 } while (updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -391,8 +402,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -459,8 +470,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     }
                                 } while (updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -494,8 +505,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -516,8 +527,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -600,8 +611,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -677,8 +688,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     }
                                 } while (!updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -710,8 +721,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -767,8 +778,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     }
                                 } while (updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -804,8 +815,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -872,8 +883,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     }
                                 } while (updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -907,8 +918,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                baseSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                baseSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });
@@ -929,8 +940,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
-                                updatedSortedAndCountedMap.forEach((value /*, key*/) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
                             });

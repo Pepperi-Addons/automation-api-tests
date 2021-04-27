@@ -4,10 +4,12 @@ import promised from 'chai-as-promised';
 import fs from 'fs';
 import path from 'path';
 import Mochawesome from 'mochawesome';
+import { Client } from '@pepperi-addons/debug-server';
 
 chai.use(promised);
 
-export default function Tester(testName?: string, environment?: string) {
+export default function Tester(client?: Client, testName?: string, environment?: string) {
+    const isLocal = client ? client['AssetsBaseUrl'].includes('/localhost:') : false;
     const testObject = {};
     const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
         environment ? environment : 'Default'
@@ -23,7 +25,7 @@ export default function Tester(testName?: string, environment?: string) {
         reporterOptions: {
             reportDir: mochaDir,
             reportFilename: fileName,
-            html: false,
+            html: isLocal,
             consoleReporter: 'none',
         },
         timeout: 1200000,
