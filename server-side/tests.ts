@@ -74,7 +74,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -101,7 +101,7 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -126,7 +126,7 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = { describe, expect, it, run };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
@@ -148,6 +148,7 @@ export async function sanity(client: Client, testerFunctions: TesterFunctions) {
         ? 'Production-EU'
         : 'Production';
     const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
         testName,
         testEnvironment,
     );
@@ -172,7 +173,7 @@ export async function file_storage(client: Client, testerFunctions: TesterFuncti
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -201,7 +202,7 @@ export async function data_views(client: Client, testerFunctions: TesterFunction
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -230,7 +231,7 @@ export async function data_views_positive(client: Client, testerFunctions: Teste
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -259,7 +260,7 @@ export async function data_views_negative(client: Client, testerFunctions: Teste
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -288,7 +289,7 @@ export async function fields(client: Client, testerFunctions: TesterFunctions) {
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -317,7 +318,7 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -345,7 +346,7 @@ export async function sync_big_data(client: Client, testerFunctions: TesterFunct
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -370,7 +371,7 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -399,6 +400,7 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
             ? 'Production-EU'
             : 'Production';
         const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            client,
             testName,
             testEnvironment,
         );
@@ -433,6 +435,7 @@ export async function var_api(client: Client, request: Request, testerFunctions:
         ? 'Production-EU'
         : 'Production';
     const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
         testName,
         testEnvironment,
     );
@@ -463,6 +466,7 @@ export async function addons(client: Client, request: Request, testerFunctions: 
         ? 'Production-EU'
         : 'Production';
     const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
         testName,
         testEnvironment,
     );
@@ -493,6 +497,7 @@ export async function addons_uninstall(client: Client, request: Request, testerF
         ? 'Production-EU'
         : 'Production';
     const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
         testName,
         testEnvironment,
     );
@@ -523,6 +528,7 @@ export async function maintenance(client: Client, request: Request, testerFuncti
         ? 'Production-EU'
         : 'Production';
     const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
         testName,
         testEnvironment,
     );
@@ -553,6 +559,7 @@ export async function maintenance_full(client: Client, request: Request, testerF
         ? 'Production-EU'
         : 'Production';
     const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
         testName,
         testEnvironment,
     );
@@ -585,7 +592,7 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
             : client.BaseURL.includes('papi-eu')
             ? 'Production-EU'
             : 'Production';
-        const { describe, expect, it, run } = tester(testName, testEnvironment);
+        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
         testerFunctions = {
             describe,
             expect,
@@ -613,7 +620,7 @@ export async function elastic_search(client: Client, request: Request, testerFun
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -637,7 +644,7 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -664,7 +671,7 @@ export async function import_export_atd_activities(client: Client, request: Requ
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -692,7 +699,7 @@ export async function import_export_atd_transactions(
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -720,7 +727,7 @@ export async function import_export_atd_activities_box(
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -748,7 +755,7 @@ export async function import_export_atd_transactions_box(
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -776,7 +783,7 @@ export async function import_export_atd_activities_override(
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -804,7 +811,7 @@ export async function import_export_atd_transactions_override(
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -832,7 +839,7 @@ export async function import_export_atd_transactions_override_winzer(
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -857,7 +864,7 @@ export async function import_export_atd_local(client: Client, request: Request, 
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -882,7 +889,7 @@ export async function adal(client: Client, request: Request, testerFunctions: Te
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -906,7 +913,7 @@ export async function pepperi_notification_service(client: Client, request: Requ
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -930,7 +937,7 @@ export async function data_index(client: Client, request: Request, testerFunctio
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
@@ -954,7 +961,7 @@ export async function cpi_node(client: Client, testerFunctions: TesterFunctions)
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, it, run } = tester(testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
