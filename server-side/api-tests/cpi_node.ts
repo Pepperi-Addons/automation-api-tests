@@ -19,7 +19,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
         describe('Endpoints', async () => {
             it('Validate GET Users', async () => {
                 const res = await generalService.fetchStatus('GET', '/Users');
-                expect(res.Status).to.be.an('number').equal(200),
+                expect(res.Status).to.be.a('number').equal(200),
                     expect(res.Body.length).to.be.above(0),
                     expect(res.Body[0].UUID).that.is.a('string').and.is.not.empty,
                     expect(res.Body[0].ExternalID).that.is.a('string'),
@@ -36,7 +36,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 '@' +
                 Math.floor(Math.random() * 1000000).toString() +
                 '.com';
-            let userBody = {
+            const userBody = {
                 ExternalID: userExternalID,
                 Email: userEmail,
                 FirstName: Math.random().toString(36).substring(7),
@@ -49,7 +49,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             it('Validate CreateUser Post', async () => {
                 const user = await generalService.fetchStatus('POST', '/CreateUser', userBody);
                 //debugger;
-                expect(user.Status, 'Should return 201 ,DI-18052').to.be.an('number').equal(200), //should return 201 on creation - DI-18052
+                expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200), //should return 201 on creation - DI-18052
                     expect(user.Body).to.have.property('InternalID').that.is.a('number').and.is.above(0),
                     expect(user.Body).to.have.property('UUID').that.is.a('string').and.is.not.empty,
                     expect(user.Body).to.have.property('ExternalID').that.is.a('string').and.is.equal(userExternalID),
@@ -91,7 +91,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     userBody,
                 );
 
-                expect(user.Status).to.be.an('number').equal(200),
+                expect(user.Status).to.be.a('number').equal(200),
                     expect(user.Body).to.have.property('FirstName').to.be.an('string').and.equals(userBody.FirstName),
                     expect(user.Body).to.have.property('LastName').to.be.an('string').and.equals(userBody.LastName),
                     expect(user.Body).to.have.property('Mobile').to.be.an('string').and.equals(userBody.Mobile),
@@ -99,46 +99,38 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             });
         });
 
-        describe('Scenarios', async () => {
-            it('Validating Account Insertion Scenarios', async () => {
-                const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
-                const accountObj: Account = {
-                    ExternalID: accountExternalID,
-                    City: 'City',
-                    Country: 'US',
-                    Debts30: 30,
-                    Debts60: 60,
-                    Debts90: 90,
-                    DebtsAbove90: 100,
-                    Discount: 10,
-                    Email: 'Test1@test.com',
-                    Mobile: '555-1234',
-                    Name: accountExternalID,
-                    Note: 'Note 1',
-                    Phone: '555-4321',
-                    Prop1: 'Prop 1',
-                    Prop2: 'Prop 2',
-                    Prop3: 'Prop 3',
-                    Prop4: 'Prop 4',
-                    Prop5: 'Prop 5',
-                    State: 'NY',
-                    Status: 2,
-                    Street: 'Street 1',
-                    Type: 'Customer',
-                    ZipCode: '12345',
-                };
+        // describe('Scenarios', async () => {
+        //     it('Validating Account Insertion Scenarios', async () => {
+        //         const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
+        //         const accountObj: Account = {
+        //             ExternalID: accountExternalID,
+        //             City: 'City',
+        //             Country: 'US',
+        //             Debts30: 30,
+        //             Debts60: 60,
+        //             Debts90: 90,
+        //             DebtsAbove90: 100,
+        //             Discount: 10,
+        //             Email: 'Test1@test.com',
+        //             Mobile: '555-1234',
+        //             Name: accountExternalID,
+        //             Note: 'Note 1',
+        //             Phone: '555-4321',
+        //             Prop1: 'Prop 1',
+        //             Prop2: 'Prop 2',
+        //             Prop3: 'Prop 3',
+        //             Prop4: 'Prop 4',
+        //             Prop5: 'Prop 5',
+        //             State: 'NY',
+        //             Status: 2,
+        //             Street: 'Street 1',
+        //             Type: 'Customer',
+        //             ZipCode: '12345',
+        //         };
 
-                const account = await generalService.fetchStatus(
-                    'POST',
-                    '/Accounts',
-                     accountObj
-                );
-
-
-            });
-
-            
-        });
+        //         //const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
+        //     });
+        // });
 
         // describe('Bug verifications', async () => {});
 
@@ -195,7 +187,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                         where: `Hidden = 0`,
                         include_deleted: false,
                     });
-                    expect(Dor).to.be.an('number').and.is.above(0);
+                    expect(Dor).to.be.a('number').and.is.above(0);
                 });
             });
 
@@ -236,11 +228,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                         order_by: 'CreationDate',
                     });
 
-                    if (gottenAccount[0].State == 'New York') {
-                        gottenAccount[0].State = 'NY';
-                    }
-
-                    return Promise.all([expect(gottenAccount[0]).to.include(accountObj)]);
+                    expect(gottenAccount[0].State).to.include('New York');
+                    gottenAccount[0].State = 'NY';
+                    expect(gottenAccount[0]).to.include(accountObj);
                 });
 
                 // it('Account Data update test', async () => {
