@@ -176,7 +176,7 @@ export default class GeneralService {
 
     async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
         const isInstalledArr: boolean[] = [];
-        const installedAddonsArr = await this.getAddons();
+        const installedAddonsArr = await this.getAddons({ page_size: -1 });
         for (const addonName in testData) {
             let isInstalled = false;
             for (let i = 0; i < installedAddonsArr.length; i++) {
@@ -287,14 +287,15 @@ export default class GeneralService {
             .then(async (response) => {
                 return {
                     Status: response.status,
-                    Body: await response.json(),
+                    Body: await response.text(),
                 };
             })
             .then((res) => {
+                res.Body = res.Body ? JSON.parse(res.Body) : '';
                 return {
                     Status: res.Status,
                     Size: res.Body.length,
-                    Body: res.Body,
+                    Body: res.Body as any,
                 };
             });
     }
@@ -303,6 +304,7 @@ export default class GeneralService {
 export interface TesterFunctions {
     describe: any;
     expect: any;
+    assert?: any;
     it: any;
     run: any;
     setNewTestHeadline?: any;

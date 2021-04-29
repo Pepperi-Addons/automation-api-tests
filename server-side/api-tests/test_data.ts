@@ -17,7 +17,7 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
     const expect = tester.expect;
     const it = tester.it;
 
-    const installedAddonsArr = await service.getAddons();
+    const installedAddonsArr = await service.getAddons({ page_size: -1 });
     for (let index = 0; index < installedAddonsArr.length; index++) {
         if (installedAddonsArr[index].Addon !== null) {
             if (installedAddonsArr[index].Addon.Name == 'Services Framework')

@@ -25,11 +25,17 @@ import { VarTests } from './api-tests/var';
 import { AuditLogsTests } from './api-tests/audit_logs';
 //#endregion Old Framwork Tests
 
-//#region Yonis Tests
+//#region Oleg's Framwork Tests
+import { DBSchemaTests } from './api-tests/schema';
+import { SchedulerTests } from './api-tests/scheduler';
+
+//#endregion Oleg's Framwork Tests
+
+//#region Yoni's Tests
 import { ObjectsTests } from './api-tests/objects';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
-//#endregion Yonis Tests
+//#endregion Yoni's Tests
 
 import {
     ImportExportATDActivitiesTests,
@@ -581,7 +587,59 @@ export async function maintenance_full(client: Client, request: Request, testerF
 }
 //#endregion Old Framwork Tests
 
-//#region Yonis Tests
+//#region Oleg's Framwork Tests
+export async function schema(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Schema';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DBSchemaTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function scheduler(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Scheduler';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SchedulerTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+//#endregion Oleg's Framwork Tests
+
+//#region Yoni's Tests
 export async function objects(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     if (testName != 'Objects' && testName != 'Sanity') {
@@ -659,7 +717,7 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     testName = '';
     return testResult;
 }
-//#endregion Yonis Tests
+//#endregion Yoni's Tests
 
 //#region import export ATD Tests
 export async function import_export_atd_activities(client: Client, request: Request, testerFunctions: TesterFunctions) {
