@@ -8,7 +8,8 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-
+    let userExID: string;
+    let userInternalID: number;
     // const usersArr = await cpiNodeService.papiClient.get('/users');
     // usersArr.forEach((element) => {
     //     debugger;
@@ -30,6 +31,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             });
 
             const userExternalID = 'Automated API User ' + Math.floor(Math.random() * 1000000).toString();
+            userExID = userExternalID;
             const userEmail =
                 'Email' +
                 Math.floor(Math.random() * 1000000).toString() +
@@ -43,12 +45,13 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 LastName: Math.random().toString(36).substring(7),
                 Mobile: Math.floor(Math.random() * 1000000).toString(),
                 Phone: Math.floor(Math.random() * 1000000).toString(),
-                IsInTradeShowMode: true,
+                IsInTradeShowMode: false,
             };
 
             it('Validate CreateUser Post', async () => {
                 const user = await generalService.fetchStatus('POST', '/CreateUser', userBody);
                 //debugger;
+                userInternalID = user.Body.InternalID;
                 expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200), //should return 201 on creation - DI-18052
                     expect(user.Body).to.have.property('InternalID').that.is.a('number').and.is.above(0),
                     expect(user.Body).to.have.property('UUID').that.is.a('string').and.is.not.empty,
@@ -58,7 +61,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     expect(user.Body).to.have.property('Mobile').that.is.a('string').and.is.not.empty,
                     expect(user.Body).to.have.property('Email').that.is.a('string').and.is.not.empty,
                     expect(user.Body).to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(user.Body).to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.true,
+                    expect(user.Body).to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.false,
                     expect(user.Body)
                         .to.have.property('CreationDateTime')
                         .that.contains(new Date().toISOString().split('T')[0]),
@@ -81,7 +84,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
             it('Validate update user', async () => {
                 (userBody.FirstName = Math.random().toString(36).substring(7)),
-                    (userBody.LastName = Math.random().toString(36).substring(7)),
+                    (userBody.LastName = Math.floor(Date.now() / 1000).toString()),
                     (userBody.Mobile = Math.floor(Math.random() * 1000000).toString()),
                     (userBody.Phone = Math.floor(Math.random() * 1000000).toString());
 
@@ -92,45 +95,174 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 );
 
                 expect(user.Status).to.be.a('number').equal(200),
-                    expect(user.Body).to.have.property('FirstName').to.be.an('string').and.equals(userBody.FirstName),
-                    expect(user.Body).to.have.property('LastName').to.be.an('string').and.equals(userBody.LastName),
-                    expect(user.Body).to.have.property('Mobile').to.be.an('string').and.equals(userBody.Mobile),
-                    expect(user.Body).to.have.property('Phone').to.be.an('string').and.equals(userBody.Phone);
+                    expect(user.Body).to.have.property('FirstName').to.be.a('string').and.equals(userBody.FirstName),
+                    expect(user.Body).to.have.property('LastName').to.be.a('string').and.equals(userBody.LastName),
+                    expect(user.Body).to.have.property('Mobile').to.be.a('string').and.equals(userBody.Mobile),
+                    expect(user.Body).to.have.property('Phone').to.be.a('string').and.equals(userBody.Phone);
             });
         });
 
-        // describe('Scenarios', async () => {
-        //     it('Validating Account Insertion Scenarios', async () => {
-        //         const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
-        //         const accountObj: Account = {
-        //             ExternalID: accountExternalID,
-        //             City: 'City',
-        //             Country: 'US',
-        //             Debts30: 30,
-        //             Debts60: 60,
-        //             Debts90: 90,
-        //             DebtsAbove90: 100,
-        //             Discount: 10,
-        //             Email: 'Test1@test.com',
-        //             Mobile: '555-1234',
-        //             Name: accountExternalID,
-        //             Note: 'Note 1',
-        //             Phone: '555-4321',
-        //             Prop1: 'Prop 1',
-        //             Prop2: 'Prop 2',
-        //             Prop3: 'Prop 3',
-        //             Prop4: 'Prop 4',
-        //             Prop5: 'Prop 5',
-        //             State: 'NY',
-        //             Status: 2,
-        //             Street: 'Street 1',
-        //             Type: 'Customer',
-        //             ZipCode: '12345',
-        //         };
+        describe('Scenarios', async () => {
+            it('Validating responses for objects creation', async () => {
+                //account
+                const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
+                const accountObj: Account = {
+                    ExternalID: accountExternalID,
+                    City: 'City',
+                    Country: 'US',
+                    Debts30: 30,
+                    Debts60: 60,
+                    Debts90: 90,
+                    DebtsAbove90: 100,
+                    Discount: 10,
+                    Email: 'Test1@test.com',
+                    Mobile: '555-1234',
+                    Name: accountExternalID,
+                    Note: 'Note 1',
+                    Phone: '555-4321',
+                    Prop1: 'Prop 1',
+                    Prop2: 'Prop 2',
+                    Prop3: 'Prop 3',
+                    Prop4: 'Prop 4',
+                    Prop5: 'Prop 5',
+                    State: 'NY',
+                    Status: 2,
+                    Street: 'Street 1',
+                    Type: 'Customer',
+                    ZipCode: '12345',
+                };
 
-        //         //const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
-        //     });
-        // });
+                const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
+                expect(account.Status).to.be.a('number').equal(201);
+                //contacts
+                const contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+                const contactObj = {
+                    ExternalID: contactExternalID,
+                    Email: 'ContactTest@mail.com',
+                    Phone: '123-45678',
+                    Mobile: '123-45678',
+                    FirstName: 'Contact',
+                    LastName: 'Test',
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                        },
+                    },
+                };
+
+                const contact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
+                expect(contact.Status).to.be.a('number').equal(201);
+
+                //activities
+                const activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
+                const activityObj = {
+                    ExternalID: activityExternalID,
+                    ActivityTypeID: 134047,
+                    Status: 1,
+                    Title: 'Testing',
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                        },
+                    },
+                };
+
+                const activity = await generalService.fetchStatus('POST', '/Activities', activityObj);
+                expect(activity.Status).to.be.a('number').equal(201);
+
+                //Transactions
+                const transactionExternalID =
+                    'Automated API Transaction' + Math.floor(Math.random() * 1000000).toString();
+                const transactionObj = {
+                    ExternalID: transactionExternalID,
+                    ActivityTypeID: 138725,
+                    Status: 1,
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                        },
+                    },
+                    Catalog: {
+                        Data: {
+                            ExternalID: 'Default Catalog',
+                        },
+                    },
+                };
+
+                const transaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
+                expect(transaction.Status).to.be.a('number').equal(201);
+
+                //Items
+                const itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
+                const itemObj = {
+                    ExternalID: itemExternalID,
+                    MainCategoryID: 'Test',
+                    UPC: 'SameCode1',
+                    Name: itemExternalID,
+                    LongDescription: itemExternalID,
+                    Price: 1.0,
+                    SecondaryPrice: 1.5,
+                    CostPrice: 0.5,
+                    Discount: 0,
+                    AllowDecimal: false,
+                    CaseQuantity: 1,
+                    MinimumQuantity: 1,
+                    Hidden: false,
+                };
+
+                const item = await generalService.fetchStatus('POST', '/items', itemObj);
+                expect(item.Status).to.be.a('number').equal(201);
+
+                //inventory
+                const inventoryObj = {
+                    InternalID: item.Body.InternalID,
+                    ItemExternalID: item.Body.ExternalID,
+                    InStockQuantity: 2,
+                    Item: {
+                        Data: {
+                            InternalID: item.Body.InternalID,
+                            ExternalID: item.Body.ExternalID,
+                        },
+                    },
+                };
+
+                const inventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
+                expect(inventory.Status).to.be.a('number').equal(201);
+
+                //Lines
+                const lineObj = {
+                    TransactionInternalID: transaction.Body.InternalID,
+                    LineNumber: 0,
+                    ItemExternalID: item.Body.ExternalID,
+                    UnitsQuantity: 1,
+                };
+
+                const line = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
+                expect(line.Status).to.be.a('number').equal(201);
+
+                //Account-Users
+                const relationObj = {
+                    UserExternalID: userExID,
+                    AccountExternalID: accountExternalID,
+                    Hidden: false,
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                            ExternalID: account.Body.ExternalID,
+                        },
+                    },
+                    User: {
+                        Data: {
+                            InternalID: userInternalID,
+                            ExternalID: userExID,
+                        },
+                    },
+                };
+
+                const relation = await generalService.fetchStatus('POST', '/account_users', relationObj);
+                expect(relation.Status).to.be.a('number').equal(201);
+            });
+        });
 
         // describe('Bug verifications', async () => {});
 
@@ -176,18 +308,18 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                             const LngDesc = obj.LongDescription;
 
                             expect(obj).to.be.an('object').to.have.property('LongDescription').not.to.be.null,
-                                expect(LngDesc).to.be.an('string');
+                                expect(LngDesc).to.be.a('string');
                         });
                 });
             });
 
             describe('Get Transactions tests', () => {
                 it('Checking items count', async () => {
-                    const Dor: number = await cpiNodeService.countTransactions({
+                    const count: number = await cpiNodeService.countTransactions({
                         where: `Hidden = 0`,
                         include_deleted: false,
                     });
-                    expect(Dor).to.be.a('number').and.is.above(0);
+                    expect(count).to.be.a('number').and.is.above(0);
                 });
             });
 
