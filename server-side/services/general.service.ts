@@ -10,6 +10,7 @@ import {
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
+import { performance } from 'perf_hooks';
 
 declare type ClientData =
     | 'UserEmail'
