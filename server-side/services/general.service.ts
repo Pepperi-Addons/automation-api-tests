@@ -5,10 +5,12 @@ import {
     FindOptions,
     GeneralActivity,
     Transaction,
+    User,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
+import { performance } from 'perf_hooks';
 
 declare type ClientData =
     | 'UserEmail'
@@ -91,6 +93,10 @@ export default class GeneralService {
 
     getCatalogs(options?: FindOptions): Promise<Catalog[]> {
         return this.papiClient.catalogs.find(options);
+    }
+
+    getUsers(options?: FindOptions): Promise<User[]> {
+        return this.papiClient.users.find(options);
     }
 
     getAllActivities(options?: FindOptions): Promise<GeneralActivity[] | Transaction[]> {
@@ -176,7 +182,7 @@ export default class GeneralService {
 
     async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
         const isInstalledArr: boolean[] = [];
-        const installedAddonsArr = await this.getAddons();
+        const installedAddonsArr = await this.getAddons({ page_size: -1 });
         for (const addonName in testData) {
             let isInstalled = false;
             for (let i = 0; i < installedAddonsArr.length; i++) {
@@ -275,6 +281,7 @@ export default class GeneralService {
     }
 
     fetchStatus(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
+        const start = performance.now();
         return fetch(`${this['client'].BaseURL}${URI}`, {
             method: `${method}`,
             body: JSON.stringify(body),
@@ -285,16 +292,42 @@ export default class GeneralService {
             size: size,
         })
             .then(async (response) => {
+                const end = performance.now();
+                console.log(
+                    `Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
                 return {
                     Status: response.status,
-                    Body: await response.json(),
+                    Body: await response.text(),
                 };
             })
             .then((res) => {
+                res.Body = res.Body ? JSON.parse(res.Body) : '';
                 return {
                     Status: res.Status,
                     Size: res.Body.length,
-                    Body: res.Body,
+                    Body: res.Body as any,
+                };
+            })
+            .catch((err) => {
+                const end = performance.now();
+                console.error(
+                    `Error - Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
+                console.error(`Error Message: ${err}`);
+                return {
+                    Status: null,
+                    Size: null,
+                    Body: null,
+                    Error: err,
                 };
             });
     }
@@ -303,6 +336,7 @@ export default class GeneralService {
 export interface TesterFunctions {
     describe: any;
     expect: any;
+    assert?: any;
     it: any;
     run: any;
     setNewTestHeadline?: any;
