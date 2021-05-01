@@ -9,40 +9,38 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     const logcash: any = {};
     let logTimeCount = 0;
     const logTimeRetryNum = 19;
-    let listLength = 0;
     const CallbackCash: any = {};
     let CodJobBody: any = {};
     let CodeJobUUIDCron;
 
+    service['options'].addonUUID = '';
+
     // this will run the first test that will run the second and so on..
     await createNewCJToChroneTest();
 
-    describe('Cron Expression test case', () => {
-        it('Insert new CodJob on cron verification test: finished', () => {
+    describe('Cron Expression Test Case', () => {
+        it('Insert New CodJob For Cron Verification Test: Finished', () => {
             assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
-            // if (logcash.insertNewCJtoCronVerification == true){
-            //     publishCodeJobCronTest();
-            // }
         });
-        it('Publish new Code Job on cron verification test: finished', () => {
+        it('Publish New Code Job For Cron Verification Test: Finished', () => {
             assert(CallbackCash.publishCodeJobCronTest, CallbackCash.publishCodeJobCronTestError);
         });
-        it('Validate empty log (the log vill be empty): finished', () => {
+        it('Validate Empty log (The Log should Be Empty): Finished', () => {
             assert(logcash.emtyLogResponsCron, logcash.emtyLogResponsCronError);
         });
-        it('Validate first log after execution: finished', () => {
+        it('Validate First Log After Execution: Finished', () => {
             assert(logcash.ResponseExecutedLogsCronTest, logcash.ResponseExecutedLogsErrorMsgCronTest);
         });
-        it('Validate  logs after 2 executions: finished', () => {
+        it('Validate Logs After Two Executions: Finished', () => {
             assert(logcash.ResponseExecutedLogsCronTestSecond, logcash.ResponseExecutedLogsCronTestSecondErrorMsg);
         });
-        it('Update crone to 4 min (from 2): finished', () => {
+        it('Update Crone To 4 Minutes (From 2): Finished', () => {
             assert(logcash.updateNewCJtoCronVerification, logcash.updateNewCJtoCronVerificationErrorMsg);
         });
-        it('Validate log after 4 min: finished', () => {
+        it('Validate Log After 4 Minutes: Finished', () => {
             assert(logcash.ResponseExecutedLogsCronTestLast, logcash.ResponseExecutedLogsCronTestLastErrorMsg);
         });
-        it('Update IsScheduled: false to stop executions: finished', () => {
+        it('Update IsScheduled: False To Stop Executions: Finished', () => {
             assert(
                 logcash.updateCronToChroneTestIsScheduledFalse,
                 logcash.updateCronToChroneTestIsScheduledFalseErrorMsg,
@@ -63,7 +61,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             FailureAlertEmailSubject: 'Execution section',
             ExecutedCode: '',
             DraftCode:
-                'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponseObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',
+                'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',
             CodeJobIsHidden: false,
             CreationDateTime: '',
             ModificationDateTime: '',
@@ -71,13 +69,13 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         };
 
         CallbackCash.insertNewCJtoCronVerification = await service.codeJobs.upsert(CodJobBody);
+
         //var status = CallbackCash.insertNewCJtoCronVerification.success;
         //CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
         logcash.insertNewCJtoCronVerification = true;
 
         if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodJobBody.CodeJobName) {
             // CodeJobUUIDCron != "" removed from IF
-            listLength += 1;
             CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
             await publishCodeJobCronTest();
         } else {
@@ -91,7 +89,6 @@ export async function SchedulerTests(generalService: GeneralService, request, te
 
         // service .httpPost("/code_jobs", CodJobBody, (success) => {
         //     logcash.insertNewCJtoCronVerification = true;
-        //     listLength += 1;
         //     CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;  // result.CodeJobUUID to result.UUID
         //     publishCodeJobCronTest();
         // }, (error) => {
@@ -268,13 +265,12 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         logcash.updateNewCJtoCronVerification = true;
 
         if (CallbackCash.updateNewCJtoCronVerification.Status == 200 && CodeJobUUIDCron != '') {
-            listLength += 1;
             generalService.sleep(250000);
             await getLogsToExecutedCronLastTest();
         } else {
             logcash.updateNewCJtoCronVerification = false;
             logcash.updateNewCJtoCronVerificationErrorMsg =
-                'Post to CodeJob on Cron Verification section  failed. CodeJobUUD is : ' + CodeJobUUIDCron;
+                'Post to CodeJob on Cron Verification section failed. CodeJobUUD is : ' + CodeJobUUIDCron;
             await updateCronToChroneTestIsScheduledFalse();
         }
     }
@@ -318,9 +314,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         );
         logcash.updateCronToChroneTestIsScheduledFalse = true;
 
-        if (CallbackCash.updateCronToChroneTestIsScheduledFalse.Status == 200 && CodeJobUUIDCron != '') {
-            listLength += 1;
-        } else {
+        if (CallbackCash.updateCronToChroneTestIsScheduledFalse.Status != 200 || CodeJobUUIDCron == '') {
             logcash.updateCronToChroneTestIsScheduledFalse = false;
             logcash.updateCronToChroneTestIsScheduledFalseErrorMsg =
                 'Post to CodeJob on Cron Verification section  failed. CodeJobUUD is : ' + CodeJobUUIDCron;

@@ -17,55 +17,55 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     // const functionResult: any = {};
     // const addonUUIDWithoutSchema = 'f3e2a0cd-9105-464a-b5b2-f99ff7b84d2b';
     const addonUUID = generalService['client'].BaseURL.includes('staging')
-        ? 'fff02926-7aac-467f-8f1b-2ec2154a6bc7'
+        ? '7aac5451-2fc7-44d2-99dc-52c592adfb70'
         : '94f08439-6480-4533-8176-a04f651f5fdf';
     const baseURL = generalService['client'].BaseURL.replace('papi-eu', 'papi');
     const token = generalService['client'].OAuthAccessToken;
 
     // this will run the first test that will run the second and so on..
     await getSecretKey();
-    describe('Create schema (negative)', () => {
-        it('Get empty schema: finished', () => {
+    describe('Create Schema (Negative)', () => {
+        it('Get Empty Schema: Finished', () => {
             if (logcash.getEmptySchemaStatus) {
             }
             assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
         });
-        it('Try to create new schema without mandatory field <Name>: finished', () => {
+        it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
             assert(logcash.createSchemaWithoutNameStatus, logcash.createSchemaWithoutNameError);
         });
     });
-    describe('Create schema, positive and upsert data to Dinamo', () => {
-        it('Create scheme with one mandatory field Name: finished', () => {
+    describe('Create schema, Positive And Upsert Data To Dinamo', () => {
+        it('Create Scheme With One Mandatory Field Name: Finished', () => {
             assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
         });
-        it('Create scheme with all parameters: finished', () => {
+        it('Create Scheme With All Parameters: Finished', () => {
             assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
         });
-        it('Insert data to schema with type meta_data without OwnerId (negative): finished', () => {
+        it('Insert Data To Schema With Type meta_data Without OwnerId (Negative): Finished', () => {
             assert(
                 logcash.insertDataToTableWithoutOwnerIDNegativeStatus,
                 logcash.insertDataToTableWithoutOwnerIDNegativeError,
             );
         });
-        it('Insert data to schema with type meta_data with OwnerId, key and one column values: finished', () => {
+        it('Insert Data To Schema With Type meta_data With OwnerId, Key And One Column Values: Finished', () => {
             assert(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError);
         });
-        it('Get data from table and compere it from posted body: finished', () => {
+        it('Get Data From Table and Compere It From Posted Body: Finished', () => {
             assert(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError);
         });
-        it('Upsert data with kyy created on previos test + insert values to all fields: finished', () => {
+        it('Upsert Data With Key Created On Previos Test + Insert Values To All Fields: Finished', () => {
             assert(logcash.upsertDataToTableWithOwnerIDStatus, logcash.upsertDataToTableWithOwnerIDError);
         });
-        it('Get data from table (with 2 objects): finished', () => {
+        it('Get Data From Table (With Two Objects): Finished', () => {
             assert(logcash.getDataFromTableTwoKeys.Status, logcash.getDataFromTableTwoKeys.Error);
         });
-        it('Get data from table when one of objects is hidden: finished', () => {
+        it('Get Data From Table When One Objects Is Hidden: Finished', () => {
             assert(logcash.getDataFromTableHidden.Status, logcash.getDataFromTableHidden.Error);
         });
-        it('Drop existing table: finished', () => {
+        it('Drop Existing Table: Finished', () => {
             assert(logcash.dropExistingTableStatus, logcash.dropExistingTableError);
         });
-        it('Drop deleted table: finished', () => {
+        it('Drop Deleted Table: Finished', () => {
             assert(logcash.dropDeletedTableStatus, logcash.dropDeletedTableError);
         });
     });
@@ -577,7 +577,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         await dropExistingTable();
     }
 
-    /////////////////////////////drop table testing
+    //#region drop table testing
     async function dropExistingTable() {
         //logcash.dropExistingTable = await fetch(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
         const res = await fetch(
@@ -625,4 +625,5 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 'Drop schema negative test failed.A message is: ' + logcash.dropExistingTable.faultstring;
         }
     }
+    //#endregion drop table testin
 }

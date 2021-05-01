@@ -5,6 +5,7 @@ import {
     FindOptions,
     GeneralActivity,
     Transaction,
+    User,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
@@ -91,6 +92,10 @@ export default class GeneralService {
 
     getCatalogs(options?: FindOptions): Promise<Catalog[]> {
         return this.papiClient.catalogs.find(options);
+    }
+
+    getUsers(options?: FindOptions): Promise<User[]> {
+        return this.papiClient.users.find(options);
     }
 
     getAllActivities(options?: FindOptions): Promise<GeneralActivity[] | Transaction[]> {
@@ -275,6 +280,7 @@ export default class GeneralService {
     }
 
     fetchStatus(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
+        const start = performance.now();
         return fetch(`${this['client'].BaseURL}${URI}`, {
             method: `${method}`,
             body: JSON.stringify(body),
@@ -285,6 +291,14 @@ export default class GeneralService {
             size: size,
         })
             .then(async (response) => {
+                const end = performance.now();
+                console.log(
+                    `Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
                 return {
                     Status: response.status,
                     Body: await response.text(),
@@ -296,6 +310,23 @@ export default class GeneralService {
                     Status: res.Status,
                     Size: res.Body.length,
                     Body: res.Body as any,
+                };
+            })
+            .catch((err) => {
+                const end = performance.now();
+                console.error(
+                    `Error - Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
+                console.error(`Error Message: ${err}`);
+                return {
+                    Status: null,
+                    Size: null,
+                    Body: null,
+                    Error: err,
                 };
             });
     }

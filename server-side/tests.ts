@@ -28,7 +28,10 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './api-tests/schema';
 import { SchedulerTests } from './api-tests/scheduler';
-
+import { CodeJobsTests } from './api-tests/code_jobs';
+import { InstallTests } from './api-tests/Install';
+import { CodeJobsRetryTests } from './api-tests/code_jobs_retry';
+import { CodeJobsAddonTests } from './api-tests/code_jobs_addon';
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
@@ -633,6 +636,106 @@ export async function scheduler(client: Client, request: Request, testerFunction
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         SchedulerTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function code_jobs(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Code_Jobs';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        CodeJobsTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function install(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Install';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        InstallTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function code_jobs_addon(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Code_Jobs_Addon';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        CodeJobsAddonTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function code_jobs_retry(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Code_Jobs_Retry';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        CodeJobsRetryTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
