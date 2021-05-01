@@ -19,7 +19,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '7aac5451-2fc7-44d2-99dc-52c592adfb70'
         : '94f08439-6480-4533-8176-a04f651f5fdf';
-    const baseURL = generalService['client'].BaseURL.replace('papi-eu', 'papi');
+    const baseURL = generalService['client'].BaseURL;
     const token = generalService['client'].OAuthAccessToken;
 
     // this will run the first test that will run the second and so on..
