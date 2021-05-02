@@ -1,7 +1,7 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import fetch from 'node-fetch';
 
-export async function DBSchemaTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function DBSchemaTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const assert = tester.assert;
