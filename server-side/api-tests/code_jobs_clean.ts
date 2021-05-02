@@ -5,10 +5,11 @@ export async function CodeJobsCleanTests(generalService: GeneralService, tester:
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+    const _addonUUID = service['options'].addonUUID;
 
     const codeJobsResponse = await generalService.fetchStatus(
         'GET',
-        '/code_jobs?Fields=IsScheduled,CodeJobName&page_size=1000',
+        '/code_jobs?Fields=IsScheduled,CodeJobName,UUID,OwnerUUID&page_size=1000',
     );
     const scheduledCodeJobsArr: any = [];
     for (let index = 0; index < codeJobsResponse.Body.length; index++) {
@@ -18,14 +19,16 @@ export async function CodeJobsCleanTests(generalService: GeneralService, tester:
     }
 
     for (let index = 0; index < codeJobsResponse.Body.length; index++) {
-        const oren = await service.codeJobs.upsert({
+        if (codeJobsResponse.Body[index].OwnerUUID) {
+            service['options'].addonUUID = codeJobsResponse.Body[index].OwnerUUID;
+        }
+        await service.codeJobs.upsert({
             CodeJobName: codeJobsResponse.Body[index].CodeJobName,
             UUID: codeJobsResponse.Body[index].UUID,
             CodeJobIsHidden: true,
             IsScheduled: false,
         });
-
-        console.log({ oren: oren });
+        service['options'].addonUUID = _addonUUID;
     }
 
     describe('Cleaned Data', () => {
@@ -37,7 +40,7 @@ export async function CodeJobsCleanTests(generalService: GeneralService, tester:
             expect(codeJobsResponse.Body.length).to.equal(0);
         });
 
-        it(`Found ${scheduledCodeJobsArr.Body.length} Scheduled Code Jobs And Removed Them All`, async () => {
+        it(`Found ${scheduledCodeJobsArr.length} Scheduled Code Jobs And Removed Them All`, async () => {
             const codeJobsResponse = await generalService.fetchStatus(
                 'GET',
                 '/code_jobs?Fields=IsScheduled&page_size=1000',
@@ -48,7 +51,7 @@ export async function CodeJobsCleanTests(generalService: GeneralService, tester:
                     scheduledCodeJobsArr.push(codeJobsResponse.Body[index]);
                 }
             }
-            expect(scheduledCodeJobsArr.Body.length).to.equal(0);
+            expect(scheduledCodeJobsArr.length).to.equal(0);
         });
     });
 }
