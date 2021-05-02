@@ -1,6 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-export async function InstallTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function InstallTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const assert = tester.assert;

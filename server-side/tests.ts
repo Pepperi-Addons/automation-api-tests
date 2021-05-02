@@ -591,7 +591,7 @@ export async function maintenance_full(client: Client, request: Request, testerF
 //#endregion Old Framwork Tests
 
 //#region Oleg's Framwork Tests
-export async function schema(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function schema(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Schema';
     PrintMemoryUseToLog('Start', testName);
@@ -610,13 +610,13 @@ export async function schema(client: Client, request: Request, testerFunctions: 
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        DBSchemaTests(service, request, testerFunctions),
+        DBSchemaTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 
-export async function scheduler(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function scheduler(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Scheduler';
     PrintMemoryUseToLog('Start', testName);
@@ -635,13 +635,13 @@ export async function scheduler(client: Client, request: Request, testerFunction
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SchedulerTests(service, request, testerFunctions),
+        SchedulerTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 
-export async function code_jobs(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function code_jobs(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Code_Jobs';
     PrintMemoryUseToLog('Start', testName);
@@ -660,13 +660,13 @@ export async function code_jobs(client: Client, request: Request, testerFunction
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        CodeJobsTests(service, request, testerFunctions),
+        CodeJobsTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 
-export async function install(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function install(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Install';
     PrintMemoryUseToLog('Start', testName);
@@ -685,13 +685,13 @@ export async function install(client: Client, request: Request, testerFunctions:
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        InstallTests(service, request, testerFunctions),
+        InstallTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 
-export async function code_jobs_addon(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function code_jobs_addon(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Code_Jobs_Addon';
     PrintMemoryUseToLog('Start', testName);
@@ -710,13 +710,13 @@ export async function code_jobs_addon(client: Client, request: Request, testerFu
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        CodeJobsAddonTests(service, request, testerFunctions),
+        CodeJobsAddonTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 
-export async function code_jobs_retry(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function code_jobs_retry(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Code_Jobs_Retry';
     PrintMemoryUseToLog('Start', testName);
@@ -735,7 +735,7 @@ export async function code_jobs_retry(client: Client, request: Request, testerFu
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        CodeJobsRetryTests(service, request, testerFunctions),
+        CodeJobsRetryTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
