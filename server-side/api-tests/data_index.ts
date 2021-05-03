@@ -13,7 +13,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const expect = tester.expect;
     const it = tester.it;
 
-    //test
+    //test limited
     const all_activities_fields = [
         //'ExternalID',
         // 'TaxPercentage',
