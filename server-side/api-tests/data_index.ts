@@ -31,7 +31,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'Account.ExternalID',
         'Account.City',
         // 'Account.Country',
-        // 'Account.Status',
+         //'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
         //'Catalog.ExternalID',
@@ -383,7 +383,6 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                                 (updatedSortedAndCountedMap.get(key) as number) + 1,
                                             );
                                         }
-                                        expect(updatedSortedAndCountedMap.has(key)).to.be.false;
                                     } else {
                                         expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
                                     }
@@ -493,7 +492,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     if (key == emptyField) {
                                         expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) - 1);
                                     } else if (key == existedField) {
-                                        expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) + 1);
+                                        if (updatedSortedAndCountedMap.has(key)) {
+                                            expect(value).to.be.equal(
+                                                (updatedSortedAndCountedMap.get(key) as number) + 1,
+                                            );
+                                        }
                                     } else {
                                         expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
                                     }
