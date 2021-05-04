@@ -102,7 +102,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
     }
 }
 
-expor function upgrade_dependencies(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function upgrade_dependencies(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Upgrade_Dependencies';
     PrintMemoryUseToLog('Start', testName);
