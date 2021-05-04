@@ -322,7 +322,10 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                             }`,
                                         );
                                     }
-                                    const accountsArr = await objectsService.getAccounts({ page_size: 1 });
+                                    const accountsArr = await objectsService.getAccounts({
+                                        where: `${allActivitiesFieldName.split('.')[1]}!=''`,
+                                        page_size: 1,
+                                    });
                                     tempAccountInternalID = accountsArr[0].InternalID as number;
                                     existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
                                     expect(accountsArr.length).to.be.above(0);
@@ -488,7 +491,6 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
-
                                 if (!isEmptyField) {
                                     //Brake the next steps of the test if the updated field change failed
                                     updatedSortedAndCountedMap = undefined as any;
