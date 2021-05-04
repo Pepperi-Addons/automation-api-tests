@@ -13,7 +13,6 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const expect = tester.expect;
     const it = tester.it;
 
-    //test limited test 2
     const all_activities_fields = [
         //'ExternalID',
         // 'TaxPercentage',
@@ -29,9 +28,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'TSATestIndexNumber',
         // 'TSATestIndexDecimalNumber',
         // 'Account.ExternalID',
-        'Account.City',
-        // 'Account.Country',
-         //'Account.Status',
+'Account.City',
+        //'Account.Country',
+        //'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
         //'Catalog.ExternalID',
@@ -200,7 +199,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
+                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
                                     }
                                     createdField = dataIndexService.createTestDataForField(
                                         allActivitiesFieldName.split('.')[1],
@@ -312,7 +311,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
+                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
                                     }
                                     const accountsArr = await objectsService.getAccounts({ page_size: 1 });
                                     tempAccountInternalID = accountsArr[0].InternalID as number;
@@ -412,7 +411,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
+                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
                                     }
                                     const updateAccountResponse = await generalService.fetchStatus(
                                         'POST',
@@ -451,6 +450,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 let maxLoopsCounter = _MAX_LOOPS_COUNTER;
                                 let isEmptyField = false;
                                 do {
+                                    maxLoopsCounter--;
+                                    generalService.sleep(_INTERVAL_TIMER);
                                     updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                         allActivitiesFieldName,
                                     );
@@ -467,14 +468,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     } else if (updatedSortedAndCountedMap.has(emptyField)) {
                                         isEmptyField = true;
                                     }
-                                    maxLoopsCounter--;
-                                    generalService.sleep(_INTERVAL_TIMER);
                                     console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
                                 } while (!isEmptyField && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                updatedSortedAndCountedMap.forEach((value, key) => {
+                                    console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
                                     expect(value).to.be.above(0);
                                 });
 
@@ -538,6 +536,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 let maxLoopsCounter = _MAX_LOOPS_COUNTER;
                                 let isEmptyField = false;
                                 do {
+                                    maxLoopsCounter--;
+                                    generalService.sleep(_INTERVAL_TIMER);
                                     updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                         allActivitiesFieldName,
                                     );
@@ -554,8 +554,6 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     } else if (!updatedSortedAndCountedMap.has(emptyField)) {
                                         isEmptyField = true;
                                     }
-                                    maxLoopsCounter--;
-                                    generalService.sleep(_INTERVAL_TIMER);
                                     console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
                                 } while (!isEmptyField && maxLoopsCounter > 0);
 
@@ -594,7 +592,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
+                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
                                     }
                                     const isAccountDeleted = await objectsService.deleteAccount(accountInternalID);
                                     expect(isAccountDeleted).to.be.true;

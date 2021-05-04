@@ -33,7 +33,7 @@ jobs:
     
     # Make sure everything compiles
     - name: Compilation & testing
-      run: npm run prepare
+      run: npm run compile-tests
 
     # # Bump the version number
     # - name: Bump version
