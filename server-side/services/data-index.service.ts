@@ -30,7 +30,7 @@ export class DataIndexService {
 
     createTestDataForField(fieldName: string): any {
         if (stringFieldsArr.includes(fieldName)) {
-            if ((fieldName = 'Country')) {
+            if (fieldName == 'Country') {
                 return 'IL';
             }
             return Math.floor(Math.random() * 100000000000).toString(36);
