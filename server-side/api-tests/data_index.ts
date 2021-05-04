@@ -28,8 +28,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'TSATestIndexNumber',
         // 'TSATestIndexDecimalNumber',
         // 'Account.ExternalID',
-'Account.City',
-     //'Account.Country',
+        'Account.City',
+        //'Account.Country',
         //'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
@@ -199,7 +199,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
                                     }
                                     createdField = dataIndexService.createTestDataForField(
                                         allActivitiesFieldName.split('.')[1],
@@ -311,7 +315,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
                                     }
                                     const accountsArr = await objectsService.getAccounts({ page_size: 1 });
                                     tempAccountInternalID = accountsArr[0].InternalID as number;
@@ -411,7 +419,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
                                     }
                                     const updateAccountResponse = await generalService.fetchStatus(
                                         'POST',
@@ -592,7 +604,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error(`NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]}`);
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
                                     }
                                     const isAccountDeleted = await objectsService.deleteAccount(accountInternalID);
                                     expect(isAccountDeleted).to.be.true;
