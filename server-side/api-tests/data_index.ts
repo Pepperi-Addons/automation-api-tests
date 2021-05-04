@@ -29,7 +29,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'TSATestIndexDecimalNumber',
         // 'Account.ExternalID',
         'Account.City',
-         //'Account.Country',
+        //'Account.Country',
         //'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
@@ -138,7 +138,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 });
             });
 
-//This now should fail
+            //This now should fail
             for (const addonName in testData) {
                 const addonUUID = testData[addonName][0];
                 const version = testData[addonName][1];
