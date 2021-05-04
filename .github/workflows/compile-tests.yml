@@ -30,9 +30,9 @@ jobs:
       - name: Setup GIT
         run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
 
-      # # Install node modules
-      # - name: Installation
-      #   run: npm install --ignore-scripts
+      # Install node modules
+      - name: Installation
+        run: npm install --ignore-scripts
 
       # Make sure everything compiles
       - name: Compilation & testing
