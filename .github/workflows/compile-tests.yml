@@ -6,8 +6,11 @@ name: Compile Tests
 # events but only for the master branch
 on:
   pull_request:
-    branches: 
+    branches:
       - master
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -18,27 +21,25 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
-   # Set up git
-    - name: Setup GIT
-      run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
- 
-    # Install node modules
-    - name: Installation
-      run: npm install --ignore-scripts
-    
-    # Make sure everything compiles
-    - name: Compilation & testing
-      run: npm run compile-tests
+      # Set up git
+      - name: Setup GIT
+        run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
 
+      # Install node modules
+      - name: Installation
+        run: npm install --ignore-scripts
+
+      # Make sure everything compiles
+      - name: Compilation & testing
+        run: npm run compile-tests
     # # Bump the version number
     # - name: Bump version
     #   run: npm version patch
-
     # # push the new version
     # - name: Push
     #   run: git push
