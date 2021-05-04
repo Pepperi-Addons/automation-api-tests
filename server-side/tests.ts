@@ -29,7 +29,7 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 import { DBSchemaTests } from './api-tests/schema';
 import { SchedulerTests } from './api-tests/scheduler';
 import { CodeJobsTests } from './api-tests/code_jobs';
-import { InstallTests } from './api-tests/Install';
+import { InstallTests } from './api-tests/install';
 import { CodeJobsRetryTests } from './api-tests/code_jobs_retry';
 import { CodeJobsAddonTests } from './api-tests/code_jobs_addon';
 //#endregion Oleg's Framwork Tests
