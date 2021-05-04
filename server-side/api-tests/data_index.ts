@@ -138,7 +138,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 });
             });
 
-//Is this 
+//This now should fail
             for (const addonName in testData) {
                 const addonUUID = testData[addonName][0];
                 const version = testData[addonName][1];
