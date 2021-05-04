@@ -29,7 +29,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'TSATestIndexDecimalNumber',
         // 'Account.ExternalID',
 'Account.City',
-        //'Account.Country',
+     //'Account.Country',
         //'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
