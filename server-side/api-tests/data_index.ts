@@ -52,6 +52,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'AdditionalAccount.Status',
     ];
 
+    //compile
+//that will not compile
     // const transaction_lines_fields = [
     //     'TSATestIndexString',
     //     'TSATestIndexTime',
