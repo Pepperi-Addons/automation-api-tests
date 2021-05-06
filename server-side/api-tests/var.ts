@@ -1646,7 +1646,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion
                 ? true
                 : 'The response is: ' +
-                      createVersionApiResponse + //.statusText.split('<h2>')[1].split('</h2>')[0] +
+                  createVersionApiResponse + //.statusText.split('<h2>')[1].split('</h2>')[0] +
                       " Expected response should include error mesage with the text : '500 - Internal server error.'",
         );
 
