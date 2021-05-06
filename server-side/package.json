@@ -11,6 +11,7 @@
     "keywords": [],
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
+        "compile-tests": "npm run compile && npm run lint",
         "compile": "tsc",
         "build": "npm run lint && rollup -c rollup.config.js",
         "start": "tsc -w app.local.ts",
@@ -27,7 +28,6 @@
         "@rollup/plugin-commonjs": "^12.0.0",
         "@rollup/plugin-node-resolve": "^8.0.0",
         "@types/chai-as-promised": "^7.1.2",
-        "@types/dotenv": "^8.2.0",
         "@types/node": "^10.17.24",
         "@types/node-fetch": "^2.5.7",
         "@typescript-eslint/eslint-plugin": "^3.5.0",

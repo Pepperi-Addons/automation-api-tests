@@ -1982,11 +1982,13 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     },
                     //Production - S3
                     {
+                        InternalID: 305089,
                         Description: 'Exported from Winzer in 30.03.2021',
                         FileName: 'BillOnly_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'BillOnly',
-                        URL: 'https://cdn.pepperi.com/TemporaryFiles/f0bd8e22-b31b-489e-accf-6f574f484325',
+                        URL:
+                            'https://cdn.pepperi.com/30013064/CustomizationFile/8f8cad93-8a50-422c-9164-c894665907f0/BillOnly_1_1_176.json',
                     },
                     //Production - S3
                     {

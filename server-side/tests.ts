@@ -29,7 +29,7 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 import { DBSchemaTests } from './api-tests/schema';
 import { SchedulerTests } from './api-tests/scheduler';
 import { CodeJobsTests } from './api-tests/code_jobs';
-import { InstallTests } from './api-tests/Install';
+import { InstallTests } from './api-tests/install';
 import { CodeJobsRetryTests } from './api-tests/code_jobs_retry';
 import { CodeJobsAddonTests } from './api-tests/code_jobs_addon';
 //#endregion Oleg's Framwork Tests
@@ -54,6 +54,7 @@ import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
 import { DataIndexTests } from './api-tests/data_index';
 import { CPINodeTests } from './api-tests/cpi_node';
+import { CodeJobsCleanTests } from './api-tests/code_jobs_clean';
 
 let testName = '';
 let testEnvironment = '';
@@ -1132,6 +1133,31 @@ export async function cpi_node(client: Client, testerFunctions: TesterFunctions)
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CPINodeTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function code_jobs_clean(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Code_Jobs_Clean';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        CodeJobsCleanTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;

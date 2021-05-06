@@ -49,6 +49,7 @@ export default class GeneralService {
     }
 
     sleep(ms: number) {
+        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
             expire = start + ms;
         while (new Date().getTime() < expire) {}
@@ -107,8 +108,8 @@ export default class GeneralService {
         return this.papiClient.metaData.type(resource_name).types.get();
     }
 
-    async getAuditLogResultObjectIfValid(URI, loopsAmount?) {
-        let auditLogResponse = await this.papiClient.get(URI);
+    async getAuditLogResultObjectIfValid(uri, loopsAmount?) {
+        let auditLogResponse = await this.papiClient.get(uri);
         auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
 
         //This loop is used for cases where AuditLog was not created at all (This can happen and it is valid)
@@ -117,7 +118,7 @@ export default class GeneralService {
             let retrayGetCall = loopsAmount + 2;
             do {
                 this.sleep(800);
-                auditLogResponse = await this.papiClient.get(URI);
+                auditLogResponse = await this.papiClient.get(uri);
                 auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
                 retrayGetCall--;
             } while (auditLogResponse.UUID.length < 10 && retrayGetCall > 0);
@@ -130,7 +131,7 @@ export default class GeneralService {
             console.log('Status ID is 2, Retray ' + loopsAmount + ' Times.');
             while (auditLogResponse.Status.ID == '2' && loopsCounter < loopsAmount) {
                 setTimeout(async () => {
-                    auditLogResponse = await this.papiClient.get(URI);
+                    auditLogResponse = await this.papiClient.get(uri);
                 }, 2000);
                 loopsCounter++;
             }
@@ -280,56 +281,66 @@ export default class GeneralService {
         return testData;
     }
 
-    fetchStatus(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
+    fetchStatus(
+        method: HttpMethod,
+        uri: string,
+        body?: any,
+        headers?: any,
+        timeout?: number,
+        size?: number,
+    ): Promise<FetchStatusResponse> {
         const start = performance.now();
-        return fetch(`${this['client'].BaseURL}${URI}`, {
+        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
             method: `${method}`,
             body: JSON.stringify(body),
             headers: {
                 Authorization: `Bearer ${this.papiClient['options'].token}`,
+                ...headers,
             },
             timeout: timeout,
             size: size,
-        })
-            .then(async (response) => {
-                const end = performance.now();
-                console.log(
-                    `Fetch ${method}:`,
-                    this['client'].BaseURL + URI,
-                    'took',
-                    (end - start).toFixed(2),
-                    'milliseconds',
-                );
-                return {
-                    Status: response.status,
-                    Body: await response.text(),
-                };
-            })
-            .then((res) => {
-                res.Body = res.Body ? JSON.parse(res.Body) : '';
-                return {
-                    Status: res.Status,
-                    Size: res.Body.length,
-                    Body: res.Body as any,
-                };
-            })
-            .catch((err) => {
-                const end = performance.now();
-                console.error(
-                    `Error - Fetch ${method}:`,
-                    this['client'].BaseURL + URI,
-                    'took',
-                    (end - start).toFixed(2),
-                    'milliseconds',
-                );
-                console.error(`Error Message: ${err}`);
-                return {
-                    Status: null,
-                    Size: null,
-                    Body: null,
-                    Error: err,
-                };
+        }).then(async (response) => {
+            const end = performance.now();
+            const isSucsess = response.status > 199 && response.status < 400 ? true : false;
+            console[isSucsess ? 'log' : 'debug'](
+                `%cFetch ${isSucsess ? '' : 'Error '}${method}: ${
+                    uri.startsWith('/') ? this['client'].BaseURL + uri : uri
+                } took ${(end - start).toFixed(2)} milliseconds`,
+                `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'}`,
+            );
+            const responseStr = await response.text();
+            let parsed: any = {};
+            let errorMessage: any = {};
+
+            try {
+                parsed = responseStr ? JSON.parse(responseStr) : '';
+            } catch {
+                if (responseStr.substring(10).includes('xml')) {
+                    parsed = { Type: 'xml' };
+                    errorMessage = parseResponse(responseStr);
+                } else if (responseStr.substring(10).includes('html')) {
+                    errorMessage = parseResponse(responseStr);
+                    parsed = { Type: 'html' };
+                } else {
+                    debugger;
+                    parsed = {};
+                    errorMessage = '';
+                }
+            }
+
+            const headersArr: any = {};
+            response.headers.forEach((value, key) => {
+                headersArr[key] = value;
             });
+
+            return {
+                Ok: response.ok,
+                Status: response.status,
+                Headers: headersArr,
+                Body: parsed,
+                Error: errorMessage,
+            };
+        });
     }
 
     async fetchStatusNew(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
@@ -440,4 +451,32 @@ export interface TesterFunctions {
     setNewTestHeadline?: any;
     addTestResultUnderHeadline?: any;
     printTestResults?: any;
+}
+
+export interface FetchStatusResponse {
+    Ok: boolean;
+    Status: number;
+    Headers?: any;
+    Body: any;
+    Error: any;
+}
+
+function parseResponse(responseStr) {
+    const errorMessage: any = {};
+    responseStr = responseStr.replace(/\s/g, '');
+    responseStr = responseStr.replace(/.......(?<=style>).*(?=<\/style>)......../g, '');
+    responseStr = String(responseStr.match(/......(?<=head>).*(?=<\/body>)......./));
+    const headerStr = String(responseStr.match(/(?<=head>).*(?=<\/head>)/));
+    const headerTagsMatched = String(headerStr.match(/(?<=)([\w\s\.\,\:\;\'\"]+)(?=<\/)..[\w\s]+/g));
+    const headerTagsArr = headerTagsMatched.split(/,|<\//);
+    const bodyStr = String(responseStr.match(/(?<=body>).*(?=<\/body>)/));
+    const bodyStrTagsMatched = String(bodyStr.match(/(?<=)([\w\s\.\,\:\;\'\"]+)(?=<\/)..[\w\s]+/g));
+    const bodyStrTagsArr = bodyStrTagsMatched.split(/,|<\//);
+    for (let index = 1; index < headerTagsArr.length; index += 2) {
+        errorMessage[`Header.${headerTagsArr[index]}`] = headerTagsArr[index - 1];
+    }
+    for (let index = 1; index < bodyStrTagsArr.length; index += 2) {
+        errorMessage[`Body.${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
+    }
+    return errorMessage;
 }

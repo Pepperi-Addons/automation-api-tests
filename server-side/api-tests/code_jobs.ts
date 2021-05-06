@@ -198,7 +198,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             })
             .toArray(); //iter is include_count: true
         listLength = cashCallJobsList.length;
-        await createNewCodeJobByName();
+        //Oren 1/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
+        //await createNewCodeJobByName();
+        await getEmailStatus();
     }
 
     //#region Upsert code jobs
@@ -1223,7 +1225,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             logcash.MandatoryCheckError =
                 'Get wrong exeption or not get exeption on insert new CodeJob without mandatory field CodeJob name';
         }
-        await getEmailStatus();
+        //Oren 3/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
+        //await getEmailStatus();
+        await getLogsToExecutedTimeoutTest();
     }
     //#endregion
 
@@ -1295,7 +1299,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         }
         generalService.sleep(130000); // weit to get log with timeout exeption
         logTimeCount = 0;
-        await getLogsToExecutedTimeoutTest();
+
+        //Oren 2/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
+        //await getLogsToExecutedTimeoutTest();
+        await createNewCodeJobByName();
     }
 
     async function getLogsToExecutedTimeoutTest() {
@@ -1414,7 +1421,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function executeWithDraftBudgetTest() {
-        // execute Draft code with small timout 5000
+        // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestFirst = await generalService.fetchStatus(
             'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
@@ -1448,7 +1455,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function executeWithDraftBudgetTestSecond() {
-        // execute Draft code with small timout 5000
+        // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestSecond = await generalService.fetchStatus(
             'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
@@ -1500,7 +1507,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function executeWithDraftWithoutBudget() {
-        // execute Draft code with small timout 5000
+        // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftWithoutBudget = await generalService.fetchStatus(
             'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
@@ -1558,7 +1565,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function executeWithDraftWithBudget() {
-        // execute Draft code with small timout 5000
+        // execute Draft code with small TimeOut 5000
         CallbackCash.executeWithDraftWithBudget = await generalService.fetchStatus(
             'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
