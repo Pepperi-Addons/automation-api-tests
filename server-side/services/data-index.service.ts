@@ -1,7 +1,7 @@
 import { PapiClient /*FindOptions*/ } from '@pepperi-addons/papi-sdk';
 import { ElasticSearchService } from './../services/elastic-search.service';
 
-const stringFieldsArr: string[] = ['City'];
+const stringFieldsArr: string[] = ['City', 'Country'];
 const numberFieldsArr: string[] = ['ExternalID'];
 
 export class DataIndexService {
@@ -30,11 +30,14 @@ export class DataIndexService {
 
     createTestDataForField(fieldName: string): any {
         if (stringFieldsArr.includes(fieldName)) {
+            if (fieldName == 'Country') {
+                return 'IL';
+            }
             return Math.floor(Math.random() * 100000000000).toString(36);
         } else if (numberFieldsArr.includes(fieldName)) {
             return Math.floor(Math.random() * 1000000);
         } else {
-            throw new Error('NotImplementedException');
+            throw new Error(`NotImplementedException - Field Name: ${fieldName}`);
         }
     }
 

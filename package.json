@@ -5,14 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "compile-tests": "cd ./server-side && npm run compile-tests && cd ..",
     "build": "cd ./server-side && npm run build && cd .. && cd ./client-side && npm run build && cd ..",
     "init": "npm install && cd ./server-side && npm install && cd .. && cd ./client-side && npm install && cd ..",
-    "publish-addon": "npm run build && publish-addon"
+    "publish-addon": "npm run build && publish-addon",
+    "update": "npm install @pepperi-addons/scripts@latest && cd ./server-side && npm run update && cd .."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pepperi-addons/scripts": "^1.0.28"
+    "@pepperi-addons/scripts": "^1.0.29"
   }
 }

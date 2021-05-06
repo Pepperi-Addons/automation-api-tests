@@ -104,7 +104,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
         describe('Scenarios', async () => {
             it('Validating responses for objects creation', async () => {
-                //account
+                //create account
                 const accountExternalID: string = 'AutomatedAPI' + Math.floor(Math.random() * 1000000).toString();
                 const accountObj: Account = {
                     ExternalID: accountExternalID,
@@ -134,7 +134,18 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
                 const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
                 expect(account.Status).to.be.a('number').equal(201);
-                //contacts
+
+                //update Account
+                accountObj.Prop1 = 'Prop 11';
+                accountObj.Prop2 = 'Prop 22';
+                accountObj.Prop3 = 'Prop 33';
+                accountObj.Prop4 = 'Prop 44';
+                accountObj.Prop5 = 'Prop 55';
+
+                const updatedAccount = await generalService.fetchStatus('POST', '/Accounts', accountObj);
+                expect(updatedAccount.Status).to.be.a('number').equal(200);
+
+                //create contacts
                 const contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
                 const contactObj = {
                     ExternalID: contactExternalID,
@@ -153,7 +164,15 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 const contact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
                 expect(contact.Status).to.be.a('number').equal(201);
 
-                //activities
+                //update contact
+                contactObj.Phone = '123-45678-1337';
+                contactObj.Mobile = '123-45678-1337';
+                contactObj.FirstName = 'Contact_updated';
+
+                const updatedContact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
+                expect(updatedContact.Status).to.be.a('number').equal(200);
+
+                //create activities
                 const activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
                 const activityObj = {
                     ExternalID: activityExternalID,
@@ -169,6 +188,13 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
                 const activity = await generalService.fetchStatus('POST', '/Activities', activityObj);
                 expect(activity.Status).to.be.a('number').equal(201);
+
+                //update activities
+                activityObj.Status = 2;
+                activityObj.Title = 'Testing updated';
+
+                const updatedActivity = await generalService.fetchStatus('POST', '/Activities', activityObj);
+                expect(updatedActivity.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const transactionExternalID =
@@ -192,7 +218,13 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 const transaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
                 expect(transaction.Status).to.be.a('number').equal(201);
 
-                //Items
+                //update Transaction
+                transactionObj.Status = 2;
+
+                const updatedTransaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
+                expect(updatedTransaction.Status).to.be.a('number').equal(200);
+
+                //create Items
                 const itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
                 const itemObj = {
                     ExternalID: itemExternalID,
@@ -213,7 +245,16 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 const item = await generalService.fetchStatus('POST', '/items', itemObj);
                 expect(item.Status).to.be.a('number').equal(201);
 
-                //inventory
+                //update items
+                itemObj.Price = 2.0;
+                itemObj.SecondaryPrice = 3;
+                itemObj.CostPrice = 1;
+                itemObj.Discount = 1;
+
+                const updatedItem = await generalService.fetchStatus('POST', '/items', itemObj);
+                expect(updatedItem.Status).to.be.a('number').equal(200);
+
+                //create inventory
                 const inventoryObj = {
                     InternalID: item.Body.InternalID,
                     ItemExternalID: item.Body.ExternalID,
@@ -229,7 +270,13 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 const inventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
                 expect(inventory.Status).to.be.a('number').equal(201);
 
-                //Lines
+                //update inventory
+                inventoryObj.InStockQuantity = 4;
+
+                const updateInventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
+                expect(updateInventory.Status).to.be.a('number').equal(200);
+
+                //create Lines
                 const lineObj = {
                     TransactionInternalID: transaction.Body.InternalID,
                     LineNumber: 0,
@@ -240,7 +287,13 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 const line = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
                 expect(line.Status).to.be.a('number').equal(201);
 
-                //Account-Users
+                //update lines
+                lineObj.UnitsQuantity = 3;
+
+                const upcatedLine = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
+                expect(upcatedLine.Status).to.be.a('number').equal(200);
+
+                //create Account-Users
                 const relationObj = {
                     UserExternalID: userExID,
                     AccountExternalID: accountExternalID,
@@ -261,6 +314,52 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
                 const relation = await generalService.fetchStatus('POST', '/account_users', relationObj);
                 expect(relation.Status).to.be.a('number').equal(201);
+
+                //update Account-Users
+                relationObj.Hidden = true;
+
+                const updatedRelation = await generalService.fetchStatus('POST', '/account_users', relationObj);
+                expect(updatedRelation.Status).to.be.a('number').equal(200);
+
+                //deletion for all objects
+                //lines
+                const deletedLine = await generalService.fetchStatus(
+                    'DELETE',
+                    '/transaction_lines/' + line.Body.InternalID,
+                );
+                expect(deletedLine.Status).to.be.a('number').equal(200);
+
+                //Transactions
+                const deletedTransaction = await generalService.fetchStatus(
+                    'DELETE',
+                    '/transactions/' + transaction.Body.InternalID,
+                );
+                expect(deletedTransaction.Status).to.be.a('number').equal(200);
+
+                //Item
+                const deletedItem = await generalService.fetchStatus('DELETE', '/items/' + item.Body.InternalID);
+                expect(deletedItem.Status).to.be.a('number').equal(200);
+
+                //Activities
+                const deletedActivity = await generalService.fetchStatus(
+                    'DELETE',
+                    '/activities/' + activity.Body.InternalID,
+                );
+                expect(deletedActivity.Status).to.be.a('number').equal(200);
+
+                //Contacts
+                const deletedContact = await generalService.fetchStatus(
+                    'DELETE',
+                    '/contacts/' + contact.Body.InternalID,
+                );
+                expect(deletedContact.Status).to.be.a('number').equal(200);
+
+                //Accounts
+                const deletedAccount = await generalService.fetchStatus(
+                    'DELETE',
+                    '/accounts/' + account.Body.InternalID,
+                );
+                expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
         });
 

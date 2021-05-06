@@ -13,6 +13,17 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const expect = tester.expect;
     const it = tester.it;
 
+    generalService.sleep(200);
+
+    const oren = await generalService.fetchStatus('GET', '/');
+    console.log({ oren: oren });
+
+    const oren2 = await generalService.fetchStatus('GET', '/%');
+    console.log({ oren2: oren2 });
+
+    const oren3 = await generalService.fetchStatus('GET', '/users');
+    console.log({ oren3: oren3 });
+
     const all_activities_fields = [
         //'ExternalID',
         // 'TaxPercentage',
@@ -29,8 +40,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'TSATestIndexDecimalNumber',
         // 'Account.ExternalID',
         'Account.City',
-        // 'Account.Country',
-        // 'Account.Status',
+        //'Account.Country',
+        //'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
         //'Catalog.ExternalID',
@@ -138,6 +149,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 });
             });
 
+            //This now should fail
             for (const addonName in testData) {
                 const addonUUID = testData[addonName][0];
                 const version = testData[addonName][1];
@@ -163,43 +175,556 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         });
 
         describe('All Activities', () => {
-            describe('CRUD Index of Fields', () => {
+            // describe('CRUD Index of Fields', () => {
+            //     for (let index = 0; index < all_activities_fields.length; index++) {
+            //         const allActivitiesFieldName = all_activities_fields[index];
+            //         //Test Data
+            //         const testDataAccountExternalID: string =
+            //             'Test Data Account - Data Index Test ' + Math.floor(Math.random() * 1000000).toString();
+            //         const testDataTransactionExternalID: string =
+            //             'Test Data Transaction - Data Index Test ' + Math.floor(Math.random() * 1000000).toString();
+            //         describe(allActivitiesFieldName, () => {
+            //             let createdField: any;
+            //             let existedField: any;
+            //             let emptyField: any;
+            //             let activityTypeID: number;
+            //             let createdAccountInternalID: number;
+            //             let existedAccountInternalID: number;
+            //             let createdTransactionInternalID: number;
+            //             let catalogInternalID: number;
+            //             let baseSortedAndCountedMap: Map<string, number> = new Map();
+            //             let updatedSortedAndCountedMap: Map<string, number> = new Map();
+            //             describe('Create', () => {
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                         allActivitiesFieldName,
+            //                     );
+            //                     baseSortedAndCountedMap.forEach((value) => {
+            //                         //, key) => {
+            //                         //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+            //                 });
+
+            //                 if (allActivitiesFieldName.includes('.')) {
+            //                     it(`Create ${allActivitiesFieldName.split('.')[0]} With New ${
+            //                         allActivitiesFieldName.split('.')[1]
+            //                     }`, async () => {
+            //                         if (allActivitiesFieldName.split('.')[0] != 'Account') {
+            //                             throw new Error(
+            //                                 `NotImplementedException - Reference Type: ${
+            //                                     allActivitiesFieldName.split('.')[0]
+            //                                 }`,
+            //                             );
+            //                         }
+            //                         createdField = dataIndexService.createTestDataForField(
+            //                             allActivitiesFieldName.split('.')[1],
+            //                         );
+            //                         const createAccountResponse = await generalService.fetchStatus(
+            //                             'POST',
+            //                             '/accounts',
+            //                             {
+            //                                 ExternalID: testDataAccountExternalID,
+            //                                 [allActivitiesFieldName.split('.')[1]]: createdField,
+            //                             },
+            //                         );
+            //                         createdAccountInternalID = createAccountResponse.Body.InternalID;
+            //                         expect(createAccountResponse.Status).to.equal(201);
+            //                     });
+            //                 }
+
+            //                 it(`Create Transaction With The New ${allActivitiesFieldName}`, async () => {
+            //                     const transactionArr = await objectsService.getTransaction({
+            //                         where: `Type LIKE '%Sales Order%'`,
+            //                         page_size: 1,
+            //                     });
+            //                     activityTypeID = transactionArr[0].ActivityTypeID as number;
+            //                     const catalogsArr = await objectsService.getCatalogs({ page_size: 1 });
+            //                     catalogInternalID = catalogsArr[0].InternalID;
+            //                     if (!createdAccountInternalID) {
+            //                         const accountsArr = await objectsService.getAccounts({ page_size: 1 });
+            //                         createdAccountInternalID = accountsArr[0].InternalID as number;
+            //                     }
+            //                     let nonReferenceField;
+            //                     if (!allActivitiesFieldName.includes('.')) {
+            //                         createdField = dataIndexService.createTestDataForField(
+            //                             allActivitiesFieldName.split('.')[1],
+            //                         );
+            //                         nonReferenceField = createdField;
+            //                     }
+            //                     const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
+            //                         ExternalID: testDataTransactionExternalID,
+            //                         ActivityTypeID: activityTypeID,
+            //                         [allActivitiesFieldName.split('.')[1]]: nonReferenceField,
+            //                         Account: {
+            //                             Data: {
+            //                                 InternalID: createdAccountInternalID,
+            //                             },
+            //                         },
+            //                         Catalog: {
+            //                             Data: {
+            //                                 InternalID: catalogInternalID,
+            //                             },
+            //                         },
+            //                     });
+            //                     createdTransactionInternalID = testDataTransaction.Body.InternalID;
+            //                     expect(testDataTransaction.Status).to.equal(201);
+            //                 });
+
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     //try for 50 seconds to get the updated fields
+            //                     let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                     let isCreatedField = false;
+            //                     do {
+            //                         maxLoopsCounter--;
+            //                         generalService.sleep(_INTERVAL_TIMER);
+            //                         updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                             allActivitiesFieldName,
+            //                         );
+            //                         if (
+            //                             updatedSortedAndCountedMap.has(createdField) &&
+            //                             baseSortedAndCountedMap.has(createdField)
+            //                         ) {
+            //                             if (
+            //                                 (updatedSortedAndCountedMap.get(createdField) as number) !=
+            //                                 (baseSortedAndCountedMap.get(createdField) as number)
+            //                             ) {
+            //                                 isCreatedField = true;
+            //                             }
+            //                         } else if (updatedSortedAndCountedMap.has(createdField)) {
+            //                             isCreatedField = true;
+            //                         }
+            //                         console.log({ updatedSortedAndCountedMap_Field_Created: isCreatedField });
+            //                     } while (!isCreatedField && maxLoopsCounter > 0);
+
+            //                     updatedSortedAndCountedMap.forEach((value, key) => {
+            //                         console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+
+            //                     if (!isCreatedField) {
+            //                         //Brake the next steps of the test if the updated field change failed
+            //                         updatedSortedAndCountedMap = undefined as any;
+            //                         throw new Error(
+            //                             `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${createdField}`,
+            //                         );
+            //                     }
+            //                 });
+
+            //                 it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+            //                     baseSortedAndCountedMap.forEach((value, key) => {
+            //                         if (key == createdField) {
+            //                             expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) + 1);
+            //                         } else {
+            //                             expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+            //                         }
+            //                     });
+            //                     if (!baseSortedAndCountedMap.has(createdField)) {
+            //                         expect(updatedSortedAndCountedMap.get(createdField)).to.be.equal(1);
+            //                     }
+            //                 });
+            //             });
+
+            //             describe('Update', () => {
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                         allActivitiesFieldName,
+            //                     );
+            //                     baseSortedAndCountedMap.forEach((value) => {
+            //                         //, key) => {
+            //                         //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+            //                 });
+
+            //                 if (allActivitiesFieldName.includes('.')) {
+            //                     it(`Get Existed ${allActivitiesFieldName.split('.')[0]} With Existed ${
+            //                         allActivitiesFieldName.split('.')[1]
+            //                     }`, async () => {
+            //                         if (allActivitiesFieldName.split('.')[0] != 'Account') {
+            //                             throw new Error(
+            //                                 `NotImplementedException - Reference Type: ${
+            //                                     allActivitiesFieldName.split('.')[0]
+            //                                 }`,
+            //                             );
+            //                         }
+            //                         const accountsArr = await objectsService.getAccounts({
+            //                             where: `${allActivitiesFieldName.split('.')[1]}!=''`,
+            //                             page_size: 1,
+            //                         });
+            //                         existedAccountInternalID = accountsArr[0].InternalID as number;
+            //                         existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
+            //                         expect(accountsArr.length).to.be.above(0);
+            //                     });
+            //                 }
+
+            //                 it(`Update Transaction With Existed ${allActivitiesFieldName}`, async () => {
+            //                     const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
+            //                         InternalID: createdTransactionInternalID,
+            //                         ExternalID: testDataTransactionExternalID,
+            //                         ActivityTypeID: activityTypeID,
+            //                         Account: {
+            //                             Data: {
+            //                                 InternalID: existedAccountInternalID,
+            //                             },
+            //                         },
+            //                         Catalog: {
+            //                             Data: {
+            //                                 InternalID: catalogInternalID,
+            //                             },
+            //                         },
+            //                     });
+            //                     expect(testDataTransaction.Status).to.equal(200);
+            //                 });
+
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     //try for 50 seconds to get the updated fields
+            //                     let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                     let isExistedField = false;
+            //                     do {
+            //                         maxLoopsCounter--;
+            //                         generalService.sleep(_INTERVAL_TIMER);
+            //                         updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                             allActivitiesFieldName,
+            //                         );
+            //                         if (
+            //                             updatedSortedAndCountedMap.has(existedField) &&
+            //                             baseSortedAndCountedMap.has(existedField)
+            //                         ) {
+            //                             if (
+            //                                 (updatedSortedAndCountedMap.get(existedField) as number) !=
+            //                                 (baseSortedAndCountedMap.get(existedField) as number)
+            //                             ) {
+            //                                 isExistedField = true;
+            //                             }
+            //                         } else if (updatedSortedAndCountedMap.has(existedField)) {
+            //                             isExistedField = true;
+            //                         }
+            //                         console.log({ updatedSortedAndCountedMap_Field_Existed: isExistedField });
+            //                     } while (!isExistedField && maxLoopsCounter > 0);
+
+            //                     updatedSortedAndCountedMap.forEach((value, key) => {
+            //                         console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+
+            //                     if (!isExistedField) {
+            //                         //Brake the next steps of the test if the updated field change failed
+            //                         updatedSortedAndCountedMap = undefined as any;
+            //                         throw new Error(
+            //                             `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${existedField}`,
+            //                         );
+            //                     }
+            //                 });
+
+            //                 it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+            //                     baseSortedAndCountedMap.forEach((value, key) => {
+            //                         if (key == existedField) {
+            //                             expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) - 1);
+            //                         } else if (key == createdField) {
+            //                             if (updatedSortedAndCountedMap.has(key)) {
+            //                                 expect(value).to.be.equal(
+            //                                     (updatedSortedAndCountedMap.get(key) as number) + 1,
+            //                                 );
+            //                             }
+            //                         } else {
+            //                             expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+            //                         }
+            //                     });
+            //                     if (updatedSortedAndCountedMap.has(createdField)) {
+            //                         expect(updatedSortedAndCountedMap.get(createdField)).to.be.equal(
+            //                             (baseSortedAndCountedMap.get(createdField) as number) + 1,
+            //                         );
+            //                     }
+            //                 });
+            //             });
+
+            //             describe('Update To Empty', () => {
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                         allActivitiesFieldName,
+            //                     );
+            //                     baseSortedAndCountedMap.forEach((value) => {
+            //                         //, key) => {
+            //                         //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+            //                 });
+
+            //                 if (allActivitiesFieldName.includes('.')) {
+            //                     it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${
+            //                         allActivitiesFieldName.split('.')[1]
+            //                     }`, async () => {
+            //                         if (allActivitiesFieldName.split('.')[0] != 'Account') {
+            //                             throw new Error(
+            //                                 `NotImplementedException - Reference Type: ${
+            //                                     allActivitiesFieldName.split('.')[0]
+            //                                 }`,
+            //                             );
+            //                         }
+            //                         const updateAccountResponse = await generalService.fetchStatus(
+            //                             'POST',
+            //                             '/accounts',
+            //                             {
+            //                                 InternalID: createdAccountInternalID,
+            //                                 [allActivitiesFieldName.split('.')[1]]: null,
+            //                             },
+            //                         );
+            //                         emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
+            //                         expect(updateAccountResponse.Status).to.equal(200);
+            //                     });
+            //                 }
+
+            //                 it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
+            //                     const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
+            //                         InternalID: createdTransactionInternalID,
+            //                         ExternalID: testDataTransactionExternalID,
+            //                         ActivityTypeID: activityTypeID,
+            //                         Account: {
+            //                             Data: {
+            //                                 InternalID: createdAccountInternalID,
+            //                             },
+            //                         },
+            //                         Catalog: {
+            //                             Data: {
+            //                                 InternalID: catalogInternalID,
+            //                             },
+            //                         },
+            //                     });
+            //                     expect(testDataTransaction.Status).to.equal(200);
+            //                 });
+
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     //try for 50 seconds to get the updated fields
+            //                     let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                     let isEmptyField = false;
+            //                     do {
+            //                         maxLoopsCounter--;
+            //                         generalService.sleep(_INTERVAL_TIMER);
+            //                         updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                             allActivitiesFieldName,
+            //                         );
+            //                         if (
+            //                             updatedSortedAndCountedMap.has(emptyField) &&
+            //                             baseSortedAndCountedMap.has(emptyField)
+            //                         ) {
+            //                             if (
+            //                                 (updatedSortedAndCountedMap.get(emptyField) as number) !=
+            //                                 (baseSortedAndCountedMap.get(emptyField) as number)
+            //                             ) {
+            //                                 isEmptyField = true;
+            //                             }
+            //                         } else if (updatedSortedAndCountedMap.has(emptyField)) {
+            //                             isEmptyField = true;
+            //                         }
+            //                         console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
+            //                     } while (!isEmptyField && maxLoopsCounter > 0);
+
+            //                     updatedSortedAndCountedMap.forEach((value, key) => {
+            //                         console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+
+            //                     if (!isEmptyField) {
+            //                         //Brake the next steps of the test if the updated field change failed
+            //                         updatedSortedAndCountedMap = undefined as any;
+            //                         throw new Error(
+            //                             `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${emptyField}`,
+            //                         );
+            //                     }
+            //                 });
+
+            //                 it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+            //                     baseSortedAndCountedMap.forEach((value, key) => {
+            //                         if (key == emptyField) {
+            //                             expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) - 1);
+            //                         } else if (key == existedField) {
+            //                             if (updatedSortedAndCountedMap.has(key)) {
+            //                                 expect(value).to.be.equal(
+            //                                     (updatedSortedAndCountedMap.get(key) as number) + 1,
+            //                                 );
+            //                             }
+            //                         } else {
+            //                             expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+            //                         }
+            //                     });
+            //                     if (baseSortedAndCountedMap.has(emptyField)) {
+            //                         expect(updatedSortedAndCountedMap.get(emptyField)).to.be.equal(
+            //                             (baseSortedAndCountedMap.get(emptyField) as number) + 1,
+            //                         );
+            //                     }
+            //                 });
+            //             });
+
+            //             describe('Delete', () => {
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                         allActivitiesFieldName,
+            //                     );
+            //                     baseSortedAndCountedMap.forEach((value) => {
+            //                         //, key) => {
+            //                         //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+            //                 });
+
+            //                 it(`Delete The New Transaction With ${allActivitiesFieldName}`, async () => {
+            //                     const isTransactionDeleted = await objectsService.deleteTransaction(
+            //                         createdTransactionInternalID,
+            //                     );
+            //                     expect(isTransactionDeleted).to.be.true;
+
+            //                     const getDeletedTransaction = await objectsService.getTransactionByID(
+            //                         createdTransactionInternalID,
+            //                     );
+            //                     expect(getDeletedTransaction.Hidden).to.be.true;
+            //                 });
+
+            //                 it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+            //                     //try for 50 seconds to get the updated fields
+            //                     let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                     let isEmptyField = false;
+            //                     do {
+            //                         maxLoopsCounter--;
+            //                         generalService.sleep(_INTERVAL_TIMER);
+            //                         updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+            //                             allActivitiesFieldName,
+            //                         );
+            //                         if (
+            //                             updatedSortedAndCountedMap.has(emptyField) &&
+            //                             baseSortedAndCountedMap.has(emptyField)
+            //                         ) {
+            //                             if (
+            //                                 (updatedSortedAndCountedMap.get(emptyField) as number) !=
+            //                                 (baseSortedAndCountedMap.get(emptyField) as number)
+            //                             ) {
+            //                                 isEmptyField = true;
+            //                             }
+            //                         } else if (!updatedSortedAndCountedMap.has(emptyField)) {
+            //                             isEmptyField = true;
+            //                         }
+            //                         console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
+            //                     } while (!isEmptyField && maxLoopsCounter > 0);
+
+            //                     updatedSortedAndCountedMap.forEach((value) => {
+            //                         //, key) => {
+            //                         //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+            //                         expect(value).to.be.above(0);
+            //                     });
+
+            //                     if (!isEmptyField) {
+            //                         //Brake the next steps of the test if the updated have empty but same as the base
+            //                         updatedSortedAndCountedMap = undefined as any;
+            //                         throw new Error(
+            //                             `updatedSortedAndCountedMap and baseSortedAndCountedMap contain the same field ${allActivitiesFieldName}: ${emptyField}`,
+            //                         );
+            //                     }
+            //                 });
+
+            //                 it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+            //                     updatedSortedAndCountedMap.forEach((value, key) => {
+            //                         if (key == emptyField) {
+            //                             expect(value).to.be.equal((baseSortedAndCountedMap.get(key) as number) - 1);
+            //                         } else {
+            //                             expect(value).to.be.equal(baseSortedAndCountedMap.get(key));
+            //                         }
+            //                     });
+            //                     if (!updatedSortedAndCountedMap.has(emptyField)) {
+            //                         expect(baseSortedAndCountedMap.get(emptyField)).to.equal(1);
+            //                     }
+            //                 });
+            //             });
+
+            //             describe('Clean UP', () => {
+            //                 if (allActivitiesFieldName.includes('.')) {
+            //                     it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${
+            //                         allActivitiesFieldName.split('.')[1]
+            //                     }`, async () => {
+            //                         if (allActivitiesFieldName.split('.')[0] != 'Account') {
+            //                             throw new Error(
+            //                                 `NotImplementedException - Reference Type: ${
+            //                                     allActivitiesFieldName.split('.')[0]
+            //                                 }`,
+            //                             );
+            //                         }
+            //                         const isAccountDeleted = await objectsService.deleteAccount(createdAccountInternalID);
+            //                         expect(isAccountDeleted).to.be.true;
+
+            //                         const getDeletedAccount = await objectsService.getAccountByID(createdAccountInternalID);
+            //                         expect(getDeletedAccount.Hidden).to.be.true;
+            //                     });
+            //                 }
+            //             });
+
+            //             //Done 1 (create)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
+            //             //Done 2 (create) *Only for cases where internal object created	API call POST: https://papi.staging.pepperi.com/V1.0/accounts (With Account.City from test data – city 1234)	Response Code 201
+            //             //Done 3 (create)	API call POST: https://papi.staging.pepperi.com/V1.0/transactions (With the new Account)	Response Code 201
+            //             //Done 4 (create)	API call: https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
+            //             //?? 5 (create)	Compare The Counts From Totals Account.City (1), with the counts from Totals Account.City (4)	Is +1
+            //             //Maybe 6 (update)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
+            //             //Maybe 7 (update)	API call POST: https://papi.staging.pepperi.com/V1.0/accounts (With Account.City as the first existed)	Response Code 200
+            //             //Maybe 8 (update)	API call GET: https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
+            //             //Maybe 9 (update)	Compare The Counts From Totals Account.City (6), with the counts from Totals Account.City (8)	Is +1 and Is -1
+            //             // Maybe 2 10 (Update to empty)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
+            //             // Maybe 2 11 (Update to empty)	API call POST: https://papi.staging.pepperi.com/V1.0/accounts (With Account.City as empty string or null if possible)	Response Code 200
+            //             // Maybe 2 12 (Update to empty)	API call GET: https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
+            //             // Maybe 2 13 (Update to empty)	Compare The Counts From Totals Account.City (10), with the counts from Totals Account.City (12)	Is +1 and Is -1
+            //             // Maybe 3 14 (clean up)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)	Count > 0
+            //             // Maybe 3 15 (clean up)	API call DELETE: https://papi.staging.pepperi.com/V1.0/transactions  (Clean the test transaction and restore previous condition)	Response Code 200
+            //             // Maybe 3 16 (clean up)	API call GET:   https://papi.staging.pepperi.com/V1.0/elasticsearch/all_activities?where=InternalID=86411390	Body = []
+            //             // Maybe 3 17 (clean up)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)	Count > 0
+            //             // Maybe 3 18 (clean up)	Compare The Counts From Totals Account.City (14), with the counts from Totals Account.City (16)	Is -1
+            //             //Skipped after meeting with Ido 19 (clean up) *Only for Transaction Lines	API call DELETE: https://papi.staging.pepperi.com/V1.0/transactions_lines (Clean the test transaction_lines and restore previous condition)	Response Code 200
+            //             //Skipped after meeting with Ido 20 (clean up) *Only for Transaction Lines	API call GET:   https://papi.staging.pepperi.com/V1.0/transaction_lines/813929257	Hidden = true
+            //             // Maybe 3 21 (clean up)*Only for cases where internal object created	API call DELETE: https://papi.staging.pepperi.com/V1.0/accounts	Response Code 200
+            //             // Maybe 3 22 (clean up) *Only for cases where internal object created	API call GET: https://papi.staging.pepperi.com/V1.0/accounts/20520635	Hidden = true
+            //             //All Activities: 'SubTotal','Account.City',
+            //             //Transaction Lines:'TotalUnitsPriceAfterDiscount', 'Transaction.Account.City
+            //         });
+            //     }
+            // });
+
+            describe('CRUD Index of Objects', () => {
                 for (let index = 0; index < all_activities_fields.length; index++) {
                     const allActivitiesFieldName = all_activities_fields[index];
                     //Test Data
-                    const accountExternalID: string =
+                    const testDataAccountExternalID: string =
                         'Test Data Account - Data Index Test ' + Math.floor(Math.random() * 1000000).toString();
-                    const transactionExternalID: string =
+                    const testDataTransactionExternalID: string =
                         'Test Data Transaction - Data Index Test ' + Math.floor(Math.random() * 1000000).toString();
                     describe(allActivitiesFieldName, () => {
                         let createdField: any;
                         let existedField: any;
                         let emptyField: any;
                         let activityTypeID: number;
-                        let accountInternalID: number;
-                        let tempAccountInternalID: number;
-                        let transactionInternalID: number;
+                        let createdAccountInternalID: number;
+                        let existedAccountInternalID: number;
+                        let createdTransactionInternalID: number;
                         let catalogInternalID: number;
                         let baseSortedAndCountedMap: Map<string, number> = new Map();
                         let updatedSortedAndCountedMap: Map<string, number> = new Map();
-                        describe('Create', () => {
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                    allActivitiesFieldName,
-                                );
-                                baseSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
+                        if (allActivitiesFieldName.includes('.')) {
+                            describe('Create', () => {
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                        allActivitiesFieldName,
+                                    );
+                                    baseSortedAndCountedMap.forEach((value) => {
+                                        //, key) => {
+                                        //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
                                 });
-                            });
 
-                            if (allActivitiesFieldName.includes('.')) {
                                 it(`Create ${allActivitiesFieldName.split('.')[0]} With New ${
                                     allActivitiesFieldName.split('.')[1]
                                 }`, async () => {
                                     if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
                                     }
                                     createdField = dataIndexService.createTestDataForField(
                                         allActivitiesFieldName.split('.')[1],
@@ -208,398 +733,433 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                         'POST',
                                         '/accounts',
                                         {
-                                            ExternalID: accountExternalID,
+                                            ExternalID: testDataAccountExternalID,
                                             [allActivitiesFieldName.split('.')[1]]: createdField,
                                         },
                                     );
-                                    accountInternalID = createAccountResponse.Body.InternalID;
+                                    createdAccountInternalID = createAccountResponse.Body.InternalID;
                                     expect(createAccountResponse.Status).to.equal(201);
                                 });
-                            }
 
-                            it(`Create Transaction With The New ${allActivitiesFieldName}`, async () => {
-                                const transactionArr = await objectsService.getTransaction({
-                                    where: `Type LIKE '%Sales Order%'`,
-                                    page_size: 1,
-                                });
-                                activityTypeID = transactionArr[0].ActivityTypeID as number;
-                                const catalogsArr = await objectsService.getCatalogs({ page_size: 1 });
-                                catalogInternalID = catalogsArr[0].InternalID;
-                                if (!accountInternalID) {
-                                    const accountsArr = await objectsService.getAccounts({ page_size: 1 });
-                                    accountInternalID = accountsArr[0].InternalID as number;
-                                }
-                                const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
-                                    ExternalID: transactionExternalID,
-                                    ActivityTypeID: activityTypeID,
-                                    Account: {
-                                        Data: {
-                                            InternalID: accountInternalID,
-                                        },
-                                    },
-                                    Catalog: {
-                                        Data: {
-                                            InternalID: catalogInternalID,
-                                        },
-                                    },
-                                });
-                                transactionInternalID = testDataTransaction.Body.InternalID;
-                                expect(testDataTransaction.Status).to.equal(201);
-                            });
+                                it(`Create Transaction With Existed ${allActivitiesFieldName}`, async () => {
+                                    const transactionArr = await objectsService.getTransaction({
+                                        where: `Type LIKE '%Sales Order%'`,
+                                        page_size: 1,
+                                    });
+                                    activityTypeID = transactionArr[0].ActivityTypeID as number;
+                                    const catalogsArr = await objectsService.getCatalogs({ page_size: 1 });
+                                    catalogInternalID = catalogsArr[0].InternalID;
 
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
-                                do {
-                                    updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                        allActivitiesFieldName,
-                                    );
-                                    if (!updatedSortedAndCountedMap.has(createdField)) {
-                                        maxLoopsCounter--;
-                                        generalService.sleep(_INTERVAL_TIMER);
-                                        console.log({
-                                            updatedSortedAndCountedMap_Field_Create: updatedSortedAndCountedMap.has(
-                                                createdField,
-                                            ),
-                                        });
-                                    }
-                                } while (!updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
-
-                                updatedSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
-                                });
-
-                                if (!updatedSortedAndCountedMap.has(createdField)) {
-                                    //Brake the next steps of the test if the updated field creation failed
-                                    updatedSortedAndCountedMap = undefined as any;
-                                    throw new Error(
-                                        `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${createdField}`,
-                                    );
-                                }
-                            });
-
-                            it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
-                                baseSortedAndCountedMap.forEach((value, key) => {
-                                    if (key == createdField) {
-                                        expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) + 1);
-                                    } else {
-                                        expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
-                                    }
-                                });
-                                if (!baseSortedAndCountedMap.has(createdField)) {
-                                    expect(updatedSortedAndCountedMap.get(createdField)).to.be.equal(1);
-                                }
-                            });
-                        });
-
-                        describe('Update', () => {
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                    allActivitiesFieldName,
-                                );
-                                baseSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
-                                });
-                            });
-
-                            if (allActivitiesFieldName.includes('.')) {
-                                it(`Get Existing ${allActivitiesFieldName.split('.')[0]} With Existing ${
-                                    allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    const accountsArr = await objectsService.getAccounts({ page_size: 1 });
-                                    tempAccountInternalID = accountsArr[0].InternalID as number;
+                                    const accountsArr = await objectsService.getAccounts({
+                                        where: `${allActivitiesFieldName.split('.')[1]}!=''`,
+                                        page_size: 1,
+                                    });
+                                    existedAccountInternalID = accountsArr[0].InternalID as number;
                                     existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
                                     expect(accountsArr.length).to.be.above(0);
-                                });
-                            }
 
-                            it(`Update Transaction With Existing ${allActivitiesFieldName}`, async () => {
-                                const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
-                                    InternalID: transactionInternalID,
-                                    ExternalID: transactionExternalID,
-                                    ActivityTypeID: activityTypeID,
-                                    Account: {
-                                        Data: {
-                                            InternalID: tempAccountInternalID,
+                                    const testDataTransaction = await generalService.fetchStatus(
+                                        'POST',
+                                        '/transactions',
+                                        {
+                                            ExternalID: testDataTransactionExternalID,
+                                            ActivityTypeID: activityTypeID,
+                                            Account: {
+                                                Data: {
+                                                    InternalID: existedAccountInternalID,
+                                                },
+                                            },
+                                            Catalog: {
+                                                Data: {
+                                                    InternalID: catalogInternalID,
+                                                },
+                                            },
                                         },
-                                    },
-                                    Catalog: {
-                                        Data: {
-                                            InternalID: catalogInternalID,
-                                        },
-                                    },
-                                });
-                                expect(testDataTransaction.Status).to.equal(200);
-                            });
-
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
-                                do {
-                                    updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                        allActivitiesFieldName,
                                     );
-                                    if (updatedSortedAndCountedMap.has(createdField)) {
+                                    createdTransactionInternalID = testDataTransaction.Body.InternalID;
+                                    expect(testDataTransaction.Status).to.equal(201);
+                                });
+
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    //try for 50 seconds to get the updated fields
+                                    let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                    let isExistedField = false;
+                                    do {
                                         maxLoopsCounter--;
                                         generalService.sleep(_INTERVAL_TIMER);
-                                        console.log({
-                                            updatedSortedAndCountedMap_Field_Update: !updatedSortedAndCountedMap.has(
-                                                createdField,
-                                            ),
-                                        });
-                                    }
-                                } while (updatedSortedAndCountedMap.has(createdField) && maxLoopsCounter > 0);
+                                        updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                            allActivitiesFieldName,
+                                        );
+                                        if (
+                                            updatedSortedAndCountedMap.has(existedField) &&
+                                            baseSortedAndCountedMap.has(existedField)
+                                        ) {
+                                            if (
+                                                (updatedSortedAndCountedMap.get(existedField) as number) !=
+                                                (baseSortedAndCountedMap.get(existedField) as number)
+                                            ) {
+                                                isExistedField = true;
+                                            }
+                                        } else if (updatedSortedAndCountedMap.has(existedField)) {
+                                            isExistedField = true;
+                                        }
+                                        console.log({ updatedSortedAndCountedMap_Field_Existed: isExistedField });
+                                    } while (!isExistedField && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
+                                    updatedSortedAndCountedMap.forEach((value, key) => {
+                                        console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
+
+                                    if (!isExistedField) {
+                                        //Brake the next steps of the test if the updated field change failed
+                                        updatedSortedAndCountedMap = undefined as any;
+                                        throw new Error(
+                                            `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${existedField}`,
+                                        );
+                                    }
                                 });
 
-                                if (updatedSortedAndCountedMap.has(createdField)) {
-                                    //Brake the next steps of the test if the updated field change failed
-                                    updatedSortedAndCountedMap = undefined as any;
-                                    throw new Error(
-                                        `updatedSortedAndCountedMap contain the field ${allActivitiesFieldName}: ${createdField}`,
-                                    );
-                                }
+                                it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+                                    baseSortedAndCountedMap.forEach((value, key) => {
+                                        if (key == existedField) {
+                                            expect(value).to.be.equal(
+                                                (updatedSortedAndCountedMap.get(key) as number) - 1,
+                                            );
+                                        } else {
+                                            expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+                                        }
+                                    });
+                                    expect(baseSortedAndCountedMap.has(existedField)).to.be.true;
+                                });
                             });
 
-                            it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
-                                baseSortedAndCountedMap.forEach((value, key) => {
-                                    if (key == existedField) {
-                                        expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) - 1);
-                                    } else if (key == createdField) {
-                                        if (updatedSortedAndCountedMap.has(key)) {
+                            describe('Update', () => {
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                        allActivitiesFieldName,
+                                    );
+                                    baseSortedAndCountedMap.forEach((value) => {
+                                        //, key) => {
+                                        //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
+                                });
+
+                                it(`Update Transaction With New Referance Object that has new: ${allActivitiesFieldName}`, async () => {
+                                    const testDataTransaction = await generalService.fetchStatus(
+                                        'POST',
+                                        '/transactions',
+                                        {
+                                            InternalID: createdTransactionInternalID,
+                                            ExternalID: testDataTransactionExternalID,
+                                            ActivityTypeID: activityTypeID,
+                                            Account: {
+                                                Data: {
+                                                    InternalID: createdAccountInternalID,
+                                                },
+                                            },
+                                            Catalog: {
+                                                Data: {
+                                                    InternalID: catalogInternalID,
+                                                },
+                                            },
+                                        },
+                                    );
+                                    expect(testDataTransaction.Status).to.equal(200);
+                                });
+
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    //try for 50 seconds to get the updated fields
+                                    let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                    let isCreatedField = false;
+                                    do {
+                                        maxLoopsCounter--;
+                                        generalService.sleep(_INTERVAL_TIMER);
+                                        updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                            allActivitiesFieldName,
+                                        );
+                                        if (
+                                            updatedSortedAndCountedMap.has(createdField) &&
+                                            baseSortedAndCountedMap.has(createdField)
+                                        ) {
+                                            if (
+                                                (updatedSortedAndCountedMap.get(createdField) as number) !=
+                                                (baseSortedAndCountedMap.get(createdField) as number)
+                                            ) {
+                                                isCreatedField = true;
+                                            }
+                                        } else if (updatedSortedAndCountedMap.has(createdField)) {
+                                            isCreatedField = true;
+                                        }
+                                        console.log({ updatedSortedAndCountedMap_Field_Created: isCreatedField });
+                                    } while (!isCreatedField && maxLoopsCounter > 0);
+
+                                    updatedSortedAndCountedMap.forEach((value, key) => {
+                                        console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
+
+                                    if (!isCreatedField) {
+                                        //Brake the next steps of the test if the updated field change failed
+                                        updatedSortedAndCountedMap = undefined as any;
+                                        throw new Error(
+                                            `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${createdField}`,
+                                        );
+                                    }
+                                });
+
+                                it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+                                    baseSortedAndCountedMap.forEach((value, key) => {
+                                        if (key == existedField) {
                                             expect(value).to.be.equal(
                                                 (updatedSortedAndCountedMap.get(key) as number) + 1,
                                             );
+                                        } else if (key == createdField) {
+                                            if (updatedSortedAndCountedMap.has(key)) {
+                                                expect(value).to.be.equal(
+                                                    (updatedSortedAndCountedMap.get(key) as number) - 1,
+                                                );
+                                            }
+                                        } else {
+                                            expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
                                         }
-                                        expect(updatedSortedAndCountedMap.has(key)).to.be.false;
-                                    } else {
-                                        expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+                                    });
+                                    if (baseSortedAndCountedMap.has(createdField)) {
+                                        expect(updatedSortedAndCountedMap.get(createdField)).to.be.equal(
+                                            (baseSortedAndCountedMap.get(createdField) as number) + 1,
+                                        );
                                     }
                                 });
-                                if (updatedSortedAndCountedMap.has(createdField)) {
-                                    expect(updatedSortedAndCountedMap.get(createdField)).to.be.equal(
-                                        (baseSortedAndCountedMap.get(createdField) as number) + 1,
+                            });
+
+                            describe('Update To Empty', () => {
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                        allActivitiesFieldName,
                                     );
-                                }
-                            });
-                        });
-
-                        describe('Update To Empty', () => {
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                    allActivitiesFieldName,
-                                );
-                                baseSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
+                                    baseSortedAndCountedMap.forEach((value) => {
+                                        //, key) => {
+                                        //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
                                 });
-                            });
 
-                            if (allActivitiesFieldName.includes('.')) {
-                                it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${
-                                    allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    const updateAccountResponse = await generalService.fetchStatus(
+                                if (allActivitiesFieldName.includes('.')) {
+                                    it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${
+                                        allActivitiesFieldName.split('.')[1]
+                                    }`, async () => {
+                                        if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                            throw new Error(
+                                                `NotImplementedException - Reference Type: ${
+                                                    allActivitiesFieldName.split('.')[0]
+                                                }`,
+                                            );
+                                        }
+                                        const updateAccountResponse = await generalService.fetchStatus(
+                                            'POST',
+                                            '/accounts',
+                                            {
+                                                InternalID: createdAccountInternalID,
+                                                [allActivitiesFieldName.split('.')[1]]: null,
+                                            },
+                                        );
+                                        emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
+                                        expect(updateAccountResponse.Status).to.equal(200);
+                                    });
+                                }
+
+                                it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
+                                    const testDataTransaction = await generalService.fetchStatus(
                                         'POST',
-                                        '/accounts',
+                                        '/transactions',
                                         {
-                                            InternalID: accountInternalID,
-                                            [allActivitiesFieldName.split('.')[1]]: null,
+                                            InternalID: createdTransactionInternalID,
+                                            ExternalID: testDataTransactionExternalID,
+                                            ActivityTypeID: activityTypeID,
+                                            Account: {
+                                                Data: {
+                                                    InternalID: createdAccountInternalID,
+                                                },
+                                            },
+                                            Catalog: {
+                                                Data: {
+                                                    InternalID: catalogInternalID,
+                                                },
+                                            },
                                         },
                                     );
-                                    emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
-                                    expect(updateAccountResponse.Status).to.equal(200);
+                                    expect(testDataTransaction.Status).to.equal(200);
                                 });
-                            }
 
-                            it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
-                                const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
-                                    InternalID: transactionInternalID,
-                                    ExternalID: transactionExternalID,
-                                    ActivityTypeID: activityTypeID,
-                                    Account: {
-                                        Data: {
-                                            InternalID: accountInternalID,
-                                        },
-                                    },
-                                    Catalog: {
-                                        Data: {
-                                            InternalID: catalogInternalID,
-                                        },
-                                    },
-                                });
-                                expect(testDataTransaction.Status).to.equal(200);
-                            });
-
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
-                                let isEmptyField = false;
-                                do {
-                                    updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                        allActivitiesFieldName,
-                                    );
-                                    if (
-                                        updatedSortedAndCountedMap.has(emptyField) &&
-                                        baseSortedAndCountedMap.has(emptyField)
-                                    ) {
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    //try for 50 seconds to get the updated fields
+                                    let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                    let isEmptyField = false;
+                                    do {
+                                        maxLoopsCounter--;
+                                        generalService.sleep(_INTERVAL_TIMER);
+                                        updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                            allActivitiesFieldName,
+                                        );
                                         if (
-                                            (updatedSortedAndCountedMap.get(emptyField) as number) !=
-                                            (baseSortedAndCountedMap.get(emptyField) as number)
+                                            updatedSortedAndCountedMap.has(emptyField) &&
+                                            baseSortedAndCountedMap.has(emptyField)
                                         ) {
+                                            if (
+                                                (updatedSortedAndCountedMap.get(emptyField) as number) !=
+                                                (baseSortedAndCountedMap.get(emptyField) as number)
+                                            ) {
+                                                isEmptyField = true;
+                                            }
+                                        } else if (updatedSortedAndCountedMap.has(emptyField)) {
                                             isEmptyField = true;
                                         }
-                                    } else if (updatedSortedAndCountedMap.has(emptyField)) {
-                                        isEmptyField = true;
-                                    }
-                                    maxLoopsCounter--;
-                                    generalService.sleep(_INTERVAL_TIMER);
-                                    console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
-                                } while (!isEmptyField && maxLoopsCounter > 0);
+                                        console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
+                                    } while (!isEmptyField && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
-                                });
+                                    updatedSortedAndCountedMap.forEach((value, key) => {
+                                        console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
 
-                                if (!isEmptyField) {
-                                    //Brake the next steps of the test if the updated field change failed
-                                    updatedSortedAndCountedMap = undefined as any;
-                                    throw new Error(
-                                        `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${emptyField}`,
-                                    );
-                                }
-                            });
-
-                            it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
-                                baseSortedAndCountedMap.forEach((value, key) => {
-                                    if (key == emptyField) {
-                                        expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) - 1);
-                                    } else if (key == existedField) {
-                                        expect(value).to.be.equal((updatedSortedAndCountedMap.get(key) as number) + 1);
-                                    } else {
-                                        expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+                                    if (!isEmptyField) {
+                                        //Brake the next steps of the test if the updated field change failed
+                                        updatedSortedAndCountedMap = undefined as any;
+                                        throw new Error(
+                                            `updatedSortedAndCountedMap don't contain the field ${allActivitiesFieldName}: ${emptyField}`,
+                                        );
                                     }
                                 });
-                                if (baseSortedAndCountedMap.has(emptyField)) {
-                                    expect(updatedSortedAndCountedMap.get(emptyField)).to.be.equal(
-                                        (baseSortedAndCountedMap.get(emptyField) as number) + 1,
-                                    );
-                                }
-                            });
-                        });
 
-                        describe('Delete', () => {
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
-                                    allActivitiesFieldName,
-                                );
-                                baseSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
+                                it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+                                    baseSortedAndCountedMap.forEach((value, key) => {
+                                        if (key == emptyField) {
+                                            expect(value).to.be.equal(
+                                                (updatedSortedAndCountedMap.get(key) as number) - 1,
+                                            );
+                                        } else if (key == existedField) {
+                                            if (updatedSortedAndCountedMap.has(key)) {
+                                                expect(value).to.be.equal(
+                                                    (updatedSortedAndCountedMap.get(key) as number) + 1,
+                                                );
+                                            }
+                                        } else {
+                                            expect(value).to.be.equal(updatedSortedAndCountedMap.get(key));
+                                        }
+                                    });
+                                    if (baseSortedAndCountedMap.has(emptyField)) {
+                                        expect(updatedSortedAndCountedMap.get(emptyField)).to.be.equal(
+                                            (baseSortedAndCountedMap.get(emptyField) as number) + 1,
+                                        );
+                                    }
                                 });
                             });
 
-                            it(`Delete The New Transaction With ${allActivitiesFieldName}`, async () => {
-                                const isTransactionDeleted = await objectsService.deleteTransaction(
-                                    transactionInternalID,
-                                );
-                                expect(isTransactionDeleted).to.be.true;
-
-                                const getDeletedTransaction = await objectsService.getTransactionByID(
-                                    transactionInternalID,
-                                );
-                                expect(getDeletedTransaction.Hidden).to.be.true;
-                            });
-
-                            it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
-                                //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
-                                let isEmptyField = false;
-                                do {
-                                    updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                            describe('Delete', () => {
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                         allActivitiesFieldName,
                                     );
-                                    if (
-                                        updatedSortedAndCountedMap.has(emptyField) &&
-                                        baseSortedAndCountedMap.has(emptyField)
-                                    ) {
+                                    baseSortedAndCountedMap.forEach((value) => {
+                                        //, key) => {
+                                        //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
+                                });
+
+                                it(`Delete The New Transaction With ${allActivitiesFieldName}`, async () => {
+                                    const isTransactionDeleted = await objectsService.deleteTransaction(
+                                        createdTransactionInternalID,
+                                    );
+                                    expect(isTransactionDeleted).to.be.true;
+
+                                    const getDeletedTransaction = await objectsService.getTransactionByID(
+                                        createdTransactionInternalID,
+                                    );
+                                    expect(getDeletedTransaction.Hidden).to.be.true;
+                                });
+
+                                it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                    //try for 50 seconds to get the updated fields
+                                    let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                    let isEmptyField = false;
+                                    do {
+                                        maxLoopsCounter--;
+                                        generalService.sleep(_INTERVAL_TIMER);
+                                        updatedSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
+                                            allActivitiesFieldName,
+                                        );
                                         if (
-                                            (updatedSortedAndCountedMap.get(emptyField) as number) !=
-                                            (baseSortedAndCountedMap.get(emptyField) as number)
+                                            updatedSortedAndCountedMap.has(emptyField) &&
+                                            baseSortedAndCountedMap.has(emptyField)
                                         ) {
+                                            if (
+                                                (updatedSortedAndCountedMap.get(emptyField) as number) !=
+                                                (baseSortedAndCountedMap.get(emptyField) as number)
+                                            ) {
+                                                isEmptyField = true;
+                                            }
+                                        } else if (!updatedSortedAndCountedMap.has(emptyField)) {
                                             isEmptyField = true;
                                         }
-                                    } else if (!updatedSortedAndCountedMap.has(emptyField)) {
-                                        isEmptyField = true;
-                                    }
-                                    maxLoopsCounter--;
-                                    generalService.sleep(_INTERVAL_TIMER);
-                                    console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
-                                } while (!isEmptyField && maxLoopsCounter > 0);
+                                        console.log({ updatedSortedAndCountedMap_Field_Empty: isEmptyField });
+                                    } while (!isEmptyField && maxLoopsCounter > 0);
 
-                                updatedSortedAndCountedMap.forEach((value) => {
-                                    //, key) => {
-                                    //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
-                                    expect(value).to.be.above(0);
+                                    updatedSortedAndCountedMap.forEach((value) => {
+                                        //, key) => {
+                                        //console.log(`updatedSortedAndCountedMap[${key}] = ${value}`);
+                                        expect(value).to.be.above(0);
+                                    });
+
+                                    if (!isEmptyField) {
+                                        //Brake the next steps of the test if the updated have empty but same as the base
+                                        updatedSortedAndCountedMap = undefined as any;
+                                        throw new Error(
+                                            `updatedSortedAndCountedMap and baseSortedAndCountedMap contain the same field ${allActivitiesFieldName}: ${emptyField}`,
+                                        );
+                                    }
                                 });
 
-                                if (!isEmptyField) {
-                                    //Brake the next steps of the test if the updated have empty but same as the base
-                                    updatedSortedAndCountedMap = undefined as any;
-                                    throw new Error(
-                                        `updatedSortedAndCountedMap and baseSortedAndCountedMap contain the same field ${allActivitiesFieldName}: ${emptyField}`,
-                                    );
-                                }
+                                it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
+                                    updatedSortedAndCountedMap.forEach((value, key) => {
+                                        if (key == emptyField) {
+                                            expect(value).to.be.equal((baseSortedAndCountedMap.get(key) as number) - 1);
+                                        } else {
+                                            expect(value).to.be.equal(baseSortedAndCountedMap.get(key));
+                                        }
+                                    });
+                                    if (!updatedSortedAndCountedMap.has(emptyField)) {
+                                        expect(baseSortedAndCountedMap.get(emptyField)).to.equal(1);
+                                    }
+                                });
                             });
 
-                            it(`Compare The Counts From Totals ${allActivitiesFieldName}`, async () => {
-                                updatedSortedAndCountedMap.forEach((value, key) => {
-                                    if (key == emptyField) {
-                                        expect(value).to.be.equal((baseSortedAndCountedMap.get(key) as number) - 1);
-                                    } else {
-                                        expect(value).to.be.equal(baseSortedAndCountedMap.get(key));
-                                    }
-                                });
-                                if (!updatedSortedAndCountedMap.has(emptyField)) {
-                                    expect(baseSortedAndCountedMap.get(emptyField)).to.equal(1);
+                            describe('Clean UP', () => {
+                                if (allActivitiesFieldName.includes('.')) {
+                                    it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${
+                                        allActivitiesFieldName.split('.')[1]
+                                    }`, async () => {
+                                        if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                            throw new Error(
+                                                `NotImplementedException - Reference Type: ${
+                                                    allActivitiesFieldName.split('.')[0]
+                                                }`,
+                                            );
+                                        }
+                                        const isAccountDeleted = await objectsService.deleteAccount(
+                                            createdAccountInternalID,
+                                        );
+                                        expect(isAccountDeleted).to.be.true;
+
+                                        const getDeletedAccount = await objectsService.getAccountByID(
+                                            createdAccountInternalID,
+                                        );
+                                        expect(getDeletedAccount.Hidden).to.be.true;
+                                    });
                                 }
                             });
-                        });
-
-                        describe('Clean UP', () => {
-                            if (allActivitiesFieldName.includes('.')) {
-                                it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${
-                                    allActivitiesFieldName.split('.')[1]
-                                }`, async () => {
-                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                        throw new Error('NotImplementedException');
-                                    }
-                                    const isAccountDeleted = await objectsService.deleteAccount(accountInternalID);
-                                    expect(isAccountDeleted).to.be.true;
-
-                                    const getDeletedAccount = await objectsService.getAccountByID(accountInternalID);
-                                    expect(getDeletedAccount.Hidden).to.be.true;
-                                });
-                            }
-                        });
+                        }
 
                         //Done 1 (create)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
                         //Done 2 (create) *Only for cases where internal object created	API call POST: https://papi.staging.pepperi.com/V1.0/accounts (With Account.City from test data – city 1234)	Response Code 201
@@ -607,7 +1167,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         //Done 4 (create)	API call: https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
                         //?? 5 (create)	Compare The Counts From Totals Account.City (1), with the counts from Totals Account.City (4)	Is +1
                         //Maybe 6 (update)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
-                        //Maybe 7 (update)	API call POST: https://papi.staging.pepperi.com/V1.0/accounts (With Account.City as the first existing)	Response Code 200
+                        //Maybe 7 (update)	API call POST: https://papi.staging.pepperi.com/V1.0/accounts (With Account.City as the first existed)	Response Code 200
                         //Maybe 8 (update)	API call GET: https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0
                         //Maybe 9 (update)	Compare The Counts From Totals Account.City (6), with the counts from Totals Account.City (8)	Is +1 and Is -1
                         // Maybe 2 10 (Update to empty)	API call GET:  https://papi.staging.pepperi.com/V1.0/elasticsearch/totals/all_activities?select=count(Account.City)&group_by=Account.City	Count > 0

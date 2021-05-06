@@ -1,5 +1,5 @@
 import Mocha, { Suite } from 'mocha';
-import chai, { expect } from 'chai';
+import chai, { expect, assert } from 'chai';
 import promised from 'chai-as-promised';
 import fs from 'fs';
 import path from 'path';
@@ -47,6 +47,8 @@ export default function Tester(client?: Client, testName?: string, environment?:
         },
 
         expect: expect,
+
+        assert: assert,
 
         run: () => {
             return new Promise((resolve, reject) => {
