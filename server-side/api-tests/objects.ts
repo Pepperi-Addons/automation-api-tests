@@ -568,7 +568,7 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkJobInfo;
             let bulkAccounts;
             let bulkUpdateAccounts;
-            let batchAcccountResponse;
+            //         let batchAcccountResponse;
             let bulkAccountArray;
 
             it('Create TSAs for account CRUD', async () => {
@@ -918,10 +918,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
 
             it('Bulk create 60,000 accounts', async () => {
                 bulkAccountExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
-                bulkAccountArray = service.createBulkArray(60000, bulkAccountExternalID)
+                bulkAccountArray = service.createBulkArray(60000, bulkAccountExternalID);
                 bulkCreateAccount = await service.bulkCreate('accounts', {
                     Headers: ['ExternalID', 'Name'],
-                    Lines: bulkAccountArray
+                    Lines: bulkAccountArray,
                 });
                 expect(bulkCreateAccount.JobID).to.be.a('number'),
                     expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
@@ -953,18 +953,18 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(
                         await service.countAccounts({
                             where: "ExternalID like '%" + bulkAccountExternalID + "%'",
-                            
                         }),
                     )
-                        .to.be.a('number').and.equals(60000),
+                        .to.be.a('number')
+                        .and.equals(60000),
                 ]);
             });
 
             it('Bulk update 60,000 accounts', async () => {
-                bulkAccountArray = service.updateBulkArray(bulkAccountArray)
+                bulkAccountArray = service.updateBulkArray(bulkAccountArray);
                 bulkCreateAccount = await service.bulkCreate('accounts', {
                     Headers: ['ExternalID', 'Name'],
-                    Lines: bulkAccountArray
+                    Lines: bulkAccountArray,
                 });
                 expect(bulkCreateAccount.JobID).to.be.a('number'),
                     expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
@@ -996,18 +996,18 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(
                         await service.countAccounts({
                             where: "ExternalID like '%" + bulkAccountExternalID + "%'" + "AND Name like '%Update%'",
-                            
                         }),
                     )
-                        .to.be.a('number').and.equals(60000),
+                        .to.be.a('number')
+                        .and.equals(60000),
                 ]);
             });
 
             it('Bulk delete 60,000 accounts', async () => {
-                bulkAccountArray = service.addHiddenBulkArray(bulkAccountArray)
+                bulkAccountArray = service.addHiddenBulkArray(bulkAccountArray);
                 bulkCreateAccount = await service.bulkCreate('accounts', {
                     Headers: ['ExternalID', 'Name', 'Hidden'],
-                    Lines: bulkAccountArray
+                    Lines: bulkAccountArray,
                 });
                 expect(bulkCreateAccount.JobID).to.be.a('number'),
                     expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
@@ -1039,10 +1039,10 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                     expect(
                         await service.countAccounts({
                             where: "ExternalID like '%" + bulkAccountExternalID + "%'" + "AND Name like '%Update%'",
-                            
                         }),
                     )
-                        .to.be.a('number').and.equals(0),
+                        .to.be.a('number')
+                        .and.equals(0),
                 ]);
             });
 

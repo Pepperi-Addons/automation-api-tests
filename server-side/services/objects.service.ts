@@ -226,23 +226,23 @@ export class ObjectsService {
     }
 
     createBulkArray(amount, exID) {
-        let bulkArray = [] as any;
+        const bulkArray = [] as any;
         for (let i = 0; i < amount; i++) {
-            bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i])
+            bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i]);
         }
         return bulkArray;
     }
 
     updateBulkArray(array) {
         for (let i = 0; i < array.length; i++) {
-            array[i][1] += ' Update'
+            array[i][1] += ' Update';
         }
         return array;
     }
 
     addHiddenBulkArray(array) {
         for (let i = 0; i < array.length; i++) {
-            array[i].push('1')
+            array[i].push('1');
         }
         return array;
     }
