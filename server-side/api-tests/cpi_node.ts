@@ -320,6 +320,46 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
 
                 const updatedRelation = await generalService.fetchStatus('POST', '/account_users', relationObj);
                 expect(updatedRelation.Status).to.be.a('number').equal(200);
+
+                //deletion for all objects
+                //lines
+                const deletedLine = await generalService.fetchStatus(
+                    'DELETE',
+                    '/transaction_lines/' + line.Body.InternalID,
+                );
+                expect(deletedLine.Status).to.be.a('number').equal(200);
+
+                //Transactions
+                const deletedTransaction = await generalService.fetchStatus(
+                    'DELETE',
+                    '/transactions/' + transaction.Body.InternalID,
+                );
+                expect(deletedTransaction.Status).to.be.a('number').equal(200);
+
+                //Item
+                const deletedItem = await generalService.fetchStatus('DELETE', '/items/' + item.Body.InternalID);
+                expect(deletedItem.Status).to.be.a('number').equal(200);
+
+                //Activities
+                const deletedActivity = await generalService.fetchStatus(
+                    'DELETE',
+                    '/activities/' + activity.Body.InternalID,
+                );
+                expect(deletedActivity.Status).to.be.a('number').equal(200);
+
+                //Contacts
+                const deletedContact = await generalService.fetchStatus(
+                    'DELETE',
+                    '/contacts/' + contact.Body.InternalID,
+                );
+                expect(deletedContact.Status).to.be.a('number').equal(200);
+
+                //Accounts
+                const deletedAccount = await generalService.fetchStatus(
+                    'DELETE',
+                    '/accounts/' + account.Body.InternalID,
+                );
+                expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
         });
 

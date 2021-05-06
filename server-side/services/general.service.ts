@@ -331,6 +331,104 @@ export default class GeneralService {
                 };
             });
     }
+
+    async fetchStatusNew(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
+        const start = performance.now();
+        const response = await fetch(`${this['client'].BaseURL}${URI}`, {
+            method: `${method}`,
+            body: JSON.stringify(body),
+            headers: {
+                Authorization: `Bearer ${this.papiClient['options'].token}`,
+            },
+            timeout: timeout,
+            size: size,
+        });
+        const end = performance.now();
+        let cb1, cb2;
+        switch (response.status) {
+            case 200:
+            case 201: //200
+                console.log(
+                    `Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
+                cb1 = await response.text();
+                try {
+                    cb2 = cb1 ? JSON.parse(cb1) : '';
+                    console.log({ cb2: cb2 });
+                } catch (err) {
+                    console.error(`Parsing Error Exception (200): ${err}`);
+                }
+                break;
+            case 400:
+            case 404: //400
+                console.error(
+                    `Error - Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
+                cb1 = await response.text();
+                console.log({ cb1: cb1 });
+
+                try {
+                    cb2 = JSON.parse(cb1);
+
+                    console.log({ cb2: cb2 });
+                } catch {
+                    const res = cb1.split('faultstring');
+
+                    console.log(res);
+                }
+                break;
+            case 500:
+            case 501:
+            case 503: //500
+                console.error(
+                    `Error - Fetch ${method}:`,
+                    this['client'].BaseURL + URI,
+                    'took',
+                    (end - start).toFixed(2),
+                    'milliseconds',
+                );
+                cb1 = await response.text();
+                console.log({ cb1: cb1 });
+
+                try {
+                    cb2 = JSON.parse(cb1);
+                    debugger;
+                    console.log({ cb2: cb2 });
+                } catch {
+                    const res = cb1.split('<body>')[1];
+                    console.log(res);
+                    debugger;
+                }
+                break;
+            default:
+                throw new Error(`NotImplementedException, Status: ${response.status}`);
+        }
+
+        console.log(
+            `Fetch ${method} response:`,
+            response.ok,
+            response.status,
+            { response_headers: response.headers },
+            response.statusText,
+        );
+        debugger;
+        return {
+            Ok: response.ok, //Done
+            Status: response.status, //Done
+            Headers: response.headers, // Done
+            Body: cb2 ? cb2 : cb1, //3 options JSON/HTML/XML
+            Error: response.statusText,
+            Size: 0, //Remove
+        };
+    }
 }
 
 export interface TesterFunctions {
