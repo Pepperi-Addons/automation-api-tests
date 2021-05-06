@@ -568,6 +568,8 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
             let bulkJobInfo;
             let bulkAccounts;
             let bulkUpdateAccounts;
+            let batchAcccountResponse;
+            let bulkAccountArray;
 
             it('Create TSAs for account CRUD', async () => {
                 createdTSAs = await service.createBulkTSA('accounts', TSAarr);
@@ -914,7 +916,248 @@ export async function ObjectsTests(generalService: GeneralService, tester: Teste
                 ]);
             });
 
-            // Fixed in NUC V95_DEV - Tested in Sandbxo and working - but this NUC is not yet published to all
+            it('Bulk create 60,000 accounts', async () => {
+                bulkAccountExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
+                bulkAccountArray = service.createBulkArray(60000, bulkAccountExternalID)
+                bulkCreateAccount = await service.bulkCreate('accounts', {
+                    Headers: ['ExternalID', 'Name'],
+                    Lines: bulkAccountArray
+                });
+                expect(bulkCreateAccount.JobID).to.be.a('number'),
+                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            });
+
+            it('Verify bulk 60,000 accounts jobinfo', async () => {
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                    expect(bulkJobInfo.Records, 'Records').to.equal(60000),
+                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(60000),
+                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
+                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
+                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+            });
+
+            it('Verify bulk 60,000 accounts', async () => {
+                return Promise.all([
+                    expect(
+                        await service.countAccounts({
+                            where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                            
+                        }),
+                    )
+                        .to.be.a('number').and.equals(60000),
+                ]);
+            });
+
+            it('Bulk update 60,000 accounts', async () => {
+                bulkAccountArray = service.updateBulkArray(bulkAccountArray)
+                bulkCreateAccount = await service.bulkCreate('accounts', {
+                    Headers: ['ExternalID', 'Name'],
+                    Lines: bulkAccountArray
+                });
+                expect(bulkCreateAccount.JobID).to.be.a('number'),
+                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            });
+
+            it('Verify bulk 60,000 accounts update jobinfo', async () => {
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                    expect(bulkJobInfo.Records, 'Records').to.equal(60000),
+                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
+                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(60000),
+                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+            });
+
+            it('Verify bulk 60,000 accounts update', async () => {
+                return Promise.all([
+                    expect(
+                        await service.countAccounts({
+                            where: "ExternalID like '%" + bulkAccountExternalID + "%'" + "AND Name like '%Update%'",
+                            
+                        }),
+                    )
+                        .to.be.a('number').and.equals(60000),
+                ]);
+            });
+
+            it('Bulk delete 60,000 accounts', async () => {
+                bulkAccountArray = service.addHiddenBulkArray(bulkAccountArray)
+                bulkCreateAccount = await service.bulkCreate('accounts', {
+                    Headers: ['ExternalID', 'Name', 'Hidden'],
+                    Lines: bulkAccountArray
+                });
+                expect(bulkCreateAccount.JobID).to.be.a('number'),
+                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            });
+
+            it('Verify bulk 60,000 accounts delete jobinfo', async () => {
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    ),
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                    expect(bulkJobInfo.Records, 'Records').to.equal(60000),
+                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
+                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(60000),
+                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+            });
+
+            it('Verify bulk 60,000 accounts delete', async () => {
+                return Promise.all([
+                    expect(
+                        await service.countAccounts({
+                            where: "ExternalID like '%" + bulkAccountExternalID + "%'" + "AND Name like '%Update%'",
+                            
+                        }),
+                    )
+                        .to.be.a('number').and.equals(0),
+                ]);
+            });
+
+            // it('BATCH Account Insert', async () => {
+            //     accountExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+            //     batchAcccountResponse = await service.postBatchAccount([
+            //         {
+            //         ExternalID: accountExternalID + ' 1',
+            //         City: 'City',
+            //         Name: accountExternalID + ' 1',
+            //         Type: 'Customer',
+            //         ZipCode: '12345'
+            //         },
+            //         {
+            //         ExternalID: accountExternalID + ' 2',
+            //         City: 'City',
+            //         Name: accountExternalID + ' 2',
+            //         Type: 'Customer',
+            //         ZipCode: '12345'
+            //         },
+            //         {
+            //         ExternalID: accountExternalID + ' 3',
+            //         City: 'City',
+            //         Name: accountExternalID + ' 3',
+            //         Type: 'Customer',
+            //         ZipCode: '12345'
+            //         },
+            //         {
+            //         ExternalID: accountExternalID + ' 4',
+            //         City: 'City',
+            //         Name: accountExternalID + ' 4',
+            //         Type: 'Customer',
+            //         ZipCode: '12345'
+            //         },
+            //     ]);
+            //     expect(batchAcccountResponse).to.be.an('array').with.lengthOf(4),
+            //     batchAcccountResponse.map((row) => {
+            //             expect(row).to.have.property('InternalID').that.is.above(0),
+            //                 expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
+            //                 expect(row).to.have.property('Status').that.equals('Insert'),
+            //                 expect(row).to.have.property('Message').that.equals('Row inserted.'),
+            //                 expect(row)
+            //                     .to.have.property('URI')
+            //                     .that.equals('/user_defined_tables/' + row.InternalID);
+            //         });
+            // });
+
+            // it('BATCH Account statuses', async () => {
+            //     batchAccountresponse = await service.postBatchUDT([
+            //         {
+            //             MapDataExternalID: UDTRandom,
+            //             MainKey: 'batch API Test row 1',
+            //             SecondaryKey: '1',
+            //             Values: ['Api Test value 1'],
+            //         },
+            //         {
+            //             MapDataExternalID: UDTRandom,
+            //             MainKey: 'batch API Test row 2',
+            //             SecondaryKey: '2',
+            //             Values: ['Api Test value 222'],
+            //         },
+            //         {
+            //             MapDataExternalID: UDTRandom,
+            //             MainKey: 'batch API Test row 33',
+            //             SecondaryKey: '33',
+            //             Values: ['Api Test value 33'],
+            //         },
+            //         {
+            //             MapDataExternalID: 'This is need to get error status',
+            //             MainKey: 'batch API Test row 4',
+            //             SecondaryKey: '4',
+            //             Values: ['Api Test value 4'],
+            //         },
+            //     ]);
+            //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(4),
+            //         expect(batchUDTresponse[0]).have.property('InternalID').that.is.above(0),
+            //         expect(batchUDTresponse[0])
+            //             .to.have.property('UUID')
+            //             .that.equals('00000000-0000-0000-0000-000000000000'),
+            //         expect(batchUDTresponse[0]).to.have.property('Status').that.equals('Ignore'),
+            //         expect(batchUDTresponse[0])
+            //             .to.have.property('Message')
+            //             .that.equals('No changes in this row. The row is being ignored.'),
+            //         expect(batchUDTresponse[0])
+            //             .to.have.property('URI')
+            //             .that.equals('/user_defined_tables/' + batchUDTresponse[0].InternalID),
+            //         expect(batchUDTresponse[1]).have.property('InternalID').that.is.above(0),
+            //         expect(batchUDTresponse[1])
+            //             .to.have.property('UUID')
+            //             .that.equals('00000000-0000-0000-0000-000000000000'),
+            //         expect(batchUDTresponse[1]).to.have.property('Status').that.equals('Update'),
+            //         expect(batchUDTresponse[1]).to.have.property('Message').that.equals('Row updated.'),
+            //         expect(batchUDTresponse[1])
+            //             .to.have.property('URI')
+            //             .that.equals('/user_defined_tables/' + batchUDTresponse[1].InternalID),
+            //         expect(batchUDTresponse[2]).have.property('InternalID').that.is.above(0),
+            //         expect(batchUDTresponse[2])
+            //             .to.have.property('UUID')
+            //             .that.equals('00000000-0000-0000-0000-000000000000'),
+            //         expect(batchUDTresponse[2]).to.have.property('Status').that.equals('Insert'),
+            //         expect(batchUDTresponse[2]).to.have.property('Message').that.equals('Row inserted.'),
+            //         expect(batchUDTresponse[2])
+            //             .to.have.property('URI')
+            //             .that.equals('/user_defined_tables/' + batchUDTresponse[2].InternalID),
+            //         expect(batchUDTresponse[3]).have.property('InternalID').that.equals(0),
+            //         expect(batchUDTresponse[3])
+            //             .to.have.property('UUID')
+            //             .that.equals('00000000-0000-0000-0000-000000000000'),
+            //         expect(batchUDTresponse[3]).to.have.property('Status').that.equals('Error'),
+            //         expect(batchUDTresponse[3])
+            //             .to.have.property('Message')
+            //             .that.equals('@MapDataExternalID does not exist.value: This is need to get error status'),
+            //         expect(batchUDTresponse[3]).to.have.property('URI').that.equals('');
+            // });
+
             // it('Delete Account Message (DI-17285)', async () => {
             //     const account = await service.createAccount({
             //         ExternalID: 'Delete Account Test 12345',
