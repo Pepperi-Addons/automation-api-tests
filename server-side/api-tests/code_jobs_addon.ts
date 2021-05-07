@@ -53,8 +53,8 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
 
     async function installAddonToDist() {
         CallbackCash.installAddonToDist = await generalService.fetchStatus(
-            'POST',
             '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
+            { method: 'POST' },
         );
         await createNewAddonJob();
     }
@@ -84,7 +84,10 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             AddonUUID: addonUUID, // Only for AddonJob
             FunctionName: functionNamePapiTransaction,
         };
-        CallbackCash.createNewAddonJob = await generalService.fetchStatus('POST', '/code_jobs', addonJobBody);
+        CallbackCash.createNewAddonJob = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: addonJobBody,
+        });
         //var status = CallbackCash.createNewAddonJob.success;
         logcash.createNewAddonJobStatus = true;
         if (CallbackCash.createNewAddonJob.Status == 200 && CallbackCash.createNewAddonJob.Body.UUID != '') {
@@ -98,8 +101,8 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
 
     async function executeAddonJob() {
         CallbackCash.executeAddonJob = await generalService.fetchStatus(
-            'POST',
             '/code_jobs/async/' + CallbackCash.createNewAddonJob.Body.UUID + '/execute',
+            { method: 'POST' },
         );
         //debugger;
         if (CallbackCash.executeAddonJob.Body.ExecutionUUID != '') {
@@ -118,8 +121,8 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
     async function getAuditLogAddonJobExecution() {
         generalService.sleep(20000);
         CallbackCash.getAuditLogAddonJobExecution = await generalService.fetchStatus(
-            'GET',
             '/audit_logs/' + CallbackCash.executeAddonJob.Body.ExecutionUUID,
+            { method: 'GET' },
         );
         //debugger;
         CallbackCash.parsedResultObject = JSON.parse(
@@ -165,7 +168,10 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             AddonUUID: addonUUID, // Only for AddonJob
             FunctionName: functionNameWithBody,
         };
-        CallbackCash.createNewAddonJobNegative = await generalService.fetchStatus('POST', '/code_jobs', addonJobBody);
+        CallbackCash.createNewAddonJobNegative = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: addonJobBody,
+        });
         //debugger;
         // verification will be changed after bug fixing. Now i get succes , but should get exeption about draft code
         //status = CallbackCash.createNewAddonJobNegative.success;
@@ -197,7 +203,10 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             AddonUUID: addonUUID, // Only for AddonJob
             // "FunctionName": functionNameWithBody
         };
-        CallbackCash.updateNewAddonJobNegative = await generalService.fetchStatus('POST', '/code_jobs', addonJobBody);
+        CallbackCash.updateNewAddonJobNegative = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: addonJobBody,
+        });
         //debugger;
         //CallbackCash.parsedUpdateNewAddonJobNegative = JSON.parse(CallbackCash.updateNewAddonJobNegative.Body.fault.faultstring);//statustext changed to result
         if (
@@ -221,11 +230,10 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             IsScheduled: false,
             // "ExecutedCode": "",
         };
-        CallbackCash.insertNewCJWithoutType = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            addonJobBodyWithoutType,
-        );
+        CallbackCash.insertNewCJWithoutType = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JSON.stringify(addonJobBodyWithoutType),
+        });
         //debugger;
         if (
             CallbackCash.insertNewCJWithoutType.Status == 200 &&

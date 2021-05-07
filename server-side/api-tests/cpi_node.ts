@@ -19,7 +19,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
     describe('CPI Node Tests Suites', () => {
         describe('Endpoints', async () => {
             it('Validate GET Users', async () => {
-                const res = await generalService.fetchStatus('GET', '/Users');
+                const res = await generalService.fetchStatus('/Users', { method: 'GET' });
                 expect(res.Status).to.be.a('number').equal(200),
                     expect(res.Body.length).to.be.above(0),
                     expect(res.Body[0].UUID).that.is.a('string').and.is.not.empty,
@@ -49,7 +49,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             };
 
             it('Validate CreateUser Post', async () => {
-                const user = await generalService.fetchStatus('POST', '/CreateUser', userBody);
+                const user = await generalService.fetchStatus('/CreateUser', {
+                    method: 'POST',
+                    body: JSON.stringify(userBody),
+                });
                 //debugger;
                 userInternalID = user.Body.InternalID;
                 expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200), //should return 201 on creation - DI-18052
@@ -88,11 +91,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     (userBody.Mobile = Math.floor(Math.random() * 1000000).toString()),
                     (userBody.Phone = Math.floor(Math.random() * 1000000).toString());
 
-                const user = await generalService.fetchStatus(
-                    'POST',
-                    '/Users?where=ExternalID=' + userBody.ExternalID,
-                    userBody,
-                );
+                const user = await generalService.fetchStatus('/Users?where=ExternalID=' + userBody.ExternalID, {
+                    method: 'POST',
+                    body: JSON.stringify(userBody),
+                });
 
                 expect(user.Status).to.be.a('number').equal(200),
                     expect(user.Body).to.have.property('FirstName').to.be.a('string').and.equals(userBody.FirstName),
@@ -132,7 +134,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     ZipCode: '12345',
                 };
 
-                const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
+                const account = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+
                 expect(account.Status).to.be.a('number').equal(201);
 
                 //update Account
@@ -141,8 +147,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 accountObj.Prop3 = 'Prop 33';
                 accountObj.Prop4 = 'Prop 44';
                 accountObj.Prop5 = 'Prop 55';
-
-                const updatedAccount = await generalService.fetchStatus('POST', '/Accounts', accountObj);
+                const updatedAccount = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
                 expect(updatedAccount.Status).to.be.a('number').equal(200);
 
                 //create contacts
@@ -161,15 +169,21 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const contact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
+                const contact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
                 expect(contact.Status).to.be.a('number').equal(201);
 
                 //update contact
                 contactObj.Phone = '123-45678-1337';
                 contactObj.Mobile = '123-45678-1337';
                 contactObj.FirstName = 'Contact_updated';
+                const updatedContact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
 
-                const updatedContact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
                 expect(updatedContact.Status).to.be.a('number').equal(200);
 
                 //create activities
@@ -186,14 +200,19 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const activity = await generalService.fetchStatus('POST', '/Activities', activityObj);
+                const activity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
                 expect(activity.Status).to.be.a('number').equal(201);
 
                 //update activities
                 activityObj.Status = 2;
                 activityObj.Title = 'Testing updated';
-
-                const updatedActivity = await generalService.fetchStatus('POST', '/Activities', activityObj);
+                const updatedActivity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
                 expect(updatedActivity.Status).to.be.a('number').equal(200);
 
                 //Transactions
@@ -215,13 +234,18 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const transaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
+                const transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
                 expect(transaction.Status).to.be.a('number').equal(201);
 
                 //update Transaction
                 transactionObj.Status = 2;
-
-                const updatedTransaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
+                const updatedTransaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
                 expect(updatedTransaction.Status).to.be.a('number').equal(200);
 
                 //create Items
@@ -242,7 +266,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     Hidden: false,
                 };
 
-                const item = await generalService.fetchStatus('POST', '/items', itemObj);
+                const item = await generalService.fetchStatus('/items', {
+                    method: 'POST',
+                    body: JSON.stringify(itemObj),
+                });
                 expect(item.Status).to.be.a('number').equal(201);
 
                 //update items
@@ -251,7 +278,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 itemObj.CostPrice = 1;
                 itemObj.Discount = 1;
 
-                const updatedItem = await generalService.fetchStatus('POST', '/items', itemObj);
+                const updatedItem = await generalService.fetchStatus('/items', {
+                    method: 'POST',
+                    body: JSON.stringify(itemObj),
+                });
                 expect(updatedItem.Status).to.be.a('number').equal(200);
 
                 //create inventory
@@ -267,13 +297,19 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const inventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
+                const inventory = await generalService.fetchStatus('/inventory', {
+                    method: 'POST',
+                    body: JSON.stringify(inventoryObj),
+                });
                 expect(inventory.Status).to.be.a('number').equal(201);
 
                 //update inventory
                 inventoryObj.InStockQuantity = 4;
 
-                const updateInventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
+                const updateInventory = await generalService.fetchStatus('/inventory', {
+                    method: 'POST',
+                    body: JSON.stringify(inventoryObj),
+                });
                 expect(updateInventory.Status).to.be.a('number').equal(200);
 
                 //create Lines
@@ -284,13 +320,19 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     UnitsQuantity: 1,
                 };
 
-                const line = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
+                const line = await generalService.fetchStatus('/transaction_lines', {
+                    method: 'POST',
+                    body: JSON.stringify(lineObj),
+                });
                 expect(line.Status).to.be.a('number').equal(201);
 
                 //update lines
                 lineObj.UnitsQuantity = 3;
 
-                const upcatedLine = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
+                const upcatedLine = await generalService.fetchStatus('/transaction_lines', {
+                    method: 'POST',
+                    body: JSON.stringify(lineObj),
+                });
                 expect(upcatedLine.Status).to.be.a('number').equal(200);
 
                 //create Account-Users
@@ -312,53 +354,57 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const relation = await generalService.fetchStatus('POST', '/account_users', relationObj);
+                const relation = await generalService.fetchStatus('/account_users', {
+                    method: 'POST',
+                    body: JSON.stringify(relationObj),
+                });
                 expect(relation.Status).to.be.a('number').equal(201);
 
                 //update Account-Users
                 relationObj.Hidden = true;
 
-                const updatedRelation = await generalService.fetchStatus('POST', '/account_users', relationObj);
+                const updatedRelation = await generalService.fetchStatus('/account_users', {
+                    method: 'POST',
+                    body: JSON.stringify(relationObj),
+                });
                 expect(updatedRelation.Status).to.be.a('number').equal(200);
 
                 //deletion for all objects
                 //lines
-                const deletedLine = await generalService.fetchStatus(
-                    'DELETE',
-                    '/transaction_lines/' + line.Body.InternalID,
-                );
+                const deletedLine = await generalService.fetchStatus('/transaction_lines/' + line.Body.InternalID, {
+                    method: 'DELETE',
+                });
                 expect(deletedLine.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const deletedTransaction = await generalService.fetchStatus(
-                    'DELETE',
                     '/transactions/' + transaction.Body.InternalID,
+                    { method: 'DELETE' },
                 );
                 expect(deletedTransaction.Status).to.be.a('number').equal(200);
 
                 //Item
-                const deletedItem = await generalService.fetchStatus('DELETE', '/items/' + item.Body.InternalID);
+                const deletedItem = await generalService.fetchStatus('/items/' + item.Body.InternalID, {
+                    method: 'DELETE',
+                });
                 expect(deletedItem.Status).to.be.a('number').equal(200);
 
                 //Activities
-                const deletedActivity = await generalService.fetchStatus(
-                    'DELETE',
-                    '/activities/' + activity.Body.InternalID,
-                );
+                const deletedActivity = await generalService.fetchStatus('/activities/' + activity.Body.InternalID, {
+                    method: 'DELETE',
+                });
                 expect(deletedActivity.Status).to.be.a('number').equal(200);
 
                 //Contacts
-                const deletedContact = await generalService.fetchStatus(
-                    'DELETE',
-                    '/contacts/' + contact.Body.InternalID,
-                );
+                const deletedContact = await generalService.fetchStatus('/contacts/' + contact.Body.InternalID, {
+                    method: 'DELETE',
+                });
                 expect(deletedContact.Status).to.be.a('number').equal(200);
 
                 //Accounts
-                const deletedAccount = await generalService.fetchStatus(
-                    'DELETE',
-                    '/accounts/' + account.Body.InternalID,
-                );
+                const deletedAccount = await generalService.fetchStatus('/accounts/' + account.Body.InternalID, {
+                    method: 'DELETE',
+                });
                 expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
         });

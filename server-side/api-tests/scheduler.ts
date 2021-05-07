@@ -103,8 +103,10 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
     async function publishCodeJobCronTest() {
         // publish this job code
         CallbackCash.publishCodeJobCronTest = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/${CodeJobUUIDCron}/publish`,
+            {
+                method: 'POST',
+            },
         );
         if (CallbackCash.publishCodeJobCronTest.Status == 200) {
             CallbackCash.publishCodeJobCronTest = true;
@@ -260,7 +262,10 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             CronExpression: '*/4 * * * *', // cron updated to 4 min
         };
 
-        CallbackCash.updateNewCJtoCronVerification = await generalService.fetchStatus('POST', '/code_jobs', CodJobBody);
+        CallbackCash.updateNewCJtoCronVerification = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JSON.stringify({ CodJobBody }),
+        });
         //var status = CallbackCash.updateNewCJtoCronVerification.success;
         logcash.updateNewCJtoCronVerification = true;
 
@@ -307,11 +312,10 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             IsScheduled: false,
         };
 
-        CallbackCash.updateCronToChroneTestIsScheduledFalse = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            CodJobBody,
-        );
+        CallbackCash.updateCronToChroneTestIsScheduledFalse = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JSON.stringify(CodJobBody),
+        });
         logcash.updateCronToChroneTestIsScheduledFalse = true;
 
         if (CallbackCash.updateCronToChroneTestIsScheduledFalse.Status != 200 || CodeJobUUIDCron == '') {

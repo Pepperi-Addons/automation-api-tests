@@ -52,7 +52,10 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
             ExecutionMemoryLevel: 1,
             NumberOfTries: 1,
         };
-        CallbackCash.ResponseRetryTest = await generalService.fetchStatus('POST', '/code_jobs', insertBodyRetryTest);
+        CallbackCash.ResponseRetryTest = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: insertBodyRetryTest,
+        });
         const status = CallbackCash.ResponseRetryTest.Status;
         if (status == 200 && CallbackCash.ResponseRetryTest.Body.UUID != '') {
             logcash.statusInsert1 = true;
@@ -65,8 +68,8 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function executeDraftCodeWithoutRetry() {
         CallbackCash.executeDraftCodeWithoutRetry = await generalService.fetchStatus(
-            'POST',
             '/code_jobs/async/' + CallbackCash.ResponseRetryTest.Body.UUID + '/execute_draft',
+            { method: 'POST' },
         ); // changed to .Body.UUID from .Body.CodeJobUUID
 
         if (
@@ -86,8 +89,8 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function getSingleExecutonLogWithoutRetry() {
         logDataNoRetry = await generalService.fetchStatus(
-            'GET',
             '/audit_logs/' + CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID,
+            { method: 'GET' },
         );
         //cacheLog.ExecutionResult = JSON.parse(logData.Body.AuditInfo.ResultObject);
         if (
@@ -119,11 +122,10 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
             UUID: CallbackCash.ResponseRetryTest.Body.UUID,
             NumberOfTries: 2,
         };
-        CallbackCash.ResponseRetryTestUpdated = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            insertBodyRetryTest,
-        );
+        CallbackCash.ResponseRetryTestUpdated = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: insertBodyRetryTest,
+        });
         const status = CallbackCash.ResponseRetryTestUpdated.Status;
         if (status == 200) {
             logcash.statusInsert2 = true;
@@ -137,8 +139,8 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function executeDraftCodeWithRetry() {
         CallbackCash.executeDraftCodeWithRetry = await generalService.fetchStatus(
-            'POST',
             '/code_jobs/async/' + CallbackCash.ResponseRetryTest.Body.UUID + '/execute_draft',
+            { method: 'POST' },
         );
         if (
             CallbackCash.executeDraftCodeWithRetry.Status == 200 &&
@@ -157,8 +159,8 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function getSingleExecutonLogWithRetry() {
         logDataWithRetry = await generalService.fetchStatus(
-            'GET',
             '/audit_logs/' + CallbackCash.executeDraftCodeWithRetry.Body.ExecutionUUID,
+            { method: 'GET' },
         );
         //cacheLog.ExecutionResult = JSON.parse(logData.Body.AuditInfo.ResultObject);
         if (
@@ -194,8 +196,8 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function getSingleExecutonLogWithRetry2() {
         logDataWithRetry2 = await generalService.fetchStatus(
-            'GET',
             '/audit_logs/' + CallbackCash.executeDraftCodeWithRetry.Body.ExecutionUUID,
+            { method: 'GET' },
         );
         //cacheLog.ExecutionResult = JSON.parse(logData.Body.AuditInfo.ResultObject);
         if (

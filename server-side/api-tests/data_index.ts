@@ -4,7 +4,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 
 export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const objectsService = new ObjectsService(generalService);
-    const dataIndexService = new DataIndexService(generalService.papiClient);
+    const dataIndexService = new DataIndexService(generalService);
 
     const _MAX_LOOPS_COUNTER = 10;
     const _INTERVAL_TIMER = 5000;
@@ -15,15 +15,25 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
     generalService.sleep(200);
 
-    const oren = await generalService.fetchStatus('GET', '/');
+    const oren = await generalService.fetchStatus('/', { method: 'GET' });
     console.log({ oren: oren });
 
-    const oren2 = await generalService.fetchStatus('GET', '/%');
+    const oren2 = await generalService.fetchStatus('/%', { method: 'GET' });
     console.log({ oren2: oren2 });
 
-    const oren3 = await generalService.fetchStatus('GET', '/users');
+    const oren3 = await generalService.fetchStatus('/users', { method: 'GET' });
     console.log({ oren3: oren3 });
 
+    const oren4 = await generalService.fetchStatus('/users', { method: 'GET', size: 10000 });
+    console.log({ oren4: oren4 });
+
+    const oren5 = await generalService.fetchStatus('/users', { method: 'GET', size: 100000 });
+    console.log({ oren5: oren5 });
+
+    const oren6 = await generalService.fetchStatus('/users', { method: 'GET', size: 1000000 });
+    console.log({ oren6: oren6 });
+
+    debugger;
     const all_activities_fields = [
         //'ExternalID',
         // 'TaxPercentage',
@@ -220,14 +230,13 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             //                         createdField = dataIndexService.createTestDataForField(
             //                             allActivitiesFieldName.split('.')[1],
             //                         );
-            //                         const createAccountResponse = await generalService.fetchStatus(
-            //                             'POST',
-            //                             '/accounts',
-            //                             {
+            //                         const createAccountResponse = await generalService.fetchStatus('/accounts', {
+            //                             method: 'POST',
+            //                             body: JSON.stringify({
             //                                 ExternalID: testDataAccountExternalID,
             //                                 [allActivitiesFieldName.split('.')[1]]: createdField,
-            //                             },
-            //                         );
+            //                             }),
+            //                         });
             //                         createdAccountInternalID = createAccountResponse.Body.InternalID;
             //                         expect(createAccountResponse.Status).to.equal(201);
             //                     });
@@ -252,20 +261,23 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             //                         );
             //                         nonReferenceField = createdField;
             //                     }
-            //                     const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
-            //                         ExternalID: testDataTransactionExternalID,
-            //                         ActivityTypeID: activityTypeID,
-            //                         [allActivitiesFieldName.split('.')[1]]: nonReferenceField,
-            //                         Account: {
-            //                             Data: {
-            //                                 InternalID: createdAccountInternalID,
+            //                     const testDataTransaction = await generalService.fetchStatus('/transactions', {
+            //                         method: 'POST',
+            //                         body: JSON.stringify({
+            //                             ExternalID: testDataTransactionExternalID,
+            //                             ActivityTypeID: activityTypeID,
+            //                             [allActivitiesFieldName.split('.')[1]]: nonReferenceField,
+            //                             Account: {
+            //                                 Data: {
+            //                                     InternalID: createdAccountInternalID,
+            //                                 },
             //                             },
-            //                         },
-            //                         Catalog: {
-            //                             Data: {
-            //                                 InternalID: catalogInternalID,
+            //                             Catalog: {
+            //                                 Data: {
+            //                                     InternalID: catalogInternalID,
+            //                                 },
             //                             },
-            //                         },
+            //                         }),
             //                     });
             //                     createdTransactionInternalID = testDataTransaction.Body.InternalID;
             //                     expect(testDataTransaction.Status).to.equal(201);
@@ -359,20 +371,23 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             //                 }
 
             //                 it(`Update Transaction With Existed ${allActivitiesFieldName}`, async () => {
-            //                     const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
-            //                         InternalID: createdTransactionInternalID,
-            //                         ExternalID: testDataTransactionExternalID,
-            //                         ActivityTypeID: activityTypeID,
-            //                         Account: {
-            //                             Data: {
-            //                                 InternalID: existedAccountInternalID,
+            //                     const testDataTransaction = await generalService.fetchStatus('/transactions', {
+            //                         method: 'POST',
+            //                         body: JSON.stringify({
+            //                             InternalID: createdTransactionInternalID,
+            //                             ExternalID: testDataTransactionExternalID,
+            //                             ActivityTypeID: activityTypeID,
+            //                             Account: {
+            //                                 Data: {
+            //                                     InternalID: existedAccountInternalID,
+            //                                 },
             //                             },
-            //                         },
-            //                         Catalog: {
-            //                             Data: {
-            //                                 InternalID: catalogInternalID,
+            //                             Catalog: {
+            //                                 Data: {
+            //                                     InternalID: catalogInternalID,
+            //                                 },
             //                             },
-            //                         },
+            //                         }),
             //                     });
             //                     expect(testDataTransaction.Status).to.equal(200);
             //                 });
@@ -462,34 +477,36 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             //                                 }`,
             //                             );
             //                         }
-            //                         const updateAccountResponse = await generalService.fetchStatus(
-            //                             'POST',
-            //                             '/accounts',
-            //                             {
+            //                         const updateAccountResponse = await generalService.fetchStatus('/accounts', {
+            //                             method: 'POST',
+            //                             body: JSON.stringify({
             //                                 InternalID: createdAccountInternalID,
             //                                 [allActivitiesFieldName.split('.')[1]]: null,
-            //                             },
-            //                         );
+            //                             }),
+            //                         });
             //                         emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
             //                         expect(updateAccountResponse.Status).to.equal(200);
             //                     });
             //                 }
 
             //                 it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
-            //                     const testDataTransaction = await generalService.fetchStatus('POST', '/transactions', {
-            //                         InternalID: createdTransactionInternalID,
-            //                         ExternalID: testDataTransactionExternalID,
-            //                         ActivityTypeID: activityTypeID,
-            //                         Account: {
-            //                             Data: {
-            //                                 InternalID: createdAccountInternalID,
+            //                     const testDataTransaction = await generalService.fetchStatus('/transactions', {
+            //                         method: 'POST',
+            //                         body: JSON.stringify({
+            //                             InternalID: createdTransactionInternalID,
+            //                             ExternalID: testDataTransactionExternalID,
+            //                             ActivityTypeID: activityTypeID,
+            //                             Account: {
+            //                                 Data: {
+            //                                     InternalID: createdAccountInternalID,
+            //                                 },
             //                             },
-            //                         },
-            //                         Catalog: {
-            //                             Data: {
-            //                                 InternalID: catalogInternalID,
+            //                             Catalog: {
+            //                                 Data: {
+            //                                     InternalID: catalogInternalID,
+            //                                 },
             //                             },
-            //                         },
+            //                         }),
             //                     });
             //                     expect(testDataTransaction.Status).to.equal(200);
             //                 });
@@ -647,10 +664,14 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             //                                 }`,
             //                             );
             //                         }
-            //                         const isAccountDeleted = await objectsService.deleteAccount(createdAccountInternalID);
+            //                         const isAccountDeleted = await objectsService.deleteAccount(
+            //                             createdAccountInternalID,
+            //                         );
             //                         expect(isAccountDeleted).to.be.true;
 
-            //                         const getDeletedAccount = await objectsService.getAccountByID(createdAccountInternalID);
+            //                         const getDeletedAccount = await objectsService.getAccountByID(
+            //                             createdAccountInternalID,
+            //                         );
             //                         expect(getDeletedAccount.Hidden).to.be.true;
             //                     });
             //                 }
@@ -729,14 +750,13 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     createdField = dataIndexService.createTestDataForField(
                                         allActivitiesFieldName.split('.')[1],
                                     );
-                                    const createAccountResponse = await generalService.fetchStatus(
-                                        'POST',
-                                        '/accounts',
-                                        {
+                                    const createAccountResponse = await generalService.fetchStatus('/accounts', {
+                                        method: 'POST',
+                                        body: JSON.stringify({
                                             ExternalID: testDataAccountExternalID,
                                             [allActivitiesFieldName.split('.')[1]]: createdField,
-                                        },
-                                    );
+                                        }),
+                                    });
                                     createdAccountInternalID = createAccountResponse.Body.InternalID;
                                     expect(createAccountResponse.Status).to.equal(201);
                                 });
@@ -758,10 +778,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
                                     expect(accountsArr.length).to.be.above(0);
 
-                                    const testDataTransaction = await generalService.fetchStatus(
-                                        'POST',
-                                        '/transactions',
-                                        {
+                                    const testDataTransaction = await generalService.fetchStatus('/transactions', {
+                                        method: 'POST',
+                                        body: JSON.stringify({
                                             ExternalID: testDataTransactionExternalID,
                                             ActivityTypeID: activityTypeID,
                                             Account: {
@@ -774,8 +793,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                                     InternalID: catalogInternalID,
                                                 },
                                             },
-                                        },
-                                    );
+                                        }),
+                                    });
                                     createdTransactionInternalID = testDataTransaction.Body.InternalID;
                                     expect(testDataTransaction.Status).to.equal(201);
                                 });
@@ -847,10 +866,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 });
 
                                 it(`Update Transaction With New Referance Object that has new: ${allActivitiesFieldName}`, async () => {
-                                    const testDataTransaction = await generalService.fetchStatus(
-                                        'POST',
-                                        '/transactions',
-                                        {
+                                    const testDataTransaction = await generalService.fetchStatus('/transactions', {
+                                        method: 'POST',
+                                        body: JSON.stringify({
                                             InternalID: createdTransactionInternalID,
                                             ExternalID: testDataTransactionExternalID,
                                             ActivityTypeID: activityTypeID,
@@ -864,8 +882,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                                     InternalID: catalogInternalID,
                                                 },
                                             },
-                                        },
-                                    );
+                                        }),
+                                    });
                                     expect(testDataTransaction.Status).to.equal(200);
                                 });
 
@@ -956,24 +974,22 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                                 }`,
                                             );
                                         }
-                                        const updateAccountResponse = await generalService.fetchStatus(
-                                            'POST',
-                                            '/accounts',
-                                            {
+                                        const updateAccountResponse = await generalService.fetchStatus('/accounts', {
+                                            method: 'POST',
+                                            body: JSON.stringify({
                                                 InternalID: createdAccountInternalID,
                                                 [allActivitiesFieldName.split('.')[1]]: null,
-                                            },
-                                        );
+                                            }),
+                                        });
                                         emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
                                         expect(updateAccountResponse.Status).to.equal(200);
                                     });
                                 }
 
                                 it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
-                                    const testDataTransaction = await generalService.fetchStatus(
-                                        'POST',
-                                        '/transactions',
-                                        {
+                                    const testDataTransaction = await generalService.fetchStatus('/transactions', {
+                                        method: 'POST',
+                                        body: JSON.stringify({
                                             InternalID: createdTransactionInternalID,
                                             ExternalID: testDataTransactionExternalID,
                                             ActivityTypeID: activityTypeID,
@@ -987,8 +1003,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                                     InternalID: catalogInternalID,
                                                 },
                                             },
-                                        },
-                                    );
+                                        }),
+                                    });
                                     expect(testDataTransaction.Status).to.equal(200);
                                 });
 

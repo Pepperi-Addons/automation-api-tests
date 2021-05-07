@@ -1,7 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { FileStorage } from '@pepperi-addons/papi-sdk';
-import fetch from 'node-fetch';
 
 // All File Storage Tests
 export async function FileStorageTests(generalService: GeneralService, tester: TesterFunctions) {
@@ -188,7 +187,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the new added file content', async () => {
                         //Get the created file content
                         uriStr = fileObject.URL as any;
-                        const fileContent: string = await fetch(uriStr).then((response) => response.text());
+                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
                         expect(fileContent).to.contain('ABCD');
                     });
 
@@ -226,7 +225,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
 
                         //Get the updated file content
                         const updateduriStr = updatedFileObjectNewUrl.URL;
-                        updatedFileContent = await fetch(updateduriStr).then((response) => response.text());
+                        updatedFileContent = await generalService.fetchStatus(updateduriStr).then((res) => res.Body);
 
                         for (let index = 0; index < allFilesAfter.length; index++) {
                             if (allFilesAfter[index].InternalID == fileObject.InternalID) {
@@ -258,7 +257,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
 
                     it('Read the first added file content again after updated the new file (DI-17885)', async () => {
                         //Get the created file content
-                        const fileContent: string = await fetch(uriStr).then((response) => response.text());
+                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
                         expect(fileContent).to.contain('<Message>Access Denied</Message>');
                         //expect(fileContent).to.contain('ABCD');
                     });
@@ -336,7 +335,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the new added file content', async () => {
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
-                        const fileContent: string = await fetch(uriStr).then((response) => response.text());
+                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
                         expect(fileContent).to.contain('Test Data for File Storage');
                     });
 
@@ -394,7 +393,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
 
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
-                        fileContent = await fetch(uriStr).then((response) => response.text());
+                        fileContent = await generalService.fetchStatus(uriStr).then((res) => res.Body);
 
                         expect(fileObject.InternalID).to.be.above(0);
                         expect(fileObject).to.include({
@@ -484,7 +483,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the new added file content', async () => {
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
-                        const fileContent: string = await fetch(uriStr).then((response) => response.text());
+                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
                         expect(fileContent).to.contain('ABCD');
                     });
 

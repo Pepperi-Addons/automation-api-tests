@@ -1,5 +1,5 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import fetch from 'node-fetch';
+import GeneralService from './general.service';
 
 interface QueryOptions {
     select?: string[];
@@ -27,20 +27,31 @@ function addQueryAndOptions(url: string, options: QueryOptions = {}) {
 }
 
 export class ElasticSearchService {
-    constructor(public papiClient: PapiClient) {}
+    papiClient: PapiClient;
+    generalService: GeneralService;
+
+    constructor(public service: GeneralService) {
+        this.papiClient = service.papiClient;
+        this.generalService = service;
+    }
 
     async uploadTempFile(body: any) {
         const tempFileURLs = await this.papiClient.post('/file_storage/tmp');
-        const tempFileResult = await fetch(tempFileURLs.UploadURL, {
-            method: 'PUT',
-            body: JSON.stringify(body),
-        }).then((response) => {
-            if (response.ok) {
-                return tempFileURLs.DownloadURL;
-            } else {
-                return 'temp file upload failed ' + response.status;
-            }
-        });
+        const tempFileResult = await this.generalService
+            .fetchStatus(tempFileURLs.UploadURL, {
+                method: 'PUT',
+                body: JSON.stringify(body),
+                headers: {
+                    Authorization: null as any,
+                },
+            })
+            .then((response) => {
+                if (response.Ok) {
+                    return tempFileURLs.DownloadURL;
+                } else {
+                    return 'temp file upload failed ' + response.Status;
+                }
+            });
         return tempFileResult;
     }
 

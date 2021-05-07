@@ -14,7 +14,6 @@ import {
     Contact,
     BatchApiResponse,
 } from '@pepperi-addons/papi-sdk';
-import fetch from 'node-fetch';
 import GeneralService from './general.service';
 
 const apiCallsInterval = 400;
@@ -54,12 +53,14 @@ export class ObjectsService {
     }
 
     async getSecurityGroup(idpBaseURL: string) {
-        const securityGroups = await fetch(idpBaseURL + '/api/securitygroups', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + this.papiClient['options'].token,
-            },
-        }).then((data) => data.json());
+        const securityGroups = await this.generalService
+            .fetchStatus(idpBaseURL + '/api/securitygroups', {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + this.papiClient['options'].token,
+                },
+            })
+            .then((res) => res.Body);
         return securityGroups;
     }
 

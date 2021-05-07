@@ -1,5 +1,4 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import fetch from 'node-fetch';
 
 declare type SyncStatus = 'New' | 'SyncStart' | 'Skipped' | 'Done';
 declare type ServerTypes = 'sandbox' | 'eu' | 'prod';
@@ -512,26 +511,24 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">63747156750000</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>';
         }
 
-        const syncResponse = await fetch(url, {
-            method: 'POST',
-            headers: {
-                SOAPAction: `WrntyAgentClientDevice.BLL.Agent3/IAgent3/GetData`,
-                Expect: `100-continue`,
-                'Content-Type': `text/xml; charset=utf-8`,
-                ClientDBVersion: '16',
-                ClientDBVersionMinor: '50',
-                DeviceID: `${testDataBody.DeviceExternalID}`,
-                SoftwareVersion: `${testDataBody.SoftwareVersion}`,
-                SourceType: `${testDataBody.SourceType}`,
-                SystemName: `${testDataBody.SystemName}`,
-                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-            },
-            body: raw,
-            redirect: 'follow',
-        })
-            .then((response) => response.text())
-            .then((result) => result)
-            .catch((error) => error);
+        const syncResponse = await generalService
+            .fetchStatus(url, {
+                method: 'POST',
+                headers: {
+                    SOAPAction: `WrntyAgentClientDevice.BLL.Agent3/IAgent3/GetData`,
+                    Expect: `100-continue`,
+                    'Content-Type': `text/xml; charset=utf-8`,
+                    ClientDBVersion: '16',
+                    ClientDBVersionMinor: '50',
+                    DeviceID: `${testDataBody.DeviceExternalID}`,
+                    SoftwareVersion: `${testDataBody.SoftwareVersion}`,
+                    SourceType: `${testDataBody.SourceType}`,
+                    SystemName: `${testDataBody.SystemName}`,
+                    Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+                },
+                body: raw,
+            })
+            .then((res) => res.Body());
 
         if (testName.includes('Negative')) {
             addTestResultUnderHeadline(
@@ -698,7 +695,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 UUID: getAllCodeJobs[i].UUID,
                 IsScheduled: false,
             };
-            await fetch(generalService['client'].BaseURL + '/code_jobs', {
+            await generalService.fetchStatus(generalService['client'].BaseURL + '/code_jobs', {
                 method: 'POST',
                 body: JSON.stringify(codeJobObject),
                 headers: {

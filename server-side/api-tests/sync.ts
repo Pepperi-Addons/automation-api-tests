@@ -1,6 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { SyncService } from '../services/sync.service';
-import fetch from 'node-fetch';
 import { SyncBody, Account, Transaction, GeneralActivity } from '@pepperi-addons/papi-sdk';
 
 declare type TestResult = 'Pass' | 'Fail';
@@ -669,7 +668,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 do {
                     generalService.sleep(500);
                     try {
-                        putXmlResponse = await fetch(syncJobInfoURL).then((response) => response.text());
+                        putXmlResponse = await generalService.fetchStatus(syncJobInfoURL).then((res) => res.Body);
                     } catch (error) {
                         return {
                             TestResult: `Error in sync job info: ${JSON.stringify(syncJobInfo)}, Error: ${error}`,
@@ -757,7 +756,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             do {
                 generalService.sleep(500);
                 try {
-                    putXmlResponse = await fetch(syncJobInfoURL).then((response) => response.text());
+                    putXmlResponse = await generalService.fetchStatus(syncJobInfoURL).then((res) => res.Body);
                 } catch (error) {
                     return {
                         TestResult: `Error in sync job info: ${JSON.stringify(syncJobInfo)}, Error: ${error}`,
@@ -1034,17 +1033,23 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     //#region check file
     //Get the stream of the file' and check if its size is bigger then 10 KB
     function checkFile(url) {
-        return fetch(url, {
-            method: 'GET',
-            size: 10000, // maximum response body size in bytes, 10000 = 10KB
-        })
-            .then((res) => res.text())
+        debugger;
+        return generalService
+            .fetchStatus(url, {
+                size: 10000, // maximum response body size in bytes, 10000 = 10KB
+            })
+            .then((res) => {
+                debugger;
+                res.Body;
+            })
             .then((json) => {
+                debugger;
                 console.log(json);
                 console.log(`File size was smaller then 10KB`);
                 return false;
             })
             .catch((error) => {
+                debugger;
                 console.log(`File size was bigger then 10KB ${error}`);
                 return true;
             });
