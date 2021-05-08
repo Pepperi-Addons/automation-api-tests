@@ -187,12 +187,12 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the new added file content', async () => {
                         //Get the created file content
                         uriStr = fileObject.URL as any;
-                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
-                        expect(fileContent).to.contain('ABCD');
+                        const fileContent = await generalService.fetchStatus(uriStr).then((res) => res.Body);
+                        expect(fileContent.Text).to.contain('ABCD');
                     });
 
                     let inUpdatedFileObject: FileStorage;
-                    let updatedFileContent: string;
+                    let updatedFileContent;
                     it('Update the new added file', async () => {
                         //Update the new added file
                         const updatedFileObject: FileStorage = {
@@ -252,14 +252,14 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     });
 
                     it('Read the updated file content', () => {
-                        expect(updatedFileContent).to.contain('EDCBA');
+                        expect(updatedFileContent.Text).to.contain('EDCBA');
                     });
 
                     it('Read the first added file content again after updated the new file (DI-17885)', async () => {
                         //Get the created file content
-                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
-                        expect(fileContent).to.contain('<Message>Access Denied</Message>');
-                        //expect(fileContent).to.contain('ABCD');
+                        const fileContent = await generalService.fetchStatus(uriStr).then((res) => res.Body);
+                        expect(fileContent.Text).to.contain('<Message>Access Denied</Message>');
+                        //expect(fileContent.Text).to.contain('ABCD');
                     });
 
                     it('Make sure files removed in the end of the tests', async () => {
@@ -335,8 +335,8 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the new added file content', async () => {
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
-                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
-                        expect(fileContent).to.contain('Test Data for File Storage');
+                        const fileContent = await generalService.fetchStatus(uriStr).then((res) => res.Body);
+                        expect(fileContent.Text).to.contain('Test Data for File Storage');
                     });
 
                     it('Make sure files removed in the end of the tests', async () => {
@@ -381,7 +381,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                             .with.lengthOf(allfilesBefore.length + 1);
                     });
 
-                    let fileContent: string;
+                    let fileContent;
                     it('Read the new added file properties', async () => {
                         //Save the created file information
                         for (let index = 0; index < allFilesAfter.length; index++) {
@@ -413,7 +413,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     });
 
                     it('Read the new added file content', () => {
-                        expect(fileContent).to.contain('ABCD');
+                        expect(fileContent.Text).to.contain('ABCD');
                     });
 
                     it('Make sure files removed in the end of the tests', async () => {
@@ -483,8 +483,8 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the new added file content', async () => {
                         //Get the created file content
                         const uriStr: string = fileObject.URL as any;
-                        const fileContent: string = await generalService.fetchStatus(uriStr).then((res) => res.Body);
-                        expect(fileContent).to.contain('ABCD');
+                        const fileContent = await generalService.fetchStatus(uriStr).then((res) => res.Body);
+                        expect(fileContent.Text).to.contain('ABCD');
                     });
 
                     it('Make sure files removed in the end of the tests', async () => {
