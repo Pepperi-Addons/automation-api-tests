@@ -332,17 +332,17 @@ export default class GeneralService {
                         };
                         errorMessage = parseResponse(responseStr);
                     } else if (responseStr && responseStr.substring(20).includes('html')) {
-                        errorMessage = parseResponse(responseStr);
                         parsed = {
                             Type: 'html',
                             Text: responseStr,
                         };
+                        errorMessage = parseResponse(responseStr);
                     } else {
-                        errorMessage = error;
                         parsed = {
                             Type: 'Error',
                             Text: responseStr,
                         };
+                        errorMessage = error;
                     }
                 }
 

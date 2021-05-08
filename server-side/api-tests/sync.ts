@@ -677,10 +677,10 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
 
                     console.log({ In_the_Puts_Xml: putXmlResponse });
                     counter++;
-                } while (putXmlResponse.includes('Message>Access Denied') && counter < 30);
+                } while (JSON.stringify(putXmlResponse).includes('Message>Access Denied') && counter < 30);
 
-                if (putXmlResponse.includes('<Successful>true</Successful>')) {
-                    const putXmlResponseArr = putXmlResponse.split('<PutObjectResult>');
+                if (JSON.stringify(putXmlResponse).includes('<Successful>true</Successful>')) {
+                    const putXmlResponseArr = JSON.stringify(putXmlResponse).split('<PutObjectResult>');
                     if (
                         !putXmlResponseArr[putXmlResponseArr.length - 1].includes('Row inserted.') ||
                         !putXmlResponseArr[putXmlResponseArr.length - 1].includes('<Successful>true</Successful>')
@@ -764,9 +764,9 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 }
                 console.log({ In_the_Data_Members_Xml: putXmlResponse });
                 counter++;
-            } while (putXmlResponse.includes('Message>Access Denied') && counter < 30);
-            if (putXmlResponse.includes('<Successful>true</Successful>')) {
-                const putXmlResponseArr = putXmlResponse.split('<PutObjectResult>');
+            } while (JSON.stringify(putXmlResponse).includes('Message>Access Denied') && counter < 30);
+            if (JSON.stringify(putXmlResponse).includes('<Successful>true</Successful>')) {
+                const putXmlResponseArr = JSON.stringify(putXmlResponse).split('<PutObjectResult>');
                 for (let i = 1; i < putXmlResponseArr.length; i++) {
                     if (
                         !putXmlResponseArr[i].includes('Row inserted.') ||
@@ -1033,25 +1033,18 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     //#region check file
     //Get the stream of the file' and check if its size is bigger then 10 KB
     function checkFile(url) {
-        debugger;
         return generalService
             .fetchStatus(url, {
                 size: 10000, // maximum response body size in bytes, 10000 = 10KB
             })
             .then((res) => {
-                debugger;
-                res.Body;
-            })
-            .then((json) => {
-                debugger;
-                console.log(json);
-                console.log(`File size was smaller then 10KB`);
-                return false;
-            })
-            .catch((error) => {
-                debugger;
-                console.log(`File size was bigger then 10KB ${error}`);
-                return true;
+                if (res.Error.message.includes('over limit: 10000')) {
+                    console.log(`File size was bigger then 10KB ${res}`);
+                    return true;
+                } else {
+                    console.log(`File size was smaller then 10KB`);
+                    return false;
+                }
             });
         //return (encodeURI(fileContent).split(/%..|./).length - 1) / 1000 > 10;
     }
