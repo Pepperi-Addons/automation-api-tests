@@ -1,10 +1,9 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import fetch from 'node-fetch';
 
-export async function DBSchemaTests(generalService: GeneralService, tester: TesterFunctions) {
-    const service = generalService.papiClient;
+export async function DBSchemaTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const assert = tester.assert;
+    const expect = tester.expect;
     const it = tester.it;
 
     const logcash: any = {};
@@ -22,165 +21,213 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     const baseURL = generalService['client'].BaseURL;
     const token = generalService['client'].OAuthAccessToken;
 
-    // this will run the first test that will run the second and so on..
-    await getSecretKey();
-    describe('Create Schema (Negative)', () => {
-        it('Get Empty Schema: Finished', () => {
-            if (logcash.getEmptySchemaStatus) {
+    //#region Upgrade ADAL
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#endregion Upgrade ADAL
+
+    describe('ADAL Tests Suites', () => {
+        describe('Prerequisites Addon for ADAL Tests', () => {
+            //Test Data
+            //ADAL
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
             }
-            assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
         });
-        it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
-            assert(logcash.createSchemaWithoutNameStatus, logcash.createSchemaWithoutNameError);
+
+        describe('Create Schema (Negative)', () => {
+            it('Get Empty Schema: Finished', async () => {
+                // this will run the first test that will run the second and so on..
+                await getSecretKey();
+                if (logcash.getEmptySchemaStatus) {
+                }
+                assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
+            });
+            it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
+                assert(logcash.createSchemaWithoutNameStatus, logcash.createSchemaWithoutNameError);
+            });
+        });
+        describe('Create schema, Positive And Upsert Data To Dinamo', () => {
+            it('Create Scheme With One Mandatory Field Name: Finished', () => {
+                assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
+            });
+            it('Create Scheme With All Parameters: Finished', () => {
+                assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
+            });
+            it('Insert Data To Schema With Type meta_data Without OwnerId (Negative): Finished', () => {
+                assert(
+                    logcash.insertDataToTableWithoutOwnerIDNegativeStatus,
+                    logcash.insertDataToTableWithoutOwnerIDNegativeError,
+                );
+            });
+            it('Insert Data To Schema With Type meta_data With OwnerId, Key And One Column Values: Finished', () => {
+                assert(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError);
+            });
+            it('Get Data From Table and Compere It From Posted Body: Finished', () => {
+                assert(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError);
+            });
+            it('Upsert Data With Key Created On Previos Test + Insert Values To All Fields: Finished', () => {
+                assert(logcash.upsertDataToTableWithOwnerIDStatus, logcash.upsertDataToTableWithOwnerIDError);
+            });
+            it('Get Data From Table (With Two Objects): Finished', () => {
+                assert(logcash.getDataFromTableTwoKeys.Status, logcash.getDataFromTableTwoKeys.Error);
+            });
+            it('Get Data From Table When One Objects Is Hidden: Finished', () => {
+                assert(logcash.getDataFromTableHidden.Status, logcash.getDataFromTableHidden.Error);
+            });
+            it('Drop Existing Table: Finished', () => {
+                assert(logcash.dropExistingTableStatus, logcash.dropExistingTableError);
+            });
+            it('Drop Deleted Table: Finished', () => {
+                assert(logcash.dropDeletedTableStatus, logcash.dropDeletedTableError);
+            });
         });
     });
-    describe('Create schema, Positive And Upsert Data To Dinamo', () => {
-        it('Create Scheme With One Mandatory Field Name: Finished', () => {
-            assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
-        });
-        it('Create Scheme With All Parameters: Finished', () => {
-            assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
-        });
-        it('Insert Data To Schema With Type meta_data Without OwnerId (Negative): Finished', () => {
-            assert(
-                logcash.insertDataToTableWithoutOwnerIDNegativeStatus,
-                logcash.insertDataToTableWithoutOwnerIDNegativeError,
-            );
-        });
-        it('Insert Data To Schema With Type meta_data With OwnerId, Key And One Column Values: Finished', () => {
-            assert(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError);
-        });
-        it('Get Data From Table and Compere It From Posted Body: Finished', () => {
-            assert(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError);
-        });
-        it('Upsert Data With Key Created On Previos Test + Insert Values To All Fields: Finished', () => {
-            assert(logcash.upsertDataToTableWithOwnerIDStatus, logcash.upsertDataToTableWithOwnerIDError);
-        });
-        it('Get Data From Table (With Two Objects): Finished', () => {
-            assert(logcash.getDataFromTableTwoKeys.Status, logcash.getDataFromTableTwoKeys.Error);
-        });
-        it('Get Data From Table When One Objects Is Hidden: Finished', () => {
-            assert(logcash.getDataFromTableHidden.Status, logcash.getDataFromTableHidden.Error);
-        });
-        it('Drop Existing Table: Finished', () => {
-            assert(logcash.dropExistingTableStatus, logcash.dropExistingTableError);
-        });
-        it('Drop Deleted Table: Finished', () => {
-            assert(logcash.dropDeletedTableStatus, logcash.dropDeletedTableError);
-        });
-    });
+
     //get secret key
     async function getSecretKey() {
-        logcash.getAuditData = await fetch(baseURL + '/code_jobs/get_data_for_job_execution', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-            },
-            body: JSON.stringify({
-                JobMessageData: {
-                    UUID: '14ca5951-06e6-4f4c-a8fd-92fa243a662c',
-                    MessageType: 'AddonMessage',
-                    SchemaVersion: 2,
-                    DistributorUUID: '547dc30b-bb56-46f7-8c89-864f54402cdb',
-                    FunctionPath: 'Addon/Public/fff02926-7aac-467f-8f1b-2ec2154a6bc7/Ver3/test.js',
-                    ExecutionMemoryLevel: 4,
-                    UserUUID: '3e4d1f14-6760-4c2c-9977-4f438e591c56',
-                    NumberOfTry: 1,
-                    NumberOfTries: 1,
-                    FunctionName: 'ido',
-                    StartDateTime: '2020-11-03T11:34:15.916Z',
-                    EndDateTime: '2020-11-03T11:34:16.508Z',
-                    Request: {
-                        path: '/addons/api/async/fff02926-7aac-467f-8f1b-2ec2154a6bc7/test.js/ido',
-                        method: 'GET',
-                        originalUrl: '/pjobs/addons/api/async/fff02926-7aac-467f-8f1b-2ec2154a6bc7/test.js/ido',
-                        query: {},
-                        body: null,
-                        header: {},
-                    },
-                    CodeJobUUID: null,
-                    CodeJobName: null,
-                    CodeJobDescription: null,
-                    IsScheduled: false,
-                    IsPublished: false,
-                    AddonData: {
-                        AddonUUID: addonUUID, //"fff02926-7aac-467f-8f1b-2ec2154a6bc7",
-                        AddonPath: 'test.js',
-                        AddonVersion: null,
-                    },
-                    CallbackUUID: null,
+        logcash.getAuditData = await generalService
+            .fetchStatus(baseURL + '/code_jobs/get_data_for_job_execution', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
                 },
-            }),
-        }).then((data) => data.json());
+                body: JSON.stringify({
+                    JobMessageData: {
+                        UUID: '14ca5951-06e6-4f4c-a8fd-92fa243a662c',
+                        MessageType: 'AddonMessage',
+                        SchemaVersion: 2,
+                        DistributorUUID: '547dc30b-bb56-46f7-8c89-864f54402cdb',
+                        FunctionPath: 'Addon/Public/fff02926-7aac-467f-8f1b-2ec2154a6bc7/Ver3/test.js',
+                        ExecutionMemoryLevel: 4,
+                        UserUUID: '3e4d1f14-6760-4c2c-9977-4f438e591c56',
+                        NumberOfTry: 1,
+                        NumberOfTries: 1,
+                        FunctionName: 'ido',
+                        StartDateTime: '2020-11-03T11:34:15.916Z',
+                        EndDateTime: '2020-11-03T11:34:16.508Z',
+                        Request: {
+                            path: '/addons/api/async/fff02926-7aac-467f-8f1b-2ec2154a6bc7/test.js/ido',
+                            method: 'GET',
+                            originalUrl: '/pjobs/addons/api/async/fff02926-7aac-467f-8f1b-2ec2154a6bc7/test.js/ido',
+                            query: {},
+                            body: null,
+                            header: {},
+                        },
+                        CodeJobUUID: null,
+                        CodeJobName: null,
+                        CodeJobDescription: null,
+                        IsScheduled: false,
+                        IsPublished: false,
+                        AddonData: {
+                            AddonUUID: addonUUID, //"fff02926-7aac-467f-8f1b-2ec2154a6bc7",
+                            AddonPath: 'test.js',
+                            AddonVersion: null,
+                        },
+                        CallbackUUID: null,
+                    },
+                }),
+            })
+            .then((res) => res.Body);
         //Oren added this to improve logs of failed tests
         try {
             logcash.secretKey = logcash.getAuditData.ClientObject.AddonSecretKey;
         } catch (error) {
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
-        await installAddon();
-    }
-
-    async function installAddon() {
-        logcash.installAddonResult = await fetch(
-            baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/install/1.0.94',
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
-                },
-            },
-        ).then((data) => data.json());
-
-        //logcash.installAddonResult.URI
-        await upgradellAddon();
-    }
-
-    async function upgradellAddon() {
-        logcash.upgradellAddonResult = await fetch(
-            baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/upgrade/1.0.98',
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
-                },
-            },
-        ).then((data) => data.json());
-
-        //logcash.installAddonResult.URI
-        await getAuditLogInstallStatus();
-    }
-
-    async function getAuditLogInstallStatus() {
-        logcash.getAuditLogInstallStatus = await service.auditLogs.get(logcash.installAddonResult.ExecutionUUID);
-        //debugger;
-        if (
-            logcash.getAuditLogInstallStatus.Status.ID == 1 ||
-            (logcash.getAuditLogInstallStatus.Status.ID == 0 &&
-                logcash.getAuditLogInstallStatus.AuditInfo.ErrorMessage == 'Addon already installed')
-        ) {
-            logcash.getAuditLogInstallStatusLog = true;
-        } else {
-            logcash.getAuditLogInstallStatusLog = false;
-            logcash.getAuditLogInstallStatusError =
-                'The install failed . Addon not installed. The auditLog URI is: ' + logcash.getAuditLogInstallStatus;
-        }
+        //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
+        //await installADallAddon();
         await getEmptySchema();
     }
 
+    // async function installADallAddon() {
+    //     logcash.installAddonResult = await generalService
+    //         .fetchStatus(baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/install/1.0.94', {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: 'Bearer ' + token,
+    //                 'X-Pepperi-OwnerID': addonUUID,
+    //                 'X-Pepperi-SecretKey': logcash.secretKey,
+    //             },
+    //         })
+    //         .then((res) => res.Body);
+
+    //     //logcash.installAddonResult.URI
+    //     await upgradADallAddon();
+    // }
+
+    // async function upgradADallAddon() {
+    //     logcash.upgradellAddonResult = await generalService
+    //         .fetchStatus(baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/upgrade/1.0.98', {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: 'Bearer ' + token,
+    //                 'X-Pepperi-OwnerID': addonUUID,
+    //                 'X-Pepperi-SecretKey': logcash.secretKey,
+    //             },
+    //         })
+    //         .then((res) => res.Body);
+
+    //     //logcash.installAddonResult.URI
+    //     await getAuditLogInstallStatus();
+    // }
+
+    // async function getAuditLogInstallStatus() {
+    //     logcash.getAuditLogInstallStatus = await service.auditLogs.get(logcash.installAddonResult.ExecutionUUID);
+    //     //debugger;
+    //     if (
+    //         logcash.getAuditLogInstallStatus.Status.ID == 1 ||
+    //         (logcash.getAuditLogInstallStatus.Status.ID == 0 &&
+    //             logcash.getAuditLogInstallStatus.AuditInfo.ErrorMessage == 'Addon already installed')
+    //     ) {
+    //         logcash.getAuditLogInstallStatusLog = true;
+    //     } else {
+    //         logcash.getAuditLogInstallStatusLog = false;
+    //         logcash.getAuditLogInstallStatusError =
+    //             'The install failed . Addon not installed. The auditLog URI is: ' + logcash.getAuditLogInstallStatus;
+    //     }
+    //     await getEmptySchema();
+    // }
+
     async function getEmptySchema() {
-        logcash.getEmptySchema = await fetch(baseURL + '/addons/data/addonUUIDWithoutSchema/test', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-        }).then((data) => data.json());
+        logcash.getEmptySchema = await generalService
+            .fetchStatus(baseURL + '/addons/data/addonUUIDWithoutSchema/test', {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
         //debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
             if ((logcash.getEmptySchema.fault.faultstring = 'Failed due to exception: Table schema must be exist')) {
@@ -201,14 +248,16 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function createSchemaWithoutName() {
-        logcash.createSchemaWithoutName = await fetch(baseURL + '/addons/data/schemes', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-        }).then((data) => data.json());
+        logcash.createSchemaWithoutName = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
         //debugger;
         if (logcash.createSchemaWithoutName.fault.faultstring != undefined) {
             //if (logcash.createSchemaWithoutName.fault.faultstring.includes("Cannot read property 'Name' of null") == true) {-- error message changed on 1.0.95
@@ -232,17 +281,19 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function createSchemaWithMandFieldName() {
-        logcash.createSchemaWithMandFieldName = await fetch(baseURL + '/addons/data/schemes', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Name: 'CreateSchemaWithMandatoryField ' + Date(),
-            }),
-        }).then((data) => data.json());
+        logcash.createSchemaWithMandFieldName = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'CreateSchemaWithMandatoryField ' + Date(),
+                }),
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.createSchemaWithMandFieldName.CreationDateTime.includes(new Date().toISOString().split('T')[0]) ==
@@ -264,26 +315,28 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function createSchemaWithProperties() {
-        logcash.createSchemaWithProperties = await fetch(baseURL + '/addons/data/schemes', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Name: logcash.createSchemaWithMandFieldName.Name,
-                Type: 'meta_data',
-                Fields: {
-                    testString: { Type: 'String' },
-                    testBoolean: { Type: 'Bool' },
-                    TestInteger: { Type: 'Integer' },
-                    TestMultipleStringValues: { Type: 'MultipleStringValues' },
+        logcash.createSchemaWithProperties = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-                CreationDateTime: '2020-10-08T10:19:00.677Z',
-                ModificationDateTime: '2020-10-08T10:19:00.677Z',
-            }),
-        }).then((data) => data.json());
+                body: JSON.stringify({
+                    Name: logcash.createSchemaWithMandFieldName.Name,
+                    Type: 'meta_data',
+                    Fields: {
+                        testString: { Type: 'String' },
+                        testBoolean: { Type: 'Bool' },
+                        TestInteger: { Type: 'Integer' },
+                        TestMultipleStringValues: { Type: 'MultipleStringValues' },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.createSchemaWithProperties.CreationDateTime ==
@@ -307,9 +360,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function insertDataToTableWithoutOwnerIDNegative() {
-        logcash.insertDataToTableWithoutOwnerIDNegative = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.insertDataToTableWithoutOwnerIDNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'POST',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -320,8 +372,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
                     Key: 'testKey1',
                     Column1: ['Value1', 'Value2', 'Value3'],
                 }),
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.insertDataToTableWithoutOwnerIDNegative.fault.faultstring.includes(
@@ -339,9 +391,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function insertDataToTableWithOwnerID() {
-        logcash.insertDataToTableWithOwnerID = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.insertDataToTableWithOwnerID = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'POST',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -352,8 +403,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
                     Key: 'testKey1',
                     Column1: ['Value1', 'Value2', 'Value3'],
                 }),
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.insertDataToTableWithOwnerID.Column1[0] == 'Value1' &&
@@ -374,17 +425,16 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
 
     async function getDataToTableWithOwnerID() {
         logcash.getDataToTableWithOwnerIDStatus = true;
-        logcash.getDataToTableWithOwnerID = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.getDataToTableWithOwnerID = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         for (const key in logcash.getDataToTableWithOwnerID[0]) {
             if (key == 'Column1') {
@@ -417,9 +467,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function upsertDataToTableWithOwnerID() {
-        logcash.upsertDataToTableWithOwnerID = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.upsertDataToTableWithOwnerID = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'POST',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -437,8 +486,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
                         ['a', 'b', 'c'],
                     ],
                 }),
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.upsertDataToTableWithOwnerID.Column1[0] == 'Value1-2' &&
@@ -471,9 +520,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function upsertDataToSameTableWithAnotherKey() {
-        logcash.upsertDataToSameTableWithAnotherKey = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.upsertDataToSameTableWithAnotherKey = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'POST',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -484,8 +532,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
                     Key: 'testKey2',
                     Column1: 'Value2-2',
                 }),
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.upsertDataToSameTableWithAnotherKey.Column1 == 'Value2-2' &&
@@ -505,17 +553,16 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
 
     async function getDataFromTableTwoKeys() {
         //logcash.getDataFromTableTwoKeystatus = true;
-        logcash.getDataFromTableTwoKeys = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.getDataFromTableTwoKeys = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         if (
             logcash.getDataFromTableTwoKeys.length == 2 &&
@@ -534,9 +581,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function changeHiddenToTrue() {
-        logcash.changeHiddenToTrue = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.changeHiddenToTrue = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'POST',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -547,25 +593,24 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
                     Key: 'testKey2',
                     Hidden: true,
                 }),
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         await getDataFromTableHidden();
     }
 
     async function getDataFromTableHidden() {
         //logcash.getDataFromTableTwoKeystatus = true;
-        logcash.getDataFromTableHidden = await fetch(
-            baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-            {
+        logcash.getDataFromTableHidden = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            },
-        ).then((data) => data.json());
+            })
+            .then((res) => res.Body);
         //debugger;
         if (logcash.getDataFromTableHidden.length == 1) {
             logcash.getDataFromTableHidden.Status = true;
@@ -579,8 +624,8 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
 
     //#region drop table testing
     async function dropExistingTable() {
-        //logcash.dropExistingTable = await fetch(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
-        const res = await fetch(
+        //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
+        const res = await generalService.fetchStatus(
             baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge',
             {
                 method: 'POST',
@@ -594,7 +639,7 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
         //debugger;
 
         //if(logcash.dropExistingTable.success == true){
-        if (res.ok) {
+        if (res.Ok) {
             logcash.dropExistingTableStatus = true;
         } else {
             logcash.dropExistingTableStatus = false;
@@ -605,7 +650,7 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     }
 
     async function dropDeletedTable() {
-        const res = await fetch(
+        const res = await generalService.fetchStatus(
             baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge',
             {
                 method: 'POST',
@@ -617,7 +662,7 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
             },
         ); //.then((data) => data.json())
         //debugger;
-        if (res.ok == false) {
+        if (res.Ok == false) {
             logcash.dropDeletedTableStatus = true;
         } else {
             logcash.dropDeletedTableStatus = false;

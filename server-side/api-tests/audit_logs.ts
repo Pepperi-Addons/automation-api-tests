@@ -1,5 +1,4 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import fetch from 'node-fetch';
 
 declare type SyncStatus = 'New' | 'SyncStart' | 'Skipped' | 'Done';
 declare type ServerTypes = 'sandbox' | 'eu' | 'prod';
@@ -486,7 +485,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             .getAddons({
                 where: "AddonUUID='00000000-0000-0000-0000-000000abcdef'",
             })
-            .then((addon) => addon[0].Version);
+            .then((installationArr) => installationArr[0].Addon.SystemData.split('"')[3]);
         console.log({ installedCPIVersion: installedCPIVersion });
         const server = await generalService.getClientData('Server');
         switch (server) {
@@ -512,54 +511,56 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">63747156750000</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>';
         }
 
-        const syncResponse = await fetch(url, {
-            method: 'POST',
-            headers: {
-                SOAPAction: `WrntyAgentClientDevice.BLL.Agent3/IAgent3/GetData`,
-                Expect: `100-continue`,
-                'Content-Type': `text/xml; charset=utf-8`,
-                ClientDBVersion: '16',
-                ClientDBVersionMinor: '50',
-                DeviceID: `${testDataBody.DeviceExternalID}`,
-                SoftwareVersion: `${testDataBody.SoftwareVersion}`,
-                SourceType: `${testDataBody.SourceType}`,
-                SystemName: `${testDataBody.SystemName}`,
-                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-            },
-            body: raw,
-            redirect: 'follow',
-        })
-            .then((response) => response.text())
-            .then((result) => result)
-            .catch((error) => error);
+        const syncResponse = await generalService
+            .fetchStatus(url, {
+                method: 'POST',
+                headers: {
+                    SOAPAction: `WrntyAgentClientDevice.BLL.Agent3/IAgent3/GetData`,
+                    Expect: `100-continue`,
+                    'Content-Type': `text/xml; charset=utf-8`,
+                    ClientDBVersion: '16',
+                    ClientDBVersionMinor: '50',
+                    DeviceID: `${testDataBody.DeviceExternalID}`,
+                    SoftwareVersion: `${testDataBody.SoftwareVersion}`,
+                    SourceType: `${testDataBody.SourceType}`,
+                    SystemName: `${testDataBody.SystemName}`,
+                    Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+                },
+                body: raw,
+            })
+            .then((res) => res.Body);
 
         if (testName.includes('Negative')) {
             addTestResultUnderHeadline(
                 testName,
                 'No Server Error',
-                syncResponse.includes('/h:ServerError') ? syncResponse : true,
+                JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
             );
 
             addTestResultUnderHeadline(
                 testName,
                 'No Sync FileName',
-                syncResponse.includes('/h:FileName') ? syncResponse : true,
+                JSON.stringify(syncResponse).includes('/h:FileName') ? JSON.stringify(syncResponse) : true,
             );
 
-            const Length = syncResponse
+            const Length = JSON.stringify(syncResponse)
                 .split('h:Length')[1]
                 .slice(-5, -2)
                 .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(testName, 'Get Sync Length', Length == 1 ? true : 'Length is: ' + Length);
+            addTestResultUnderHeadline(
+                testName,
+                'Get Sync Length',
+                Number(Length) == 1 ? true : 'Length is: ' + Length,
+            );
 
-            const Status = syncResponse.split('h:Status')[1];
+            const Status = JSON.stringify(syncResponse).split('h:Status')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync Status',
                 Status.includes('NoDataToSent') ? true : 'Status is: ' + Status,
             );
 
-            const GetDataResponse = syncResponse.split('GetDataResponse')[1];
+            const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync GetDataResponse',
@@ -569,30 +570,34 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             addTestResultUnderHeadline(
                 testName,
                 'No Server Error',
-                syncResponse.includes('/h:ServerError') ? syncResponse : true,
+                JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
             );
 
-            const FileName = syncResponse.split('h:FileName')[1];
+            const FileName = JSON.stringify(syncResponse).split('h:FileName')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync FileName',
                 FileName.includes('GetData.sqlite') ? true : 'FileName is: ' + FileName,
             );
 
-            const Length = syncResponse
+            const Length = JSON.stringify(syncResponse)
                 .split('h:Length')[1]
                 .slice(-10, -2)
                 .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(testName, 'Get Sync Length', Length > 200 ? true : 'Length is: ' + Length);
+            addTestResultUnderHeadline(
+                testName,
+                'Get Sync Length',
+                Number(Length) > 200 ? true : 'Length is: ' + Length,
+            );
 
-            const Status = syncResponse.split('h:Status')[1];
+            const Status = JSON.stringify(syncResponse).split('h:Status')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync Status',
                 Status.includes('DataSent') ? true : 'Status is: ' + Status,
             );
 
-            const GetDataResponse = syncResponse.split('GetDataResponse')[1];
+            const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync GetDataResponse',
@@ -698,7 +703,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 UUID: getAllCodeJobs[i].UUID,
                 IsScheduled: false,
             };
-            await fetch(generalService['client'].BaseURL + '/code_jobs', {
+            await generalService.fetchStatus(generalService['client'].BaseURL + '/code_jobs', {
                 method: 'POST',
                 body: JSON.stringify(codeJobObject),
                 headers: {

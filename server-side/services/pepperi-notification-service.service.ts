@@ -1,6 +1,5 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
-import fetch from 'node-fetch';
 
 export declare type NucleusFlagType = 'stop_after_redis' | 'stop_after_db' | 'stop_after_nucleus' | null;
 declare type PutDataSubTypeHeaders =
@@ -50,21 +49,17 @@ export class PepperiNotificationServiceService {
     }
 
     putSync(putData: PutData, PutID: number) {
-        return fetch(`https://papi.staging.pepperi.com/V1.0/wacd/PutSync/${PutID}`, {
-            method: `POST`,
-            headers: {
-                Authorization: this.Authorization,
-                DeviceID: 'Oren_Test',
-            },
-            body: JSON.stringify(putData),
-        })
-            .then((res) => {
-                console.log(res.url);
-                return res.text();
+        return this.generalService
+            .fetchStatus(`https://papi.staging.pepperi.com/V1.0/wacd/PutSync/${PutID}`, {
+                method: `POST`,
+                headers: {
+                    Authorization: this.Authorization,
+                    DeviceID: 'Oren_Test',
+                },
+                body: JSON.stringify(putData),
             })
-            .then((obj) => {
-                console.log(obj ? JSON.parse(obj) : '');
-                return obj ? JSON.parse(obj) : '';
+            .then((res) => {
+                res.Body;
             });
     }
 }

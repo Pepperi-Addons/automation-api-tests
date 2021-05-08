@@ -592,7 +592,7 @@ export async function maintenance_full(client: Client, request: Request, testerF
 //#endregion Old Framwork Tests
 
 //#region Oleg's Framwork Tests
-export async function schema(client: Client, testerFunctions: TesterFunctions) {
+export async function schema(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Schema';
     PrintMemoryUseToLog('Start', testName);
@@ -611,7 +611,7 @@ export async function schema(client: Client, testerFunctions: TesterFunctions) {
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        DBSchemaTests(service, testerFunctions),
+        DBSchemaTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;

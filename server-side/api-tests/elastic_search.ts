@@ -2,7 +2,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ElasticSearchService } from '../services/elastic-search.service';
 
 export async function ElasticSearchTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const elasticSearchService = new ElasticSearchService(generalService.papiClient);
+    const elasticSearchService = new ElasticSearchService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
