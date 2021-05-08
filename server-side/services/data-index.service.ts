@@ -2,7 +2,7 @@ import /*FindOptions*/ '@pepperi-addons/papi-sdk';
 import { ElasticSearchService } from './../services/elastic-search.service';
 import GeneralService from './general.service';
 
-const stringFieldsArr: string[] = ['City', 'Country'];
+const stringFieldsArr: string[] = ['City', 'Country', 'Remark'];
 const numberFieldsArr: string[] = ['ExternalID'];
 
 export class DataIndexService {
