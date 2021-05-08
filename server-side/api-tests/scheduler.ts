@@ -10,7 +10,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
     let logTimeCount = 0;
     const logTimeRetryNum = 19;
     const CallbackCash: any = {};
-    let CodJobBody: any = {};
+    let CodeJobBody: any = {};
     let CodeJobUUIDCron;
 
     service['options'].addonUUID = '';
@@ -49,7 +49,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
     });
 
     async function createNewCJToChroneTest() {
-        CodJobBody = {
+        CodeJobBody = {
             UUID: '',
             CodeJobName: 'New CodeJob with IsScheduled true',
             Description: 'Cron verification',
@@ -68,13 +68,13 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             ExecutionMemoryLevel: 1,
         };
 
-        CallbackCash.insertNewCJtoCronVerification = await service.codeJobs.upsert(CodJobBody);
+        CallbackCash.insertNewCJtoCronVerification = await service.codeJobs.upsert(CodeJobBody);
 
         //var status = CallbackCash.insertNewCJtoCronVerification.success;
         //CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
         logcash.insertNewCJtoCronVerification = true;
 
-        if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodJobBody.CodeJobName) {
+        if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodeJobBody.CodeJobName) {
             // CodeJobUUIDCron != "" removed from IF
             CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
             await publishCodeJobCronTest();
@@ -87,7 +87,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                 CallbackCash.insertNewCJtoCronVerification.statusText;
         }
 
-        // service .httpPost("/code_jobs", CodJobBody, (success) => {
+        // service .httpPost("/code_jobs", CodeJobBody, (success) => {
         //     logcash.insertNewCJtoCronVerification = true;
         //     CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;  // result.CodeJobUUID to result.UUID
         //     publishCodeJobCronTest();
@@ -255,7 +255,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
 
     async function updateCronToChroneTest() {
         // cerate new code about Cron test case
-        CodJobBody = {
+        CodeJobBody = {
             UUID: CodeJobUUIDCron,
             CodeJobName: 'Cron updating t 4 minutes',
             Description: 'Cron verification',
@@ -264,7 +264,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
 
         CallbackCash.updateNewCJtoCronVerification = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
-            body: JSON.stringify({ CodJobBody }),
+            body: JSON.stringify(CodeJobBody),
         });
         //var status = CallbackCash.updateNewCJtoCronVerification.success;
         logcash.updateNewCJtoCronVerification = true;
@@ -307,14 +307,14 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
 
     async function updateCronToChroneTestIsScheduledFalse() {
         // stop automated execution - IsScheduled = False
-        CodJobBody = {
+        CodeJobBody = {
             UUID: CodeJobUUIDCron,
             IsScheduled: false,
         };
 
         CallbackCash.updateCronToChroneTestIsScheduledFalse = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
-            body: JSON.stringify(CodJobBody),
+            body: JSON.stringify(CodeJobBody),
         });
         logcash.updateCronToChroneTestIsScheduledFalse = true;
 

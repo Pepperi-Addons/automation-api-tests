@@ -1,9 +1,9 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-export async function DBSchemaTests(generalService: GeneralService, tester: TesterFunctions) {
-    const service = generalService.papiClient;
+export async function DBSchemaTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const assert = tester.assert;
+    const expect = tester.expect;
     const it = tester.it;
 
     const logcash: any = {};
@@ -21,53 +21,97 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
     const baseURL = generalService['client'].BaseURL;
     const token = generalService['client'].OAuthAccessToken;
 
-    // this will run the first test that will run the second and so on..
-    await getSecretKey();
-    describe('Create Schema (Negative)', () => {
-        it('Get Empty Schema: Finished', () => {
-            if (logcash.getEmptySchemaStatus) {
+    //#region Upgrade ADAL
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#endregion Upgrade ADAL
+
+    describe('ADAL Tests Suites', () => {
+        describe('Prerequisites Addon for ADAL Tests', () => {
+            //Test Data
+            //ADAL
+            it('Validate that all the needed addons are installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
             }
-            assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
         });
-        it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
-            assert(logcash.createSchemaWithoutNameStatus, logcash.createSchemaWithoutNameError);
+
+        describe('Create Schema (Negative)', () => {
+            it('Get Empty Schema: Finished', async () => {
+                // this will run the first test that will run the second and so on..
+                await getSecretKey();
+                if (logcash.getEmptySchemaStatus) {
+                }
+                assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
+            });
+            it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
+                assert(logcash.createSchemaWithoutNameStatus, logcash.createSchemaWithoutNameError);
+            });
+        });
+        describe('Create schema, Positive And Upsert Data To Dinamo', () => {
+            it('Create Scheme With One Mandatory Field Name: Finished', () => {
+                assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
+            });
+            it('Create Scheme With All Parameters: Finished', () => {
+                assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
+            });
+            it('Insert Data To Schema With Type meta_data Without OwnerId (Negative): Finished', () => {
+                assert(
+                    logcash.insertDataToTableWithoutOwnerIDNegativeStatus,
+                    logcash.insertDataToTableWithoutOwnerIDNegativeError,
+                );
+            });
+            it('Insert Data To Schema With Type meta_data With OwnerId, Key And One Column Values: Finished', () => {
+                assert(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError);
+            });
+            it('Get Data From Table and Compere It From Posted Body: Finished', () => {
+                assert(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError);
+            });
+            it('Upsert Data With Key Created On Previos Test + Insert Values To All Fields: Finished', () => {
+                assert(logcash.upsertDataToTableWithOwnerIDStatus, logcash.upsertDataToTableWithOwnerIDError);
+            });
+            it('Get Data From Table (With Two Objects): Finished', () => {
+                assert(logcash.getDataFromTableTwoKeys.Status, logcash.getDataFromTableTwoKeys.Error);
+            });
+            it('Get Data From Table When One Objects Is Hidden: Finished', () => {
+                assert(logcash.getDataFromTableHidden.Status, logcash.getDataFromTableHidden.Error);
+            });
+            it('Drop Existing Table: Finished', () => {
+                assert(logcash.dropExistingTableStatus, logcash.dropExistingTableError);
+            });
+            it('Drop Deleted Table: Finished', () => {
+                assert(logcash.dropDeletedTableStatus, logcash.dropDeletedTableError);
+            });
         });
     });
-    describe('Create schema, Positive And Upsert Data To Dinamo', () => {
-        it('Create Scheme With One Mandatory Field Name: Finished', () => {
-            assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
-        });
-        it('Create Scheme With All Parameters: Finished', () => {
-            assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
-        });
-        it('Insert Data To Schema With Type meta_data Without OwnerId (Negative): Finished', () => {
-            assert(
-                logcash.insertDataToTableWithoutOwnerIDNegativeStatus,
-                logcash.insertDataToTableWithoutOwnerIDNegativeError,
-            );
-        });
-        it('Insert Data To Schema With Type meta_data With OwnerId, Key And One Column Values: Finished', () => {
-            assert(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError);
-        });
-        it('Get Data From Table and Compere It From Posted Body: Finished', () => {
-            assert(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError);
-        });
-        it('Upsert Data With Key Created On Previos Test + Insert Values To All Fields: Finished', () => {
-            assert(logcash.upsertDataToTableWithOwnerIDStatus, logcash.upsertDataToTableWithOwnerIDError);
-        });
-        it('Get Data From Table (With Two Objects): Finished', () => {
-            assert(logcash.getDataFromTableTwoKeys.Status, logcash.getDataFromTableTwoKeys.Error);
-        });
-        it('Get Data From Table When One Objects Is Hidden: Finished', () => {
-            assert(logcash.getDataFromTableHidden.Status, logcash.getDataFromTableHidden.Error);
-        });
-        it('Drop Existing Table: Finished', () => {
-            assert(logcash.dropExistingTableStatus, logcash.dropExistingTableError);
-        });
-        it('Drop Deleted Table: Finished', () => {
-            assert(logcash.dropDeletedTableStatus, logcash.dropDeletedTableError);
-        });
-    });
+
     //get secret key
     async function getSecretKey() {
         logcash.getAuditData = await generalService
@@ -119,57 +163,59 @@ export async function DBSchemaTests(generalService: GeneralService, tester: Test
         } catch (error) {
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
-        await installAddon();
-    }
-
-    async function installAddon() {
-        logcash.installAddonResult = await generalService
-            .fetchStatus(baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/install/1.0.94', {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
-                },
-            })
-            .then((res) => res.Body);
-
-        //logcash.installAddonResult.URI
-        await upgradellAddon();
-    }
-
-    async function upgradellAddon() {
-        logcash.upgradellAddonResult = await generalService
-            .fetchStatus(baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/upgrade/1.0.98', {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
-                },
-            })
-            .then((res) => res.Body);
-
-        //logcash.installAddonResult.URI
-        await getAuditLogInstallStatus();
-    }
-
-    async function getAuditLogInstallStatus() {
-        logcash.getAuditLogInstallStatus = await service.auditLogs.get(logcash.installAddonResult.ExecutionUUID);
-        //debugger;
-        if (
-            logcash.getAuditLogInstallStatus.Status.ID == 1 ||
-            (logcash.getAuditLogInstallStatus.Status.ID == 0 &&
-                logcash.getAuditLogInstallStatus.AuditInfo.ErrorMessage == 'Addon already installed')
-        ) {
-            logcash.getAuditLogInstallStatusLog = true;
-        } else {
-            logcash.getAuditLogInstallStatusLog = false;
-            logcash.getAuditLogInstallStatusError =
-                'The install failed . Addon not installed. The auditLog URI is: ' + logcash.getAuditLogInstallStatus;
-        }
+        //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
+        //await installADallAddon();
         await getEmptySchema();
     }
+
+    // async function installADallAddon() {
+    //     logcash.installAddonResult = await generalService
+    //         .fetchStatus(baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/install/1.0.94', {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: 'Bearer ' + token,
+    //                 'X-Pepperi-OwnerID': addonUUID,
+    //                 'X-Pepperi-SecretKey': logcash.secretKey,
+    //             },
+    //         })
+    //         .then((res) => res.Body);
+
+    //     //logcash.installAddonResult.URI
+    //     await upgradADallAddon();
+    // }
+
+    // async function upgradADallAddon() {
+    //     logcash.upgradellAddonResult = await generalService
+    //         .fetchStatus(baseURL + '/addons/installed_addons/00000000-0000-0000-0000-00000000ADA1/upgrade/1.0.98', {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: 'Bearer ' + token,
+    //                 'X-Pepperi-OwnerID': addonUUID,
+    //                 'X-Pepperi-SecretKey': logcash.secretKey,
+    //             },
+    //         })
+    //         .then((res) => res.Body);
+
+    //     //logcash.installAddonResult.URI
+    //     await getAuditLogInstallStatus();
+    // }
+
+    // async function getAuditLogInstallStatus() {
+    //     logcash.getAuditLogInstallStatus = await service.auditLogs.get(logcash.installAddonResult.ExecutionUUID);
+    //     //debugger;
+    //     if (
+    //         logcash.getAuditLogInstallStatus.Status.ID == 1 ||
+    //         (logcash.getAuditLogInstallStatus.Status.ID == 0 &&
+    //             logcash.getAuditLogInstallStatus.AuditInfo.ErrorMessage == 'Addon already installed')
+    //     ) {
+    //         logcash.getAuditLogInstallStatusLog = true;
+    //     } else {
+    //         logcash.getAuditLogInstallStatusLog = false;
+    //         logcash.getAuditLogInstallStatusError =
+    //             'The install failed . Addon not installed. The auditLog URI is: ' + logcash.getAuditLogInstallStatus;
+    //     }
+    //     await getEmptySchema();
+    // }
 
     async function getEmptySchema() {
         logcash.getEmptySchema = await generalService

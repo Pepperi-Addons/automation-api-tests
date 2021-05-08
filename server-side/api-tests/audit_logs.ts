@@ -485,7 +485,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             .getAddons({
                 where: "AddonUUID='00000000-0000-0000-0000-000000abcdef'",
             })
-            .then((addon) => addon[0].Version);
+            .then((installationArr) => installationArr[0].Addon.SystemData.split('"')[3]);
         console.log({ installedCPIVersion: installedCPIVersion });
         const server = await generalService.getClientData('Server');
         switch (server) {
@@ -528,35 +528,39 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 },
                 body: raw,
             })
-            .then((res) => res.Body());
+            .then((res) => res.Body);
 
         if (testName.includes('Negative')) {
             addTestResultUnderHeadline(
                 testName,
                 'No Server Error',
-                syncResponse.includes('/h:ServerError') ? syncResponse : true,
+                JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
             );
 
             addTestResultUnderHeadline(
                 testName,
                 'No Sync FileName',
-                syncResponse.includes('/h:FileName') ? syncResponse : true,
+                JSON.stringify(syncResponse).includes('/h:FileName') ? JSON.stringify(syncResponse) : true,
             );
 
-            const Length = syncResponse
+            const Length = JSON.stringify(syncResponse)
                 .split('h:Length')[1]
                 .slice(-5, -2)
                 .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(testName, 'Get Sync Length', Length == 1 ? true : 'Length is: ' + Length);
+            addTestResultUnderHeadline(
+                testName,
+                'Get Sync Length',
+                Number(Length) == 1 ? true : 'Length is: ' + Length,
+            );
 
-            const Status = syncResponse.split('h:Status')[1];
+            const Status = JSON.stringify(syncResponse).split('h:Status')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync Status',
                 Status.includes('NoDataToSent') ? true : 'Status is: ' + Status,
             );
 
-            const GetDataResponse = syncResponse.split('GetDataResponse')[1];
+            const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync GetDataResponse',
@@ -566,30 +570,34 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             addTestResultUnderHeadline(
                 testName,
                 'No Server Error',
-                syncResponse.includes('/h:ServerError') ? syncResponse : true,
+                JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
             );
 
-            const FileName = syncResponse.split('h:FileName')[1];
+            const FileName = JSON.stringify(syncResponse).split('h:FileName')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync FileName',
                 FileName.includes('GetData.sqlite') ? true : 'FileName is: ' + FileName,
             );
 
-            const Length = syncResponse
+            const Length = JSON.stringify(syncResponse)
                 .split('h:Length')[1]
                 .slice(-10, -2)
                 .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(testName, 'Get Sync Length', Length > 200 ? true : 'Length is: ' + Length);
+            addTestResultUnderHeadline(
+                testName,
+                'Get Sync Length',
+                Number(Length) > 200 ? true : 'Length is: ' + Length,
+            );
 
-            const Status = syncResponse.split('h:Status')[1];
+            const Status = JSON.stringify(syncResponse).split('h:Status')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync Status',
                 Status.includes('DataSent') ? true : 'Status is: ' + Status,
             );
 
-            const GetDataResponse = syncResponse.split('GetDataResponse')[1];
+            const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
             addTestResultUnderHeadline(
                 testName,
                 'Get Sync GetDataResponse',

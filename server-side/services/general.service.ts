@@ -325,15 +325,24 @@ export default class GeneralService {
                     responseStr = await response.text();
                     parsed = responseStr ? JSON.parse(responseStr) : '';
                 } catch (error) {
-                    if (responseStr && responseStr.substring(10).includes('xml')) {
-                        parsed = { Type: 'xml' };
+                    if (responseStr && responseStr.substring(20).includes('xml')) {
+                        parsed = {
+                            Type: 'xml',
+                            Text: responseStr,
+                        };
                         errorMessage = parseResponse(responseStr);
-                    } else if (responseStr && responseStr.substring(10).includes('html')) {
+                    } else if (responseStr && responseStr.substring(20).includes('html')) {
                         errorMessage = parseResponse(responseStr);
-                        parsed = { Type: 'html' };
+                        parsed = {
+                            Type: 'html',
+                            Text: responseStr,
+                        };
                     } else {
                         errorMessage = error;
-                        parsed = { Type: 'Error' };
+                        parsed = {
+                            Type: 'Error',
+                            Text: responseStr,
+                        };
                     }
                 }
 
