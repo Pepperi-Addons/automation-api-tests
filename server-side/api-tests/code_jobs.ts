@@ -209,7 +209,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     //////////////////////////////////////////////////////////////////////////////////
     async function createNewCodeJobByName() {
         JobName = { CodeJobName: 'First Olegs test' }; //create post body with one param: name
-        CallbackCash.ResponseCallback = await generalService.fetchStatus('POST', '/code_jobs', JobName);
+        CallbackCash.ResponseCallback = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JobName,
+        });
         const status = CallbackCash.ResponseCallback.Status == 200 ? true : false;
         if (status == true && CallbackCash.ResponseCallback.Body.UUID != '') {
             logcash.statusA = true;
@@ -225,8 +228,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function getSingleCodeJobByApi() {
         CallbackCash.ResponseCallbackSingleByCJUUID = await generalService.fetchStatus(
-            'GET',
             `/code_jobs/${CallbackCash.ResponseCallback.Body.UUID}`,
+            { method: 'GET' },
         );
         // changed from CallbackCash.ResponseCallback.Body.CodeJobUUID
         try {
@@ -293,7 +296,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             NumberOfTries: 1,
         };
 
-        CallbackCash.ResponseCallbackAfterUpdate = await generalService.fetchStatus('POST', '/code_jobs', updateValues);
+        CallbackCash.ResponseCallbackAfterUpdate = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: updateValues,
+        });
         const status = CallbackCash.ResponseCallback.Status == 200 ? true : false;
         defaultValues.UUID = CodeJobUUID;
         logcash.statusc = true;
@@ -306,10 +312,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function UpdateCodeJobVerification() {
-        CallbackCash.ResponseCallbackSingleUpdated = await generalService.fetchStatus(
-            'GET',
-            `/code_jobs/${CodeJobUUID}`,
-        );
+        CallbackCash.ResponseCallbackSingleUpdated = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}`, {
+            method: 'GET',
+        });
 
         const returnedObject = CallbackCash.ResponseCallbackSingleUpdated;
         // const CreationDateTime = new Date(returnedObject.Body.CreationDateTime);
@@ -374,11 +379,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             ExecutionMemoryLevel: 1,
             NumberOfTries: 1,
         };
-        CallbackCash.ResponseCallbackAfterCreation = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            updateValuesLast,
-        );
+        CallbackCash.ResponseCallbackAfterCreation = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: updateValuesLast,
+        });
 
         const status = CallbackCash.ResponseCallbackAfterCreation.Status == 200 ? true : false; //changed to CallbackCash.ResponseCallbackAfterCreation.success from CallbackCash.ResponseCallbackAfterCreation.Body.Success
         logcash.statuse = true;
@@ -395,8 +399,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         //get single cod job
         // changed to .Body.UUID from .Body.CodeJobUUID
         CallbackCash.ResponseCallbacknew = await generalService.fetchStatus(
-            'GET',
             `/code_jobs/${CallbackCash.ResponseCallbackAfterCreation.Body.UUID}`,
+            { method: 'GET' },
         );
 
         const returnedObject = CallbackCash.ResponseCallbacknew;
@@ -457,7 +461,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             ExecutionMemoryLevel: 1,
             NumberOfTries: 1,
         };
-        CallbackCash.PhaseTwoPost = await generalService.fetchStatus('POST', '/code_jobs', updateValues);
+        CallbackCash.PhaseTwoPost = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: updateValues,
+        });
         logcash.statusPublishinsert = true;
 
         if (CallbackCash.PhaseTwoPost.Status == 200 && CallbackCash.PhaseTwoPost.Body.UUID != '') {
@@ -470,12 +477,18 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function publishCodeJob() {
-        CallbackCash.postPublish = await generalService.fetchStatus('POST', `/code_jobs/${CodeJobUUID}/publish`);
+        CallbackCash.postPublish = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}/publish`, {
+            method: 'POST',
+        });
+
         await CodeJobVerificationAfterPublish();
     }
 
     async function CodeJobVerificationAfterPublish() {
-        CallbackCash.ResponseCallbacknew = await generalService.fetchStatus('GET', `/code_jobs/${CodeJobUUID}`);
+        CallbackCash.ResponseCallbacknew = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}`, {
+            method: 'GET',
+        });
+
         const returnedObject = CallbackCash.ResponseCallbacknew;
         CodeJobUUID = returnedObject.Body.UUID;
         logcash.statusAfterFirstPublish = true;
@@ -534,12 +547,13 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             NumberOfTries: 1,
         };
 
-        CallbackCash.PhaseTwoPostDraftEmpty = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            updateValuesWithoutDraft,
-        );
-        CallbackCash.postPublish = await generalService.fetchStatus('POST', `/code_jobs/${CodeJobUUID}/publish`);
+        CallbackCash.PhaseTwoPostDraftEmpty = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: updateValuesWithoutDraft,
+        });
+        CallbackCash.postPublish = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}/publish`, {
+            method: 'POST',
+        });
 
         //var status = CallbackCash.PhaseTwoPostDraftEmpty.Body.Status == 200? true: false;
         CodeJobUUID = CallbackCash.PhaseTwoPostDraftEmpty.Body.UUID; // changed to .Body.UUID from .Body.CodeJobUUID
@@ -554,7 +568,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     }
 
     async function publishCodeJobNext() {
-        CallbackCash.postPublishNext = await generalService.fetchStatus('POST', `/code_jobs/${CodeJobUUID}/publish`);
+        CallbackCash.postPublishNext = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}/publish`, {
+            method: 'POST',
+        });
         const tmp = CallbackCash.postPublishNext.Body.fault.faultstring;
         // if (tmp.fault.faultstring == "Invalid field value. Field:CodeDraft: Value cannot be null or empty.") {
         if (tmp.includes('Invalid field value. Field:CodeDraft: Value cannot be null or empty.')) {
@@ -609,11 +625,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             NumberOfTries: 1,
         };
 
-        CallbackCash.executeCOdeJobUsingDraft = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            updateValuesToDraftExecute,
-        );
+        CallbackCash.executeCOdeJobUsingDraft = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: updateValuesToDraftExecute,
+        });
         logcash.executeCOdeJobUsingDraft = true;
 
         if (
@@ -631,8 +646,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function executeDraftCodeJobeOnce() {
         CallbackCash.executeDraftCodeJobeOnce1 = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${CallbackCash.executeCOdeJobUsingDraft.Body.UUID}/execute_draft`,
+            { method: 'POST', body: updateValuesToDraftExecute },
         );
 
         if (
@@ -713,7 +728,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             ExecutionMemoryLevel: 1,
             NumberOfTries: 1,
         };
-        CallbackCash.createNewCJToPublish = await generalService.fetchStatus('POST', '/code_jobs', NewCJToPublish);
+        CallbackCash.createNewCJToPublish = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: NewCJToPublish,
+        });
 
         logcash.createNewCJToPublish = true;
         if (CallbackCash.createNewCJToPublish.Status == 200 && CallbackCash.createNewCJToPublish.Body.UUID != '') {
@@ -730,8 +748,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function publishNewCJToPublish() {
         // publish this job code
         CallbackCash.publishNewCJ = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/${CallbackCash.createNewCJToPublish.Body.UUID}/publish`,
+            { method: 'POST', body: NewCJToPublish },
         );
         // BODY CHANGED TO undefined
         if (CallbackCash.publishNewCJ.Status == 200) {
@@ -776,7 +794,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                 'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(4,4);\r\n};',
             ExecutionMemoryLevel: 1,
         };
-        CallbackCash.UpdatedDraftCode = await generalService.fetchStatus('POST', '/code_jobs', UpdateDraftCode);
+        CallbackCash.UpdatedDraftCode = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: UpdateDraftCode,
+        });
 
         //var status = CallbackCash.UpdatedDraftCode.Body.Status == 200? true: false;
         logcash.UpdatedDraftCode = true;
@@ -793,10 +814,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDiffBetweenDraftAndExecution() {
         // execute
         CallbackCash.executeWithDiff = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${CallbackCash.UpdatedDraftCode.Body.UUID}/execute`,
+            { method: 'POST' },
         );
-
         if (
             CallbackCash.executeWithDiff.Status == 200 &&
             CallbackCash.executeWithDiff.Body.ExecutionUUID != '' &&
@@ -815,7 +835,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function getSingleToCheckBetveenDraftAndExecuted() {
         // verification between draft code and execution code - will be different
-        CallbackCash.ResponseCallbackToCheck = await generalService.fetchStatus('GET', `/code_jobs/${CodeJobUUID}`);
+        CallbackCash.ResponseCallbackToCheck = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}`, {
+            method: 'GET',
+        });
 
         if (
             CallbackCash.ResponseCallbackToCheck.Body.ExecutedCode !=
@@ -885,8 +907,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function publishCJToPublish() {
         // publish this job code
-        CallbackCash.publishNewCJ = await generalService.fetchStatus('POST', `/code_jobs/${CodeJobUUID}/publish`);
-
+        CallbackCash.publishNewCJ = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}/publish`, {
+            method: 'POST',
+        });
         if (CallbackCash.publishNewCJ.Status == 200) {
             CallbackCash.StatusPublished = true;
         } else {
@@ -898,7 +921,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function getSingleToCheckBetveenDraftAndExecutedNew() {
         // verification between draft code and execution code - will be the same
-        CallbackCash.ResponseCallbackToCheckLast = await generalService.fetchStatus('GET', `/code_jobs/${CodeJobUUID}`);
+        CallbackCash.ResponseCallbackToCheckLast = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}`, {
+            method: 'GET',
+        });
+
         //debugger;
         if (
             CallbackCash.ResponseCallbackToCheckLast.Body.ExecutedCode ==
@@ -917,8 +943,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     //#region Restore executed code
     async function restoreNegativeWithWrongCodeJobUUID() {
         CallbackCash.restoreNegativeWithWrongCodeJobUUID = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/20e6d067-0f77-nega-tive-bc2044892532/restore/${CallbackCash.PublishAuditLogUUID}`,
+            { method: 'POST', body: UpdateDraftCode },
         );
         //debugger;
         if (
@@ -942,8 +968,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function restoreNegativeAuditLogNotFound() {
         CallbackCash.restoreNegativeAuditLogNotFound = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/${CodeJobUUID}/restore/5560d92f-nega-tive-b440-441bf1de7602`,
+            { method: 'POST', body: UpdateDraftCode },
         );
         //debugger;
         if (
@@ -965,8 +991,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function restoreNegativeAuditLogNotPublish() {
         CallbackCash.restoreNegativeAuditLogNotPublish = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/${CodeJobUUID}/restore/${CallbackCash.insertAuditLogUUID}`,
+            { method: 'POST', body: UpdateDraftCode },
         );
         //debugger;
         if (
@@ -990,8 +1016,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function restoreExecutedCode() {
         CallbackCash.publishNewCJ = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/${CodeJobUUID}/restore/${CallbackCash.PublishAuditLogUUID}`,
+            { method: 'POST', body: UpdateDraftCode },
         );
         //debugger;
         if (CallbackCash.publishNewCJ.Status == 200) {
@@ -1009,7 +1035,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function getSingleToCheckRestoredExecutedCode() {
         // restore executed code . From now will be different to draft code
-        CallbackCash.RestoredExecutedCode = await generalService.fetchStatus('GET', `/code_jobs/${CodeJobUUID}`);
+        CallbackCash.RestoredExecutedCode = await generalService.fetchStatus(`/code_jobs/${CodeJobUUID}`, {
+            method: 'GET',
+        });
         //debugger;
         if (CallbackCash.RestoredExecutedCode.Body.ExecutedCode != CallbackCash.RestoredExecutedCode.Body.DraftCode) {
             logcash.CheckBetveenDraftAndExecutedLastStatus = true;
@@ -1208,7 +1236,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             CodeJobName: '',
             Description: 'Will failed on madatory field',
         };
-        CallbackCash.insertWithoutName = await generalService.fetchStatus('POST', '/code_jobs', insertEmptyName);
+        CallbackCash.insertWithoutName = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JSON.stringify(insertEmptyName),
+        });
         parsedData = CallbackCash.insertWithoutName;
         //const tmp = parsedData.Body.fault.faultstring;
         //CallbackCash.parsedMsg = JSON.parse(tmp);
@@ -1234,8 +1265,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     //#region TimeOut verification
     async function getEmailStatus() {
         CallbackCash.GetEmails = await generalService.fetchStatus(
-            'GET',
             '/actions_queue?include_count=true&order_by=CreationDate DESC',
+            { method: 'GET' },
         );
         CallbackCash.EmailsFromToDay = CallbackCash.GetEmails.Body.filter(
             (x) => x.CreationDate > new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
@@ -1256,11 +1287,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             ExecutionMemoryLevel: 1,
         };
 
-        CallbackCash.UpdatedDraftCodeWithoutResult = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            UpdateDraftCodeWithoutResult,
-        );
+        CallbackCash.UpdatedDraftCodeWithoutResult = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JSON.stringify(UpdateDraftCodeWithoutResult),
+        });
         logcash.UpdatedDraftCodeWithoutResult = true;
         if (
             CallbackCash.UpdatedDraftCodeWithoutResult.Status == 200 &&
@@ -1280,8 +1310,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftWithoutResult() {
         // execute Draft code without result() , to get timeout
         CallbackCash.WithDraftWithoutResult = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID}/execute_draft`,
+            { method: 'POST' },
         );
         if (
             CallbackCash.WithDraftWithoutResult.Status == 200 &&
@@ -1372,7 +1402,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     //#region Distributor Execution
     async function getDistributorExecutionBudget() {
-        CallbackCash.ExecutionBudget = await generalService.fetchStatus('GET', '/code_jobs/execution_budget');
+        CallbackCash.ExecutionBudget = await generalService.fetchStatus('/code_jobs/execution_budget', {
+            method: 'GET',
+        });
+
         //debugger;
         logcash.getDistributorBudgetTest = true;
         if (CallbackCash.ExecutionBudget.Status == 200) {
@@ -1396,11 +1429,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             ExecutionMemoryLevel: 1,
         };
 
-        CallbackCash.insertNewCodJobToBudgetTest = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            CodJobeBodyBudgetTest,
-        );
+        CallbackCash.insertNewCodJobToBudgetTest = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: JSON.stringify(CodJobeBodyBudgetTest),
+        });
         logcash.insertNewCodJobToBudgetTest = true;
 
         if (
@@ -1423,15 +1455,17 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftBudgetTest() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestFirst = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            { method: 'POST' },
         );
         generalService.sleep(20000);
         await getDistributorExecutionBudgetSecond();
     }
 
     async function getDistributorExecutionBudgetSecond() {
-        CallbackCash.ExecutionBudget = await generalService.fetchStatus('GET', '/code_jobs/execution_budget');
+        CallbackCash.ExecutionBudget = await generalService.fetchStatus('/code_jobs/execution_budget', {
+            method: 'GET',
+        });
 
         //debugger;
         if (
@@ -1457,15 +1491,18 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftBudgetTestSecond() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestSecond = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            { method: 'POST' },
         );
         generalService.sleep(10000);
         await getDistributorExecutionBudgetThird();
     }
 
     async function getDistributorExecutionBudgetThird() {
-        CallbackCash.ExecutionBudgetThird = await generalService.fetchStatus('GET', '/code_jobs/execution_budget');
+        CallbackCash.ExecutionBudgetThird = await generalService.fetchStatus('/code_jobs/execution_budget', {
+            method: 'GET',
+        });
+
         //debugger;
         if (
             CallbackCash.ExecutionBudgetThird.Status == 200 &&
@@ -1496,11 +1533,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         const updateBudget = {
             Budget: 0.0,
         };
-        CallbackCash.UpdateBudget = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs/execution_budget/budget',
-            updateBudget,
-        );
+        CallbackCash.UpdateBudget = await generalService.fetchStatus('/code_jobs/execution_budget/budget', {
+            method: 'POST',
+            body: JSON.stringify(updateBudget),
+        });
 
         generalService.sleep(3000);
         await executeWithDraftWithoutBudget();
@@ -1509,8 +1545,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftWithoutBudget() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftWithoutBudget = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            { method: 'POST' },
         );
 
         generalService.sleep(50000);
@@ -1543,17 +1579,20 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         const updateBudget = {
             Budget: 2.0,
         };
-        CallbackCash.UpdateBudget = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs/execution_budget/budget',
-            updateBudget,
-        );
+        CallbackCash.UpdateBudget = await generalService.fetchStatus('/code_jobs/execution_budget/budget', {
+            method: 'POST',
+            body: JSON.stringify(updateBudget),
+        });
+
         generalService.sleep(3000);
         await getDistributorExecutionBudgetLast();
     }
 
     async function getDistributorExecutionBudgetLast() {
-        CallbackCash.ExecutionBudgetLast = await generalService.fetchStatus('GET', '/code_jobs/execution_budget');
+        CallbackCash.ExecutionBudgetLast = await generalService.fetchStatus('/code_jobs/execution_budget', {
+            method: 'GET',
+        });
+
         //debugger;
         //logcash.ExecutionBudgetLast = true;
         if (CallbackCash.ExecutionBudgetLast.Status == 200) {
@@ -1567,9 +1606,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftWithBudget() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.executeWithDraftWithBudget = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            { method: 'POST' },
         );
+
         generalService.sleep(30000);
         await getSingleExecutionLogToLastBudgetTest();
     }
@@ -1614,12 +1654,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             ExecutionMemoryLevel: 1,
             //"NumberOfTries": 1
         };
-        CallbackCash.insertNewCJtoPapiCall = await generalService.fetchStatus(
-            'POST',
-            '/code_jobs',
-            CodJobeBodyWithPapiCall,
-        );
-
+        CallbackCash.insertNewCJtoPapiCall = await generalService.fetchStatus('/code_jobs', {
+            method: 'POST',
+            body: CodJobeBodyWithPapiCall,
+        });
         logcash.insertNewCJtoPapiCall = true;
 
         if (CallbackCash.insertNewCJtoPapiCall.Status == 200) {
@@ -1636,8 +1674,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function executeDraftCodeJobePapiTest() {
         CallbackCash.executeDraftCodeTestPapi = await generalService.fetchStatus(
-            'POST',
             `/code_jobs/async/${CallbackCash.insertNewCJtoPapiCall.Body.UUID}/execute_draft`,
+            { method: 'POST' },
         );
         if (
             CallbackCash.executeDraftCodeTestPapi.Status == 200 &&

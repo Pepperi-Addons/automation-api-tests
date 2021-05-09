@@ -1,14 +1,15 @@
-import { PapiClient /*FindOptions*/ } from '@pepperi-addons/papi-sdk';
+import /*FindOptions*/ '@pepperi-addons/papi-sdk';
 import { ElasticSearchService } from './../services/elastic-search.service';
+import GeneralService from './general.service';
 
-const stringFieldsArr: string[] = ['City', 'Country'];
+const stringFieldsArr: string[] = ['City', 'Country', 'Remark'];
 const numberFieldsArr: string[] = ['ExternalID'];
 
 export class DataIndexService {
     elasticSearchService: ElasticSearchService;
 
-    constructor(public papiClient: PapiClient) {
-        this.elasticSearchService = new ElasticSearchService(papiClient);
+    constructor(public generalService: GeneralService) {
+        this.elasticSearchService = new ElasticSearchService(generalService);
     }
 
     async createTotalsMapOfField(fieldName: string): Promise<Map<string, number>> {

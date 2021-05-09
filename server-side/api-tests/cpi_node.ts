@@ -32,7 +32,7 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
     describe('CPI Node Tests Suites', () => {
         describe('Endpoints', async () => {
             it('Validate GET Users', async () => {
-                const res = await generalService.fetchStatus('GET', '/Users');
+                const res = await generalService.fetchStatus('/Users', { method: 'GET' });
                 expect(res.Status).to.be.a('number').equal(200),
                     expect(res.Ok).that.is.a('boolean').and.is.true,
                     expect(res.Error).that.is.an('object').and.is.empty,
@@ -64,7 +64,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
             };
 
             it('Validate CreateUser Post', async () => {
-                const user = await generalService.fetchStatus('POST', '/CreateUser', userBody);
+                const user = await generalService.fetchStatus('/CreateUser', {
+                    method: 'POST',
+                    body: JSON.stringify(userBody),
+                });
                 //debugger;
                 userInternalID = user.Body.InternalID;
                 expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200), //should return 201 on creation - DI-18052
@@ -105,11 +108,10 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     (userBody.Mobile = Math.floor(Math.random() * 1000000).toString()),
                     (userBody.Phone = Math.floor(Math.random() * 1000000).toString());
 
-                const user = await generalService.fetchStatus(
-                    'POST',
-                    '/Users?where=ExternalID=' + userBody.ExternalID,
-                    userBody,
-                );
+                const user = await generalService.fetchStatus('/Users?where=ExternalID=' + userBody.ExternalID, {
+                    method: 'POST',
+                    body: JSON.stringify(userBody),
+                });
 
                 expect(user.Status).to.be.a('number').equal(200),
                     expect(user.Ok).that.is.a('boolean').and.is.true,
@@ -151,11 +153,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     ZipCode: '12345',
                 };
 
-                const account = await generalService.fetchStatus('POST', '/Accounts', accountObj);
-                debugger;
-                expect(account.Ok).that.is.a('boolean').and.is.true,
-                    expect(account.Error).that.is.an('object').and.is.empty,
-                    expect(account.Status).to.be.a('number').equal(201);
+                const account = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+
+                expect(account.Status).to.be.a('number').equal(201);
 
                 //update Account
                 accountObj.Prop1 = 'Prop 11';
@@ -163,11 +166,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 accountObj.Prop3 = 'Prop 33';
                 accountObj.Prop4 = 'Prop 44';
                 accountObj.Prop5 = 'Prop 55';
-
-                const updatedAccount = await generalService.fetchStatus('POST', '/Accounts', accountObj);
-                expect(updatedAccount.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedAccount.Error).that.is.an('object').and.is.empty,
-                    expect(updatedAccount.Status).to.be.a('number').equal(200);
+                const updatedAccount = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+                expect(updatedAccount.Status).to.be.a('number').equal(200);
 
                 //create contacts
                 const contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
@@ -185,20 +188,22 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const contact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
-                expect(contact.Ok).that.is.a('boolean').and.is.true,
-                    expect(contact.Error).that.is.an('object').and.is.empty,
-                    expect(contact.Status).to.be.a('number').equal(201);
+                const contact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
+                expect(contact.Status).to.be.a('number').equal(201);
 
                 //update contact
                 contactObj.Phone = '123-45678-1337';
                 contactObj.Mobile = '123-45678-1337';
                 contactObj.FirstName = 'Contact_updated';
+                const updatedContact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
 
-                const updatedContact = await generalService.fetchStatus('POST', '/Contacts', contactObj);
-                expect(updatedContact.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedContact.Error).that.is.an('object').and.is.empty,
-                    expect(updatedContact.Status).to.be.a('number').equal(200);
+                expect(updatedContact.Status).to.be.a('number').equal(200);
 
                 //create activities
                 const activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
@@ -214,19 +219,20 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const activity = await generalService.fetchStatus('POST', '/Activities', activityObj);
-                expect(activity.Ok).that.is.a('boolean').and.is.true,
-                    expect(activity.Error).that.is.an('object').and.is.empty,
-                    expect(activity.Status).to.be.a('number').equal(201);
+                const activity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
+                expect(activity.Status).to.be.a('number').equal(201);
 
                 //update activities
                 activityObj.Status = 2;
                 activityObj.Title = 'Testing updated';
-
-                const updatedActivity = await generalService.fetchStatus('POST', '/Activities', activityObj);
-                expect(updatedActivity.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedActivity.Error).that.is.an('object').and.is.empty,
-                    expect(updatedActivity.Status).to.be.a('number').equal(200);
+                const updatedActivity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
+                expect(updatedActivity.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const transactionExternalID =
@@ -247,18 +253,19 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const transaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
-                expect(transaction.Ok).that.is.a('boolean').and.is.true,
-                    expect(transaction.Error).that.is.an('object').and.is.empty,
-                    expect(transaction.Status).to.be.a('number').equal(201);
+                const transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+                expect(transaction.Status).to.be.a('number').equal(201);
 
                 //update Transaction
                 transactionObj.Status = 2;
-
-                const updatedTransaction = await generalService.fetchStatus('POST', '/transactions', transactionObj);
-                expect(updatedTransaction.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedTransaction.Error).that.is.an('object').and.is.empty,
-                    expect(updatedTransaction.Status).to.be.a('number').equal(200);
+                const updatedTransaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+                expect(updatedTransaction.Status).to.be.a('number').equal(200);
 
                 //create Items
                 const itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -278,10 +285,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     Hidden: false,
                 };
 
-                const item = await generalService.fetchStatus('POST', '/items', itemObj);
-                expect(item.Ok).that.is.a('boolean').and.is.true,
-                    expect(item.Error).that.is.an('object').and.is.empty,
-                    expect(item.Status).to.be.a('number').equal(201);
+                const item = await generalService.fetchStatus('/items', {
+                    method: 'POST',
+                    body: JSON.stringify(itemObj),
+                });
+                expect(item.Status).to.be.a('number').equal(201);
 
                 //update items
                 itemObj.Price = 2.0;
@@ -289,10 +297,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 itemObj.CostPrice = 1;
                 itemObj.Discount = 1;
 
-                const updatedItem = await generalService.fetchStatus('POST', '/items', itemObj);
-                expect(updatedItem.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedItem.Error).that.is.an('object').and.is.empty,
-                    expect(updatedItem.Status).to.be.a('number').equal(200);
+                const updatedItem = await generalService.fetchStatus('/items', {
+                    method: 'POST',
+                    body: JSON.stringify(itemObj),
+                });
+                expect(updatedItem.Status).to.be.a('number').equal(200);
 
                 //create inventory
                 const inventoryObj = {
@@ -307,18 +316,20 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const inventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
-                expect(inventory.Ok).that.is.a('boolean').and.is.true,
-                    expect(inventory.Error).that.is.an('object').and.is.empty,
-                    expect(inventory.Status).to.be.a('number').equal(201);
+                const inventory = await generalService.fetchStatus('/inventory', {
+                    method: 'POST',
+                    body: JSON.stringify(inventoryObj),
+                });
+                expect(inventory.Status).to.be.a('number').equal(201);
 
                 //update inventory
                 inventoryObj.InStockQuantity = 4;
 
-                const updateInventory = await generalService.fetchStatus('POST', '/inventory', inventoryObj);
-                expect(updateInventory.Ok).that.is.a('boolean').and.is.true,
-                    expect(updateInventory.Error).that.is.an('object').and.is.empty,
-                    expect(updateInventory.Status).to.be.a('number').equal(200);
+                const updateInventory = await generalService.fetchStatus('/inventory', {
+                    method: 'POST',
+                    body: JSON.stringify(inventoryObj),
+                });
+                expect(updateInventory.Status).to.be.a('number').equal(200);
 
                 //create Lines
                 const lineObj = {
@@ -328,18 +339,20 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     UnitsQuantity: 1,
                 };
 
-                const line = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
-                expect(line.Ok).that.is.a('boolean').and.is.true,
-                    expect(line.Error).that.is.an('object').and.is.empty,
-                    expect(line.Status).to.be.a('number').equal(201);
+                const line = await generalService.fetchStatus('/transaction_lines', {
+                    method: 'POST',
+                    body: JSON.stringify(lineObj),
+                });
+                expect(line.Status).to.be.a('number').equal(201);
 
                 //update lines
                 lineObj.UnitsQuantity = 3;
 
-                const upcatedLine = await generalService.fetchStatus('POST', '/transaction_lines', lineObj);
-                expect(upcatedLine.Ok).that.is.a('boolean').and.is.true,
-                    expect(upcatedLine.Error).that.is.an('object').and.is.empty,
-                    expect(upcatedLine.Status).to.be.a('number').equal(200);
+                const upcatedLine = await generalService.fetchStatus('/transaction_lines', {
+                    method: 'POST',
+                    body: JSON.stringify(lineObj),
+                });
+                expect(upcatedLine.Status).to.be.a('number').equal(200);
 
                 //create Account-Users
                 const relationObj = {
@@ -360,70 +373,60 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     },
                 };
 
-                const relation = await generalService.fetchStatus('POST', '/account_users', relationObj);
-                expect(relation.Ok).that.is.a('boolean').and.is.true,
-                    expect(relation.Error).that.is.an('object').and.is.empty,
-                    expect(relation.Status).to.be.a('number').equal(201);
+                const relation = await generalService.fetchStatus('/account_users', {
+                    method: 'POST',
+                    body: JSON.stringify(relationObj),
+                });
+                expect(relation.Status).to.be.a('number').equal(201);
 
                 //update Account-Users
                 relationObj.Hidden = true;
 
-                const updatedRelation = await generalService.fetchStatus('POST', '/account_users', relationObj);
-                expect(updatedRelation.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedRelation.Error).that.is.an('object').and.is.empty,
-                    expect(updatedRelation.Status).to.be.a('number').equal(200);
+                const updatedRelation = await generalService.fetchStatus('/account_users', {
+                    method: 'POST',
+                    body: JSON.stringify(relationObj),
+                });
+                expect(updatedRelation.Status).to.be.a('number').equal(200);
 
                 //deletion for all objects
                 //lines
-                const deletedLine = await generalService.fetchStatus(
-                    'DELETE',
-                    '/transaction_lines/' + line.Body.InternalID,
-                );
-                expect(deletedLine.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedLine.Error).that.is.an('object').and.is.empty,
-                    expect(deletedLine.Status).to.be.a('number').equal(200);
+                const deletedLine = await generalService.fetchStatus('/transaction_lines/' + line.Body.InternalID, {
+                    method: 'DELETE',
+                });
+                expect(deletedLine.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const deletedTransaction = await generalService.fetchStatus(
-                    'DELETE',
                     '/transactions/' + transaction.Body.InternalID,
+                    { method: 'DELETE' },
                 );
                 expect(deletedTransaction.Ok).that.is.a('boolean').and.is.true,
                     expect(deletedTransaction.Error).that.is.an('object').and.is.empty,
                     expect(deletedTransaction.Status).to.be.a('number').equal(200);
 
                 //Item
-                const deletedItem = await generalService.fetchStatus('DELETE', '/items/' + item.Body.InternalID);
-                expect(deletedItem.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedItem.Error).that.is.an('object').and.is.empty,
-                    expect(deletedItem.Status).to.be.a('number').equal(200);
+                const deletedItem = await generalService.fetchStatus('/items/' + item.Body.InternalID, {
+                    method: 'DELETE',
+                });
+                expect(deletedItem.Status).to.be.a('number').equal(200);
 
                 //Activities
-                const deletedActivity = await generalService.fetchStatus(
-                    'DELETE',
-                    '/activities/' + activity.Body.InternalID,
-                );
-                expect(deletedActivity.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedActivity.Error).that.is.an('object').and.is.empty,
-                    expect(deletedActivity.Status).to.be.a('number').equal(200);
+                const deletedActivity = await generalService.fetchStatus('/activities/' + activity.Body.InternalID, {
+                    method: 'DELETE',
+                });
+                expect(deletedActivity.Status).to.be.a('number').equal(200);
 
                 //Contacts
-                const deletedContact = await generalService.fetchStatus(
-                    'DELETE',
-                    '/contacts/' + contact.Body.InternalID,
-                );
-                expect(deletedContact.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedContact.Error).that.is.an('object').and.is.empty,
-                    expect(deletedContact.Status).to.be.a('number').equal(200);
+                const deletedContact = await generalService.fetchStatus('/contacts/' + contact.Body.InternalID, {
+                    method: 'DELETE',
+                });
+                expect(deletedContact.Status).to.be.a('number').equal(200);
 
                 //Accounts
-                const deletedAccount = await generalService.fetchStatus(
-                    'DELETE',
-                    '/accounts/' + account.Body.InternalID,
-                );
-                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedAccount.Error).that.is.an('object').and.is.empty,
-                    expect(deletedAccount.Status).to.be.a('number').equal(200);
+                const deletedAccount = await generalService.fetchStatus('/accounts/' + account.Body.InternalID, {
+                    method: 'DELETE',
+                });
+                expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
         });
 

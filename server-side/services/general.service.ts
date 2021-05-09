@@ -32,7 +32,7 @@ const UserDataObject = {
     Server: 'pepperi.datacenter',
     IdpURL: 'iss',
 };
-type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';
+type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -216,29 +216,40 @@ export default class GeneralService {
             if (addonName == 'Services Framework' || addonName == 'Cross Platforms API' || !isPhased) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
-            let varLatestVersion;
-            try {
-                varLatestVersion = await fetch(
-                    `${this.client.BaseURL.replace(
-                        'papi-eu',
-                        'papi',
-                    )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
-                    {
-                        method: `GET`,
-                        headers: {
-                            Authorization: `${varKey}`,
-                        },
+            const fetchVarResponse = await this.fetchStatus(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `${varKey}`,
                     },
-                ).then((response) => response.json());
-            } catch (error) {
-                throw new Error(`Fetch Error - Verify The varKey, error: ${error}`);
+                },
+            );
+            let varLatestVersion;
+            if (fetchVarResponse.Status == 200) {
+                try {
+                    varLatestVersion = fetchVarResponse.Body[0].Version;
+                } catch (error) {
+                    throw new Error(
+                        `Get latest addon version failed: ${version}, Status: ${
+                            varLatestVersion.Status
+                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
+                    );
+                }
+            } else if (fetchVarResponse.Status == 401) {
+                throw new Error(
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.Header.title}`,
+                );
+            } else {
+                throw new Error(
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchVarResponse.Status
+                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
+                );
             }
-            try {
-                varLatestVersion = varLatestVersion[0].Version;
-            } catch (error) {
-                throw new Error(`No Version That Start With: ${version}, error: ${error}`);
-            }
-
             testData[addonName].push(varLatestVersion);
 
             let upgradeResponse = await this.papiClient.addons.installedAddons
@@ -281,164 +292,86 @@ export default class GeneralService {
         return testData;
     }
 
-    fetchStatus(
-        method: HttpMethod,
-        uri: string,
-        body?: any,
-        headers?: any,
-        timeout?: number,
-        size?: number,
-    ): Promise<FetchStatusResponse> {
+    fetchStatus(uri: string, requestInit?: FetchRequestInit): Promise<FetchStatusResponse> {
         const start = performance.now();
-        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
-            method: `${method}`,
-            body: JSON.stringify(body),
-            headers: {
-                Authorization: `Bearer ${this.papiClient['options'].token}`,
-                ...headers,
-            },
-            timeout: timeout,
-            size: size,
-        }).then(async (response) => {
-            const end = performance.now();
-            const isSucsess = response.status > 199 && response.status < 400 ? true : false;
-            console[isSucsess ? 'log' : 'debug'](
-                `%cFetch ${isSucsess ? '' : 'Error '}${method}: ${
-                    uri.startsWith('/') ? this['client'].BaseURL + uri : uri
-                } took ${(end - start).toFixed(2)} milliseconds`,
-                `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'}`,
-            );
-            const responseStr = await response.text();
-            let parsed: any = {};
-            let errorMessage: any = {};
-
-            try {
-                parsed = responseStr ? JSON.parse(responseStr) : '';
-            } catch {
-                if (responseStr.substring(10).includes('xml')) {
-                    parsed = { Type: 'xml' };
-                    errorMessage = parseResponse(responseStr);
-                } else if (responseStr.substring(10).includes('html')) {
-                    errorMessage = parseResponse(responseStr);
-                    parsed = { Type: 'html' };
-                } else {
-                    debugger;
-                    parsed = {};
-                    errorMessage = '';
-                }
-            }
-
-            const headersArr: any = {};
-            response.headers.forEach((value, key) => {
-                headersArr[key] = value;
-            });
-
-            return {
-                Ok: response.ok,
-                Status: response.status,
-                Headers: headersArr,
-                Body: parsed,
-                Error: errorMessage,
-            };
-        });
-    }
-
-    async fetchStatusNew(method: HttpMethod, URI: string, body?: any, timeout?: number, size?: number) {
-        const start = performance.now();
-        const response = await fetch(`${this['client'].BaseURL}${URI}`, {
-            method: `${method}`,
-            body: JSON.stringify(body),
-            headers: {
-                Authorization: `Bearer ${this.papiClient['options'].token}`,
-            },
-            timeout: timeout,
-            size: size,
-        });
-        const end = performance.now();
-        let cb1, cb2;
-        switch (response.status) {
-            case 200:
-            case 201: //200
-                console.log(
-                    `Fetch ${method}:`,
-                    this['client'].BaseURL + URI,
-                    'took',
-                    (end - start).toFixed(2),
-                    'milliseconds',
-                );
-                cb1 = await response.text();
-                try {
-                    cb2 = cb1 ? JSON.parse(cb1) : '';
-                    console.log({ cb2: cb2 });
-                } catch (err) {
-                    console.error(`Parsing Error Exception (200): ${err}`);
-                }
-                break;
-            case 400:
-            case 404: //400
-                console.error(
-                    `Error - Fetch ${method}:`,
-                    this['client'].BaseURL + URI,
-                    'took',
-                    (end - start).toFixed(2),
-                    'milliseconds',
-                );
-                cb1 = await response.text();
-                console.log({ cb1: cb1 });
-
-                try {
-                    cb2 = JSON.parse(cb1);
-
-                    console.log({ cb2: cb2 });
-                } catch {
-                    const res = cb1.split('faultstring');
-
-                    console.log(res);
-                }
-                break;
-            case 500:
-            case 501:
-            case 503: //500
-                console.error(
-                    `Error - Fetch ${method}:`,
-                    this['client'].BaseURL + URI,
-                    'took',
-                    (end - start).toFixed(2),
-                    'milliseconds',
-                );
-                cb1 = await response.text();
-                console.log({ cb1: cb1 });
-
-                try {
-                    cb2 = JSON.parse(cb1);
-                    debugger;
-                    console.log({ cb2: cb2 });
-                } catch {
-                    const res = cb1.split('<body>')[1];
-                    console.log(res);
-                    debugger;
-                }
-                break;
-            default:
-                throw new Error(`NotImplementedException, Status: ${response.status}`);
-        }
-
-        console.log(
-            `Fetch ${method} response:`,
-            response.ok,
-            response.status,
-            { response_headers: response.headers },
-            response.statusText,
-        );
-        debugger;
-        return {
-            Ok: response.ok, //Done
-            Status: response.status, //Done
-            Headers: response.headers, // Done
-            Body: cb2 ? cb2 : cb1, //3 options JSON/HTML/XML
-            Error: response.statusText,
-            Size: 0, //Remove
+        let responseStr: string;
+        let parsed: any = {};
+        let errorMessage: any = {};
+        let OptionalHeaders = {
+            Authorization: `Bearer ${this.papiClient['options'].token}`,
+            ...requestInit?.headers,
         };
+        if (requestInit?.headers?.Authorization === null) {
+            OptionalHeaders = undefined as any;
+        }
+        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
+            method: `${requestInit?.method ? requestInit?.method : 'GET'}`,
+            body: typeof requestInit?.body == 'string' ? requestInit.body : JSON.stringify(requestInit?.body),
+            headers: OptionalHeaders,
+            timeout: requestInit?.timeout,
+            size: requestInit?.size,
+        })
+            .then(async (response) => {
+                const end = performance.now();
+                const isSucsess = response.status > 199 && response.status < 400 ? true : false;
+                console[isSucsess ? 'log' : 'debug'](
+                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                        uri.startsWith('/') ? this['client'].BaseURL + uri : uri
+                    } took ${(end - start).toFixed(2)} milliseconds`,
+                    `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'}`,
+                );
+
+                try {
+                    responseStr = await response.text();
+                    parsed = responseStr ? JSON.parse(responseStr) : '';
+                } catch (error) {
+                    if (responseStr && responseStr.substring(20).includes('xml')) {
+                        parsed = {
+                            Type: 'xml',
+                            Text: responseStr,
+                        };
+                        errorMessage = parseResponse(responseStr);
+                    } else if (responseStr && responseStr.substring(20).includes('html')) {
+                        parsed = {
+                            Type: 'html',
+                            Text: responseStr,
+                        };
+                        errorMessage = parseResponse(responseStr);
+                    } else {
+                        parsed = {
+                            Type: 'Error',
+                            Text: responseStr,
+                        };
+                        errorMessage = error;
+                    }
+                }
+
+                const headersArr: any = {};
+                response.headers.forEach((value, key) => {
+                    headersArr[key] = value;
+                });
+
+                return {
+                    Ok: response.ok,
+                    Status: response.status,
+                    Headers: headersArr,
+                    Body: parsed,
+                    Error: errorMessage,
+                };
+            })
+            .catch((error) => {
+                console.error(`Error type: ${error.type}, ${error}`);
+                return {
+                    Ok: undefined as any,
+                    Status: undefined as any,
+                    Headers: undefined as any,
+                    Body: {
+                        Type: error.type,
+                        Name: error.name,
+                    },
+                    Error: error.message,
+                };
+            });
     }
 }
 
@@ -461,6 +394,16 @@ export interface FetchStatusResponse {
     Error: any;
 }
 
+export interface FetchRequestInit {
+    method?: HttpMethod;
+    body?: string;
+    headers?: {
+        [key: string]: string;
+    };
+    timeout?: number;
+    size?: number;
+}
+
 function parseResponse(responseStr) {
     const errorMessage: any = {};
     responseStr = responseStr.replace(/\s/g, '');
@@ -473,10 +416,12 @@ function parseResponse(responseStr) {
     const bodyStrTagsMatched = String(bodyStr.match(/(?<=)([\w\s\.\,\:\;\'\"]+)(?=<\/)..[\w\s]+/g));
     const bodyStrTagsArr = bodyStrTagsMatched.split(/,|<\//);
     for (let index = 1; index < headerTagsArr.length; index += 2) {
-        errorMessage[`Header.${headerTagsArr[index]}`] = headerTagsArr[index - 1];
+        errorMessage.Header = {};
+        errorMessage.Header[`${headerTagsArr[index]}`] = headerTagsArr[index - 1];
     }
     for (let index = 1; index < bodyStrTagsArr.length; index += 2) {
-        errorMessage[`Body.${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
+        errorMessage.Body = {};
+        errorMessage.Body[`${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
     }
     return errorMessage;
 }

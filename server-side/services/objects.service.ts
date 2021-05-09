@@ -14,7 +14,6 @@ import {
     Contact,
     BatchApiResponse,
 } from '@pepperi-addons/papi-sdk';
-import fetch from 'node-fetch';
 import GeneralService from './general.service';
 
 const apiCallsInterval = 400;
@@ -54,12 +53,14 @@ export class ObjectsService {
     }
 
     async getSecurityGroup(idpBaseURL: string) {
-        const securityGroups = await fetch(idpBaseURL + '/api/securitygroups', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + this.papiClient['options'].token,
-            },
-        }).then((data) => data.json());
+        const securityGroups = await this.generalService
+            .fetchStatus(idpBaseURL + '/api/securitygroups', {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + this.papiClient['options'].token,
+                },
+            })
+            .then((res) => res.Body);
         return securityGroups;
     }
 
@@ -189,6 +190,10 @@ export class ObjectsService {
         return this.papiClient.accounts.find(options);
     }
 
+    countAccounts(options?: FindOptions): Promise<number> {
+        return this.papiClient.accounts.count(options);
+    }
+
     getAllAccounts(options?: FindOptions) {
         return this.papiClient.accounts.iter(options).toArray();
     }
@@ -215,6 +220,32 @@ export class ObjectsService {
 
     postBatchUDT(body: UserDefinedTableRow[]): Promise<BatchApiResponse[]> {
         return this.papiClient.userDefinedTables.batch(body);
+    }
+
+    postBatchAccount(body: Account[]): Promise<BatchApiResponse[]> {
+        return this.papiClient.accounts.batch(body);
+    }
+
+    createBulkArray(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i]);
+        }
+        return bulkArray;
+    }
+
+    updateBulkArray(array) {
+        for (let i = 0; i < array.length; i++) {
+            array[i][1] += ' Update';
+        }
+        return array;
+    }
+
+    addHiddenBulkArray(array) {
+        for (let i = 0; i < array.length; i++) {
+            array[i].push('1');
+        }
+        return array;
     }
 
     deleteUDT(id: number): Promise<boolean> {

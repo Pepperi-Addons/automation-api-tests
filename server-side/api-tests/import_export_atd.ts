@@ -1,7 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { FieldsService } from '../services/fields.service';
 import { ImportExportATDService, MetaDataATD, MetaDataUDT } from '../services/import-export-atd.service';
-import fetch from 'node-fetch';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -430,9 +429,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         //     .that.contain('https://')
                         //     .and.contain('cdn.')
                         //     .and.contain('/TemporaryFiles/');
-                        // const exportATDResponseBeforeHiddenObject = await fetch(
-                        //     exportATDResponseBeforeHidden.URL,
-                        // ).then((response) => response.json());
+                        // const exportATDResponseBeforeHiddenObject = await generalService.fetchStatus(
+                        //     exportATDResponseBeforeHidden.URL
+                        // ).then((res) => res.Body);
 
                         //Delete
                         const testDeleteATD = await importExportATDService.postActivitiesATD({
@@ -478,9 +477,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         //     .that.contain('https://')
                         //     .and.contain('cdn.')
                         //     .and.contain('/TemporaryFiles/');
-                        // const exportATDResponseAfterRestoreObject = await fetch(
-                        //     exportATDResponseAfterRestore.URL,
-                        // ).then((response) => response.json());
+                        // const exportATDResponseAfterRestoreObject = await generalService.fetchStatus(
+                        //     exportATDResponseAfterRestore.URL
+                        // ).then((res) => res.Body);
                         // if (
                         //     Math.abs(
                         //         JSON.stringify(exportATDResponseBeforeHiddenObject).length -
@@ -788,8 +787,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
 
-                            const references = await fetch(JSON.parse(ATDExportObj.AuditInfo.ResultObject).URL)
-                                .then((response) => response.json())
+                            const references = await generalService
+                                .fetchStatus(JSON.parse(ATDExportObj.AuditInfo.ResultObject).URL)
+                                .then((res) => res.Body)
                                 .then((atd) => atd.References);
                             references[0].ID = 0;
                             const mappingResponse = await importExportATDService.exportMappingATD({
@@ -845,8 +845,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
 
-                            const references = await fetch(JSON.parse(ATDExportObj.AuditInfo.ResultObject).URL)
-                                .then((response) => response.json())
+                            const references = await generalService
+                                .fetchStatus(JSON.parse(ATDExportObj.AuditInfo.ResultObject).URL)
+                                .then((res) => res.Body)
                                 .then((atd) => atd.References);
                             references[0].ID = 0;
                             const mappingResponse = await importExportATDService.exportMappingATD({
@@ -926,9 +927,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-                                originalATDExportObj = await fetch(originalATDExportResponse.URL).then((response) =>
-                                    response.json(),
-                                );
+                                originalATDExportObj = await generalService
+                                    .fetchStatus(originalATDExportResponse.URL)
+                                    .then((res) => res.Body);
 
                                 testDataExistingActivityATD = await importExportATDService.postActivitiesATD(
                                     testDataATD(
@@ -984,9 +985,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-                                existingATDExportObj = await fetch(existingATDExportResponse.URL).then((response) =>
-                                    response.json(),
-                                );
+                                existingATDExportObj = await generalService
+                                    .fetchStatus(existingATDExportResponse.URL)
+                                    .then((res) => res.Body);
                             });
 
                             it(`Activity: ${activityName} copy to new ATD`, async () => {
@@ -1060,9 +1061,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         .that.contain('https://')
                                         .and.contain('cdn.')
                                         .and.contain('/TemporaryFiles/');
-                                    newATDExportObj = await fetch(newATDExportResponse.URL).then((response) =>
-                                        response.json(),
-                                    );
+                                    newATDExportObj = await generalService
+                                        .fetchStatus(newATDExportResponse.URL)
+                                        .then((res) => res.Body);
                                 } else {
                                     expect(isNewATD).to.be.false;
                                 }
@@ -1388,9 +1389,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-                                originalATDExportObj = await fetch(originalATDExportResponse.URL).then((response) =>
-                                    response.json(),
-                                );
+                                originalATDExportObj = await generalService
+                                    .fetchStatus(originalATDExportResponse.URL)
+                                    .then((res) => res.Body);
 
                                 testDataExistingTransactionATD = await importExportATDService.postTransactionsATD(
                                     testDataATD(
@@ -1453,9 +1454,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     .that.contain('https://')
                                     .and.contain('cdn.')
                                     .and.contain('/TemporaryFiles/');
-                                existingATDExportObj = await fetch(existingATDExportResponse.URL).then((response) =>
-                                    response.json(),
-                                );
+                                existingATDExportObj = await generalService
+                                    .fetchStatus(existingATDExportResponse.URL)
+                                    .then((res) => res.Body);
                             });
 
                             it(`Transaction: ${transactionName} copy to new ATD`, async () => {
@@ -1532,9 +1533,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                         .that.contain('https://')
                                         .and.contain('cdn.')
                                         .and.contain('/TemporaryFiles/');
-                                    newATDExportObj = await fetch(newATDExportResponse.URL).then((response) =>
-                                        response.json(),
-                                    );
+                                    newATDExportObj = await generalService
+                                        .fetchStatus(newATDExportResponse.URL)
+                                        .then((res) => res.Body);
                                 } else {
                                     expect(isNewATD).to.be.false;
                                 }
@@ -2054,8 +2055,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         let ATDExportResponse;
                         let ATDImportResponse;
                         it('Post ATD to Override Existing ATD', async () => {
-                            const references = await fetch(TransactionsATDArr[index].URL)
-                                .then((response) => response.json())
+                            const references = await generalService
+                                .fetchStatus(TransactionsATDArr[index].URL)
+                                .then((res) => res.Body)
                                 .then((atd) => atd.References);
                             const mappingResponse = await importExportATDService.exportMappingATD({
                                 References: references,
@@ -2118,13 +2120,13 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 .and.contain('cdn.')
                                 .and.contain('/TemporaryFiles/');
 
-                            beforeATDExportObj = await fetch(TransactionsATDArr[index].URL).then((response) =>
-                                response.json(),
-                            );
+                            beforeATDExportObj = await generalService
+                                .fetchStatus(TransactionsATDArr[index].URL)
+                                .then((res) => res.Body);
 
-                            afterATDExportObj = await fetch(afterATDExportResponse.URL).then((response) =>
-                                response.json(),
-                            );
+                            afterATDExportObj = await generalService
+                                .fetchStatus(afterATDExportResponse.URL)
+                                .then((res) => res.Body);
 
                             RemoveUntestedMembers(beforeATDExportObj);
                             RemoveUntestedMembers(afterATDExportObj);
@@ -2572,9 +2574,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     let afterATDExportObj;
 
                     it("Export JSON Objects From Both URL's", async () => {
-                        beforeATDExportObj = await fetch(beforeURL).then((response) => response.json());
+                        beforeATDExportObj = await generalService.fetchStatus(beforeURL).then((res) => res.Body);
 
-                        afterATDExportObj = await fetch(afterURL).then((response) => response.json());
+                        afterATDExportObj = await generalService.fetchStatus(afterURL).then((res) => res.Body);
 
                         RemoveUntestedMembers(beforeATDExportObj);
                         RemoveUntestedMembers(afterATDExportObj);
