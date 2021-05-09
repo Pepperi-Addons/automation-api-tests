@@ -158,7 +158,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(accountObj),
                 });
 
-                expect(account.Status).to.be.a('number').equal(201);
+                expect(account.Ok).that.is.a('boolean').and.is.true,
+                    expect(account.Error).that.is.an('object').and.is.empty,
+                    expect(account.Status).to.be.a('number').equal(201);
 
                 //update Account
                 accountObj.Prop1 = 'Prop 11';
@@ -170,7 +172,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(accountObj),
                 });
-                expect(updatedAccount.Status).to.be.a('number').equal(200);
+                expect(updatedAccount.Ok).that.is.a('boolean').and.is.true,
+                    expect(updatedAccount.Error).that.is.an('object').and.is.empty,
+                    expect(updatedAccount.Status).to.be.a('number').equal(200);
 
                 //create contacts
                 const contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
@@ -192,7 +196,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(contactObj),
                 });
-                expect(contact.Status).to.be.a('number').equal(201);
+                expect(contact.Ok).that.is.a('boolean').and.is.true,
+                    expect(contact.Error).that.is.an('object').and.is.empty,
+                    expect(contact.Status).to.be.a('number').equal(201);
 
                 //update contact
                 contactObj.Phone = '123-45678-1337';
@@ -202,8 +208,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(contactObj),
                 });
-
-                expect(updatedContact.Status).to.be.a('number').equal(200);
+                expect(updatedContact.Ok).that.is.a('boolean').and.is.true,
+                    expect(updatedContact.Error).that.is.an('object').and.is.empty,
+                    expect(updatedContact.Status).to.be.a('number').equal(200);
 
                 //create activities
                 const activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
@@ -223,7 +230,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(activityObj),
                 });
-                expect(activity.Status).to.be.a('number').equal(201);
+                expect(activity.Ok).that.is.a('boolean').and.is.true,
+                    expect(activity.Error).that.is.an('object').and.is.empty,
+                    expect(activity.Status).to.be.a('number').equal(201);
 
                 //update activities
                 activityObj.Status = 2;
@@ -232,7 +241,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(activityObj),
                 });
-                expect(updatedActivity.Status).to.be.a('number').equal(200);
+                expect(updatedActivity.Ok).that.is.a('boolean').and.is.true,
+                    expect(updatedActivity.Error).that.is.an('object').and.is.empty,
+                    expect(updatedActivity.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const transactionExternalID =
@@ -257,7 +268,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(transactionObj),
                 });
-                expect(transaction.Status).to.be.a('number').equal(201);
+                expect(transaction.Ok).that.is.a('boolean').and.is.true,
+                    expect(transaction.Error).that.is.an('object').and.is.empty,
+                    expect(transaction.Status).to.be.a('number').equal(201);
 
                 //update Transaction
                 transactionObj.Status = 2;
@@ -265,7 +278,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(transactionObj),
                 });
-                expect(updatedTransaction.Status).to.be.a('number').equal(200);
+                expect(updatedTransaction.Ok).that.is.a('boolean').and.is.true,
+                    expect(updatedTransaction.Error).that.is.an('object').and.is.empty,
+                    expect(updatedTransaction.Status).to.be.a('number').equal(200);
 
                 //create Items
                 const itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -289,7 +304,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(itemObj),
                 });
-                expect(item.Status).to.be.a('number').equal(201);
+                expect(item.Ok).that.is.a('boolean').and.is.true,
+                    expect(item.Error).that.is.an('object').and.is.empty,
+                    expect(item.Status).to.be.a('number').equal(201);
 
                 //update items
                 itemObj.Price = 2.0;
@@ -301,7 +318,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(itemObj),
                 });
-                expect(updatedItem.Status).to.be.a('number').equal(200);
+                expect(updatedItem.Ok).that.is.a('boolean').and.is.true,
+                    expect(updatedItem.Error).that.is.an('object').and.is.empty,
+                    expect(updatedItem.Status).to.be.a('number').equal(200);
 
                 //create inventory
                 const inventoryObj = {
@@ -320,7 +339,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(inventoryObj),
                 });
-                expect(inventory.Status).to.be.a('number').equal(201);
+                expect(inventory.Ok).that.is.a('boolean').and.is.true,
+                    expect(inventory.Error).that.is.an('object').and.is.empty,
+                    expect(inventory.Status).to.be.a('number').equal(201);
 
                 //update inventory
                 inventoryObj.InStockQuantity = 4;
@@ -329,7 +350,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(inventoryObj),
                 });
-                expect(updateInventory.Status).to.be.a('number').equal(200);
+                expect(updateInventory.Ok).that.is.a('boolean').and.is.true,
+                    expect(updateInventory.Error).that.is.an('object').and.is.empty,
+                    expect(updateInventory.Status).to.be.a('number').equal(200);
 
                 //create Lines
                 const lineObj = {
@@ -343,7 +366,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(lineObj),
                 });
-                expect(line.Status).to.be.a('number').equal(201);
+                expect(line.Ok).that.is.a('boolean').and.is.true,
+                    expect(line.Error).that.is.an('object').and.is.empty,
+                    expect(line.Status).to.be.a('number').equal(201);
 
                 //update lines
                 lineObj.UnitsQuantity = 3;
@@ -352,7 +377,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(lineObj),
                 });
-                expect(upcatedLine.Status).to.be.a('number').equal(200);
+                expect(upcatedLine.Ok).that.is.a('boolean').and.is.true,
+                    expect(upcatedLine.Error).that.is.an('object').and.is.empty,
+                    expect(upcatedLine.Status).to.be.a('number').equal(200);
 
                 //create Account-Users
                 const relationObj = {
@@ -377,7 +404,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(relationObj),
                 });
-                expect(relation.Status).to.be.a('number').equal(201);
+                expect(relation.Ok).that.is.a('boolean').and.is.true,
+                    expect(relation.Error).that.is.an('object').and.is.empty,
+                    expect(relation.Status).to.be.a('number').equal(201);
 
                 //update Account-Users
                 relationObj.Hidden = true;
@@ -386,14 +415,18 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(relationObj),
                 });
-                expect(updatedRelation.Status).to.be.a('number').equal(200);
+                expect(updatedRelation.Ok).that.is.a('boolean').and.is.true,
+                    expect(updatedRelation.Error).that.is.an('object').and.is.empty,
+                    expect(updatedRelation.Status).to.be.a('number').equal(200);
 
                 //deletion for all objects
                 //lines
                 const deletedLine = await generalService.fetchStatus('/transaction_lines/' + line.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedLine.Status).to.be.a('number').equal(200);
+                expect(deletedLine.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedLine.Error).that.is.an('object').and.is.empty,
+                    expect(deletedLine.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const deletedTransaction = await generalService.fetchStatus(
@@ -408,25 +441,33 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 const deletedItem = await generalService.fetchStatus('/items/' + item.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedItem.Status).to.be.a('number').equal(200);
+                expect(deletedItem.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedItem.Error).that.is.an('object').and.is.empty,
+                    expect(deletedItem.Status).to.be.a('number').equal(200);
 
                 //Activities
                 const deletedActivity = await generalService.fetchStatus('/activities/' + activity.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedActivity.Status).to.be.a('number').equal(200);
+                expect(deletedActivity.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedActivity.Error).that.is.an('object').and.is.empty,
+                    expect(deletedActivity.Status).to.be.a('number').equal(200);
 
                 //Contacts
                 const deletedContact = await generalService.fetchStatus('/contacts/' + contact.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedContact.Status).to.be.a('number').equal(200);
+                expect(deletedContact.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedContact.Error).that.is.an('object').and.is.empty,
+                    expect(deletedContact.Status).to.be.a('number').equal(200);
 
                 //Accounts
                 const deletedAccount = await generalService.fetchStatus('/accounts/' + account.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedAccount.Status).to.be.a('number').equal(200);
+                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedAccount.Error).that.is.an('object').and.is.empty,
+                    expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
         });
 
