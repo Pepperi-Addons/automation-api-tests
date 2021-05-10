@@ -142,7 +142,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
         describe('Prerequisites Addon for Elastic Search Tests', () => {
             //Test Data
             //PepperiElasticSearch
-            it('Validate that all the needed addons are installed', async () => {
+            it('Validate That All The Needed Addons Installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
                 });
