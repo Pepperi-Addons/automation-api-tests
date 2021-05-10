@@ -40,7 +40,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', () => {
-        it('Validate that all the needed addons are installed', async () => {
+        it('Validate That All The Needed Addons Installed', async () => {
             isInstalledArr.forEach((isInstalled) => {
                 expect(isInstalled).to.be.true;
             });

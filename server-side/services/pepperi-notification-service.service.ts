@@ -58,8 +58,6 @@ export class PepperiNotificationServiceService {
                 },
                 body: JSON.stringify(putData),
             })
-            .then((res) => {
-                res.Body;
-            });
+            .then((res) => res.Body);
     }
 }

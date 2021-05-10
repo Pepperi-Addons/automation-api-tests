@@ -153,7 +153,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         describe('Prerequisites Addon for Data Index Tests', () => {
             //Test Datas
             //Data Index, Pepperi Notification Service
-            it('Validate that all the needed addons are installed', async () => {
+            it('Validate That All The Needed Addons Installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
                 });
