@@ -35,7 +35,12 @@ import { CodeJobsAddonTests } from './api-tests/code_jobs_addon';
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
-import { ObjectsTests } from './api-tests/objects';
+import { UDTTests } from './api-tests/udt';
+import { UsersTests } from './api-tests/users';
+import { AccountsTests } from './api-tests/accounts';
+import { ContactsTests } from './api-tests/contacts';
+import { GeneralActivitiesTests } from './api-tests/general_activities';
+import { TransactionTests } from './api-tests/transactions';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
 //#endregion Yoni's Tests
@@ -143,30 +148,6 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
         sync(client, testerFunctions),
         file_storage(client, testerFunctions),
         fields(client, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    PrintMemoryUseToLog('End', testName);
-    testName = '';
-    return testResult;
-}
-
-export async function sanity(client: Client, testerFunctions: TesterFunctions) {
-    testName = 'Sanity';
-    PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        audit_logs(client, testerFunctions),
-        objects(client, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     testName = '';
@@ -744,33 +725,148 @@ export async function code_jobs_retry(client: Client, testerFunctions: TesterFun
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
-export async function objects(client: Client, testerFunctions: TesterFunctions) {
+export async function udt(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    if (testName != 'Objects' && testName != 'Sanity') {
-        testName = 'Objects';
-        PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            ObjectsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-        PrintMemoryUseToLog('End', testName);
-        testName = '';
-        return testResult;
-    } else {
-        return ObjectsTests(service, testerFunctions);
-    }
+    testName = 'UDT';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        UDTTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function users(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Users';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        UsersTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function accounts(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Accounts';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AccountsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function contacts(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Contacts';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ContactsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function general_activities(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'General_Activities';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        GeneralActivitiesTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function transactions(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Transactions';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        TransactionTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
 }
 
 export async function elastic_search(client: Client, request: Request, testerFunctions: TesterFunctions) {
