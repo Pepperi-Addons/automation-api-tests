@@ -233,7 +233,7 @@ export async function PepperiNotificationServiceTests(
                 //     expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
                 // });
 
-                it('Validate New Transaction Line Created With Transaction Line (TSA1 - UnitsQuantity = 25)', async () => {
+                it('Validate New Transaction Line Created (TSA1 - UnitsQuantity = 25)', async () => {
                     const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
                     expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
                         createdTransactionLines.InternalID,
@@ -247,7 +247,7 @@ export async function PepperiNotificationServiceTests(
                         InternalID: createdTransaction.InternalID,
                         Remark: 'Adding Remark as the 2nd TSA',
                     });
-                    expect(updatedTransaction.Data[0].InternalID).to.equal(createdTransactionLines.InternalID);
+                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
                 });
 
                 it('Validate Transaction Updated (TSA2 - Remark)', async () => {
@@ -259,7 +259,7 @@ export async function PepperiNotificationServiceTests(
                     expect(createdObject.Remark).to.equal('Adding Remark as the 2nd TSA');
                 });
 
-                it(`Create transaction line with WACD ${testID + 0}`, async () => {
+                it(`Update Transaction Line with WACD (ID: ${testID + 0}) (TSA1 - UnitsQuantity = 15)`, async () => {
                     const putSyncResponse = await pepperiNotificationServiceService.putSync(
                         {
                             putData: {
@@ -280,7 +280,7 @@ export async function PepperiNotificationServiceTests(
                                             itemArr[0].ExternalID,
                                             '0',
                                             String(createdTransaction.UUID),
-                                            '77',
+                                            '15',
                                             String(Math.floor(Math.random() * -1000000)),
                                             '0',
                                         ],
@@ -302,7 +302,7 @@ export async function PepperiNotificationServiceTests(
                     return Promise.all([
                         expect(getCreatedTransactionLineResponse[0]).to.include({
                             LineNumber: 0,
-                            UnitsQuantity: 77,
+                            UnitsQuantity: 15,
                         }),
                         expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
                             JSON.stringify({
@@ -368,6 +368,32 @@ export async function PepperiNotificationServiceTests(
                 //     expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(77);
                 //     expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
                 // });
+
+                it('Validate New Transaction Line Updated (TSA1 - UnitsQuantity = 15)', async () => {
+                    const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
+                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                        createdTransactionLines.InternalID,
+                    );
+                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
+                    expect(createdObject.Remark).to.equal('Adding Remark as the 2nd TSA');
+                });
+
+                it('Update Transaction With SDK (TSA2 - Remark)', async () => {
+                    const updatedTransaction = await objectsService.createTransaction({
+                        InternalID: createdTransaction.InternalID,
+                        Remark: 'Updatating Remark as the 2nd TSA',
+                    });
+                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                });
+
+                it('Validate Transaction Updated (TSA2 - Remark)', async () => {
+                    const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
+                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                        createdTransactionLines.InternalID,
+                    );
+                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
+                    expect(createdObject.Remark).to.equal('Updatating Remark as the 2nd TSA');
+                });
             });
 
             describe('WACD', () => {
@@ -389,134 +415,193 @@ export async function PepperiNotificationServiceTests(
                     for (let index = 0; index < pnsTestScenariosArr.length; index++) {
                         const testName = pnsTestScenariosArr[index].Name;
                         const testType = pnsTestScenariosArr[index].Type;
-                        it(`Post PUT That ${testName} TestID ${testID + index + 1}`, async () => {
-                            const putSyncResponse = await pepperiNotificationServiceService.putSync(
-                                {
-                                    putData: {
-                                        10: {
-                                            SubType: '',
-                                            Headers: [
-                                                'ItemWrntyID',
-                                                'ItemExternalID',
-                                                'LineNumber',
-                                                'TransactionUUID',
-                                                'UnitsQuantity',
-                                                'WrntyID',
-                                                'Hidden',
-                                            ],
-                                            Lines: [
-                                                [
-                                                    String(itemArr[0].InternalID),
-                                                    itemArr[0].ExternalID,
-                                                    '0',
-                                                    String(createdTransaction.UUID),
-                                                    `${11 * (1 + index)}`,
-                                                    String(Math.floor(Math.random() * -1000000)),
-                                                    '0',
-                                                ],
-                                            ],
-                                        },
-                                    },
-                                    nucleus_crud_type: testType,
-                                },
-                                testID + index,
-                            );
-
-                            console.log({ testType: putSyncResponse });
-                            if (testName == 'Stop After DB') {
-                                expect(putSyncResponse).to.be.false;
-                            } else {
-                                expect(putSyncResponse).to.be.true;
-                            }
-
-                            const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
-                                where: `TransactionInternalID=${createdTransaction.InternalID}`,
-                            });
-                            //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
-
-                            if (testName == 'Stop After DB') {
-                                expect(getCreatedTransactionLineResponse[0]).to.not.include({
-                                    LineNumber: 0,
-                                    UnitsQuantity: 11 * (1 + index),
+                        describe(testName, () => {
+                            it('Reset The Transaction With SDK (TSA2 - Remark)', async () => {
+                                const updatedTransaction = await objectsService.createTransaction({
+                                    InternalID: createdTransaction.InternalID,
+                                    Remark: '',
                                 });
-                            } else {
-                                return Promise.all([
-                                    expect(getCreatedTransactionLineResponse[0]).to.include({
-                                        LineNumber: 0,
-                                        UnitsQuantity: 11 * (1 + index),
-                                    }),
-                                    expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
-                                        JSON.stringify({
-                                            Data: {
-                                                InternalID: itemArr[0].InternalID,
-                                                UUID: itemArr[0].UUID,
-                                                ExternalID: itemArr[0].ExternalID,
-                                            },
-                                            URI: '/items/' + itemArr[0].InternalID,
-                                        }),
-                                    ),
-                                    expect(JSON.stringify(getCreatedTransactionLineResponse[0].Transaction)).equals(
-                                        JSON.stringify({
-                                            Data: {
-                                                InternalID: createdTransaction.InternalID,
-                                                UUID: createdTransaction.UUID,
-                                                ExternalID: createdTransaction.ExternalID,
-                                            },
-                                            URI: '/transactions/' + createdTransaction.InternalID,
-                                        }),
-                                    ),
-                                    expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
-                                        createdTransactionLines.InternalID,
-                                    ),
-                                    expect(getCreatedTransactionLineResponse[0].UUID).to.include(
-                                        createdTransactionLines.UUID,
-                                    ),
-                                    expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
-                                        new Date().toISOString().split('T')[0],
-                                    ),
-                                    expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain('Z'),
-                                    expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
-                                        new Date().toISOString().split('T')[0],
-                                    ),
-                                    expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
-                                    expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
-                                    expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                                    expect(
-                                        await objectsService.getTransactionLines({
-                                            where: `TransactionInternalID=${createdTransaction.InternalID}`,
-                                        }),
-                                    )
-                                        .to.be.an('array')
-                                        .with.lengthOf(1),
-                                ]);
-                            }
-                        });
+                                expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                                expect(updatedTransaction.Remark).to.equal('');
+                            });
 
-                        // it(`Validate ${
-                        //     testName == 'Stop After DB' ? 'No New' : ''
-                        // } PNS Triggered for Update When ${testName}`, async () => {
-                        //     let schema;
-                        //     let maxLoopsCounter = 15;
-                        //     do {
-                        //         generalService.sleep(1500);
-                        //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                        //             order_by: 'ModificationDateTime DESC',
-                        //         });
-                        //         maxLoopsCounter--;
-                        //     } while (
-                        //         (!schema[0].Key.startsWith('Update') ||
-                        //             schema[0].TransactioInfo.UnitsQuantity != 11 * (1 + index) ||
-                        //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                        //         maxLoopsCounter > 0
-                        //     );
-                        //     if (testName == 'Stop After DB') {
-                        //         expect(schema[0].TransactioInfo.UnitsQuantity).to.not.equal(11 * (1 + index));
-                        //     } else {
-                        //         expect(schema[0].Key).to.be.a('String').and.contain('Update');
-                        //         expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(11 * (1 + index));
-                        //         expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
-                        //     }
-                        // });
+                            it(`Post PUT That ${testName} TestID ${testID + index + 1} (TSA1 - UnitsQuantity = ${
+                                11 * (1 + index)
+                            }`, async () => {
+                                const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                                    {
+                                        putData: {
+                                            10: {
+                                                SubType: '',
+                                                Headers: [
+                                                    'ItemWrntyID',
+                                                    'ItemExternalID',
+                                                    'LineNumber',
+                                                    'TransactionUUID',
+                                                    'UnitsQuantity',
+                                                    'WrntyID',
+                                                    'Hidden',
+                                                ],
+                                                Lines: [
+                                                    [
+                                                        String(itemArr[0].InternalID),
+                                                        itemArr[0].ExternalID,
+                                                        '0',
+                                                        String(createdTransaction.UUID),
+                                                        `${11 * (1 + index)}`,
+                                                        String(Math.floor(Math.random() * -1000000)),
+                                                        '0',
+                                                    ],
+                                                ],
+                                            },
+                                        },
+                                        nucleus_crud_type: testType,
+                                    },
+                                    testID + index,
+                                );
+
+                                console.log({ testType: putSyncResponse });
+                                if (testName == 'Stop After DB') {
+                                    expect(putSyncResponse).to.be.false;
+                                } else {
+                                    expect(putSyncResponse).to.be.true;
+                                }
+
+                                const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
+                                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                                });
+                                //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
+
+                                if (testName == 'Stop After DB') {
+                                    expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(15);
+                                } else {
+                                    return Promise.all([
+                                        expect(getCreatedTransactionLineResponse[0]).to.include({
+                                            LineNumber: 0,
+                                            UnitsQuantity: 11 * (1 + index),
+                                        }),
+                                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
+                                            JSON.stringify({
+                                                Data: {
+                                                    InternalID: itemArr[0].InternalID,
+                                                    UUID: itemArr[0].UUID,
+                                                    ExternalID: itemArr[0].ExternalID,
+                                                },
+                                                URI: '/items/' + itemArr[0].InternalID,
+                                            }),
+                                        ),
+                                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Transaction)).equals(
+                                            JSON.stringify({
+                                                Data: {
+                                                    InternalID: createdTransaction.InternalID,
+                                                    UUID: createdTransaction.UUID,
+                                                    ExternalID: createdTransaction.ExternalID,
+                                                },
+                                                URI: '/transactions/' + createdTransaction.InternalID,
+                                            }),
+                                        ),
+                                        expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
+                                            createdTransactionLines.InternalID,
+                                        ),
+                                        expect(getCreatedTransactionLineResponse[0].UUID).to.include(
+                                            createdTransactionLines.UUID,
+                                        ),
+                                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
+                                            new Date().toISOString().split('T')[0],
+                                        ),
+                                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain('Z'),
+                                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
+                                            new Date().toISOString().split('T')[0],
+                                        ),
+                                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
+                                            'Z',
+                                        ),
+                                        expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
+                                        expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                                        expect(
+                                            await objectsService.getTransactionLines({
+                                                where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                                            }),
+                                        )
+                                            .to.be.an('array')
+                                            .with.lengthOf(1),
+                                    ]);
+                                }
+                            });
+
+                            // it(`Validate ${
+                            //     testName == 'Stop After DB' ? 'No New' : ''
+                            // } PNS Triggered for Update When ${testName}`, async () => {
+                            //     let schema;
+                            //     let maxLoopsCounter = 15;
+                            //     do {
+                            //         generalService.sleep(1500);
+                            //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            //             order_by: 'ModificationDateTime DESC',
+                            //         });
+                            //         maxLoopsCounter--;
+                            //     } while (
+                            //         (!schema[0].Key.startsWith('Update') ||
+                            //             schema[0].TransactioInfo.UnitsQuantity != 11 * (1 + index) ||
+                            //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
+                            //         maxLoopsCounter > 0
+                            //     );
+                            //     if (testName == 'Stop After DB') {
+                            //         expect(schema[0].TransactioInfo.UnitsQuantity).to.not.equal(11 * (1 + index));
+                            //     } else {
+                            //         expect(schema[0].Key).to.be.a('String').and.contain('Update');
+                            //         expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(11 * (1 + index));
+                            //         expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
+                            //     }
+                            // });
+
+                            it(`Validate New Transaction Line Updated (TSA1 - UnitsQuantity = ${
+                                index == 0 ? 15 : 11 * (1 + index)
+                            }${index == 0 ? ' (Negative)' : ''}`, async () => {
+                                const createdObject = await objectsService.getTransactionByID(
+                                    createdTransaction.InternalID,
+                                );
+                                expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                                    createdTransactionLines.InternalID,
+                                );
+                                if (index == 0) {
+                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
+                                } else {
+                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                        11 * (1 + index),
+                                    );
+                                }
+                                expect(createdObject.Remark).to.equal('');
+                            });
+
+                            it('Update Transaction With SDK (TSA2 - Remark)', async () => {
+                                const updatedTransaction = await objectsService.createTransaction({
+                                    InternalID: createdTransaction.InternalID,
+                                    Remark: 'Updatating Remark as the 2nd TSA',
+                                });
+                                expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                            });
+
+                            it(`Validate Transaction Updated (TSA2 - Remark)${
+                                index == 0 ? ' (Negative)' : ''
+                            }`, async () => {
+                                const createdObject = await objectsService.getTransactionByID(
+                                    createdTransaction.InternalID,
+                                );
+                                expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                                    createdTransactionLines.InternalID,
+                                );
+
+                                if (index == 0) {
+                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
+                                } else {
+                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                        11 * (1 + index),
+                                    );
+                                }
+                                expect(createdObject.Remark).to.equal('Updatating Remark as the 2nd TSA');
+                            });
+                        });
                     }
                 });
             });
