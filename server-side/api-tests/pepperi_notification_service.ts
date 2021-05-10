@@ -427,7 +427,7 @@ export async function PepperiNotificationServiceTests(
 
                             it(`Post PUT That ${testName} TestID ${testID + index + 1} (TSA1 - UnitsQuantity = ${
                                 11 * (1 + index)
-                            }`, async () => {
+                            })`, async () => {
                                 const putSyncResponse = await pepperiNotificationServiceService.putSync(
                                     {
                                         putData: {
@@ -474,6 +474,10 @@ export async function PepperiNotificationServiceTests(
 
                                 if (testName == 'Stop After DB') {
                                     expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(15);
+                                } else if (testName == 'Stop After Redis') {
+                                    expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(
+                                        11 * (1 + index - 1),
+                                    );
                                 } else {
                                     return Promise.all([
                                         expect(getCreatedTransactionLineResponse[0]).to.include({
@@ -556,8 +560,8 @@ export async function PepperiNotificationServiceTests(
                             // });
 
                             it(`Validate New Transaction Line Updated (TSA1 - UnitsQuantity = ${
-                                index == 0 ? 15 : 11 * (1 + index)
-                            }${index == 0 ? ' (Negative)' : ''}`, async () => {
+                                index == 0 ? 15 : index == 2 ? 11 * (1 + index - 1) : 11 * (1 + index)
+                            })${index == 0 ? ' (Negative)' : index == 2 ? ' (Negative)' : ''}`, async () => {
                                 const createdObject = await objectsService.getTransactionByID(
                                     createdTransaction.InternalID,
                                 );
@@ -566,6 +570,10 @@ export async function PepperiNotificationServiceTests(
                                 );
                                 if (index == 0) {
                                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
+                                } else if (index == 2) {
+                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                        11 * (1 + index - 1),
+                                    );
                                 } else {
                                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
                                         11 * (1 + index),
@@ -583,7 +591,7 @@ export async function PepperiNotificationServiceTests(
                             });
 
                             it(`Validate Transaction Updated (TSA2 - Remark)${
-                                index == 0 ? ' (Negative)' : ''
+                                index == 2 ? ' (Negative)' : ''
                             }`, async () => {
                                 const createdObject = await objectsService.getTransactionByID(
                                     createdTransaction.InternalID,
@@ -591,9 +599,10 @@ export async function PepperiNotificationServiceTests(
                                 expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
                                     createdTransactionLines.InternalID,
                                 );
-
-                                if (index == 0) {
-                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
+                                if (index == 2) {
+                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                        11 * (1 + index - 1),
+                                    );
                                 } else {
                                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
                                         11 * (1 + index),
