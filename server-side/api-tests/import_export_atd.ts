@@ -260,7 +260,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             });
 
             //ImportExportATD, Data Views API
-            it('Validate that all the needed addons are installed', async () => {
+            it('Validate That All The Needed Addons Installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
                 });

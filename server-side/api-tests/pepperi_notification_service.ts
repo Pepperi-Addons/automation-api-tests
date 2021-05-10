@@ -2,7 +2,7 @@ import { Catalog, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { NucleusFlagType, PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ObjectsService } from '../services/objects.service';
-import { ADALService } from '../services/adal.service';
+//import { ADALService } from '../services/adal.service';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -13,13 +13,13 @@ export async function PepperiNotificationServiceTests(
 ) {
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
     const objectsService = new ObjectsService(generalService);
-    const adalService = new ADALService(generalService.papiClient);
+    //const adalService = new ADALService(generalService.papiClient);
 
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+    //const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
@@ -31,7 +31,7 @@ export async function PepperiNotificationServiceTests(
 
     describe('Pepperi Notification Service Tests Suites', () => {
         const testID = Math.floor(Math.random() * 10000000);
-        const schemaName = 'PNS Test';
+        //const schemaName = 'PNS Test';
         let atdArr;
         let catalogArr: Catalog[];
         let itemArr: Item[];
@@ -42,7 +42,7 @@ export async function PepperiNotificationServiceTests(
         describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
             //Test Data
             //Pepperi Notification Service
-            it('Validate that all the needed addons are installed', async () => {
+            it('Validate That All The Needed Addons Installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
                 });
@@ -74,7 +74,7 @@ export async function PepperiNotificationServiceTests(
 
         describe('Endpoints', () => {
             describe('POST', () => {
-                it('Create transaction', async () => {
+                it('Create Transaction', async () => {
                     atdArr = await objectsService.getATD('transactions');
                     transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
                         return res[0];
@@ -140,7 +140,7 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
-                it('Create transaction line with SDK', async () => {
+                it('Create Transaction Line With SDK (TSA1 - UnitsQuantity = 25)', async () => {
                     itemArr = await objectsService.getItems({ page_size: 1 });
                     createdTransactionLines = await objectsService.createTransactionLine({
                         LineNumber: 0,
@@ -157,11 +157,11 @@ export async function PepperiNotificationServiceTests(
                         },
                     });
 
-                    console.log({ createdTransactionLines: createdTransactionLines });
+                    //console.log({ createdTransactionLines: createdTransactionLines });
                     const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
                         where: `TransactionInternalID=${createdTransaction.InternalID}`,
                     });
-                    console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
+                    //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
                     return Promise.all([
                         expect(getCreatedTransactionLineResponse[0]).to.include({
@@ -212,25 +212,51 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
-                it('Validate PNS Triggered for Insert', async () => {
-                    let schema;
-                    let maxLoopsCounter = 30;
-                    do {
-                        generalService.sleep(1500);
-                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'ModificationDateTime DESC',
-                        });
-                        maxLoopsCounter--;
-                    } while (
-                        (!schema[0].Key.startsWith('Insert') ||
-                            schema[0].TransactioInfo.UnitsQuantity != 25 ||
-                            schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                        maxLoopsCounter > 0
-                    );
+                // it('Validate PNS Triggered for Insert', async () => {
+                //     let schema;
+                //     let maxLoopsCounter = 30;
+                //     do {
+                //         generalService.sleep(1500);
+                //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                //             order_by: 'ModificationDateTime DESC',
+                //         });
+                //         maxLoopsCounter--;
+                //     } while (
+                //         (!schema[0].Key.startsWith('Insert') ||
+                //             schema[0].TransactioInfo.UnitsQuantity != 25 ||
+                //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
+                //         maxLoopsCounter > 0
+                //     );
 
-                    expect(schema[0].Key).to.be.a('String').and.contain('Insert');
-                    expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(25);
-                    expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
+                //     expect(schema[0].Key).to.be.a('String').and.contain('Insert');
+                //     expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(25);
+                //     expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
+                // });
+
+                it('Validate New Transaction Line Created With Transaction Line (TSA1 - UnitsQuantity = 25)', async () => {
+                    const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
+                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                        createdTransactionLines.InternalID,
+                    );
+                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(25);
+                    expect(createdObject.Remark).to.equal('');
+                });
+
+                it('Update Transaction With SDK (TSA2 - Remark)', async () => {
+                    const updatedTransaction = await objectsService.createTransaction({
+                        InternalID: createdTransaction.InternalID,
+                        Remark: 'Adding Remark as the 2nd TSA',
+                    });
+                    expect(updatedTransaction.Data[0].InternalID).to.equal(createdTransactionLines.InternalID);
+                });
+
+                it('Validate Transaction Updated (TSA2 - Remark)', async () => {
+                    const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
+                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                        createdTransactionLines.InternalID,
+                    );
+                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(25);
+                    expect(createdObject.Remark).to.equal('Adding Remark as the 2nd TSA');
                 });
 
                 it(`Create transaction line with WACD ${testID + 0}`, async () => {
@@ -271,7 +297,7 @@ export async function PepperiNotificationServiceTests(
                     const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
                         where: `TransactionInternalID=${createdTransaction.InternalID}`,
                     });
-                    console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
+                    //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
                     return Promise.all([
                         expect(getCreatedTransactionLineResponse[0]).to.include({
@@ -322,26 +348,26 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
-                it('Validate PNS Triggered for Update', async () => {
-                    let schema;
-                    let maxLoopsCounter = 30;
-                    do {
-                        generalService.sleep(1500);
-                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'ModificationDateTime DESC',
-                        });
-                        maxLoopsCounter--;
-                    } while (
-                        (!schema[0].Key.startsWith('Update') ||
-                            schema[0].TransactioInfo.UnitsQuantity != 77 ||
-                            schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                        maxLoopsCounter > 0
-                    );
+                // it('Validate PNS Triggered for Update', async () => {
+                //     let schema;
+                //     let maxLoopsCounter = 30;
+                //     do {
+                //         generalService.sleep(1500);
+                //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                //             order_by: 'ModificationDateTime DESC',
+                //         });
+                //         maxLoopsCounter--;
+                //     } while (
+                //         (!schema[0].Key.startsWith('Update') ||
+                //             schema[0].TransactioInfo.UnitsQuantity != 77 ||
+                //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
+                //         maxLoopsCounter > 0
+                //     );
 
-                    expect(schema[0].Key).to.be.a('String').and.contain('Update');
-                    expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(77);
-                    expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
-                });
+                //     expect(schema[0].Key).to.be.a('String').and.contain('Update');
+                //     expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(77);
+                //     expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
+                // });
             });
 
             describe('WACD', () => {
@@ -406,7 +432,7 @@ export async function PepperiNotificationServiceTests(
                             const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
                                 where: `TransactionInternalID=${createdTransaction.InternalID}`,
                             });
-                            console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
+                            //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
                             if (testName == 'Stop After DB') {
                                 expect(getCreatedTransactionLineResponse[0]).to.not.include({
@@ -466,31 +492,31 @@ export async function PepperiNotificationServiceTests(
                             }
                         });
 
-                        it(`Validate ${
-                            testName == 'Stop After DB' ? 'No New' : ''
-                        } PNS Triggered for Update When ${testName}`, async () => {
-                            let schema;
-                            let maxLoopsCounter = 15;
-                            do {
-                                generalService.sleep(1500);
-                                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                    order_by: 'ModificationDateTime DESC',
-                                });
-                                maxLoopsCounter--;
-                            } while (
-                                (!schema[0].Key.startsWith('Update') ||
-                                    schema[0].TransactioInfo.UnitsQuantity != 11 * (1 + index) ||
-                                    schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                                maxLoopsCounter > 0
-                            );
-                            if (testName == 'Stop After DB') {
-                                expect(schema[0].TransactioInfo.UnitsQuantity).to.not.equal(11 * (1 + index));
-                            } else {
-                                expect(schema[0].Key).to.be.a('String').and.contain('Update');
-                                expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(11 * (1 + index));
-                                expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
-                            }
-                        });
+                        // it(`Validate ${
+                        //     testName == 'Stop After DB' ? 'No New' : ''
+                        // } PNS Triggered for Update When ${testName}`, async () => {
+                        //     let schema;
+                        //     let maxLoopsCounter = 15;
+                        //     do {
+                        //         generalService.sleep(1500);
+                        //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                        //             order_by: 'ModificationDateTime DESC',
+                        //         });
+                        //         maxLoopsCounter--;
+                        //     } while (
+                        //         (!schema[0].Key.startsWith('Update') ||
+                        //             schema[0].TransactioInfo.UnitsQuantity != 11 * (1 + index) ||
+                        //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
+                        //         maxLoopsCounter > 0
+                        //     );
+                        //     if (testName == 'Stop After DB') {
+                        //         expect(schema[0].TransactioInfo.UnitsQuantity).to.not.equal(11 * (1 + index));
+                        //     } else {
+                        //         expect(schema[0].Key).to.be.a('String').and.contain('Update');
+                        //         expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(11 * (1 + index));
+                        //         expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
+                        //     }
+                        // });
                     }
                 });
             });
