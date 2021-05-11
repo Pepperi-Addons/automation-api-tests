@@ -145,6 +145,7 @@ export async function PepperiNotificationServiceTests(
                     createdTransactionLines = await objectsService.createTransactionLine({
                         LineNumber: 0,
                         UnitsQuantity: 25,
+                        UnitDiscountPercentage: 0,
                         Item: {
                             Data: {
                                 ExternalID: itemArr[0].ExternalID,
@@ -239,24 +240,25 @@ export async function PepperiNotificationServiceTests(
                         createdTransactionLines.InternalID,
                     );
                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(25);
-                    expect(createdObject.Remark).to.equal('');
+                    expect(createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage).to.equal(0);
                 });
 
-                it('Update Transaction With SDK (TSA2 - Remark)', async () => {
-                    const updatedTransaction = await objectsService.createTransaction({
-                        InternalID: createdTransaction.InternalID,
-                        Remark: 'Adding Remark as the 2nd TSA',
-                    });
-                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage = 40)', async () => {
+                    const updatedTransactionLine = await objectsService.createTransactionLine({
+                        InternalID: createdTransactionLines.InternalID,
+                        UUID: createdTransactionLines.UUID,
+                        UnitDiscountPercentage: 40,
+                    } as any);
+                    expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
                 });
 
-                it('Validate Transaction Updated (TSA2 - Remark)', async () => {
-                    const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
-                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                it('Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 40)', async () => {
+                    const updatedTransactionLine = await objectsService.getTransactionLinesByID(
                         createdTransactionLines.InternalID,
                     );
-                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(25);
-                    expect(createdObject.Remark).to.equal('Adding Remark as the 2nd TSA');
+                    expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
+                    expect(updatedTransactionLine.UnitsQuantity).to.equal(25);
+                    expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(40);
                 });
 
                 it(`Update Transaction Line with WACD (ID: ${testID + 0}) (TSA1 - UnitsQuantity = 15)`, async () => {
@@ -375,24 +377,25 @@ export async function PepperiNotificationServiceTests(
                         createdTransactionLines.InternalID,
                     );
                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
-                    expect(createdObject.Remark).to.equal('Adding Remark as the 2nd TSA');
+                    expect(createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage).to.equal(40);
                 });
 
-                it('Update Transaction With SDK (TSA2 - Remark)', async () => {
-                    const updatedTransaction = await objectsService.createTransaction({
-                        InternalID: createdTransaction.InternalID,
-                        Remark: 'Updatating Remark as the 2nd TSA',
-                    });
-                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage = 60)', async () => {
+                    const updatedTransactionLine = await objectsService.createTransactionLine({
+                        InternalID: createdTransactionLines.InternalID,
+                        UUID: createdTransactionLines.UUID,
+                        UnitDiscountPercentage: 60,
+                    } as any);
+                    expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
                 });
 
-                it('Validate Transaction Updated (TSA2 - Remark)', async () => {
-                    const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
-                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                it('Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)', async () => {
+                    const updatedTransactionLine = await objectsService.getTransactionLinesByID(
                         createdTransactionLines.InternalID,
                     );
-                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
-                    expect(createdObject.Remark).to.equal('Updatating Remark as the 2nd TSA');
+                    expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
+                    expect(updatedTransactionLine.UnitsQuantity).to.equal(15);
+                    expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(60);
                 });
             });
 
@@ -416,13 +419,14 @@ export async function PepperiNotificationServiceTests(
                         const testName = pnsTestScenariosArr[index].Name;
                         const testType = pnsTestScenariosArr[index].Type;
                         describe(testName, () => {
-                            it('Reset The Transaction With SDK (TSA2 - Remark)', async () => {
-                                const updatedTransaction = await objectsService.createTransaction({
-                                    InternalID: createdTransaction.InternalID,
-                                    Remark: '',
-                                });
-                                expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
-                                expect(updatedTransaction.Remark).to.equal('');
+                            it('Reset The Transaction With SDK (TSA2 - UnitDiscountPercentage = 0)', async () => {
+                                const updatedTransactionLine = await objectsService.createTransactionLine({
+                                    InternalID: createdTransactionLines.InternalID,
+                                    UUID: createdTransactionLines.UUID,
+                                    UnitDiscountPercentage: 0,
+                                } as any);
+                                expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
+                                expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(0);
                             });
 
                             it(`Post PUT That ${testName} TestID ${testID + index + 1} (TSA1 - UnitsQuantity = ${
@@ -457,15 +461,11 @@ export async function PepperiNotificationServiceTests(
                                         },
                                         nucleus_crud_type: testType,
                                     },
-                                    testID + index,
+                                    testID + index + 1,
                                 );
 
                                 console.log({ testType: putSyncResponse });
-                                if (testName == 'Stop After DB') {
-                                    expect(putSyncResponse).to.be.false;
-                                } else {
-                                    expect(putSyncResponse).to.be.true;
-                                }
+                                expect(putSyncResponse).to.be.true;
 
                                 const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
                                     where: `TransactionInternalID=${createdTransaction.InternalID}`,
@@ -579,19 +579,51 @@ export async function PepperiNotificationServiceTests(
                                         11 * (1 + index),
                                     );
                                 }
-                                expect(createdObject.Remark).to.equal('');
+                                expect(
+                                    createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
+                                ).to.equal(0);
                             });
 
-                            it('Update Transaction With SDK (TSA2 - Remark)', async () => {
-                                const updatedTransaction = await objectsService.createTransaction({
-                                    InternalID: createdTransaction.InternalID,
-                                    Remark: 'Updatating Remark as the 2nd TSA',
-                                });
-                                expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                            it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage)', async () => {
+                                let updatedTransactionLine;
+                                try {
+                                    updatedTransactionLine = await objectsService.createTransactionLine({
+                                        InternalID: createdTransactionLines.InternalID,
+                                        UUID: createdTransactionLines.UUID,
+                                        UnitDiscountPercentage: 60,
+                                    } as any);
+                                } catch (error) {
+                                    console.dir(error);
+                                    updatedTransactionLine = await objectsService.createTransactionLine({
+                                        InternalID: createdTransactionLines.InternalID,
+                                        UUID: createdTransactionLines.UUID,
+                                        UnitDiscountPercentage: 60,
+                                    } as any);
+                                }
+                                expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
                             });
 
-                            it(`Validate Transaction Updated (TSA2 - Remark)${
-                                index == 2 ? ' (Negative)' : ''
+                            it(`Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)${
+                                index == 2
+                                    ? ` (TSA1 - UnitsQuantity = ${11 * (1 + index - 1)}) (Negative)`
+                                    : ` (TSA1 - UnitsQuantity = ${11 * (1 + index)})`
+                            }`, async () => {
+                                const updatedTransactionLine = await objectsService.getTransactionLinesByID(
+                                    createdTransactionLines.InternalID,
+                                );
+                                expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
+                                if (index == 2) {
+                                    expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + index - 1));
+                                } else {
+                                    expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + index));
+                                }
+                                expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(60);
+                            });
+
+                            it(`Validate Transaction Updated (TSA2 - UnitDiscountPercentage = 60)${
+                                index == 2
+                                    ? ` (TSA1 - UnitsQuantity = ${11 * (1 + index - 1)}) (Negative)`
+                                    : ` (TSA1 - UnitsQuantity = ${11 * (1 + index)})`
                             }`, async () => {
                                 const createdObject = await objectsService.getTransactionByID(
                                     createdTransaction.InternalID,
@@ -608,7 +640,9 @@ export async function PepperiNotificationServiceTests(
                                         11 * (1 + index),
                                     );
                                 }
-                                expect(createdObject.Remark).to.equal('Updatating Remark as the 2nd TSA');
+                                expect(
+                                    createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
+                                ).to.equal(60);
                             });
                         });
                     }
@@ -629,6 +663,7 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it('Delete transaction lines', async () => {
+                    generalService.sleep(2000);
                     expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true;
                     expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false;
                     expect(await objectsService.getTransactionByID(createdTransaction.InternalID))

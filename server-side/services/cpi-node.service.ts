@@ -39,7 +39,7 @@ export class CPINodeService {
         return this.papiClient.items.find(options);
     }
 
-    countTransactions(options?: FindOptions): Promise<number> {
+    countTransactions(options?): Promise<number> {
         return this.papiClient.transactions.count(options);
     }
 
