@@ -469,6 +469,391 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     expect(deletedAccount.Error).that.is.an('object').and.is.empty,
                     expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
+
+            it('Validating negative tests responses for objects creation', async () => {
+                //create account with broken data - no ExID
+                const accountExternalID: any = null;
+                const accountObj: Account = {
+                    ExternalID: accountExternalID,
+                    City: 'City',
+                    Country: 'US',
+                    Debts30: 30,
+                    Debts60: 60,
+                    Debts90: 90,
+                    DebtsAbove90: 100,
+                    Discount: 10,
+                    Email: 'Test1@test.com',
+                    Mobile: '555-1234',
+                    Name: accountExternalID,
+                    Note: 'Note 1',
+                    Phone: '555-4321',
+                    Prop1: 'Prop 1',
+                    Prop2: 'Prop 2',
+                    Prop3: 'Prop 3',
+                    Prop4: 'Prop 4',
+                    Prop5: 'Prop 5',
+                    State: 'NY',
+                    Status: 2,
+                    Street: 'Street 1',
+                    Type: 'Customer',
+                    ZipCode: '12345',
+                };
+
+                let account = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+
+                expect(account.Ok).that.is.a('boolean').and.is.false,
+                    expect(account.Error).that.is.an('object').and.is.empty,
+                    expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(account.Status).to.be.a('number').equal(400);
+
+                accountObj.ExternalID = 'Automated API Acc' + Math.floor(Math.random() * 1000000).toString();
+
+                account = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+
+                expect(account.Ok).that.is.a('boolean').and.is.false,
+                    expect(account.Error).that.is.an('object').and.is.empty,
+                    expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(account.Body.fault.faultstring).that.is.a('string').and.contains('"Name"'),
+                    expect(account.Status).to.be.a('number').equal(400);
+
+                accountObj.Name = 'Automated API Acc' + Math.floor(Math.random() * 1000000).toString();
+                accountObj.ExternalID = '';
+
+                account = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+
+                expect(account.Ok).that.is.a('boolean').and.is.false,
+                    expect(account.Error).that.is.an('object').and.is.empty,
+                    expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(account.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                    expect(account.Status).to.be.a('number').equal(400);
+
+                accountObj.ExternalID = accountObj.Name;
+                ///valid account data
+                account = await generalService.fetchStatus('/Accounts', {
+                    method: 'POST',
+                    body: JSON.stringify(accountObj),
+                });
+
+                //Contacts test
+                const contactObj = {
+                    ExternalID: null,
+                    Email: null,
+                    Phone: '123-45678',
+                    Mobile: '123-45678',
+                    FirstName: 'Contact',
+                    LastName: 'Test',
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                        },
+                    },
+                };
+
+                let contact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
+                //debugger;
+                expect(contact.Ok).that.is.a('boolean').and.is.false,
+                    expect(contact.Error).that.is.an('object').and.is.empty,
+                    expect(contact.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(contact.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(contact.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                    expect(contact.Status).to.be.a('number').equal(400);
+
+                const userEmail =
+                    'Email' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '@' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '.com';
+
+                contactObj.Email = userEmail as any;
+
+                contact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
+                //debugger;
+
+                expect(contact.Ok).that.is.a('boolean').and.is.false,
+                    expect(contact.Error).that.is.an('object').and.is.empty,
+                    expect(contact.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(contact.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(contact.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                    expect(contact.Status).to.be.a('number').equal(400);
+
+                contactObj.Account.Data.InternalID = null;
+
+                contactObj.ExternalID = ('Automated API contact' +
+                    Math.floor(Math.random() * 1000000).toString()) as any;
+
+                contact = await generalService.fetchStatus('/Contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactObj),
+                });
+
+                expect(contact.Ok).that.is.a('boolean').and.is.true,
+                    expect(contact.Error).that.is.an('object').and.is.empty, // currently possible to insert contact without account - approved by ido - will be fixed by accountBuyer
+                    expect(contact.Status).to.be.a('number').equal(201);
+
+                //create activities with broken data
+                //no ExID
+                let activityExternalID: any = null;
+                const activityObj = {
+                    ExternalID: activityExternalID,
+                    ActivityTypeID: 134047,
+                    Status: 1,
+                    Title: 'Testing',
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                        },
+                    },
+                };
+
+                let activity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
+
+                expect(activity.Ok).that.is.a('boolean').and.is.false,
+                    expect(activity.Error).that.is.an('object').and.is.empty,
+                    expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                    expect(activity.Status).to.be.a('number').equal(400);
+                //no account
+                activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
+                activityObj.ExternalID = activityExternalID;
+                activityObj.Account.Data.InternalID = null;
+
+                activity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
+
+                expect(activity.Ok).that.is.a('boolean').and.is.false,
+                    expect(activity.Error).that.is.an('object').and.is.empty,
+                    expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"AccountInternalID"'),
+                    expect(activity.Status).to.be.a('number').equal(400);
+                // no ATD
+                activityObj.Account.Data.InternalID = account.Body.InternalID;
+                activityObj.ActivityTypeID = null as any;
+
+                activity = await generalService.fetchStatus('/Activities', {
+                    method: 'POST',
+                    body: JSON.stringify(activityObj),
+                });
+
+                //currently returns 500 and wrong message - DI-18105 - once fixed should return the below
+                // expect(activity.Ok).that.is.a('boolean').and.is.false,
+                // expect(activity.Error).that.is.an('object').and.is.empty,
+                // expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                // expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                // expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"ActivityTypeID"'),
+                // expect(activity.Status).to.be.a('number').equal(400);
+
+                //Transactions - no ExID
+                const testParams: (string | number)[] = [138725, 'Default Catalog'];
+                let transactionExternalID: any = null;
+                const transactionObj = {
+                    ExternalID: transactionExternalID,
+                    ActivityTypeID: 138725,
+                    Status: 1,
+                    Account: {
+                        Data: {
+                            InternalID: account.Body.InternalID,
+                        },
+                    },
+                    Catalog: {
+                        Data: {
+                            ExternalID: 'Default Catalog',
+                        },
+                    },
+                };
+
+                let transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+
+                expect(transaction.Ok).that.is.a('boolean').and.is.false,
+                    expect(transaction.Error).that.is.an('object').and.is.empty,
+                    expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                    expect(transaction.Status).to.be.a('number').equal(400);
+                //no account
+                transactionExternalID = 'Automated API Transaction' + Math.floor(Math.random() * 1000000).toString();
+                transactionObj.ExternalID = transactionExternalID;
+                transactionObj.Account.Data.InternalID = null;
+
+                transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+
+                expect(transaction.Ok).that.is.a('boolean').and.is.false,
+                    expect(transaction.Error).that.is.an('object').and.is.empty,
+                    expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"AccountInternalID"'),
+                    expect(transaction.Status).to.be.a('number').equal(400);
+
+                //no ATD
+                transactionObj.Account.Data.InternalID = account.Body.InternalID;
+                transactionObj.ActivityTypeID = null as any;
+
+                transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+
+                //currently returns 500 and wrong message - DI-18114 - once fixed should return the below
+                // expect(transaction.Ok).that.is.a('boolean').and.is.false,
+                // expect(transaction.Error).that.is.an('object').and.is.empty,
+                // expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                // expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                // expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                // expect(transaction.Status).to.be.a('number').equal(400);
+
+                //no catalog
+                transactionObj.ActivityTypeID = testParams[0] as number;
+                transactionObj.Catalog.Data.ExternalID = null as any;
+
+                transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+
+                expect(transaction.Ok).that.is.a('boolean').and.is.false,
+                    expect(transaction.Error).that.is.an('object').and.is.empty,
+                    expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                    expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('Catalog is mandatory'),
+                    expect(transaction.Status).to.be.a('number').equal(400);
+
+                //Setting up a correct transaction for lines tests
+
+                transactionObj.Catalog.Data.ExternalID = testParams[1] as string;
+
+                transaction = await generalService.fetchStatus('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(transactionObj),
+                });
+
+                //TransactionLines
+                //items setup for line test
+                const itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
+                const itemObj = {
+                    ExternalID: itemExternalID,
+                    MainCategoryID: 'Test',
+                    UPC: 'SameCode1',
+                    Name: itemExternalID,
+                    LongDescription: itemExternalID,
+                    Price: 1.0,
+                    SecondaryPrice: 1.5,
+                    CostPrice: 0.5,
+                    Discount: 0,
+                    AllowDecimal: false,
+                    CaseQuantity: 1,
+                    MinimumQuantity: 1,
+                    Hidden: false,
+                };
+
+                const item = await generalService.fetchStatus('/items', {
+                    method: 'POST',
+                    body: JSON.stringify(itemObj),
+                });
+
+                //No header internalID
+
+                const lineObj = {
+                    TransactionInternalID: null,
+                    LineNumber: 0,
+                    ItemExternalID: item.Body.ExternalID,
+                    UnitsQuantity: 1,
+                };
+
+                let line = await generalService.fetchStatus('/transaction_lines', {
+                    method: 'POST',
+                    body: JSON.stringify(lineObj),
+                });
+
+                //currently returns 500 and wrong message - DI-18117 - once fixed should return the below
+                // expect(line.Ok).that.is.a('boolean').and.is.false,
+                // expect(line.Error).that.is.an('object').and.is.empty,
+                // expect(line.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                // expect(line.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
+                // expect(line.Body.fault.faultstring).that.is.a('string').and.contains('"InternalID"'),
+                // expect(line.Status).to.be.a('number').equal(400);
+
+                //no itemExID
+                lineObj.TransactionInternalID = transaction.Body.internalID;
+                lineObj.ItemExternalID = null;
+
+                line = await generalService.fetchStatus('/transaction_lines', {
+                    method: 'POST',
+                    body: JSON.stringify(lineObj),
+                });
+                expect(line.Ok).that.is.a('boolean').and.is.false,
+                    expect(line.Error).that.is.an('object').and.is.empty,
+                    expect(line.Body.fault.detail).that.is.an('object').and.is.not.empty,
+                    expect(line.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidParameter'),
+                    expect(line.Body.fault.faultstring).that.is.a('string').and.contains('Sub type is not valid.'),
+                    expect(line.Status).to.be.a('number').equal(400);
+
+                //item deletion after test is done
+                const deletedItem = await generalService.fetchStatus('/items/' + item.Body.InternalID, {
+                    method: 'DELETE',
+                });
+
+                expect(deletedItem.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedItem.Error).that.is.an('object').and.is.empty,
+                    expect(deletedItem.Status).to.be.a('number').equal(200);
+
+                //Transaction deletion after test is done
+                const deletedTransaction = await generalService.fetchStatus(
+                    '/transactions/' + transaction.Body.InternalID,
+                    { method: 'DELETE' },
+                );
+
+                expect(deletedTransaction.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedTransaction.Error).that.is.an('object').and.is.empty,
+                    expect(deletedTransaction.Status).to.be.a('number').equal(200);
+
+                const deletedContact = await generalService.fetchStatus('/contacts/' + contact.Body.InternalID, {
+                    method: 'DELETE',
+                });
+
+                expect(deletedContact.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedContact.Error).that.is.an('object').and.is.empty,
+                    expect(deletedContact.Status).to.be.a('number').equal(200);
+
+                //Accounts
+                const deletedAccount = await generalService.fetchStatus('/accounts/' + account.Body.InternalID, {
+                    method: 'DELETE',
+                });
+
+                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true,
+                    expect(deletedAccount.Error).that.is.an('object').and.is.empty,
+                    expect(deletedAccount.Status).to.be.a('number').equal(200);
+            });
         });
 
         // describe('Bug verifications', async () => {});
