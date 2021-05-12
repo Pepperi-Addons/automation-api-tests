@@ -12,32 +12,32 @@ export async function update_pns(client: Client): Promise<any> {
     return insertLog(client, 'Update');
 }
 
-export async function index_test_index_string(client: Client, request: Request): Promise<any> {
-    return indexLog(client, request, 'TestIndexString');
+export async function index_test_string(client: Client, request: Request): Promise<any> {
+    return indexLog(client, request, 'TSATestIndexString');
 }
 
-export async function index_test_index_time(client: Client, request: Request): Promise<any> {
-    return indexLog(client, request, 'TestIndexTime');
+export async function index_test_time(client: Client, request: Request): Promise<any> {
+    return indexLog(client, request, 'TSATestIndexTime');
 }
 
-export async function index_test_index_calculated(client: Client, request: Request): Promise<any> {
-    return indexLog(client, request, 'TestIndexCalculated');
+export async function index_test_calculated(client: Client, request: Request): Promise<any> {
+    return indexLog(client, request, 'TSATestIndexCalculated');
 }
 
-export async function index_test_index_check_box(client: Client, request: Request): Promise<any> {
-    return indexLog(client, request, 'TestIndexAttachment');
+export async function index_test_check_box(client: Client, request: Request): Promise<any> {
+    return indexLog(client, request, 'TSATestIndexAttachment');
 }
 
-export async function index_test_index_attachment(client: Client, request: Request): Promise<any> {
+export async function index_test_attachment(client: Client, request: Request): Promise<any> {
     return indexLog(client, request, 'TSATestIndexCheckbox');
 }
 
-export async function index_test_index_number(client: Client, request: Request): Promise<any> {
-    return indexLog(client, request, 'TestIndexNumber');
+export async function index_test_number(client: Client, request: Request): Promise<any> {
+    return indexLog(client, request, 'TSATestIndexNumber');
 }
 
-export async function index_test_index_decimal_number(client: Client, request: Request): Promise<any> {
-    return indexLog(client, request, 'TestIndexDecimalNumber');
+export async function index_test_decimal_number(client: Client, request: Request): Promise<any> {
+    return indexLog(client, request, 'TSATestIndexDecimalNumber');
 }
 
 async function insertLog(client: Client, type: string) {
