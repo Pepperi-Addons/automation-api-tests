@@ -48,7 +48,7 @@ export default class GeneralService {
         });
     }
 
-    sleep(ms: number) {
+    sleep(ms) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
             expire = start + ms;
