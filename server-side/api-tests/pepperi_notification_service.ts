@@ -663,7 +663,6 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it('Delete transaction lines', async () => {
-                    generalService.sleep(2000);
                     expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true;
                     expect(await objectsService.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false;
                     expect(await objectsService.getTransactionByID(createdTransaction.InternalID))
