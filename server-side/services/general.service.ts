@@ -48,13 +48,12 @@ export default class GeneralService {
         });
     }
 
-    sleep(ms: number): Promise<void> {
+    sleep(ms) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, ms);
-        });
+        const start = new Date().getTime(),
+            expire = start + ms;
+        while (new Date().getTime() < expire) {}
+        return;
     }
 
     //#region getDate
