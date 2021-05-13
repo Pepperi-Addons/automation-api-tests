@@ -268,6 +268,7 @@ export async function PepperiNotificationServiceTests(
                                 10: {
                                     SubType: '',
                                     Headers: [
+                                        'UUID',
                                         'ItemWrntyID',
                                         'ItemExternalID',
                                         'LineNumber',
@@ -278,6 +279,7 @@ export async function PepperiNotificationServiceTests(
                                     ],
                                     Lines: [
                                         [
+                                            createdTransactionLines.UUID,
                                             String(itemArr[0].InternalID),
                                             itemArr[0].ExternalID,
                                             '0',
@@ -438,6 +440,7 @@ export async function PepperiNotificationServiceTests(
                                             10: {
                                                 SubType: '',
                                                 Headers: [
+                                                    'UUID',
                                                     'ItemWrntyID',
                                                     'ItemExternalID',
                                                     'LineNumber',
@@ -448,6 +451,7 @@ export async function PepperiNotificationServiceTests(
                                                 ],
                                                 Lines: [
                                                     [
+                                                        createdTransactionLines.UUID,
                                                         String(itemArr[0].InternalID),
                                                         itemArr[0].ExternalID,
                                                         '0',

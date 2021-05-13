@@ -24,11 +24,11 @@ export async function index_test_calculated(client: Client, request: Request): P
     return indexLog(client, request, 'TSATestIndexCalculated');
 }
 
-export async function index_test_check_box(client: Client, request: Request): Promise<any> {
+export async function index_test_attachment(client: Client, request: Request): Promise<any> {
     return indexLog(client, request, 'TSATestIndexAttachment');
 }
 
-export async function index_test_attachment(client: Client, request: Request): Promise<any> {
+export async function index_test_check_box(client: Client, request: Request): Promise<any> {
     return indexLog(client, request, 'TSATestIndexCheckbox');
 }
 
