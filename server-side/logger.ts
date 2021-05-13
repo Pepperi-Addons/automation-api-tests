@@ -1,4 +1,3 @@
-import { ObjectsService } from './services/objects.service';
 import { Client, Request } from '@pepperi-addons/debug-server';
 import GeneralService from './services/general.service';
 import { ADALService } from './services/adal.service';
@@ -42,25 +41,10 @@ export async function index_test_decimal_number(client: Client, request: Request
 
 async function insertLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
     const schemaName = 'PNS Test';
     const logUUID = uuidv4().replace(/-/g, '_');
-    const lastTransactionLine = await objectsService.getTransactionLines({
-        include_deleted: true,
-        page_size: 1,
-        order_by: 'ModificationDateTime DESC',
-    });
-
     const insertedObject = {
-        Key: `Log_${type}_Transaction_${generalService.getServer()}_${logUUID}`,
-        TransactioInfo: {
-            ModificationDateTime: lastTransactionLine[0].ModificationDateTime,
-            InternalID: lastTransactionLine[0].InternalID,
-            Hidden: lastTransactionLine[0].Hidden,
-            ItemData: lastTransactionLine[0].Item?.Data,
-            UnitsQuantity: lastTransactionLine[0].UnitsQuantity,
-            UnitDiscountPercentage: lastTransactionLine[0].UnitDiscountPercentage,
-        },
+        Key: `Log_${type}_Transaction_Line_${generalService.getServer()}_${logUUID}`,
         Message: request.body,
     };
     return sendResponse(client, schemaName, insertedObject);
