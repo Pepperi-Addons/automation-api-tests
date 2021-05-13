@@ -203,6 +203,7 @@ export async function PepperiNotificationServiceTests(
                         expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                        expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
                         expect(
                             await objectsService.getTransactionLines({
                                 where: `TransactionInternalID=${createdTransaction.InternalID}`,
@@ -241,6 +242,7 @@ export async function PepperiNotificationServiceTests(
                     );
                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(25);
                     expect(createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage).to.equal(0);
+                    expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
                 });
 
                 it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage = 40)', async () => {
@@ -268,6 +270,7 @@ export async function PepperiNotificationServiceTests(
                                 10: {
                                     SubType: '',
                                     Headers: [
+                                        'UUID',
                                         'ItemWrntyID',
                                         'ItemExternalID',
                                         'LineNumber',
@@ -278,6 +281,7 @@ export async function PepperiNotificationServiceTests(
                                     ],
                                     Lines: [
                                         [
+                                            createdTransactionLines.UUID,
                                             String(itemArr[0].InternalID),
                                             itemArr[0].ExternalID,
                                             '0',
@@ -340,6 +344,7 @@ export async function PepperiNotificationServiceTests(
                         expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain('Z'),
                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                        expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
                         expect(
                             await objectsService.getTransactionLines({
                                 where: `TransactionInternalID=${createdTransaction.InternalID}`,
@@ -378,6 +383,7 @@ export async function PepperiNotificationServiceTests(
                     );
                     expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
                     expect(createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage).to.equal(40);
+                    expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
                 });
 
                 it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage = 60)', async () => {
@@ -438,6 +444,7 @@ export async function PepperiNotificationServiceTests(
                                             10: {
                                                 SubType: '',
                                                 Headers: [
+                                                    'UUID',
                                                     'ItemWrntyID',
                                                     'ItemExternalID',
                                                     'LineNumber',
@@ -448,6 +455,7 @@ export async function PepperiNotificationServiceTests(
                                                 ],
                                                 Lines: [
                                                     [
+                                                        createdTransactionLines.UUID,
                                                         String(itemArr[0].InternalID),
                                                         itemArr[0].ExternalID,
                                                         '0',
@@ -522,6 +530,7 @@ export async function PepperiNotificationServiceTests(
                                         ),
                                         expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
                                         expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                                        expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
                                         expect(
                                             await objectsService.getTransactionLines({
                                                 where: `TransactionInternalID=${createdTransaction.InternalID}`,
@@ -529,6 +538,7 @@ export async function PepperiNotificationServiceTests(
                                         )
                                             .to.be.an('array')
                                             .with.lengthOf(1),
+                                        expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
                                     ]);
                                 }
                             });
@@ -582,6 +592,7 @@ export async function PepperiNotificationServiceTests(
                                 expect(
                                     createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
                                 ).to.equal(0);
+                                expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
                             });
 
                             it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage)', async () => {
@@ -643,6 +654,7 @@ export async function PepperiNotificationServiceTests(
                                 expect(
                                     createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
                                 ).to.equal(60);
+                                expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
                             });
                         });
                     }
