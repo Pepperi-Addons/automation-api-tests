@@ -61,7 +61,7 @@ async function insertLog(client: Client, request: Request, type: string) {
             UnitsQuantity: lastTransactionLine[0].UnitsQuantity,
             UnitDiscountPercentage: lastTransactionLine[0].UnitDiscountPercentage,
         },
-        Message: request.body
+        Message: request.body,
     };
     return sendResponse(client, schemaName, insertedObject);
 }
