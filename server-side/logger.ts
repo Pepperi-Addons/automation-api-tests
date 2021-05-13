@@ -4,12 +4,12 @@ import GeneralService from './services/general.service';
 import { ADALService } from './services/adal.service';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function insert_pns(client: Client): Promise<any> {
-    return insertLog(client, 'Insert');
+export async function insert_pns(client: Client, request: Request): Promise<any> {
+    return insertLog(client, request, 'Insert');
 }
 
-export async function update_pns(client: Client): Promise<any> {
-    return insertLog(client, 'Update');
+export async function update_pns(client: Client, request: Request): Promise<any> {
+    return insertLog(client, request, 'Update');
 }
 
 export async function index_test_string(client: Client, request: Request): Promise<any> {
@@ -40,7 +40,7 @@ export async function index_test_decimal_number(client: Client, request: Request
     return indexLog(client, request, 'TSATestIndexDecimalNumber');
 }
 
-async function insertLog(client: Client, type: string) {
+async function insertLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const schemaName = 'PNS Test';
@@ -59,7 +59,9 @@ async function insertLog(client: Client, type: string) {
             Hidden: lastTransactionLine[0].Hidden,
             ItemData: lastTransactionLine[0].Item?.Data,
             UnitsQuantity: lastTransactionLine[0].UnitsQuantity,
+            UnitDiscountPercentage: lastTransactionLine[0].UnitDiscountPercentage,
         },
+        Message: request.body
     };
     return sendResponse(client, schemaName, insertedObject);
 }
