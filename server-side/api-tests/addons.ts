@@ -889,9 +889,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsInstallAddonWithoutVersionFiles.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsInstallAddonWithoutVersionFiles.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -1041,9 +1040,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsInstallAddonWithoutExistingVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsInstallAddonWithoutExistingVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -1178,9 +1176,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsInstallAddonWithNonAvailableVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsInstallAddonWithNonAvailableVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -1373,9 +1370,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsInstallNewestAddonWithoutVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsInstallNewestAddonWithoutVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -1790,9 +1786,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeAddonWithoutVersionFiles.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsUpgradeAddonWithoutVersionFiles.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -1997,9 +1992,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeAddonWithoutExistingVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsUpgradeAddonWithoutExistingVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -2205,9 +2199,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeAddonWithNonAvailableVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsUpgradeAddonWithNonAvailableVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -2411,9 +2404,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeToNewestAddonVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsUpgradeToNewestAddonVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -2536,7 +2528,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             if (postAddonApiResponse.AuditInfo.ErrorMessage != undefined) {
                 isErrorMessage = true;
             }
-            mandatoryStepsUpgradeToNewestAddonVersionWithoutVersion.UpgradeCorrectVersionWithoutVersion = !isErrorMessage;
+            mandatoryStepsUpgradeToNewestAddonVersionWithoutVersion.UpgradeCorrectVersionWithoutVersion =
+                !isErrorMessage;
             addTestResultUnderHeadline(
                 testName,
                 'Upgrade Addon Without Version',
@@ -2619,9 +2612,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeToNewestAddonVersionWithoutVersion.deleteAddon = !JSON.stringify(
-                deleteApiResponse,
-            ).includes('fault');
+            mandatoryStepsUpgradeToNewestAddonVersionWithoutVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -2742,7 +2734,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     }
                 });
 
-            mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.failedTUpgradeCorrectVersionWithoutAvailableVersion = isErrorMessage;
+            mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.failedTUpgradeCorrectVersionWithoutAvailableVersion =
+                isErrorMessage;
             addTestResultUnderHeadline(
                 testName,
                 'Failed To Upgrade Addon Without Available Version',
@@ -2818,9 +2811,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.deleteAddon = !JSON.stringify(
-                deleteApiResponse,
-            ).includes('fault');
+            mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -2946,7 +2938,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     }
                 });
 
-            mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.failedTUpgradeCorrectVersionWithoutPhasedVersion = isErrorMessage;
+            mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.failedTUpgradeCorrectVersionWithoutPhasedVersion =
+                isErrorMessage;
             addTestResultUnderHeadline(
                 testName,
                 'Failed To Upgrade Addon Without Phased Version',
@@ -3031,9 +3024,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.deleteAddon = !JSON.stringify(
-                deleteApiResponse,
-            ).includes('fault');
+            mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -3457,9 +3449,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsDowngradeAddonWithoutVersionFiles.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsDowngradeAddonWithoutVersionFiles.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -3664,9 +3655,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsDowngradeAddonWithoutExistingVersion.deleteAddon = !JSON.stringify(
-                deleteApiResponse,
-            ).includes('fault');
+            mandatoryStepsDowngradeAddonWithoutExistingVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -3873,9 +3863,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsDowngradeAddonWithNonAvailableVersion.deleteAddon = !JSON.stringify(
-                deleteApiResponse,
-            ).includes('fault');
+            mandatoryStepsDowngradeAddonWithNonAvailableVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -4079,9 +4068,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsDowngradeToOldestAddonVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsDowngradeToOldestAddonVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -4548,9 +4536,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
 
             //Install newest available without version
-            const postInstalAddonWithDeletedAddonVersionApiResponse = await generalService.papiClient.addons.installedAddons
-                .addonUUID(createApiResponse.Body.UUID)
-                .install();
+            const postInstalAddonWithDeletedAddonVersionApiResponse =
+                await generalService.papiClient.addons.installedAddons.addonUUID(createApiResponse.Body.UUID).install();
             //console.log({ Post_Addon_Without_Version: postInstalAddonWithDeletedAddonVersionApiResponse });
 
             let postAddonApiResponse;
@@ -4620,9 +4607,10 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             addTestResultUnderHeadline(testName, 'Unexpected Error happened', err);
         } finally {
             //Uninstall addon
-            const postUninstalAddonWithDeletedAddonVersionApiResponse = await generalService.papiClient.addons.installedAddons
-                .addonUUID(createApiResponse.Body.UUID)
-                .uninstall();
+            const postUninstalAddonWithDeletedAddonVersionApiResponse =
+                await generalService.papiClient.addons.installedAddons
+                    .addonUUID(createApiResponse.Body.UUID)
+                    .uninstall();
             //console.log({ Post_Addon_Uninstall: postUninstalAddonWithDeletedAddonVersionApiResponse });
 
             let postAddonApiResponse;
@@ -4691,9 +4679,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUninstalAddonWithDeletedAddonVersion.deleteAddon = !JSON.stringify(
-                deleteApiResponse,
-            ).includes('fault');
+            mandatoryStepsUninstalAddonWithDeletedAddonVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -4855,9 +4842,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUninstallAddonWithDeletedAddon.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsUninstallAddonWithDeletedAddon.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         //Uninstall addon
@@ -6097,9 +6083,10 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //console.log({ Install_Installed_Addon: getInstalledAddonsApiResponse[0] });
 
             //Install results
-            mandatoryStepsUpgradeToNewestAddonVersion.installCorrectSystemData = getInstalledAddonsApiResponse[0].SystemData.includes(
-                '{"Editors":[{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"},{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"}]',
-            );
+            mandatoryStepsUpgradeToNewestAddonVersion.installCorrectSystemData =
+                getInstalledAddonsApiResponse[0].SystemData.includes(
+                    '{"Editors":[{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"},{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"}]',
+                );
             addTestResultUnderHeadline(
                 testName,
                 'Installed Addon Correct SystemData',
@@ -6165,18 +6152,20 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //Upgraded results
             if (testName.includes('Negative')) {
-                mandatoryStepsUpgradeToNewestAddonVersion.UpgradeCorrectSystemData = getInstalledAddonsApiResponse[0].SystemData.includes(
-                    '{"Editors":[{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"},{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"}]',
-                );
+                mandatoryStepsUpgradeToNewestAddonVersion.UpgradeCorrectSystemData =
+                    getInstalledAddonsApiResponse[0].SystemData.includes(
+                        '{"Editors":[{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"},{"ParentPackageName":"ParentPackageName Upgrade Test 0","PackageName":"PackageName Upgrade Test 0","Description":"Description Upgrade Test 0"}]',
+                    );
                 addTestResultUnderHeadline(
                     testName,
                     'Upgraded Addon Correct SystemData',
                     mandatoryStepsUpgradeToNewestAddonVersion.UpgradeCorrectSystemData,
                 );
             } else {
-                mandatoryStepsUpgradeToNewestAddonVersion.UpgradeCorrectSystemData = getInstalledAddonsApiResponse[0].SystemData.includes(
-                    '{"Editors":[{"ParentPackageName":"ParentPackageName Upgrade Test 1","PackageName":"PackageName Upgrade Test 1","Description":"Description Upgrade Test 1"},{"ParentPackageName":"ParentPackageName Upgrade Test 1","PackageName":"PackageName Upgrade Test 1","Description":"Description Upgrade Test 1"}]',
-                );
+                mandatoryStepsUpgradeToNewestAddonVersion.UpgradeCorrectSystemData =
+                    getInstalledAddonsApiResponse[0].SystemData.includes(
+                        '{"Editors":[{"ParentPackageName":"ParentPackageName Upgrade Test 1","PackageName":"PackageName Upgrade Test 1","Description":"Description Upgrade Test 1"},{"ParentPackageName":"ParentPackageName Upgrade Test 1","PackageName":"PackageName Upgrade Test 1","Description":"Description Upgrade Test 1"}]',
+                    );
                 addTestResultUnderHeadline(
                     testName,
                     'Upgraded Addon Correct SystemData',
@@ -6255,9 +6244,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsUpgradeToNewestAddonVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsUpgradeToNewestAddonVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (
@@ -6401,9 +6389,10 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //console.log({ Install_Installed_Addon: getInstalledAddonsApiResponse[0] });
 
             //Install results
-            mandatoryStepsDowngradeToOldestAddonVersion.installCorrectSystemData = getInstalledAddonsApiResponse[0].SystemData.includes(
-                '{"Editors":[{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"},{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"}]',
-            );
+            mandatoryStepsDowngradeToOldestAddonVersion.installCorrectSystemData =
+                getInstalledAddonsApiResponse[0].SystemData.includes(
+                    '{"Editors":[{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"},{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"}]',
+                );
             addTestResultUnderHeadline(
                 testName,
                 'Installed Addon Correct SystemData',
@@ -6469,18 +6458,20 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //Downgrade results
             if (testName.includes('Negative')) {
-                mandatoryStepsDowngradeToOldestAddonVersion.DowngradeCorrectSystemData = getInstalledAddonsApiResponse[0].SystemData.includes(
-                    '{"Editors":[{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"},{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"}]',
-                );
+                mandatoryStepsDowngradeToOldestAddonVersion.DowngradeCorrectSystemData =
+                    getInstalledAddonsApiResponse[0].SystemData.includes(
+                        '{"Editors":[{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"},{"ParentPackageName":"ParentPackageName Downgrade Test 1","PackageName":"PackageName Downgrade Test 1","Description":"Description Downgrade Test 1"}]',
+                    );
                 addTestResultUnderHeadline(
                     testName,
                     'Downgrade Addon Correct SystemData',
                     mandatoryStepsDowngradeToOldestAddonVersion.DowngradeCorrectSystemData,
                 );
             } else {
-                mandatoryStepsDowngradeToOldestAddonVersion.DowngradeCorrectSystemData = getInstalledAddonsApiResponse[0].SystemData.includes(
-                    '{"Editors":[{"ParentPackageName":"ParentPackageName Downgrade Test 0","PackageName":"PackageName Downgrade Test 0","Description":"Description Downgrade Test 0"},{"ParentPackageName":"ParentPackageName Downgrade Test 0","PackageName":"PackageName Downgrade Test 0","Description":"Description Downgrade Test 0"}]',
-                );
+                mandatoryStepsDowngradeToOldestAddonVersion.DowngradeCorrectSystemData =
+                    getInstalledAddonsApiResponse[0].SystemData.includes(
+                        '{"Editors":[{"ParentPackageName":"ParentPackageName Downgrade Test 0","PackageName":"PackageName Downgrade Test 0","Description":"Description Downgrade Test 0"},{"ParentPackageName":"ParentPackageName Downgrade Test 0","PackageName":"PackageName Downgrade Test 0","Description":"Description Downgrade Test 0"}]',
+                    );
                 addTestResultUnderHeadline(
                     testName,
                     'Downgrade Addon Correct SystemData',
@@ -6559,9 +6550,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 'Delete Addon - End Test',
                 !JSON.stringify(deleteApiResponse).includes('fault'),
             );
-            mandatoryStepsDowngradeToOldestAddonVersion.deleteAddon = !JSON.stringify(deleteApiResponse).includes(
-                'fault',
-            );
+            mandatoryStepsDowngradeToOldestAddonVersion.deleteAddon =
+                !JSON.stringify(deleteApiResponse).includes('fault');
         }
 
         if (

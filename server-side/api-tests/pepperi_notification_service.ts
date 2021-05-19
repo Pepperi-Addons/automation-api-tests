@@ -2,7 +2,7 @@ import { Catalog, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { NucleusFlagType, PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ObjectsService } from '../services/objects.service';
-//import { ADALService } from '../services/adal.service';
+import { ADALService } from '../services/adal.service';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
@@ -13,13 +13,13 @@ export async function PepperiNotificationServiceTests(
 ) {
     const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
     const objectsService = new ObjectsService(generalService);
-    //const adalService = new ADALService(generalService.papiClient);
+    const adalService = new ADALService(generalService.papiClient);
 
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    //const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
@@ -31,7 +31,8 @@ export async function PepperiNotificationServiceTests(
 
     describe('Pepperi Notification Service Tests Suites', () => {
         const testID = Math.floor(Math.random() * 10000000);
-        //const schemaName = 'PNS Test';
+        const schemaName = 'PNS Test';
+        const _MAX_LOOPS = 12;
         let atdArr;
         let catalogArr: Catalog[];
         let itemArr: Item[];
@@ -70,6 +71,24 @@ export async function PepperiNotificationServiceTests(
                     });
                 });
             }
+
+            it(`Reset Schema`, async () => {
+                const schemaNameArr = ['Index Logs', 'PNS Test'];
+                let purgedSchema;
+                for (let index = 0; index < schemaNameArr.length; index++) {
+                    try {
+                        purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
+                    } catch (error) {
+                        expect(error.message).to.includes(
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist"`,
+                        );
+                    }
+                    const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
+                    expect(purgedSchema).to.equal('');
+                    expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
+                    expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
+                }
+            });
         });
 
         describe('Endpoints', () => {
@@ -214,26 +233,21 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
-                // it('Validate PNS Triggered for Insert', async () => {
-                //     let schema;
-                //     let maxLoopsCounter = 30;
-                //     do {
-                //         generalService.sleep(1500);
-                //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                //             order_by: 'ModificationDateTime DESC',
-                //         });
-                //         maxLoopsCounter--;
-                //     } while (
-                //         (!schema[0].Key.startsWith('Insert') ||
-                //             schema[0].TransactioInfo.UnitsQuantity != 25 ||
-                //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                //         maxLoopsCounter > 0
-                //     );
-
-                //     expect(schema[0].Key).to.be.a('String').and.contain('Insert');
-                //     expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(25);
-                //     expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
-                // });
+                it('Validate PNS Triggered for Insert', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while ((schema.length <= 0 || !schema[0].Key.startsWith('Log_Insert')) && maxLoopsCounter > 0);
+                    expect(schema[0].Key).to.be.a('String').and.contain('Insert');
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                        createdTransactionLines.UUID,
+                    );
+                });
 
                 it('Validate New Transaction Line Created (TSA1 - UnitsQuantity = 25)', async () => {
                     const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
@@ -252,6 +266,32 @@ export async function PepperiNotificationServiceTests(
                         UnitDiscountPercentage: 40,
                     } as any);
                     expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
+                });
+
+                it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 40)', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while (
+                        (!schema[0].Key.startsWith('Log_Update') ||
+                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
+                                'UnitDiscountPercentage') &&
+                        maxLoopsCounter > 0
+                    );
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                        createdTransactionLines.UUID,
+                    );
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                        NewValue: 40,
+                        OldValue: 0,
+                        FieldID: 'UnitDiscountPercentage',
+                    });
                 });
 
                 it('Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 40)', async () => {
@@ -355,28 +395,33 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
-                // it('Validate PNS Triggered for Update', async () => {
-                //     let schema;
-                //     let maxLoopsCounter = 30;
-                //     do {
-                //         generalService.sleep(1500);
-                //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                //             order_by: 'ModificationDateTime DESC',
-                //         });
-                //         maxLoopsCounter--;
-                //     } while (
-                //         (!schema[0].Key.startsWith('Update') ||
-                //             schema[0].TransactioInfo.UnitsQuantity != 77 ||
-                //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                //         maxLoopsCounter > 0
-                //     );
+                it('Validate PNS Triggered for WACD Update (TSA1 - UnitsQuantity = 15)', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while (
+                        (!schema[0].Key.startsWith('Log_Update') ||
+                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
+                                'UnitsQuantity') &&
+                        maxLoopsCounter > 0
+                    );
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                        createdTransactionLines.UUID,
+                    );
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                        NewValue: 15,
+                        OldValue: 25,
+                        FieldID: 'UnitsQuantity',
+                    });
+                });
 
-                //     expect(schema[0].Key).to.be.a('String').and.contain('Update');
-                //     expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(77);
-                //     expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
-                // });
-
-                it('Validate New Transaction Line Updated (TSA1 - UnitsQuantity = 15)', async () => {
+                it('Validate New Transaction Line WACD Updated (TSA1 - UnitsQuantity = 15)', async () => {
                     const createdObject = await objectsService.getTransactionByID(createdTransaction.InternalID);
                     expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
                         createdTransactionLines.InternalID,
@@ -395,7 +440,33 @@ export async function PepperiNotificationServiceTests(
                     expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
                 });
 
-                it('Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)', async () => {
+                it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 60)', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while (
+                        (!schema[0].Key.startsWith('Log_Update') ||
+                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
+                                'UnitDiscountPercentage') &&
+                        maxLoopsCounter > 0
+                    );
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                        createdTransactionLines.UUID,
+                    );
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                        NewValue: 60,
+                        OldValue: 40,
+                        FieldID: 'UnitDiscountPercentage',
+                    });
+                });
+
+                it('Validate Transaction Line SDK Updated (TSA2 - UnitDiscountPercentage = 60)', async () => {
                     const updatedTransactionLine = await objectsService.getTransactionLinesByID(
                         createdTransactionLines.InternalID,
                     );
@@ -543,31 +614,34 @@ export async function PepperiNotificationServiceTests(
                                 }
                             });
 
-                            // it(`Validate ${
-                            //     testName == 'Stop After DB' ? 'No New' : ''
-                            // } PNS Triggered for Update When ${testName}`, async () => {
-                            //     let schema;
-                            //     let maxLoopsCounter = 15;
-                            //     do {
-                            //         generalService.sleep(1500);
-                            //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            //             order_by: 'ModificationDateTime DESC',
-                            //         });
-                            //         maxLoopsCounter--;
-                            //     } while (
-                            //         (!schema[0].Key.startsWith('Update') ||
-                            //             schema[0].TransactioInfo.UnitsQuantity != 11 * (1 + index) ||
-                            //             schema[0].TransactioInfo.ItemData.ExternalID != itemArr[0].ExternalID) &&
-                            //         maxLoopsCounter > 0
-                            //     );
-                            //     if (testName == 'Stop After DB') {
-                            //         expect(schema[0].TransactioInfo.UnitsQuantity).to.not.equal(11 * (1 + index));
-                            //     } else {
-                            //         expect(schema[0].Key).to.be.a('String').and.contain('Update');
-                            //         expect(schema[0].TransactioInfo.UnitsQuantity).to.equal(11 * (1 + index));
-                            //         expect(schema[0].TransactioInfo.ItemData.ExternalID).to.equal(itemArr[0].ExternalID);
-                            //     }
-                            // });
+                            it(`Validate PNS Not Triggered for WACD Update (TSA1 - UnitsQuantity = ${
+                                11 * (1 + index)
+                            } (Negative)`, async () => {
+                                let schema;
+                                let maxLoopsCounter = _MAX_LOOPS;
+                                do {
+                                    generalService.sleep(1500);
+                                    schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                        order_by: 'ModificationDateTime DESC',
+                                    });
+                                    maxLoopsCounter--;
+                                } while (
+                                    (!schema[0].Key.startsWith('Log_Update') ||
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
+                                            'UnitsQuantity') &&
+                                    maxLoopsCounter > 0
+                                );
+                                expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                                expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                                    createdTransactionLines.UUID,
+                                );
+                                expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                                    NewValue: 0,
+                                    OldValue: 60,
+                                    FieldID: 'UnitDiscountPercentage',
+                                });
+                                expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(1);
+                            });
 
                             it(`Validate New Transaction Line Updated (TSA1 - UnitsQuantity = ${
                                 index == 0 ? 15 : index == 2 ? 11 * (1 + index - 1) : 11 * (1 + index)
@@ -612,6 +686,56 @@ export async function PepperiNotificationServiceTests(
                                     } as any);
                                 }
                                 expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
+                            });
+
+                            it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 40)', async () => {
+                                let schema;
+                                let maxLoopsCounter = _MAX_LOOPS;
+                                do {
+                                    generalService.sleep(1500);
+                                    schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                        order_by: 'ModificationDateTime DESC',
+                                    });
+                                    maxLoopsCounter--;
+                                } while (
+                                    (!schema[0].Key.startsWith('Log_Update') ||
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
+                                            'UnitDiscountPercentage') &&
+                                    maxLoopsCounter > 0
+                                );
+                                expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                                expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                                    createdTransactionLines.UUID,
+                                );
+                                console.log(
+                                    JSON.stringify(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields),
+                                );
+                                expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                                    NewValue: 60,
+                                    OldValue: 0,
+                                    FieldID: 'UnitDiscountPercentage',
+                                });
+                                if (index == 0) {
+                                    expect(
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1],
+                                    ).to.deep.equal({
+                                        NewValue: 11 * (1 + index),
+                                        OldValue: 15,
+                                        FieldID: 'UnitDiscountPercentage',
+                                    });
+                                } else if (index == 1) {
+                                    expect(
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1],
+                                    ).to.deep.equal({
+                                        NewValue: 11 * (1 + index),
+                                        OldValue: 11 * (1 + index - 1),
+                                        FieldID: 'UnitDiscountPercentage',
+                                    });
+                                } else {
+                                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(
+                                        1,
+                                    );
+                                }
                             });
 
                             it(`Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)${

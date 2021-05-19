@@ -7,6 +7,10 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
     const it = tester.it;
 
     const testData = {
+        'API Testing Framework': [
+            'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            request.body.apiTestingFramework ? `${request.body.apiTestingFramework}` : '',
+        ],
         'Services Framework': [
             '00000000-0000-0000-0000-000000000a91',
             request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5',
@@ -19,6 +23,10 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             '00000000-0000-0000-1234-000000000b2b',
             request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.55',
         ],
+        'Settings Framework': [
+            '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
+            request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
+        ],
         'Addons Manager': [
             'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9',
             request.body.addonsManager ? `${request.body.addonsManager}` : '0.',
@@ -26,10 +34,6 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         'Data Views API': [
             '484e7f22-796a-45f8-9082-12a734bac4e8',
             request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '1.',
-        ],
-        'Settings Framework': [
-            '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
-            request.body.settingsFramework ? `${request.body.settingsFramework}` : '9.5',
         ],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
     };

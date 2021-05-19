@@ -1873,8 +1873,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Base_ATD_SB_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Base ATD SB - 1.1.176',
-                        URL:
-                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/aeda4ee7-11be-4577-bbb8-c7484f4ced1b/Base_ATD_SB_1_1_176.json',
+                        URL: 'https://cdn.staging.pepperi.com/30014740/CustomizationFile/aeda4ee7-11be-4577-bbb8-c7484f4ced1b/Base_ATD_SB_1_1_176.json',
                     },
                     //Base Production - S3
                     {
@@ -1883,8 +1882,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Base_ATD_PRO_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Base ATD PRO - 1.1.177',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/83e55247-fd6b-45d9-8cd8-248cf963ed43/Base_ATD_PRO_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/83e55247-fd6b-45d9-8cd8-248cf963ed43/Base_ATD_PRO_1_1_176.json',
                     },
                     //Base EU - S3
                     {
@@ -1893,8 +1891,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Base_ATD_EU_1_1_168.json',
                         MimeType: 'application/json',
                         Title: 'Base ATD EU - 1.1.168',
-                        URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/04fb286e-580c-4dbd-ba7d-c878b271459b/Base_ATD_EU_1_1_168.json',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/04fb286e-580c-4dbd-ba7d-c878b271459b/Base_ATD_EU_1_1_168.json',
                     },
                     //Sandbox - S3
                     {
@@ -1903,8 +1900,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Winzer_Sales_Order_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Winzer Sales Order',
-                        URL:
-                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/18c11539-7e65-4615-80f3-1340079426b7/Winzer_Sales_Order_1_1_176.json',
+                        URL: 'https://cdn.staging.pepperi.com/30014740/CustomizationFile/18c11539-7e65-4615-80f3-1340079426b7/Winzer_Sales_Order_1_1_176.json',
                     },
                     //Production - S3
                     {
@@ -1913,8 +1909,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order Winzer DEV (New)',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/08914b6b-372c-42ed-b5af-052fbf1f3e34/Sales_Order_Winzer_DEV_(New)_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/08914b6b-372c-42ed-b5af-052fbf1f3e34/Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                     },
                     //Production - S3
                     {
@@ -1924,8 +1919,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Sales_Order_Legacy_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order Legacy',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/c05d52b8-9e14-470c-907c-7943032cd2f5/Sales_Order_Legacy_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/c05d52b8-9e14-470c-907c-7943032cd2f5/Sales_Order_Legacy_1_1_176.json',
                     },
                     //EU - S3
                     {
@@ -1934,8 +1928,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Sales_Order_New_Pricing_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order New Pricing',
-                        URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/b735eeca-dc7a-43e5-9ecf-fcd8623c95df/Sales_Order_New_Pricing_1_1_176.json',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/b735eeca-dc7a-43e5-9ecf-fcd8623c95df/Sales_Order_New_Pricing_1_1_176.json',
                     },
                 ];
             }
@@ -1948,8 +1941,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'VSN_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'VSN',
-                        URL:
-                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/c1b2e701-9e56-4be6-ab98-d4980b90daad/VSN_1_1_176.json',
+                        URL: 'https://cdn.staging.pepperi.com/30014740/CustomizationFile/c1b2e701-9e56-4be6-ab98-d4980b90daad/VSN_1_1_176.json',
                     },
                     //Sandbox - S3
                     {
@@ -1958,8 +1950,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'VSN_TEST_(268995)_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'VSN TEST (268995)',
-                        URL:
-                            'https://cdn.staging.pepperi.com/30014740/CustomizationFile/3435332d-21b1-4d7c-a5fa-a6a6923972fc/VSN_TEST_(268995)_1_1_176.json',
+                        URL: 'https://cdn.staging.pepperi.com/30014740/CustomizationFile/3435332d-21b1-4d7c-a5fa-a6a6923972fc/VSN_TEST_(268995)_1_1_176.json',
                     },
                     //Production - S3
                     {
@@ -1968,8 +1959,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'CustomKits_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'CustomKits',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/9e7b4493-c34f-457f-8ae7-553b9a9e7f5c/CustomKits_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/9e7b4493-c34f-457f-8ae7-553b9a9e7f5c/CustomKits_1_1_176.json',
                     },
                     //Production - S3
                     {
@@ -1978,8 +1968,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Custom_Kit_TEST_(268997)_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Custom Kit TEST (268997)',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/7beb1317-4ed5-42c7-b89f-87ae2a46ed09/Custom_Kit_TEST_(268997)_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/7beb1317-4ed5-42c7-b89f-87ae2a46ed09/Custom_Kit_TEST_(268997)_1_1_176.json',
                     },
                     //Production - S3
                     {
@@ -1988,8 +1977,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'BillOnly_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'BillOnly',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/8f8cad93-8a50-422c-9164-c894665907f0/BillOnly_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/8f8cad93-8a50-422c-9164-c894665907f0/BillOnly_1_1_176.json',
                     },
                     //Production - S3
                     {
@@ -1998,8 +1986,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'FDP_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'FDP',
-                        URL:
-                            'https://cdn.pepperi.com/30013064/CustomizationFile/01c06a53-4617-4241-9855-89f40610893b/FDP_1_1_176.json',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/01c06a53-4617-4241-9855-89f40610893b/FDP_1_1_176.json',
                     },
                     //EU - S3
                     {
@@ -2008,8 +1995,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Label_Only_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Label Only',
-                        URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/7c44ef18-6c35-4109-8d7d-ce4cb5adb4e3/Label_Only_1_1_176.json',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/7c44ef18-6c35-4109-8d7d-ce4cb5adb4e3/Label_Only_1_1_176.json',
                     },
                     //EU - S3
                     {
@@ -2018,8 +2004,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Update_Prices_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Update Prices',
-                        URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/bd46cc94-dc56-47af-bd23-345b45016315/Update_Prices_1_1_176.json',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/bd46cc94-dc56-47af-bd23-345b45016315/Update_Prices_1_1_176.json',
                     },
                     //EU - S3
                     {
@@ -2028,8 +2013,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Winzer_Sales_Order_V2_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Winzer Sales Order V2',
-                        URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/7579ae17-b5c3-45e2-82cb-fff397d860e0/Winzer_Sales_Order_V2_1_1_176.json',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/7579ae17-b5c3-45e2-82cb-fff397d860e0/Winzer_Sales_Order_V2_1_1_176.json',
                     },
                     //EU - S3
                     {
@@ -2038,8 +2022,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Sales_Order_DEV_V3_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Sales Order DEV V3',
-                        URL:
-                            'https://eucdn.pepperi.com/30010075/CustomizationFile/bfd1b6c1-62a1-4b5f-958f-bbc95991a087/Sales_Order_DEV_V3_1_1_176.json',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/bfd1b6c1-62a1-4b5f-958f-bbc95991a087/Sales_Order_DEV_V3_1_1_176.json',
                     },
                 ];
             }
@@ -2204,20 +2187,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     ) {
                                         errorsArr.push(
                                             {
-                                                Before:
-                                                    beforeDataViewsArr[
-                                                        index < beforeDataViewsArr.length
-                                                            ? index
-                                                            : beforeDataViewsArr.length - 1
-                                                    ],
+                                                Before: beforeDataViewsArr[
+                                                    index < beforeDataViewsArr.length
+                                                        ? index
+                                                        : beforeDataViewsArr.length - 1
+                                                ],
                                             },
                                             {
-                                                After:
-                                                    afterDataViewsArr[
-                                                        index < afterDataViewsArr.length
-                                                            ? index
-                                                            : afterDataViewsArr.length - 1
-                                                    ],
+                                                After: afterDataViewsArr[
+                                                    index < afterDataViewsArr.length
+                                                        ? index
+                                                        : afterDataViewsArr.length - 1
+                                                ],
                                             },
                                         );
                                     }
@@ -2275,20 +2256,14 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     ) {
                                         errorsArr.push(
                                             {
-                                                Before:
-                                                    beforeFieldsArr[
-                                                        index < beforeFieldsArr.length
-                                                            ? index
-                                                            : beforeFieldsArr.length - 1
-                                                    ],
+                                                Before: beforeFieldsArr[
+                                                    index < beforeFieldsArr.length ? index : beforeFieldsArr.length - 1
+                                                ],
                                             },
                                             {
-                                                After:
-                                                    afterFieldsArr[
-                                                        index < afterFieldsArr.length
-                                                            ? index
-                                                            : afterFieldsArr.length - 1
-                                                    ],
+                                                After: afterFieldsArr[
+                                                    index < afterFieldsArr.length ? index : afterFieldsArr.length - 1
+                                                ],
                                             },
                                         );
                                     }
@@ -2345,20 +2320,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     ) {
                                         errorsArr.push(
                                             {
-                                                Before:
-                                                    beforeLineFieldsArr[
-                                                        index < beforeLineFieldsArr.length
-                                                            ? index
-                                                            : beforeLineFieldsArr.length - 1
-                                                    ],
+                                                Before: beforeLineFieldsArr[
+                                                    index < beforeLineFieldsArr.length
+                                                        ? index
+                                                        : beforeLineFieldsArr.length - 1
+                                                ],
                                             },
                                             {
-                                                After:
-                                                    afterLineFieldsArr[
-                                                        index < afterLineFieldsArr.length
-                                                            ? index
-                                                            : afterLineFieldsArr.length - 1
-                                                    ],
+                                                After: afterLineFieldsArr[
+                                                    index < afterLineFieldsArr.length
+                                                        ? index
+                                                        : afterLineFieldsArr.length - 1
+                                                ],
                                             },
                                         );
                                     }
@@ -2436,20 +2409,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     ) {
                                         errorsArr.push(
                                             {
-                                                Before:
-                                                    beforeReferenceArr[
-                                                        index < beforeReferenceArr.length
-                                                            ? index
-                                                            : beforeReferenceArr.length - 1
-                                                    ],
+                                                Before: beforeReferenceArr[
+                                                    index < beforeReferenceArr.length
+                                                        ? index
+                                                        : beforeReferenceArr.length - 1
+                                                ],
                                             },
                                             {
-                                                After:
-                                                    afterReferenceArr[
-                                                        index < afterReferenceArr.length
-                                                            ? index
-                                                            : afterReferenceArr.length - 1
-                                                    ],
+                                                After: afterReferenceArr[
+                                                    index < afterReferenceArr.length
+                                                        ? index
+                                                        : afterReferenceArr.length - 1
+                                                ],
                                             },
                                         );
                                     }
@@ -2652,20 +2623,16 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 ) {
                                     errorsArr.push(
                                         {
-                                            Before:
-                                                beforeDataViewsArr[
-                                                    index < beforeDataViewsArr.length
-                                                        ? index
-                                                        : beforeDataViewsArr.length - 1
-                                                ],
+                                            Before: beforeDataViewsArr[
+                                                index < beforeDataViewsArr.length
+                                                    ? index
+                                                    : beforeDataViewsArr.length - 1
+                                            ],
                                         },
                                         {
-                                            After:
-                                                afterDataViewsArr[
-                                                    index < afterDataViewsArr.length
-                                                        ? index
-                                                        : afterDataViewsArr.length - 1
-                                                ],
+                                            After: afterDataViewsArr[
+                                                index < afterDataViewsArr.length ? index : afterDataViewsArr.length - 1
+                                            ],
                                         },
                                     );
                                 }
@@ -2721,16 +2688,14 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 ) {
                                     errorsArr.push(
                                         {
-                                            Before:
-                                                beforeFieldsArr[
-                                                    index < beforeFieldsArr.length ? index : beforeFieldsArr.length - 1
-                                                ],
+                                            Before: beforeFieldsArr[
+                                                index < beforeFieldsArr.length ? index : beforeFieldsArr.length - 1
+                                            ],
                                         },
                                         {
-                                            After:
-                                                afterFieldsArr[
-                                                    index < afterFieldsArr.length ? index : afterFieldsArr.length - 1
-                                                ],
+                                            After: afterFieldsArr[
+                                                index < afterFieldsArr.length ? index : afterFieldsArr.length - 1
+                                            ],
                                         },
                                     );
                                 }
@@ -2787,20 +2752,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 ) {
                                     errorsArr.push(
                                         {
-                                            Before:
-                                                beforeLineFieldsArr[
-                                                    index < beforeLineFieldsArr.length
-                                                        ? index
-                                                        : beforeLineFieldsArr.length - 1
-                                                ],
+                                            Before: beforeLineFieldsArr[
+                                                index < beforeLineFieldsArr.length
+                                                    ? index
+                                                    : beforeLineFieldsArr.length - 1
+                                            ],
                                         },
                                         {
-                                            After:
-                                                afterLineFieldsArr[
-                                                    index < afterLineFieldsArr.length
-                                                        ? index
-                                                        : afterLineFieldsArr.length - 1
-                                                ],
+                                            After: afterLineFieldsArr[
+                                                index < afterLineFieldsArr.length
+                                                    ? index
+                                                    : afterLineFieldsArr.length - 1
+                                            ],
                                         },
                                     );
                                 }
@@ -2878,20 +2841,16 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 ) {
                                     errorsArr.push(
                                         {
-                                            Before:
-                                                beforeReferenceArr[
-                                                    index < beforeReferenceArr.length
-                                                        ? index
-                                                        : beforeReferenceArr.length - 1
-                                                ],
+                                            Before: beforeReferenceArr[
+                                                index < beforeReferenceArr.length
+                                                    ? index
+                                                    : beforeReferenceArr.length - 1
+                                            ],
                                         },
                                         {
-                                            After:
-                                                afterReferenceArr[
-                                                    index < afterReferenceArr.length
-                                                        ? index
-                                                        : afterReferenceArr.length - 1
-                                                ],
+                                            After: afterReferenceArr[
+                                                index < afterReferenceArr.length ? index : afterReferenceArr.length - 1
+                                            ],
                                         },
                                     );
                                 }

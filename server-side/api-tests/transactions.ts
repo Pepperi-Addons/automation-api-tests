@@ -624,8 +624,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 TSAEmailAPI: 'Test@test.com',
                 TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
                 TSAImageAPI: {
-                    URL:
-                        'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+                    URL: 'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
                     Content: '',
                 },
                 TSALimitedLineAPI: 'Limit text',
