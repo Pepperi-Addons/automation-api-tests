@@ -213,7 +213,12 @@ export default class GeneralService {
             const version = testData[addonName][1];
             let changeType = 'Upgrade';
             let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
-            if (addonName == 'Services Framework' || addonName == 'Cross Platforms API' || !isPhased) {
+            if (
+                addonName == 'Services Framework' ||
+                addonName == 'Cross Platforms API' ||
+                addonName == 'API Testing Framework' ||
+                !isPhased
+            ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
             const fetchVarResponse = await this.fetchStatus(
