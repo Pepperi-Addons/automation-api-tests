@@ -64,11 +64,15 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         });
 
         describe('Create Schema (Negative)', () => {
-            it('Get Empty Schema: Finished', async () => {
-                // this will run the first test that will run the second and so on..
+            it('Test Initiation', async () => {
+                // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
+            });
+            it('Get Empty Schema: Finished', async () => {
                 if (logcash.getEmptySchemaStatus) {
+                    
                 }
+                
                 assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
             });
             it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
@@ -162,7 +166,38 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 );
             });
         });
+
+        describe('Single Hard Delete Data functionality(Negative and Positive)', () => {
+            it('Negative: try to delete not hidden object', async () => {
+                assert(
+                    logcash.hardDeleteOnNotHiddenNegativeStatus,
+                    logcash.hardDeleteOnNotHiddenNegativeError,
+                );
+            });
+            it('Hard Delete hidden object(meta_data type)', () => {
+                assert(
+                    logcash.hardDeleteOnHiddenStatus,
+                    logcash.hardDeleteOnHiddenError,
+                );
+            });
+            it('Get data after hard_delete (verification after delete include hidden objects)', () => {
+                assert(logcash.getDataFromTableIncludeHidden.Status, logcash.getDataFromTableIncludeHidden.Error);
+            });
+            it('Force Hard_delete on not hidden object', async () => {
+                assert(
+                    logcash.hardDeleteForceStatus,
+                    logcash.hardDeleteForceError,
+                );
+            });
+            it('Get data after force hard_delete (verification after force delete include hidden objects)', () => {
+                assert(
+                    logcash.getDataFromTableIncludeHiddenAfterForce.Status,
+                    logcash.getDataFromTableIncludeHiddenAfterForce.Error,
+                );
+            });
+        });
     });
+
 
     //get secret key
     async function getSecretKey() {
@@ -280,7 +315,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
             if (
                 logcash.getEmptySchema.fault.faultstring.includes(
@@ -314,7 +349,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (logcash.createSchemaWithoutName.fault.faultstring != undefined) {
             //debugger;
             //if (logcash.createSchemaWithoutName.fault.faultstring.includes("Cannot read property 'Name' of null") == true) {-- error message changed on 1.0.95
@@ -671,7 +706,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             )
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (logcash.hardDeleteOnNotHiddenNegative.fault.faultstring != undefined) {
             if (
                 logcash.hardDeleteOnNotHiddenNegative.fault.faultstring.includes('Cannot delete non hidden items') ==
@@ -681,12 +716,12 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             } else {
                 logcash.hardDeleteOnNotHiddenNegativeStatus = false;
                 logcash.hardDeleteOnNotHiddenNegativeError =
-                    'The indexed field <IndexedString1> update will fail, but actually not';
+                    'Hard delete will fail becouse object is not hidden, but actually not';
             }
         } else {
             logcash.hardDeleteOnNotHiddenNegativeStatus == false;
             logcash.hardDeleteOnNotHiddenNegativeError ==
-                'The indexed field <IndexedString1> update will fail, but actually get  ' +
+                'Hard delete will fail becouse object is not hidden, but actually get  ' +
                     logcash.hardDeleteOnNotHiddenNegative;
         }
         await changeHiddenToTrue();
@@ -724,7 +759,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (logcash.getDataFromTableHidden.length == 1) {
             logcash.getDataFromTableHidden.Status = true;
         } else {
@@ -732,12 +767,184 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableHidden.Error =
                 'Result will be one object, and not: ' + logcash.getDataFromTableHidden;
         }
-        await dropExistingTable();
+        await hardDeleteOnHidden();
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////Negative: hard delete with another OwnerID        /////////////////////////////////////////////////
-
+    //not running before bug https://pepperi.atlassian.net/browse/DI-18158 is closed
+    // async function hardDeleteOnHiddenWithWrongOwnerIdNegative() {
+    //     logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative = await generalService
+    //         .fetchStatus(
+    //             baseURL +
+    //                 '/addons/data/' +
+    //                 addonUUID +
+    //                 '/' +
+    //                 logcash.createSchemaWithMandFieldName.Name +
+    //                 '/' +
+    //                 'testKey2' +
+    //                 '/hard_delete',
+    //             {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     Authorization: 'Bearer ' + token,
+    //                     'X-Pepperi-OwnerID': '7aac5451-2fc7-44d2-99dc-52c592adfb71',
+    //                     'X-Pepperi-SecretKey': logcash.secretKey,
+    //                 },
+    //                 // body: JSON.stringify({
+    //                 //     Key: 'testKey2',
+    //                 //     Hidden: true,
+    //                 // }),
+    //             },
+    //         )
+    //         .then((res) => [res.Body,res.Status]);
+    //     //debugger;
+    //     if (logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative.fault.faultstring != undefined) {
+    //         if (
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative.fault.faultstring.includes('') ==
+    //             true
+    //         ) {
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeStatus = true;
+    //         } else {
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeStatus = false;
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeError =
+    //                 'Hard delete will fail becouse OwnerID is wrong, but actually not';
+    //         }
+    //     } else {
+    //         logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeStatus == false;
+    //         logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeError ==
+    //             'Hard delete will fail becouse OwnerID is wrong, but actually get  ' +
+    //                 logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative;
+    //     }
+    //     //await dropExistingTable();
+    // }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////Positive: hard delete hidden object 'testKey2'       /////////////////////////////////////////////////
+    async function hardDeleteOnHidden() {
+        logcash.hardDeleteOnHidden = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '/' +
+                    'testKey2' +
+                    '/hard_delete',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    // body: JSON.stringify({
+                    //     Key: 'testKey2',
+                    //     Hidden: true,
+                    // }),
+                },
+            )
+            .then((res) => [res.Status,res.Body]);
+        //debugger;
+        if (logcash.hardDeleteOnHidden[0] == 200) {
+            logcash.hardDeleteOnHiddenStatus = true;
+        }
+        else {
+            logcash.hardDeleteOnHiddenStatus == false;
+            logcash.hardDeleteOnHiddenError ==
+                'Hard delete failed ' +
+                    logcash.hardDeleteOnHidden[0];
+        }
+        await getDataFromTableIncludeHidden();
+    }
+
+    async function getDataFromTableIncludeHidden() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableIncludeHidden = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '?include_deleted=true', {
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+            },
+        })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromTableIncludeHidden.length == 1) {
+            logcash.getDataFromTableIncludeHidden.Status = true;
+        }
+        else {
+            logcash.getDataFromTableIncludeHidden.Status = false;
+            logcash.getDataFromTableIncludeHidden.Error =
+                'Result will be one object, the hard_delete function is failed: ' + logcash.getDataFromTableIncludeHidden;
+        }
+        await hardDeleteForce();
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////Force hard_delete//////////////////////////////////////////////////////////////////////////
+    async function hardDeleteForce() {
+        logcash.hardDeleteForce = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '/' +
+                    'testKey1' +
+                    '/hard_delete',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Force: true,
+                    }),
+                },
+            )
+            .then((res) => [res.Status,res.Body]);
+        //debugger;
+        if (logcash.hardDeleteForce[0] == 200) {
+            logcash.hardDeleteForceStatus = true;
+        }
+        else {
+            logcash.hardDeleteForceStatus == false;
+            logcash.hardDeleteForceError ==
+                'Force Hard delete failed ' +
+                    logcash.hardDeleteForce[0];
+        }
+        await getDataFromTableIncludeHiddenAfterForce();
+    }
+
+    async function getDataFromTableIncludeHiddenAfterForce() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableIncludeHiddenAfterForce = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '?include_deleted=true', {
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+            },
+        })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromTableIncludeHiddenAfterForce.length == 0) {
+            logcash.getDataFromTableIncludeHiddenAfterForce.Status = true;
+        }
+        else {
+            logcash.getDataFromTableIncludeHiddenAfterForce.Status = false;
+            logcash.getDataFromTableIncludeHiddenAfterForce.Error =
+                'Result will be one object, the hard_delete function is failed: ' + logcash.getDataFromTableIncludeHiddenAfterForce;
+        }
+        await dropExistingTable();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //#region drop table testing
     async function dropExistingTable() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
@@ -752,7 +959,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             },
         ); //.then((data) => data.json())
-        debugger;
+        //debugger;
 
         //if(logcash.dropExistingTable.success == true){
         if (res.Ok) {
@@ -776,7 +983,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             },
         ); //.then((data) => data.json())
-        debugger;
+        //debugger;
         if (res.Ok == false) {
             logcash.dropDeletedTableStatus = true;
         } else {
@@ -1164,7 +1371,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
             logcash.updateSchemaAddIndexStringAndNum.CreationDateTime ==
                 logcash.createSchemaWithIndexedDataType.CreationDateTime &&
@@ -1210,7 +1417,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring != undefined) {
             if (
                 logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes(
@@ -1246,7 +1453,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             },
         ); //.then((data) => data.json())
-        debugger;
+        //debugger;
 
         //if(logcash.dropExistingTable.success == true){
         if (res.Ok) {
