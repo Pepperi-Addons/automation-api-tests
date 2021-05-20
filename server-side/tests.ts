@@ -725,6 +725,35 @@ export async function code_jobs_retry(client: Client, testerFunctions: TesterFun
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
+export async function objects(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Objects';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        UDTTests(service, testerFunctions),
+        UsersTests(service, testerFunctions),
+        AccountsTests(service, testerFunctions),
+        ContactsTests(service, testerFunctions),
+        GeneralActivitiesTests(service, testerFunctions),
+        TransactionTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
 export async function udt(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'UDT';
