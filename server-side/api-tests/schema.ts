@@ -112,7 +112,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         });
         describe('CPI_Meta_Data testing (Negative)', () => {
             it('Create schema with type CPI_meta_data', async () => {
-                assert(logcash.createSchemaWithTypeCPIMetadataStatus, logcash.createSchemaWithTypeCPIMetadataErrorMessage);
+                assert(
+                    logcash.createSchemaWithTypeCPIMetadataStatus,
+                    logcash.createSchemaWithTypeCPIMetadataErrorMessage,
+                );
             });
             it('Insert data to created schema: Finished', () => {
                 assert(logcash.insertDataToCPIMetaDataTableStatus, logcash.insertDataToCPIMetaDataTableError);
@@ -126,30 +129,41 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         });
         describe('indexed_data schema functionality testing (Negative and Positive)', () => {
             it('Create schema with type indexed_data and add on indexed string colum', async () => {
-                assert(logcash.createSchemaWithIndexedDataTypeStatus, logcash.createSchemaWithIndexedDataTypeErrorMessage);
+                assert(
+                    logcash.createSchemaWithIndexedDataTypeStatus,
+                    logcash.createSchemaWithIndexedDataTypeErrorMessage,
+                );
             });
             it('Negative: try to add two indexed integer fields', () => {
-                assert(logcash.updateSchemaTwoIndexedInstegerNegativeStatus,  logcash.updateSchemaTwoIndexedInstegerNegativeError);
+                assert(
+                    logcash.updateSchemaTwoIndexedInstegerNegativeStatus,
+                    logcash.updateSchemaTwoIndexedInstegerNegativeError,
+                );
             });
             it('Change integer column to indexed string : Finished', () => {
                 assert(logcash.updateSchemaAddIndexToStringStatus, logcash.updateSchemaAddIndexToStringErrorMessage);
             });
             it('Negative: try to add to indexed string columns(one new , and one updated from standard): Finished', () => {
-                assert(logcash.updateSchemaTwoIndexedStringsNegativeStatus, logcash.updateSchemaTwoIndexedStringsNegativeError);
+                assert(
+                    logcash.updateSchemaTwoIndexedStringsNegativeStatus,
+                    logcash.updateSchemaTwoIndexedStringsNegativeError,
+                );
             });
             it('Add two indexed columns (string and intger)', async () => {
-                assert(logcash.updateSchemaAddIndexStringAndNumStatus, logcash.updateSchemaAddIndexStringAndNumErrorMessage);
+                assert(
+                    logcash.updateSchemaAddIndexStringAndNumStatus,
+                    logcash.updateSchemaAddIndexStringAndNumErrorMessage,
+                );
             });
             it('Negative : try change indexed column: Finished', () => {
-                assert(logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus, logcash.updateSchemaTryToChangeIndexedFieldNegativeError);
+                assert(
+                    logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
+                    logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
+                );
             });
-            
         });
     });
-     
-    
-     
-    
+
     //get secret key
     async function getSecretKey() {
         logcash.getAuditData = await generalService
@@ -268,7 +282,11 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             .then((res) => res.Body);
         debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
-            if ((logcash.getEmptySchema.fault.faultstring.includes('Failed due to exception: Table schema must be exist') == true)) {
+            if (
+                logcash.getEmptySchema.fault.faultstring.includes(
+                    'Failed due to exception: Table schema must be exist',
+                ) == true
+            ) {
                 logcash.getEmptySchemaStatus = true;
             } else {
                 logcash.getEmptySchemaStatus = false;
@@ -570,7 +588,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 body: JSON.stringify({
                     Key: 'testKey2',
                     Column1: 'Value2-2',
-                    testString: ['string2-1', 'String2-2'],//added string,bulean,int,multi data on 19-05-21 to test hard_delete on meta data type
+                    testString: ['string2-1', 'String2-2'], //added string,bulean,int,multi data on 19-05-21 to test hard_delete on meta data type
                     testBoolean: [true, false],
                     TestInteger: 14,
                     TestMultipleStringValues: [
@@ -626,31 +644,44 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         //await changeHiddenToTrue();
         await hardDeleteOnNotHiddenNegative();
     }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////Negative : hard delete before change key to hidden/////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////Negative : hard delete before change key to hidden/////////////////////////////////////////////////
     async function hardDeleteOnNotHiddenNegative() {
         logcash.hardDeleteOnNotHiddenNegative = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '/' + 'testKey2' + '/hard_delete', {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '/' +
+                    'testKey2' +
+                    '/hard_delete',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    // body: JSON.stringify({
+                    //     Key: 'testKey2',
+                    //     Hidden: true,
+                    // }),
                 },
-                // body: JSON.stringify({
-                //     Key: 'testKey2',
-                //     Hidden: true,
-                // }),
-            })
+            )
             .then((res) => res.Body);
         debugger;
         if (logcash.hardDeleteOnNotHiddenNegative.fault.faultstring != undefined) {
-            if ((logcash.hardDeleteOnNotHiddenNegative.fault.faultstring.includes('Cannot delete non hidden items') == true)) {
+            if (
+                logcash.hardDeleteOnNotHiddenNegative.fault.faultstring.includes('Cannot delete non hidden items') ==
+                true
+            ) {
                 logcash.hardDeleteOnNotHiddenNegativeStatus = true;
             } else {
                 logcash.hardDeleteOnNotHiddenNegativeStatus = false;
                 logcash.hardDeleteOnNotHiddenNegativeError =
-                    'The indexed field <IndexedString1> update will fail, but actually not' ;
+                    'The indexed field <IndexedString1> update will fail, but actually not';
             }
         } else {
             logcash.hardDeleteOnNotHiddenNegativeStatus == false;
@@ -660,8 +691,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         }
         await changeHiddenToTrue();
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     async function changeHiddenToTrue() {
         logcash.changeHiddenToTrue = await generalService
@@ -729,8 +759,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.dropExistingTableStatus = true;
         } else {
             logcash.dropExistingTableStatus = false;
-            logcash.dropExistingTableError =
-                'Drop schema failed. Error message is: ' + logcash.dropExistingTable;
+            logcash.dropExistingTableError = 'Drop schema failed. Error message is: ' + logcash.dropExistingTable;
         }
         await dropDeletedTable();
     }
@@ -773,7 +802,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
                 body: JSON.stringify({
                     //Name: 'createSchemaWithTypeCPIMetadata ' + Date(),
-                    Name: 'createSchemaWithTypeCPIMetadata' + new Date().getTime() ,
+                    Name: 'createSchemaWithTypeCPIMetadata' + new Date().getTime(),
                     Type: 'cpi_meta_data',
                     Fields: {
                         testString: { Type: 'String' },
@@ -788,7 +817,6 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             .then((res) => res.Body);
         //debugger;
         if (
-            
             logcash.createSchemaWithTypeCPIMetadata.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.createSchemaWithTypeCPIMetadata.Hidden == false &&
             logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' &&
@@ -877,43 +905,51 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             }
             //debugger;
         }
-        
+
         await getDataFromUDTTable();
     }
 
-
     async function getDataFromUDTTable() {
-        
         logcash.getDataFromUDTTable = await generalService
-            .fetchStatus(baseURL + '/user_defined_tables?where=MainKey=\'' + addonUUID + '_' + logcash.createSchemaWithTypeCPIMetadata.Name + '\'' , {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    // 'X-Pepperi-OwnerID': addonUUID,
-                    // 'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    "/user_defined_tables?where=MainKey='" +
+                    addonUUID +
+                    '_' +
+                    logcash.createSchemaWithTypeCPIMetadata.Name +
+                    "'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        // 'X-Pepperi-OwnerID': addonUUID,
+                        // 'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        logcash.getDataFromUDTTableTmp = JSON.parse(logcash.getDataFromUDTTable[0].Values).Column1
-        if(
-            logcash.getDataFromUDTTable[0].CreationDateTime == logcash.getDataFromCPIMetaDataTable[0].CreationDateTime &&
+        logcash.getDataFromUDTTableTmp = JSON.parse(logcash.getDataFromUDTTable[0].Values).Column1;
+        if (
+            logcash.getDataFromUDTTable[0].CreationDateTime ==
+                logcash.getDataFromCPIMetaDataTable[0].CreationDateTime &&
             logcash.getDataFromUDTTable[0].Hidden == logcash.getDataFromCPIMetaDataTable[0].Hidden &&
-            logcash.getDataFromUDTTable[0].ModificationDateTime == logcash.getDataFromCPIMetaDataTable[0].ModificationDateTime &&
+            logcash.getDataFromUDTTable[0].ModificationDateTime ==
+                logcash.getDataFromCPIMetaDataTable[0].ModificationDateTime &&
             logcash.getDataFromUDTTable[0].SecondaryKey == logcash.getDataFromCPIMetaDataTable[0].Key &&
             logcash.getDataFromUDTTableTmp[0] == logcash.getDataFromCPIMetaDataTable[0].Column1[0] &&
             logcash.getDataFromUDTTableTmp[1] == logcash.getDataFromCPIMetaDataTable[0].Column1[1] &&
             logcash.getDataFromUDTTableTmp[2] == logcash.getDataFromCPIMetaDataTable[0].Column1[2]
-
-        )
-        {
+        ) {
             logcash.getDataFromUDTTableStatus = true;
-        }
-        else
-        {
+        } else {
             //debugger;
             logcash.getDataFromUDTTableStatus = false;
-            logcash.getDataFromUDTTableError = ('Created UDT table data with name '+ logcash.getDataFromUDTTable[0].MainKey  + 'is not equale to API data ' + logcash.getDataFromCPIMetaDataTable[0]);
+            logcash.getDataFromUDTTableError =
+                'Created UDT table data with name ' +
+                logcash.getDataFromUDTTable[0].MainKey +
+                'is not equale to API data ' +
+                logcash.getDataFromCPIMetaDataTable[0];
         }
         await createSchemaWithIndexedDataType();
     }
@@ -935,15 +971,14 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     Type: 'indexed_data',
                     Fields: {
                         IndexedString1: { Type: 'String', Indexed: true },
-                        Field1: { Type: 'String'},
-                        Field2: { Type: 'String'},
-                        Field3: { Type: 'String'},
-                        Field4: { Type: 'String'},
-                        Field5: { Type: 'Integer'},
-                        Field6: { Type: 'Integer'},
-                        Field7: { Type: 'Integer'},
-                        Field8: { Type: 'Integer'}
-
+                        Field1: { Type: 'String' },
+                        Field2: { Type: 'String' },
+                        Field3: { Type: 'String' },
+                        Field4: { Type: 'String' },
+                        Field5: { Type: 'Integer' },
+                        Field6: { Type: 'Integer' },
+                        Field7: { Type: 'Integer' },
+                        Field8: { Type: 'Integer' },
                     },
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
                     ModificationDateTime: '2020-10-08T10:19:00.677Z',
@@ -981,22 +1016,25 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     Name: logcash.createSchemaWithIndexedDataType.Name,
                     //Type: 'indexed_data',
                     Fields: {
-                        IndexedInt1_willFail: { Type: 'Integer', Indexed: true},
-                        IndexedInt2_willFail: { Type: 'Integer', Indexed: true}//try to create two indexed integer fields.
+                        IndexedInt1_willFail: { Type: 'Integer', Indexed: true },
+                        IndexedInt2_willFail: { Type: 'Integer', Indexed: true }, //try to create two indexed integer fields.
                     },
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
-                    ModificationDateTime: '2020-10-08T10:19:00.677Z'
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
                 }),
             })
             .then((res) => res.Body);
         //debugger;
         if (logcash.updateSchemaTwoIndexedInstegerNegative.fault.faultstring != undefined) {
-            if ((logcash.updateSchemaTwoIndexedInstegerNegative.fault.faultstring.includes('failed with status: 400') == true)) {
+            if (
+                logcash.updateSchemaTwoIndexedInstegerNegative.fault.faultstring.includes('failed with status: 400') ==
+                true
+            ) {
                 logcash.updateSchemaTwoIndexedInstegerNegativeStatus = true;
             } else {
                 logcash.updateSchemaTwoIndexedInstegerNegativeStatus = false;
                 logcash.updateSchemaTwoIndexedInstegerNegativeError =
-                    'The schema update with two indexed integer fileld will fail, but actually not' ;
+                    'The schema update with two indexed integer fileld will fail, but actually not';
             }
         } else {
             logcash.updateSchemaTwoIndexedInstegerNegativeStatus == false;
@@ -1007,7 +1045,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         await updateSchemaAddIndexToString();
     }
 
-    async function updateSchemaAddIndexToString() {//positive: change field by type Int to indexed String
+    async function updateSchemaAddIndexToString() {
+        //positive: change field by type Int to indexed String
         logcash.updateSchemaAddIndexToString = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
                 method: 'POST',
@@ -1027,8 +1066,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                         // Field5: { Type: 'Integer'},
                         // Field6: { Type: 'Integer'},
                         // Field7: { Type: 'Integer'},
-                        Field8: { Type: 'String', Indexed: true}
-
+                        Field8: { Type: 'String', Indexed: true },
                     },
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
                     ModificationDateTime: '2020-10-08T10:19:00.677Z',
@@ -1037,7 +1075,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.updateSchemaAddIndexToString.CreationDateTime == logcash.createSchemaWithIndexedDataType.CreationDateTime &&
+            logcash.updateSchemaAddIndexToString.CreationDateTime ==
+                logcash.createSchemaWithIndexedDataType.CreationDateTime &&
             logcash.updateSchemaAddIndexToString.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.updateSchemaAddIndexToString.Hidden == false &&
             logcash.updateSchemaAddIndexToString.Type == 'indexed_data' &&
@@ -1053,7 +1092,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         await updateSchemaTwoIndexedStringsNegative();
     }
 
-    async function updateSchemaTwoIndexedStringsNegative() {// try to add 1 indexed string and update one standard filed to indexed string. Will fail (can create just 3 indexed string fields)
+    async function updateSchemaTwoIndexedStringsNegative() {
+        // try to add 1 indexed string and update one standard filed to indexed string. Will fail (can create just 3 indexed string fields)
         logcash.updateSchemaTwoIndexedStringsNegative = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
                 method: 'POST',
@@ -1066,22 +1106,25 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     Name: logcash.createSchemaWithIndexedDataType.Name,
                     //Type: 'indexed_data',
                     Fields: {
-                        IndexedString1_willFail: { Type: 'String', Indexed: true},
-                        Field7: { Type: 'String', Indexed: true}
+                        IndexedString1_willFail: { Type: 'String', Indexed: true },
+                        Field7: { Type: 'String', Indexed: true },
                     },
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
-                    ModificationDateTime: '2020-10-08T10:19:00.677Z'
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
                 }),
             })
             .then((res) => res.Body);
         //debugger;
         if (logcash.updateSchemaTwoIndexedStringsNegative.fault.faultstring != undefined) {
-            if ((logcash.updateSchemaTwoIndexedStringsNegative.fault.faultstring.includes('Failed due to exception:') == true)) {
+            if (
+                logcash.updateSchemaTwoIndexedStringsNegative.fault.faultstring.includes('Failed due to exception:') ==
+                true
+            ) {
                 logcash.updateSchemaTwoIndexedStringsNegativeStatus = true;
             } else {
                 logcash.updateSchemaTwoIndexedStringsNegativeStatus = false;
                 logcash.updateSchemaTwoIndexedStringsNegativeError =
-                    'The schema update with two indexed string fileld will fail(because we have 2 indexed strung fields before), but actually not' ;
+                    'The schema update with two indexed string fileld will fail(because we have 2 indexed strung fields before), but actually not';
             }
         } else {
             logcash.updateSchemaTwoIndexedStringsNegativeStatus == false;
@@ -1092,7 +1135,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         await updateSchemaAddIndexStringAndNum();
     }
 
-    async function updateSchemaAddIndexStringAndNum() {//positive: change field by type Int to indexed String
+    async function updateSchemaAddIndexStringAndNum() {
+        //positive: change field by type Int to indexed String
         logcash.updateSchemaAddIndexStringAndNum = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
                 method: 'POST',
@@ -1112,9 +1156,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                         // Field5: { Type: 'Integer'},
                         // Field6: { Type: 'Integer'},
                         // Field7: { Type: 'Integer'},
-                        IndexedString2: { Type: 'String', Indexed: true},
-                        IndexedInt1: { Type: 'Integer', Indexed: true}
-
+                        IndexedString2: { Type: 'String', Indexed: true },
+                        IndexedInt1: { Type: 'Integer', Indexed: true },
                     },
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
                     ModificationDateTime: '2020-10-08T10:19:00.677Z',
@@ -1123,7 +1166,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             .then((res) => res.Body);
         debugger;
         if (
-            logcash.updateSchemaAddIndexStringAndNum.CreationDateTime == logcash.createSchemaWithIndexedDataType.CreationDateTime &&
+            logcash.updateSchemaAddIndexStringAndNum.CreationDateTime ==
+                logcash.createSchemaWithIndexedDataType.CreationDateTime &&
             logcash.updateSchemaAddIndexStringAndNum.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.updateSchemaAddIndexStringAndNum.Hidden == false &&
             logcash.updateSchemaAddIndexStringAndNum.Type == 'indexed_data' &&
@@ -1139,12 +1183,14 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         } else {
             logcash.updateSchemaAddIndexStringAndNumStatus = false;
             logcash.updateSchemaAddIndexStringAndNumErrorMessage =
-                'One of parameters on Schema creation get with wrong value: ' + logcash.updateSchemaAddIndexStringAndNum;
+                'One of parameters on Schema creation get with wrong value: ' +
+                logcash.updateSchemaAddIndexStringAndNum;
         }
         await updateSchemaTryToChangeIndexedFieldNegative();
     }
 
-    async function updateSchemaTryToChangeIndexedFieldNegative() {// try to add 1 indexed string and update one standard filed to indexed string. Will fail (can create just 3 indexed string fields)
+    async function updateSchemaTryToChangeIndexedFieldNegative() {
+        // try to add 1 indexed string and update one standard filed to indexed string. Will fail (can create just 3 indexed string fields)
         logcash.updateSchemaTryToChangeIndexedFieldNegative = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
                 method: 'POST',
@@ -1157,21 +1203,25 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     Name: logcash.createSchemaWithIndexedDataType.Name,
                     //Type: 'indexed_data',
                     Fields: {
-                        IndexedString1: { Type: 'String'}
+                        IndexedString1: { Type: 'String' },
                     },
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
-                    ModificationDateTime: '2020-10-08T10:19:00.677Z'
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
                 }),
             })
             .then((res) => res.Body);
         debugger;
         if (logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring != undefined) {
-            if ((logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes('Failed due to exception:') == true)) {
+            if (
+                logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes(
+                    'Failed due to exception:',
+                ) == true
+            ) {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
             } else {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = false;
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeError =
-                    'The indexed field <IndexedString1> update will fail, but actually not' ;
+                    'The indexed field <IndexedString1> update will fail, but actually not';
             }
         } else {
             logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus == false;
@@ -1183,7 +1233,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     }
     //#endregion schema creation  functionality test
 
-    async function dropTableIndexed() {// the drop table function will be moved after indexed_table data verification when code is ready
+    async function dropTableIndexed() {
+        // the drop table function will be moved after indexed_table data verification when code is ready
         const res = await generalService.fetchStatus(
             baseURL + '/addons/data/schemes/' + logcash.createSchemaWithIndexedDataType.Name + '/purge',
             {
@@ -1202,13 +1253,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.dropTableIndexedStatus = true;
         } else {
             logcash.dropTableIndexedStatus = false;
-            logcash.dropTableIndexedError =
-                'Drop schema failed. Error message is: ' + logcash.dropTableIndexed;
+            logcash.dropTableIndexedError = 'Drop schema failed. Error message is: ' + logcash.dropTableIndexed;
         }
         //await dropDeletedTable();
     }
-
-    
-
-
 }
