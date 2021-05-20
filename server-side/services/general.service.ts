@@ -48,7 +48,7 @@ export default class GeneralService {
         });
     }
 
-    sleep(ms: number) {
+    sleep(ms) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
             expire = start + ms;
@@ -213,7 +213,12 @@ export default class GeneralService {
             const version = testData[addonName][1];
             let changeType = 'Upgrade';
             let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
-            if (addonName == 'Services Framework' || addonName == 'Cross Platforms API' || !isPhased) {
+            if (
+                addonName == 'Services Framework' ||
+                addonName == 'Cross Platforms API' ||
+                addonName == 'API Testing Framework' ||
+                !isPhased
+            ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
             const fetchVarResponse = await this.fetchStatus(

@@ -1217,9 +1217,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsGetDeletedAddonVersionTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes(
-            'fault',
-        );
+        mandatoryStepsGetDeletedAddonVersionTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsGetDeletedAddonVersionTest.createAddonVersion == true &&
@@ -1382,9 +1381,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostEmptyVersionsArrayTest.RemoveAddonEndTest = !JSON.stringify(deleteApiResponse).includes(
-            'fault',
-        );
+        mandatoryStepsPostEmptyVersionsArrayTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostEmptyVersionsArrayTest.FailToCreateAddonVersion == true &&
@@ -1644,9 +1642,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
 
         //console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //.statusText.split('<h2>')[1].split('</h2>')[0] });
-        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
-            createVersionApiResponse,
-        ).includes('fault'); //.statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
+        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion =
+            JSON.stringify(createVersionApiResponse).includes('fault'); //.statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
         addTestResultUnderHeadline(
             testName,
             'Create New Addon With Single Version In Bulk End Point Test',
@@ -1673,9 +1670,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion == true &&
@@ -1827,9 +1823,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
         //console.log({ Post_Addon_Without_Name_Test: createApiResponse });
-        mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion = JSON.stringify(
-            createApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion =
+            JSON.stringify(createApiResponse).includes('fault');
         addTestResultUnderHeadline(
             testName,
             'Post Addon Without Name Negative Test',
@@ -1915,9 +1910,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithoutVersionTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostAddonVersionWithoutVersionTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithoutVersionTest.FailToCreateAddonVersion == true &&
@@ -2008,9 +2002,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithoutAddonUUIDTest.FailToCreateAddonVersion == true &&
@@ -2127,9 +2120,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion == true &&
@@ -2245,9 +2237,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion == true &&
@@ -2364,9 +2355,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             'Delete Addon - End Test',
             !JSON.stringify(deleteApiResponse).includes('fault'),
         );
-        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest = !JSON.stringify(
-            deleteApiResponse,
-        ).includes('fault');
+        mandatoryStepsPostAddonVersionWithWrongVersionTest.RemoveAddonEndTest =
+            !JSON.stringify(deleteApiResponse).includes('fault');
 
         if (
             mandatoryStepsPostAddonVersionWithWrongVersionTest.DontCreateAddonVersion == true &&
@@ -2448,9 +2438,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
         //console.log({ Get_Version: getVersionApiResponse });
-        mandatoryStepsvalidateInstallationFileCreated.fileCreated = getVersionApiResponse.Body.Files[0].URL.includes(
-            'cdn',
-        );
+        mandatoryStepsvalidateInstallationFileCreated.fileCreated =
+            getVersionApiResponse.Body.Files[0].URL.includes('cdn');
         addTestResultUnderHeadline(
             testName,
             'Read File In Version Test',
@@ -2575,9 +2564,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
         //console.log({ Get_Var_Addons_Version_File_Sent_Create: createVersionApiResponse });
-        mandatoryStepsvalidateInstallationFileSent.createVersionTestResult = !JSON.stringify(
-            createVersionApiResponse,
-        ).includes('fault');
+        mandatoryStepsvalidateInstallationFileSent.createVersionTestResult =
+            !JSON.stringify(createVersionApiResponse).includes('fault');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Test',
@@ -2732,9 +2720,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
         //console.log({ Get_Var_Addons_Version_Other_File_Create: createVersionApiResponse });
-        mandatoryStepsvalidateOtherFileSent.createVersionTestResult = !JSON.stringify(
-            createVersionApiResponse,
-        ).includes('fault');
+        mandatoryStepsvalidateOtherFileSent.createVersionTestResult =
+            !JSON.stringify(createVersionApiResponse).includes('fault');
         addTestResultUnderHeadline(
             testName,
             'Create New Addon Version Test',
@@ -2951,9 +2938,8 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //console.log({ Get_Var_Addons_Version_Other_File_Create: createVersionApiResponse });
 
         if (!testName.includes('Negative')) {
-            mandatoryStepsvalidateOtherFileSent.createVersionTestResult = !JSON.stringify(
-                createVersionApiResponse,
-            ).includes('fault');
+            mandatoryStepsvalidateOtherFileSent.createVersionTestResult =
+                !JSON.stringify(createVersionApiResponse).includes('fault');
             addTestResultUnderHeadline(
                 testName,
                 'Create New Addon Version Test',

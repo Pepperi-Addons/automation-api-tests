@@ -190,7 +190,7 @@ export class ObjectsService {
         return this.papiClient.accounts.find(options);
     }
 
-    countAccounts(options?: FindOptions): Promise<number> {
+    countAccounts(options?): Promise<number> {
         return this.papiClient.accounts.count(options);
     }
 

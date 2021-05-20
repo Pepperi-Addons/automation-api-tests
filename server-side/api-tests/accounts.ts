@@ -375,8 +375,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 TSAEmailAPI: 'Test@test.com',
                 TSAHtmlAPI: '<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>',
                 TSAImageAPI: {
-                    URL:
-                        'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+                    URL: 'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
                     Content: '',
                 },
                 TSALimitedLineAPI: 'Limit text',
@@ -493,8 +492,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                         TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated',
                         TSAPhoneNumberAPI: '972555432512',
                         TSASignatureAPI: {
-                            URL:
-                                'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
+                            URL: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
                             Content: '',
                         },
                         TSASingleLineAPI: 'Random TEXT',
