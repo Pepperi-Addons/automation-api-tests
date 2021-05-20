@@ -150,13 +150,6 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     
      
     
-     
-                
-     
-           
-    
-     
-    
     //get secret key
     async function getSecretKey() {
         logcash.getAuditData = await generalService
@@ -273,7 +266,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
             if ((logcash.getEmptySchema.fault.faultstring.includes('Failed due to exception: Table schema must be exist') == true)) {
                 logcash.getEmptySchemaStatus = true;
@@ -303,7 +296,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (logcash.createSchemaWithoutName.fault.faultstring != undefined) {
             //debugger;
             //if (logcash.createSchemaWithoutName.fault.faultstring.includes("Cannot read property 'Name' of null") == true) {-- error message changed on 1.0.95
@@ -577,6 +570,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 body: JSON.stringify({
                     Key: 'testKey2',
                     Column1: 'Value2-2',
+                    testString: ['string2-1', 'String2-2'],//added string,bulean,int,multi data on 19-05-21 to test hard_delete on meta data type
+                    testBoolean: [true, false],
+                    TestInteger: 14,
+                    TestMultipleStringValues: [
+                        [11, 12, 13],
+                        ['d', 'e', 'f'],
+                    ],
                 }),
             })
             .then((res) => res.Body);
@@ -623,8 +623,45 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 'will get 2 object , but actual result is: ' + logcash.getDataFromTableTwoKeys;
         }
         //debugger;
+        //await changeHiddenToTrue();
+        await hardDeleteOnNotHiddenNegative();
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////Negative : hard delete before change key to hidden/////////////////////////////////////////////////
+    async function hardDeleteOnNotHiddenNegative() {
+        logcash.hardDeleteOnNotHiddenNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '/' + 'testKey2' + '/hard_delete', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                // body: JSON.stringify({
+                //     Key: 'testKey2',
+                //     Hidden: true,
+                // }),
+            })
+            .then((res) => res.Body);
+        debugger;
+        if (logcash.hardDeleteOnNotHiddenNegative.fault.faultstring != undefined) {
+            if ((logcash.hardDeleteOnNotHiddenNegative.fault.faultstring.includes('Cannot delete non hidden items') == true)) {
+                logcash.hardDeleteOnNotHiddenNegativeStatus = true;
+            } else {
+                logcash.hardDeleteOnNotHiddenNegativeStatus = false;
+                logcash.hardDeleteOnNotHiddenNegativeError =
+                    'The indexed field <IndexedString1> update will fail, but actually not' ;
+            }
+        } else {
+            logcash.hardDeleteOnNotHiddenNegativeStatus == false;
+            logcash.hardDeleteOnNotHiddenNegativeError ==
+                'The indexed field <IndexedString1> update will fail, but actually get  ' +
+                    logcash.hardDeleteOnNotHiddenNegative;
+        }
         await changeHiddenToTrue();
     }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     async function changeHiddenToTrue() {
         logcash.changeHiddenToTrue = await generalService
@@ -657,7 +694,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (logcash.getDataFromTableHidden.length == 1) {
             logcash.getDataFromTableHidden.Status = true;
         } else {
@@ -667,7 +704,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         }
         await dropExistingTable();
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////Negative: hard delete with another OwnerID        /////////////////////////////////////////////////
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //#region drop table testing
     async function dropExistingTable() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
@@ -682,7 +722,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             },
         ); //.then((data) => data.json())
-        //debugger;
+        debugger;
 
         //if(logcash.dropExistingTable.success == true){
         if (res.Ok) {
@@ -707,7 +747,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             },
         ); //.then((data) => data.json())
-        //debugger;
+        debugger;
         if (res.Ok == false) {
             logcash.dropDeletedTableStatus = true;
         } else {
@@ -1081,15 +1121,15 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (
             logcash.updateSchemaAddIndexStringAndNum.CreationDateTime == logcash.createSchemaWithIndexedDataType.CreationDateTime &&
             logcash.updateSchemaAddIndexStringAndNum.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.updateSchemaAddIndexStringAndNum.Hidden == false &&
             logcash.updateSchemaAddIndexStringAndNum.Type == 'indexed_data' &&
-            logcash.updateSchemaAddIndexStringAndNum.Fields.Field8.Type == 'String' &&
-            logcash.updateSchemaAddIndexStringAndNum.Fields.Field8.Indexed == true &&
-            logcash.updateSchemaAddIndexStringAndNum.Fields.Field7.Type == 'Integer' &&
+            // logcash.updateSchemaAddIndexStringAndNum.Fields.Field8.Type == 'String' &&
+            // logcash.updateSchemaAddIndexStringAndNum.Fields.Field8.Indexed == true &&
+            // logcash.updateSchemaAddIndexStringAndNum.Fields.Field7.Type == 'Integer' &&
             logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedString2.Type == 'String' &&
             logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedString2.Indexed == true &&
             logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedInt1.Type == 'Integer' &&
@@ -1124,7 +1164,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring != undefined) {
             if ((logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes('Failed due to exception:') == true)) {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
@@ -1155,7 +1195,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             },
         ); //.then((data) => data.json())
-        //debugger;
+        debugger;
 
         //if(logcash.dropExistingTable.success == true){
         if (res.Ok) {
