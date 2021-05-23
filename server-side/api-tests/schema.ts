@@ -8,8 +8,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
 
     const logcash: any = {};
     let counter = 0;
-    let keyCounter = 0;
-    let DataField = [];
+    //const keyCounter = 0;
+    //const DataField = [];
     // const addonJobBody: any = {};
     // const CallbackCash: any = {};
     // const insertBodyRetryTest: any = {};
@@ -73,9 +73,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             });
             it('Get Empty Schema: Finished', async () => {
                 if (logcash.getEmptySchemaStatus) {
-                    
                 }
-                
+
                 assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
             });
             it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
@@ -172,25 +171,16 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
 
         describe('Single Hard Delete Data functionality(Negative and Positive)', () => {
             it('Negative: try to delete not hidden object', async () => {
-                assert(
-                    logcash.hardDeleteOnNotHiddenNegativeStatus,
-                    logcash.hardDeleteOnNotHiddenNegativeError,
-                );
+                assert(logcash.hardDeleteOnNotHiddenNegativeStatus, logcash.hardDeleteOnNotHiddenNegativeError);
             });
             it('Hard Delete hidden object(meta_data type)', () => {
-                assert(
-                    logcash.hardDeleteOnHiddenStatus,
-                    logcash.hardDeleteOnHiddenError,
-                );
+                assert(logcash.hardDeleteOnHiddenStatus, logcash.hardDeleteOnHiddenError);
             });
             it('Get data after hard_delete (verification after delete include hidden objects)', () => {
                 assert(logcash.getDataFromTableIncludeHidden.Status, logcash.getDataFromTableIncludeHidden.Error);
             });
             it('Force Hard_delete on not hidden object', async () => {
-                assert(
-                    logcash.hardDeleteForceStatus,
-                    logcash.hardDeleteForceError,
-                );
+                assert(logcash.hardDeleteForceStatus, logcash.hardDeleteForceError);
             });
             it('Get data after force hard_delete (verification after force delete include hidden objects)', () => {
                 assert(
@@ -201,10 +191,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         });
         describe('Data Table, where clause testing on 199 objects', () => {
             it('Where clause on first value', async () => {
-                assert(
-                    logcash.getDataFromDataTableWhereClouseStatus,
-                    logcash.getDataFromDataTableWhereClouseError,
-                );
+                assert(logcash.getDataFromDataTableWhereClouseStatus, logcash.getDataFromDataTableWhereClouseError);
             });
             it('Where clause on second value', () => {
                 assert(
@@ -213,31 +200,19 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 );
             });
             it('Drop table ', () => {
-                assert(
-                    logcash.dropTableDataStatus,
-                    logcash.dropTableDataError,
-                );
+                assert(logcash.dropTableDataStatus, logcash.dropTableDataError);
             });
-            
         });
         describe('DateTime  filed verification (where clause with = and >=)', () => {
             it('Where clause on =', async () => {
-                assert(
-                    logcash.getDataTimeFieldVerificationStatus,
-                    logcash.getDataTimeFieldVerificationError,
-                );
+                assert(logcash.getDataTimeFieldVerificationStatus, logcash.getDataTimeFieldVerificationError);
             });
             it('Where clause on >=', () => {
-                assert(
-                    logcash.getDataTimeFieldVerificationSecStatus,
-                    logcash.getDataTimeFieldVerificationSecError,
-                );
+                assert(logcash.getDataTimeFieldVerificationSecStatus, logcash.getDataTimeFieldVerificationSecError);
             });
-            
         });
     });
-    
-    
+
     //get secret key
     async function getSecretKey() {
         logcash.getAuditData = await generalService
@@ -883,16 +858,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     // }),
                 },
             )
-            .then((res) => [res.Status,res.Body]);
+            .then((res) => [res.Status, res.Body]);
         //debugger;
         if (logcash.hardDeleteOnHidden[0] == 200) {
             logcash.hardDeleteOnHiddenStatus = true;
-        }
-        else {
+        } else {
             logcash.hardDeleteOnHiddenStatus == false;
-            logcash.hardDeleteOnHiddenError ==
-                'Hard delete failed ' +
-                    logcash.hardDeleteOnHidden[0];
+            logcash.hardDeleteOnHiddenError == 'Hard delete failed ' + logcash.hardDeleteOnHidden[0];
         }
         await getDataFromTableIncludeHidden();
     }
@@ -900,23 +872,31 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     async function getDataFromTableIncludeHidden() {
         //logcash.getDataFromTableTwoKeystatus = true;
         logcash.getDataFromTableIncludeHidden = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '?include_deleted=true', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-        })
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '?include_deleted=true',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
             .then((res) => res.Body);
         //debugger;
         if (logcash.getDataFromTableIncludeHidden.length == 1) {
             logcash.getDataFromTableIncludeHidden.Status = true;
-        }
-        else {
+        } else {
             logcash.getDataFromTableIncludeHidden.Status = false;
             logcash.getDataFromTableIncludeHidden.Error =
-                'Result will be one object, the hard_delete function is failed: ' + logcash.getDataFromTableIncludeHidden;
+                'Result will be one object, the hard_delete function is failed: ' +
+                logcash.getDataFromTableIncludeHidden;
         }
         await hardDeleteForce();
     }
@@ -945,16 +925,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     }),
                 },
             )
-            .then((res) => [res.Status,res.Body]);
+            .then((res) => [res.Status, res.Body]);
         //debugger;
         if (logcash.hardDeleteForce[0] == 200) {
             logcash.hardDeleteForceStatus = true;
-        }
-        else {
+        } else {
             logcash.hardDeleteForceStatus == false;
-            logcash.hardDeleteForceError ==
-                'Force Hard delete failed ' +
-                    logcash.hardDeleteForce[0];
+            logcash.hardDeleteForceError == 'Force Hard delete failed ' + logcash.hardDeleteForce[0];
         }
         await getDataFromTableIncludeHiddenAfterForce();
     }
@@ -962,23 +939,31 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     async function getDataFromTableIncludeHiddenAfterForce() {
         //logcash.getDataFromTableTwoKeystatus = true;
         logcash.getDataFromTableIncludeHiddenAfterForce = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '?include_deleted=true', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-        })
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '?include_deleted=true',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
             .then((res) => res.Body);
         //debugger;
         if (logcash.getDataFromTableIncludeHiddenAfterForce.length == 0) {
             logcash.getDataFromTableIncludeHiddenAfterForce.Status = true;
-        }
-        else {
+        } else {
             logcash.getDataFromTableIncludeHiddenAfterForce.Status = false;
             logcash.getDataFromTableIncludeHiddenAfterForce.Error =
-                'Result will be one object, the hard_delete function is failed: ' + logcash.getDataFromTableIncludeHiddenAfterForce;
+                'Result will be one object, the hard_delete function is failed: ' +
+                logcash.getDataFromTableIncludeHiddenAfterForce;
         }
         await dropExistingTable();
     }
@@ -1457,24 +1442,27 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             })
             .then((res) => res.Body);
         //debugger;
-        // 
+        //
         if (logcash.updateSchemaTryToChangeIndexedFieldNegative.CreationDateTime != undefined) {
             logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus == false;
             logcash.updateSchemaTryToChangeIndexedFieldNegativeError ==
-                'The indexed field <IndexedString1> update will fail, but actually changed'
-            }
-            // else {
-            //     logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
-            // }
-        
+                'The indexed field <IndexedString1> update will fail, but actually changed';
+        }
+        // else {
+        //     logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
+        // }
         else {
-            if (logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes('Failed due to exception:') == true) {
+            if (
+                logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes(
+                    'Failed due to exception:',
+                ) == true
+            ) {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
-            }
-            else {
+            } else {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = false;
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeError =
-                    'The indexed field <IndexedString1> update fail, but we get wrong exeption :'+ logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring;
+                    'The indexed field <IndexedString1> update fail, but we get wrong exeption :' +
+                    logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring;
             }
         }
         await dropTableIndexed();
@@ -1506,43 +1494,43 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         await createSchemaTypeData();
     }
 
-//#region  200 object creation (100 objects with property1 and 100 - property2), and where clouse on one of properties
+    //#region  200 object creation (100 objects with property1 and 100 - property2), and where clouse on one of properties
     async function createSchemaTypeData() {
         logcash.createSchemaTypeData = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Name: 'createSchemaTypeData' + new Date().getTime(),
-                Type: 'data',
-                Fields: {
-                    Field1: { Type: 'DateTime' },
-                    Field2: { Type: 'String' },
-                    Field3: { Type: 'String' },
-                    Field4: { Type: 'String' },
-                    Field5: { Type: 'Double' },
-                    Field6: { Type: 'Integer' },
-                    Field7: { Type: 'Integer' },
-                    Field8: { Type: 'Integer' },
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-                CreationDateTime: '2020-10-08T10:19:00.677Z',
-                ModificationDateTime: '2020-10-08T10:19:00.677Z',
-            }),
-        })
+                body: JSON.stringify({
+                    Name: 'createSchemaTypeData' + new Date().getTime(),
+                    Type: 'data',
+                    Fields: {
+                        Field1: { Type: 'DateTime' },
+                        Field2: { Type: 'String' },
+                        Field3: { Type: 'String' },
+                        Field4: { Type: 'String' },
+                        Field5: { Type: 'Double' },
+                        Field6: { Type: 'Integer' },
+                        Field7: { Type: 'Integer' },
+                        Field8: { Type: 'Integer' },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
             .then((res) => res.Body);
         //debugger;
-        if (logcash.createSchemaTypeData.CreationDateTime != '2020-10-08T10:19:00.677Z' &&
+        if (
+            logcash.createSchemaTypeData.CreationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.createSchemaTypeData.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.createSchemaTypeData.Hidden == false &&
-            logcash.createSchemaTypeData.Type == 'data' ) 
-            {
+            logcash.createSchemaTypeData.Type == 'data'
+        ) {
             logcash.createSchemaTypeDataStatus = true;
-        }
-        else {
+        } else {
             logcash.createSchemaTypeDataStatus = false;
             logcash.createSchemaTypeDataErrorMessage =
                 'One of parameters on data type Schema creation get with wrong value';
@@ -1550,191 +1538,219 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         await insertDataToDataTableFirst100();
     }
 
-
     async function insertDataToDataTableFirst100() {
         for (counter; counter < 100; counter++) {
-        logcash.insertDataToDataTableFirst100 = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                //'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Key: 'stress ' + counter,
-                Field1: new Date(),
-                Field2: 'Stress1',
-            }),
-        })
-            .then((res) => [res.Status,res.Body]);
+            logcash.insertDataToDataTableFirst100 = await generalService
+                .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Key: 'stress ' + counter,
+                        Field1: new Date(),
+                        Field2: 'Stress1',
+                    }),
+                })
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToDataTableFirst100[0] == 200) {
+                logcash.insertDataToDataTableFirst100Status = true;
+            } else {
+                logcash.insertDataToDataTableFirst100Status = false;
+                logcash.insertDataToDataTableFirst100Error = 'Insert data failed on try number: ' + counter;
+            }
+        }
         //debugger;
-        if (logcash.insertDataToDataTableFirst100[0] == 200) {
-            logcash.insertDataToDataTableFirst100Status = true;
-        
-        }
-        else {
-            logcash.insertDataToDataTableFirst100Status = false;
-            logcash.insertDataToDataTableFirst100Error =
-                'Insert data failed on try number: ' + counter ;
-        }
-    }
-    //debugger;
         await insertDataToDataTableSecond100();
     }
 
     async function insertDataToDataTableSecond100() {
         for (counter; counter < 199; counter++) {
-        logcash.insertDataToDataTableSecond100 = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                //'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Key: 'stress ' + counter,
-                Field1: new Date(),
-                Field2: 'Stress2',
-            }),
-        })
-            .then((res) => [res.Status,res.Body]);
+            logcash.insertDataToDataTableSecond100 = await generalService
+                .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Key: 'stress ' + counter,
+                        Field1: new Date(),
+                        Field2: 'Stress2',
+                    }),
+                })
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToDataTableSecond100[0] == 200) {
+                logcash.insertDataToDataTableSecond100Status = true;
+            } else {
+                logcash.insertDataToDataTableSecond100Status = false;
+                logcash.insertDataToDataTableSecond100Error = 'Insert data failed on try number: ' + counter;
+            }
+        }
         //debugger;
-        if (logcash.insertDataToDataTableSecond100[0] == 200) {
-            logcash.insertDataToDataTableSecond100Status = true;
-        }
-        else {
-            logcash.insertDataToDataTableSecond100Status = false;
-            logcash.insertDataToDataTableSecond100Error =
-                'Insert data failed on try number: ' + counter ;
-        }
-    }
-    //debugger;
         await getDataFromDataTableWhereClouse();
     }
 
     async function getDataFromDataTableWhereClouse() {
         logcash.getDataFromDataTableWhereClouse = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name + '?where=Field2=' + "'Stress1'", {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
-                },
-            })
-            .then((res) => res.Body);
-            //debugger;
-        if(logcash.getDataFromDataTableWhereClouse.length == 100){
-            logcash.getDataFromDataTableWhereClouseStatus = true;
-        }
-        else{
-            logcash.getDataFromDataTableWhereClouseStatus = false;
-            logcash.getDataFromDataTableWhereClouseError = 'The get wit where clause result is wrong.Will get 100 objects but result is :' + logcash.getDataFromDataTableWhereClouse.length;
-        }  
-            await getDataFromDataTableWhereClouseSec();
-        }
-
-        async function getDataFromDataTableWhereClouseSec() {
-            logcash.getDataFromDataTableWhereClouseSec = await generalService
-                .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name + '?where=Field2=' + "'Stress2'", {
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field2=' +
+                    "'Stress1'",
+                {
                     method: 'GET',
                     headers: {
                         Authorization: 'Bearer ' + token,
                         'X-Pepperi-OwnerID': addonUUID,
                         'X-Pepperi-SecretKey': logcash.secretKey,
                     },
-                })
-                .then((res) => res.Body);
-                //debugger;
-            if(logcash.getDataFromDataTableWhereClouseSec.length == 99){
-                logcash.getDataFromDataTableWhereClouseSecStatus = true;
-            }
-            else{
-                logcash.getDataFromDataTableWhereClouseSecStatus = false;
-                logcash.getDataFromDataTableWhereClouseSecError = 'The get wit where clause result is wrong.Will get 99 objects but result is :' + logcash.getDataFromDataTableWhereClouseSec.length;
-            }  
-            //debugger;
-                await getDataTimeFieldVerification();
-            }
-
-//#endregion 200 object creation
-//#region DataTime field verification
-
-async function getDataTimeFieldVerification() {
-    logcash.getDataTimeFieldVerification = await generalService
-        .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name + '?where=Field1=' + JSON.stringify(logcash.getDataFromDataTableWhereClouseSec[96].Field1) , {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-        })
-        .then((res) => res.Body);
-    //debugger;
-    if(logcash.getDataTimeFieldVerification.length == 1){
-        logcash.getDataTimeFieldVerificationStatus = true;
-    }
-    else{
-        logcash.getDataTimeFieldVerificationStatus = false;
-        logcash.getDataTimeFieldVerificationError = 'The get wit where clause result is wrong.Will get 1 object, but result is :' + logcash.getDataTimeFieldVerification.length;
-    }  
-        await getDataTimeFieldVerificationSec();
-    }
-
-    async function getDataTimeFieldVerificationSec() {
-        logcash.getDataTimeFieldVerificationSec = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name + '?where=Field1>=' + JSON.stringify(logcash.getDataFromDataTableWhereClouseSec[96].Field1) , {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataTimeFieldVerificationSec.length == 3){
-            logcash.getDataTimeFieldVerificationSecStatus = true;
+        if (logcash.getDataFromDataTableWhereClouse.length == 100) {
+            logcash.getDataFromDataTableWhereClouseStatus = true;
+        } else {
+            logcash.getDataFromDataTableWhereClouseStatus = false;
+            logcash.getDataFromDataTableWhereClouseError =
+                'The get wit where clause result is wrong.Will get 100 objects but result is :' +
+                logcash.getDataFromDataTableWhereClouse.length;
         }
-        else{
-            logcash.getDataTimeFieldVerificationSecStatus = false;
-            logcash.getDataTimeFieldVerificationSecError = 'The get wit where clause result is wrong.Will get 3 objects, but result is :' + logcash.getDataTimeFieldVerificationSec.length;
-        }  
-            await dropTableDataAterDataTimeTest();
-        }
-//#endregion DataTime field verification
+        await getDataFromDataTableWhereClouseSec();
+    }
 
-
-
-        async function dropTableDataAterDataTimeTest() {
-            // the drop table function will be moved after indexed_table data verification when code is ready
-            const res = await generalService.fetchStatus(
-                baseURL + '/addons/data/schemes/' + logcash.createSchemaTypeData.Name + '/purge',
+    async function getDataFromDataTableWhereClouseSec() {
+        logcash.getDataFromDataTableWhereClouseSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field2=' +
+                    "'Stress2'",
                 {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
                         Authorization: 'Bearer ' + token,
                         'X-Pepperi-OwnerID': addonUUID,
                         'X-Pepperi-SecretKey': logcash.secretKey,
                     },
                 },
-            ); //.then((data) => data.json())
-            //debugger;
-    
-            //if(logcash.dropExistingTable.success == true){
-            if (res.Ok) {
-                logcash.dropTableDataStatus = true;
-            } else {
-                logcash.dropTableDataStatus = false;
-                logcash.dropTableDataError = 'Drop Data table failed.' ;
-            }
-            //await createSchemaTypeData();
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromDataTableWhereClouseSec.length == 99) {
+            logcash.getDataFromDataTableWhereClouseSecStatus = true;
+        } else {
+            logcash.getDataFromDataTableWhereClouseSecStatus = false;
+            logcash.getDataFromDataTableWhereClouseSecError =
+                'The get wit where clause result is wrong.Will get 99 objects but result is :' +
+                logcash.getDataFromDataTableWhereClouseSec.length;
         }
-    
+        //debugger;
+        await getDataTimeFieldVerification();
+    }
 
+    //#endregion 200 object creation
+    //#region DataTime field verification
 
+    async function getDataTimeFieldVerification() {
+        logcash.getDataTimeFieldVerification = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field1=' +
+                    JSON.stringify(logcash.getDataFromDataTableWhereClouseSec[96].Field1),
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataTimeFieldVerification.length == 1) {
+            logcash.getDataTimeFieldVerificationStatus = true;
+        } else {
+            logcash.getDataTimeFieldVerificationStatus = false;
+            logcash.getDataTimeFieldVerificationError =
+                'The get wit where clause result is wrong.Will get 1 object, but result is :' +
+                logcash.getDataTimeFieldVerification.length;
+        }
+        await getDataTimeFieldVerificationSec();
+    }
 
+    async function getDataTimeFieldVerificationSec() {
+        logcash.getDataTimeFieldVerificationSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field1>=' +
+                    JSON.stringify(logcash.getDataFromDataTableWhereClouseSec[96].Field1),
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataTimeFieldVerificationSec.length == 3) {
+            logcash.getDataTimeFieldVerificationSecStatus = true;
+        } else {
+            logcash.getDataTimeFieldVerificationSecStatus = false;
+            logcash.getDataTimeFieldVerificationSecError =
+                'The get wit where clause result is wrong.Will get 3 objects, but result is :' +
+                logcash.getDataTimeFieldVerificationSec.length;
+        }
+        await dropTableDataAterDataTimeTest();
+    }
+    //#endregion DataTime field verification
+
+    async function dropTableDataAterDataTimeTest() {
+        // the drop table function will be moved after indexed_table data verification when code is ready
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaTypeData.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        ); //.then((data) => data.json())
+        //debugger;
+
+        //if(logcash.dropExistingTable.success == true){
+        if (res.Ok) {
+            logcash.dropTableDataStatus = true;
+        } else {
+            logcash.dropTableDataStatus = false;
+            logcash.dropTableDataError = 'Drop Data table failed.';
+        }
+        //await createSchemaTypeData();
+    }
 }
