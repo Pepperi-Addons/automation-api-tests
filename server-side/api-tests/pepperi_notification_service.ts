@@ -80,7 +80,7 @@ export async function PepperiNotificationServiceTests(
                         purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                     } catch (error) {
                         expect(error.message).to.includes(
-                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist"`,
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
                         );
                     }
                     const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -239,7 +239,7 @@ export async function PepperiNotificationServiceTests(
                     do {
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'ModificationDateTime DESC',
+                            order_by: 'CreationDateTime DESC',
                         });
                         maxLoopsCounter--;
                     } while ((schema.length <= 0 || !schema[0].Key.startsWith('Log_Insert')) && maxLoopsCounter > 0);
@@ -274,7 +274,7 @@ export async function PepperiNotificationServiceTests(
                     do {
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'ModificationDateTime DESC',
+                            order_by: 'CreationDateTime DESC',
                         });
                         maxLoopsCounter--;
                     } while (
@@ -401,7 +401,7 @@ export async function PepperiNotificationServiceTests(
                     do {
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'ModificationDateTime DESC',
+                            order_by: 'CreationDateTime DESC',
                         });
                         maxLoopsCounter--;
                     } while (
@@ -446,7 +446,7 @@ export async function PepperiNotificationServiceTests(
                     do {
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'ModificationDateTime DESC',
+                            order_by: 'CreationDateTime DESC',
                         });
                         maxLoopsCounter--;
                     } while (
@@ -622,7 +622,7 @@ export async function PepperiNotificationServiceTests(
                                 do {
                                     generalService.sleep(1500);
                                     schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                        order_by: 'ModificationDateTime DESC',
+                                        order_by: 'CreationDateTime DESC',
                                     });
                                     maxLoopsCounter--;
                                 } while (
@@ -670,71 +670,116 @@ export async function PepperiNotificationServiceTests(
                             });
 
                             it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage)', async () => {
-                                let updatedTransactionLine;
-                                try {
-                                    updatedTransactionLine = await objectsService.createTransactionLine({
-                                        InternalID: createdTransactionLines.InternalID,
-                                        UUID: createdTransactionLines.UUID,
-                                        UnitDiscountPercentage: 60,
-                                    } as any);
-                                } catch (error) {
-                                    console.dir(error);
-                                    updatedTransactionLine = await objectsService.createTransactionLine({
-                                        InternalID: createdTransactionLines.InternalID,
-                                        UUID: createdTransactionLines.UUID,
-                                        UnitDiscountPercentage: 60,
-                                    } as any);
-                                }
+                                const updatedTransactionLine = await objectsService.createTransactionLine({
+                                    InternalID: createdTransactionLines.InternalID,
+                                    UUID: createdTransactionLines.UUID,
+                                    UnitDiscountPercentage: 60,
+                                } as any);
                                 expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
                             });
 
-                            it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 40)', async () => {
+                            it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 60)', async () => {
                                 let schema;
                                 let maxLoopsCounter = _MAX_LOOPS;
                                 do {
                                     generalService.sleep(1500);
                                     schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                        order_by: 'ModificationDateTime DESC',
+                                        order_by: 'CreationDateTime DESC',
                                     });
                                     maxLoopsCounter--;
                                 } while (
                                     (!schema[0].Key.startsWith('Log_Update') ||
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
-                                            'UnitDiscountPercentage') &&
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue == 0 ||
+                                        schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue == 0 ||
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID ==
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID) &&
                                     maxLoopsCounter > 0
                                 );
                                 expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
                                 expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                                     createdTransactionLines.UUID,
                                 );
-                                console.log(
-                                    JSON.stringify(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields),
-                                );
-                                expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
-                                    NewValue: 60,
-                                    OldValue: 0,
-                                    FieldID: 'UnitDiscountPercentage',
-                                });
                                 if (index == 0) {
-                                    expect(
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1],
-                                    ).to.deep.equal({
-                                        NewValue: 11 * (1 + index),
-                                        OldValue: 15,
-                                        FieldID: 'UnitDiscountPercentage',
-                                    });
+                                    try {
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 60,
+                                            OldValue: 0,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                        expect(
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 11 * (1 + index),
+                                            OldValue: 15,
+                                            FieldID: 'UnitsQuantity',
+                                        });
+                                    } catch (error) {
+                                        //The order of the PNS trigger can be diffrent it's not a bug
+                                        expect(
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 60,
+                                            OldValue: 0,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 11 * (1 + index),
+                                            OldValue: 15,
+                                            FieldID: 'UnitsQuantity',
+                                        });
+                                    }
                                 } else if (index == 1) {
+                                    try {
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 11 * (1 + index),
+                                            OldValue: 11 * (1 + index - 1),
+                                            FieldID: 'UnitsQuantity',
+                                        });
+                                        expect(
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 60,
+                                            OldValue: 0,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                    } catch (error) {
+                                        //The order of the PNS trigger can be diffrent it's not a bug
+                                        expect(
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 11 * (1 + index),
+                                            OldValue: 11 * (1 + index - 1),
+                                            FieldID: 'UnitsQuantity',
+                                        });
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 60,
+                                            OldValue: 0,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                    }
+                                } else {
                                     expect(
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1],
+                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
                                     ).to.deep.equal({
-                                        NewValue: 11 * (1 + index),
-                                        OldValue: 11 * (1 + index - 1),
+                                        NewValue: 60,
+                                        OldValue: 0,
                                         FieldID: 'UnitDiscountPercentage',
                                     });
-                                } else {
-                                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(
-                                        1,
-                                    );
+                                    expect(
+                                        schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                    ).to.deep.equal({
+                                        NewValue: 0,
+                                        OldValue: 60,
+                                        FieldID: 'UnitDiscountPercentage',
+                                    });
                                 }
                             });
 
