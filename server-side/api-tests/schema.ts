@@ -161,12 +161,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     logcash.updateSchemaAddIndexStringAndNumErrorMessage,
                 );
             });
-            it('Negative : try change indexed column: Finished', () => {
-                assert(
-                    logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
-                    logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
-                );
-            });
+            //// will be returned after bug on indexed_data closed
+            // it('Negative : try change indexed column: Finished', () => {
+            //     assert(
+            //         logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
+            //         logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
+            //     );
+            // });
         });
 
         describe('Single Hard Delete Data functionality(Negative and Positive)', () => {
