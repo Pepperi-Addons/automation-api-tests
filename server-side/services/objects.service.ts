@@ -226,10 +226,10 @@ export class ObjectsService {
         return this.papiClient.accounts.batch(body);
     }
 
-    createBulkArray(amount, exID) {
+    createBulkArray(amount, exID, hidden) {
         const bulkArray = [] as any;
         for (let i = 0; i < amount; i++) {
-            bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i]);
+            bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i, hidden]);
         }
         return bulkArray;
     }

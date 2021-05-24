@@ -38,6 +38,7 @@ import { CodeJobsAddonTests } from './api-tests/code_jobs_addon';
 import { UDTTests } from './api-tests/udt';
 import { UsersTests } from './api-tests/users';
 import { AccountsTests } from './api-tests/accounts';
+import { BulkBigDataTests } from './api-tests/bulk_big_data';
 import { ContactsTests } from './api-tests/contacts';
 import { GeneralActivitiesTests } from './api-tests/general_activities';
 import { TransactionTests } from './api-tests/transactions';
@@ -821,6 +822,30 @@ export async function accounts(client: Client, testerFunctions: TesterFunctions)
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AccountsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function bulk_big_data(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Bulk_Big_Data';
+    PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        BulkBigDataTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     PrintMemoryUseToLog('End', testName);
     return testResult;
