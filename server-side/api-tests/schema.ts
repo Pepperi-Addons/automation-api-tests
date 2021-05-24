@@ -7,6 +7,9 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     const it = tester.it;
 
     const logcash: any = {};
+    let counter = 0;
+    //const keyCounter = 0;
+    //const DataField = [];
     // const addonJobBody: any = {};
     // const CallbackCash: any = {};
     // const insertBodyRetryTest: any = {};
@@ -64,11 +67,14 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         });
 
         describe('Create Schema (Negative)', () => {
-            it('Get Empty Schema: Finished', async () => {
-                // this will run the first test that will run the second and so on..
+            it('Test Initiation', async () => {
+                // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
+            });
+            it('Get Empty Schema: Finished', async () => {
                 if (logcash.getEmptySchemaStatus) {
                 }
+
                 assert(logcash.getEmptySchemaStatus, logcash.getEmptySchemaError);
             });
             it('Try To Create New Schema Without Mandatory Field <Name>: Finished', () => {
@@ -108,6 +114,102 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             });
             it('Drop Deleted Table: Finished', () => {
                 assert(logcash.dropDeletedTableStatus, logcash.dropDeletedTableError);
+            });
+        });
+        describe('CPI_Meta_Data testing (Negative)', () => {
+            it('Create schema with type CPI_meta_data', async () => {
+                assert(
+                    logcash.createSchemaWithTypeCPIMetadataStatus,
+                    logcash.createSchemaWithTypeCPIMetadataErrorMessage,
+                );
+            });
+            it('Insert data to created schema: Finished', () => {
+                assert(logcash.insertDataToCPIMetaDataTableStatus, logcash.insertDataToCPIMetaDataTableError);
+            });
+            it('Get data by API and compare values between insert and get data: Finished', () => {
+                assert(logcash.getDataFromCPIMetaDataTableStatus, logcash.getDataFromCPIMetaDataTableError);
+            });
+            it('Get data from created UDT table and compare values btween UDT and API results: Finished', () => {
+                assert(logcash.getDataFromUDTTableStatus, logcash.getDataFromUDTTableError);
+            });
+        });
+        describe('indexed_data schema functionality testing (Negative and Positive)', () => {
+            it('Create schema with type indexed_data and add on indexed string colum', async () => {
+                assert(
+                    logcash.createSchemaWithIndexedDataTypeStatus,
+                    logcash.createSchemaWithIndexedDataTypeErrorMessage,
+                );
+            });
+            it('Negative: try to add two indexed integer fields', () => {
+                assert(
+                    logcash.updateSchemaTwoIndexedInstegerNegativeStatus,
+                    logcash.updateSchemaTwoIndexedInstegerNegativeError,
+                );
+            });
+            it('Change integer column to indexed string : Finished', () => {
+                assert(logcash.updateSchemaAddIndexToStringStatus, logcash.updateSchemaAddIndexToStringErrorMessage);
+            });
+            it('Negative: try to add to indexed string columns(one new , and one updated from standard): Finished', () => {
+                assert(
+                    logcash.updateSchemaTwoIndexedStringsNegativeStatus,
+                    logcash.updateSchemaTwoIndexedStringsNegativeError,
+                );
+            });
+            it('Add two indexed columns (string and intger)', async () => {
+                assert(
+                    logcash.updateSchemaAddIndexStringAndNumStatus,
+                    logcash.updateSchemaAddIndexStringAndNumErrorMessage,
+                );
+            });
+            //// will be returned after bug on indexed_data closed
+            // it('Negative : try change indexed column: Finished', () => {
+            //     assert(
+            //         logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
+            //         logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
+            //     );
+            // });
+        });
+
+        describe('Single Hard Delete Data functionality(Negative and Positive)', () => {
+            it('Negative: try to delete not hidden object', async () => {
+                assert(logcash.hardDeleteOnNotHiddenNegativeStatus, logcash.hardDeleteOnNotHiddenNegativeError);
+            });
+            it('Hard Delete hidden object(meta_data type)', () => {
+                assert(logcash.hardDeleteOnHiddenStatus, logcash.hardDeleteOnHiddenError);
+            });
+            it('Get data after hard_delete (verification after delete include hidden objects)', () => {
+                assert(logcash.getDataFromTableIncludeHidden.Status, logcash.getDataFromTableIncludeHidden.Error);
+            });
+            it('Force Hard_delete on not hidden object', async () => {
+                assert(logcash.hardDeleteForceStatus, logcash.hardDeleteForceError);
+            });
+            it('Get data after force hard_delete (verification after force delete include hidden objects)', () => {
+                assert(
+                    logcash.getDataFromTableIncludeHiddenAfterForce.Status,
+                    logcash.getDataFromTableIncludeHiddenAfterForce.Error,
+                );
+            });
+        });
+        describe('Data Table, where clause testing on 199 objects', () => {
+            it('Where clause on first value', async () => {
+                assert(logcash.getDataFromDataTableWhereClouseStatus, logcash.getDataFromDataTableWhereClouseError);
+            });
+            it('Where clause on second value', () => {
+                assert(
+                    logcash.getDataFromDataTableWhereClouseSecStatus,
+                    logcash.getDataFromDataTableWhereClouseSecError,
+                );
+            });
+            it('Drop table ', () => {
+                assert(logcash.dropTableDataStatus, logcash.dropTableDataError);
+            });
+        });
+        describe('DateTime  filed verification (where clause with = and >=)', () => {
+            it('Where clause on =', async () => {
+                assert(logcash.getDataTimeFieldVerificationStatus, logcash.getDataTimeFieldVerificationError);
+            });
+            it('Where clause on >=', () => {
+                assert(logcash.getDataTimeFieldVerificationSecStatus, logcash.getDataTimeFieldVerificationSecError);
             });
         });
     });
@@ -230,13 +332,17 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             .then((res) => res.Body);
         //debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
-            if ((logcash.getEmptySchema.fault.faultstring = 'Failed due to exception: Table schema must be exist')) {
+            if (
+                logcash.getEmptySchema.fault.faultstring.includes(
+                    'Failed due to exception: Table schema must be exist',
+                ) == true
+            ) {
                 logcash.getEmptySchemaStatus = true;
             } else {
                 logcash.getEmptySchemaStatus = false;
                 logcash.getEmptySchemaError =
                     'Get empty schema finished with wrong exeption.Will get: Table schema must be exist, but result is: ' +
-                    logcash.getEmptySchema.fault.faultstring;
+                    logcash.getEmptySchema;
             }
         } else {
             logcash.getEmptySchemaStatus == false;
@@ -260,6 +366,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             .then((res) => res.Body);
         //debugger;
         if (logcash.createSchemaWithoutName.fault.faultstring != undefined) {
+            //debugger;
             //if (logcash.createSchemaWithoutName.fault.faultstring.includes("Cannot read property 'Name' of null") == true) {-- error message changed on 1.0.95
             if (
                 logcash.createSchemaWithoutName.fault.faultstring.includes('Required request body is missing') == true
@@ -531,6 +638,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 body: JSON.stringify({
                     Key: 'testKey2',
                     Column1: 'Value2-2',
+                    testString: ['string2-1', 'String2-2'], //added string,bulean,int,multi data on 19-05-21 to test hard_delete on meta data type
+                    testBoolean: [true, false],
+                    TestInteger: 14,
+                    TestMultipleStringValues: [
+                        [11, 12, 13],
+                        ['d', 'e', 'f'],
+                    ],
                 }),
             })
             .then((res) => res.Body);
@@ -577,8 +691,57 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 'will get 2 object , but actual result is: ' + logcash.getDataFromTableTwoKeys;
         }
         //debugger;
+        //await changeHiddenToTrue();
+        await hardDeleteOnNotHiddenNegative();
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////Negative : hard delete before change key to hidden/////////////////////////////////////////////////
+    async function hardDeleteOnNotHiddenNegative() {
+        logcash.hardDeleteOnNotHiddenNegative = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '/' +
+                    'testKey2' +
+                    '/hard_delete',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    // body: JSON.stringify({
+                    //     Key: 'testKey2',
+                    //     Hidden: true,
+                    // }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.hardDeleteOnNotHiddenNegative.fault.faultstring != undefined) {
+            if (
+                logcash.hardDeleteOnNotHiddenNegative.fault.faultstring.includes('Cannot delete non hidden items') ==
+                true
+            ) {
+                logcash.hardDeleteOnNotHiddenNegativeStatus = true;
+            } else {
+                logcash.hardDeleteOnNotHiddenNegativeStatus = false;
+                logcash.hardDeleteOnNotHiddenNegativeError =
+                    'Hard delete will fail becouse object is not hidden, but actually not';
+            }
+        } else {
+            logcash.hardDeleteOnNotHiddenNegativeStatus == false;
+            logcash.hardDeleteOnNotHiddenNegativeError ==
+                'Hard delete will fail becouse object is not hidden, but actually get  ' +
+                    logcash.hardDeleteOnNotHiddenNegative;
+        }
         await changeHiddenToTrue();
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     async function changeHiddenToTrue() {
         logcash.changeHiddenToTrue = await generalService
@@ -619,9 +782,194 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableHidden.Error =
                 'Result will be one object, and not: ' + logcash.getDataFromTableHidden;
         }
+        await hardDeleteOnHidden();
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////Negative: hard delete with another OwnerID        /////////////////////////////////////////////////
+    //not running before bug https://pepperi.atlassian.net/browse/DI-18158 is closed
+    // async function hardDeleteOnHiddenWithWrongOwnerIdNegative() {
+    //     logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative = await generalService
+    //         .fetchStatus(
+    //             baseURL +
+    //                 '/addons/data/' +
+    //                 addonUUID +
+    //                 '/' +
+    //                 logcash.createSchemaWithMandFieldName.Name +
+    //                 '/' +
+    //                 'testKey2' +
+    //                 '/hard_delete',
+    //             {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     Authorization: 'Bearer ' + token,
+    //                     'X-Pepperi-OwnerID': '7aac5451-2fc7-44d2-99dc-52c592adfb71',
+    //                     'X-Pepperi-SecretKey': logcash.secretKey,
+    //                 },
+    //                 // body: JSON.stringify({
+    //                 //     Key: 'testKey2',
+    //                 //     Hidden: true,
+    //                 // }),
+    //             },
+    //         )
+    //         .then((res) => [res.Body,res.Status]);
+    //     //debugger;
+    //     if (logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative.fault.faultstring != undefined) {
+    //         if (
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative.fault.faultstring.includes('') ==
+    //             true
+    //         ) {
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeStatus = true;
+    //         } else {
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeStatus = false;
+    //             logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeError =
+    //                 'Hard delete will fail becouse OwnerID is wrong, but actually not';
+    //         }
+    //     } else {
+    //         logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeStatus == false;
+    //         logcash.hardDeleteOnHiddenWithWrongOwnerIdNegativeError ==
+    //             'Hard delete will fail becouse OwnerID is wrong, but actually get  ' +
+    //                 logcash.hardDeleteOnHiddenWithWrongOwnerIdNegative;
+    //     }
+    //     //await dropExistingTable();
+    // }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////Positive: hard delete hidden object 'testKey2'       /////////////////////////////////////////////////
+    async function hardDeleteOnHidden() {
+        logcash.hardDeleteOnHidden = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '/' +
+                    'testKey2' +
+                    '/hard_delete',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    // body: JSON.stringify({
+                    //     Key: 'testKey2',
+                    //     Hidden: true,
+                    // }),
+                },
+            )
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.hardDeleteOnHidden[0] == 200) {
+            logcash.hardDeleteOnHiddenStatus = true;
+        } else {
+            logcash.hardDeleteOnHiddenStatus == false;
+            logcash.hardDeleteOnHiddenError == 'Hard delete failed ' + logcash.hardDeleteOnHidden[0];
+        }
+        await getDataFromTableIncludeHidden();
+    }
+
+    async function getDataFromTableIncludeHidden() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableIncludeHidden = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '?include_deleted=true',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromTableIncludeHidden.length == 1) {
+            logcash.getDataFromTableIncludeHidden.Status = true;
+        } else {
+            logcash.getDataFromTableIncludeHidden.Status = false;
+            logcash.getDataFromTableIncludeHidden.Error =
+                'Result will be one object, the hard_delete function is failed: ' +
+                logcash.getDataFromTableIncludeHidden;
+        }
+        await hardDeleteForce();
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////Force hard_delete//////////////////////////////////////////////////////////////////////////
+    async function hardDeleteForce() {
+        logcash.hardDeleteForce = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '/' +
+                    'testKey1' +
+                    '/hard_delete',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Force: true,
+                    }),
+                },
+            )
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.hardDeleteForce[0] == 200) {
+            logcash.hardDeleteForceStatus = true;
+        } else {
+            logcash.hardDeleteForceStatus == false;
+            logcash.hardDeleteForceError == 'Force Hard delete failed ' + logcash.hardDeleteForce[0];
+        }
+        await getDataFromTableIncludeHiddenAfterForce();
+    }
+
+    async function getDataFromTableIncludeHiddenAfterForce() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableIncludeHiddenAfterForce = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    '?include_deleted=true',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromTableIncludeHiddenAfterForce.length == 0) {
+            logcash.getDataFromTableIncludeHiddenAfterForce.Status = true;
+        } else {
+            logcash.getDataFromTableIncludeHiddenAfterForce.Status = false;
+            logcash.getDataFromTableIncludeHiddenAfterForce.Error =
+                'Result will be one object, the hard_delete function is failed: ' +
+                logcash.getDataFromTableIncludeHiddenAfterForce;
+        }
         await dropExistingTable();
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //#region drop table testing
     async function dropExistingTable() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
@@ -643,8 +991,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.dropExistingTableStatus = true;
         } else {
             logcash.dropExistingTableStatus = false;
-            logcash.dropExistingTableError =
-                'Drop schema failed. Error message is: ' + logcash.dropExistingTable.faultstring;
+            logcash.dropExistingTableError = 'Drop schema failed. Error message is: ' + logcash.dropExistingTable;
         }
         await dropDeletedTable();
     }
@@ -667,8 +1014,744 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         } else {
             logcash.dropDeletedTableStatus = false;
             logcash.dropDeletedTableError =
-                'Drop schema negative test failed.A message is: ' + logcash.dropExistingTable.faultstring;
+                'Drop schema negative test failed.A message is: ' + logcash.dropExistingTable;
         }
+        //debugger;
+        await createSchemaWithTypeCPIMetadata();
     }
-    //#endregion drop table testin
+    //#endregion drop table testing
+
+    //#region CPI_metadata testing (will add drop table on the end of test when it developed)
+
+    async function createSchemaWithTypeCPIMetadata() {
+        logcash.createSchemaWithTypeCPIMetadata = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    //Name: 'createSchemaWithTypeCPIMetadata ' + Date(),
+                    Name: 'createSchemaWithTypeCPIMetadata' + new Date().getTime(),
+                    Type: 'cpi_meta_data',
+                    Fields: {
+                        testString: { Type: 'String' },
+                        //testBoolean: { Type: 'Bool' },
+                        TestInteger: { Type: 'Integer' },
+                        //TestMultipleStringValues: { Type: 'MultipleStringValues' },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaWithTypeCPIMetadata.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.createSchemaWithTypeCPIMetadata.Hidden == false &&
+            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' &&
+            //logcash.createSchemaWithProperties.Fields.testBoolean.Type == 'Bool' &&
+            logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
+            logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String' //&&
+            //logcash.createSchemaWithProperties.Fields.TestMultipleStringValues.Type == 'MultipleStringValues'
+        ) {
+            logcash.createSchemaWithTypeCPIMetadataStatus = true;
+        } else {
+            logcash.createSchemaWithTypeCPIMetadataStatus = false;
+            logcash.createSchemaWithTypeCPIMetadataErrorMessage =
+                'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaWithTypeCPIMetadata;
+        }
+        await insertDataToCPIMetaDataTable();
+    }
+
+    async function insertDataToCPIMetaDataTable() {
+        logcash.insertDataToCPIMetaDataTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadata.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testKey3',
+                    Column1: ['Value4', 'Value5', 'Value6'],
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.insertDataToCPIMetaDataTable.Column1[0] == 'Value4' &&
+            logcash.insertDataToCPIMetaDataTable.Column1[1] == 'Value5' &&
+            logcash.insertDataToCPIMetaDataTable.Column1[2] == 'Value6' &&
+            logcash.insertDataToCPIMetaDataTable.Key == 'testKey3'
+        ) {
+            logcash.insertDataToCPIMetaDataTableStatus = true;
+        } else {
+            logcash.insertDataToCPIMetaDataTableStatus = false;
+            logcash.insertDataToCPIMetaDataTableError =
+                'One of parameters is wrong: ' + logcash.insertDataToCPIMetaDataTable;
+        }
+        await getDataFromCPIMetaDataTable();
+    }
+
+    async function getDataFromCPIMetaDataTable() {
+        logcash.getDataFromCPIMetaDataTableStatus = true;
+        logcash.getDataFromCPIMetaDataTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadata.Name, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        for (const key in logcash.getDataFromCPIMetaDataTable[0]) {
+            if (key == 'Column1') {
+                for (let index = 0; index < logcash.getDataFromCPIMetaDataTable[0].Column1.length; index++) {
+                    if (
+                        logcash.getDataFromCPIMetaDataTable[0].Column1[index] !=
+                        logcash.insertDataToCPIMetaDataTable[key][index]
+                    ) {
+                        logcash.getDataFromCPIMetaDataTableStatus = false;
+                        logcash.getDataFromCPIMetaDataTableError =
+                            'Objects (fields data) between POST body and get is different.Post result is: ' +
+                            logcash.insertDataToCPIMetaDataTable +
+                            'Get result: ' +
+                            logcash.getDataFromCPIMetaDataTable;
+                    }
+                }
+            } else {
+                if (logcash.insertDataToCPIMetaDataTable[key] != logcash.getDataFromCPIMetaDataTable[0][key]) {
+                    logcash.getDataFromCPIMetaDataTableStatus = false;
+                    logcash.getDataFromCPIMetaDataTableError =
+                        'Objects (fields data) between POST body and get is different.Post result is: ' +
+                        logcash.insertDataToCPIMetaDataTable +
+                        'Get result: ' +
+                        logcash.getDataFromCPIMetaDataTable;
+                }
+            }
+            //debugger;
+        }
+
+        await getDataFromUDTTable();
+    }
+
+    async function getDataFromUDTTable() {
+        logcash.getDataFromUDTTable = await generalService
+            .fetchStatus(
+                baseURL +
+                    "/user_defined_tables?where=MainKey='" +
+                    addonUUID +
+                    '_' +
+                    logcash.createSchemaWithTypeCPIMetadata.Name +
+                    "'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        // 'X-Pepperi-OwnerID': addonUUID,
+                        // 'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        logcash.getDataFromUDTTableTmp = JSON.parse(logcash.getDataFromUDTTable[0].Values).Column1;
+        if (
+            logcash.getDataFromUDTTable[0].CreationDateTime ==
+                logcash.getDataFromCPIMetaDataTable[0].CreationDateTime &&
+            logcash.getDataFromUDTTable[0].Hidden == logcash.getDataFromCPIMetaDataTable[0].Hidden &&
+            logcash.getDataFromUDTTable[0].ModificationDateTime ==
+                logcash.getDataFromCPIMetaDataTable[0].ModificationDateTime &&
+            logcash.getDataFromUDTTable[0].SecondaryKey == logcash.getDataFromCPIMetaDataTable[0].Key &&
+            logcash.getDataFromUDTTableTmp[0] == logcash.getDataFromCPIMetaDataTable[0].Column1[0] &&
+            logcash.getDataFromUDTTableTmp[1] == logcash.getDataFromCPIMetaDataTable[0].Column1[1] &&
+            logcash.getDataFromUDTTableTmp[2] == logcash.getDataFromCPIMetaDataTable[0].Column1[2]
+        ) {
+            logcash.getDataFromUDTTableStatus = true;
+        } else {
+            //debugger;
+            logcash.getDataFromUDTTableStatus = false;
+            logcash.getDataFromUDTTableError =
+                'Created UDT table data with name ' +
+                logcash.getDataFromUDTTable[0].MainKey +
+                'is not equale to API data ' +
+                logcash.getDataFromCPIMetaDataTable[0];
+        }
+        await createSchemaWithIndexedDataType();
+    }
+    //#endregion CPI_metadata
+
+    //#region indexed_data: schema creation  functionality test
+
+    async function createSchemaWithIndexedDataType() {
+        logcash.createSchemaWithIndexedDataType = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'createSchemaWithIndexedDataType' + new Date().getTime(),
+                    Type: 'indexed_data',
+                    Fields: {
+                        IndexedString1: { Type: 'String', Indexed: true },
+                        Field1: { Type: 'String' },
+                        Field2: { Type: 'String' },
+                        Field3: { Type: 'String' },
+                        Field4: { Type: 'String' },
+                        Field5: { Type: 'Integer' },
+                        Field6: { Type: 'Integer' },
+                        Field7: { Type: 'Integer' },
+                        Field8: { Type: 'Integer' },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaWithIndexedDataType.CreationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.createSchemaWithIndexedDataType.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.createSchemaWithIndexedDataType.Hidden == false &&
+            logcash.createSchemaWithIndexedDataType.Type == 'indexed_data' &&
+            logcash.createSchemaWithIndexedDataType.Fields.IndexedString1.Type == 'String' &&
+            logcash.createSchemaWithIndexedDataType.Fields.IndexedString1.Indexed == true
+        ) {
+            logcash.createSchemaWithIndexedDataTypeStatus = true;
+        } else {
+            logcash.createSchemaWithIndexedDataTypeStatus = false;
+            logcash.createSchemaWithIndexedDataTypeErrorMessage =
+                'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaWithIndexedDataType;
+        }
+        await updateSchemaTwoIndexedInstegerNegative();
+    }
+
+    async function updateSchemaTwoIndexedInstegerNegative() {
+        logcash.updateSchemaTwoIndexedInstegerNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: logcash.createSchemaWithIndexedDataType.Name,
+                    //Type: 'indexed_data',
+                    Fields: {
+                        IndexedInt1_willFail: { Type: 'Integer', Indexed: true },
+                        IndexedInt2_willFail: { Type: 'Integer', Indexed: true }, //try to create two indexed integer fields.
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.updateSchemaTwoIndexedInstegerNegative.fault.faultstring != undefined) {
+            if (
+                logcash.updateSchemaTwoIndexedInstegerNegative.fault.faultstring.includes('failed with status: 400') ==
+                true
+            ) {
+                logcash.updateSchemaTwoIndexedInstegerNegativeStatus = true;
+            } else {
+                logcash.updateSchemaTwoIndexedInstegerNegativeStatus = false;
+                logcash.updateSchemaTwoIndexedInstegerNegativeError =
+                    'The schema update with two indexed integer fileld will fail, but actually not';
+            }
+        } else {
+            logcash.updateSchemaTwoIndexedInstegerNegativeStatus == false;
+            logcash.updateSchemaTwoIndexedInstegerNegativeError ==
+                'The schema update with two indexed integer fileld will fail, but actually get  ' +
+                    logcash.updateSchemaTwoIndexedInstegerNegative;
+        }
+        await updateSchemaAddIndexToString();
+    }
+
+    async function updateSchemaAddIndexToString() {
+        //positive: change field by type Int to indexed String
+        logcash.updateSchemaAddIndexToString = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: logcash.createSchemaWithIndexedDataType.Name,
+                    Fields: {
+                        // IndexedString1: { Type: 'String', Indexed: true },
+                        // Field1: { Type: 'String'},
+                        // Field2: { Type: 'String'},
+                        // Field3: { Type: 'String'},
+                        // Field4: { Type: 'String'},
+                        // Field5: { Type: 'Integer'},
+                        // Field6: { Type: 'Integer'},
+                        // Field7: { Type: 'Integer'},
+                        Field8: { Type: 'String', Indexed: true },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.updateSchemaAddIndexToString.CreationDateTime ==
+                logcash.createSchemaWithIndexedDataType.CreationDateTime &&
+            logcash.updateSchemaAddIndexToString.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.updateSchemaAddIndexToString.Hidden == false &&
+            logcash.updateSchemaAddIndexToString.Type == 'indexed_data' &&
+            logcash.updateSchemaAddIndexToString.Fields.Field8.Type == 'String' &&
+            logcash.updateSchemaAddIndexToString.Fields.Field8.Indexed == true
+        ) {
+            logcash.updateSchemaAddIndexToStringStatus = true;
+        } else {
+            logcash.updateSchemaAddIndexToStringStatus = false;
+            logcash.updateSchemaAddIndexToStringErrorMessage =
+                'One of parameters on Schema creation get with wrong value: ' + logcash.updateSchemaAddIndexToString;
+        }
+        await updateSchemaTwoIndexedStringsNegative();
+    }
+
+    async function updateSchemaTwoIndexedStringsNegative() {
+        // try to add 1 indexed string and update one standard filed to indexed string. Will fail (can create just 3 indexed string fields)
+        logcash.updateSchemaTwoIndexedStringsNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: logcash.createSchemaWithIndexedDataType.Name,
+                    //Type: 'indexed_data',
+                    Fields: {
+                        IndexedString1_willFail: { Type: 'String', Indexed: true },
+                        Field7: { Type: 'String', Indexed: true },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.updateSchemaTwoIndexedStringsNegative.fault.faultstring != undefined) {
+            if (
+                logcash.updateSchemaTwoIndexedStringsNegative.fault.faultstring.includes('Failed due to exception:') ==
+                true
+            ) {
+                logcash.updateSchemaTwoIndexedStringsNegativeStatus = true;
+            } else {
+                logcash.updateSchemaTwoIndexedStringsNegativeStatus = false;
+                logcash.updateSchemaTwoIndexedStringsNegativeError =
+                    'The schema update with two indexed string fileld will fail(because we have 2 indexed strung fields before), but actually not';
+            }
+        } else {
+            logcash.updateSchemaTwoIndexedStringsNegativeStatus == false;
+            logcash.updateSchemaTwoIndexedStringsNegativeError ==
+                'The schema update with two indexed string fileld will fail(because we have 2 indexed strung fields before), but actually get  ' +
+                    logcash.updateSchemaTwoIndexedStringsNegative;
+        }
+        await updateSchemaAddIndexStringAndNum();
+    }
+
+    async function updateSchemaAddIndexStringAndNum() {
+        //positive: change field by type Int to indexed String
+        logcash.updateSchemaAddIndexStringAndNum = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: logcash.createSchemaWithIndexedDataType.Name,
+                    Fields: {
+                        // IndexedString1: { Type: 'String', Indexed: true },
+                        // Field1: { Type: 'String'},
+                        // Field2: { Type: 'String'},
+                        // Field3: { Type: 'String'},
+                        // Field4: { Type: 'String'},
+                        // Field5: { Type: 'Integer'},
+                        // Field6: { Type: 'Integer'},
+                        // Field7: { Type: 'Integer'},
+                        IndexedString2: { Type: 'String', Indexed: true },
+                        IndexedInt1: { Type: 'Integer', Indexed: true },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.updateSchemaAddIndexStringAndNum.CreationDateTime ==
+                logcash.createSchemaWithIndexedDataType.CreationDateTime &&
+            logcash.updateSchemaAddIndexStringAndNum.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.updateSchemaAddIndexStringAndNum.Hidden == false &&
+            logcash.updateSchemaAddIndexStringAndNum.Type == 'indexed_data' &&
+            // logcash.updateSchemaAddIndexStringAndNum.Fields.Field8.Type == 'String' &&
+            // logcash.updateSchemaAddIndexStringAndNum.Fields.Field8.Indexed == true &&
+            // logcash.updateSchemaAddIndexStringAndNum.Fields.Field7.Type == 'Integer' &&
+            logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedString2.Type == 'String' &&
+            logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedString2.Indexed == true &&
+            logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedInt1.Type == 'Integer' &&
+            logcash.updateSchemaAddIndexStringAndNum.Fields.IndexedInt1.Indexed == true
+        ) {
+            logcash.updateSchemaAddIndexStringAndNumStatus = true;
+        } else {
+            logcash.updateSchemaAddIndexStringAndNumStatus = false;
+            logcash.updateSchemaAddIndexStringAndNumErrorMessage =
+                'One of parameters on Schema creation get with wrong value: ' +
+                logcash.updateSchemaAddIndexStringAndNum;
+        }
+        await updateSchemaTryToChangeIndexedFieldNegative();
+    }
+
+    async function updateSchemaTryToChangeIndexedFieldNegative() {
+        // try to add 1 indexed string and update one standard filed to indexed string. Will fail (can create just 3 indexed string fields)
+        logcash.updateSchemaTryToChangeIndexedFieldNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: logcash.createSchemaWithIndexedDataType.Name,
+                    //Type: 'indexed_data',
+                    Fields: {
+                        IndexedString1: { Type: 'String' },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        //
+        if (logcash.updateSchemaTryToChangeIndexedFieldNegative.CreationDateTime != undefined) {
+            logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus == false;
+            logcash.updateSchemaTryToChangeIndexedFieldNegativeError ==
+                'The indexed field <IndexedString1> update will fail, but actually changed';
+        }
+        // else {
+        //     logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
+        // }
+        else {
+            if (
+                logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes(
+                    'Failed due to exception:',
+                ) == true
+            ) {
+                logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
+            } else {
+                logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = false;
+                logcash.updateSchemaTryToChangeIndexedFieldNegativeError =
+                    'The indexed field <IndexedString1> update fail, but we get wrong exeption :' +
+                    logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring;
+            }
+        }
+        await dropTableIndexed();
+    }
+    //#endregion schema creation  functionality test
+
+    async function dropTableIndexed() {
+        // the drop table function will be moved after indexed_table data verification when code is ready
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaWithIndexedDataType.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        ); //.then((data) => data.json())
+        //debugger;
+
+        //if(logcash.dropExistingTable.success == true){
+        if (res.Ok) {
+            logcash.dropTableIndexedStatus = true;
+        } else {
+            logcash.dropTableIndexedStatus = false;
+            logcash.dropTableIndexedError = 'Drop schema failed. Error message is: ' + logcash.dropTableIndexed;
+        }
+        await createSchemaTypeData();
+    }
+
+    //#region  200 object creation (100 objects with property1 and 100 - property2), and where clouse on one of properties
+    async function createSchemaTypeData() {
+        logcash.createSchemaTypeData = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'createSchemaTypeData' + new Date().getTime(),
+                    Type: 'data',
+                    Fields: {
+                        Field1: { Type: 'DateTime' },
+                        Field2: { Type: 'String' },
+                        Field3: { Type: 'String' },
+                        Field4: { Type: 'String' },
+                        Field5: { Type: 'Double' },
+                        Field6: { Type: 'Integer' },
+                        Field7: { Type: 'Integer' },
+                        Field8: { Type: 'Integer' },
+                    },
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaTypeData.CreationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.createSchemaTypeData.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.createSchemaTypeData.Hidden == false &&
+            logcash.createSchemaTypeData.Type == 'data'
+        ) {
+            logcash.createSchemaTypeDataStatus = true;
+        } else {
+            logcash.createSchemaTypeDataStatus = false;
+            logcash.createSchemaTypeDataErrorMessage =
+                'One of parameters on data type Schema creation get with wrong value';
+        }
+        await insertDataToDataTableFirst100();
+    }
+
+    async function insertDataToDataTableFirst100() {
+        for (counter; counter < 100; counter++) {
+            logcash.insertDataToDataTableFirst100 = await generalService
+                .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Key: 'stress ' + counter,
+                        Field1: new Date(),
+                        Field2: 'Stress1',
+                    }),
+                })
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToDataTableFirst100[0] == 200) {
+                logcash.insertDataToDataTableFirst100Status = true;
+            } else {
+                logcash.insertDataToDataTableFirst100Status = false;
+                logcash.insertDataToDataTableFirst100Error = 'Insert data failed on try number: ' + counter;
+            }
+        }
+        //debugger;
+        await insertDataToDataTableSecond100();
+    }
+
+    async function insertDataToDataTableSecond100() {
+        for (counter; counter < 199; counter++) {
+            logcash.insertDataToDataTableSecond100 = await generalService
+                .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Key: 'stress ' + counter,
+                        Field1: new Date(),
+                        Field2: 'Stress2',
+                    }),
+                })
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToDataTableSecond100[0] == 200) {
+                logcash.insertDataToDataTableSecond100Status = true;
+            } else {
+                logcash.insertDataToDataTableSecond100Status = false;
+                logcash.insertDataToDataTableSecond100Error = 'Insert data failed on try number: ' + counter;
+            }
+        }
+        //debugger;
+        await getDataFromDataTableWhereClouse();
+    }
+
+    async function getDataFromDataTableWhereClouse() {
+        logcash.getDataFromDataTableWhereClouse = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field2=' +
+                    "'Stress1'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromDataTableWhereClouse.length == 100) {
+            logcash.getDataFromDataTableWhereClouseStatus = true;
+        } else {
+            logcash.getDataFromDataTableWhereClouseStatus = false;
+            logcash.getDataFromDataTableWhereClouseError =
+                'The get wit where clause result is wrong.Will get 100 objects but result is :' +
+                logcash.getDataFromDataTableWhereClouse.length;
+        }
+        await getDataFromDataTableWhereClouseSec();
+    }
+
+    async function getDataFromDataTableWhereClouseSec() {
+        logcash.getDataFromDataTableWhereClouseSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field2=' +
+                    "'Stress2'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromDataTableWhereClouseSec.length == 99) {
+            logcash.getDataFromDataTableWhereClouseSecStatus = true;
+        } else {
+            logcash.getDataFromDataTableWhereClouseSecStatus = false;
+            logcash.getDataFromDataTableWhereClouseSecError =
+                'The get wit where clause result is wrong.Will get 99 objects but result is :' +
+                logcash.getDataFromDataTableWhereClouseSec.length;
+        }
+        //debugger;
+        await getDataTimeFieldVerification();
+    }
+
+    //#endregion 200 object creation
+    //#region DataTime field verification
+
+    async function getDataTimeFieldVerification() {
+        logcash.getDataTimeFieldVerification = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field1=' +
+                    JSON.stringify(logcash.getDataFromDataTableWhereClouseSec[96].Field1),
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataTimeFieldVerification.length == 1) {
+            logcash.getDataTimeFieldVerificationStatus = true;
+        } else {
+            logcash.getDataTimeFieldVerificationStatus = false;
+            logcash.getDataTimeFieldVerificationError =
+                'The get wit where clause result is wrong.Will get 1 object, but result is :' +
+                logcash.getDataTimeFieldVerification.length;
+        }
+        await getDataTimeFieldVerificationSec();
+    }
+
+    async function getDataTimeFieldVerificationSec() {
+        logcash.getDataTimeFieldVerificationSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaTypeData.Name +
+                    '?where=Field1>=' +
+                    JSON.stringify(logcash.getDataFromDataTableWhereClouseSec[96].Field1),
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataTimeFieldVerificationSec.length == 3) {
+            logcash.getDataTimeFieldVerificationSecStatus = true;
+        } else {
+            logcash.getDataTimeFieldVerificationSecStatus = false;
+            logcash.getDataTimeFieldVerificationSecError =
+                'The get wit where clause result is wrong.Will get 3 objects, but result is :' +
+                logcash.getDataTimeFieldVerificationSec.length;
+        }
+        await dropTableDataAterDataTimeTest();
+    }
+    //#endregion DataTime field verification
+
+    async function dropTableDataAterDataTimeTest() {
+        // the drop table function will be moved after indexed_table data verification when code is ready
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaTypeData.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        ); //.then((data) => data.json())
+        //debugger;
+
+        //if(logcash.dropExistingTable.success == true){
+        if (res.Ok) {
+            logcash.dropTableDataStatus = true;
+        } else {
+            logcash.dropTableDataStatus = false;
+            logcash.dropTableDataError = 'Drop Data table failed.';
+        }
+        //await createSchemaTypeData();
+    }
 }
