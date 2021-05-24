@@ -7,17 +7,18 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
     const expect = tester.expect;
     const it = tester.it;
 
-    let bulkAccountExternalID = 'API bulk 60K';
+    const bulkAccountExternalID = 'API bulk 60K';
     let runTest = await service.countAccounts({
-        where: "ExternalID like '%API bulk 60K%'", include_deleted: true
+        where: "ExternalID like '%API bulk 60K%'",
+        include_deleted: true,
     });
 
     if (runTest == 60000) {
-        runTest = true as any
+        runTest = true as any;
     }
 
     describe('Bulk Big Data 60K accounts test', () => {
-        let bulkCreateAccount
+        let bulkCreateAccount;
         let bulkJobInfo;
         let bulkAccountArray;
 
@@ -64,12 +65,12 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         //     ]);
         // });
 
-
         it('Verify 60,000 accounts available for test', async () => {
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "ExternalID like '%API bulk 60K%'", include_deleted: true
+                        where: "ExternalID like '%API bulk 60K%'",
+                        include_deleted: true,
                     }),
                 )
                     .to.be.a('number')
@@ -78,7 +79,6 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         });
 
         if (runTest) {
-
             it('Bulk remove hidden from 60,000 accounts', async () => {
                 bulkAccountArray = service.createBulkArray(60000, bulkAccountExternalID, 0);
                 bulkCreateAccount = await service.bulkCreate('accounts', {
