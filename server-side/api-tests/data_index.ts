@@ -37,7 +37,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const all_activities_fields = [
         //'ExternalID',
         // 'TaxPercentage',
-        //'Remark',
+        // 'Remark',
         // 'CreationDateTime',
         // 'SubTotal',
         // 'Status',
@@ -51,10 +51,10 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'Account.ExternalID',
         'Account.City',
         // 'Account.Country',
-        //'Account.Status',
+        // 'Account.Status',
         // 'Account.Parent.City',
         // 'Catalog.Description',
-        //'Catalog.ExternalID',
+        // 'Catalog.ExternalID',
         // 'Catalog.TSAImage',
         // 'ContactPerson.ExternalID',
         // 'ContactPerson.FirstName',
@@ -357,7 +357,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                         );
                                     }
                                     const accountsArr = await objectsService.getAccounts({
-                                        where: `${allActivitiesFieldName.split('.')[1]}!=''`,
+                                        where: `${allActivitiesFieldName.split('.')[1]}!='' AND ${
+                                            allActivitiesFieldName.split('.')[1]
+                                        }!='${createdField}'`,
                                         page_size: 1,
                                     });
                                     existedAccountInternalID = accountsArr[0].InternalID as number;
@@ -373,6 +375,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                         InternalID: createdTransactionInternalID,
                                         ExternalID: testDataTransactionExternalID,
                                         ActivityTypeID: activityTypeID,
+                                        [allActivitiesFieldName.includes('.')
+                                            ? 'Test Data'
+                                            : allActivitiesFieldName.split('.')[0]]: createdField,
                                         Account: {
                                             Data: {
                                                 InternalID: existedAccountInternalID,
