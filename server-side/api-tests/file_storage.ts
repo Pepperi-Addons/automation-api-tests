@@ -294,8 +294,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                         await service.postFileToStorage({
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
-                            URL:
-                                'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
+                            URL: 'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
                         });
 
                         let allFilesAfter: FileStorage[];
@@ -449,8 +448,7 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                             Title: testDataFileName,
                             FileName: testDataFileName + '.txt',
                             Content: service.createTestDataInBase64Format(),
-                            URL:
-                                'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
+                            URL: 'https://cdn.staging.pepperi.com/30013175/CustomizationFile/9e57eea7-0277-441d-beae-0de365cbdd8b/TestData.txt',
                         });
                         //Get the current (after) files from the File Storage
                         return expect((allFilesAfter = await service.getFilesFromStorage({ page_size: -1 })))
