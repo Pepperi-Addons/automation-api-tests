@@ -327,8 +327,6 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         let bulkJobInfo;
         let bulkAccounts;
         let bulkUpdateAccounts;
-        //let batchAcccountResponse;
-        //let bulkAccountArray; //Removed 07/05/2021 by oren - this test is to long for jenkins runs
 
         it('Create TSAs for account CRUD', async () => {
             createdTSAs = await service.createBulkTSA('accounts', TSAarr);
