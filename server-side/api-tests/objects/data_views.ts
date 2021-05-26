@@ -1,5 +1,5 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataViewsService } from '../services/data-views.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { DataViewsService } from '../../services/data-views.service';
 import { DataView } from '@pepperi-addons/papi-sdk';
 
 //#region Test Config area

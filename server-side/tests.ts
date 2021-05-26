@@ -3,14 +3,14 @@ import tester from './tester';
 import GeneralService, { TesterFunctions } from './services/general.service';
 
 //#region Service Tests
-import { TestDataTest } from './api-tests/test_data';
-import { UpgradeDependenciesTests } from './api-tests/upgrade_dependencies';
+import { TestDataTest } from './api-tests/test-service/test_data';
+import { UpgradeDependenciesTests } from './api-tests/test-service/upgrade_dependencies';
 //#endregion Service Tests
 
 //#region All Tests
-import { FileStorageTests } from './api-tests/file_storage';
-import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } from './api-tests/data_views';
-import { FieldsTests } from './api-tests/fields';
+import { FileStorageTests } from './api-tests/objects/file_storage';
+import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } from './api-tests/objects/data_views';
+import { FieldsTests } from './api-tests/objects/fields';
 import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
 //#endregion All Tests
 
@@ -27,21 +27,21 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './api-tests/schema';
-import { SchedulerTests } from './api-tests/scheduler';
-import { CodeJobsTests } from './api-tests/code_jobs';
-import { InstallTests } from './api-tests/install';
-import { CodeJobsRetryTests } from './api-tests/code_jobs_retry';
-import { CodeJobsAddonTests } from './api-tests/code_jobs_addon';
+import { SchedulerTests } from './api-tests/code-jobs/scheduler';
+import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
+import { InstallTests } from './api-tests/code-jobs/install';
+import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
+import { CodeJobsAddonTests } from './api-tests/code-jobs/code_jobs_addon';
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
-import { UDTTests } from './api-tests/udt';
-import { UsersTests } from './api-tests/users';
-import { AccountsTests } from './api-tests/accounts';
-import { BulkBigDataTests } from './api-tests/bulk_big_data';
-import { ContactsTests } from './api-tests/contacts';
-import { GeneralActivitiesTests } from './api-tests/general_activities';
-import { TransactionTests } from './api-tests/transactions';
+import { UDTTests } from './api-tests/objects/udt';
+import { UsersTests } from './api-tests/objects/users';
+import { AccountsTests } from './api-tests/objects/accounts';
+import { BulkBigDataTests } from './api-tests/objects/bulk_big_data';
+import { ContactsTests } from './api-tests/objects/contacts';
+import { GeneralActivitiesTests } from './api-tests/objects/general_activities';
+import { TransactionTests } from './api-tests/objects/transactions';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
 //#endregion Yoni's Tests
@@ -60,7 +60,7 @@ import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
 import { DataIndexTests } from './api-tests/data_index';
 import { CPINodeTests } from './api-tests/cpi_node';
-import { CodeJobsCleanTests } from './api-tests/code_jobs_clean';
+import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
 
 let testName = '';
 let testEnvironment = '';

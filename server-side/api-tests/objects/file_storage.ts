@@ -1,5 +1,5 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { FileStorageService } from '../services/file-storage.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { FileStorageService } from '../../services/file-storage.service';
 import { FileStorage } from '@pepperi-addons/papi-sdk';
 
 // All File Storage Tests

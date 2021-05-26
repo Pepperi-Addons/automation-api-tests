@@ -1,5 +1,5 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { ObjectsService } from '../services/objects.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { ObjectsService } from '../../services/objects.service';
 
 export async function UDTTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
