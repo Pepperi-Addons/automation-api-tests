@@ -1,5 +1,5 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { FieldsService } from '../services/fields.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { FieldsService } from '../../services/fields.service';
 
 declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 

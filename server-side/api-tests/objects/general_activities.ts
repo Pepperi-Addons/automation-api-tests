@@ -1,5 +1,5 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { ObjectsService } from '../services/objects.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { ObjectsService } from '../../services/objects.service';
 import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
 export async function GeneralActivitiesTests(generalService: GeneralService, tester: TesterFunctions) {
