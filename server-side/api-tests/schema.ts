@@ -230,7 +230,14 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 assert(logcash.updateSchemaExpirationDateTimeUnhiddeSecStatus, logcash.updateSchemaExpirationDateTimeUnhiddeSecError);
             });
         });
+        describe('Hidden automatic update , after property changes', () => {
+            it('Updating property column1 on hidden = true object finished, the hidden changed to false', async () => {
+                assert(logcash.updateSchemaExpirationDateTimeUnhiddeStatus,logcash.updateSchemaExpirationDateTimeUnhiddeError);
+            });
+        });
     });
+
+   
 
     //get secret key
     async function getSecretKey() {
@@ -419,7 +426,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
             logcash.createSchemaWithMandFieldName.CreationDateTime.includes(new Date().toISOString().split('T')[0]) ==
                 true &&
@@ -462,7 +469,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
             logcash.createSchemaWithProperties.CreationDateTime ==
                 logcash.createSchemaWithMandFieldName.CreationDateTime &&
@@ -1891,7 +1898,8 @@ async function updateSchemaExpirationDateTime() {
     await updateSchemaExpirationDateTimeUnhidde();
 }
 
-async function updateSchemaExpirationDateTimeUnhidde() {
+// on this test i will update any property , without changing hidden = false. After update the hidden will be changed automaticly to false
+async function updateSchemaExpirationDateTimeUnhidde() {   
     logcash.updateSchemaExpirationDateTimeUnhidde = await generalService
         .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
             method: 'POST',
@@ -1902,7 +1910,8 @@ async function updateSchemaExpirationDateTimeUnhidde() {
             },
             body: JSON.stringify({
                 Key: 'testExpDate',
-                Hidden: false,
+                //Hidden: false,
+                Column1:'Value2',
             }),
         })
         .then((res) => [res.Status,res.Body]);
@@ -1920,6 +1929,36 @@ async function updateSchemaExpirationDateTimeUnhidde() {
     }
     await updateSchemaExpirationDateTimeSetValueExpDate();
 }
+
+// async function updateSchemaExpirationDateTimeUnhidde() {
+//     logcash.updateSchemaExpirationDateTimeUnhidde = await generalService
+//         .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+//             method: 'POST',
+//             headers: {
+//                 Authorization: 'Bearer ' + token,
+//                 'X-Pepperi-OwnerID'  : addonUUID,
+//                 'X-Pepperi-SecretKey': logcash.secretKey,
+//             },
+//             body: JSON.stringify({
+//                 Key: 'testExpDate',
+//                 Hidden: false,
+//             }),
+//         })
+//         .then((res) => [res.Status,res.Body]);
+//     //debugger;
+    
+//     if (
+//         logcash.updateSchemaExpirationDateTimeUnhidde[0] == 200 &&
+//         logcash.updateSchemaExpirationDateTimeUnhidde[1].ExpirationDateTime == undefined
+//     ) {
+//         logcash.updateSchemaExpirationDateTimeUnhiddeStatus = true;
+//     } else {
+//         logcash.updateSchemaExpirationDateTimeUnhiddeStatus = false;
+//         logcash.updateSchemaExpirationDateTimeUnhiddeError =
+//             'ExpirationDateTime not removed after unhide';
+//     }
+//     await updateSchemaExpirationDateTimeSetValueExpDate();
+// }
 
 async function updateSchemaExpirationDateTimeSetValueExpDate() {
     let date = new Date();
