@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
 
 const installedAddons = {
     'Services Framework': '' as any,

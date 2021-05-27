@@ -161,13 +161,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     logcash.updateSchemaAddIndexStringAndNumErrorMessage,
                 );
             });
-            //// will be returned after bug on indexed_data closed
-            // it('Negative : try change indexed column: Finished', () => {
-            //     assert(
-            //         logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
-            //         logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
-            //     );
-            // });
+            // will be returned after bug on indexed_data closed
+            it('Negative : try change indexed column: Finished', () => {
+                assert(
+                    logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
+                    logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
+                );
+            });
         });
 
         describe('Single Hard Delete Data functionality(Negative and Positive)', () => {
@@ -210,6 +210,44 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             });
             it('Where clause on >=', () => {
                 assert(logcash.getDataTimeFieldVerificationSecStatus, logcash.getDataTimeFieldVerificationSecError);
+            });
+        });
+
+        describe('ExpirationDateTime tests', () => {
+            it('Default value (30 days) after hidden updated to true', async () => {
+                assert(logcash.updateSchemaExpirationDateTimeStatus, logcash.updateSchemaExpirationDateTimeError);
+            });
+            it('ExpirationDateTime value  removed fter hidden updated to false', () => {
+                assert(
+                    logcash.updateSchemaExpirationDateTimeUnhiddeStatus,
+                    logcash.updateSchemaExpirationDateTimeUnhiddeError,
+                );
+            });
+            it('Update ExpirationDateTime manually (hidden = false) ', () => {
+                assert(
+                    logcash.updateSchemaExpirationDateTimeSetValueExpDateStatus,
+                    logcash.updateSchemaExpirationDateTimeSetValueExpDateError,
+                );
+            });
+            it('ExpirationDateTime Verification after updating hidden = true', () => {
+                assert(
+                    logcash.updateSchemaExpirationDateTimeHideStatus,
+                    logcash.updateSchemaExpirationDateTimeHideError,
+                );
+            });
+            it('ExpirationDateTime Verification after updating hidden = false ', () => {
+                assert(
+                    logcash.updateSchemaExpirationDateTimeUnhiddeSecStatus,
+                    logcash.updateSchemaExpirationDateTimeUnhiddeSecError,
+                );
+            });
+        });
+        describe('Hidden automatic update , after property changes', () => {
+            it('Updating property column1 on hidden = true object finished, the hidden changed to false', async () => {
+                assert(
+                    logcash.updateSchemaExpirationDateTimeUnhiddeStatus,
+                    logcash.updateSchemaExpirationDateTimeUnhiddeError,
+                );
             });
         });
     });
@@ -1036,12 +1074,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     //Name: 'createSchemaWithTypeCPIMetadata ' + Date(),
                     Name: 'createSchemaWithTypeCPIMetadata' + new Date().getTime(),
                     Type: 'cpi_meta_data',
-                    Fields: {
-                        testString: { Type: 'String' },
-                        //testBoolean: { Type: 'Bool' },
-                        TestInteger: { Type: 'Integer' },
-                        //TestMultipleStringValues: { Type: 'MultipleStringValues' },
-                    },
+                    // Fields: {
+                    //     testString: { Type: 'String' },
+                    //     TestInteger: { Type: 'Integer' },
+                    // },                                             // from build 1.0.119 create fields on cpi_meta_data not supported.
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
                     ModificationDateTime: '2020-10-08T10:19:00.677Z',
                 }),
@@ -1051,11 +1087,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         if (
             logcash.createSchemaWithTypeCPIMetadata.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.createSchemaWithTypeCPIMetadata.Hidden == false &&
-            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' &&
-            //logcash.createSchemaWithProperties.Fields.testBoolean.Type == 'Bool' &&
-            logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
-            logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String' //&&
-            //logcash.createSchemaWithProperties.Fields.TestMultipleStringValues.Type == 'MultipleStringValues'
+            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' //&&
+
+            // logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
+            // logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String'
         ) {
             logcash.createSchemaWithTypeCPIMetadataStatus = true;
         } else {
@@ -1752,6 +1787,289 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.dropTableDataStatus = false;
             logcash.dropTableDataError = 'Drop Data table failed.';
         }
-        //await createSchemaTypeData();
+        await createSchemaExpirationDateTime();
     }
+
+    //#region ExpirationDateTime test
+
+    async function createSchemaExpirationDateTime() {
+        logcash.createSchemaExpirationDateTime = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'createSchemaExpirationDateTime' + new Date().getTime(),
+                    Type: 'data',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaExpirationDateTime.ExpirationDateTime == undefined &&
+            logcash.createSchemaExpirationDateTime.Hidden == false &&
+            logcash.createSchemaExpirationDateTime.Type == 'data'
+        ) {
+            logcash.createSchemaExpirationDateTimeStatus = true;
+        } else {
+            logcash.createSchemaExpirationDateTimeStatus = false;
+            logcash.createSchemaExpirationDateTimeErrorMessage =
+                'One of parameters on data type Schema creation get with wrong value';
+        }
+        await insertSchemaExpirationDateTime();
+    }
+
+    async function insertSchemaExpirationDateTime() {
+        logcash.SchemaExpirationDateTime = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testExpDate',
+                    Column1: 'Value1',
+                }),
+            })
+            .then((res) => res.Status);
+        //debugger;
+        if (logcash.SchemaExpirationDateTime == 200) {
+            logcash.SchemaExpirationDateTimeStatus = true;
+        } else {
+            logcash.SchemaExpirationDateTimeStatus = false;
+            logcash.SchemaExpirationDateTimeError =
+                'Insert data failed ' + logcash.insertDataToTableWithoutOwnerIDNegative;
+        }
+        await getDataExpirationDateTimeTest();
+    }
+
+    async function getDataExpirationDateTimeTest() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataExpirationDateTimeTest = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataExpirationDateTimeTest.length == 1 &&
+            logcash.getDataExpirationDateTimeTest[0].Key == 'testExpDate'
+        ) {
+            logcash.getDataExpirationDateTimeTest.Status = true;
+        } else {
+            logcash.getDataExpirationDateTimeTest.Status = false;
+            logcash.getDataExpirationDateTimeTest.Error = 'Insert failed';
+        }
+        await updateSchemaExpirationDateTime();
+    }
+
+    async function updateSchemaExpirationDateTime() {
+        logcash.updateSchemaExpirationDateTime = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testExpDate',
+                    Hidden: true,
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        const date = new Date();
+        date.setDate(date.getDate() + 30);
+        let isodate = date.toISOString();
+        isodate.split('T')[0];
+        isodate = isodate.split('T')[0];
+
+        if (
+            logcash.updateSchemaExpirationDateTime[0] == 200 &&
+            logcash.updateSchemaExpirationDateTime[1].ExpirationDateTime.split('T')[0] == isodate
+        ) {
+            logcash.updateSchemaExpirationDateTimeStatus = true;
+        } else {
+            logcash.updateSchemaExpirationDateTimeStatus = false;
+            logcash.updateSchemaExpirationDateTimeError = 'Insert data failed ';
+        }
+        await updateSchemaExpirationDateTimeUnhidde();
+    }
+
+    // on this test i will update any property , without changing hidden = false. After update the hidden will be changed automaticly to false
+    async function updateSchemaExpirationDateTimeUnhidde() {
+        logcash.updateSchemaExpirationDateTimeUnhidde = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testExpDate',
+                    //Hidden: false,
+                    Column1: 'Value2',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+
+        if (
+            logcash.updateSchemaExpirationDateTimeUnhidde[0] == 200 &&
+            logcash.updateSchemaExpirationDateTimeUnhidde[1].ExpirationDateTime == undefined
+        ) {
+            logcash.updateSchemaExpirationDateTimeUnhiddeStatus = true;
+        } else {
+            logcash.updateSchemaExpirationDateTimeUnhiddeStatus = false;
+            logcash.updateSchemaExpirationDateTimeUnhiddeError = 'ExpirationDateTime not removed after unhide';
+        }
+        await updateSchemaExpirationDateTimeSetValueExpDate();
+    }
+
+    // async function updateSchemaExpirationDateTimeUnhidde() {
+    //     logcash.updateSchemaExpirationDateTimeUnhidde = await generalService
+    //         .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: 'Bearer ' + token,
+    //                 'X-Pepperi-OwnerID'  : addonUUID,
+    //                 'X-Pepperi-SecretKey': logcash.secretKey,
+    //             },
+    //             body: JSON.stringify({
+    //                 Key: 'testExpDate',
+    //                 Hidden: false,
+    //             }),
+    //         })
+    //         .then((res) => [res.Status,res.Body]);
+    //     //debugger;
+
+    //     if (
+    //         logcash.updateSchemaExpirationDateTimeUnhidde[0] == 200 &&
+    //         logcash.updateSchemaExpirationDateTimeUnhidde[1].ExpirationDateTime == undefined
+    //     ) {
+    //         logcash.updateSchemaExpirationDateTimeUnhiddeStatus = true;
+    //     } else {
+    //         logcash.updateSchemaExpirationDateTimeUnhiddeStatus = false;
+    //         logcash.updateSchemaExpirationDateTimeUnhiddeError =
+    //             'ExpirationDateTime not removed after unhide';
+    //     }
+    //     await updateSchemaExpirationDateTimeSetValueExpDate();
+    // }
+
+    async function updateSchemaExpirationDateTimeSetValueExpDate() {
+        const date = new Date();
+        date.setDate(date.getDate() + 10);
+        const isodate = date.toISOString();
+        // isodate.split('T')[0]
+        // isodate = isodate.split('T')[0]
+
+        logcash.updateSchemaExpirationDateTimeSetValueExpDate = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testExpDate',
+                    //Hidden: false,
+                    ExpirationDateTime: isodate,
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+
+        if (
+            logcash.updateSchemaExpirationDateTimeSetValueExpDate[0] == 200 &&
+            logcash.updateSchemaExpirationDateTimeSetValueExpDate[1].ExpirationDateTime.split('T')[0] ==
+                isodate.split('T')[0]
+        ) {
+            logcash.updateSchemaExpirationDateTimeSetValueExpDateStatus = true;
+        } else {
+            logcash.updateSchemaExpirationDateTimeSetValueExpDateStatus = false;
+            logcash.updateSchemaExpirationDateTimeSetValueExpDateError = 'ExpirationDateTime not updated';
+        }
+        await updateSchemaExpirationDateTimeHide();
+    }
+
+    async function updateSchemaExpirationDateTimeHide() {
+        logcash.updateSchemaExpirationDateTimeHide = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testExpDate',
+                    Hidden: true,
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        const date = new Date();
+        date.setDate(date.getDate() + 10);
+        const isodate = date.toISOString();
+        // isodate.split('T')[0]
+        // isodate = isodate.split('T')[0]
+
+        if (
+            logcash.updateSchemaExpirationDateTimeHide[0] == 200 &&
+            logcash.updateSchemaExpirationDateTimeHide[1].ExpirationDateTime.split('T')[0] == isodate.split('T')[0]
+        ) {
+            logcash.updateSchemaExpirationDateTimeHideStatus = true;
+        } else {
+            logcash.updateSchemaExpirationDateTimeHideStatus = false;
+            logcash.updateSchemaExpirationDateTimeHideError = 'ExpirationDateTime get wrong value ';
+        }
+        await updateSchemaExpirationDateTimeUnhiddeSec();
+    }
+
+    async function updateSchemaExpirationDateTimeUnhiddeSec() {
+        logcash.updateSchemaExpirationDateTimeUnhiddeSec = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaExpirationDateTime.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testExpDate',
+                    Hidden: false,
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        const date = new Date();
+        date.setDate(date.getDate() + 10);
+        const isodate = date.toISOString();
+        if (
+            logcash.updateSchemaExpirationDateTimeUnhiddeSec[0] == 200 &&
+            logcash.updateSchemaExpirationDateTimeUnhiddeSec[1].ExpirationDateTime.split('T')[0] ==
+                isodate.split('T')[0]
+        ) {
+            logcash.updateSchemaExpirationDateTimeUnhiddeSecStatus = true;
+        } else {
+            logcash.updateSchemaExpirationDateTimeUnhiddeSecStatus = false;
+            logcash.updateSchemaExpirationDateTimeUnhiddeSecError =
+                'Manually inserted ExpirationDateTime removed after unhide';
+        }
+        //await updateSchemaExpirationDateTimeSetValueExpDate();
+    }
+    //#endregion ExpirationDateTime
 }

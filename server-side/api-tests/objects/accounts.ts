@@ -1,5 +1,5 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { ObjectsService } from '../services/objects.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { ObjectsService } from '../../services/objects.service';
 import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
 export async function AccountsTests(generalService: GeneralService, tester: TesterFunctions) {
@@ -327,8 +327,6 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         let bulkJobInfo;
         let bulkAccounts;
         let bulkUpdateAccounts;
-        //let batchAcccountResponse;
-        //let bulkAccountArray; //Removed 07/05/2021 by oren - this test is to long for jenkins runs
 
         it('Create TSAs for account CRUD', async () => {
             createdTSAs = await service.createBulkTSA('accounts', TSAarr);
@@ -805,23 +803,21 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         //         expect(batchUDTresponse[3]).to.have.property('URI').that.equals('');
         // });
 
-        // it('Delete Account Message (DI-17285)', async () => {
-        //     const account = await service.createAccount({
-        //         ExternalID: 'Delete Account Test 12345',
-        //         City: 'City',
-        //         Country: 'US',
-        //     });
-        //     return Promise.all([
-        //         expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.true,
-        //         expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.false,
-        //         expect(
-        //             service.deleteAccount((account.InternalID as number) + 123456789),
-        //         ).eventually.to.be.rejectedWith(
-        //             `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
-        //                 (account.InternalID as number) + 123456789
-        //             } you are trying to update does not exist. Please load it and then try again."`,
-        //         ),
-        //     ]);
-        // });
+        it('Delete Account Message (DI-17285)', async () => {
+            const account = await service.createAccount({
+                ExternalID: 'Delete Account Test 12345',
+                City: 'City',
+                Country: 'US',
+            });
+            return Promise.all([
+                await expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.true,
+                expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.false,
+                expect(service.deleteAccount((account.InternalID as number) + 123456789)).eventually.to.be.rejectedWith(
+                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
+                        (account.InternalID as number) + 123456789
+                    } you are trying to update does not exist. Please load it and then try again."`,
+                ),
+            ]);
+        });
     });
 }

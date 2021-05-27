@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
 
 export async function UpgradeDependenciesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;

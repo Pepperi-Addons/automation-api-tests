@@ -1,8 +1,8 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { ObjectsService } from '../services/objects.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { ObjectsService } from '../../services/objects.service';
 import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
 
-export async function GeneralActivitiesTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function ContactsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
@@ -317,39 +317,40 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
     ];
     //#endregion Array of TSAs
 
-    describe('General Activities Test Suites', () => {
-        let activityTSAs;
-        let updatedActivity;
-        let atds;
-        let activityExternalID;
-        let activityAccount;
-        let createdActivity;
-        let bulkCreateActivity;
-        let bulkActivityExternalID;
+    describe('Contacts Test Suites', () => {
+        let contactAccount;
+        let updatedContact;
+        let contactTSAs;
+        let contactExternalID;
+        let createdContact;
+        let bulkCreateContact;
+        let bulkContactExternalID;
         let bulkJobInfo;
-        let bulkActivities;
-        let bulkUpdateActivities;
+        let bulkContacts;
+        let bulkUpdateContacts;
+        let contactUUIDArray;
 
-        it('Create account and TSAs for activity CRUD', async () => {
-            atds = await service.getATD('activities');
-            activityTSAs = await service.createBulkTSA('activities', TSAarr, atds[0].TypeID);
-            console.log('The following fields were created:\n' + activityTSAs);
-            activityAccount = await service.createAccount({
-                ExternalID: 'ActivityTestAccount',
-                Name: 'Activity Test Account',
+        it('Create account and TSAs for contact CRUD', async () => {
+            contactAccount = await service.createAccount({
+                ExternalID: 'ContactTestAccount',
+                Name: 'Contact Test Account',
             });
+            contactTSAs = await service.createBulkTSA('contacts', TSAarr);
+            console.log('The following fields were created:\n' + contactTSAs);
         });
 
-        it('Create activity', async () => {
-            activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
-            createdActivity = await service.createActivity({
-                ExternalID: activityExternalID,
-                ActivityTypeID: atds[0].TypeID,
-                Status: 1,
-                Title: 'Testing',
+        it('Create contact', async () => {
+            contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+            createdContact = await service.createContact({
+                ExternalID: contactExternalID,
+                Email: 'ContactTest@mail.com',
+                Phone: '123-45678',
+                Mobile: '123-45678',
+                FirstName: 'Contact',
+                LastName: 'Test',
                 Account: {
                     Data: {
-                        InternalID: activityAccount.InternalID,
+                        InternalID: contactAccount.InternalID,
                     },
                 },
                 TSAAttachmentAPI: {
@@ -381,16 +382,17 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 TSASingleLineAPI: 'Random text',
             });
 
-            const getCreatedActivity = await service.getActivity({
-                where: `InternalID=${createdActivity.InternalID}`,
-            });
+            const getCreatedContact = await service.getContacts(createdContact.InternalID);
 
             return Promise.all([
-                expect(getCreatedActivity[0]).to.include({
-                    ExternalID: activityExternalID,
-                    ActivityTypeID: atds[0].TypeID,
-                    Status: 1,
-                    Title: 'Testing',
+                expect(getCreatedContact[0]).to.include({
+                    ExternalID: contactExternalID,
+                    Email: 'ContactTest@mail.com',
+                    Phone: '123-45678',
+                    Mobile: '123-45678',
+                    FirstName: 'Contact',
+                    LastName: 'Test',
+                    Status: 2,
                     TSACheckboxAPI: true,
                     TSACurrencyAPI: 10.0,
                     TSADateAPI: '2020-09-01Z',
@@ -407,55 +409,41 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     TSAPhoneNumberAPI: '9725554325',
                     TSASingleLineAPI: 'Random text',
                 }),
-                expect(getCreatedActivity[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
-                expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('sign2.png'),
-                expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
-                expect(JSON.stringify(getCreatedActivity[0].Account)).equals(
+                expect(getCreatedContact[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                expect(getCreatedContact[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(JSON.stringify(getCreatedContact[0].Account)).equals(
                     JSON.stringify({
                         Data: {
-                            InternalID: activityAccount.InternalID,
-                            UUID: activityAccount.UUID,
-                            ExternalID: activityAccount.ExternalID,
+                            InternalID: contactAccount.InternalID,
+                            UUID: contactAccount.UUID,
+                            ExternalID: contactAccount.ExternalID,
                         },
-                        URI: '/accounts/' + activityAccount.InternalID,
+                        URI: '/accounts/' + contactAccount.InternalID,
                     }),
                 ),
-                expect(getCreatedActivity[0].InternalID).to.equal(createdActivity.InternalID),
-                expect(getCreatedActivity[0].UUID).to.include(createdActivity.UUID),
-                expect(getCreatedActivity[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(getCreatedActivity[0].CreationDateTime).to.contain('Z'),
-                expect(getCreatedActivity[0].ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(getCreatedActivity[0].ModificationDateTime).to.contain('Z'),
-                expect(getCreatedActivity[0].Archive).to.be.false,
-                expect(getCreatedActivity[0].Hidden).to.be.false,
-                expect(getCreatedActivity[0].StatusName).to.include('InCreation'),
-                expect(getCreatedActivity[0].Agent).to.be.null,
-                expect(getCreatedActivity[0].ContactPerson).to.be.null,
-                expect(getCreatedActivity[0].Creator).to.be.null,
             ]);
         });
 
-        it('Update activity', async () => {
+        it('Update contact', async () => {
             return Promise.all([
                 expect(
-                    (updatedActivity = await service.createActivity({
-                        ExternalID: activityExternalID,
-                        Status: 2,
-                        Title: 'Testing Update',
-                        Account: {
-                            Data: {
-                                InternalID: activityAccount.InternalID,
-                            },
-                        },
+                    (updatedContact = await service.createContact({
+                        ExternalID: contactExternalID,
+                        Email: 'ContactUpdateTest@mail.com',
+                        Phone: '123-456789',
+                        Mobile: '123-456789',
+                        FirstName: 'Contact Update',
+                        LastName: 'Test Update',
                         TSAAttachmentAPI: {
                             URL: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                             Content: '',
                         },
                         TSACheckboxAPI: false,
                         TSACurrencyAPI: 15.0,
-                        TSADateAPI: '2020-09-05Z',
-                        TSADateTimeAPI: '2020-09-30T21:00:00Z',
-                        TSADecimalNumberAPI: 0.5,
+                        TSADateAPI: '2020-09-02Z',
+                        TSADateTimeAPI: '2020-07-31T21:00:00Z',
+                        TSADecimalNumberAPI: 6.2,
                         TSADropdownAPI: '2',
                         TSAEmailAPI: 'TestUpdate@test.com',
                         TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
@@ -463,113 +451,141 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                             URL: 'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
                             Content: '',
                         },
-                        TSALimitedLineAPI: 'Limit Update',
-                        TSALinkAPI: 'https://www.google.com',
+                        TSALimitedLineAPI: 'Update text',
+                        TSALinkAPI: 'https://www.mako.co.il',
                         TSAMultiChoiceAPI: 'B',
-                        TSANumberAPI: 2,
-                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
-                        TSAPhoneNumberAPI: '972555432512',
+                        TSANumberAPI: 3,
+                        TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdate',
+                        TSAPhoneNumberAPI: '97255543251',
                         TSASignatureAPI: {
                             URL: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
                             Content: '',
                         },
-                        TSASingleLineAPI: 'Random updated text',
+                        TSASingleLineAPI: 'Random Updated text',
                     })),
                 ).to.be.include({
-                    ExternalID: activityExternalID,
-                    ActivityTypeID: atds[0].TypeID,
-                    Status: 2,
-                    Title: 'Testing Update',
+                    ExternalID: contactExternalID,
+                    Email: 'ContactUpdateTest@mail.com',
+                    Phone: '123-456789',
+                    Mobile: '123-456789',
+                    FirstName: 'Contact Update',
+                    LastName: 'Test Update',
                     TSACheckboxAPI: false,
                     TSACurrencyAPI: 15.0,
-                    TSADateAPI: '2020-09-05Z',
-                    TSADateTimeAPI: '2020-09-30T21:00:00Z',
-                    TSADecimalNumberAPI: 0.5,
+                    TSADateAPI: '2020-09-02Z',
+                    TSADateTimeAPI: '2020-07-31T21:00:00Z',
+                    TSADecimalNumberAPI: 6.2,
                     TSADropdownAPI: '2',
                     TSAEmailAPI: 'TestUpdate@test.com',
                     TSAHtmlAPI: '<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>',
-                    TSALimitedLineAPI: 'Limit Update',
-                    TSALinkAPI: 'https://www.google.com',
+                    TSALimitedLineAPI: 'Update text',
+                    TSALinkAPI: 'https://www.mako.co.il',
                     TSAMultiChoiceAPI: 'B',
-                    TSANumberAPI: 2,
-                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
-                    TSAPhoneNumberAPI: '972555432512',
-                    TSASingleLineAPI: 'Random updated text',
+                    TSANumberAPI: 3,
+                    TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdate',
+                    TSAPhoneNumberAPI: '97255543251',
+                    TSASingleLineAPI: 'Random Updated text',
                 }),
-                expect(updatedActivity.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
-                expect(updatedActivity.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
-                expect(updatedActivity.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
-                expect(JSON.stringify(updatedActivity.Account)).equals(
-                    JSON.stringify({
-                        Data: {
-                            InternalID: activityAccount.InternalID,
-                            UUID: activityAccount.UUID,
-                            ExternalID: activityAccount.ExternalID,
-                        },
-                        URI: '/accounts/' + activityAccount.InternalID,
-                    }),
-                ),
-                expect(updatedActivity.InternalID).to.equal(createdActivity.InternalID),
-                expect(updatedActivity.UUID).to.include(createdActivity.UUID),
-                expect(updatedActivity.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(updatedActivity.CreationDateTime).to.contain('Z'),
-                expect(updatedActivity.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(updatedActivity.ModificationDateTime).to.contain('Z'),
-                expect(updatedActivity.Archive).to.be.false,
-                expect(updatedActivity.Hidden).to.be.false,
-                expect(updatedActivity.StatusName).to.include('Submitted'),
-                expect(updatedActivity.Agent).to.be.null,
-                expect(updatedActivity.ContactPerson).to.be.null,
-                expect(updatedActivity.Creator).to.be.null,
+                expect(updatedContact.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                expect(updatedContact.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                expect(updatedContact.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
             ]);
         });
 
-        it('Delete activity', async () => {
-            expect(await service.deleteActivity(createdActivity.InternalID)).to.be.true,
-                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.false,
-                expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+        it('Delete contact', async () => {
+            return Promise.all([
+                expect(await service.deleteContact(createdContact.InternalID)).to.be.true,
+                expect(await service.deleteContact(createdContact.InternalID)).to.be.false,
+                expect(await service.getContacts(createdContact.InternalID))
                     .to.be.an('array')
-                    .with.lengthOf(0);
+                    .with.lengthOf(0),
+            ]);
         });
 
         it('Check Hidden=false after update', async () => {
             return Promise.all([
-                expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}`, include_deleted: true }))
+                expect(await service.getContactsSDK({ where: `InternalID=${createdContact.InternalID}`, include_deleted: true }))
                     .to.be.an('array')
                     .with.lengthOf(1),
             ]),
-                updatedActivity = await service.createActivity({
-                    ExternalID: activityExternalID,
-                        Status: 2,
-                        Title: 'Testing Update 123',
+                updatedContact = await service.createContact({
+                    ExternalID: contactExternalID,
+                    Email: 'ContactUpdateTest@mail.com',
+                    Phone: '123-45678900',
+                    Mobile: '123-45678900',
                 }),
-                expect(updatedActivity).to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.true,
-                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.false,
-                expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+                expect(updatedContact).to.have.property('Hidden').that.is.a('boolean').and.is.false,
+                expect(await service.deleteContact(createdContact.InternalID)).to.be.true,
+                expect(await service.deleteContact(createdContact.InternalID)).to.be.false,
+                expect(await service.getContacts(createdContact.InternalID))
                     .to.be.an('array')
                     .with.lengthOf(0);
         });
 
-        it('Bulk create activity', async () => {
-            bulkActivityExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
-            bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
-                Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+        it('Bulk create contacts', async () => {
+            bulkContactExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
+            bulkCreateContact = await service.bulkCreate('contacts', {
+                Headers: ['ExternalID', 'AccountExternalID', 'FirstName', 'Email'],
                 Lines: [
-                    [bulkActivityExternalID + ' 1', activityAccount.ExternalID, '1'],
-                    [bulkActivityExternalID + ' 2', activityAccount.ExternalID, '1'],
-                    [bulkActivityExternalID + ' 3', activityAccount.ExternalID, '1'],
-                    [bulkActivityExternalID + ' 4', activityAccount.ExternalID, '1'],
-                    [bulkActivityExternalID + ' 5', activityAccount.ExternalID, '1'],
+                    [
+                        bulkContactExternalID + ' 1',
+                        contactAccount.ExternalID,
+                        'Bulk Contact 1',
+                        'Email' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
+                    ],
+                    [
+                        bulkContactExternalID + ' 2',
+                        contactAccount.ExternalID,
+                        'Bulk Contact 2',
+                        'Email' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
+                    ],
+                    [
+                        bulkContactExternalID + ' 3',
+                        contactAccount.ExternalID,
+                        'Bulk Contact 3',
+                        'Email' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
+                    ],
+                    [
+                        bulkContactExternalID + ' 4',
+                        contactAccount.ExternalID,
+                        'Bulk Contact 4',
+                        'Email' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
+                    ],
+                    [
+                        bulkContactExternalID + ' 5',
+                        contactAccount.ExternalID,
+                        'Bulk Contact 5',
+                        'Email' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
+                    ],
                 ],
             });
-            expect(bulkCreateActivity.JobID).to.be.a('number'),
-                expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
+            expect(bulkCreateContact.JobID).to.be.a('number'),
+                expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
         });
 
         it('Verify bulk jobinfo', async () => {
-            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
+            expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
                 expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                 expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
                 expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
@@ -588,32 +604,85 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
-        it('Verify bulk created activities', async () => {
+        it('Verify bulk created contacts', async () => {
             return Promise.all([
-                expect(await service.getBulk('activities', "?where=ExternalID like '%" + bulkActivityExternalID + "%'"))
+                expect(await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"))
                     .to.be.an('array')
                     .with.lengthOf(5),
             ]);
         });
 
-        it('Bulk update activities', async () => {
-            bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
-                Headers: ['ExternalID', 'AccountExternalID', 'Status'],
+        it('Connect bulk created contacts as buyers', async () => {
+            const connectAsBuyerContacts = await service.getBulk(
+                'contacts',
+                "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+            );
+            connectAsBuyerContacts.map((contact) => {
+                expect(contact).to.not.have.property('SecurityGroupUUID'),
+                    expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
+            });
+
+            contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
+            const connectAsBuyer = await service.connectAsBuyer({
+                UUIDs: contactUUIDArray,
+                SelectAll: false,
+            });
+            expect(connectAsBuyer).to.be.an('array').with.lengthOf(5),
+                connectAsBuyer.map((buyer) => {
+                    expect(buyer, 'Connect as buyer name').to.have.property('name').that.is.not.empty,
+                        expect(buyer, 'Connect as buyer email').to.have.property('email').that.is.not.empty,
+                        expect(buyer, 'Connect as buyer message').to.have.property('message').that.is.a('string').and.is
+                            .empty,
+                        expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not.empty;
+                });
+
+            const connectedContacts = await service.getBulk(
+                'contacts',
+                "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer",
+            );
+            connectedContacts.map((contact) => {
+                expect(contact, 'Buyer security group UUID').to.have.property('SecurityGroupUUID').that.is.a('string')
+                    .and.is.not.empty,
+                    expect(contact, 'Buyer IsBuyer').to.have.property('IsBuyer').that.is.a('boolean').and.is.true;
+            });
+        });
+
+        it('Disconnect bulk created contacts as buyers', async () => {
+            const DisconnectBuyer = await service.disconnectBuyer({
+                UUIDs: contactUUIDArray,
+                SelectAll: false,
+            });
+
+            expect(DisconnectBuyer).to.be.true;
+
+            const DisconnectedBuyers = await service.getBulk(
+                'contacts',
+                "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+            );
+            DisconnectedBuyers.map((contact) => {
+                expect(contact).to.not.have.property('SecurityGroupUUID'),
+                    expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
+            });
+        });
+
+        it('Bulk update contacts', async () => {
+            bulkCreateContact = await service.bulkCreate('contacts', {
+                Headers: ['ExternalID', 'AccountExternalID', 'FirstName'],
                 Lines: [
-                    [bulkActivityExternalID + ' 1', activityAccount.ExternalID, '2'],
-                    [bulkActivityExternalID + ' 2', activityAccount.ExternalID, '2'],
-                    [bulkActivityExternalID + ' 3', activityAccount.ExternalID, '2'],
-                    [bulkActivityExternalID + ' 4', activityAccount.ExternalID, '2'],
-                    [bulkActivityExternalID + ' 5', activityAccount.ExternalID, '2'],
+                    [bulkContactExternalID + ' 1', contactAccount.ExternalID, 'Bulk Contact 1 Update'],
+                    [bulkContactExternalID + ' 2', contactAccount.ExternalID, 'Bulk Contact 2 Update'],
+                    [bulkContactExternalID + ' 3', contactAccount.ExternalID, 'Bulk Contact 3 Update'],
+                    [bulkContactExternalID + ' 4', contactAccount.ExternalID, 'Bulk Contact 4 Update'],
+                    [bulkContactExternalID + ' 5', contactAccount.ExternalID, 'Bulk Contact 5 Update'],
                 ],
             });
-            expect(bulkCreateActivity.JobID).to.be.a('number'),
-                expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
+            expect(bulkCreateContact.JobID).to.be.a('number'),
+                expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
         });
 
         it('Verify bulk update jobinfo', async () => {
-            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
+            expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
                 expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                 expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
                 expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
@@ -632,43 +701,38 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
-        it('Verify bulk activities update', async () => {
-            bulkUpdateActivities = await service.getBulk(
-                'activities',
-                "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+        it('Verify bulk contacts update', async () => {
+            bulkUpdateContacts = await service.getBulk(
+                'contacts',
+                "?where=ExternalID like '%" + bulkContactExternalID + "%'",
             );
-            expect(bulkUpdateActivities[0].Status).to.equal(2),
-                expect(bulkUpdateActivities[1].Status).to.equal(2),
-                expect(bulkUpdateActivities[2].Status).to.equal(2),
-                expect(bulkUpdateActivities[3].Status).to.equal(2),
-                expect(bulkUpdateActivities[4].Status).to.equal(2);
+            expect(bulkUpdateContacts[0].FirstName).to.include('Update'),
+                expect(bulkUpdateContacts[1].FirstName).to.include('Update'),
+                expect(bulkUpdateContacts[2].FirstName).to.include('Update'),
+                expect(bulkUpdateContacts[3].FirstName).to.include('Update'),
+                expect(bulkUpdateContacts[4].FirstName).to.include('Update');
         });
 
-        it('Delete bulk activities', async () => {
-            bulkActivities = await service.getBulk(
-                'activities',
-                "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+        it('Delete bulk contacts', async () => {
+            bulkContacts = await service.getBulk(
+                'contacts',
+                "?where=ExternalID like '%" + bulkContactExternalID + "%'",
             );
             return Promise.all([
-                expect(await service.deleteActivity(bulkActivities[0].InternalID)).to.be.true,
-                expect(await service.deleteActivity(bulkActivities[1].InternalID)).to.be.true,
-                expect(await service.deleteActivity(bulkActivities[2].InternalID)).to.be.true,
-                expect(await service.deleteActivity(bulkActivities[3].InternalID)).to.be.true,
-                expect(await service.deleteActivity(bulkActivities[4].InternalID)).to.be.true,
-                expect(await service.getBulk('activities', "?where=ExternalID like '%" + bulkActivityExternalID + "%'"))
+                expect(await service.deleteContact(bulkContacts[0].InternalID)).to.be.true,
+                expect(await service.deleteContact(bulkContacts[1].InternalID)).to.be.true,
+                expect(await service.deleteContact(bulkContacts[2].InternalID)).to.be.true,
+                expect(await service.deleteContact(bulkContacts[3].InternalID)).to.be.true,
+                expect(await service.deleteContact(bulkContacts[4].InternalID)).to.be.true,
+                expect(await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"))
                     .to.be.an('array')
                     .with.lengthOf(0),
             ]);
         });
 
-        it('Delete activity test account and TSAs', async () => {
-            expect(activityTSAs.length == (await service.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length).to
-                .be.true,
-                expect(await service.deleteAccount(activityAccount.InternalID)).to.be.true,
-                expect(await service.deleteAccount(activityAccount.InternalID)).to.be.false,
-                expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(0);
+        it('Delete contact test account and TSAs', async () => {
+            expect(contactTSAs.length == (await service.deleteBulkTSA('contacts', TSAarr)).length).to.be.true,
+                expect(await service.deleteAccount(contactAccount.InternalID)).to.be.true;
         });
     });
 }
