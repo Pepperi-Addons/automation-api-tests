@@ -477,357 +477,637 @@ export async function PepperiNotificationServiceTests(
             });
 
             describe('WACD', () => {
-                describe('PNS Tests Scenarios', () => {
-                    const pnsTestScenariosArr = [
-                        {
-                            Type: 'stop_after_db' as NucleusFlagType,
-                            Name: 'Stop After DB',
-                        },
-                        {
-                            Type: 'stop_after_nucleus' as NucleusFlagType,
-                            Name: 'Stop After NUC',
-                        },
-                        {
-                            Type: 'stop_after_redis' as NucleusFlagType,
-                            Name: 'Stop After Redis',
-                        },
-                    ];
-                    for (let index = 0; index < pnsTestScenariosArr.length; index++) {
-                        const testName = pnsTestScenariosArr[index].Name;
-                        const testType = pnsTestScenariosArr[index].Type;
-                        describe(testName, () => {
-                            it('Reset The Transaction With SDK (TSA2 - UnitDiscountPercentage = 0)', async () => {
-                                const updatedTransactionLine = await objectsService.createTransactionLine({
-                                    InternalID: createdTransactionLines.InternalID,
-                                    UUID: createdTransactionLines.UUID,
-                                    UnitDiscountPercentage: 0,
-                                } as any);
-                                expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
-                                expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(0);
-                            });
-
-                            it(`Post PUT That ${testName} TestID ${testID + index + 1} (TSA1 - UnitsQuantity = ${
-                                11 * (1 + index)
-                            })`, async () => {
-                                const putSyncResponse = await pepperiNotificationServiceService.putSync(
-                                    {
-                                        putData: {
-                                            10: {
-                                                SubType: '',
-                                                Headers: [
-                                                    'UUID',
-                                                    'ItemWrntyID',
-                                                    'ItemExternalID',
-                                                    'LineNumber',
-                                                    'TransactionUUID',
-                                                    'UnitsQuantity',
-                                                    'WrntyID',
-                                                    'Hidden',
-                                                ],
-                                                Lines: [
-                                                    [
-                                                        createdTransactionLines.UUID,
-                                                        String(itemArr[0].InternalID),
-                                                        itemArr[0].ExternalID,
-                                                        '0',
-                                                        String(createdTransaction.UUID),
-                                                        `${11 * (1 + index)}`,
-                                                        String(Math.floor(Math.random() * -1000000)),
-                                                        '0',
-                                                    ],
-                                                ],
-                                            },
-                                        },
-                                        nucleus_crud_type: testType,
-                                    },
-                                    testID + index + 1,
-                                );
-
-                                console.log({ testType: putSyncResponse });
-                                expect(putSyncResponse).to.be.true;
-
-                                const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
-                                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                const pnsTestScenariosEndpointsArr = [
+                    {
+                        Type: 'SDK',
+                        Name: 'PNS Tests Scenarios',
+                    },
+                    {
+                        Type: 'WACD',
+                        Name: 'PNS Tests Scenarios Without POST from SDK Endpoints',
+                    },
+                ];
+                for (let j = 0; j < pnsTestScenariosEndpointsArr.length; j++) {
+                    const testEndpointName = pnsTestScenariosEndpointsArr[j].Name;
+                    const testEndpointType = pnsTestScenariosEndpointsArr[j].Type;
+                    describe(testEndpointName, () => {
+                        const pnsTestScenariosArr = [
+                            {
+                                Type: 'stop_after_db' as NucleusFlagType,
+                                Name: 'Stop After DB',
+                            },
+                            {
+                                Type: 'stop_after_nucleus' as NucleusFlagType,
+                                Name: 'Stop After NUC',
+                            },
+                            {
+                                Type: 'stop_after_redis' as NucleusFlagType,
+                                Name: 'Stop After Redis',
+                            },
+                            {
+                                Type: 'stop_after_pns' as NucleusFlagType,
+                                Name: 'Stop After PNS',
+                            },
+                        ];
+                        for (let i = 0; i < pnsTestScenariosArr.length; i++) {
+                            const testName = pnsTestScenariosArr[i].Name;
+                            const testType = pnsTestScenariosArr[i].Type;
+                            describe(testName, () => {
+                                it('Reset The Transaction With SDK (TSA2 - UnitDiscountPercentage = 0)', async () => {
+                                    const updatedTransactionLine = await objectsService.createTransactionLine({
+                                        InternalID: createdTransactionLines.InternalID,
+                                        UUID: createdTransactionLines.UUID,
+                                        UnitDiscountPercentage: 0,
+                                    } as any);
+                                    expect(updatedTransactionLine.InternalID).to.equal(
+                                        createdTransactionLines.InternalID,
+                                    );
+                                    expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(0);
                                 });
-                                //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
-                                if (testName == 'Stop After DB') {
-                                    expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(15);
-                                } else if (testName == 'Stop After Redis') {
-                                    expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(
-                                        11 * (1 + index - 1),
+                                it('Validate PNS Triggered for SDK Rest (TSA2 - UnitDiscountPercentage = 0)', async () => {
+                                    let schema;
+                                    let maxLoopsCounter = _MAX_LOOPS;
+                                    do {
+                                        generalService.sleep(1500);
+                                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                            order_by: 'CreationDateTime DESC',
+                                        });
+                                        maxLoopsCounter--;
+                                    } while (
+                                        (!schema[0].Key.startsWith('Log_Update') ||
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue !=
+                                                0) &&
+                                        maxLoopsCounter > 0
                                     );
-                                } else {
-                                    return Promise.all([
-                                        expect(getCreatedTransactionLineResponse[0]).to.include({
-                                            LineNumber: 0,
-                                            UnitsQuantity: 11 * (1 + index),
-                                        }),
-                                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
-                                            JSON.stringify({
-                                                Data: {
-                                                    InternalID: itemArr[0].InternalID,
-                                                    UUID: itemArr[0].UUID,
-                                                    ExternalID: itemArr[0].ExternalID,
-                                                },
-                                                URI: '/items/' + itemArr[0].InternalID,
-                                            }),
-                                        ),
-                                        expect(JSON.stringify(getCreatedTransactionLineResponse[0].Transaction)).equals(
-                                            JSON.stringify({
-                                                Data: {
-                                                    InternalID: createdTransaction.InternalID,
-                                                    UUID: createdTransaction.UUID,
-                                                    ExternalID: createdTransaction.ExternalID,
-                                                },
-                                                URI: '/transactions/' + createdTransaction.InternalID,
-                                            }),
-                                        ),
-                                        expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
-                                            createdTransactionLines.InternalID,
-                                        ),
-                                        expect(getCreatedTransactionLineResponse[0].UUID).to.include(
-                                            createdTransactionLines.UUID,
-                                        ),
-                                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
-                                            new Date().toISOString().split('T')[0],
-                                        ),
-                                        expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain('Z'),
-                                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
-                                            new Date().toISOString().split('T')[0],
-                                        ),
-                                        expect(getCreatedTransactionLineResponse[0].ModificationDateTime).to.contain(
-                                            'Z',
-                                        ),
-                                        expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
-                                        expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
-                                        expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
-                                        expect(
-                                            await objectsService.getTransactionLines({
-                                                where: `TransactionInternalID=${createdTransaction.InternalID}`,
-                                            }),
-                                        )
-                                            .to.be.an('array')
-                                            .with.lengthOf(1),
-                                        expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
-                                    ]);
-                                }
-                            });
-
-                            it(`Validate PNS Not Triggered for WACD Update (TSA1 - UnitsQuantity = ${
-                                11 * (1 + index)
-                            } (Negative)`, async () => {
-                                let schema;
-                                let maxLoopsCounter = _MAX_LOOPS;
-                                do {
-                                    generalService.sleep(1500);
-                                    schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                        order_by: 'CreationDateTime DESC',
-                                    });
-                                    maxLoopsCounter--;
-                                } while (
-                                    (!schema[0].Key.startsWith('Log_Update') ||
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
-                                            'UnitsQuantity') &&
-                                    maxLoopsCounter > 0
-                                );
-                                expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                                expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
-                                    createdTransactionLines.UUID,
-                                );
-                                expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
-                                    NewValue: 0,
-                                    OldValue: 60,
-                                    FieldID: 'UnitDiscountPercentage',
-                                });
-                                expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(1);
-                            });
-
-                            it(`Validate New Transaction Line Updated (TSA1 - UnitsQuantity = ${
-                                index == 0 ? 15 : index == 2 ? 11 * (1 + index - 1) : 11 * (1 + index)
-                            })${index == 0 ? ' (Negative)' : index == 2 ? ' (Negative)' : ''}`, async () => {
-                                const createdObject = await objectsService.getTransactionByID(
-                                    createdTransaction.InternalID,
-                                );
-                                expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
-                                    createdTransactionLines.InternalID,
-                                );
-                                if (index == 0) {
-                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(15);
-                                } else if (index == 2) {
-                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                        11 * (1 + index - 1),
+                                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                                        createdTransactionLines.UUID,
                                     );
-                                } else {
-                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                        11 * (1 + index),
-                                    );
-                                }
-                                expect(
-                                    createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
-                                ).to.equal(0);
-                                expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
-                            });
-
-                            it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage)', async () => {
-                                const updatedTransactionLine = await objectsService.createTransactionLine({
-                                    InternalID: createdTransactionLines.InternalID,
-                                    UUID: createdTransactionLines.UUID,
-                                    UnitDiscountPercentage: 60,
-                                } as any);
-                                expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
-                            });
-
-                            it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 60)', async () => {
-                                let schema;
-                                let maxLoopsCounter = _MAX_LOOPS;
-                                do {
-                                    generalService.sleep(1500);
-                                    schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                        order_by: 'CreationDateTime DESC',
-                                    });
-                                    maxLoopsCounter--;
-                                } while (
-                                    (!schema[0].Key.startsWith('Log_Update') ||
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue == 0 ||
-                                        schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue == 0 ||
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID ==
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID) &&
-                                    maxLoopsCounter > 0
-                                );
-                                expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                                expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                    createdTransactionLines.UUID,
-                                );
-                                if (index == 0) {
-                                    try {
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 60,
-                                            OldValue: 0,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                        expect(
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 11 * (1 + index),
-                                            OldValue: 15,
-                                            FieldID: 'UnitsQuantity',
-                                        });
-                                    } catch (error) {
-                                        //The order of the PNS trigger can be diffrent it's not a bug
-                                        expect(
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 60,
-                                            OldValue: 0,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 11 * (1 + index),
-                                            OldValue: 15,
-                                            FieldID: 'UnitsQuantity',
-                                        });
-                                    }
-                                } else if (index == 1) {
-                                    try {
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 11 * (1 + index),
-                                            OldValue: 11 * (1 + index - 1),
-                                            FieldID: 'UnitsQuantity',
-                                        });
-                                        expect(
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 60,
-                                            OldValue: 0,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                    } catch (error) {
-                                        //The order of the PNS trigger can be diffrent it's not a bug
-                                        expect(
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 11 * (1 + index),
-                                            OldValue: 11 * (1 + index - 1),
-                                            FieldID: 'UnitsQuantity',
-                                        });
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 60,
-                                            OldValue: 0,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                    }
-                                } else {
                                     expect(
                                         schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                    ).to.deep.equal({
-                                        NewValue: 60,
-                                        OldValue: 0,
-                                        FieldID: 'UnitDiscountPercentage',
-                                    });
-                                    expect(
-                                        schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
                                     ).to.deep.equal({
                                         NewValue: 0,
                                         OldValue: 60,
                                         FieldID: 'UnitDiscountPercentage',
                                     });
-                                }
-                            });
-
-                            it(`Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)${
-                                index == 2
-                                    ? ` (TSA1 - UnitsQuantity = ${11 * (1 + index - 1)}) (Negative)`
-                                    : ` (TSA1 - UnitsQuantity = ${11 * (1 + index)})`
-                            }`, async () => {
-                                const updatedTransactionLine = await objectsService.getTransactionLinesByID(
-                                    createdTransactionLines.InternalID,
-                                );
-                                expect(updatedTransactionLine.InternalID).to.equal(createdTransactionLines.InternalID);
-                                if (index == 2) {
-                                    expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + index - 1));
-                                } else {
-                                    expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + index));
-                                }
-                                expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(60);
-                            });
-
-                            it(`Validate Transaction Updated (TSA2 - UnitDiscountPercentage = 60)${
-                                index == 2
-                                    ? ` (TSA1 - UnitsQuantity = ${11 * (1 + index - 1)}) (Negative)`
-                                    : ` (TSA1 - UnitsQuantity = ${11 * (1 + index)})`
-                            }`, async () => {
-                                const createdObject = await objectsService.getTransactionByID(
-                                    createdTransaction.InternalID,
-                                );
-                                expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
-                                    createdTransactionLines.InternalID,
-                                );
-                                if (index == 2) {
-                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                        11 * (1 + index - 1),
+                                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(
+                                        1,
                                     );
-                                } else {
-                                    expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                        11 * (1 + index),
+                                });
+
+                                it(`Post PUT That ${testName} TestID ${
+                                    testID + i + 1 + j * pnsTestScenariosArr.length
+                                } (TSA1 - UnitsQuantity = ${j > 0 ? 44 : 11 * (1 + i)})`, async () => {
+                                    const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                                        {
+                                            putData: {
+                                                10: {
+                                                    SubType: '',
+                                                    Headers: [
+                                                        'UUID',
+                                                        'ItemWrntyID',
+                                                        'ItemExternalID',
+                                                        'LineNumber',
+                                                        'TransactionUUID',
+                                                        'UnitsQuantity',
+                                                        'WrntyID',
+                                                        'Hidden',
+                                                    ],
+                                                    Lines: [
+                                                        [
+                                                            createdTransactionLines.UUID,
+                                                            String(itemArr[0].InternalID),
+                                                            itemArr[0].ExternalID,
+                                                            '0',
+                                                            String(createdTransaction.UUID),
+                                                            `${11 * (1 + i)}`,
+                                                            String(Math.floor(Math.random() * -1000000)),
+                                                            '0',
+                                                        ],
+                                                    ],
+                                                },
+                                            },
+                                            nucleus_crud_type: testType,
+                                        },
+                                        testID + i + 1 + j * pnsTestScenariosArr.length,
                                     );
+
+                                    console.log({ testType: putSyncResponse });
+                                    expect(putSyncResponse).to.be.true;
+
+                                    const getCreatedTransactionLineResponse = await objectsService.getTransactionLines({
+                                        where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                                    });
+                                    //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
+
+                                    if (testName == 'Stop After DB') {
+                                        if (j > 0) {
+                                            expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(44);
+                                        } else {
+                                            expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(15);
+                                        }
+                                    } else if (testName == 'Stop After Redis') {
+                                        expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(
+                                            11 * (1 + i - 1),
+                                        );
+                                    } else {
+                                        return Promise.all([
+                                            expect(getCreatedTransactionLineResponse[0]).to.include({
+                                                LineNumber: 0,
+                                                UnitsQuantity: 11 * (1 + i),
+                                            }),
+                                            expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
+                                                JSON.stringify({
+                                                    Data: {
+                                                        InternalID: itemArr[0].InternalID,
+                                                        UUID: itemArr[0].UUID,
+                                                        ExternalID: itemArr[0].ExternalID,
+                                                    },
+                                                    URI: '/items/' + itemArr[0].InternalID,
+                                                }),
+                                            ),
+                                            expect(
+                                                JSON.stringify(getCreatedTransactionLineResponse[0].Transaction),
+                                            ).equals(
+                                                JSON.stringify({
+                                                    Data: {
+                                                        InternalID: createdTransaction.InternalID,
+                                                        UUID: createdTransaction.UUID,
+                                                        ExternalID: createdTransaction.ExternalID,
+                                                    },
+                                                    URI: '/transactions/' + createdTransaction.InternalID,
+                                                }),
+                                            ),
+                                            expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
+                                                createdTransactionLines.InternalID,
+                                            ),
+                                            expect(getCreatedTransactionLineResponse[0].UUID).to.include(
+                                                createdTransactionLines.UUID,
+                                            ),
+                                            expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
+                                                new Date().toISOString().split('T')[0],
+                                            ),
+                                            expect(getCreatedTransactionLineResponse[0].CreationDateTime).to.contain(
+                                                'Z',
+                                            ),
+                                            expect(
+                                                getCreatedTransactionLineResponse[0].ModificationDateTime,
+                                            ).to.contain(new Date().toISOString().split('T')[0]),
+                                            expect(
+                                                getCreatedTransactionLineResponse[0].ModificationDateTime,
+                                            ).to.contain('Z'),
+                                            expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
+                                            expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                                            expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
+                                            expect(
+                                                await objectsService.getTransactionLines({
+                                                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                                                }),
+                                            )
+                                                .to.be.an('array')
+                                                .with.lengthOf(1),
+                                            expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
+                                        ]);
+                                    }
+                                });
+
+                                if (testName == 'Stop After PNS') {
+                                    it(`Validate PNS Triggered for WACD Update (TSA1 - UnitsQuantity = ${
+                                        11 * (1 + i)
+                                    } (Negative)`, async () => {
+                                        let schema;
+                                        let maxLoopsCounter = _MAX_LOOPS;
+                                        do {
+                                            generalService.sleep(1500);
+                                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                                order_by: 'CreationDateTime DESC',
+                                            });
+                                            maxLoopsCounter--;
+                                        } while (
+                                            (!schema[0].Key.startsWith('Log_Update') ||
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .FieldID == 'UnitsQuantity') &&
+                                            maxLoopsCounter > 0
+                                        );
+                                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                                            createdTransactionLines.UUID,
+                                        );
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 11 * (1 + i),
+                                            OldValue: 11 * (1 + i - 2),
+                                            FieldID: 'UnitsQuantity',
+                                        });
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length,
+                                        ).to.equal(1);
+                                    });
+                                } else {
+                                    it(`Validate PNS Not Triggered for WACD Update (TSA1 - UnitsQuantity = ${
+                                        11 * (1 + i)
+                                    } (Negative)`, async () => {
+                                        let schema;
+                                        let maxLoopsCounter = _MAX_LOOPS;
+                                        do {
+                                            generalService.sleep(1500);
+                                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                                order_by: 'CreationDateTime DESC',
+                                            });
+                                            maxLoopsCounter--;
+                                        } while (
+                                            (!schema[0].Key.startsWith('Log_Update') ||
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .FieldID != 'UnitsQuantity') &&
+                                            maxLoopsCounter > 0
+                                        );
+                                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+                                            createdTransactionLines.UUID,
+                                        );
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 0,
+                                            OldValue: 60,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length,
+                                        ).to.equal(1);
+                                    });
                                 }
-                                expect(
-                                    createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
-                                ).to.equal(60);
-                                expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
+
+                                it(`Validate New Transaction Line Updated (TSA1 - UnitsQuantity = ${
+                                    i == 0 ? (j > 0 ? 44 : 15) : i == 2 ? 11 * (1 + i - 1) : 11 * (1 + i)
+                                })${i == 0 ? ' (Negative)' : i == 2 ? ' (Negative)' : ''}`, async () => {
+                                    const createdObject = await objectsService.getTransactionByID(
+                                        createdTransaction.InternalID,
+                                    );
+                                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                                        createdTransactionLines.InternalID,
+                                    );
+                                    if (i == 0) {
+                                        if (j > 0) {
+                                            expect(
+                                                createdObject['TransactionLines' as any].Data[0].UnitsQuantity,
+                                            ).to.equal(44);
+                                        } else {
+                                            expect(
+                                                createdObject['TransactionLines' as any].Data[0].UnitsQuantity,
+                                            ).to.equal(15);
+                                        }
+                                    } else if (i == 2) {
+                                        expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                            11 * (1 + i - 1),
+                                        );
+                                    } else {
+                                        expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                            11 * (1 + i),
+                                        );
+                                    }
+                                    expect(
+                                        createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
+                                    ).to.equal(0);
+                                    expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
+                                });
+
+                                if (testEndpointType == 'WACD') {
+                                    it(`Update Transaction Line With WACD TestID ${
+                                        testID + i + 1 + j * pnsTestScenariosArr.length + pnsTestScenariosArr.length
+                                    } (TSA2 - UnitDiscountPercentage = 60)`, async () => {
+                                        const putSyncResponse = await pepperiNotificationServiceService.putSync(
+                                            {
+                                                putData: {
+                                                    10: {
+                                                        SubType: '',
+                                                        Headers: [
+                                                            'UUID',
+                                                            'ItemWrntyID',
+                                                            'ItemExternalID',
+                                                            'LineNumber',
+                                                            'TransactionUUID',
+                                                            'UnitDiscountPercentage',
+                                                            'WrntyID',
+                                                            'Hidden',
+                                                        ],
+                                                        Lines: [
+                                                            [
+                                                                createdTransactionLines.UUID,
+                                                                String(itemArr[0].InternalID),
+                                                                itemArr[0].ExternalID,
+                                                                '0',
+                                                                String(createdTransaction.UUID),
+                                                                `60`,
+                                                                String(Math.floor(Math.random() * -1000000)),
+                                                                '0',
+                                                            ],
+                                                        ],
+                                                    },
+                                                },
+                                            },
+                                            testID +
+                                                i +
+                                                1 +
+                                                j * pnsTestScenariosArr.length +
+                                                pnsTestScenariosArr.length,
+                                        );
+
+                                        console.log({ testType: putSyncResponse });
+                                        expect(putSyncResponse).to.be.true;
+
+                                        const getCreatedTransactionLineResponse =
+                                            await objectsService.getTransactionLines({
+                                                where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                                            });
+                                        //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
+
+                                        if (testName == 'Stop After Redis') {
+                                            expect(getCreatedTransactionLineResponse[0]).to.include({
+                                                LineNumber: 0,
+                                                UnitsQuantity: 11 * (1 + i - 1),
+                                                UnitDiscountPercentage: 60,
+                                            });
+                                        } else {
+                                            return Promise.all([
+                                                expect(getCreatedTransactionLineResponse[0]).to.include({
+                                                    LineNumber: 0,
+                                                    UnitsQuantity: 11 * (1 + i),
+                                                    UnitDiscountPercentage: 60,
+                                                }),
+                                                expect(
+                                                    JSON.stringify(getCreatedTransactionLineResponse[0].Item),
+                                                ).equals(
+                                                    JSON.stringify({
+                                                        Data: {
+                                                            InternalID: itemArr[0].InternalID,
+                                                            UUID: itemArr[0].UUID,
+                                                            ExternalID: itemArr[0].ExternalID,
+                                                        },
+                                                        URI: '/items/' + itemArr[0].InternalID,
+                                                    }),
+                                                ),
+                                                expect(
+                                                    JSON.stringify(getCreatedTransactionLineResponse[0].Transaction),
+                                                ).equals(
+                                                    JSON.stringify({
+                                                        Data: {
+                                                            InternalID: createdTransaction.InternalID,
+                                                            UUID: createdTransaction.UUID,
+                                                            ExternalID: createdTransaction.ExternalID,
+                                                        },
+                                                        URI: '/transactions/' + createdTransaction.InternalID,
+                                                    }),
+                                                ),
+                                                expect(getCreatedTransactionLineResponse[0].InternalID).to.equal(
+                                                    createdTransactionLines.InternalID,
+                                                ),
+                                                expect(getCreatedTransactionLineResponse[0].UUID).to.include(
+                                                    createdTransactionLines.UUID,
+                                                ),
+                                                expect(
+                                                    getCreatedTransactionLineResponse[0].CreationDateTime,
+                                                ).to.contain(new Date().toISOString().split('T')[0]),
+                                                expect(
+                                                    getCreatedTransactionLineResponse[0].CreationDateTime,
+                                                ).to.contain('Z'),
+                                                expect(
+                                                    getCreatedTransactionLineResponse[0].ModificationDateTime,
+                                                ).to.contain(new Date().toISOString().split('T')[0]),
+                                                expect(
+                                                    getCreatedTransactionLineResponse[0].ModificationDateTime,
+                                                ).to.contain('Z'),
+                                                expect(getCreatedTransactionLineResponse[0].Archive).to.be.false,
+                                                expect(getCreatedTransactionLineResponse[0].Hidden).to.be.false,
+                                                expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
+                                                expect(
+                                                    await objectsService.getTransactionLines({
+                                                        where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                                                    }),
+                                                )
+                                                    .to.be.an('array')
+                                                    .with.lengthOf(1),
+                                                expect(getCreatedTransactionLineResponse[1]).to.be.undefined,
+                                            ]);
+                                        }
+                                    });
+                                } else {
+                                    it('Update Transaction Line With SDK (TSA2 - UnitDiscountPercentage = 60)', async () => {
+                                        const updatedTransactionLine = await objectsService.createTransactionLine({
+                                            InternalID: createdTransactionLines.InternalID,
+                                            UUID: createdTransactionLines.UUID,
+                                            UnitDiscountPercentage: 60,
+                                        } as any);
+                                        expect(updatedTransactionLine.InternalID).to.equal(
+                                            createdTransactionLines.InternalID,
+                                        );
+                                    });
+                                }
+
+                                it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 60)', async () => {
+                                    let schema;
+                                    let maxLoopsCounter = _MAX_LOOPS;
+                                    do {
+                                        generalService.sleep(1500);
+                                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                            order_by: 'CreationDateTime DESC',
+                                        });
+                                        maxLoopsCounter--;
+                                    } while (
+                                        (!schema[0].Key.startsWith('Log_Update') ||
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue ==
+                                                0 ||
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue ==
+                                                0 ||
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID ==
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .FieldID) &&
+                                        maxLoopsCounter > 0
+                                    );
+                                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+                                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                                        createdTransactionLines.UUID,
+                                    );
+                                    if (i == 0) {
+                                        try {
+                                            expect(
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 60,
+                                                OldValue: 0,
+                                                FieldID: 'UnitDiscountPercentage',
+                                            });
+                                            expect(
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: j > 0 ? 44 : 15,
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                        } catch (error) {
+                                            //The order of the PNS trigger can be diffrent it's not a bug
+                                            expect(
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 60,
+                                                OldValue: 0,
+                                                FieldID: 'UnitDiscountPercentage',
+                                            });
+                                            expect(
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: j > 0 ? 44 : 15,
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                        }
+                                    } else if (i == 1) {
+                                        try {
+                                            expect(
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: 11 * (1 + i - 1),
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                            expect(
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 60,
+                                                OldValue: 0,
+                                                FieldID: 'UnitDiscountPercentage',
+                                            });
+                                        } catch (error) {
+                                            //The order of the PNS trigger can be diffrent it's not a bug
+                                            expect(
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: 11 * (1 + i - 1),
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                            expect(
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 60,
+                                                OldValue: 0,
+                                                FieldID: 'UnitDiscountPercentage',
+                                            });
+                                        }
+                                    } else if (i == 2) {
+                                        expect(
+                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 60,
+                                            OldValue: 0,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                        expect(
+                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                        ).to.deep.equal({
+                                            NewValue: 0,
+                                            OldValue: 60,
+                                            FieldID: 'UnitDiscountPercentage',
+                                        });
+                                    } else {
+                                        try {
+                                            expect(
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 60,
+                                                OldValue: 0,
+                                                FieldID: 'UnitDiscountPercentage',
+                                            });
+                                            expect(
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: 11 * (1 + i - 2),
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                            expect(
+                                                schema[2].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: 11 * (1 + i - 2),
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                        } catch (error) {
+                                            expect(
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 60,
+                                                OldValue: 0,
+                                                FieldID: 'UnitDiscountPercentage',
+                                            });
+                                            expect(
+                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: 11 * (1 + i - 2),
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                            expect(
+                                                schema[2].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: 11 * (1 + i),
+                                                OldValue: 11 * (1 + i - 2),
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                        }
+                                    }
+                                });
+
+                                it(`Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)${
+                                    i == 2
+                                        ? ` (TSA1 - UnitsQuantity = ${11 * (1 + i - 1)}) (Negative)`
+                                        : ` (TSA1 - UnitsQuantity = ${11 * (1 + i)})`
+                                }`, async () => {
+                                    const updatedTransactionLine = await objectsService.getTransactionLinesByID(
+                                        createdTransactionLines.InternalID,
+                                    );
+                                    expect(updatedTransactionLine.InternalID).to.equal(
+                                        createdTransactionLines.InternalID,
+                                    );
+                                    if (i == 2) {
+                                        expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + i - 1));
+                                    } else {
+                                        expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + i));
+                                    }
+                                    expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(60);
+                                });
+
+                                it(`Validate Transaction Updated (TSA2 - UnitDiscountPercentage = 60)${
+                                    i == 2
+                                        ? ` (TSA1 - UnitsQuantity = ${11 * (1 + i - 1)}) (Negative)`
+                                        : ` (TSA1 - UnitsQuantity = ${11 * (1 + i)})`
+                                }`, async () => {
+                                    const createdObject = await objectsService.getTransactionByID(
+                                        createdTransaction.InternalID,
+                                    );
+                                    expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
+                                        createdTransactionLines.InternalID,
+                                    );
+                                    if (i == 2) {
+                                        expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                            11 * (1 + i - 1),
+                                        );
+                                    } else {
+                                        expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
+                                            11 * (1 + i),
+                                        );
+                                    }
+                                    expect(
+                                        createdObject['TransactionLines' as any].Data[0].UnitDiscountPercentage,
+                                    ).to.equal(60);
+                                    expect(createdObject['TransactionLines' as any].Data[1]).to.be.undefined;
+                                });
                             });
-                        });
-                    }
-                });
+                        }
+                    });
+                }
             });
 
             describe('Delete', () => {
