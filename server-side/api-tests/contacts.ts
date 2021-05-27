@@ -502,6 +502,26 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
             ]);
         });
 
+        it('Check Hidden=false after update', async () => {
+            return Promise.all([
+                expect(await service.getContactsSDK({ where: `InternalID=${createdContact.InternalID}`, include_deleted: true }))
+                    .to.be.an('array')
+                    .with.lengthOf(1),
+            ]),
+                updatedContact = await service.createContact({
+                    ExternalID: contactExternalID,
+                    Email: 'ContactUpdateTest@mail.com',
+                    Phone: '123-45678900',
+                    Mobile: '123-45678900',
+                }),
+                expect(updatedContact).to.have.property('Hidden').that.is.a('boolean').and.is.false,
+                expect(await service.deleteContact(createdContact.InternalID)).to.be.true,
+                expect(await service.deleteContact(createdContact.InternalID)).to.be.false,
+                expect(await service.getContacts(createdContact.InternalID))
+                    .to.be.an('array')
+                    .with.lengthOf(0);
+        });
+
         it('Bulk create contacts', async () => {
             bulkContactExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
             bulkCreateContact = await service.bulkCreate('contacts', {
@@ -512,50 +532,50 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                         contactAccount.ExternalID,
                         'Bulk Contact 1',
                         'Email' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '@' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '.com',
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
                     ],
                     [
                         bulkContactExternalID + ' 2',
                         contactAccount.ExternalID,
                         'Bulk Contact 2',
                         'Email' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '@' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '.com',
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
                     ],
                     [
                         bulkContactExternalID + ' 3',
                         contactAccount.ExternalID,
                         'Bulk Contact 3',
                         'Email' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '@' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '.com',
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
                     ],
                     [
                         bulkContactExternalID + ' 4',
                         contactAccount.ExternalID,
                         'Bulk Contact 4',
                         'Email' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '@' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '.com',
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
                     ],
                     [
                         bulkContactExternalID + ' 5',
                         contactAccount.ExternalID,
                         'Bulk Contact 5',
                         'Email' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '@' +
-                            Math.floor(Math.random() * 1000000).toString() +
-                            '.com',
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com',
                     ],
                 ],
             });

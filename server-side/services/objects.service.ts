@@ -103,6 +103,10 @@ export class ObjectsService {
         return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
     }
 
+    getContactsSDK(options?: FindOptions) {
+        return this.papiClient.contacts.find(options);
+    }
+
     getBulk(type, clause) {
         return this.papiClient.get('/' + type + clause);
     }
@@ -194,6 +198,10 @@ export class ObjectsService {
         return this.papiClient.accounts.count(options);
     }
 
+    countUDTRows(options?): Promise<number> {
+        return this.papiClient.userDefinedTables.count(options);
+    }
+
     getAllAccounts(options?: FindOptions) {
         return this.papiClient.accounts.iter(options).toArray();
     }
@@ -230,6 +238,14 @@ export class ObjectsService {
         const bulkArray = [] as any;
         for (let i = 0; i < amount; i++) {
             bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i, hidden]);
+        }
+        return bulkArray;
+    }
+
+    createBulkUDTArray(amount, exID, hidden) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            bulkArray.push([exID, 'Test ' + i, '', 'Value ' + i, hidden]);
         }
         return bulkArray;
     }
