@@ -15,7 +15,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
     //const logDataRetry: any = {};
     //const executionLog: any = {};
     const addonUUID = generalService['client'].BaseURL.includes('staging')
-        ? '7aac5451-2fc7-44d2-99dc-52c592adfb70'
+        ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '94f08439-6480-4533-8176-a04f651f5fdf';
     const jsFileName = 'test.js';
     const functionName = 'ido';
