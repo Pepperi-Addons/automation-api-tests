@@ -1,7 +1,10 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
 //#region Prerequisites for Var API Tests
+let isTestData = false;
 //TestData
 function testDataNewAddon(testNumber) {
     return { Name: 'Pepperitest Test ' + testNumber }; //Name here can't be changed or it will send messages VIA teams
@@ -38,8 +41,13 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 //     return btoa(unescape(encodeURIComponent(request.response)));
 // }
 
+function testDatagetBase64FileFromFileAtPath(pathOfFileToReadFrom): string {
+    const file = fs.readFileSync(path.resolve(__dirname, pathOfFileToReadFrom));
+    return file.toString('base64');
+}
+
 //Changed to not use local files, but always the same file
-function testDatagetBase64FileFromFileAtPath() {
+function testDatagetBase64FileFromText() {
     return Buffer.from(
         'exports.install = async (Client, Request) => {\n' +
             'return {success:true, resultObject:{}}\n};' +
@@ -53,8 +61,12 @@ function testDatagetBase64FileFromFileAtPath() {
             'return {success:true, resultObject:{}}\n}',
     ).toString('base64');
 }
-
 //#endregion Prerequisites for Var API Tests
+
+export async function CreateTestDataAddon(generalService: GeneralService, request, tester: TesterFunctions) {
+    isTestData = true;
+    await VarTests(generalService, request, tester);
+}
 
 // All Var API Tests
 export async function VarTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -160,146 +172,152 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         "Update Phased Without 'StartPhasedDateTime' Mandatory Field (Negative)";
     setNewTestHeadline(updatePhasedWithoutMandatoryFieldTest);
 
+    const creataTestDataAddon = 'Create Test Data Addon';
+    setNewTestHeadline(creataTestDataAddon);
+
     //#region Test Config area
-    await executeCrudAddonTest(crudAddonTest, testDataNewAddon(Math.floor(Math.random() * 1000000).toString()));
+    if (!isTestData) {
+        await executeCrudAddonTest(crudAddonTest, testDataNewAddon(Math.floor(Math.random() * 1000000).toString()));
 
-    await executeCrudAddonWithUUIDTestTest(
-        crudAddonWithUUIDTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeCrudAddonWithUUIDTestTest(
+            crudAddonWithUUIDTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeCrudAddonWithNonValidUUIDTestTest(
-        crudAddonWithNonValidUUIDTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeCrudAddonWithNonValidUUIDTestTest(
+            crudAddonWithNonValidUUIDTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeCrudAddonVersionTest(
-        crudAddonVersionTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeCrudAddonVersionTest(
+            crudAddonVersionTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeGetDeletedAddonTest(
-        getDeletedAddonTest,
-        true,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeGetDeletedAddonTest(
+            getDeletedAddonTest,
+            true,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeGetDeletedAddonTest(
-        dontGetDeletedAddonInListTest,
-        false,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeGetDeletedAddonTest(
+            dontGetDeletedAddonInListTest,
+            false,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeGetDeletedAddonVersionTest(
-        getSpecificDeletedAddonVersionTest,
-        true,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeGetDeletedAddonVersionTest(
+            getSpecificDeletedAddonVersionTest,
+            true,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeGetDeletedAddonVersionTest(
-        dontGetDeletedAddonVersionInListTest,
-        false,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeGetDeletedAddonVersionTest(
+            dontGetDeletedAddonVersionInListTest,
+            false,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostEmptyVersionObjectTest(
-        postEmptyVersionObjectTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostEmptyVersionObjectTest(
+            postEmptyVersionObjectTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostEmptyVersionsInBulkEndPointTest(
-        postEmptyVersionsInBulkEndPointTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostEmptyVersionsInBulkEndPointTest(
+            postEmptyVersionsInBulkEndPointTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostVersionsInBulkEndPointTest(
-        postVersionsInBulkEndPointTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostVersionsInBulkEndPointTest(
+            postVersionsInBulkEndPointTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    //Test was removed in 21/12/2020 since all the responses of 500 will return in HTML and are not formattable
-    // await executePostSingleVersionInBulkEndPointTest(
-    //     postSingleVersionInBulkEndPointTest,
-    //     testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    // );
+        //Test was removed in 21/12/2020 since all the responses of 500 will return in HTML and are not formattable
+        // await executePostSingleVersionInBulkEndPointTest(
+        //     postSingleVersionInBulkEndPointTest,
+        //     testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        // );
 
-    await executePostVersionsWithoutBulkEndPointTest(
-        postVersionsWithoutBulkEndPointTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostVersionsWithoutBulkEndPointTest(
+            postVersionsWithoutBulkEndPointTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostSameVersionNameTest(
-        postVersionWithSameNameTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostSameVersionNameTest(
+            postVersionWithSameNameTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostAddonWithoutNameTest(postAddonWithoutNameTest, {});
+        await executePostAddonWithoutNameTest(postAddonWithoutNameTest, {});
 
-    await executePostAddonVersionWithoutVersionTest(
-        postAddonVersionWithoutVersionTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostAddonVersionWithoutVersionTest(
+            postAddonVersionWithoutVersionTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostAddonVersionWithoutAddonUUIDTest(
-        postAddonVersionWithoutAddonUUIDTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostAddonVersionWithoutAddonUUIDTest(
+            postAddonVersionWithoutAddonUUIDTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostAddonVersionWithWrongVersionTest(
-        postAddonVersionWithWrongVersionTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostAddonVersionWithWrongVersionTest(
+            postAddonVersionWithWrongVersionTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostAddonVersionWithShorterUUIDTest(
-        postAddonVersionWithShorterUUIDTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostAddonVersionWithShorterUUIDTest(
+            postAddonVersionWithShorterUUIDTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executePostAddonVersionWithWrongUUIDTest(
-        postAddonVersionWithWrongUUIDTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executePostAddonVersionWithWrongUUIDTest(
+            postAddonVersionWithWrongUUIDTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeValidateInstallationFileCreatedTest(
-        validateInstallationFileCreatedTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeValidateInstallationFileCreatedTest(
+            validateInstallationFileCreatedTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeValidateInstallationFileSentTest(
-        validateInstallationFileSentTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeValidateInstallationFileSentTest(
+            validateInstallationFileSentTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeValidateOtherFileSentTest(
-        validateOtherFileSentTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeValidateOtherFileSentTest(
+            validateOtherFileSentTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeValidateOtherFilesSentInFolderTest(
-        validateOtherFilesSentInFolderTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeValidateOtherFilesSentInFolderTest(
+            validateOtherFilesSentInFolderTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeValidateOtherFilesSentInFolderTest(
-        validateOtherFilesSentInFolderNegativeTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeValidateOtherFilesSentInFolderTest(
+            validateOtherFilesSentInFolderNegativeTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeUpdateAllAddonDataMembersTest(
-        updateAllAddonDataMembersTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeUpdateAllAddonDataMembersTest(
+            updateAllAddonDataMembersTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeUpdateAllVersionDataMembersTest(
-        updateAllVersionDataMembersTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
+        await executeUpdateAllVersionDataMembersTest(
+            updateAllVersionDataMembersTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
 
-    await executeUpdatePhasedWithoutMandatoryFieldTest(
-        updatePhasedWithoutMandatoryFieldTest,
-        testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
-    );
-
+        await executeUpdatePhasedWithoutMandatoryFieldTest(
+            updatePhasedWithoutMandatoryFieldTest,
+            testDataNewAddon(Math.floor(Math.random() * 1000000).toString()),
+        );
+    } else {
+        await executecreataTestDataAddonTest(creataTestDataAddon);
+    }
     //#endregion Test Config area
     //Careful - This method can delete all the Addons!!!
     //Never change this, you can comment this out, but don't play with it.
@@ -2544,7 +2562,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
 
-        const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
+        const fileAsSBase64 = await testDatagetBase64FileFromText();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
             Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
@@ -2700,7 +2718,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
 
-        const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
+        const fileAsSBase64 = await testDatagetBase64FileFromText();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
             Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
@@ -2867,7 +2885,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
 
-        const fileAsSBase64 = await testDatagetBase64FileFromFileAtPath();
+        const fileAsSBase64 = await testDatagetBase64FileFromText();
 
         let versionTestDataBody;
         if (testName.includes('Negative')) {
@@ -3596,6 +3614,117 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 false,
             );
         }
+
+        //This can be use to easily extract the token to the console
+        //console.log({ Token: VarAPI._Token })
+    }
+
+    //Test Creata Test Data Addon Test
+    async function executecreataTestDataAddonTest(testName) {
+        //Create
+        const createApiResponse = await generalService.fetchStatus(
+            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: request.body.varKey,
+                },
+                body: JSON.stringify({
+                    Name: 'Pepperitest (Jenkins Special Addon) - Code Jobs',
+                    Description: 'Part of Jenkins Tests',
+                }),
+            },
+        );
+
+        const fileAsSBase64Arr: string[] = [];
+        const createVersionApiResponseArr: any[] = [];
+        //Ver 1
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver1.js'));
+        debugger;
+        let versionTestDataBody = {
+            AddonUUID: createApiResponse.Body.UUID,
+            Version: 'Ver1',
+            Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[0] }],
+        };
+        createVersionApiResponseArr.push(
+            await generalService.fetchStatus(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(versionTestDataBody),
+                },
+            ),
+        );
+
+        //Ver 2
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver2.js'));
+        versionTestDataBody = {
+            AddonUUID: createApiResponse.Body.UUID,
+            Version: 'Ver2',
+            Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[1] }],
+        };
+        createVersionApiResponseArr.push(
+            await generalService.fetchStatus(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(versionTestDataBody),
+                },
+            ),
+        );
+
+        //Ver 3
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver3.js'));
+        versionTestDataBody = {
+            AddonUUID: createApiResponse.Body.UUID,
+            Version: 'Ver3',
+            Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[2] }],
+        };
+        createVersionApiResponseArr.push(
+            await generalService.fetchStatus(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(versionTestDataBody),
+                },
+            ),
+        );
+
+        debugger;
+
+        addTestResultUnderHeadline(
+            testName,
+            'Ver1 Creatred',
+            createVersionApiResponseArr[0].Body.Version == 'Ver1'
+                ? true
+                : 'The Ver1 Creation failed with response of: ' + createVersionApiResponseArr[0],
+        );
+
+        addTestResultUnderHeadline(
+            testName,
+            'Ver1 Creatred',
+            createVersionApiResponseArr[1].Body.Version == 'Ver2'
+                ? true
+                : 'The Ver2 Creation failed with response of: ' + createVersionApiResponseArr[1],
+        );
+
+        addTestResultUnderHeadline(
+            testName,
+            'Ver1 Creatred',
+            createVersionApiResponseArr[2].Body.Version == 'Ver3'
+                ? true
+                : 'The Ver3 Creation failed with response of: ' + createVersionApiResponseArr[2],
+        );
+        debugger;
 
         //This can be use to easily extract the token to the console
         //console.log({ Token: VarAPI._Token })
