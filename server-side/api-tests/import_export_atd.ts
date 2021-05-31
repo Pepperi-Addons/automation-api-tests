@@ -2028,7 +2028,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             }
 
             describe('Test Transactions Override', () => {
-                const testATDInternalID = testATD.InternalID; // 290418; //Production 'Automation ATD 1.1.165 2'
+                const testATDInternalID = testATD.InternalID;
                 for (let index = 0; index < TransactionsATDArr.length; index++) {
                     describe(`Tested ATD: ${TransactionsATDArr[index].Title}`, () => {
                         let afterATDExportResponse;

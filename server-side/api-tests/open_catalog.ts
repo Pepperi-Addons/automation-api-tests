@@ -158,6 +158,7 @@ export async function OpenCatalogTests(generalService: GeneralService, tester: T
         });
 
         it('Post change to data views, verify change arrived to open catalog after publish', async () => {
+            generalService.sleep(1000); //Sleep added after tests failed only in Jenkins
             const postDataView = await openCatalogService.postDataView({
                 InternalID: 5266676,
                 Type: 'Menu',
@@ -241,6 +242,7 @@ export async function OpenCatalogTests(generalService: GeneralService, tester: T
             });
 
             expect(revertDataView).to.have.property('InternalID').that.equals(5266676);
+            generalService.sleep(1000); //Sleep added after tests failed only in Jenkins
             const publishOpenCatalogRevert = await openCatalogService.publishOpenCatalog({
                 atdID: '304550',
                 atdSecret:
