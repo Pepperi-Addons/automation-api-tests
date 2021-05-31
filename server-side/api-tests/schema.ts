@@ -1416,8 +1416,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     Name: logcash.createSchemaWithIndexedDataType.Name,
                     Fields: {
                         // IndexedString1: { Type: 'String', Indexed: true },
-                        // Field1: { Type: 'String'},
-                        // Field2: { Type: 'String'},
+                        Field1: { Type: 'String'},
+                        Field2: { Type: 'String'},
                         // Field3: { Type: 'String'},
                         // Field4: { Type: 'String'},
                         // Field5: { Type: 'Integer'},
@@ -1490,7 +1490,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         else {
             if (
                 logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes(
-                    'Failed due to exception:',
+                    'Index cannot be modified/removed',
                 ) == true
             ) {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
@@ -1501,10 +1501,119 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring;
             }
         }
-        await dropTableIndexed();
+        await insertDataToIndexedTableFirst100();
     }
-    //#endregion schema creation  functionality test
+//#endregion schema creation  functionality test
+//#region insert data to indexed table + order by and where clause tests
 
+async function insertDataToIndexedTableFirst100() {
+    for (counter; counter < 100; counter++) {
+        logcash.insertDataToIndexedTableFirst100 = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithIndexedDataType.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'indexedTest ' + counter,
+                    IndexedInt1: counter,
+                    IndexedString1: 'IndexedString1-' + counter,
+                    IndexedString2: 'IndexedString2-' + counter,
+                    Field8: 'Stress1 ' + new Date(),
+                    Field1:  counter,
+                    Field2:  'String1-' + counter
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertDataToIndexedTableFirst100[0] == 200) {
+            logcash.insertDataToIndexedTableFirst100Status = true;
+        } else {
+            logcash.insertDataToIndexedTableFirst100Status = false;
+            logcash.insertDataToIndexedTableFirst100Error = 'Insert data failed on try number: ' + counter;
+        }
+    }
+    counter = 0;
+    debugger;
+    await getDataFromIndexedData();
+}
+
+async function getDataFromIndexedData() {
+    logcash.getDataFromIndexedData = await generalService
+        .fetchStatus(
+            baseURL +
+                '/addons/data/' +
+                addonUUID +
+                '/' +
+                logcash.createSchemaWithIndexedDataType.Name +
+                '?order_by=IndexedString1',  //desc
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        )
+        .then((res) => res.Body);
+    debugger;
+    if (logcash.getDataFromIndexedData.length == 100 &&
+        logcash.getDataFromIndexedData[12].Field2 == 'String1-2'&&
+        logcash.getDataFromIndexedData[89].Field2 == 'String1-9') {
+        logcash.getDataFromIndexedDataStatus = true;
+    } else {
+        logcash.getDataFromIndexedDataStatus = false;
+        logcash.getDataFromIndexedDataError =
+            'The get wit order_by result is wrong.Will get 100 objects but result is :' +
+            logcash.getDataFromDataTableWhereClouse.length;
+    }
+    await getDataFromIndexedDataNegative();
+}
+
+async function getDataFromIndexedDataNegative() {
+    logcash.getDataFromIndexedDataNegative = await generalService
+        .fetchStatus(
+            baseURL +
+                '/addons/data/' +
+                addonUUID +
+                '/' +
+                logcash.createSchemaWithIndexedDataType.Name +
+                '?order_by=Field2',  //desc
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        )
+        .then((res) => res.Body);
+    debugger;
+    if(logcash.getDataFromIndexedDataNegative.fault != undefined)
+    {
+        if (logcash.getDataFromIndexedDataNegative.fault.faultstring.includes('Failed due to exception: Order by using non indexed parameter is invalid, requested index = undefined')) 
+        {
+            logcash.getDataFromIndexedDataNegativeStatus = true;
+        } 
+        else{
+            logcash.getDataFromIndexedDataNegativeStatus = false;
+            logcash.getDataFromIndexedDataNegativeError = 'The error message is wrong';
+        }
+    }
+
+    else{
+        logcash.getDataFromIndexedDataNegativeStatus = false;
+        logcash.getDataFromIndexedDataNegativeError =
+                'Order_by not indexed field will fail , but actuall worked';    
+    }
+    
+    await dropTableIndexed();
+}
+//#endregion insert data to indexed table 
     async function dropTableIndexed() {
         // the drop table function will be moved after indexed_table data verification when code is ready
         const res = await generalService.fetchStatus(
