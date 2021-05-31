@@ -3630,7 +3630,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                     Authorization: request.body.varKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Pepperitest (Jenkins Special Addon) - Code Jobs',
+                    Name: 'Pepperitest Test (Jenkins Special Addon) - Code Jobs',
                     Description: 'Part of Jenkins Tests',
                 }),
             },
@@ -3640,7 +3640,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const createVersionApiResponseArr: any[] = [];
         //Ver 1
         fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver1.js'));
-        debugger;
+
         let versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
             Version: 'Ver1',
@@ -3699,8 +3699,6 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             ),
         );
 
-        debugger;
-
         addTestResultUnderHeadline(
             testName,
             'Ver1 Creatred',
@@ -3724,7 +3722,6 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 ? true
                 : 'The Ver3 Creation failed with response of: ' + createVersionApiResponseArr[2],
         );
-        debugger;
 
         //This can be use to easily extract the token to the console
         //console.log({ Token: VarAPI._Token })
