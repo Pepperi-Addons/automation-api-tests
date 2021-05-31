@@ -187,7 +187,6 @@ export async function OpenCatalogTests(generalService: GeneralService, tester: T
                 ],
             });
 
-            generalService.sleep(1500); //Sleep added after tests failed only in Jenkins
             const publishOpenCatalog = await openCatalogService.publishOpenCatalog({
                 atdID: '304550',
                 atdSecret:
@@ -244,7 +243,6 @@ export async function OpenCatalogTests(generalService: GeneralService, tester: T
 
             expect(revertDataView).to.have.property('InternalID').that.equals(5266676);
 
-            generalService.sleep(1500); //Sleep added after tests failed only in Jenkins
             const publishOpenCatalogRevert = await openCatalogService.publishOpenCatalog({
                 atdID: '304550',
                 atdSecret:
