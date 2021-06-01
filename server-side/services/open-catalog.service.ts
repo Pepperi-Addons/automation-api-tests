@@ -95,9 +95,9 @@ export class OpenCatalogService {
             '/addons/api/async/00000000-0000-0000-0000-00000ca7a109/settings/publishOpenCatalog',
             body,
         );
-        const auditLogStatus = await this.waitForAuditLogStatus(publishOpenCatalog.ExecutionUUID, 80000);
+        const auditLogStatus = await this.waitForAuditLogStatus(publishOpenCatalog.ExecutionUUID, 200000);
         const ElasticSearchSubTypeObject = JSON.parse(auditLogStatus.AuditInfo.ResultObject);
-        const adalLogStatus = await this.waitForAdalLogStatus(ElasticSearchSubTypeObject.ElasticSearchSubType, 80000);
+        const adalLogStatus = await this.waitForAdalLogStatus(ElasticSearchSubTypeObject.ElasticSearchSubType, 200000);
         return adalLogStatus;
     }
 
