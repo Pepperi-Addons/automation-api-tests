@@ -9,7 +9,7 @@ interface TestObject {
     apiGetResponse?: Record<string, unknown>;
     testBody?: Record<string, unknown>;
 }
-const apiCallsInterval = 400;
+const apiCallsInterval = 4000;
 let isBase = true;
 let isSkipMechanisem = false;
 let isSkipMechanisemHundredGets = false;
@@ -850,12 +850,12 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
 
     //#region wait for status
     async function waitForSyncStatus(uuid: string, maxTime: number) {
-        const maxLoops = maxTime / (apiCallsInterval * 10);
+        const maxLoops = maxTime / apiCallsInterval;
         let counter = 0;
         let apiGetResponse;
         do {
             if (apiGetResponse != undefined) {
-                generalService.sleep(apiCallsInterval * 10);
+                generalService.sleep(apiCallsInterval);
             }
             counter++;
             apiGetResponse = await service.jobInfo(uuid);

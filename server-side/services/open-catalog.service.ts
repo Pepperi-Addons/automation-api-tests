@@ -1,7 +1,7 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
-const apiCallsInterval = 400;
+const apiCallsInterval = 4000;
 
 export class OpenCatalogService {
     papiClient: PapiClient;
@@ -102,37 +102,29 @@ export class OpenCatalogService {
     }
 
     async waitForAuditLogStatus(ID: number, maxTime: number) {
-        const maxLoops = maxTime / (apiCallsInterval * 10);
+        const maxLoops = maxTime / apiCallsInterval;
         let counter = 0;
         let apiGetResponse;
         do {
-            if (apiGetResponse != undefined) {
-                this.generalService.sleep(apiCallsInterval * 10);
-            }
-            counter++;
+            this.generalService.sleep(apiCallsInterval);
             apiGetResponse = await this.getAuditLog(ID);
+            counter++;
         } while (
             (apiGetResponse.Status.Name == 'New' || apiGetResponse.Status.Name == 'InProgress') &&
             counter < maxLoops
         );
-        this.generalService.sleep(apiCallsInterval * 10);
-        apiGetResponse = await this.getAuditLog(ID);
         return apiGetResponse;
     }
 
     async waitForAdalLogStatus(ID: number, maxTime: number) {
-        const maxLoops = maxTime / (apiCallsInterval * 10);
+        const maxLoops = maxTime / apiCallsInterval;
         let counter = 0;
         let apiGetResponse;
         do {
-            if (apiGetResponse != undefined) {
-                this.generalService.sleep(apiCallsInterval * 10);
-            }
-            counter++;
+            this.generalService.sleep(apiCallsInterval);
             apiGetResponse = await this.getAdalLog(ID);
-        } while ((apiGetResponse.Status != 'Done' || !apiGetResponse.Status.includes('Failed')) && counter < maxLoops);
-        this.generalService.sleep(apiCallsInterval * 10);
-        apiGetResponse = await this.getAdalLog(ID);
+            counter++;
+        } while (apiGetResponse.Status != 'Done' && !apiGetResponse.Status.includes('Failed') && counter < maxLoops);
         return apiGetResponse;
     }
 
