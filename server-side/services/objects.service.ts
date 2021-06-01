@@ -16,7 +16,7 @@ import {
 } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
-const apiCallsInterval = 400;
+const apiCallsInterval = 4000;
 
 export class ObjectsService {
     papiClient: PapiClient;
@@ -273,21 +273,17 @@ export class ObjectsService {
     }
 
     async waitForBulkJobStatus(ID: number, maxTime: number) {
-        const maxLoops = maxTime / (apiCallsInterval * 10);
+        const maxLoops = maxTime / apiCallsInterval;
         let counter = 0;
         let apiGetResponse;
         do {
-            if (apiGetResponse != undefined) {
-                this.generalService.sleep(apiCallsInterval * 10);
-            }
-            counter++;
+            this.generalService.sleep(apiCallsInterval);
             apiGetResponse = await this.getBulkJobInfo(ID);
+            counter++;
         } while (
             (apiGetResponse.Status == 'Not Started' || apiGetResponse.Status == 'In Progress') &&
             counter < maxLoops
         );
-        this.generalService.sleep(apiCallsInterval * 10);
-        apiGetResponse = await this.getBulkJobInfo(ID);
         return apiGetResponse;
     }
 
