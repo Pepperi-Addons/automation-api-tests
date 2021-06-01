@@ -198,6 +198,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
         describe('Post search data', () => {
             it('Search data', async () => {
+                generalService.sleep(1500); //Sleep added after tests failed only in Jenkins
                 const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
                     Sort: { order: 'asc' },
                 });
@@ -488,6 +489,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             });
 
             it('Search data', async () => {
+                generalService.sleep(1500); //Sleep added after tests failed only in Jenkins
                 const searchData = await elasticSearchService.postSearchData({ Distributor: 'Test Dist 1' }, 10, {
                     Sort: { order: 'asc' },
                 });

@@ -1,7 +1,12 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
-export declare type NucleusFlagType = 'stop_after_redis' | 'stop_after_db' | 'stop_after_nucleus' | null;
+export declare type NucleusFlagType =
+    | 'stop_after_redis'
+    | 'stop_after_db'
+    | 'stop_after_nucleus'
+    | 'stop_after_pns'
+    | null;
 declare type PutDataSubTypeHeaders =
     | 'CreationDateTime'
     | 'DeliveryDate'

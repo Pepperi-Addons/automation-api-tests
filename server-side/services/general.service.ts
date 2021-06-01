@@ -56,6 +56,20 @@ export default class GeneralService {
         return;
     }
 
+    CalculateUsedMemory() {
+        const used = process.memoryUsage();
+        const memoryUsed = {};
+        for (const key in used) {
+            memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
+        }
+        console.log(`memoryUse in MB = ${JSON.stringify(memoryUsed)}`);
+    }
+
+    PrintMemoryUseToLog(state, testName) {
+        console.log(`${state} Test: ${testName}`);
+        this.CalculateUsedMemory();
+    }
+
     //#region getDate
     getTime() {
         const getDate = new Date();
