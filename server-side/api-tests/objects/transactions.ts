@@ -1037,21 +1037,28 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Check Hidden=false after update', async () => {
-            return Promise.all([
-                expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}`, include_deleted: true }))
-                    .to.be.an('array')
-                    .with.lengthOf(1),
-            ]),
-                updatedTransaction = await service.createTransaction({
+            return (
+                Promise.all([
+                    expect(
+                        await service.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                            include_deleted: true,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(1),
+                ]),
+                (updatedTransaction = await service.createTransaction({
                     ExternalID: transactionExternalID,
-                    Status: 1
-                }),
+                    Status: 1,
+                })),
                 expect(updatedTransaction).to.have.property('Hidden').that.is.a('boolean').and.is.false,
                 expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.true,
                 expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.false,
                 expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }))
                     .to.be.an('array')
-                    .with.lengthOf(0);
+                    .with.lengthOf(0)
+            );
         });
 
         it('Bulk create transaction headers', async () => {

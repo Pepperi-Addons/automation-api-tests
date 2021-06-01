@@ -552,24 +552,30 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         });
 
         it('Check Hidden=false after update', async () => {
-            return Promise.all([
-                expect(await service.getAccounts({ where: `InternalID=${createdAccount.InternalID}`, include_deleted: true }))
-                    .to.be.an('array')
-                    .with.lengthOf(1),
-            ]),
-                updatedAccount = await service.createAccount({
+            return (
+                Promise.all([
+                    expect(
+                        await service.getAccounts({
+                            where: `InternalID=${createdAccount.InternalID}`,
+                            include_deleted: true,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(1),
+                ]),
+                (updatedAccount = await service.createAccount({
                     ExternalID: accountExternalID,
                     City: 'City update 1',
                     Name: accountExternalID + ' Update 1',
-                }),
+                })),
                 expect(updatedAccount).to.have.property('Hidden').that.is.a('boolean').and.is.false,
                 expect(await service.deleteAccount(createdAccount.InternalID)).to.be.true,
                 expect(await service.deleteAccount(createdAccount.InternalID)).to.be.false,
                 expect(await service.getAccounts({ where: `InternalID=${createdAccount.InternalID}` }))
                     .to.be.an('array')
-                    .with.lengthOf(0);
+                    .with.lengthOf(0)
+            );
         });
-
 
         it('Delete account TSAs', async () => {
             expect(createdTSAs.length == (await service.deleteBulkTSA('accounts', TSAarr)).length).to.be.true;

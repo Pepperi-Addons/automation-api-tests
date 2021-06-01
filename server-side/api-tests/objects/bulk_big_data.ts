@@ -14,7 +14,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         include_deleted: true,
     });
 
-    let runUDTTest = await service.countUDTRows({
+    const runUDTTest = await service.countUDTRows({
         where: "MapDataExternalID like '%Big Bulk UDT%'",
         include_deleted: true,
     });
@@ -27,7 +27,6 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         let bulkCreateAccount;
         let bulkJobInfo;
         let bulkAccountArray;
-        let createdUDT;
         let bulkUpdateUDT;
         let bulkUDTArray;
 
@@ -207,7 +206,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 bulkUDTArray = service.createBulkUDTArray(10000, UDTRandom, 0);
                 bulkUpdateUDT = await service.bulkCreate('user_defined_tables', {
                     Headers: ['MapDataExternalID', 'MainKey', 'SecondaryKey', 'Values', 'Hidden'],
-                    Lines: bulkUDTArray
+                    Lines: bulkUDTArray,
                 });
                 expect(bulkUpdateUDT.JobID).to.be.a('number'),
                     expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
@@ -251,7 +250,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 bulkUDTArray = service.createBulkUDTArray(10000, UDTRandom, 1);
                 bulkUpdateUDT = await service.bulkCreate('user_defined_tables', {
                     Headers: ['MapDataExternalID', 'MainKey', 'SecondaryKey', 'Values', 'Hidden'],
-                    Lines: bulkUDTArray
+                    Lines: bulkUDTArray,
                 });
                 expect(bulkUpdateUDT.JobID).to.be.a('number'),
                     expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
@@ -282,7 +281,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 return Promise.all([
                     expect(
                         await service.countUDTRows({
-                            where: "MapDataExternalID like '%Big Bulk UDT%'"
+                            where: "MapDataExternalID like '%Big Bulk UDT%'",
                         }),
                     )
                         .to.be.a('number')
