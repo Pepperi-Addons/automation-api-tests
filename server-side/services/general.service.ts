@@ -210,7 +210,9 @@ export default class GeneralService {
             }
             if (!isInstalled) {
                 if (testData[addonUUID][0] == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
-                    await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonUUID][0]}`).install('0.0.235');
+                    await this.papiClient.addons.installedAddons
+                        .addonUUID(`${testData[addonUUID][0]}`)
+                        .install('0.0.235');
                 } else {
                     await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonUUID][0]}`).install();
                 }
