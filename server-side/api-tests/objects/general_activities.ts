@@ -532,6 +532,32 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     .with.lengthOf(0);
         });
 
+        it('Check Hidden=false after update', async () => {
+            return (
+                Promise.all([
+                    expect(
+                        await service.getActivity({
+                            where: `InternalID=${createdActivity.InternalID}`,
+                            include_deleted: true,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(1),
+                ]),
+                (updatedActivity = await service.createActivity({
+                    ExternalID: activityExternalID,
+                    Status: 2,
+                    Title: 'Testing Update 123',
+                })),
+                expect(updatedActivity).to.have.property('Hidden').that.is.a('boolean').and.is.false,
+                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.true,
+                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.false,
+                expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+                    .to.be.an('array')
+                    .with.lengthOf(0)
+            );
+        });
+
         it('Bulk create activity', async () => {
             bulkActivityExternalID = 'Automated API bulk ' + Math.floor(Math.random() * 1000000).toString();
             bulkCreateActivity = await service.bulkCreate('activities/' + atds[0].TypeID, {
