@@ -39,12 +39,31 @@ export async function index_test_decimal_number(client: Client, request: Request
     return indexLog(client, request, 'TSATestIndexDecimalNumber');
 }
 
+export async function insert_object_pns(client: Client, request: Request): Promise<any> {
+    return insertObjectLog(client, request, 'Insert');
+}
+
+export async function update_object_pns(client: Client, request: Request): Promise<any> {
+    return insertObjectLog(client, request, 'Update');
+}
+
 async function insertLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const schemaName = 'PNS Test';
     const logUUID = uuidv4().replace(/-/g, '_');
     const insertedObject = {
         Key: `Log_${type}_Transaction_Line_${generalService.getServer()}_${logUUID}`,
+        Message: request.body,
+    };
+    return sendResponse(client, schemaName, insertedObject);
+}
+
+async function insertObjectLog(client: Client, request: Request, type: string) {
+    const generalService = new GeneralService(client);
+    const schemaName = 'PNS Objects Test';
+    const logUUID = uuidv4().replace(/-/g, '_');
+    const insertedObject = {
+        Key: `Log_${type}_${generalService.getServer()}_${logUUID}`,
         Message: request.body,
     };
     return sendResponse(client, schemaName, insertedObject);
