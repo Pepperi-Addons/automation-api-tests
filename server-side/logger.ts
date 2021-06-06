@@ -56,7 +56,7 @@ async function insertPNSLog(client: Client, request: Request, type: string) {
     const schemaName = 'PNS Test';
     const logUUID = uuidv4().replace(/-/g, '_');
     const insertedObject = {
-        Key: `Log_${type}_PNS_TEST_${generalService.getServer()}_${logUUID}`,
+        Key: `Log_${type}_PNS_Test_${generalService.getServer()}_${logUUID}`,
         Message: request.body,
     };
     return sendResponse(client, schemaName, insertedObject);
