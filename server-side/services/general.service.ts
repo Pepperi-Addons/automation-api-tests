@@ -360,8 +360,16 @@ export default class GeneralService {
                 );
 
                 try {
-                    responseStr = await response.text();
-                    parsed = responseStr ? JSON.parse(responseStr) : '';
+                    if (response.headers.get('content-type')?.startsWith('image')) {
+                        responseStr = await response.buffer().then((r) => r.toString('base64'));
+                        parsed = {
+                            Type: 'image/base64',
+                            Text: responseStr,
+                        };
+                    } else {
+                        responseStr = await response.text();
+                        parsed = responseStr ? JSON.parse(responseStr) : '';
+                    }
                 } catch (error) {
                     if (responseStr && responseStr.substring(20).includes('xml')) {
                         parsed = {
