@@ -1,8 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-//import { FieldsService } from '../services/fields.service';
 import { ImportExportATDService, MetaDataATD, MetaDataUDT } from '../services/import-export-atd.service';
-
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
 
 function testDataATD(externaID: string, description: string) {
     return {
@@ -136,7 +133,6 @@ export async function ImportExportATDLocalTests(generalService: GeneralService, 
 
 async function ImportExportATDTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
-    //const fieldsService = new FieldsService(generalService.papiClient);
     const importExportATDService = new ImportExportATDService(generalService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
@@ -156,8 +152,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
     //#region Upgrade ImportExportATD and Data Views API
     const testData = {
-        'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-        ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', '1.'],
+        'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
+        ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);

@@ -34,7 +34,20 @@ const UserDataObject = {
 };
 type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH';
 
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+export declare type ResourceTypes =
+    | 'activities'
+    | 'transactions'
+    | 'transaction_lines'
+    | 'catalogs'
+    | 'accounts'
+    | 'items'
+    | 'contacts'
+    | 'fields'
+    | 'file_storage'
+    | 'all_activities'
+    | 'user_defined_tables'
+    | 'users'
+    | 'data_views';
 
 export default class GeneralService {
     papiClient: PapiClient;
@@ -347,8 +360,16 @@ export default class GeneralService {
                 );
 
                 try {
-                    responseStr = await response.text();
-                    parsed = responseStr ? JSON.parse(responseStr) : '';
+                    if (response.headers.get('content-type')?.startsWith('image')) {
+                        responseStr = await response.buffer().then((r) => r.toString('base64'));
+                        parsed = {
+                            Type: 'image/base64',
+                            Text: responseStr,
+                        };
+                    } else {
+                        responseStr = await response.text();
+                        parsed = responseStr ? JSON.parse(responseStr) : '';
+                    }
                 } catch (error) {
                     if (responseStr && responseStr.substring(20).includes('xml')) {
                         parsed = {
