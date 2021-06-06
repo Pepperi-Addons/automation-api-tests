@@ -4,8 +4,6 @@ import { NucleusFlagType, NucRecoveryService } from '../services/nuc_recovery.se
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
 
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
-
 export async function NucRecoveryTests(generalService: GeneralService, request, tester: TesterFunctions) {
     NucRecoveryService;
     const nucRecoveryService = new NucRecoveryService(generalService);
@@ -20,7 +18,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', '1.'],
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -28,7 +26,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
     describe('Pepperi Notification Service Tests Suites', () => {
         const testID = Math.floor(Math.random() * 10000000);
-        const schemaName = 'PNS Test';
+        const schemaName = 'NUC Test';
         const _MAX_LOOPS = 12;
         let atdArr;
         let catalogArr: Catalog[];
@@ -70,7 +68,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
             }
 
             it(`Reset Schema`, async () => {
-                const schemaNameArr = ['Index Logs', 'PNS Test'];
+                const schemaNameArr = ['Index Logs', 'NUC Test'];
                 let purgedSchema;
                 for (let index = 0; index < schemaNameArr.length; index++) {
                     try {

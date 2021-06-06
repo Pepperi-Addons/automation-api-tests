@@ -14,7 +14,7 @@ export class PepperiNotificationServiceService {
     }
 
     getSubscriptionsbyKey(key: string): Promise<Subscription[]> {
-        return this.papiClient.notification.subscriptions.find({where: `Key='${key}'`});
+        return this.papiClient.notification.subscriptions.find({ where: `Key='${key}'` });
     }
 
     findSubscriptions(options?: FindOptions): Promise<Subscription[]> {

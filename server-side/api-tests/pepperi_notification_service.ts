@@ -3,8 +3,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
-
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+import { ResourceTypes } from '../services/general.service';
 
 export async function PepperiNotificationServiceTests(
     generalService: GeneralService,
@@ -21,35 +20,30 @@ export async function PepperiNotificationServiceTests(
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
+    const oren = await pepperiNotificationServiceService.subscribe({
+        AddonRelativeURL: '/logger/insert_pns',
+        Type: 'data',
+        AddonUUID: PepperiOwnerID,
+        FilterPolicy: {
+            Resource: ['transactions    ' as ResourceTypes],
+            Action: ['update'],
+            ModifiedFields: ['UnitsQuantity', 'TSAPrecioPorBotella', 'ModificationDateTime', 'TSATestIndexString'],
+            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+        },
+        Name: 'Test_Objects_PNS_Update_PNS',
+    });
 
-        const oren = await pepperiNotificationServiceService.subscribe({
-            AddonRelativeURL: '/logger/insert_pns',
-            Type: 'data',
-            AddonUUID: PepperiOwnerID,
-            FilterPolicy: {
-                Resource: ['transaction_lines'],
-                Action: ['update'],
-                ModifiedFields: [
-                    'UnitsQuantity',
-                    'TSAPrecioPorBotella',
-                    'ModificationDateTime',
-                    'TSATestIndexString'
-                ],
-                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-            },
-            Name: 'Test_Objects_PNS_Update_PNS',
-        });
-        
-        const oren1 = await pepperiNotificationServiceService.getSubscriptionsbyKey('10979a11-d7f4-41df-8993-f06bfd778304_all_activities_pns_accounts_update');
-        const oren2 = await pepperiNotificationServiceService.findSubscriptions();
+    const oren1 = await pepperiNotificationServiceService.getSubscriptionsbyKey(
+        '10979a11-d7f4-41df-8993-f06bfd778304_all_activities_pns_accounts_update',
+    );
+    const oren2 = await pepperiNotificationServiceService.findSubscriptions();
 
-        debugger;
-
+    debugger;
 
     debugger;
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', '1.'],
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -99,7 +93,7 @@ export async function PepperiNotificationServiceTests(
             }
 
             it(`Reset Schema`, async () => {
-                const schemaNameArr = ['Index Logs', 'PNS Test'];
+                const schemaNameArr = ['PNS Test'];
                 let purgedSchema;
                 for (let index = 0; index < schemaNameArr.length; index++) {
                     try {
