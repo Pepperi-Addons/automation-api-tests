@@ -179,7 +179,7 @@ export async function PepperiNotificationServiceTests(
                     ]);
                 });
 
-                it('Update Transaction With SDK', async () => {
+                it('Update Transaction', async () => {
                     const updatedTransaction = await objectsService.createTransaction({
                         InternalID: createdTransaction.InternalID,
                         Remark: 'PNS Tests',
@@ -190,7 +190,7 @@ export async function PepperiNotificationServiceTests(
                     expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
                 });
 
-                it('Validate PNS Triggered for SDK Update', async () => {
+                it('Validate PNS Triggered After Update', async () => {
                     let schema;
                     let maxLoopsCounter = _MAX_LOOPS;
                     do {
@@ -252,7 +252,7 @@ export async function PepperiNotificationServiceTests(
                     expect(getSubscribeResponse).to.deep.equal([]);
                 });
 
-                it('Update Transaction With SDK', async () => {
+                it('Update Transaction', async () => {
                     const updatedTransaction = await objectsService.createTransaction({
                         InternalID: createdTransaction.InternalID,
                         Remark: 'PNS Negatice Tests',
@@ -263,7 +263,7 @@ export async function PepperiNotificationServiceTests(
                     expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
                 });
 
-                it('Validate PNS Triggered for SDK Update', async () => {
+                it('Validate PNS Not Triggered After Update', async () => {
                     let schema;
                     let maxLoopsCounter = _MAX_LOOPS;
                     do {
