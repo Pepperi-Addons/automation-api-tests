@@ -198,15 +198,13 @@ export async function PepperiNotificationServiceTests(
                         });
                         maxLoopsCounter--;
                     } while (
-                        (!schema[0].Key.startsWith('Log_Insert_PNS_TEST_Sandbox' /*Log_Update_PNS_Test_Sandbox*/) ||
+                        (!schema[0].Key.startsWith('Log_Update_PNS_Test') ||
                             schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
                                 'UnitDiscountPercentage') &&
                         maxLoopsCounter > 0
                     );
 
-                    expect(schema[0].Key)
-                        .to.be.a('String')
-                        .and.contain('Log_Insert_PNS_TEST_Sandbox' /*Log_Update_PNS_Test_Sandbox*/) ||
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             createdTransaction.UUID,
                         );
