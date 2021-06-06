@@ -85,32 +85,33 @@ export async function PepperiNotificationServiceTests(
                     expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
                 }
             });
-        });
 
-        it(`Reset Schema`, async () => {
-            const subscriptionBody: Subscription = {
-                AddonRelativeURL: '/logger/update_pns_test',
-                Type: 'data',
-                AddonUUID: PepperiOwnerID,
-                FilterPolicy: {
-                    Resource: ['transactions' as ResourceTypes],
-                    Action: ['update'],
-                    ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
-                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                },
-                Name: 'Test_Update_PNS',
-            };
-            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-            expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+            describe(`Subscription And Trigger Scenarios`, async () => {
+                it(`Subscribe`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Resource: ['transactions' as ResourceTypes],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                    expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
 
-            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                'Test_Update_PNS',
-            );
-            expect(getSubscribeResponse[0]).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
-        });
+                    const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                        'Test_Update_PNS',
+                    );
+                    expect(getSubscribeResponse[0])
+                        .to.have.property('Name')
+                        .a('string')
+                        .that.is.equal(subscriptionBody.Name);
+                });
 
-        describe('Endpoints', () => {
-            describe('POST', () => {
                 it('Create Transaction', async () => {
                     atdArr = await objectsService.getATD('transactions');
                     transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
@@ -189,7 +190,80 @@ export async function PepperiNotificationServiceTests(
                     expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
                 });
 
-                it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 40)', async () => {
+                it('Validate PNS Triggered for SDK Update', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'CreationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0);
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                            createdTransaction.UUID,
+                        );
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                        {
+                            NewValue: 'PNS Tests',
+                            OldValue: '',
+                            FieldID: 'Remark',
+                        },
+                        {
+                            NewValue: 95,
+                            OldValue: 0,
+                            FieldID: 'TaxPercentage',
+                        },
+                        {
+                            NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+                            OldValue: createdTransaction.ExternalID,
+                            FieldID: 'ExternalID',
+                        },
+                        {
+                            NewValue: null,
+                            OldValue: 1,
+                            FieldID: 'CatalogPriceFactor',
+                        },
+                    ]);
+                });
+
+                it(`Un Subscribe`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        Hidden: true,
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Resource: ['transactions' as ResourceTypes],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                    expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+                    expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
+
+                    const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                        'Test_Update_PNS',
+                    );
+                    expect(getSubscribeResponse).to.deep.equal([]);
+                });
+
+                it('Update Transaction With SDK', async () => {
+                    const updatedTransaction = await objectsService.createTransaction({
+                        InternalID: createdTransaction.InternalID,
+                        Remark: 'PNS Negatice Tests',
+                        TaxPercentage: 50,
+                        ExternalID: `(Test) ${createdTransaction.ExternalID}`,
+                    });
+
+                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                });
+
+                it('Validate PNS Triggered for SDK Update', async () => {
                     let schema;
                     let maxLoopsCounter = _MAX_LOOPS;
                     do {
@@ -199,17 +273,15 @@ export async function PepperiNotificationServiceTests(
                         });
                         maxLoopsCounter--;
                     } while (
-                        (!schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
-                                'UnitDiscountPercentage') &&
+                        (!schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length == 1) &&
                         maxLoopsCounter > 0
                     );
-
                     expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             createdTransaction.UUID,
                         );
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal([
+                    expect(schema[1]).to.be.undefined;
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
                         {
                             NewValue: 'PNS Tests',
                             OldValue: '',
