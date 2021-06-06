@@ -89,13 +89,13 @@ export async function PepperiNotificationServiceTests(
 
         it(`Reset Schema`, async () => {
             const subscriptionBody: Subscription = {
-                AddonRelativeURL: '/logger/upsert_pns_test',
+                AddonRelativeURL: '/logger/update_pns_test',
                 Type: 'data',
                 AddonUUID: PepperiOwnerID,
                 FilterPolicy: {
                     Resource: ['transactions' as ResourceTypes],
                     Action: ['update'],
-                    ModifiedFields: ['Remark', 'TaxPercentage', 'CurrencySymbol'],
+                    ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
                     AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 },
                 Name: 'Test_Update_PNS',
@@ -183,8 +183,9 @@ export async function PepperiNotificationServiceTests(
                         InternalID: createdTransaction.InternalID,
                         Remark: 'PNS Tests',
                         TaxPercentage: 95,
-                        CurrencySymbol: 'NIS',
+                        ExternalID: `(Deleted) ${createdTransaction.ExternalID}`,
                     });
+
                     expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
                 });
 
@@ -218,6 +219,11 @@ export async function PepperiNotificationServiceTests(
                             NewValue: 95,
                             OldValue: 0,
                             FieldID: 'TaxPercentage',
+                        },
+                        {
+                            NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+                            OldValue: createdTransaction.ExternalID,
+                            FieldID: 'ExternalID',
                         },
                         {
                             NewValue: null,

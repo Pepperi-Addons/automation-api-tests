@@ -47,8 +47,8 @@ export async function update_object_pns(client: Client, request: Request): Promi
     return insertObjectLog(client, request, 'Update');
 }
 
-export async function insert_pns_test(client: Client, request: Request): Promise<any> {
-    return insertPNSLog(client, request, 'Insert');
+export async function update_pns_test(client: Client, request: Request): Promise<any> {
+    return insertPNSLog(client, request, 'Update');
 }
 
 async function insertPNSLog(client: Client, request: Request, type: string) {
