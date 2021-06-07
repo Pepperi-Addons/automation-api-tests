@@ -1539,7 +1539,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
 //#region insert data to indexed table + order by and where clause tests
 
 async function insertDataToIndexedTableFirst100() {
-    for (counter; counter < 100; counter++) {
+    for (counter; counter < 300; counter++) {
+        logcash.randomInt = Math.floor(Math.random() * 5);
         logcash.insertDataToIndexedTableFirst100 = await generalService
             .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithIndexedDataType.Name, {
                 method: 'POST',
@@ -1550,11 +1551,11 @@ async function insertDataToIndexedTableFirst100() {
                 },
                 body: JSON.stringify({
                     Key: 'indexedTest ' + counter,
-                    IndexedInt1: counter,
+                    IndexedInt1: logcash.randomInt,//counter,
                     IndexedString1: 'IndexedString1-' + counter,
                     IndexedString2: 'IndexedString2-' + counter,
                     Field8: 'Stress1 ' + new Date(),
-                    Field1:  counter,
+                    Field1:  logcash.randomInt,//counter,
                     Field2:  'String1-' + counter
                 }),
             })
@@ -1580,28 +1581,36 @@ async function getDataFromIndexedData() {
                 addonUUID +
                 '/' +
                 logcash.createSchemaWithIndexedDataType.Name +
-                '?order_by=IndexedString1',  //desc
+                '?order_by=IndexedString1&page_size=-1',  //desc
             {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
+                    
                 },
             },
         )
         .then((res) => res.Body);
     //debugger;
-    if (logcash.getDataFromIndexedData.length == 100 &&
-        logcash.getDataFromIndexedData[12].Field2 == 'String1-2'&&
-        logcash.getDataFromIndexedData[89].Field2 == 'String1-9') {
+    if (logcash.getDataFromIndexedData.length == 300 &&
+        logcash.getDataFromIndexedData[12].Field2 == 'String1-109'&&
+        logcash.getDataFromIndexedData[189].Field2 == 'String1-269') {
         logcash.getDataFromIndexedDataStatus = true;
     } else {
         logcash.getDataFromIndexedDataStatus = false;
         logcash.getDataFromIndexedDataError =
-            'The get wit order_by result is wrong.Will get 100 objects but result is :' +
+            'The get wit order_by result is wrong.Will get 300 objects but result is :' +
             logcash.getDataFromDataTableWhereClouse.length;
     }
+    logcash.count = 0;
+        for (counter; counter < 300; counter++) {
+           if (logcash.getDataFromIndexedData[counter].IndexedInt1 == 4){
+               logcash.count ++
+           }
+        }
+    counter = 0
     await getDataFromIndexedDataNegative();
 }
 
@@ -1613,13 +1622,14 @@ async function getDataFromIndexedDataNegative() {
                 addonUUID +
                 '/' +
                 logcash.createSchemaWithIndexedDataType.Name +
-                '?order_by=Field2',  //desc
+                '?order_by=Field2&page_size=-1',  //desc
             {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
+                    
                 },
             },
         )
@@ -1655,13 +1665,14 @@ async function getDataFromIndexedDataWhereClause() {
                 addonUUID +
                 '/' +
                 logcash.createSchemaWithIndexedDataType.Name +
-                '?where=IndexedInt1 > 10',  //desc
+                '?order_by=IndexedInt1&where=IndexedInt1=4',//&page_size=-1',  //desc
             {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
+                    'X-Pepperi-ActionID' : '26f69441-1ed4-4dd1-86d2-beb75e69725d'
                 },
             },
         )
@@ -1670,12 +1681,12 @@ async function getDataFromIndexedDataWhereClause() {
 
     //debugger;
     logcash.totalTimeIndexed = logcash.endTimeIndexed-logcash.startTimeIndexed;
-    if (logcash.getDataFromIndexedDataWhereClause.length == 89 ) {
+    if (logcash.getDataFromIndexedDataWhereClause.length == logcash.count ) {
         logcash.getDataFromIndexedDataWhereClauseStatus = true;
     } else {
         logcash.getDataFromIndexedDataWhereClauseStatus = false;
         logcash.getDataFromIndexedDataWhereClauseError =
-            'The get with where clause by indexed integer result is wrong.Will get 89 objects but result is :' +
+            'The get with where clause by indexed integer result is wrong.Will get ' + logcash.count + ' objects but result is :' +
             logcash.getDataFromIndexedDataWhereClause.length;
     }
     await getDataFromNotIndexedDataWhereClause();
@@ -1690,13 +1701,14 @@ async function getDataFromNotIndexedDataWhereClause() {
                 addonUUID +
                 '/' +
                 logcash.createSchemaWithIndexedDataType.Name +
-                '?where=Field1 > 10',  //desc
+                '?where=Field1=4',//&page_size=-1',  //desc
             {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'X-Pepperi-OwnerID': addonUUID,
                     'X-Pepperi-SecretKey': logcash.secretKey,
+                    'X-Pepperi-ActionID' : 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d'
                 },
             },
         )
@@ -1705,13 +1717,13 @@ async function getDataFromNotIndexedDataWhereClause() {
         
     //debugger;
     logcash.totalTimeNotIndexed = logcash.endTimeNotIndexed-logcash.startTimeNotIndexed;
-    if (logcash.getDataFromNotIndexedDataWhereClause.length == 89 ) {
+    if (logcash.getDataFromNotIndexedDataWhereClause.length == logcash.getDataFromIndexedDataWhereClause.length ) {
         if(logcash.totalTimeNotIndexed - logcash.totalTimeIndexed > 100  ){
             logcash.getDataFromNotIndexedDataWhereClauseStatus = true;
         }
         else{
             logcash.getDataFromNotIndexedDataWhereClauseStatus = false;
-            logcash.getDataFromNotIndexedDataWhereClauseError = 'where clause on indexed field and NOT indexed field is to small to 200 msec (on 100 inseret rows). On indexed field its take '+ logcash.totalTimeIndexed + ' msec, and on not indexed :' + logcash.totalTimeNotIndexed + ' msec';
+            logcash.getDataFromNotIndexedDataWhereClauseError = 'where clause on indexed field and NOT indexed field is to small to 100 msec (on 100 inseret rows). On indexed field its take '+ logcash.totalTimeIndexed + ' msec, and on not indexed :' + logcash.totalTimeNotIndexed + ' msec';
         }
         
     } else {
