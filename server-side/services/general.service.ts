@@ -34,7 +34,20 @@ const UserDataObject = {
 };
 type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH';
 
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+export declare type ResourceTypes =
+    | 'activities'
+    | 'transactions'
+    | 'transaction_lines'
+    | 'catalogs'
+    | 'accounts'
+    | 'items'
+    | 'contacts'
+    | 'fields'
+    | 'file_storage'
+    | 'all_activities'
+    | 'user_defined_tables'
+    | 'users'
+    | 'data_views';
 
 export default class GeneralService {
     papiClient: PapiClient;
@@ -54,6 +67,20 @@ export default class GeneralService {
             expire = start + ms;
         while (new Date().getTime() < expire) {}
         return;
+    }
+
+    CalculateUsedMemory() {
+        const used = process.memoryUsage();
+        const memoryUsed = {};
+        for (const key in used) {
+            memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
+        }
+        console.log(`memoryUse in MB = ${JSON.stringify(memoryUsed)}`);
+    }
+
+    PrintMemoryUseToLog(state, testName) {
+        console.log(`${state} Test: ${testName}`);
+        this.CalculateUsedMemory();
     }
 
     //#region getDate
@@ -184,18 +211,24 @@ export default class GeneralService {
     async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
         const isInstalledArr: boolean[] = [];
         const installedAddonsArr = await this.getAddons({ page_size: -1 });
-        for (const addonName in testData) {
+        for (const addonUUID in testData) {
             let isInstalled = false;
             for (let i = 0; i < installedAddonsArr.length; i++) {
                 if (installedAddonsArr[i].Addon !== null) {
-                    if (installedAddonsArr[i].Addon.Name == addonName) {
+                    if (installedAddonsArr[i].Addon.Name == addonUUID) {
                         isInstalled = true;
                         break;
                     }
                 }
             }
             if (!isInstalled) {
-                await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonName][0]}`).install();
+                if (testData[addonUUID][0] == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
+                    await this.papiClient.addons.installedAddons
+                        .addonUUID(`${testData[addonUUID][0]}`)
+                        .install('0.0.235');
+                } else {
+                    await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonUUID][0]}`).install();
+                }
                 this.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
             }
             isInstalledArr.push(true);
@@ -327,8 +360,16 @@ export default class GeneralService {
                 );
 
                 try {
-                    responseStr = await response.text();
-                    parsed = responseStr ? JSON.parse(responseStr) : '';
+                    if (response.headers.get('content-type')?.startsWith('image')) {
+                        responseStr = await response.buffer().then((r) => r.toString('base64'));
+                        parsed = {
+                            Type: 'image/base64',
+                            Text: responseStr,
+                        };
+                    } else {
+                        responseStr = await response.text();
+                        parsed = responseStr ? JSON.parse(responseStr) : '';
+                    }
                 } catch (error) {
                     if (responseStr && responseStr.substring(20).includes('xml')) {
                         parsed = {

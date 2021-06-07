@@ -2516,7 +2516,6 @@ async function TestCleanUp(service: DataViewsService) {
                 deletedCounter++;
             } catch (error) {
                 console.log('error in idex: ' + index);
-
                 console.log(error);
             }
         }

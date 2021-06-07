@@ -4,11 +4,11 @@ import { ADALService } from './services/adal.service';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function insert_pns(client: Client, request: Request): Promise<any> {
-    return insertLog(client, request, 'Insert');
+    return insertNUCLog(client, request, 'Insert');
 }
 
 export async function update_pns(client: Client, request: Request): Promise<any> {
-    return insertLog(client, request, 'Update');
+    return insertNUCLog(client, request, 'Update');
 }
 
 export async function index_test_string(client: Client, request: Request): Promise<any> {
@@ -39,12 +39,46 @@ export async function index_test_decimal_number(client: Client, request: Request
     return indexLog(client, request, 'TSATestIndexDecimalNumber');
 }
 
-async function insertLog(client: Client, request: Request, type: string) {
+export async function insert_object_pns(client: Client, request: Request): Promise<any> {
+    return insertObjectLog(client, request, 'Insert');
+}
+
+export async function update_object_pns(client: Client, request: Request): Promise<any> {
+    return insertObjectLog(client, request, 'Update');
+}
+
+export async function update_pns_test(client: Client, request: Request): Promise<any> {
+    return insertPNSLog(client, request, 'Update');
+}
+
+async function insertPNSLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const schemaName = 'PNS Test';
     const logUUID = uuidv4().replace(/-/g, '_');
     const insertedObject = {
+        Key: `Log_${type}_PNS_Test_${generalService.getServer()}_${logUUID}`,
+        Message: request.body,
+    };
+    return sendResponse(client, schemaName, insertedObject);
+}
+
+async function insertNUCLog(client: Client, request: Request, type: string) {
+    const generalService = new GeneralService(client);
+    const schemaName = 'NUC Test';
+    const logUUID = uuidv4().replace(/-/g, '_');
+    const insertedObject = {
         Key: `Log_${type}_Transaction_Line_${generalService.getServer()}_${logUUID}`,
+        Message: request.body,
+    };
+    return sendResponse(client, schemaName, insertedObject);
+}
+
+async function insertObjectLog(client: Client, request: Request, type: string) {
+    const generalService = new GeneralService(client);
+    const schemaName = 'PNS Objects Test';
+    const logUUID = uuidv4().replace(/-/g, '_');
+    const insertedObject = {
+        Key: `Log_${type}_${generalService.getServer()}_${logUUID}`,
         Message: request.body,
     };
     return sendResponse(client, schemaName, insertedObject);

@@ -16,7 +16,7 @@ import {
 } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
-const apiCallsInterval = 400;
+const apiCallsInterval = 4000;
 
 export class ObjectsService {
     papiClient: PapiClient;
@@ -101,6 +101,10 @@ export class ObjectsService {
 
     getContacts(InternalID) {
         return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
+    }
+
+    getContactsSDK(options?: FindOptions) {
+        return this.papiClient.contacts.find(options);
     }
 
     getBulk(type, clause) {
@@ -194,6 +198,10 @@ export class ObjectsService {
         return this.papiClient.accounts.count(options);
     }
 
+    countUDTRows(options?): Promise<number> {
+        return this.papiClient.userDefinedTables.count(options);
+    }
+
     getAllAccounts(options?: FindOptions) {
         return this.papiClient.accounts.iter(options).toArray();
     }
@@ -234,6 +242,14 @@ export class ObjectsService {
         return bulkArray;
     }
 
+    createBulkUDTArray(amount, exID, hidden) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            bulkArray.push([exID, 'Test ' + i, '', 'Value ' + i, hidden]);
+        }
+        return bulkArray;
+    }
+
     updateBulkArray(array) {
         for (let i = 0; i < array.length; i++) {
             array[i][1] += ' Update';
@@ -257,21 +273,17 @@ export class ObjectsService {
     }
 
     async waitForBulkJobStatus(ID: number, maxTime: number) {
-        const maxLoops = maxTime / (apiCallsInterval * 10);
+        const maxLoops = maxTime / apiCallsInterval;
         let counter = 0;
         let apiGetResponse;
         do {
-            if (apiGetResponse != undefined) {
-                this.generalService.sleep(apiCallsInterval * 10);
-            }
-            counter++;
+            this.generalService.sleep(apiCallsInterval);
             apiGetResponse = await this.getBulkJobInfo(ID);
+            counter++;
         } while (
             (apiGetResponse.Status == 'Not Started' || apiGetResponse.Status == 'In Progress') &&
             counter < maxLoops
         );
-        this.generalService.sleep(apiCallsInterval * 10);
-        apiGetResponse = await this.getBulkJobInfo(ID);
         return apiGetResponse;
     }
 

@@ -1,5 +1,5 @@
 import { PapiClient, ApiFieldObject } from '@pepperi-addons/papi-sdk';
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+import { ResourceTypes } from '../services/general.service';
 
 export class FieldsService {
     constructor(public papiClient: PapiClient) {}

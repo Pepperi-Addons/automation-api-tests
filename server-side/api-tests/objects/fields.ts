@@ -1,7 +1,6 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 import { FieldsService } from '../../services/fields.service';
-
-declare type ResourceTypes = 'activities' | 'transactions' | 'transaction_lines' | 'catalogs' | 'accounts' | 'items';
+import { ResourceTypes } from '../../services/general.service';
 
 /*Create a test using UUID of other Addon
 With the fetch header like in this example:
