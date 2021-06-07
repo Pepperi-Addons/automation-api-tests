@@ -16,230 +16,6 @@ export async function ObjectsPNSTests(generalService: GeneralService, request, t
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
-    const fieldsArr = [
-        'InternalID',
-        'UUID',
-        'ExternalID',
-        'ActionDateTime',
-        'ActivityTypeID',
-        'Archive',
-        'BillToCity',
-        'BillToCountry',
-        'BillToFax',
-        'BillToName',
-        'BillToPhone',
-        'BillToState',
-        'BillToStreet',
-        'BillToZipCode',
-        'CreationDateTime',
-        'CurrencySymbol',
-        'DeliveryDate',
-        'DiscountPercentage',
-        'GrandTotal',
-        'Hidden',
-        'ItemsCount',
-        'ModificationDateTime',
-        'QuantitiesTotal',
-        'Remark',
-        'ShipToCity',
-        'ShipToCountry',
-        'ShipToExternalID',
-        'ShipToFax',
-        'ShipToName',
-        'ShipToPhone',
-        'ShipToState',
-        'ShipToStreet',
-        'ShipToZipCode',
-        'Signature',
-        'Status',
-        'StatusName',
-        'SubmissionGeoCodeLAT',
-        'SubmissionGeoCodeLNG',
-        'SubTotal',
-        'SubTotalAfterItemsDiscount',
-        'TaxPercentage',
-        'TSAAccountIDForCCCard',
-        'TSAActualFreightItems',
-        'TSAAddinCases',
-        'TSAAddnewComment',
-        'TSABackorder',
-        'TSABillAttach1',
-        'TSABillAttach2',
-        'TSABillAttach3',
-        'TSABillAttach4',
-        'TSABillImage1',
-        'TSABillImage2',
-        'TSABillImage3',
-        'TSABillImage4',
-        'TSABillOnly',
-        'TSABillOnlyImagesObject',
-        'TSABlockOrder',
-        'TSABlockOrderForConvertedProspects',
-        'TSABottomRemark',
-        'TSABottomRemarkOptions',
-        'TSABottomSystemComments',
-        'TSACampaignsRefresh',
-        'TSACCExpirationDate',
-        'TSACCExternalID',
-        'TSACCTitle',
-        'TSACCType',
-        'TSACheckCommentLength',
-        'TSAClickedItemToOpenCampaign',
-        'TSAComment',
-        'TSACSFValue',
-        'TSACustomerCC',
-        'TSACustomKits',
-        'TSADeliveryDateAdjusted',
-        'TSADiscountMessage',
-        'TSADisplayNone1',
-        'TSADisplayNone2',
-        'TSADisregardAccountOrderLimit',
-        'TSADynamicLogo',
-        'TSAFDP',
-        'TSAFDPNumber',
-        'TSAFinalRepID',
-        'TSAFinalShipToAddress',
-        'TSAFinalShipToAddress2',
-        'TSAFinalShipToCity',
-        'TSAFinalShipToCode',
-        'TSAFinalShiptoContact',
-        'TSAFinalShipToExtention',
-        'TSAFinalShiptofax',
-        'TSAFinalShipToLocation',
-        'TSAFinalShipToName',
-        'TSAFinalShiptoPhone',
-        'TSAFinalShipToState',
-        'TSAFinalShipToStDrop',
-        'TSAFinalShiptoTaxCode',
-        'TSAFinalShipToZipCode',
-        'TSAFinalTotalPrice',
-        'TSAFooterLabel1',
-        'TSAFooterLabel2',
-        'TSAFooterLabel3',
-        'TSAFooterLabel4',
-        'TSAFooterLabel5',
-        'TSAFooterLabel6',
-        'TSAFreightChangesString',
-        'TSAFreightChargeOK',
-        'TSAFreightOptionsDropdown',
-        'TSAGMCOMDisplay',
-        'TSAHasPOFreightChanged',
-        'TSAHoldReasons',
-        'TSAInfoLabel1',
-        'TSAInfoLabel2',
-        'TSAisTablet',
-        'TSAKitsZeroPriceMessage',
-        'TSALoadPromosToMemory',
-        'TSANotInGMCOMAmount',
-        'TSANotInGMCOMCommissionAmount',
-        'TSAOrderDate',
-        'TSAOrderDiscount',
-        'TSAOrderNumofLines',
-        'TSAOrderPriceBooksCode',
-        'TSAOrderType',
-        'TSAPaymentTerms',
-        'TSAPDFBillingLine1',
-        'TSAPDFBillingLine2',
-        'TSAPDFCatalog',
-        'TSAPDFDisclaimerText',
-        'TSAPDFOrderDiscount',
-        'TSAPDFShippingLine1',
-        'TSAPDFshippingLine2',
-        'TSAPointSymbol',
-        'TSAPointSymbolSec',
-        'TSAPONumber',
-        'TSAPONumberChangesString',
-        'TSAPONumberChangesStringCalculations',
-        'TSAPromoItemList',
-        'TSAPromotionCodes',
-        'TSAReadID',
-        'TSAremarkOptions',
-        'TSASaveUserComment',
-        'TSAScanningStatsUDT',
-        'TSASetDefaultValueToShipCarrier',
-        'TSASetFinalShipTolocation',
-        'TSASetfreightDefaultValue',
-        'TSASetValueforSplitFreight',
-        'TSAShipcarrier',
-        'TSAShipCarrierNew',
-        'TSAShippingOptionsCode',
-        'TSAShipToAddress',
-        'TSAShipToAddress2',
-        'TSAShipToCarrier',
-        'TSAShipToCity',
-        'TSAShipToCode',
-        'TSAShipToContact',
-        'TSAShipToDropdownID',
-        'TSAShipToFax',
-        'TSAShipToLocation',
-        'TSAShipToName',
-        'TSAShipToPhone',
-        'TSAShipToPhoneExtention',
-        'TSAShipToState',
-        'TSAShipToTaxCode',
-        'TSAShipToUUID',
-        'TSAShipToZipCode',
-        'TSAShipWhse',
-        'TSAShowGSADisclaimer',
-        'TSASplitFreightOK',
-        'TSASubmitDateForReports',
-        'TSASuppresPricesonPicklist',
-        'TSATaxCodeDisplay',
-        'TSATest 2 Upsert 1234',
-        'TSATestAPI',
-        'TSATestHadar SB12',
-        'TSATestLoadPriceBookToMemory',
-        'TSATestPrMK',
-        'TSATESTSig',
-        'TSATestToDeleteForHeader',
-        'TSATestUDT',
-        'TSATextFreightChangesSecOnePart',
-        'TSATextFreightChangesSecTwoPart',
-        'TSATextFreightPOChangesValue1',
-        'TSATextFreightPOChangesValue2',
-        'TSATopRemark',
-        'TSATopRemarkOptions',
-        'TSATopSystemComments',
-        'TSATotalCommissionAmount',
-        'TSATotalCost',
-        'TSATotalCostDisplay',
-        'TSATotalCostForCalulatedGM',
-        'TSATotalDiscountAmount',
-        'TSATotalForCalulatedComAmount',
-        'TSATotalGMCom',
-        'TSATotalGMComAmount',
-        'TSATotalLineMarginPercentage',
-        'TSATotalpricetoD',
-        'TSATotalQuantityWithNoCampaignLines',
-        'TSATotalSumForCalulatedGM',
-        'TSATotalSumForIntegration',
-        'TSAUpdateHeaderForQuickOrder',
-        'TSAUserComments',
-        'TSAUserControlTable',
-        'TSAUserFreightOptionCode',
-        'TSAUserProfileType',
-        'TSAValidateAccountNote',
-        'TSAValidateActualFreightItems',
-        'TSAValidateBillOnly',
-        'TSAValidateCanCustomerAddCC',
-        'TSAValidateCCExpirationDate',
-        'TSAValidateCCFullDetails',
-        'TSAValidateCCTerms',
-        'TSAValidatecontract',
-        'TSAValidateCustomersBalanceOver60',
-        'TSAValidateHasFreightChanged',
-        'TSAValidateHasPOChanged',
-        'TSAValidateHasPOFreightChanged',
-        'TSAValidateHoldReason',
-        'TSAValidateOrderLimitAmount',
-        'TSAValidatePORequired',
-        'TSAValidatePriceonKit',
-        'TSAValidatePromoItems',
-        'TSAValidateRepfreightOptions',
-        'TSAVSN',
-        'Type',
-    ];
-
     //#region Upgrade Pepperi Notification Service
     const testData = {
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
@@ -306,230 +82,226 @@ export async function ObjectsPNSTests(generalService: GeneralService, request, t
                 }
             });
 
-            for (let index = 0; index < fieldsArr.length; index++) {
-                describe(`Subscription And Trigger Scenarios`, async () => {
-                    it(`Subscribe`, async () => {
-                        const subscriptionBody: Subscription = {
-                            AddonRelativeURL: '/logger/update_pns_test',
-                            Type: 'data',
-                            AddonUUID: PepperiOwnerID,
-                            FilterPolicy: {
-                                Resource: ['transactions' as ResourceTypes],
-                                Action: ['update'],
-                                ModifiedFields: [fieldsArr[index]],
-                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                            },
-                            Name: 'Test_Update_PNS',
-                        };
-                        const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-                        expect(subscribeResponse)
-                            .to.have.property('Name')
-                            .a('string')
-                            .that.is.equal(subscriptionBody.Name);
+            describe(`Subscription And Trigger Scenarios`, () => {
+                it(`Subscribe`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Resource: ['transactions' as ResourceTypes],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                    expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
 
-                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                            'Test_Update_PNS',
-                        );
-                        expect(getSubscribeResponse[0])
-                            .to.have.property('Name')
-                            .a('string')
-                            .that.is.equal(subscriptionBody.Name);
+                    const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                        'Test_Update_PNS',
+                    );
+                    expect(getSubscribeResponse[0])
+                        .to.have.property('Name')
+                        .a('string')
+                        .that.is.equal(subscriptionBody.Name);
+                });
+
+                it('Create Transaction', async () => {
+                    atdArr = await objectsService.getATD('transactions');
+                    transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
+                        return res[0];
+                    });
+                    transactionExternalID =
+                        'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+                    catalogArr = await generalService.getCatalogs();
+                    createdTransaction = await objectsService.createTransaction({
+                        ExternalID: transactionExternalID,
+                        ActivityTypeID: atdArr[0].TypeID,
+                        Status: 1,
+                        Account: {
+                            Data: {
+                                InternalID: transactionAccount.InternalID,
+                            },
+                        },
+                        Catalog: {
+                            Data: {
+                                ExternalID: catalogArr[0].ExternalID,
+                            },
+                        },
                     });
 
-                    it('Create Transaction', async () => {
-                        atdArr = await objectsService.getATD('transactions');
-                        transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
-                            return res[0];
-                        });
-                        transactionExternalID =
-                            'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
-                        catalogArr = await generalService.getCatalogs();
-                        createdTransaction = await objectsService.createTransaction({
+                    const getCreatedTransactionResponse = await objectsService.getTransaction({
+                        where: `InternalID=${createdTransaction.InternalID}`,
+                    });
+
+                    return Promise.all([
+                        expect(getCreatedTransactionResponse[0]).to.include({
                             ExternalID: transactionExternalID,
                             ActivityTypeID: atdArr[0].TypeID,
                             Status: 1,
-                            Account: {
+                        }),
+                        expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
+                            JSON.stringify({
                                 Data: {
                                     InternalID: transactionAccount.InternalID,
+                                    UUID: transactionAccount.UUID,
+                                    ExternalID: transactionAccount.ExternalID,
                                 },
-                            },
-                            Catalog: {
-                                Data: {
-                                    ExternalID: catalogArr[0].ExternalID,
-                                },
-                            },
-                        });
-
-                        const getCreatedTransactionResponse = await objectsService.getTransaction({
-                            where: `InternalID=${createdTransaction.InternalID}`,
-                        });
-
-                        return Promise.all([
-                            expect(getCreatedTransactionResponse[0]).to.include({
-                                ExternalID: transactionExternalID,
-                                ActivityTypeID: atdArr[0].TypeID,
-                                Status: 1,
+                                URI: '/accounts/' + transactionAccount.InternalID,
                             }),
-                            expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
-                                JSON.stringify({
-                                    Data: {
-                                        InternalID: transactionAccount.InternalID,
-                                        UUID: transactionAccount.UUID,
-                                        ExternalID: transactionAccount.ExternalID,
-                                    },
-                                    URI: '/accounts/' + transactionAccount.InternalID,
-                                }),
-                            ),
-                            expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
-                            expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
-                            expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
-                                new Date().toISOString().split('T')[0],
-                            ),
-                            expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
-                            expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
-                                new Date().toISOString().split('T')[0],
-                            ),
-                            expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
-                            expect(getCreatedTransactionResponse[0].Archive).to.be.false,
-                            expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
-                            expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
-                            expect(getCreatedTransactionResponse[0].Agent).to.be.null,
-                            expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
-                            expect(getCreatedTransactionResponse[0].Creator).to.be.null,
-                            expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
-                            expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
-                                URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
-                            }),
-                        ]);
-                    });
-
-                    it('Update Transaction', async () => {
-                        const temp = 'oren test';
-                        console.log({
-                            InternalID: createdTransaction.InternalID,
-                            // Remark: 'PNS Tests',
-                            // TaxPercentage: 95,
-                            // ExternalID: `(Deleted) ${createdTransaction.ExternalID}`,
-                            [fieldsArr[index]]: temp,
-                        });
-                        const updatedTransaction = await objectsService.createTransaction({
-                            InternalID: createdTransaction.InternalID,
-                            // Remark: 'PNS Tests',
-                            // TaxPercentage: 95,
-                            // ExternalID: `(Deleted) ${createdTransaction.ExternalID}`,
-                            [fieldsArr[index]]: temp,
-                        });
-
-                        expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
-                    });
-
-                    it('Validate PNS Triggered After Update', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            debugger;
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                        } while (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0);
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
-                            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                createdTransaction.UUID,
-                            );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
-                            {
-                                NewValue: 'PNS Tests',
-                                OldValue: '',
-                                FieldID: 'Remark',
-                            },
-                            {
-                                NewValue: 95,
-                                OldValue: 0,
-                                FieldID: 'TaxPercentage',
-                            },
-                            {
-                                NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
-                                OldValue: createdTransaction.ExternalID,
-                                FieldID: 'ExternalID',
-                            },
-                        ]);
-                    });
-
-                    // it(`Un Subscribe`, async () => {
-                    //     const subscriptionBody: Subscription = {
-                    //         AddonRelativeURL: '/logger/update_pns_test',
-                    //         Type: 'data',
-                    //         Hidden: true,
-                    //         AddonUUID: PepperiOwnerID,
-                    //         FilterPolicy: {
-                    //             Resource: ['transactions' as ResourceTypes],
-                    //             Action: ['update'],
-                    //             ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
-                    //             AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                    //         },
-                    //         Name: 'Test_Update_PNS',
-                    //     };
-                    //     const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-                    //     expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
-                    //     expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
-
-                    //     const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                    //         'Test_Update_PNS',
-                    //     );
-                    //     expect(getSubscribeResponse).to.deep.equal([]);
-                    // });
-
-                    it('Update Transaction', async () => {
-                        const updatedTransaction = await objectsService.createTransaction({
-                            InternalID: createdTransaction.InternalID,
-                            Remark: 'PNS Negatice Tests',
-                            TaxPercentage: 50,
-                            ExternalID: `(Test) ${createdTransaction.ExternalID}`,
-                        });
-
-                        expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
-                    });
-
-                    it('Validate PNS Not Triggered After Update', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                        } while (
-                            (!schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length == 1) &&
-                            maxLoopsCounter > 0
-                        );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
-                            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                createdTransaction.UUID,
-                            );
-                        expect(schema[1]).to.be.undefined;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
-                            {
-                                NewValue: 'PNS Tests',
-                                OldValue: '',
-                                FieldID: 'Remark',
-                            },
-                            {
-                                NewValue: 95,
-                                OldValue: 0,
-                                FieldID: 'TaxPercentage',
-                            },
-                            {
-                                NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
-                                OldValue: createdTransaction.ExternalID,
-                                FieldID: 'ExternalID',
-                            },
-                        ]);
-                    });
+                        ),
+                        expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
+                        expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
+                        expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
+                            new Date().toISOString().split('T')[0],
+                        ),
+                        expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
+                        expect(getCreatedTransactionResponse[0].Archive).to.be.false,
+                        expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
+                        expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
+                        expect(getCreatedTransactionResponse[0].Agent).to.be.null,
+                        expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
+                        expect(getCreatedTransactionResponse[0].Creator).to.be.null,
+                        expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
+                        expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
+                            URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
+                        }),
+                    ]);
                 });
-            }
+
+                it('Update Transaction', async () => {
+                    const updatedTransaction = await objectsService.createTransaction({
+                        InternalID: createdTransaction.InternalID,
+                        Remark: 'PNS Tests',
+                        TaxPercentage: 95,
+                        ExternalID: `(Deleted) ${createdTransaction.ExternalID}`,
+                    });
+
+                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                });
+
+                it('Validate PNS Triggered After Update', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'CreationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0);
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                            createdTransaction.UUID,
+                        );
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                        {
+                            NewValue: 'PNS Tests',
+                            OldValue: '',
+                            FieldID: 'Remark',
+                        },
+                        {
+                            NewValue: 95,
+                            OldValue: 0,
+                            FieldID: 'TaxPercentage',
+                        },
+                        {
+                            NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+                            OldValue: createdTransaction.ExternalID,
+                            FieldID: 'ExternalID',
+                        },
+                        {
+                            NewValue: null,
+                            OldValue: 1,
+                            FieldID: 'CatalogPriceFactor',
+                        },
+                    ]);
+                });
+
+                it(`Un Subscribe`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        Hidden: true,
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Resource: ['transactions' as ResourceTypes],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                    expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+                    expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
+
+                    const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                        'Test_Update_PNS',
+                    );
+                    expect(getSubscribeResponse).to.deep.equal([]);
+                });
+
+                it('Update Transaction', async () => {
+                    const updatedTransaction = await objectsService.createTransaction({
+                        InternalID: createdTransaction.InternalID,
+                        Remark: 'PNS Negatice Tests',
+                        TaxPercentage: 50,
+                        ExternalID: `(Test) ${createdTransaction.ExternalID}`,
+                    });
+
+                    expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                });
+
+                it('Validate PNS Not Triggered After Update', async () => {
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                            order_by: 'CreationDateTime DESC',
+                        });
+                        maxLoopsCounter--;
+                    } while (
+                        (!schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length == 1) &&
+                        maxLoopsCounter > 0
+                    );
+                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test') ||
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                            createdTransaction.UUID,
+                        );
+                    expect(schema[1]).to.be.undefined;
+                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                        {
+                            NewValue: 'PNS Tests',
+                            OldValue: '',
+                            FieldID: 'Remark',
+                        },
+                        {
+                            NewValue: 95,
+                            OldValue: 0,
+                            FieldID: 'TaxPercentage',
+                        },
+                        {
+                            NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+                            OldValue: createdTransaction.ExternalID,
+                            FieldID: 'ExternalID',
+                        },
+                        {
+                            NewValue: null,
+                            OldValue: 1,
+                            FieldID: 'CatalogPriceFactor',
+                        },
+                    ]);
+                });
+            });
+
             describe('Delete', () => {
                 it('Delete transaction', async () => {
                     expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
