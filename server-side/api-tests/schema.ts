@@ -270,7 +270,26 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 );
             });
         });
+        describe('querying a property of type Integer with !=', () => {
+            it('querying a property of type Integer with !=', async () => {
+                assert(
+                    logcash.getDataFromTableTwoKeysWhereClause.Status,
+                    logcash.getDataFromTableTwoKeysWhereClause.Error,
+                );
+            });
+        });
+        describe('where on key parameter return exception (DI-17519)', () => {
+            it('where clause by Key', async () => {
+                assert(
+                    logcash.getDataFromTableKeyWhereClause.Status,
+                    logcash.getDataFromTableKeyWhereClause.Error,
+                );
+            });
+        });
     });
+
+            
+
 
     //get secret key
     async function getSecretKey() {
@@ -747,6 +766,62 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableTwoKeys.Status = false;
             logcash.getDataFromTableTwoKeys.Error =
                 'will get 2 object , but actual result is: ' + logcash.getDataFromTableTwoKeys;
+        }
+        //debugger;
+        //await changeHiddenToTrue();
+        await getDataFromTableTwoKeysWhereClause();
+    }
+
+    async function getDataFromTableTwoKeysWhereClause() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableTwoKeysWhereClause = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + '?where=TestInteger!=14', {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataFromTableTwoKeysWhereClause.length == 1 &&
+            logcash.getDataFromTableTwoKeysWhereClause[0].TestInteger == 4
+        ) {
+            logcash.getDataFromTableTwoKeysWhereClause.Status = true;
+        } else {
+            logcash.getDataFromTableTwoKeysWhereClause.Status = false;
+            logcash.getDataFromTableTwoKeysWhereClause.Error =
+                'will get 1 object after where clausu with != 14, but actual result is: ' + logcash.getDataFromTableTwoKeysWhereClause;
+        }
+        //debugger;
+        //await changeHiddenToTrue();
+        await getDataFromTableKeyWhereClause();
+    }
+
+    async function getDataFromTableKeyWhereClause() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableKeyWhereClause = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name + "?where=Key='testKey2'", {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataFromTableKeyWhereClause.length == 1 &&
+            logcash.getDataFromTableKeyWhereClause[0].TestInteger == 14
+        ) {
+            logcash.getDataFromTableKeyWhereClause.Status = true;
+        } else {
+            logcash.getDataFromTableKeyWhereClause.Status = false;
+            logcash.getDataFromTableKeyWhereClause.Error =
+                'will get 1 object after where clause with Key value, but actual result is: ' + logcash.getDataFromTableKeyWhereClause;
         }
         //debugger;
         //await changeHiddenToTrue();
@@ -1709,7 +1784,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         //debugger;
         logcash.totalTimeNotIndexed = logcash.endTimeNotIndexed - logcash.startTimeNotIndexed;
         if (logcash.getDataFromNotIndexedDataWhereClause.length == logcash.getDataFromIndexedDataWhereClause.length) {
-            if (logcash.totalTimeNotIndexed - logcash.totalTimeIndexed > 100) {
+            if (logcash.totalTimeNotIndexed - logcash.totalTimeIndexed > 20) {
                 logcash.getDataFromNotIndexedDataWhereClauseStatus = true;
             } else {
                 logcash.getDataFromNotIndexedDataWhereClauseStatus = false;
