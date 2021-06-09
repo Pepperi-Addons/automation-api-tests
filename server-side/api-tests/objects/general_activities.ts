@@ -384,7 +384,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
             const getCreatedActivity = await service.getActivity({
                 where: `InternalID=${createdActivity.InternalID}`,
             });
-
+            debugger;
             return Promise.all([
                 expect(getCreatedActivity[0]).to.include({
                     ExternalID: activityExternalID,
@@ -408,8 +408,11 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     TSASingleLineAPI: 'Random text',
                 }),
                 expect(getCreatedActivity[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                expect(getCreatedActivity[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('cdn'),
                 expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(getCreatedActivity[0].Account)).equals(
                     JSON.stringify({
                         Data: {
@@ -497,8 +500,11 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     TSASingleLineAPI: 'Random updated text',
                 }),
                 expect(updatedActivity.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                expect(updatedActivity.TSAImageAPI.URL).to.include('cdn'),
                 expect(updatedActivity.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                expect(updatedActivity.TSASignatureAPI.URL).to.include('cdn'),
                 expect(updatedActivity.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                expect(updatedActivity.TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(updatedActivity.Account)).equals(
                     JSON.stringify({
                         Data: {

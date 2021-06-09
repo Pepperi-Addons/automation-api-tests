@@ -98,7 +98,8 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk 60,000 accounts remove hidden jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+                generalService.sleep(2000); //DI-18235
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -141,7 +142,8 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk 60,000 accounts delete jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+                generalService.sleep(2000); //DI-18235
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -213,7 +215,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 60000);
                 expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -257,7 +259,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 60000);
                 expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),

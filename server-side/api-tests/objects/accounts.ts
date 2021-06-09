@@ -352,7 +352,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 Phone: '555-4321',
                 Prop1: 'Prop 1',
                 Prop2: 'Prop 2',
-                Prop3: 'Prop 3',
+                Prop3: 'Prop 3', 
                 Prop4: 'Prop 4',
                 Prop5: 'Prop 5',
                 State: 'NY',
@@ -435,8 +435,11 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     TSASingleLineAPI: 'Random text',
                 }),
                 expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('cdn'),
                 expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
         });
 
@@ -536,8 +539,11 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     TSASingleLineAPI: 'Random TEXT',
                 }),
                 expect(updatedAccount.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                expect(updatedAccount.TSAImageAPI.URL).to.include('cdn'),
                 expect(updatedAccount.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                expect(updatedAccount.TSASignatureAPI.URL).to.include('cdn'),
                 expect(updatedAccount.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                expect(updatedAccount.TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
         });
 

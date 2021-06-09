@@ -410,8 +410,11 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     TSASingleLineAPI: 'Random text',
                 }),
                 expect(getCreatedContact[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                expect(getCreatedContact[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedContact[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                expect(getCreatedContact[0].TSASignatureAPI.URL).to.include('cdn'),
                 expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(getCreatedContact[0].Account)).equals(
                     JSON.stringify({
                         Data: {
@@ -487,8 +490,11 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     TSASingleLineAPI: 'Random Updated text',
                 }),
                 expect(updatedContact.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                expect(updatedContact.TSAImageAPI.URL).to.include('cdn'),
                 expect(updatedContact.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                expect(updatedContact.TSASignatureAPI.URL).to.include('cdn'),
                 expect(updatedContact.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                expect(updatedContact.TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
         });
 

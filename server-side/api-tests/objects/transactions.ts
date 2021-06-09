@@ -666,8 +666,11 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     TSASingleLineAPI: 'Random text',
                 }),
                 expect(getCreatedTransaction[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
+                expect(getCreatedTransaction[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedTransaction[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                expect(getCreatedTransaction[0].TSASignatureAPI.URL).to.include('cdn'),
                 expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(getCreatedTransaction[0].Account)).equals(
                     JSON.stringify({
                         Data: {
@@ -1002,8 +1005,11 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 TSASingleLineAPI: 'Random updated text',
             }),
                 expect(updatedTransaction.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
+                expect(updatedTransaction.TSAImageAPI.URL).to.include('cdn'),
                 expect(updatedTransaction.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                expect(updatedTransaction.TSASignatureAPI.URL).to.include('cdn'),
                 expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(updatedTransaction.Account)).equals(
                     JSON.stringify({
                         Data: {
