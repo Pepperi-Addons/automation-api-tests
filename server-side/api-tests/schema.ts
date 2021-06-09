@@ -161,11 +161,31 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     logcash.updateSchemaAddIndexStringAndNumErrorMessage,
                 );
             });
-            // will be returned after bug on indexed_data closed
+
             it('Negative : try change indexed column: Finished', () => {
                 assert(
                     logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus,
                     logcash.updateSchemaTryToChangeIndexedFieldNegativeError,
+                );
+            });
+            //////////////////////////////////////////////////////////////////
+            it('Insert data to indexed table : Finished', () => {
+                assert(logcash.insertDataToIndexedTableFirst100Status, logcash.insertDataToIndexedTableFirst100Error);
+            });
+            it('Order by indexed field : finished', async () => {
+                assert(logcash.getDataFromIndexedDataStatus, logcash.getDataFromIndexedDataError);
+            });
+
+            it('Negative : Order by not indexed field: Finished', () => {
+                assert(logcash.getDataFromIndexedDataNegativeStatus, logcash.getDataFromIndexedDataNegativeError);
+            });
+            it('Where clause by indexed integer field: Finished, result: ' + logcash.totalTimeIndexed, () => {
+                assert(logcash.getDataFromIndexedDataWhereClauseStatus, logcash.getDataFromIndexedDataWhereClauseError);
+            });
+            it('Where clause by NOT indexed integer field: Finished, result: ' + logcash.totalTimeNotIndexed, () => {
+                assert(
+                    logcash.getDataFromNotIndexedDataWhereClauseStatus,
+                    logcash.getDataFromNotIndexedDataWhereClauseError,
                 );
             });
         });
@@ -1416,8 +1436,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     Name: logcash.createSchemaWithIndexedDataType.Name,
                     Fields: {
                         // IndexedString1: { Type: 'String', Indexed: true },
-                        // Field1: { Type: 'String'},
-                        // Field2: { Type: 'String'},
+                        Field1: { Type: 'Integer' },
+                        Field2: { Type: 'String' },
                         // Field3: { Type: 'String'},
                         // Field4: { Type: 'String'},
                         // Field5: { Type: 'Integer'},
@@ -1490,7 +1510,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         else {
             if (
                 logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring.includes(
-                    'Failed due to exception:',
+                    'Index cannot be modified/removed',
                 ) == true
             ) {
                 logcash.updateSchemaTryToChangeIndexedFieldNegativeStatus = true;
@@ -1501,10 +1521,215 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     logcash.updateSchemaTryToChangeIndexedFieldNegative.fault.faultstring;
             }
         }
-        await dropTableIndexed();
+        await insertDataToIndexedTableFirst100();
     }
     //#endregion schema creation  functionality test
+    //#region insert data to indexed table + order by and where clause tests
 
+    async function insertDataToIndexedTableFirst100() {
+        for (counter; counter < 300; counter++) {
+            logcash.randomInt = Math.floor(Math.random() * 5);
+            logcash.insertDataToIndexedTableFirst100 = await generalService
+                .fetchStatus(
+                    baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithIndexedDataType.Name,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            //'X-Pepperi-OwnerID': addonUUID,
+                            'X-Pepperi-SecretKey': logcash.secretKey,
+                        },
+                        body: JSON.stringify({
+                            Key: 'indexedTest ' + counter,
+                            IndexedInt1: logcash.randomInt, //counter,
+                            IndexedString1: 'IndexedString1-' + counter,
+                            IndexedString2: 'IndexedString2-' + counter,
+                            Field8: 'Stress1 ' + new Date(),
+                            Field1: logcash.randomInt, //counter,
+                            Field2: 'String1-' + counter,
+                        }),
+                    },
+                )
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToIndexedTableFirst100[0] == 200) {
+                logcash.insertDataToIndexedTableFirst100Status = true;
+            } else {
+                logcash.insertDataToIndexedTableFirst100Status = false;
+                logcash.insertDataToIndexedTableFirst100Error = 'Insert data failed on try number: ' + counter;
+            }
+        }
+        counter = 0;
+        //debugger;
+        await getDataFromIndexedData();
+    }
+
+    async function getDataFromIndexedData() {
+        logcash.getDataFromIndexedData = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithIndexedDataType.Name +
+                    '?order_by=IndexedString1&page_size=-1', //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataFromIndexedData.length == 300 &&
+            logcash.getDataFromIndexedData[12].Field2 == 'String1-109' &&
+            logcash.getDataFromIndexedData[189].Field2 == 'String1-269'
+        ) {
+            logcash.getDataFromIndexedDataStatus = true;
+        } else {
+            logcash.getDataFromIndexedDataStatus = false;
+            logcash.getDataFromIndexedDataError =
+                'The get wit order_by result is wrong.Will get 300 objects but result is :' +
+                logcash.getDataFromDataTableWhereClouse.length;
+        }
+        logcash.count = 0;
+        for (counter; counter < 300; counter++) {
+            if (logcash.getDataFromIndexedData[counter].IndexedInt1 == 4) {
+                logcash.count++;
+            }
+        }
+        counter = 0;
+        await getDataFromIndexedDataNegative();
+    }
+
+    async function getDataFromIndexedDataNegative() {
+        logcash.getDataFromIndexedDataNegative = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithIndexedDataType.Name +
+                    '?order_by=Field2&page_size=-1', //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataFromIndexedDataNegative.fault != undefined) {
+            if (
+                logcash.getDataFromIndexedDataNegative.fault.faultstring.includes(
+                    'Failed due to exception: Order by using non indexed parameter is invalid, requested index = undefined',
+                )
+            ) {
+                logcash.getDataFromIndexedDataNegativeStatus = true;
+            } else {
+                logcash.getDataFromIndexedDataNegativeStatus = false;
+                logcash.getDataFromIndexedDataNegativeError = 'The error message is wrong';
+            }
+        } else {
+            logcash.getDataFromIndexedDataNegativeStatus = false;
+            logcash.getDataFromIndexedDataNegativeError = 'Order_by not indexed field will fail , but actuall worked';
+        }
+
+        await getDataFromIndexedDataWhereClause();
+    }
+
+    async function getDataFromIndexedDataWhereClause() {
+        logcash.startTimeIndexed = new Date().getTime();
+        logcash.getDataFromIndexedDataWhereClause = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithIndexedDataType.Name +
+                    '?order_by=IndexedInt1&where=IndexedInt1=4', //&page_size=-1',  //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                        'X-Pepperi-ActionID': '26f69441-1ed4-4dd1-86d2-beb75e69725d',
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        logcash.endTimeIndexed = new Date().getTime();
+
+        //debugger;
+        logcash.totalTimeIndexed = logcash.endTimeIndexed - logcash.startTimeIndexed;
+        if (logcash.getDataFromIndexedDataWhereClause.length == logcash.count) {
+            logcash.getDataFromIndexedDataWhereClauseStatus = true;
+        } else {
+            logcash.getDataFromIndexedDataWhereClauseStatus = false;
+            logcash.getDataFromIndexedDataWhereClauseError =
+                'The get with where clause by indexed integer result is wrong.Will get ' +
+                logcash.count +
+                ' objects but result is :' +
+                logcash.getDataFromIndexedDataWhereClause.length;
+        }
+        await getDataFromNotIndexedDataWhereClause();
+    }
+
+    async function getDataFromNotIndexedDataWhereClause() {
+        logcash.startTimeNotIndexed = new Date().getTime();
+        logcash.getDataFromNotIndexedDataWhereClause = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithIndexedDataType.Name +
+                    '?where=Field1=4', //&page_size=-1',  //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                        'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        logcash.endTimeNotIndexed = new Date().getTime();
+
+        //debugger;
+        logcash.totalTimeNotIndexed = logcash.endTimeNotIndexed - logcash.startTimeNotIndexed;
+        if (logcash.getDataFromNotIndexedDataWhereClause.length == logcash.getDataFromIndexedDataWhereClause.length) {
+            if (logcash.totalTimeNotIndexed - logcash.totalTimeIndexed > 100) {
+                logcash.getDataFromNotIndexedDataWhereClauseStatus = true;
+            } else {
+                logcash.getDataFromNotIndexedDataWhereClauseStatus = false;
+                logcash.getDataFromNotIndexedDataWhereClauseError =
+                    'where clause on indexed field and NOT indexed field is to small to 100 msec (on 100 inseret rows). On indexed field its take ' +
+                    logcash.totalTimeIndexed +
+                    ' msec, and on not indexed :' +
+                    logcash.totalTimeNotIndexed +
+                    ' msec';
+            }
+        } else {
+            logcash.getDataFromNotIndexedDataWhereClauseStatus = false;
+            logcash.getDataFromNotIndexedDataWhereClauseError =
+                'The get with where clause by NOT indexed integer result is wrong.Will get 89 objects but result is :' +
+                logcash.getDataFromNotIndexedDataWhereClause.length;
+        }
+        await dropTableIndexed();
+    }
+
+    //#endregion insert data to indexed table
     async function dropTableIndexed() {
         // the drop table function will be moved after indexed_table data verification when code is ready
         const res = await generalService.fetchStatus(
