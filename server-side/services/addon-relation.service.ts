@@ -1,9 +1,4 @@
-import {
-    PapiClient,
-    FindOptions,
-    Item
-
-} from '@pepperi-addons/papi-sdk';
+import { PapiClient, FindOptions, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 const apiCallsInterval = 4000;
@@ -30,6 +25,25 @@ export class AddonRelationService {
             .then((res) => res.Body);
     }
 
+    async postRelation(headers?: { [key: string]: string }, body?: any) {
+        return this.generalService
+            .fetchStatus('/addons/data/relations', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            })
+            .then((res) => res.Body);
+    }
+
+    async postRelationStatus(headers?: { [key: string]: string }, body?: any) {
+        return this.generalService
+            .fetchStatus('/addons/data/relations', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            })
+            .then((res) => res.Status);
+    }
 
     //get secret key
     async getSecretKey(): Promise<string> {
