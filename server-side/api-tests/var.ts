@@ -3794,10 +3794,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 const deleteApiResponse = await generalService.papiClient.post(
                     '/addons/installed_addons/' + getAllInstalledAddonsBeforeDelete[index].Addon.UUID + '/uninstall',
                 );
-                console.log('Addone deleted: ' + getAllInstalledAddonsBeforeDelete[index].Addon.Name);
-                //console.log({ Post_Var_Addons_Delete: deleteApiResponse });
-                //const getAuditLogApiResponse =
-                await generalService.papiClient.get(deleteApiResponse.Body.URI);
+                console.log('Addone Deleted: ' + getAllInstalledAddonsBeforeDelete[index].Addon.Name);
+                console.log({ Post_Var_Addons_Delete: deleteApiResponse });
+                //const getAuditLogApiResponse = await generalService.papiClient.get(deleteApiResponse.Body.URI);
                 //console.log({ Get_Audit_Log_Uninstall: getAuditLogApiResponse });
             }
         }
@@ -3812,6 +3811,36 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //     if (!deleteVersionApiResponse) {
         //         //console.log({ Post_Var_Addons_Versions_Delete: deleteVersionApiResponse });
         //     }
+
+        //Added at 08/06/2021 but did not work - this is an attempt to delete the versions of deleted addons, but its not working
+        // const getAllAddonsVersionsBeforeDelete = await generalService.fetchStatus(
+        //     generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions?page_size=-1',
+        //     {
+        //         method: `GET`,
+        //         headers: {
+        //             Authorization: request.body.varKey,
+        //         },
+        //     },
+        // );
+        // for (let index = 0; index < getAllAddonsVersionsBeforeDelete.Body.length; index++) {
+        //     if (getAllAddonsVersionsBeforeDelete.Body[index].Version.startsWith('Pepperitest Test Version ')){
+        //         const versionTestDataBody = getAllAddonsVersionsBeforeDelete.Body[index];
+        //         versionTestDataBody.Hidden = true;
+        //         const deleteApiResponse = await generalService.fetchStatus(
+        //             generalService['client'].BaseURL.replace('papi-eu', 'papi') +
+        //                 '/var/addons/versions',
+        //             {
+        //                 method: `POST`,
+        //                 headers: {
+        //                     Authorization: request.body.varKey,
+        //                 },
+        //                 body: JSON.stringify(versionTestDataBody),
+        //             },
+        //         );
+        //         console.log('Addone Version Deleted: ' + getAllAddonsVersionsBeforeDelete.Body[index].Name);
+        //         console.log({ Post_Var_Addons_Version_Delete: deleteApiResponse.Body });
+        //     }
+        // }
 
         //This can be use to easily extract the token to the console
         //console.log({ Token: VarAPI._Token })
