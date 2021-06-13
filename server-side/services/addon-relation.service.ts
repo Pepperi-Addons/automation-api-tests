@@ -25,6 +25,15 @@ export class AddonRelationService {
             .then((res) => res.Body);
     }
 
+    async getRelationWithName(headers: { [key: string]: string }, name: string) {
+        return this.generalService
+            .fetchStatus(`/addons/data/relations?where=Name='${name}'&include_deleted=true`, {
+                method: 'GET',
+                headers: headers,
+            })
+            .then((res) => res.Body);
+    }
+
     async postRelation(headers?: { [key: string]: string }, body?: any) {
         return this.generalService
             .fetchStatus('/addons/data/relations', {

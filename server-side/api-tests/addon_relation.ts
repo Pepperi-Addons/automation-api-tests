@@ -77,6 +77,28 @@ export async function AddonRelationTests(generalService: GeneralService, request
                     'Failed due to exception: AddonUUID must be equal to X-Pepperi-OwnerID header value',
                 );
             });
+            it(`negative : AddonUUID not equale to SecretKey`, async () => {
+                //const secretKey = await relationService.getSecretKey()
+                const relationResponce = await relationService.postRelation(
+                    {
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': generalService.papiClient['options'].addonUUID,
+                        // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+                    },
+                    {
+                        Name: 'wrong addonUUID test', // mandatory
+                        AddonUUID: addonUUID, // mandatory
+                        RelationName: 'ATDExport', // mandatory
+                        Type: 'AddonAPI', // mandatory on create
+                        Description: 'test1',
+                        AddonRelativeURL: '/api/test1', // mandatory on create
+                    },
+                );
+                //debugger;
+                expect(relationResponce.fault.faultstring).to.equal(
+                    'Failed due to exception: secret key must match to addon UUID',
+                );
+            });
             it(`negative : Name is mandatory field`, async () => {
                 //const secretKey = await relationService.getSecretKey()
                 const relationResponce = await relationService.postRelation(
@@ -337,9 +359,60 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 //debugger;
                 expect(relationResponce[0]).to.include({
                     ...relationBody,
-                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`
+                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                    Hidden: false,
                 });
             });
+
+            ///////////////////////////
+            it(`Update  addon Relation to Hidden = true`, async () => {
+                //const secretKey = await relationService.getSecretKey()
+                const relationResponce = await relationService.postRelationStatus(
+                    {
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': secretKey,
+                        // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+                    },
+                    {
+                        Name: 'Addon relation positive1', // mandatory
+                        AddonUUID: addonUUID, // mandatory
+                        RelationName: 'ATDExport', // mandatory
+                        Type: 'AddonAPI', // mandatory on create
+                        Description: 'test1',
+                        AddonRelativeURL: '/api/test1', // mandatory on create
+                        Hidden: true,
+                    },
+                );
+                //debugger;
+                expect(relationResponce).to.equal(200);
+            });
+            ///////////////////////////////////
+            it(`Get addon Relation where clause by Name`, async () => {
+                const relationBody = {
+                    Name: 'Addon relation positive1', // mandatory
+                    AddonUUID: addonUUID, // mandatory
+                    RelationName: 'ATDExport', // mandatory
+                    Type: 'AddonAPI', // mandatory on create
+                    Description: 'test1',
+                    AddonRelativeURL: '/api/test1', // mandatory on create
+                };
+                const relationResponce = await relationService.getRelationWithName(
+                    {
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': secretKey,
+                    },
+                    relationBody.Name,
+
+                );
+
+                debugger;
+                expect(relationResponce[0]).to.include({
+                    ...relationBody,
+                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                    Hidden: true,
+                });
+            });
+            ///////////////////////////////////
         });
     });
 
