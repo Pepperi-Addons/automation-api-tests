@@ -1,8 +1,6 @@
 import { PapiClient, FindOptions, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
-const apiCallsInterval = 4000;
-
 export class AddonRelationService {
     papiClient: PapiClient;
     generalService: GeneralService;

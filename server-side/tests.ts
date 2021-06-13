@@ -751,7 +751,7 @@ export async function addon_relations(client: Client, request: Request, testerFu
         : client.BaseURL.includes('papi-eu')
         ? 'Production-EU'
         : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
     testerFunctions = {
         describe,
         expect,
