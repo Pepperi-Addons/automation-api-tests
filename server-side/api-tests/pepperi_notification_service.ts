@@ -203,7 +203,10 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
-                        } while (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0);
+                        } while (
+                            !schema[0] ||
+                            (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0)
+                        );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             createdTransaction.UUID,
@@ -280,7 +283,7 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
@@ -329,6 +332,7 @@ export async function PepperiNotificationServiceTests(
 
                 describe(`Addons`, () => {
                     let createdAddon;
+                    let installedAddon;
                     const testAddon: Addon = {
                         Name: 'Pepperitest Test ' + Math.floor(Math.random() * 1000000).toString(),
                     }; //Name here can't be changed or it will send messages VIA teams
@@ -341,7 +345,7 @@ export async function PepperiNotificationServiceTests(
                             Type: 'data',
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
-                                Resource: ['InstalledAddon'],
+                                Resource: ['installed_addons'],
                                 AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
                             },
                             Name: 'Test_Update_PNS',
@@ -402,55 +406,6 @@ export async function PepperiNotificationServiceTests(
                         expect(versionsArr[2].Version).to.contain('Pepperitest Test Version ');
                     });
 
-                    it('Validate PNS Triggered After Addon Creation', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                        } while (
-                            (!schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
-                            maxLoopsCounter > 0
-                        );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[1].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        try {
-                            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                createdAddon.UUID,
-                            );
-                            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
-                            expect(schema[0].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
-                            expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-                            expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                '00000000-0000-0000-0000-000000000000',
-                            );
-                            expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([]);
-                            expect(schema[1].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
-                            expect(schema[1].Message.FilterAttributes.Action).to.equal('insert');
-                            expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-                        } catch (error) {
-                            //The order of the PNS trigger can be diffrent it's not a bug
-                            expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                createdAddon.UUID,
-                            );
-                            expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
-                            expect(schema[1].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
-                            expect(schema[1].Message.FilterAttributes.Action).to.equal('update');
-                            expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-                            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                                '00000000-0000-0000-0000-000000000000',
-                            );
-                            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([]);
-                            expect(schema[0].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
-                            expect(schema[0].Message.FilterAttributes.Action).to.equal('insert');
-                            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-                        }
-                    });
-
                     it('Install Addon', async () => {
                         //Install with available version
                         const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
@@ -478,11 +433,68 @@ export async function PepperiNotificationServiceTests(
                             postAddonApiResponse.AuditInfo.ToVersion = 'Error - Audit Log was not found';
                         }
 
+                        debugger;
+                        //Save Installed addon
+                        installedAddon = await generalService.papiClient.addons.installedAddons.find({
+                            where: `AddonUUID='${postAddonApiResponse.AuditInfo.Addon.UUID}'`,
+                        }).then((addonsArr) => addonsArr[0]);
+
+                        debugger;
                         //Install results
                         expect(postAddonApiResponse.Status.Name).to.equal('Success');
 
                         //Installed version results
                         expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
+                    });
+
+                    it('Validate PNS Triggered After Addon Installation', async () => {
+                        let schema;
+                        let maxLoopsCounter = _MAX_LOOPS;
+                        do {
+                            generalService.sleep(1500);
+                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                order_by: 'CreationDateTime DESC',
+                            });
+                            maxLoopsCounter--;
+                        } while (
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                            maxLoopsCounter > 0
+                        );
+                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema[1].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        try {
+                            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                                installedAddon.UUID,
+                            );
+                            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+                            expect(schema[0].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
+                            expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
+                            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                            expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                                '00000000-0000-0000-0000-000000000000',
+                            );
+                            expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([]);
+                            expect(schema[1].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
+                            expect(schema[1].Message.FilterAttributes.Action).to.equal('insert');
+                            expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                        } catch (error) {
+                            debugger;
+                            //The order of the PNS trigger can be diffrent it's not a bug
+                            expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                                installedAddon.UUID,
+                            );
+                            expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+                            expect(schema[1].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
+                            expect(schema[1].Message.FilterAttributes.Action).to.equal('update');
+                            expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                                '00000000-0000-0000-0000-000000000000',
+                            );
+                            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([]);
+                            expect(schema[0].Message.FilterAttributes.Resource).to.equal('InstalledAddon');
+                            expect(schema[0].Message.FilterAttributes.Action).to.equal('insert');
+                            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                        }
                     });
 
                     it('Upgrade Addon', async () => {
@@ -596,7 +608,7 @@ export async function PepperiNotificationServiceTests(
                                 console.log({ Post_Var_Addons_Versions_Delete: deleteVersionApiResponse });
                             }
                             expect(deleteVersionApiResponse.Status).to.equal(200);
-                            expect(deleteVersionApiResponse.Body.Success).to.be.true;
+                            expect(deleteVersionApiResponse.Body).to.be.true;
                         }
                     });
 
