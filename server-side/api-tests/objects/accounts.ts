@@ -352,7 +352,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 Phone: '555-4321',
                 Prop1: 'Prop 1',
                 Prop2: 'Prop 2',
-                Prop3: 'Prop 3', 
+                Prop3: 'Prop 3',
                 Prop4: 'Prop 4',
                 Prop5: 'Prop 5',
                 State: 'NY',
@@ -444,17 +444,25 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         });
 
         it('Verify attachment URL', async () => {
-            const testDataArr = ['https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg','https://capitalstars.com/qpay/assets/images/sign2.png','http://www.africau.edu/images/default/sample.pdf']
+            const testDataArr = [
+                'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+                'https://capitalstars.com/qpay/assets/images/sign2.png',
+                'http://www.africau.edu/images/default/sample.pdf',
+            ];
             const getCreatedAccount = await service.getAccounts({
                 where: `InternalID=${createdAccount.InternalID}`,
             });
-            const testGetDataArr = [getCreatedAccount[0].TSAImageAPI.URL,getCreatedAccount[0].TSASignatureAPI.URL,getCreatedAccount[0].TSAAttachmentAPI.URL]
+            const testGetDataArr = [
+                getCreatedAccount[0].TSAImageAPI.URL,
+                getCreatedAccount[0].TSASignatureAPI.URL,
+                getCreatedAccount[0].TSAAttachmentAPI.URL,
+            ];
 
             for (let index = 0; index < testDataArr.length; index++) {
                 const PostURL = await generalService.fetchStatus(testDataArr[index]);
                 const GetURL = await generalService.fetchStatus(testGetDataArr[index]);
-                    expect(PostURL.Body.Text).to.equal(GetURL.Body.Text);
-                    expect(PostURL.Body.Type).to.equal(GetURL.Body.Type);
+                expect(PostURL.Body.Text).to.equal(GetURL.Body.Text);
+                expect(PostURL.Body.Type).to.equal(GetURL.Body.Type);
             }
         });
 
@@ -749,7 +757,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(bulkUpdateAccounts[4].Name).to.include('Bulk Account 5'),
                 expect(bulkUpdateAccounts[5].Name).to.include('Bulk Account 6'),
                 expect(bulkUpdateAccounts[6].Name).to.include('Bulk Account 7');
-                    });
+        });
 
         it('Delete bulk accounts', async () => {
             bulkAccounts = await service.getAccounts({
