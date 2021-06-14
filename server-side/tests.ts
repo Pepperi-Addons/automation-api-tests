@@ -32,6 +32,7 @@ import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
 import { InstallTests } from './api-tests/code-jobs/install';
 import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
 import { CodeJobsAddonTests } from './api-tests/code-jobs/code_jobs_addon';
+import { AddonRelationTests } from './api-tests/addon_relation';
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
@@ -736,6 +737,30 @@ export async function code_jobs_retry(client: Client, testerFunctions: TesterFun
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsRetryTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_relations(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Relations';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonRelationTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
