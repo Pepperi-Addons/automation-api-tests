@@ -384,7 +384,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
             const getCreatedActivity = await service.getActivity({
                 where: `InternalID=${createdActivity.InternalID}`,
             });
-            debugger;
+
             return Promise.all([
                 expect(getCreatedActivity[0]).to.include({
                     ExternalID: activityExternalID,
@@ -528,6 +528,21 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 expect(updatedActivity.ContactPerson).to.be.null,
                 expect(updatedActivity.Creator).to.be.null,
             ]);
+        });
+
+        it('Verify attachment URL', async () => {
+            const testDataArr = ['https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf','https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg','https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png']
+            const getCreatedActivity = await service.getActivity({
+                where: `InternalID=${createdActivity.InternalID}`,
+            });
+            const testGetDataArr = [getCreatedActivity[0].TSAImageAPI.URL,getCreatedActivity[0].TSASignatureAPI.URL,getCreatedActivity[0].TSAAttachmentAPI.URL]
+
+            for (let index = 0; index < testDataArr.length; index++) {
+                const PostURL = await generalService.fetchStatus(testDataArr[index]);
+                const GetURL = await generalService.fetchStatus(testGetDataArr[index]);
+                    expect(PostURL.Body.Text).to.equal(GetURL.Body.Text);
+                    expect(PostURL.Body.Type).to.equal(GetURL.Body.Type);
+            }
         });
 
         it('Delete activity', async () => {

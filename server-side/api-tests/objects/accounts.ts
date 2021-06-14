@@ -443,6 +443,21 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             ]);
         });
 
+        it('Verify attachment URL', async () => {
+            const testDataArr = ['https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg','https://capitalstars.com/qpay/assets/images/sign2.png','http://www.africau.edu/images/default/sample.pdf']
+            const getCreatedAccount = await service.getAccounts({
+                where: `InternalID=${createdAccount.InternalID}`,
+            });
+            const testGetDataArr = [getCreatedAccount[0].TSAImageAPI.URL,getCreatedAccount[0].TSASignatureAPI.URL,getCreatedAccount[0].TSAAttachmentAPI.URL]
+
+            for (let index = 0; index < testDataArr.length; index++) {
+                const PostURL = await generalService.fetchStatus(testDataArr[index]);
+                const GetURL = await generalService.fetchStatus(testGetDataArr[index]);
+                    expect(PostURL.Body.Text).to.equal(GetURL.Body.Text);
+                    expect(PostURL.Body.Type).to.equal(GetURL.Body.Type);
+            }
+        });
+
         it('Update account', async () => {
             return Promise.all([
                 expect(
@@ -683,6 +698,59 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(bulkUpdateAccounts[4].Name).to.include('Update');
         });
 
+        it('Bulk mixed file update accounts', async () => {
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name'],
+                Lines: [
+                    [bulkAccountExternalID + ' 1', 'Bulk Account 1 Update'],
+                    [bulkAccountExternalID + ' 2', 'Bulk Account 2 Update'],
+                    [bulkAccountExternalID + ' 3', 'Bulk Account 3'],
+                    [bulkAccountExternalID + ' 4', 'Bulk Account 4'],
+                    [bulkAccountExternalID + ' 5', 'Bulk Account 5'],
+                    [bulkAccountExternalID + ' 6', 'Bulk Account 6'],
+                    [bulkAccountExternalID + ' 7', 'Bulk Account 7'],
+                    [bulkAccountExternalID + ' 1', 'Bulk Account 1 Update'],
+                    [bulkAccountExternalID + ' 2', 'Bulk Account 2 Update'],
+                ],
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify bulk update jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(9),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(2),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(3),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(2),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed file accounts update', async () => {
+            bulkUpdateAccounts = await service.getAccounts({
+                where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+            });
+            expect(bulkUpdateAccounts[0].Name).to.include('Update'),
+                expect(bulkUpdateAccounts[1].Name).to.include('Update'),
+                expect(bulkUpdateAccounts[2].Name).to.include('Bulk Account 3'),
+                expect(bulkUpdateAccounts[3].Name).to.include('Bulk Account 4'),
+                expect(bulkUpdateAccounts[4].Name).to.include('Bulk Account 5'),
+                expect(bulkUpdateAccounts[5].Name).to.include('Bulk Account 6'),
+                expect(bulkUpdateAccounts[6].Name).to.include('Bulk Account 7');
+                    });
+
         it('Delete bulk accounts', async () => {
             bulkAccounts = await service.getAccounts({
                 where: "ExternalID like '%" + bulkAccountExternalID + "%'",
@@ -693,6 +761,8 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(await service.deleteAccount(bulkAccounts[2].InternalID)).to.be.true,
                 expect(await service.deleteAccount(bulkAccounts[3].InternalID)).to.be.true,
                 expect(await service.deleteAccount(bulkAccounts[4].InternalID)).to.be.true,
+                expect(await service.deleteAccount(bulkUpdateAccounts[5].InternalID)).to.be.true,
+                expect(await service.deleteAccount(bulkUpdateAccounts[6].InternalID)).to.be.true,
                 expect(
                     await service.getAccounts({
                         where: "ExternalID like '%" + bulkAccountExternalID + "%'",
