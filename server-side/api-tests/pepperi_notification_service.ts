@@ -235,7 +235,7 @@ export async function PepperiNotificationServiceTests(
                         ]);
                     });
 
-                    it(`Unsubscribe`, async () => {
+                    it(`Unsubscribe And Validate Get With Where(DI-18054)`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
@@ -356,7 +356,7 @@ export async function PepperiNotificationServiceTests(
                         }
                     });
 
-                    it(`Subscribe`, async () => {
+                    it(`Subscribe And Validate Get With Where(DI-18054)`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
@@ -767,7 +767,7 @@ export async function PepperiNotificationServiceTests(
                         expect(deleteApiResponse.Body.Success).to.be.true;
                     });
 
-                    it(`Unsubscribe`, async () => {
+                    it(`Unsubscribe And Validate Get With Where(DI-18054)`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
@@ -812,7 +812,7 @@ export async function PepperiNotificationServiceTests(
                         }
                     });
 
-                    it(`Subscribe`, async () => {
+                    it(`Subscribe And Validate Get With Where(DI-18054)`, async () => {
                         generalService.sleep(20000); //To make sure the Subscription is after the Schema changes PNS sent
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
@@ -954,7 +954,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
                     });
 
-                    it(`Unsubscribe`, async () => {
+                    it(`Unsubscribe And Validate Get With Where(DI-18054)`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
