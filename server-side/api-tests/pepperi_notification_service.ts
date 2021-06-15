@@ -406,7 +406,7 @@ export async function PepperiNotificationServiceTests(
                             versionsArr[index] = await generalService
                                 .fetchStatus(
                                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                                    '/var/addons/versions',
+                                        '/var/addons/versions',
                                     {
                                         method: `POST`,
                                         headers: {
@@ -732,8 +732,8 @@ export async function PepperiNotificationServiceTests(
                         for (let index = 0; index < versionsArr.length; index++) {
                             const deleteVersionApiResponse = await generalService.fetchStatus(
                                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                                '/var/addons/versions/' +
-                                versionsArr[index].UUID,
+                                    '/var/addons/versions/' +
+                                    versionsArr[index].UUID,
                                 {
                                     method: `DELETE`,
                                     headers: {
@@ -752,8 +752,8 @@ export async function PepperiNotificationServiceTests(
                     it('Delete Addon', async () => {
                         const deleteApiResponse = await generalService.fetchStatus(
                             generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                            '/var/addons/' +
-                            createdAddon.Body.UUID,
+                                '/var/addons/' +
+                                createdAddon.Body.UUID,
                             {
                                 method: `DELETE`,
                                 headers: {
@@ -872,18 +872,12 @@ export async function PepperiNotificationServiceTests(
                         const schemaName = 'PNS Schema Test';
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
-                            Values: [
-                                "Value1",
-                                "Value2",
-                                "Value3"
-                            ],
+                            Values: ['Value1', 'Value2', 'Value3'],
                         } as any);
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
-                        expect(newSchema).to.have.property('Values').an('array').that.equal([
-                            "Value1",
-                            "Value2",
-                            "Value3"
-                        ]);
+                        expect(newSchema['Values'][0]).to.equal('Value1');
+                        expect(newSchema['Values'][1]).to.equal('Value2');
+                        expect(newSchema['Values'][2]).to.equal('Value3');
                     });
 
                     it('Validate PNS Triggered After Existing Schema Update (DI-17875)', async () => {
@@ -896,7 +890,7 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') && schema.length < 2) &&
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
@@ -904,14 +898,24 @@ export async function PepperiNotificationServiceTests(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(3);
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal('Values');
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
+                            'Values',
+                        );
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.be.null;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID.NewValue[0]).to.equal('Value1');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID.NewValue[1]).to.equal('Value2');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID.NewValue[2]).to.equal('Value3');
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[0]).to.equal(
+                            'Value1',
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[1]).to.equal(
+                            'Value2',
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[2]).to.equal(
+                            'Value3',
+                        );
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[\"ModificationActionUUID\",\"ModificationDateTime\",\"Values\"]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
+                            '["ModificationActionUUID","ModificationDateTime","Values"]',
+                        );
                     });
 
                     it(`Delete New Schema`, async () => {
