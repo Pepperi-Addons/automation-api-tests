@@ -1,12 +1,17 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
-import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
+import { ApiFieldObject, Subscription } from '@pepperi-addons/papi-sdk';
+import { ADALService } from '../../services/adal.service';
+import { PepperiNotificationServiceService } from '../../services/pepperi-notification-service.service';
 
 export async function AccountsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
+    const adalService = new ADALService(generalService.papiClient)
+    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService)
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
     //#region Array of TSAs
     const TSAarr: ApiFieldObject[] = [
@@ -327,10 +332,58 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         let bulkJobInfo;
         let bulkAccounts;
         let bulkUpdateAccounts;
+        const schemaName = 'PNS_Objects_Test';
+        const _MAX_LOOPS = 12;
 
         it('Create TSAs for account CRUD', async () => {
             createdTSAs = await service.createBulkTSA('accounts', TSAarr);
             console.log('The following fields created:\n' + createdTSAs);
+        });
+
+        it(`Reset Schema for PNS`, async () => {
+            const schemaNameArr = [schemaName];
+            let purgedSchema;
+            for (let index = 0; index < schemaNameArr.length; index++) {
+                try {
+                    purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
+                } catch (error) {
+                    expect(error.message).to.includes(
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                    );
+                }
+                const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
+                expect(purgedSchema).to.equal('');
+                expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
+                expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
+            }
+        });
+
+        it(`Subscribe to PNS`, async () => {
+            const subscriptionBody: Subscription = {
+                AddonRelativeURL: '/logger/update_object_pns',
+                Type: 'data',
+                AddonUUID: PepperiOwnerID,
+                FilterPolicy: {
+                    Resource: ['accounts'],
+                    Action: ['update','insert','remove' as any],
+                    ModifiedFields: [],
+                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                },
+                Name: 'PNS_Objects_Test',
+            };
+            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+            expect(subscribeResponse)
+                .to.have.property('Name')
+                .a('string')
+                .that.is.equal(subscriptionBody.Name);
+
+            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                'Test_Update_PNS',
+            );
+            expect(getSubscribeResponse[0])
+                .to.have.property('Name')
+                .a('string')
+                .that.is.equal(subscriptionBody.Name);
         });
 
         it('Create account', async () => {
@@ -441,6 +494,49 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
                 expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
+        });
+
+        it('Validate PNS after Insert', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+                debugger;
+            } while (
+                (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                maxLoopsCounter > 0
+            );
+            // expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+            // expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+            //     createdTransaction.UUID,
+            // );
+            // expect(schema[1]).to.be.undefined;
+            // expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+            //     {
+            //         NewValue: 'PNS Tests',
+            //         OldValue: '',
+            //         FieldID: 'Remark',
+            //     },
+            //     {
+            //         NewValue: 95,
+            //         OldValue: 0,
+            //         FieldID: 'TaxPercentage',
+            //     },
+            //     {
+            //         NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+            //         OldValue: createdTransaction.ExternalID,
+            //         FieldID: 'ExternalID',
+            //     },
+            //     {
+            //         NewValue: null,
+            //         OldValue: 1,
+            //         FieldID: 'CatalogPriceFactor',
+            //     },
+            // ]);
         });
 
         it('Verify attachment URL', async () => {
@@ -578,6 +674,32 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     .to.be.an('array')
                     .with.lengthOf(0),
             ]);
+        });
+
+        it(`Unsubscribe from PNS`, async () => {
+            const subscriptionBody: Subscription = {
+                AddonRelativeURL: '/logger/update_object_pns',
+                Type: 'data',
+                Hidden: true,
+                AddonUUID: PepperiOwnerID,
+                FilterPolicy: {
+                    Resource: ['accounts'],
+                    Action: ['update','insert','remove' as any],
+                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                },
+                Name: 'PNS_Objects_Test',
+            };
+            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+            expect(subscribeResponse)
+                .to.have.property('Name')
+                .a('string')
+                .that.is.equal(subscriptionBody.Name);
+            expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
+
+            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                'Test_Update_PNS',
+            );
+            expect(getSubscribeResponse).to.deep.equal([]);
         });
 
         it('Check Hidden=false after update', async () => {
