@@ -332,7 +332,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         let bulkJobInfo;
         let bulkAccounts;
         let bulkUpdateAccounts;
-        const schemaName = 'PNS_Objects_Test';
+        const schemaName = 'PNS Objects Test';
         const _MAX_LOOPS = 12;
 
         it('Create TSAs for account CRUD', async () => {
@@ -366,19 +366,20 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 FilterPolicy: {
                     Resource: ['accounts'],
                     Action: ['update','insert','remove' as any],
-                    ModifiedFields: [],
                     AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 },
                 Name: 'PNS_Objects_Test',
             };
+
             const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+            debugger;
             expect(subscribeResponse)
                 .to.have.property('Name')
                 .a('string')
                 .that.is.equal(subscriptionBody.Name);
 
             const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                'Test_Update_PNS',
+                'PNS_Objects_Test',
             );
             expect(getSubscribeResponse[0])
                 .to.have.property('Name')
@@ -697,7 +698,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
 
             const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                'Test_Update_PNS',
+                'PNS_Objects_Test',
             );
             expect(getSubscribeResponse).to.deep.equal([]);
         });
