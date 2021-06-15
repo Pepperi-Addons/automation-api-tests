@@ -69,7 +69,7 @@ export async function PepperiNotificationServiceTests(
             }
 
             describe(`Subscription And Trigger Scenarios`, () => {
-                describe(`Transactions`, () => {
+                describe(`Transactions (DI-17682)`, () => {
                     it(`Reset Schema`, async () => {
                         const schemaNameArr = [schemaName];
                         let purgedSchema;
@@ -88,7 +88,7 @@ export async function PepperiNotificationServiceTests(
                         }
                     });
 
-                    it(`Subscribe`, async () => {
+                    it(`Subscribe And Validate Get With Where(DI-18054)`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
@@ -845,7 +845,7 @@ export async function PepperiNotificationServiceTests(
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
                     });
 
-                    it('Validate PNS Triggered After New Schema Creation', async () => {
+                    it('Validate PNS Triggered After New Schema Creation (DI-18069)', async () => {
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
                         do {
@@ -866,6 +866,56 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('insert');
                         expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                    });
+
+                    it(`Create New Schema`, async () => {
+                        const schemaName = 'PNS Schema Test';
+                        const newSchema = await adalService.postSchema({
+                            Name: schemaName,
+                            Values: ['Value1', 'Value2', 'Value3'],
+                        } as any);
+                        expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+                        expect(newSchema['Values'][0]).to.equal('Value1');
+                        expect(newSchema['Values'][1]).to.equal('Value2');
+                        expect(newSchema['Values'][2]).to.equal('Value3');
+                    });
+
+                    it('Validate PNS Triggered After Existing Schema Update (DI-17875)', async () => {
+                        let schema;
+                        let maxLoopsCounter = _MAX_LOOPS;
+                        do {
+                            generalService.sleep(1500);
+                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                order_by: 'CreationDateTime DESC',
+                            });
+                            maxLoopsCounter--;
+                        } while (
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                            maxLoopsCounter > 0
+                        );
+                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.include(
+                            'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(3);
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
+                            'Values',
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.be.null;
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[0]).to.equal(
+                            'Value1',
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[1]).to.equal(
+                            'Value2',
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[2]).to.equal(
+                            'Value3',
+                        );
+                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
+                        expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
+                            '["ModificationActionUUID","ModificationDateTime","Values"]',
+                        );
                     });
 
                     it(`Delete New Schema`, async () => {
@@ -891,7 +941,7 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 3) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
