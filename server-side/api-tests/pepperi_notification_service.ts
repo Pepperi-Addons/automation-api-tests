@@ -979,6 +979,28 @@ export async function PepperiNotificationServiceTests(
                     });
                 });
             });
+
+            describe(`Bugs Verification Scenarios`, () => {
+                it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
+                    let deleteAddon = await generalService.papiClient
+                        .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
+                        .then((res) => res.text())
+                        .then((res) => (res ? JSON.parse(res) : ''));
+
+                    await expect(deleteAddon).to.have.property('Status').that.is.true;
+
+                    deleteAddon = await generalService.papiClient
+                        .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
+                        .catch((res) => res);
+
+                    await expect(deleteAddon.message).to.include(
+                        'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Current user cannot delete this, or UUID was not in the database',
+                    );
+
+                    deleteAddon = await generalService.areAddonsInstalled(testData);
+                    await expect(deleteAddon[0]).to.be.true;
+                });
+            });
         });
     });
 }
