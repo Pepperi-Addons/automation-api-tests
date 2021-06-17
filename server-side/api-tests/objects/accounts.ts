@@ -6,12 +6,13 @@ import { PepperiNotificationServiceService } from '../../services/pepperi-notifi
 
 export async function AccountsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
-    const adalService = new ADALService(generalService.papiClient)
-    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService)
+    const adalService = new ADALService(generalService.papiClient);
+    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+
 
     //#region Array of TSAs
     const TSAarr: ApiFieldObject[] = [
@@ -365,14 +366,13 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 AddonUUID: PepperiOwnerID,
                 FilterPolicy: {
                     Resource: ['accounts'],
-                    Action: ['update','insert','remove' as any],
+                    Action: ['update', 'insert', 'remove' as any],
                     AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 },
                 Name: 'PNS_Objects_Test',
             };
 
             const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-            debugger;
             expect(subscribeResponse)
                 .to.have.property('Name')
                 .a('string')
@@ -506,38 +506,16 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     order_by: 'CreationDateTime DESC',
                 });
                 maxLoopsCounter--;
-                debugger;
             } while (
-                (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                (!schema[0] || !schema[0].Key.startsWith('Log_Update') || schema.length < 1) &&
                 maxLoopsCounter > 0
             );
-            // expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-            // expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-            //     createdTransaction.UUID,
-            // );
-            // expect(schema[1]).to.be.undefined;
-            // expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
-            //     {
-            //         NewValue: 'PNS Tests',
-            //         OldValue: '',
-            //         FieldID: 'Remark',
-            //     },
-            //     {
-            //         NewValue: 95,
-            //         OldValue: 0,
-            //         FieldID: 'TaxPercentage',
-            //     },
-            //     {
-            //         NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
-            //         OldValue: createdTransaction.ExternalID,
-            //         FieldID: 'ExternalID',
-            //     },
-            //     {
-            //         NewValue: null,
-            //         OldValue: 1,
-            //         FieldID: 'CatalogPriceFactor',
-            //     },
-            // ]);
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID,);
+            expect(schema[1]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('insert')
         });
 
         it('Verify attachment URL', async () => {
@@ -667,6 +645,180 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             ]);
         });
 
+        it('Validate PNS after Update', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[1] || !schema[0].Key.startsWith('Log_Update') || schema.length < 2) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Hidden).to.be.false;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID,);
+            expect(schema[2]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                {
+                    "NewValue": "City update",
+                    "OldValue": "City",
+                    "FieldID": "City"
+                },
+                {
+                    "NewValue": 35,
+                    "OldValue": 30,
+                    "FieldID": "Debts30"
+                },
+                {
+                    "NewValue": 65,
+                    "OldValue": 60,
+                    "FieldID": "Debts60"
+                },
+                {
+                    "NewValue": 95,
+                    "OldValue": 90,
+                    "FieldID": "Debts90"
+                },
+                {
+                    "NewValue": 105,
+                    "OldValue": 100,
+                    "FieldID": "DebtsAbove90"
+                },
+                {
+                    "NewValue": 15,
+                    "OldValue": 10,
+                    "FieldID": "Discount"
+                },
+                {
+                    "NewValue": "Test2@test.com",
+                    "OldValue": "Test1@test.com",
+                    "FieldID": "Email"
+                },
+                {
+                    "NewValue": "555-123456",
+                    "OldValue": "555-1234",
+                    "FieldID": "Mobile"
+                },
+                {
+                    "NewValue": updatedAccount.Name,
+                    "OldValue": createdAccount.Name,
+                    "FieldID": "Name"
+                },
+                {
+                    "NewValue": "Note 5",
+                    "OldValue": "Note 1",
+                    "FieldID": "Note"
+                },
+                {
+                    "NewValue": "555-43210",
+                    "OldValue": "555-4321",
+                    "FieldID": "Phone"
+                },
+                {
+                    "NewValue": "Prop 11",
+                    "OldValue": "Prop 1",
+                    "FieldID": "Prop1"
+                },
+                {
+                    "NewValue": "Prop 22",
+                    "OldValue": "Prop 2",
+                    "FieldID": "Prop2"
+                },
+                {
+                    "NewValue": "Prop 33",
+                    "OldValue": "Prop 3",
+                    "FieldID": "Prop3"
+                },
+                {
+                    "NewValue": "Prop 44",
+                    "OldValue": "Prop 4",
+                    "FieldID": "Prop4"
+                },
+                {
+                    "NewValue": "Prop 55",
+                    "OldValue": "Prop 5",
+                    "FieldID": "Prop5"
+                },
+                {
+                    "NewValue": "California",
+                    "OldValue": "New York",
+                    "FieldID": "State"
+                },
+                {
+                    "NewValue": "Street 5",
+                    "OldValue": "Street 1",
+                    "FieldID": "Street"
+                },
+                {
+                    "NewValue": "1234567",
+                    "OldValue": "12345",
+                    "FieldID": "ZipCode"
+                },
+                {
+                    "NewValue": "15",
+                    "OldValue": "10",
+                    "FieldID": "TSACurrencyAPI"
+                },
+                {
+                    "NewValue": "18510",
+                    "OldValue": "18506",
+                    "FieldID": "TSADateAPI"
+                },
+                {
+                    "NewValue": "1598392800",
+                    "OldValue": "1598907600",
+                    "FieldID": "TSADateTimeAPI"
+                },
+                {
+                    "NewValue": "5.2",
+                    "OldValue": "5.5",
+                    "FieldID": "TSADecimalNumberAPI"
+                },
+                {
+                    "NewValue": "C",
+                    "OldValue": "A",
+                    "FieldID": "TSAMultiChoiceAPI"
+                },
+                {
+                    "NewValue": "2",
+                    "OldValue": "5",
+                    "FieldID": "TSANumberAPI"
+                },
+                {
+                    "NewValue": "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated",
+                    "OldValue": "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze",
+                    "FieldID": "TSAParagraphAPI"
+                },
+                {
+                    "NewValue": "972555432512",
+                    "OldValue": "9725554325",
+                    "FieldID": "TSAPhoneNumberAPI"
+                },
+                {
+                    "NewValue": "Random TEXT",
+                    "OldValue": "Random text",
+                    "FieldID": "TSASingleLineAPI"
+                },
+                {
+                    "NewValue": "CA",
+                    "OldValue": "NY",
+                    "FieldID": "StateISOAlpha2Code"
+                },
+                {
+                    "NewValue": 5,
+                    "OldValue": 32,
+                    "FieldID": "StateID"
+                },
+            ]);
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include('[\"City\",\"Debts30\",\"Debts60\",\"Debts90\",\"DebtsAbove90\",\"Discount\",\"Email\",\"Mobile\",\"Name\",\"Note\",\"Phone\",\"Prop1\",\"Prop2\",\"Prop3\",\"Prop4\",\"Prop5\",\"State\",\"Street\",\"ZipCode\",\"TSACurrencyAPI\",\"TSADateAPI\",\"TSADateTimeAPI\",\"TSADecimalNumberAPI\",\"TSAMultiChoiceAPI\",\"TSANumberAPI\",\"TSAParagraphAPI\",\"TSAPhoneNumberAPI\",\"TSASingleLineAPI\",\"StateISOAlpha2Code\",\"StateID\"]');
+        });
+
         it('Delete account', async () => {
             return Promise.all([
                 expect(await service.deleteAccount(createdAccount.InternalID)).to.be.true,
@@ -677,6 +829,34 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             ]);
         });
 
+        it('Validate PNS after Delete', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[2] || !schema[0].Key.startsWith('Log_Update') || schema.length < 3) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID,);
+            expect(schema[3]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
+                {
+                    "NewValue": true,
+                    "OldValue": false,
+                    "FieldID": "Hidden"
+                }
+            ]);
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include('[\"Hidden\"]');
+        });
+
         it(`Unsubscribe from PNS`, async () => {
             const subscriptionBody: Subscription = {
                 AddonRelativeURL: '/logger/update_object_pns',
@@ -685,7 +865,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 AddonUUID: PepperiOwnerID,
                 FilterPolicy: {
                     Resource: ['accounts'],
-                    Action: ['update','insert','remove' as any],
+                    Action: ['update', 'insert', 'remove' as any],
                     AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 },
                 Name: 'PNS_Objects_Test',
@@ -1026,8 +1206,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 await expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.true,
                 expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.false,
                 expect(service.deleteAccount((account.InternalID as number) + 123456789)).eventually.to.be.rejectedWith(
-                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
-                        (account.InternalID as number) + 123456789
+                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${(account.InternalID as number) + 123456789
                     } you are trying to update does not exist. Please load it and then try again."`,
                 ),
             ]);

@@ -1,9 +1,14 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
-import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
+import { ApiFieldObject, Subscription } from '@pepperi-addons/papi-sdk';
+import { ADALService } from '../../services/adal.service';
+import { PepperiNotificationServiceService } from '../../services/pepperi-notification-service.service';
 
 export async function ContactsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
+    const adalService = new ADALService(generalService.papiClient);
+    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -329,6 +334,8 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
         let bulkContacts;
         let bulkUpdateContacts;
         let contactUUIDArray;
+        const schemaName = 'PNS Objects Test';
+        const _MAX_LOOPS = 12;
 
         it('Create account and TSAs for contact CRUD', async () => {
             contactAccount = await service.createAccount({
@@ -337,6 +344,52 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
             });
             contactTSAs = await service.createBulkTSA('contacts', TSAarr);
             console.log('The following fields were created:\n' + contactTSAs);
+        });
+
+        it(`Reset Schema for PNS`, async () => {
+            const schemaNameArr = [schemaName];
+            let purgedSchema;
+            for (let index = 0; index < schemaNameArr.length; index++) {
+                try {
+                    purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
+                } catch (error) {
+                    expect(error.message).to.includes(
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                    );
+                }
+                const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
+                expect(purgedSchema).to.equal('');
+                expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
+                expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
+            }
+        });
+
+        it(`Subscribe to PNS`, async () => {
+            const subscriptionBody: Subscription = {
+                AddonRelativeURL: '/logger/update_object_pns',
+                Type: 'data',
+                AddonUUID: PepperiOwnerID,
+                FilterPolicy: {
+                    Resource: ['contacts'],
+                    Action: ['update', 'insert', 'remove' as any],
+                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                },
+                Name: 'PNS_Objects_Test',
+            };
+
+            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+            expect(subscribeResponse)
+                .to.have.property('Name')
+                .a('string')
+                .that.is.equal(subscriptionBody.Name);
+
+            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                'PNS_Objects_Test',
+            );
+            expect(getSubscribeResponse[0])
+                .to.have.property('Name')
+                .a('string')
+                .that.is.equal(subscriptionBody.Name);
         });
 
         it('Create contact', async () => {
@@ -428,6 +481,27 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
             ]);
         });
 
+        it('Validate PNS after Insert', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[0] || !schema[0].Key.startsWith('Log_Update') || schema.length < 1) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdContact.UUID,);
+            expect(schema[1]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('contacts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('insert')
+        });
+
         it('Update contact', async () => {
             return Promise.all([
                 expect(
@@ -498,6 +572,130 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
             ]);
         });
 
+        it('Validate PNS after Update', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[1] || !schema[0].Key.startsWith('Log_Update') || schema.length < 2) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Hidden).to.be.false;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdContact.UUID,);
+            expect(schema[2]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                {
+                    "FieldID": "Email",
+                    "NewValue": "ContactUpdateTest@mail.com",
+                    "OldValue": "ContactTest@mail.com"
+                  },
+                  {
+                    "FieldID": "Phone",
+                    "NewValue": "123-456789",
+                    "OldValue": "123-45678"
+                  },
+                  {
+                    "FieldID": "Mobile",
+                    "NewValue": "123-456789",
+                    "OldValue": "123-45678"
+                  },
+                  {
+                    "FieldID": "FirstName",
+                    "NewValue": "Contact Update",
+                    "OldValue": "Contact"
+                  },
+                  {
+                    "FieldID": "LastName",
+                    "NewValue": "Test Update",
+                    "OldValue": "Test"
+                  },
+                  {
+                    "FieldID": "TSACheckboxAPI",
+                    "NewValue": "False",
+                    "OldValue": "True"
+                  },
+                  {
+                    "FieldID": "TSACurrencyAPI",
+                    "NewValue": "15",
+                    "OldValue": "10"
+                  },
+                  {
+                    "FieldID": "TSADateAPI",
+                    "NewValue": "18507",
+                    "OldValue": "18506"
+                  },
+                  {
+                    "FieldID": "TSADateTimeAPI",
+                    "NewValue": "1596229200",
+                    "OldValue": "1598907600"
+                  },
+                  {
+                    "FieldID": "TSADecimalNumberAPI",
+                    "NewValue": "6.2",
+                    "OldValue": "5.5"
+                  },
+                  {
+                    "FieldID": "TSADropdownAPI",
+                    "NewValue": "2",
+                    "OldValue": "1"
+                  },
+                  {
+                    "FieldID": "TSAEmailAPI",
+                    "NewValue": "TestUpdate@test.com",
+                    "OldValue": "Test@test.com"
+                  },
+                  {
+                    "FieldID": "TSAHtmlAPI",
+                    "NewValue": "<h1>My First Updated Heading</h1>\r\n<p>My first paragraph.</p>",
+                    "OldValue": "<h1>My First Heading</h1>\r\n<p>My first paragraph.</p>"
+                  },
+                  {
+                    "FieldID": "TSALimitedLineAPI",
+                    "NewValue": "Update text",
+                    "OldValue": "Limit text"
+                  },
+                  {
+                    "FieldID": "TSALinkAPI",
+                    "NewValue": "https://www.mako.co.il",
+                    "OldValue": "https://www.ynet.co.il"
+                  },
+                  {
+                    "FieldID": "TSAMultiChoiceAPI",
+                    "NewValue": "B",
+                    "OldValue": "A"
+                  },
+                  {
+                    "FieldID": "TSANumberAPI",
+                    "NewValue": "3",
+                    "OldValue": "5"
+                  },
+                  {
+                    "FieldID": "TSAParagraphAPI",
+                    "NewValue": "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdate",
+                    "OldValue": "Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze"
+                  },
+                  {
+                    "FieldID": "TSAPhoneNumberAPI",
+                    "NewValue": "97255543251",
+                    "OldValue": "9725554325"
+                  },
+                  {
+                    "FieldID": "TSASingleLineAPI",
+                    "NewValue": "Random Updated text",
+                    "OldValue": "Random text"
+                  }
+            ]);
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('contacts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include('[\"Email\",\"Phone\",\"Mobile\",\"FirstName\",\"LastName\",\"TSACheckboxAPI\",\"TSACurrencyAPI\",\"TSADateAPI\",\"TSADateTimeAPI\",\"TSADecimalNumberAPI\",\"TSADropdownAPI\",\"TSAEmailAPI\",\"TSAHtmlAPI\",\"TSALimitedLineAPI\",\"TSALinkAPI\",\"TSAMultiChoiceAPI\",\"TSANumberAPI\",\"TSAParagraphAPI\",\"TSAPhoneNumberAPI\",\"TSASingleLineAPI\"]');
+        });
+
         it('Delete contact', async () => {
             return Promise.all([
                 expect(await service.deleteContact(createdContact.InternalID)).to.be.true,
@@ -506,6 +704,34 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     .to.be.an('array')
                     .with.lengthOf(0),
             ]);
+        });
+
+        it('Validate PNS after Delete', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[2] || !schema[0].Key.startsWith('Log_Update') || schema.length < 3) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdContact.UUID,);
+            expect(schema[3]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
+                {
+                    "NewValue": true,
+                    "OldValue": false,
+                    "FieldID": "Hidden"
+                }
+            ]);
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('contacts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include('[\"Hidden\"]');
         });
 
         it('Check Hidden=false after update', async () => {
