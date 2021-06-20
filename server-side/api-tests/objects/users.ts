@@ -87,51 +87,51 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
                     .that.is.a('string').and.is.not.empty;
         });
 
-        it(`Reset Schema for PNS`, async () => {
-            const schemaNameArr = [schemaName];
-            let purgedSchema;
-            for (let index = 0; index < schemaNameArr.length; index++) {
-                try {
-                    purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
-                } catch (error) {
-                    expect(error.message).to.includes(
-                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                    );
-                }
-                const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-                expect(purgedSchema).to.equal('');
-                expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
-                expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
-            }
-        });
+        // it(`Reset Schema for PNS`, async () => {
+        //     const schemaNameArr = [schemaName];
+        //     let purgedSchema;
+        //     for (let index = 0; index < schemaNameArr.length; index++) {
+        //         try {
+        //             purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
+        //         } catch (error) {
+        //             expect(error.message).to.includes(
+        //                 `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+        //             );
+        //         }
+        //         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
+        //         expect(purgedSchema).to.equal('');
+        //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
+        //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
+        //     }
+        // });
 
-        it(`Subscribe to PNS`, async () => {
-            const subscriptionBody: Subscription = {
-                AddonRelativeURL: '/logger/update_object_pns',
-                Type: 'data',
-                AddonUUID: PepperiOwnerID,
-                FilterPolicy: {
-                    Resource: ['users'],
-                    Action: ['update', 'insert', 'remove' as any],
-                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                },
-                Name: 'PNS_Objects_Test',
-            };
+        // it(`Subscribe to PNS`, async () => {
+        //     const subscriptionBody: Subscription = {
+        //         AddonRelativeURL: '/logger/update_object_pns',
+        //         Type: 'data',
+        //         AddonUUID: PepperiOwnerID,
+        //         FilterPolicy: {
+        //             Resource: ['users'],
+        //             Action: ['update', 'insert', 'remove' as any],
+        //             AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+        //         },
+        //         Name: 'PNS_Objects_Test',
+        //     };
 
-            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-            expect(subscribeResponse)
-                .to.have.property('Name')
-                .a('string')
-                .that.is.equal(subscriptionBody.Name);
+        //     const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+        //     expect(subscribeResponse)
+        //         .to.have.property('Name')
+        //         .a('string')
+        //         .that.is.equal(subscriptionBody.Name);
 
-            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                'PNS_Objects_Test',
-            );
-            expect(getSubscribeResponse[0])
-                .to.have.property('Name')
-                .a('string')
-                .that.is.equal(subscriptionBody.Name);
-        });
+        //     const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+        //         'PNS_Objects_Test',
+        //     );
+        //     expect(getSubscribeResponse[0])
+        //         .to.have.property('Name')
+        //         .a('string')
+        //         .that.is.equal(subscriptionBody.Name);
+        // });
 
         it('Create User', async () => {
             userExternalID = 'Automated API User ' + Math.floor(Math.random() * 1000000).toString();
@@ -286,27 +286,27 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
             expect(newQuantity == currentUserQuantity + 1);
         });
 
-        it('Validate PNS after Insert', async () => {
-            let schema;
-            let maxLoopsCounter = _MAX_LOOPS;
-            do {
-                generalService.sleep(1500);
-                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                    order_by: 'CreationDateTime DESC',
-                });
-                debugger;
-                maxLoopsCounter--;
-            } while (
-                (!schema[0] || !schema[0].Key.startsWith('Log_Update') || schema.length < 1) &&
-                maxLoopsCounter > 0
-            );
-            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdUser.UUID,);
-            expect(schema[1]).to.be.undefined;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
-            expect(schema[0].Message.FilterAttributes.Resource).to.include('users');
-            expect(schema[0].Message.FilterAttributes.Action).to.include('insert')
-        });
+        // it('Validate PNS after Insert', async () => {
+        //     let schema;
+        //     let maxLoopsCounter = _MAX_LOOPS;
+        //     do {
+        //         generalService.sleep(1500);
+        //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+        //             order_by: 'CreationDateTime DESC',
+        //         });
+        //         debugger;
+        //         maxLoopsCounter--;
+        //     } while (
+        //         (!schema[0] || !schema[0].Key.startsWith('Log_Update') || schema.length < 1) &&
+        //         maxLoopsCounter > 0
+        //     );
+        //     expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+        //     expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdUser.UUID,);
+        //     expect(schema[1]).to.be.undefined;
+        //     expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+        //     expect(schema[0].Message.FilterAttributes.Resource).to.include('users');
+        //     expect(schema[0].Message.FilterAttributes.Action).to.include('insert')
+        // });
 
         it('Update User', async () => {
             updatedUser = await service.updateUser({
@@ -365,29 +365,29 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
                 expect(getUpdatedUser[0], 'Profile').to.have.property('Profile').that.is.an('object');
         });
 
-        it('Validate PNS after Update', async () => {
-            let schema;
-            let maxLoopsCounter = _MAX_LOOPS;
-            do {
-                generalService.sleep(1500);
-                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                    order_by: 'CreationDateTime DESC',
-                });
-                maxLoopsCounter--;
-            } while (
-                (!schema[1] || !schema[0].Key.startsWith('Log_Update') || schema.length < 2) &&
-                maxLoopsCounter > 0
-            );
-            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-            expect(schema[0].Hidden).to.be.false;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdUser.UUID,);
-            expect(schema[2]).to.be.undefined;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
-            ]);
-            expect(schema[0].Message.FilterAttributes.Resource).to.include('users');
-            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include('');
-        });
+        // it('Validate PNS after Update', async () => {
+        //     let schema;
+        //     let maxLoopsCounter = _MAX_LOOPS;
+        //     do {
+        //         generalService.sleep(1500);
+        //         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+        //             order_by: 'CreationDateTime DESC',
+        //         });
+        //         maxLoopsCounter--;
+        //     } while (
+        //         (!schema[1] || !schema[0].Key.startsWith('Log_Update') || schema.length < 2) &&
+        //         maxLoopsCounter > 0
+        //     );
+        //     expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+        //     expect(schema[0].Hidden).to.be.false;
+        //     expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdUser.UUID,);
+        //     expect(schema[2]).to.be.undefined;
+        //     expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+        //     ]);
+        //     expect(schema[0].Message.FilterAttributes.Resource).to.include('users');
+        //     expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+        //     expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include('');
+        // });
 
         it('Get single user by UUID, ExternalID, InternalID', async () => {
             const getUpdatedUserUUID = await service.getSingleUser('UUID', updatedUser.UUID);
