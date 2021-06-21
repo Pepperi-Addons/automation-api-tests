@@ -362,7 +362,7 @@ export async function PepperiNotificationServiceTests(
                             Type: 'data',
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
-                                Resource: ['installed_addons'],
+                                Resource: ['installed_addons' as ResourceTypes],
                                 AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
                             },
                             Name: 'Test_Update_PNS',
@@ -774,7 +774,7 @@ export async function PepperiNotificationServiceTests(
                             Hidden: true,
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
-                                Resource: ['installed_addons'],
+                                Resource: ['installed_addons' as ResourceTypes],
                                 AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
                             },
                             Name: 'Test_Update_PNS',
