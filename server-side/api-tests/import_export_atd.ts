@@ -14,18 +14,14 @@ let isActivitiesTestsBox = false;
 let isTransactionsTestsBox = false;
 let isActivitiesTestsOverride = false;
 let isTransactionsTestsOverrideBase = false;
-let isTransactionsTestsOverrideWinzer = false;
+let isTransactionsTestsOverrideWinzerFirst = false;
+let isTransactionsTestsOverrideWinzerSecond = false;
+let isTransactionsTestsOverrideWinzerTheird = false;
 let isLocalFilesComparison = false;
 
 // All Import Export ATD Tests
 export async function ImportExportATDActivitiesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     isActivitiesTests = true;
-    isTransactionsTests = false;
-    isActivitiesTestsBox = false;
-    isTransactionsTestsBox = false;
-    isActivitiesTestsOverride = false;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -34,13 +30,7 @@ export async function ImportExportATDTransactionsTests(
     request,
     tester: TesterFunctions,
 ) {
-    isActivitiesTests = false;
     isTransactionsTests = true;
-    isActivitiesTestsBox = false;
-    isTransactionsTestsBox = false;
-    isActivitiesTestsOverride = false;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -49,13 +39,7 @@ export async function ImportExportATDActivitiesBoxTests(
     request,
     tester: TesterFunctions,
 ) {
-    isActivitiesTests = false;
-    isTransactionsTests = false;
     isActivitiesTestsBox = true;
-    isTransactionsTestsBox = false;
-    isActivitiesTestsOverride = false;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -64,13 +48,7 @@ export async function ImportExportATDTransactionsBoxTests(
     request,
     tester: TesterFunctions,
 ) {
-    isActivitiesTests = false;
-    isTransactionsTests = false;
-    isActivitiesTestsBox = false;
     isTransactionsTestsBox = true;
-    isActivitiesTestsOverride = false;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -79,13 +57,7 @@ export async function ImportExportATDActivitiesOverrideTests(
     request,
     tester: TesterFunctions,
 ) {
-    isActivitiesTests = false;
-    isTransactionsTests = false;
-    isActivitiesTestsBox = false;
-    isTransactionsTestsBox = false;
     isActivitiesTestsOverride = true;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -94,13 +66,7 @@ export async function ImportExportATDTransactionsOverrideTests(
     request,
     tester: TesterFunctions,
 ) {
-    isActivitiesTests = false;
-    isTransactionsTests = false;
-    isActivitiesTestsBox = false;
-    isTransactionsTestsBox = false;
-    isActivitiesTestsOverride = false;
     isTransactionsTestsOverrideBase = true;
-    isTransactionsTestsOverrideWinzer = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -109,24 +75,29 @@ export async function ImportExportATDTransactionsOverrideWinzerTests(
     request,
     tester: TesterFunctions,
 ) {
-    isActivitiesTests = false;
-    isTransactionsTests = false;
-    isActivitiesTestsBox = false;
-    isTransactionsTestsBox = false;
-    isActivitiesTestsOverride = false;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = true;
+    isTransactionsTestsOverrideWinzerFirst = true;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDTransactionsOverrideWinzerTestsTwo(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isTransactionsTestsOverrideWinzerSecond = true;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDTransactionsOverrideWinzerTestsThree(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isTransactionsTestsOverrideWinzerTheird = true;
     await ImportExportATDTests(generalService, request, tester);
 }
 
 export async function ImportExportATDLocalTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    isActivitiesTests = false;
-    isTransactionsTests = false;
-    isActivitiesTestsBox = false;
-    isTransactionsTestsBox = false;
-    isActivitiesTestsOverride = false;
-    isTransactionsTestsOverrideBase = false;
-    isTransactionsTestsOverrideWinzer = false;
     isLocalFilesComparison = true;
     await ImportExportATDTests(generalService, request, tester);
 }
@@ -207,7 +178,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         !isActivitiesTestsOverride &&
         !isTransactionsTestsOverrideBase &&
         !isLocalFilesComparison &&
-        !isTransactionsTestsOverrideWinzer
+        !isTransactionsTestsOverrideWinzerFirst
     ) {
         testDataPostUDT = await importExportATDService.postUDT({
             TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
@@ -1843,7 +1814,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             !isActivitiesTestsOverride &&
             !isTransactionsTestsOverrideBase &&
             !isLocalFilesComparison &&
-            !isTransactionsTestsOverrideWinzer
+            !isTransactionsTestsOverrideWinzerFirst &&
+            !isTransactionsTestsOverrideWinzerSecond &&
+            !isTransactionsTestsOverrideWinzerTheird
         ) {
             describe('Test Clean up', () => {
                 it('Make sure an ATD removed in the end of the tests', async () => {
@@ -1858,7 +1831,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             });
         }
 
-        if (isTransactionsTestsOverrideBase || isTransactionsTestsOverrideWinzer) {
+        if (
+            isTransactionsTestsOverrideBase ||
+            isTransactionsTestsOverrideWinzerFirst ||
+            isTransactionsTestsOverrideWinzerSecond ||
+            isTransactionsTestsOverrideWinzerTheird
+        ) {
             let TransactionsATDArr;
             if (isTransactionsTestsOverrideBase) {
                 TransactionsATDArr = [
@@ -1907,6 +1885,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         Title: 'Sales Order Winzer DEV (New)',
                         URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/08914b6b-372c-42ed-b5af-052fbf1f3e34/Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                     },
+                ];
+            }
+            if (isTransactionsTestsOverrideWinzerFirst) {
+                TransactionsATDArr = [
                     //Production - S3
                     {
                         InternalID: 305086,
@@ -1926,10 +1908,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         Title: 'Sales Order New Pricing',
                         URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/b735eeca-dc7a-43e5-9ecf-fcd8623c95df/Sales_Order_New_Pricing_1_1_176.json',
                     },
-                ];
-            }
-            if (isTransactionsTestsOverrideWinzer) {
-                TransactionsATDArr = [
                     //Sandbox - S3
                     {
                         InternalID: 320566,
@@ -1948,6 +1926,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         Title: 'VSN TEST (268995)',
                         URL: 'https://cdn.staging.pepperi.com/30014740/CustomizationFile/3435332d-21b1-4d7c-a5fa-a6a6923972fc/VSN_TEST_(268995)_1_1_176.json',
                     },
+                ];
+            }
+            if (isTransactionsTestsOverrideWinzerSecond) {
+                TransactionsATDArr = [
                     //Production - S3
                     {
                         InternalID: 305087,
@@ -1984,6 +1966,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         Title: 'FDP',
                         URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/01c06a53-4617-4241-9855-89f40610893b/FDP_1_1_176.json',
                     },
+                ];
+            }
+            if (isTransactionsTestsOverrideWinzerTheird) {
+                TransactionsATDArr = [
                     //EU - S3
                     {
                         InternalID: 6718,

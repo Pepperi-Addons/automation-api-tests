@@ -55,6 +55,8 @@ import {
     ImportExportATDActivitiesOverrideTests,
     ImportExportATDTransactionsOverrideTests,
     ImportExportATDTransactionsOverrideWinzerTests,
+    ImportExportATDTransactionsOverrideWinzerTestsTwo,
+    ImportExportATDTransactionsOverrideWinzerTestsThree,
     ImportExportATDLocalTests,
 } from './api-tests/import_export_atd';
 import { ADALTests } from './api-tests/adal';
@@ -1203,6 +1205,62 @@ export async function import_export_atd_transactions_override_winzer(
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsOverrideWinzerTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function import_export_atd_transactions_override_winzer_two(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Import_Export_ATD_Transactions_Override_Winzer';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ImportExportATDTransactionsOverrideWinzerTestsTwo(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function import_export_atd_transactions_override_winzer_three(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Import_Export_ATD_Transactions_Override_Winzer';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ImportExportATDTransactionsOverrideWinzerTestsThree(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
