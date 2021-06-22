@@ -178,7 +178,9 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         !isActivitiesTestsOverride &&
         !isTransactionsTestsOverrideBase &&
         !isLocalFilesComparison &&
-        !isTransactionsTestsOverrideWinzerFirst
+        !isTransactionsTestsOverrideWinzerFirst &&
+        !isTransactionsTestsOverrideWinzerSecond &&
+        !isTransactionsTestsOverrideWinzerTheird
     ) {
         testDataPostUDT = await importExportATDService.postUDT({
             TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
