@@ -1216,7 +1216,7 @@ export async function import_export_atd_transactions_override_winzer_two(
     testerFunctions: TesterFunctions,
 ) {
     const service = new GeneralService(client);
-    testName = 'Import_Export_ATD_Transactions_Override_Winzer';
+    testName = 'Import_Export_ATD_Transactions_Override_Winzer_Two';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -1244,7 +1244,7 @@ export async function import_export_atd_transactions_override_winzer_three(
     testerFunctions: TesterFunctions,
 ) {
     const service = new GeneralService(client);
-    testName = 'Import_Export_ATD_Transactions_Override_Winzer';
+    testName = 'Import_Export_ATD_Transactions_Override_Winzer_Three';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
