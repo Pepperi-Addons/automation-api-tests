@@ -22,6 +22,15 @@ let isLocalFilesComparison = false;
 // All Import Export ATD Tests
 export async function ImportExportATDActivitiesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     isActivitiesTests = true;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -30,7 +39,16 @@ export async function ImportExportATDTransactionsTests(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
     isTransactionsTests = true;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -39,7 +57,16 @@ export async function ImportExportATDActivitiesBoxTests(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
     isActivitiesTestsBox = true;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -48,7 +75,16 @@ export async function ImportExportATDTransactionsBoxTests(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
     isTransactionsTestsBox = true;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -57,7 +93,16 @@ export async function ImportExportATDActivitiesOverrideTests(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
     isActivitiesTestsOverride = true;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -66,7 +111,16 @@ export async function ImportExportATDTransactionsOverrideTests(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
     isTransactionsTestsOverrideBase = true;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -75,7 +129,16 @@ export async function ImportExportATDTransactionsOverrideWinzerTests(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
     isTransactionsTestsOverrideWinzerFirst = true;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -84,7 +147,16 @@ export async function ImportExportATDTransactionsOverrideWinzerTestsTwo(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
     isTransactionsTestsOverrideWinzerSecond = true;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -93,11 +165,29 @@ export async function ImportExportATDTransactionsOverrideWinzerTestsThree(
     request,
     tester: TesterFunctions,
 ) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = true;
+    isLocalFilesComparison = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
 export async function ImportExportATDLocalTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = true;
     await ImportExportATDTests(generalService, request, tester);
 }
