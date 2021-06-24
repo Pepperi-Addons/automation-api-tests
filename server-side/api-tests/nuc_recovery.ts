@@ -1,14 +1,17 @@
-import { Catalog, Item } from '@pepperi-addons/papi-sdk';
+import { Catalog, Subscription, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { NucleusFlagType, NucRecoveryService } from '../services/nuc_recovery.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
+import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
+import { ResourceTypes } from '../services/general.service';
 
 export async function NucRecoveryTests(generalService: GeneralService, request, tester: TesterFunctions) {
     NucRecoveryService;
     const nucRecoveryService = new NucRecoveryService(generalService);
     const objectsService = new ObjectsService(generalService);
     const adalService = new ADALService(generalService.papiClient);
+    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
 
     const describe = tester.describe;
     const expect = tester.expect;
@@ -66,6 +69,72 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                     });
                 });
             }
+
+            it(`Subscribe To Insert Of NUC PNS And Validate Get With Where (DI-18054)`, async () => {
+                const subscriptionBody: Subscription = {
+                    AddonRelativeURL: '/logger/insert_pns',
+                    Type: 'data',
+                    AddonUUID: PepperiOwnerID,
+                    FilterPolicy: {
+                        Resource: ['transaction_lines' as ResourceTypes],
+                        Action: ['insert'],
+                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                    },
+                    Name: 'Test_PNS_Insert_PNS',
+                };
+                const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+
+                const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                    'Test_PNS_Insert_PNS',
+                );
+                expect(getSubscribeResponse[0])
+                    .to.have.property('Name')
+                    .a('string')
+                    .that.is.equal(subscriptionBody.Name);
+            });
+
+            it(`Subscribe To Update Of NUC PNS And Validate Get With Where (DI-18054)`, async () => {
+                const subscriptionBody: Subscription = {
+                    AddonRelativeURL: '/logger/update_pns',
+                    Type: 'data',
+                    AddonUUID: PepperiOwnerID,
+                    FilterPolicy: {
+                        Resource: ['transaction_lines' as ResourceTypes],
+                        Action: ['update'],
+                        ModifiedFields: [
+                            'TSATestIndexString',
+                            'TSATestIndexTime',
+                            'TSATestIndexCalculated',
+                            'TSATestIndexNumber',
+                            'TSATestIndexDecimalNumber',
+                            'LineNumber',
+                            'DeliveryDate',
+                            'TotalUnitsPriceAfterDiscount',
+                            'TotalUnitsPriceBeforeDiscount',
+                            'ItemInternalID',
+                            'UnitDiscountPercentage',
+                            'CreationDateTime',
+                            'TransactionInternalID',
+                            'InternalID',
+                            'UUID',
+                            'UnitsQuantity',
+                        ],
+                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                    },
+                    Name: 'Test_PNS_Update_PNS',
+                };
+                const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+
+                const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                    'Test_PNS_Update_PNS',
+                );
+                expect(getSubscribeResponse[0])
+                    .to.have.property('Name')
+                    .a('string')
+                    .that.is.equal(subscriptionBody.Name);
+            });
 
             it(`Reset Schema`, async () => {
                 const schemaNameArr = ['Index Logs', 'NUC Test'];
