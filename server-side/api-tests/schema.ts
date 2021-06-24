@@ -31,7 +31,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
-
+//#region Mocha
     describe('ADAL Tests Suites', () => {
         describe('Prerequisites Addon for ADAL Tests', () => {
             //Test Data
@@ -284,6 +284,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             });
         });
     });
+//#endregion Mocha
 
     //get secret key
     async function getSecretKey() {
@@ -389,7 +390,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     //     }
     //     await getEmptySchema();
     // }
-
+    //#region Schema creation
     async function getEmptySchema() {
         logcash.getEmptySchema = await generalService
             .fetchStatus(baseURL + '/addons/data/addonUUIDWithoutSchema/test', {
@@ -536,7 +537,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         }
         await insertDataToTableWithoutOwnerIDNegative();
     }
-
+//#endregion Schema creation
+    //#region Insert/upsert data
     async function insertDataToTableWithoutOwnerIDNegative() {
         logcash.insertDataToTableWithoutOwnerIDNegative = await generalService
             .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
@@ -1113,7 +1115,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         }
         await dropExistingTable();
     }
-
+    //#endregion Insert/upsert data
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //#region drop table testing
     async function dropExistingTable() {
@@ -2381,7 +2383,126 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.updateSchemaExpirationDateTimeUnhiddeSecError =
                 'Manually inserted ExpirationDateTime removed after unhide';
         }
-        //await updateSchemaExpirationDateTimeSetValueExpDate();
+        await createSchemaWithTypeCPIMetadataSec();
     }
     //#endregion ExpirationDateTime
+
+    //#region CPI_meta_data where clause 
+    async function createSchemaWithTypeCPIMetadataSec() {
+        logcash.createSchemaWithTypeCPIMetadataSec = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    //Name: 'createSchemaWithTypeCPIMetadata ' + Date(),
+                    Name: 'SchemaWithTypeCPIMetadata' + new Date().getTime(),
+                    Type: 'cpi_meta_data',
+                    CreationDateTime: '2020-10-08T10:19:00.677Z',
+                    ModificationDateTime: '2020-10-08T10:19:00.677Z',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaWithTypeCPIMetadataSec.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
+            logcash.createSchemaWithTypeCPIMetadataSec.Hidden == false &&
+            logcash.createSchemaWithTypeCPIMetadataSec.Type == 'cpi_meta_data' //&&
+
+            // logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
+            // logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String'
+        ) {
+            logcash.createSchemaWithTypeCPIMetadataSecStatus = true;
+        } else {
+            logcash.createSchemaWithTypeCPIMetadataSecStatus = false;
+            logcash.createSchemaWithTypeCPIMetadataSecErrorMessage =
+                'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaWithTypeCPIMetadataSec;
+        }
+        await insertDataToCPIMetaDataTableSec();
+    }
+
+    async function insertDataToCPIMetaDataTableSec() {
+        logcash.insertDataToCPIMetaDataTableSec = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadataSec.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: 'testKey4',
+                    Column1: ['Value4', 'Value5', 'Value6'],
+                    ColStr1: 'testStr1',
+                    ColStr2: 'testStr2'
+                }),
+            })
+            .then((res) => res.Body);
+        debugger;
+        if (
+            logcash.insertDataToCPIMetaDataTableSec.Column1[0] == 'Value4' &&
+            logcash.insertDataToCPIMetaDataTableSec.Column1[1] == 'Value5' &&
+            logcash.insertDataToCPIMetaDataTableSec.Column1[2] == 'Value6' &&
+            logcash.insertDataToCPIMetaDataTableSec.Key == 'testKey4' &&
+            logcash.insertDataToCPIMetaDataTableSec.ColStr1 == 'testStr1'&&
+            logcash.insertDataToCPIMetaDataTableSec.ColStr2 == 'testStr2'
+        ) {
+            logcash.insertDataToCPIMetaDataTableSecStatus = true;
+        } else {
+            logcash.insertDataToCPIMetaDataTableSecStatus = false;
+            logcash.insertDataToCPIMetaDataTableSecError =
+                'One of parameters is wrong: ' + logcash.insertDataToCPIMetaDataTableSec;
+        }
+        await getDataFromCPIMetaDataTableSec();
+    }
+
+    async function getDataFromCPIMetaDataTableSec() {
+        logcash.getDataFromCPIMetaDataTableSecStatus = true;
+        logcash.getDataFromCPIMetaDataTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadataSec.Name +
+            "?where=Key LIKE '%Key4%'", {
+
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        debugger;
+        for (const key in logcash.getDataFromCPIMetaDataTableSec[0]) {
+            if (key == 'Column1') {
+                for (let index = 0; index < logcash.getDataFromCPIMetaDataTableSec[0].Column1.length; index++) {
+                    if (
+                        logcash.getDataFromCPIMetaDataTableSec[0].Column1[index] !=
+                        logcash.insertDataToCPIMetaDataTableSec[key][index]
+                    ) {
+                        logcash.getDataFromCPIMetaDataTableSecStatus = false;
+                        logcash.getDataFromCPIMetaDataTableSecError =
+                            'Objects (fields data) between POST body and get is different.Post result is: ' +
+                            logcash.insertDataToCPIMetaDataTableSec +
+                            'Get result: ' +
+                            logcash.getDataFromCPIMetaDataTableSec;
+                    }
+                }
+            } else {
+                if (logcash.insertDataToCPIMetaDataTableSec[key] != logcash.getDataFromCPIMetaDataTableSec[0][key]) {
+                    logcash.getDataFromCPIMetaDataTableSecStatus = false;
+                    logcash.getDataFromCPIMetaDataTableSecError =
+                        'Objects (fields data) between POST body and get is different.Post result is: ' +
+                        logcash.insertDataToCPIMetaDataTableSec +
+                        'Get result: ' +
+                        logcash.getDataFromCPIMetaDataTableSec;
+                }
+            }
+            //debugger;
+        }
+
+        //await getDataFromUDTTable();
+    }
+    //#endregion CPI_meta_data where clause 
 }
