@@ -8,9 +8,10 @@ export class AddonRelationService {
     constructor(public service: GeneralService) {
         this.papiClient = service.papiClient;
         this.generalService = service;
+        this.papiClient['addonUUID'] ='eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
     }
 
-    getRelations(options?: FindOptions): Promise<Relation[]> {
+    getRelationSDK(options?: FindOptions): Promise<Relation[]> {
         return this.papiClient.addons.data.relations.find(options);
     }
 
@@ -23,9 +24,9 @@ export class AddonRelationService {
             .then((res) => res.Body);
     }
 
-    // async getRelation2(options, headers?: { [key: string]: string }) {
-    //     return this.papiClient.addons.data.relations.get(options, headers);
-    // }
+    async postRelationSDK(body:Relation) {
+        return this.papiClient.addons.data.relations.upsert(body);
+    }
 
     async getRelationWithName(headers: { [key: string]: string }, name: string) {
         return this.generalService
