@@ -485,14 +485,14 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                         expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             '00000000-0000-0000-0000-000000000000',
                         );
                         expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
                         expect(schema[1].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[1].Message.FilterAttributes.Action).to.equal('insert');
-                        expect(schema[1].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it('Upgrade Addon', async () => {
@@ -549,9 +549,12 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["SystemData","ModificationDate","Version","LastUpgradeDateTime"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'SystemData',
+                            'ModificationDate',
+                            'Version',
+                            'LastUpgradeDateTime',
+                        ]);
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
                             'Pepperitest Test Version ',
                         );
@@ -634,9 +637,12 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["SystemData","ModificationDate","Version","LastUpgradeDateTime"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'SystemData',
+                            'ModificationDate',
+                            'Version',
+                            'LastUpgradeDateTime',
+                        ]);
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
                             'Pepperitest Test Version ',
                         );
@@ -712,9 +718,10 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["Hidden","ModificationDate"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'Hidden',
+                            'ModificationDate',
+                        ]);
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.be.true;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.be.false;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
@@ -819,6 +826,7 @@ export async function PepperiNotificationServiceTests(
                             Type: 'data',
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
+                                Resource: ['schemes' as ResourceTypes],
                                 AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
                             },
                             Name: 'Test_Update_PNS',
@@ -865,7 +873,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('insert');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it(`Create New Schema`, async () => {
@@ -913,9 +921,11 @@ export async function PepperiNotificationServiceTests(
                         );
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["ModificationActionUUID","ModificationDateTime","Values"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'ModificationActionUUID',
+                            'ModificationDateTime',
+                            'Values',
+                        ]);
                     });
 
                     it(`Delete New Schema`, async () => {
@@ -951,7 +961,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('remove');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it(`Unsubscribe And Validate Get With Where (DI-18054)`, async () => {
@@ -961,6 +971,7 @@ export async function PepperiNotificationServiceTests(
                             Hidden: true,
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
+                                Resource: ['schemes' as ResourceTypes],
                                 AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
                             },
                             Name: 'Test_Update_PNS',

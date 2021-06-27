@@ -48,7 +48,8 @@ export declare type ResourceTypes =
     | 'user_defined_tables'
     | 'users'
     | 'data_views'
-    | 'installed_addons';
+    | 'installed_addons'
+    | 'schemes';
 
 export default class GeneralService {
     papiClient: PapiClient;
