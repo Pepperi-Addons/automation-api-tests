@@ -4,7 +4,6 @@ import { Item, User, Account } from '@pepperi-addons/papi-sdk';
 
 export async function CPINodeTests(generalService: GeneralService, tester: TesterFunctions) {
     const cpiNodeService = new CPINodeService(generalService.papiClient);
-    //const clientService = generalService; // only use to execute tests on specifc clients - canceled on 04/02/2021
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
