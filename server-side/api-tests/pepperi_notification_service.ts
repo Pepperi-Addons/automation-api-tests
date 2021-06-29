@@ -106,6 +106,14 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            });
 
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Test_Update_PNS',
@@ -114,6 +122,14 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            });
                     });
 
                     it('Create Transaction', async () => {
@@ -128,6 +144,7 @@ export async function PepperiNotificationServiceTests(
                             ExternalID: transactionExternalID,
                             ActivityTypeID: atdArr[0].TypeID,
                             Status: 1,
+                            TaxPercentage: 0,
                             Account: {
                                 Data: {
                                     InternalID: transactionAccount.InternalID,
@@ -372,6 +389,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['installed_addons' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            });
 
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Test_Update_PNS',
@@ -380,6 +403,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['installed_addons' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            });
                     });
 
                     it('Create Addon', async () => {
@@ -836,6 +865,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['schemes' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            });
 
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Test_Update_PNS',
@@ -844,6 +879,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['schemes' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            });
                     });
 
                     it(`Create New Schema`, async () => {
@@ -992,6 +1033,61 @@ export async function PepperiNotificationServiceTests(
             });
 
             describe(`Bugs Verification Scenarios`, () => {
+                it(`AddonUUID Is Mandatory When Resource Is Used (DI-18240)`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Resource: ['transactions' as ResourceTypes],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                            // AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    expect(pepperiNotificationServiceService.subscribe(subscriptionBody)).eventually.to.be.rejectedWith(
+                        'https://papi.staging.pepperi.com/V1.0/notification/subscriptions failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: User cannot subscribe to resource without provide addon uuid and the opposite"',
+                    );
+                });
+
+                it(`AddonUUID Is Not Mandatory When Resource Is Not Used (DI-18240)`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                    expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+
+                    expect(subscribeResponse)
+                        .to.have.property('FilterPolicy')
+                        .to.deep.equal({
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                        });
+
+                    const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                        'Test_Update_PNS',
+                    );
+                    expect(getSubscribeResponse[0])
+                        .to.have.property('Name')
+                        .a('string')
+                        .that.is.equal(subscriptionBody.Name);
+
+                    expect(getSubscribeResponse[0])
+                        .to.have.property('FilterPolicy')
+                        .to.deep.equal({
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                        });
+                });
+
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
                     let deleteAddon = await generalService.papiClient
                         .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')

@@ -56,7 +56,7 @@ export class NucRecoveryService {
 
     putSync(putData: PutData, PutID: number) {
         return this.generalService
-            .fetchStatus(`https://papi.staging.pepperi.com/V1.0/wacd/PutSync/${PutID}`, {
+            .fetchStatus(`${this.generalService['client'].BaseURL}/wacd/PutSync/${PutID}`, {
                 method: `POST`,
                 headers: {
                     Authorization: this.Authorization,
