@@ -307,7 +307,6 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             createdTransaction.UUID,
                         );
-                        debugger;
                         expect(schema[1]).to.be.undefined;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
                             {
