@@ -493,6 +493,31 @@ export async function PepperiNotificationServiceTests(
                         expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
                     });
 
+                    it('Subscribe With New Addon', async () => {
+                        const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
+                        const subscriptionBody: Subscription = {
+                            AddonRelativeURL: '/test',
+                            Type: 'data',
+                            AddonUUID: createdAddon.Body.UUID,
+                            FilterPolicy: {},
+                            Name: 'Subscription_Removal_Test',
+                        };
+
+                        const subscribeResponse = await generalService.fetchStatus('/notification/subscriptions', {
+                            method: 'POST',
+                            body: JSON.stringify(subscriptionBody),
+                            headers: {
+                                'X-Pepperi-OwnerID': createdAddon.Body.UUID,
+                                'X-Pepperi-SecretKey': addonSK,
+                            },
+                        });
+                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                            'Subscription_Removal_Test',
+                        );
+                        debugger;
+                        //expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
+                    });
+
                     it('Validate PNS Triggered After Addon Installation', async () => {
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
