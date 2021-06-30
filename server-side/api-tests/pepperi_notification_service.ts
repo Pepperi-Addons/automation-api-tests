@@ -1047,7 +1047,7 @@ export async function PepperiNotificationServiceTests(
                         Name: 'Test_Update_PNS',
                     };
                     expect(pepperiNotificationServiceService.subscribe(subscriptionBody)).eventually.to.be.rejectedWith(
-                        'https://papi.staging.pepperi.com/V1.0/notification/subscriptions failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: User cannot subscribe to resource without provide addon uuid and the opposite"',
+                        'notification/subscriptions failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: User cannot subscribe to resource without provide addon uuid and the opposite"',
                     );
                 });
 
