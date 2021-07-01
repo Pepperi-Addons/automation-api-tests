@@ -47,7 +47,9 @@ export declare type ResourceTypes =
     | 'all_activities'
     | 'user_defined_tables'
     | 'users'
-    | 'data_views';
+    | 'data_views'
+    | 'installed_addons'
+    | 'schemes';
 
 export default class GeneralService {
     papiClient: PapiClient;
@@ -67,6 +69,21 @@ export default class GeneralService {
             expire = start + ms;
         while (new Date().getTime() < expire) {}
         return;
+    }
+
+    getSecretKey(addonUUID: string): Promise<string> {
+        return this.papiClient
+            .post('/code_jobs/get_data_for_job_execution', {
+                JobMessageData: {
+                    UUID: '00000000-0000-0000-0000-000000000000',
+                    MessageType: 'AddonMessage',
+                    AddonData: {
+                        AddonUUID: addonUUID,
+                        AddonPath: 0,
+                    },
+                },
+            })
+            .then((res) => res.ClientObject.AddonSecretKey);
     }
 
     CalculateUsedMemory() {

@@ -33,7 +33,6 @@ export async function DataViewsTestsNegative(generalService: GeneralService, tes
 
 export async function DataViewsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new DataViewsService(generalService.papiClient);
-    //const clientService = generalService; // only use to execute tests on specifc clients - canceled on 04/02/2021
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
