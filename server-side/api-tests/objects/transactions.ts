@@ -1076,7 +1076,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('transaction_lines');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include([
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
                 'UnitsQuantity',
                 'TSACheckboxAPI',
                 'TSACurrencyAPI',
@@ -1160,7 +1160,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('transaction_lines');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include(['Hidden']);
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
         });
 
         // it('Check Hidden=false after update', async () => {
@@ -1381,7 +1381,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('transactions');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include([
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
                 'Status',
                 'TSACheckboxAPI',
                 'TSACurrencyAPI',
@@ -1467,7 +1467,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('transactions');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include(['Hidden']);
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
         });
 
         it('Check Hidden=false after update', async () => {

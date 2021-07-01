@@ -687,7 +687,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('contacts');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include([
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
                 'Email',
                 'Phone',
                 'Mobile',
@@ -746,7 +746,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('contacts');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include(['Hidden']);
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
         });
 
         it('Check Hidden=false after update', async () => {

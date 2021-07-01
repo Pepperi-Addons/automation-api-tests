@@ -709,7 +709,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('activities');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include([
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
                 'Status',
                 'Title',
                 'TSACheckboxAPI',
@@ -787,7 +787,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('activities');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include(['Hidden']);
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
         });
 
         it('Check Hidden=false after update', async () => {

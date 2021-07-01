@@ -809,7 +809,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include([
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
                 'City',
                 'Debts30',
                 'Debts60',
@@ -878,7 +878,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             ]);
             expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
             expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.include(['Hidden']);
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
         });
 
         it(`Unsubscribe from PNS`, async () => {
