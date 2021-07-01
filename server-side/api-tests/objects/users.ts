@@ -1,14 +1,14 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
-import { Subscription } from '@pepperi-addons/papi-sdk';
-import { ADALService } from '../../services/adal.service';
-import { PepperiNotificationServiceService } from '../../services/pepperi-notification-service.service';
+// import { Subscription } from '@pepperi-addons/papi-sdk';
+// import { ADALService } from '../../services/adal.service';
+// import { PepperiNotificationServiceService } from '../../services/pepperi-notification-service.service';
 
 export async function UsersTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
-    const adalService = new ADALService(generalService.papiClient);
-    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
-    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+    // const adalService = new ADALService(generalService.papiClient);
+    // const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
+    // const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -20,8 +20,8 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
         let updatedUser;
         let userExternalID;
         let userEmail;
-        const schemaName = 'PNS Objects Test';
-        const _MAX_LOOPS = 12;
+        // const schemaName = 'PNS Objects Test';
+        // const _MAX_LOOPS = 12;
 
         it('Get initial user quantity and verify user object', async () => {
             initialUsersList = await service.getUsers();
