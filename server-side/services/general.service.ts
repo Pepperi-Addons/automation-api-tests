@@ -175,7 +175,7 @@ export default class GeneralService {
             console.log('Status ID is 2, Retray ' + loopsAmount + ' Times.');
             while (auditLogResponse.Status.ID == '2' && loopsCounter < loopsAmount) {
                 auditLogResponse = await this.papiClient.get(uri);
-                this.sleep(2000)
+                this.sleep(2000);
                 loopsCounter++;
             }
         }

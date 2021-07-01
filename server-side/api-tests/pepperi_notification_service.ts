@@ -69,281 +69,281 @@ export async function PepperiNotificationServiceTests(
             }
 
             describe(`Subscription And Trigger Scenarios`, () => {
-                // describe(`Transactions (DI-17682)`, () => {
-                //     it(`Reset Schema`, async () => {
-                //         const schemaNameArr = [schemaName];
-                //         let purgedSchema;
-                //         for (let index = 0; index < schemaNameArr.length; index++) {
-                //             try {
-                //                 purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
-                //             } catch (error) {
-                //                 expect(error.message).to.includes(
-                //                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                //                 );
-                //             }
-                //             const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-                //             expect(purgedSchema).to.equal('');
-                //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
-                //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
-                //         }
-                //     });
+                describe(`Transactions (DI-17682)`, () => {
+                    it(`Reset Schema`, async () => {
+                        const schemaNameArr = [schemaName];
+                        let purgedSchema;
+                        for (let index = 0; index < schemaNameArr.length; index++) {
+                            try {
+                                purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
+                            } catch (error) {
+                                expect(error.message).to.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                );
+                            }
+                            const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
+                            expect(purgedSchema).to.equal('');
+                            expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
+                            expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
+                        }
+                    });
 
-                //     it(`Subscribe And Validate Get With Where (DI-18054)`, async () => {
-                //         const subscriptionBody: Subscription = {
-                //             AddonRelativeURL: '/logger/update_pns_test',
-                //             Type: 'data',
-                //             AddonUUID: PepperiOwnerID,
-                //             FilterPolicy: {
-                //                 Resource: ['transactions' as ResourceTypes],
-                //                 Action: ['update'],
-                //                 ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
-                //                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                //             },
-                //             Name: 'Test_Update_PNS',
-                //         };
-                //         const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-                //         expect(subscribeResponse)
-                //             .to.have.property('Name')
-                //             .a('string')
-                //             .that.is.equal(subscriptionBody.Name);
-                //         expect(subscribeResponse)
-                //             .to.have.property('FilterPolicy')
-                //             .to.deep.equal({
-                //                 Resource: ['transactions' as ResourceTypes],
-                //                 Action: ['update'],
-                //                 ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
-                //                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                //             });
+                    it(`Subscribe And Validate Get With Where (DI-18054)`, async () => {
+                        const subscriptionBody: Subscription = {
+                            AddonRelativeURL: '/logger/update_pns_test',
+                            Type: 'data',
+                            AddonUUID: PepperiOwnerID,
+                            FilterPolicy: {
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            },
+                            Name: 'Test_Update_PNS',
+                        };
+                        const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                        expect(subscribeResponse)
+                            .to.have.property('Name')
+                            .a('string')
+                            .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            });
 
-                //         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                //             'Test_Update_PNS',
-                //         );
-                //         expect(getSubscribeResponse[0])
-                //             .to.have.property('Name')
-                //             .a('string')
-                //             .that.is.equal(subscriptionBody.Name);
-                //         expect(getSubscribeResponse[0])
-                //             .to.have.property('FilterPolicy')
-                //             .to.deep.equal({
-                //                 Resource: ['transactions' as ResourceTypes],
-                //                 Action: ['update'],
-                //                 ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
-                //                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                //             });
-                //     });
+                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                            'Test_Update_PNS',
+                        );
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('Name')
+                            .a('string')
+                            .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            });
+                    });
 
-                //     it('Create Transaction', async () => {
-                //         atdArr = await objectsService.getATD('transactions');
-                //         transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
-                //             return res[0];
-                //         });
-                //         transactionExternalID =
-                //             'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
-                //         catalogArr = await generalService.getCatalogs();
-                //         createdTransaction = await objectsService.createTransaction({
-                //             ExternalID: transactionExternalID,
-                //             ActivityTypeID: atdArr[0].TypeID,
-                //             Status: 1,
-                //             TaxPercentage: 0,
-                //             Account: {
-                //                 Data: {
-                //                     InternalID: transactionAccount.InternalID,
-                //                 },
-                //             },
-                //             Catalog: {
-                //                 Data: {
-                //                     ExternalID: catalogArr[0].ExternalID,
-                //                 },
-                //             },
-                //         });
+                    it('Create Transaction', async () => {
+                        atdArr = await objectsService.getATD('transactions');
+                        transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
+                            return res[0];
+                        });
+                        transactionExternalID =
+                            'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+                        catalogArr = await generalService.getCatalogs();
+                        createdTransaction = await objectsService.createTransaction({
+                            ExternalID: transactionExternalID,
+                            ActivityTypeID: atdArr[0].TypeID,
+                            Status: 1,
+                            TaxPercentage: 0,
+                            Account: {
+                                Data: {
+                                    InternalID: transactionAccount.InternalID,
+                                },
+                            },
+                            Catalog: {
+                                Data: {
+                                    ExternalID: catalogArr[0].ExternalID,
+                                },
+                            },
+                        });
 
-                //         const getCreatedTransactionResponse = await objectsService.getTransaction({
-                //             where: `InternalID=${createdTransaction.InternalID}`,
-                //         });
+                        const getCreatedTransactionResponse = await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        });
 
-                //         return Promise.all([
-                //             expect(getCreatedTransactionResponse[0]).to.include({
-                //                 ExternalID: transactionExternalID,
-                //                 ActivityTypeID: atdArr[0].TypeID,
-                //                 Status: 1,
-                //             }),
-                //             expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
-                //                 JSON.stringify({
-                //                     Data: {
-                //                         InternalID: transactionAccount.InternalID,
-                //                         UUID: transactionAccount.UUID,
-                //                         ExternalID: transactionAccount.ExternalID,
-                //                     },
-                //                     URI: '/accounts/' + transactionAccount.InternalID,
-                //                 }),
-                //             ),
-                //             expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
-                //             expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
-                //             expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
-                //                 new Date().toISOString().split('T')[0],
-                //             ),
-                //             expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
-                //             expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
-                //                 new Date().toISOString().split('T')[0],
-                //             ),
-                //             expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
-                //             expect(getCreatedTransactionResponse[0].Archive).to.be.false,
-                //             expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
-                //             expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
-                //             expect(getCreatedTransactionResponse[0].Agent).to.be.null,
-                //             expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
-                //             expect(getCreatedTransactionResponse[0].Creator).to.be.null,
-                //             expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
-                //             expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
-                //                 URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
-                //             }),
-                //         ]);
-                //     });
+                        return Promise.all([
+                            expect(getCreatedTransactionResponse[0]).to.include({
+                                ExternalID: transactionExternalID,
+                                ActivityTypeID: atdArr[0].TypeID,
+                                Status: 1,
+                            }),
+                            expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
+                                JSON.stringify({
+                                    Data: {
+                                        InternalID: transactionAccount.InternalID,
+                                        UUID: transactionAccount.UUID,
+                                        ExternalID: transactionAccount.ExternalID,
+                                    },
+                                    URI: '/accounts/' + transactionAccount.InternalID,
+                                }),
+                            ),
+                            expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
+                            expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
+                            expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
+                                new Date().toISOString().split('T')[0],
+                            ),
+                            expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
+                            expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
+                                new Date().toISOString().split('T')[0],
+                            ),
+                            expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
+                            expect(getCreatedTransactionResponse[0].Archive).to.be.false,
+                            expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
+                            expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
+                            expect(getCreatedTransactionResponse[0].Agent).to.be.null,
+                            expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
+                            expect(getCreatedTransactionResponse[0].Creator).to.be.null,
+                            expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
+                            expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
+                                URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
+                            }),
+                        ]);
+                    });
 
-                //     it('Update Transaction', async () => {
-                //         const updatedTransaction = await objectsService.createTransaction({
-                //             InternalID: createdTransaction.InternalID,
-                //             Remark: 'PNS Tests',
-                //             TaxPercentage: 95,
-                //             ExternalID: `(Deleted) ${createdTransaction.ExternalID}`,
-                //         });
+                    it('Update Transaction', async () => {
+                        const updatedTransaction = await objectsService.createTransaction({
+                            InternalID: createdTransaction.InternalID,
+                            Remark: 'PNS Tests',
+                            TaxPercentage: 95,
+                            ExternalID: `(Deleted) ${createdTransaction.ExternalID}`,
+                        });
 
-                //         expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
-                //     });
+                        expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                    });
 
-                //     it('Validate PNS Triggered After Update', async () => {
-                //         let schema;
-                //         let maxLoopsCounter = _MAX_LOOPS;
-                //         do {
-                //             generalService.sleep(1500);
-                //             schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                //                 order_by: 'CreationDateTime DESC',
-                //             });
-                //             maxLoopsCounter--;
-                //         } while (
-                //             !schema[0] ||
-                //             (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0)
-                //         );
-                //         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                //         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                //             createdTransaction.UUID,
-                //         );
-                //         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
-                //             {
-                //                 NewValue: 'PNS Tests',
-                //                 OldValue: '',
-                //                 FieldID: 'Remark',
-                //             },
-                //             {
-                //                 NewValue: 95,
-                //                 OldValue: 0,
-                //                 FieldID: 'TaxPercentage',
-                //             },
-                //             {
-                //                 NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
-                //                 OldValue: createdTransaction.ExternalID,
-                //                 FieldID: 'ExternalID',
-                //             },
-                //             {
-                //                 NewValue: null,
-                //                 OldValue: 1,
-                //                 FieldID: 'CatalogPriceFactor',
-                //             },
-                //         ]);
-                //     });
+                    it('Validate PNS Triggered After Update', async () => {
+                        let schema;
+                        let maxLoopsCounter = _MAX_LOOPS;
+                        do {
+                            generalService.sleep(1500);
+                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                order_by: 'CreationDateTime DESC',
+                            });
+                            maxLoopsCounter--;
+                        } while (
+                            !schema[0] ||
+                            (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0)
+                        );
+                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                            createdTransaction.UUID,
+                        );
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                            {
+                                NewValue: 'PNS Tests',
+                                OldValue: '',
+                                FieldID: 'Remark',
+                            },
+                            {
+                                NewValue: 95,
+                                OldValue: 0,
+                                FieldID: 'TaxPercentage',
+                            },
+                            {
+                                NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+                                OldValue: createdTransaction.ExternalID,
+                                FieldID: 'ExternalID',
+                            },
+                            {
+                                NewValue: null,
+                                OldValue: 1,
+                                FieldID: 'CatalogPriceFactor',
+                            },
+                        ]);
+                    });
 
-                //     it(`Unsubscribe And Validate Get With Where (DI-18054)`, async () => {
-                //         const subscriptionBody: Subscription = {
-                //             AddonRelativeURL: '/logger/update_pns_test',
-                //             Type: 'data',
-                //             Hidden: true,
-                //             AddonUUID: PepperiOwnerID,
-                //             FilterPolicy: {
-                //                 Resource: ['transactions' as ResourceTypes],
-                //                 Action: ['update'],
-                //                 ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
-                //                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
-                //             },
-                //             Name: 'Test_Update_PNS',
-                //         };
-                //         const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
-                //         expect(subscribeResponse)
-                //             .to.have.property('Name')
-                //             .a('string')
-                //             .that.is.equal(subscriptionBody.Name);
-                //         expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
+                    it(`Unsubscribe And Validate Get With Where (DI-18054)`, async () => {
+                        const subscriptionBody: Subscription = {
+                            AddonRelativeURL: '/logger/update_pns_test',
+                            Type: 'data',
+                            Hidden: true,
+                            AddonUUID: PepperiOwnerID,
+                            FilterPolicy: {
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            },
+                            Name: 'Test_Update_PNS',
+                        };
+                        const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                        expect(subscribeResponse)
+                            .to.have.property('Name')
+                            .a('string')
+                            .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
 
-                //         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                //             'Test_Update_PNS',
-                //         );
-                //         expect(getSubscribeResponse).to.deep.equal([]);
-                //     });
+                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                            'Test_Update_PNS',
+                        );
+                        expect(getSubscribeResponse).to.deep.equal([]);
+                    });
 
-                //     it('Update Transaction', async () => {
-                //         const updatedTransaction = await objectsService.createTransaction({
-                //             InternalID: createdTransaction.InternalID,
-                //             Remark: 'PNS Negatice Tests',
-                //             TaxPercentage: 50,
-                //             ExternalID: `(Test) ${createdTransaction.ExternalID}`,
-                //         });
+                    it('Update Transaction', async () => {
+                        const updatedTransaction = await objectsService.createTransaction({
+                            InternalID: createdTransaction.InternalID,
+                            Remark: 'PNS Negatice Tests',
+                            TaxPercentage: 50,
+                            ExternalID: `(Test) ${createdTransaction.ExternalID}`,
+                        });
 
-                //         expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
-                //     });
+                        expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+                    });
 
-                //     it('Validate PNS Not Triggered After Update', async () => {
-                //         let schema;
-                //         let maxLoopsCounter = _MAX_LOOPS;
-                //         do {
-                //             generalService.sleep(1500);
-                //             schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                //                 order_by: 'CreationDateTime DESC',
-                //             });
-                //             maxLoopsCounter--;
-                //         } while (
-                //             (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
-                //             maxLoopsCounter > 0
-                //         );
-                //         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                //         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                //             createdTransaction.UUID,
-                //         );
-                //         expect(schema[1]).to.be.undefined;
-                //         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
-                //             {
-                //                 NewValue: 'PNS Tests',
-                //                 OldValue: '',
-                //                 FieldID: 'Remark',
-                //             },
-                //             {
-                //                 NewValue: 95,
-                //                 OldValue: 0,
-                //                 FieldID: 'TaxPercentage',
-                //             },
-                //             {
-                //                 NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
-                //                 OldValue: createdTransaction.ExternalID,
-                //                 FieldID: 'ExternalID',
-                //             },
-                //             {
-                //                 NewValue: null,
-                //                 OldValue: 1,
-                //                 FieldID: 'CatalogPriceFactor',
-                //             },
-                //         ]);
-                //     });
+                    it('Validate PNS Not Triggered After Update', async () => {
+                        let schema;
+                        let maxLoopsCounter = _MAX_LOOPS;
+                        do {
+                            generalService.sleep(1500);
+                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                                order_by: 'CreationDateTime DESC',
+                            });
+                            maxLoopsCounter--;
+                        } while (
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                            maxLoopsCounter > 0
+                        );
+                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                            createdTransaction.UUID,
+                        );
+                        expect(schema[1]).to.be.undefined;
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                            {
+                                NewValue: 'PNS Tests',
+                                OldValue: '',
+                                FieldID: 'Remark',
+                            },
+                            {
+                                NewValue: 95,
+                                OldValue: 0,
+                                FieldID: 'TaxPercentage',
+                            },
+                            {
+                                NewValue: `(Deleted) ${createdTransaction.ExternalID}`,
+                                OldValue: createdTransaction.ExternalID,
+                                FieldID: 'ExternalID',
+                            },
+                            {
+                                NewValue: null,
+                                OldValue: 1,
+                                FieldID: 'CatalogPriceFactor',
+                            },
+                        ]);
+                    });
 
-                //     it('Delete transaction', async () => {
-                //         expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                //             expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                //             expect(
-                //                 await objectsService.getTransaction({
-                //                     where: `InternalID=${createdTransaction.InternalID}`,
-                //                 }),
-                //             )
-                //                 .to.be.an('array')
-                //                 .with.lengthOf(0);
-                //     });
-                // });
+                    it('Delete transaction', async () => {
+                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
+                            expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
+                            expect(
+                                await objectsService.getTransaction({
+                                    where: `InternalID=${createdTransaction.InternalID}`,
+                                }),
+                            )
+                                .to.be.an('array')
+                                .with.lengthOf(0);
+                    });
+                });
 
                 describe(`Addons`, () => {
                     let createdAddon;
@@ -503,7 +503,7 @@ export async function PepperiNotificationServiceTests(
                             Name: 'Subscription_Removal_Test',
                         };
 
-                        const subscribeResponse = await generalService.fetchStatus('/notification/subscriptions', {
+                        await generalService.fetchStatus('/notification/subscriptions', {
                             method: 'POST',
                             body: JSON.stringify(subscriptionBody),
                             headers: {
@@ -516,12 +516,10 @@ export async function PepperiNotificationServiceTests(
                         );
 
                         expect(getSubscribeResponse[0])
-                        .to.have.property('Name')
-                        .a('string')
-                        .that.is.equal(subscriptionBody.Name);
-                    expect(getSubscribeResponse[0])
-                        .to.have.property('FilterPolicy')
-                        .to.deep.equal({});
+                            .to.have.property('Name')
+                            .a('string')
+                            .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0]).to.have.property('FilterPolicy').to.deep.equal({});
                     });
 
                     it('Validate PNS Triggered After Addon Installation', async () => {
@@ -1130,12 +1128,16 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
-                    const uninstalledAddon = await generalService.papiClient
-                        .addons.installedAddons.addonUUID('00000000-0000-0000-0000-000000040fa9').uninstall();
+                    const uninstalledAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID('00000000-0000-0000-0000-000000040fa9')
+                        .uninstall();
 
                     expect(uninstalledAddon).to.have.property('URI');
 
-                    const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(uninstalledAddon.URI, 40)
+                    const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        uninstalledAddon.URI,
+                        40,
+                    );
                     expect(postAddonApiResponse.Status.ID).to.be.equal(1);
 
                     const deleteAddon = await generalService.papiClient
