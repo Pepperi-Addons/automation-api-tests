@@ -782,7 +782,6 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             installedAddon.UUID,
                         );
-                        debugger;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
