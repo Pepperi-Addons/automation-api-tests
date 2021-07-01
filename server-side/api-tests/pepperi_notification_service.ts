@@ -503,7 +503,7 @@ export async function PepperiNotificationServiceTests(
                             Name: 'Subscription_Removal_Test',
                         };
 
-                        const subscribeResponse = await generalService.fetchStatus('/notification/subscriptions', {
+                        await generalService.fetchStatus('/notification/subscriptions', {
                             method: 'POST',
                             body: JSON.stringify(subscriptionBody),
                             headers: {
@@ -514,8 +514,12 @@ export async function PepperiNotificationServiceTests(
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Subscription_Removal_Test',
                         );
-                        debugger;
-                        //expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
+
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('Name')
+                            .a('string')
+                            .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0]).to.have.property('FilterPolicy').to.deep.equal({});
                     });
 
                     it('Validate PNS Triggered After Addon Installation', async () => {
@@ -752,6 +756,15 @@ export async function PepperiNotificationServiceTests(
                         expect(postUninstallAddonApiResponse).to.have.property('URI');
                     });
 
+                    it('Validate Subscription Removed After Addon Uninstall (DI-17910)', async () => {
+                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                            'Subscription_Removal_Test',
+                        );
+                        debugger; //Known bug, wait for it to be sovled
+                        //https://pepperi.atlassian.net/browse/DI-17910
+                        expect(getSubscribeResponse).to.deep.equal([]);
+                    });
+
                     it('Validate PNS Triggered After Addon Uninstall', async () => {
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
@@ -769,6 +782,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             installedAddon.UUID,
                         );
+                        debugger;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
@@ -1114,14 +1128,19 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
-                    let deleteAddon = await generalService.papiClient
-                        .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
-                        .then((res) => res.text())
-                        .then((res) => (res ? JSON.parse(res) : ''));
+                    const uninstalledAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID('00000000-0000-0000-0000-000000040fa9')
+                        .uninstall();
 
-                    await expect(deleteAddon).to.have.property('Status').that.is.true;
+                    expect(uninstalledAddon).to.have.property('URI');
 
-                    deleteAddon = await generalService.papiClient
+                    const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        uninstalledAddon.URI,
+                        40,
+                    );
+                    expect(postAddonApiResponse.Status.ID).to.be.equal(1);
+
+                    const deleteAddon = await generalService.papiClient
                         .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
                         .catch((res) => res);
 
@@ -1129,8 +1148,8 @@ export async function PepperiNotificationServiceTests(
                         'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Current user cannot delete this, or UUID was not in the database',
                     );
 
-                    deleteAddon = await generalService.areAddonsInstalled(testData);
-                    await expect(deleteAddon[0]).to.be.true;
+                    const installAddon = await generalService.areAddonsInstalled(testData);
+                    await expect(installAddon[0]).to.be.true;
                 });
             });
         });
