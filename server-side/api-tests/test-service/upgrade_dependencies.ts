@@ -36,8 +36,9 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '1.',
         ],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     };
-
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, true);

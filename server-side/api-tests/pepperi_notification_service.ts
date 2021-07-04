@@ -493,7 +493,7 @@ export async function PepperiNotificationServiceTests(
                         expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
                     });
 
-                    it('Subscribe With New Addon', async () => {
+                    it('Subscribe With New Addon With Wrong AddonRelativeURL (Negative)', async () => {
                         const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/test',
@@ -503,14 +503,49 @@ export async function PepperiNotificationServiceTests(
                             Name: 'Subscription_Removal_Test',
                         };
 
-                        await generalService.fetchStatus('/notification/subscriptions', {
-                            method: 'POST',
-                            body: JSON.stringify(subscriptionBody),
-                            headers: {
-                                'X-Pepperi-OwnerID': createdAddon.Body.UUID,
-                                'X-Pepperi-SecretKey': addonSK,
+                        const negativeSubsciptionPostResponse = await generalService.fetchStatus(
+                            '/notification/subscriptions',
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(subscriptionBody),
+                                headers: {
+                                    'X-Pepperi-OwnerID': createdAddon.Body.UUID,
+                                    'X-Pepperi-SecretKey': addonSK,
+                                },
                             },
-                        });
+                        );
+
+                        expect(negativeSubsciptionPostResponse.Status).to.equal(400);
+                        expect(negativeSubsciptionPostResponse.Body.fault.faultstring).to.contain(
+                            'Failed due to exception: Invalid parameter AddonRelativeURL',
+                        );
+                    });
+
+                    it('Subscribe With New Addon', async () => {
+                        const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
+                        const subscriptionBody: Subscription = {
+                            AddonRelativeURL: '/test/go',
+                            Type: 'data',
+                            AddonUUID: createdAddon.Body.UUID,
+                            FilterPolicy: {},
+                            Name: 'Subscription_Removal_Test',
+                        };
+
+                        const subsciptionPostResponse = await generalService.fetchStatus(
+                            '/notification/subscriptions',
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(subscriptionBody),
+                                headers: {
+                                    'X-Pepperi-OwnerID': createdAddon.Body.UUID,
+                                    'X-Pepperi-SecretKey': addonSK,
+                                },
+                            },
+                        );
+
+                        expect(subsciptionPostResponse.Status).to.equal(200);
+                        expect(subsciptionPostResponse.Body.Name).to.equal('Subscription_Removal_Test');
+
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Subscription_Removal_Test',
                         );
@@ -688,6 +723,7 @@ export async function PepperiNotificationServiceTests(
                             (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 4) &&
                             maxLoopsCounter > 0
                         );
+
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             installedAddon.UUID,
@@ -757,11 +793,10 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate Subscription Removed After Addon Uninstall (DI-17910)', async () => {
+                        generalService.sleep(5000);
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Subscription_Removal_Test',
                         );
-                        debugger; //Known bug, wait for it to be sovled
-                        //https://pepperi.atlassian.net/browse/DI-17910
                         expect(getSubscribeResponse).to.deep.equal([]);
                     });
 
@@ -1085,7 +1120,7 @@ export async function PepperiNotificationServiceTests(
                         Name: 'Test_Update_PNS',
                     };
                     expect(pepperiNotificationServiceService.subscribe(subscriptionBody)).eventually.to.be.rejectedWith(
-                        'notification/subscriptions failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: User cannot subscribe to resource without provide addon uuid and the opposite"',
+                        'notification/subscriptions failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Invalid parameter addon_uuid and resource, User cannot subscribe to resource without provide addon uuid and the opposite"',
                     );
                 });
 
@@ -1137,6 +1172,7 @@ export async function PepperiNotificationServiceTests(
                         uninstalledAddon.URI,
                         40,
                     );
+
                     expect(postAddonApiResponse.Status.ID).to.be.equal(1);
 
                     const deleteAddon = await generalService.papiClient
