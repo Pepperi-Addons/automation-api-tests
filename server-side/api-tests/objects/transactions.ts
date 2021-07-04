@@ -751,7 +751,6 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Validate PNS after Insert', async () => {
-            generalService.sleep(4000);
             let schema;
             let maxLoopsCounter = _MAX_LOOPS;
             do {
