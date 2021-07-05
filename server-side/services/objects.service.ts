@@ -13,6 +13,7 @@ import {
     Catalog,
     Contact,
     BatchApiResponse,
+    ArchiveBody,
 } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
@@ -182,6 +183,18 @@ export class ObjectsService {
         return this.papiClient.get('/bulk/jobinfo/' + ID);
     }
 
+    archiveTransaction(body: ArchiveBody) {
+        return this.papiClient.maintenance.archive(body);
+    }
+
+    reloadNuc() {
+        return this.papiClient.post('/deployment/reload');
+    }
+
+    getArchiveJob(URI) {
+        return this.papiClient.get(URI);
+    }
+
     createAccount(body: Account): Promise<Account> {
         return this.papiClient.accounts.upsert(body);
     }
@@ -238,6 +251,78 @@ export class ObjectsService {
         const bulkArray = [] as any;
         for (let i = 0; i < amount; i++) {
             bulkArray.push([exID + ' ' + i, 'Bulk Account ' + i, hidden]);
+        }
+        return bulkArray;
+    }
+
+    createBulkMixedArray(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            if (i % 2 == 0) {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Update' + i, '0']);
+            } else {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Ignore' + i, '1']);
+            }
+        }
+        return bulkArray;
+    }
+
+    createBulkMixedArrayStart(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            if (i < 5000) {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Update' + i, '0']);
+            } else {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Ignore' + i, '1']);
+            }
+        }
+        return bulkArray;
+    }
+
+    createBulkMixedArrayStartDelete(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            if (i < 5000) {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Update' + i, '1']);
+            } else {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Ignore' + i, '1']);
+            }
+        }
+        return bulkArray;
+    }
+
+    createBulkMixedArrayEnd(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            if (i > 5000) {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Update' + i, '0']);
+            } else {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Ignore' + i, '1']);
+            }
+        }
+        return bulkArray;
+    }
+
+    createBulkMixedArrayEndDelete(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            if (i > 5000) {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Update' + i, '1']);
+            } else {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Ignore' + i, '1']);
+            }
+        }
+        return bulkArray;
+    }
+
+    createBulkMixedArrayDelete(amount, exID) {
+        const bulkArray = [] as any;
+        for (let i = 0; i < amount; i++) {
+            if (i % 2 == 0) {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Update' + i, '1']);
+            } else {
+                bulkArray.push([exID + ' mixed ' + i, 'Bulk Account Ignore' + i, '1']);
+            }
         }
         return bulkArray;
     }

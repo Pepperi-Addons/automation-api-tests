@@ -106,6 +106,14 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            });
 
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Test_Update_PNS',
@@ -114,6 +122,14 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['transactions' as ResourceTypes],
+                                Action: ['update'],
+                                ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            });
                     });
 
                     it('Create Transaction', async () => {
@@ -128,6 +144,7 @@ export async function PepperiNotificationServiceTests(
                             ExternalID: transactionExternalID,
                             ActivityTypeID: atdArr[0].TypeID,
                             Status: 1,
+                            TaxPercentage: 0,
                             Account: {
                                 Data: {
                                     InternalID: transactionAccount.InternalID,
@@ -372,6 +389,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['installed_addons' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            });
 
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Test_Update_PNS',
@@ -380,6 +403,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['installed_addons' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            });
                     });
 
                     it('Create Addon', async () => {
@@ -464,6 +493,70 @@ export async function PepperiNotificationServiceTests(
                         expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
                     });
 
+                    it('Subscribe With New Addon With Wrong AddonRelativeURL (Negative)', async () => {
+                        const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
+                        const subscriptionBody: Subscription = {
+                            AddonRelativeURL: '/test',
+                            Type: 'data',
+                            AddonUUID: createdAddon.Body.UUID,
+                            FilterPolicy: {},
+                            Name: 'Subscription_Removal_Test',
+                        };
+
+                        const negativeSubsciptionPostResponse = await generalService.fetchStatus(
+                            '/notification/subscriptions',
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(subscriptionBody),
+                                headers: {
+                                    'X-Pepperi-OwnerID': createdAddon.Body.UUID,
+                                    'X-Pepperi-SecretKey': addonSK,
+                                },
+                            },
+                        );
+
+                        expect(negativeSubsciptionPostResponse.Status).to.equal(400);
+                        expect(negativeSubsciptionPostResponse.Body.fault.faultstring).to.contain(
+                            'Failed due to exception: Invalid parameter AddonRelativeURL',
+                        );
+                    });
+
+                    it('Subscribe With New Addon', async () => {
+                        const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
+                        const subscriptionBody: Subscription = {
+                            AddonRelativeURL: '/test/go',
+                            Type: 'data',
+                            AddonUUID: createdAddon.Body.UUID,
+                            FilterPolicy: {},
+                            Name: 'Subscription_Removal_Test',
+                        };
+
+                        const subsciptionPostResponse = await generalService.fetchStatus(
+                            '/notification/subscriptions',
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(subscriptionBody),
+                                headers: {
+                                    'X-Pepperi-OwnerID': createdAddon.Body.UUID,
+                                    'X-Pepperi-SecretKey': addonSK,
+                                },
+                            },
+                        );
+
+                        expect(subsciptionPostResponse.Status).to.equal(200);
+                        expect(subsciptionPostResponse.Body.Name).to.equal('Subscription_Removal_Test');
+
+                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                            'Subscription_Removal_Test',
+                        );
+
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('Name')
+                            .a('string')
+                            .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0]).to.have.property('FilterPolicy').to.deep.equal({});
+                    });
+
                     it('Validate PNS Triggered After Addon Installation', async () => {
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
@@ -485,14 +578,14 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                         expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             '00000000-0000-0000-0000-000000000000',
                         );
                         expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
                         expect(schema[1].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[1].Message.FilterAttributes.Action).to.equal('insert');
-                        expect(schema[1].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it('Upgrade Addon', async () => {
@@ -549,9 +642,12 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["SystemData","ModificationDate","Version","LastUpgradeDateTime"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'SystemData',
+                            'ModificationDate',
+                            'Version',
+                            'LastUpgradeDateTime',
+                        ]);
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
                             'Pepperitest Test Version ',
                         );
@@ -627,6 +723,7 @@ export async function PepperiNotificationServiceTests(
                             (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 4) &&
                             maxLoopsCounter > 0
                         );
+
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             installedAddon.UUID,
@@ -634,9 +731,12 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["SystemData","ModificationDate","Version","LastUpgradeDateTime"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'SystemData',
+                            'ModificationDate',
+                            'Version',
+                            'LastUpgradeDateTime',
+                        ]);
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
                             'Pepperitest Test Version ',
                         );
@@ -692,6 +792,14 @@ export async function PepperiNotificationServiceTests(
                         expect(postUninstallAddonApiResponse).to.have.property('URI');
                     });
 
+                    it('Validate Subscription Removed After Addon Uninstall (DI-17910)', async () => {
+                        generalService.sleep(5000);
+                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                            'Subscription_Removal_Test',
+                        );
+                        expect(getSubscribeResponse).to.deep.equal([]);
+                    });
+
                     it('Validate PNS Triggered After Addon Uninstall', async () => {
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
@@ -712,9 +820,10 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["Hidden","ModificationDate"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'Hidden',
+                            'ModificationDate',
+                        ]);
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.be.true;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.be.false;
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
@@ -819,6 +928,7 @@ export async function PepperiNotificationServiceTests(
                             Type: 'data',
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
+                                Resource: ['schemes' as ResourceTypes],
                                 AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
                             },
                             Name: 'Test_Update_PNS',
@@ -828,6 +938,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(subscribeResponse)
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['schemes' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            });
 
                         const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
                             'Test_Update_PNS',
@@ -836,6 +952,12 @@ export async function PepperiNotificationServiceTests(
                             .to.have.property('Name')
                             .a('string')
                             .that.is.equal(subscriptionBody.Name);
+                        expect(getSubscribeResponse[0])
+                            .to.have.property('FilterPolicy')
+                            .to.deep.equal({
+                                Resource: ['schemes' as ResourceTypes],
+                                AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            });
                     });
 
                     it(`Create New Schema`, async () => {
@@ -865,7 +987,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('insert');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it(`Create New Schema`, async () => {
@@ -913,9 +1035,11 @@ export async function PepperiNotificationServiceTests(
                         );
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal(
-                            '["ModificationActionUUID","ModificationDateTime","Values"]',
-                        );
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                            'ModificationActionUUID',
+                            'ModificationDateTime',
+                            'Values',
+                        ]);
                     });
 
                     it(`Delete New Schema`, async () => {
@@ -951,7 +1075,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('remove');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.equal('[]');
+                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it(`Unsubscribe And Validate Get With Where (DI-18054)`, async () => {
@@ -961,6 +1085,7 @@ export async function PepperiNotificationServiceTests(
                             Hidden: true,
                             AddonUUID: PepperiOwnerID,
                             FilterPolicy: {
+                                Resource: ['schemes' as ResourceTypes],
                                 AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
                             },
                             Name: 'Test_Update_PNS',
@@ -981,15 +1106,76 @@ export async function PepperiNotificationServiceTests(
             });
 
             describe(`Bugs Verification Scenarios`, () => {
+                it(`AddonUUID Is Mandatory When Resource Is Used (DI-18240)`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Resource: ['transactions' as ResourceTypes],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                            // AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    expect(pepperiNotificationServiceService.subscribe(subscriptionBody)).eventually.to.be.rejectedWith(
+                        'notification/subscriptions failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Invalid parameter addon_uuid and resource, User cannot subscribe to resource without provide addon uuid and the opposite"',
+                    );
+                });
+
+                it(`AddonUUID Is Not Mandatory When Resource Is Not Used (DI-18240)`, async () => {
+                    const subscriptionBody: Subscription = {
+                        AddonRelativeURL: '/logger/update_pns_test',
+                        Type: 'data',
+                        AddonUUID: PepperiOwnerID,
+                        FilterPolicy: {
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                        },
+                        Name: 'Test_Update_PNS',
+                    };
+                    const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+                    expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+
+                    expect(subscribeResponse)
+                        .to.have.property('FilterPolicy')
+                        .to.deep.equal({
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                        });
+
+                    const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                        'Test_Update_PNS',
+                    );
+                    expect(getSubscribeResponse[0])
+                        .to.have.property('Name')
+                        .a('string')
+                        .that.is.equal(subscriptionBody.Name);
+
+                    expect(getSubscribeResponse[0])
+                        .to.have.property('FilterPolicy')
+                        .to.deep.equal({
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID'],
+                        });
+                });
+
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
-                    let deleteAddon = await generalService.papiClient
-                        .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
-                        .then((res) => res.text())
-                        .then((res) => (res ? JSON.parse(res) : ''));
+                    const uninstalledAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID('00000000-0000-0000-0000-000000040fa9')
+                        .uninstall();
 
-                    await expect(deleteAddon).to.have.property('Status').that.is.true;
+                    expect(uninstalledAddon).to.have.property('URI');
 
-                    deleteAddon = await generalService.papiClient
+                    const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        uninstalledAddon.URI,
+                        40,
+                    );
+
+                    expect(postAddonApiResponse.Status.ID).to.be.equal(1);
+
+                    const deleteAddon = await generalService.papiClient
                         .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
                         .catch((res) => res);
 
@@ -997,8 +1183,8 @@ export async function PepperiNotificationServiceTests(
                         'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Current user cannot delete this, or UUID was not in the database',
                     );
 
-                    deleteAddon = await generalService.areAddonsInstalled(testData);
-                    await expect(deleteAddon[0]).to.be.true;
+                    const installAddon = await generalService.areAddonsInstalled(testData);
+                    await expect(installAddon[0]).to.be.true;
                 });
             });
         });

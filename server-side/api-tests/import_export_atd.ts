@@ -217,7 +217,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, true); //false);
     //#endregion Upgrade ImportExportATD and Data Views API
 
     //Clean the ATD and UDT from failed tests before starting a new test

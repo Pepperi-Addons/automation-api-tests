@@ -48,7 +48,8 @@ export declare type ResourceTypes =
     | 'user_defined_tables'
     | 'users'
     | 'data_views'
-    | 'installed_addons';
+    | 'installed_addons'
+    | 'schemes';
 
 export default class GeneralService {
     papiClient: PapiClient;
@@ -68,6 +69,21 @@ export default class GeneralService {
             expire = start + ms;
         while (new Date().getTime() < expire) {}
         return;
+    }
+
+    getSecretKey(addonUUID: string): Promise<string> {
+        return this.papiClient
+            .post('/code_jobs/get_data_for_job_execution', {
+                JobMessageData: {
+                    UUID: '00000000-0000-0000-0000-000000000000',
+                    MessageType: 'AddonMessage',
+                    AddonData: {
+                        AddonUUID: addonUUID,
+                        AddonPath: 0,
+                    },
+                },
+            })
+            .then((res) => res.ClientObject.AddonSecretKey);
     }
 
     CalculateUsedMemory() {
@@ -158,9 +174,8 @@ export default class GeneralService {
             loopsAmount = loopsAmount === undefined ? 2 : loopsAmount;
             console.log('Status ID is 2, Retray ' + loopsAmount + ' Times.');
             while (auditLogResponse.Status.ID == '2' && loopsCounter < loopsAmount) {
-                setTimeout(async () => {
-                    auditLogResponse = await this.papiClient.get(uri);
-                }, 2000);
+                auditLogResponse = await this.papiClient.get(uri);
+                this.sleep(2000);
                 loopsCounter++;
             }
         }
@@ -197,7 +212,8 @@ export default class GeneralService {
                 (auditLogResponse.AuditType != 'action' && auditLogResponse.AuditType != 'data') ||
                 (auditLogResponse.Event.Type != 'code_job_execution' &&
                     auditLogResponse.Event.Type != 'scheduler' &&
-                    auditLogResponse.Event.Type != 'sync') ||
+                    auditLogResponse.Event.Type != 'sync' &&
+                    auditLogResponse.Event.Type != 'deployment') ||
                 auditLogResponse.Event.User.Email != this.getClientData('UserEmail')
             ) {
                 return 'Error in Type and Event in Audit Log API Response';

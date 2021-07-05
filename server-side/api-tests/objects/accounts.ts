@@ -1,9 +1,14 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
-import { ApiFieldObject } from '@pepperi-addons/papi-sdk';
+import { ApiFieldObject, Subscription } from '@pepperi-addons/papi-sdk';
+import { ADALService } from '../../services/adal.service';
+import { PepperiNotificationServiceService } from '../../services/pepperi-notification-service.service';
 
 export async function AccountsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = new ObjectsService(generalService);
+    const adalService = new ADALService(generalService.papiClient);
+    const pepperiNotificationServiceService = new PepperiNotificationServiceService(generalService);
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -327,10 +332,52 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         let bulkJobInfo;
         let bulkAccounts;
         let bulkUpdateAccounts;
+        const schemaName = 'PNS Objects Test';
+        const _MAX_LOOPS = 12;
 
         it('Create TSAs for account CRUD', async () => {
             createdTSAs = await service.createBulkTSA('accounts', TSAarr);
             console.log('The following fields created:\n' + createdTSAs);
+        });
+
+        it(`Reset Schema for PNS`, async () => {
+            const schemaNameArr = [schemaName];
+            let purgedSchema;
+            for (let index = 0; index < schemaNameArr.length; index++) {
+                try {
+                    purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
+                } catch (error) {
+                    expect(error.message).to.includes(
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                    );
+                }
+                const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
+                expect(purgedSchema).to.equal('');
+                expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
+                expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
+            }
+        });
+
+        it(`Subscribe to PNS`, async () => {
+            const subscriptionBody: Subscription = {
+                AddonRelativeURL: '/logger/update_object_pns',
+                Type: 'data',
+                AddonUUID: PepperiOwnerID,
+                FilterPolicy: {
+                    Resource: ['accounts'],
+                    Action: ['update', 'insert', 'remove' as any],
+                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                },
+                Name: 'PNS_Objects_Test',
+            };
+
+            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+            expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+
+            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                'PNS_Objects_Test',
+            );
+            expect(getSubscribeResponse[0]).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
         });
 
         it('Create account', async () => {
@@ -383,7 +430,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
                 TSAPhoneNumberAPI: '9725554325',
                 TSASignatureAPI: {
-                    URL: 'https://capitalstars.com/qpay/assets/images/sign2.png',
+                    URL: 'https://cdn.pepperi.com/30013412/Attachments/43448bb5e0a24a448246b7bf9bc75075.png',
                     Content: '',
                 },
                 TSASingleLineAPI: 'Random text',
@@ -435,10 +482,57 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     TSASingleLineAPI: 'Random text',
                 }),
                 expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('stock-photography-slider.jpg'),
-                expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('sign2.png'),
+                // expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('cdn'),
+                expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('43448bb5e0a24a448246b7bf9bc75075.png'),
+                // expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('cdn'),
                 expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                // expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
         });
+
+        it('Validate PNS after Insert', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[0] || !schema[0].Key.startsWith('Log_Update') || schema.length < 1) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID);
+            expect(schema[1]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('insert');
+        });
+
+        // it('Verify attachment URL', async () => {
+        //     const testDataArr = [
+        //         'https://filedn.com/ltOdFv1aqz1YIFhf4gTY8D7/ingus-info/BLOGS/Photography-stocks3/stock-photography-slider.jpg',
+        //         'https://cdn.pepperi.com/30013412/Attachments/43448bb5e0a24a448246b7bf9bc75075.png',
+        //         'http://www.africau.edu/images/default/sample.pdf',
+        //     ];
+        //     const getCreatedAccount = await service.getAccounts({
+        //         where: `InternalID=${createdAccount.InternalID}`,
+        //     });
+        //     const testGetDataArr = [
+        //         getCreatedAccount[0].TSAImageAPI.URL,
+        //         getCreatedAccount[0].TSASignatureAPI.URL,
+        //         getCreatedAccount[0].TSAAttachmentAPI.URL,
+        //     ];
+
+        //     for (let index = 0; index < testDataArr.length; index++) {
+        //         const PostURL = await generalService.fetchStatus(testDataArr[index]);
+        //         const GetURL = await generalService.fetchStatus(testGetDataArr[index]);
+        //         expect(PostURL.Body.Text).to.equal(GetURL.Body.Text);
+        //         expect(PostURL.Body.Type).to.equal(GetURL.Body.Type);
+        //     }
+        // });
 
         it('Update account', async () => {
             return Promise.all([
@@ -490,7 +584,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                         TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated',
                         TSAPhoneNumberAPI: '972555432512',
                         TSASignatureAPI: {
-                            URL: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Platt_Rogers_Spencer_signature.png',
+                            URL: 'https://cdn.pepperi.com/30013412/Attachments/f8764769ecfa41a197dce41c1468aa55.png',
                             Content: '',
                         },
                         TSASingleLineAPI: 'Random TEXT',
@@ -536,8 +630,216 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     TSASingleLineAPI: 'Random TEXT',
                 }),
                 expect(updatedAccount.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
-                expect(updatedAccount.TSASignatureAPI.URL).to.include('platt_rogers_spencer_signature.png'),
+                // expect(updatedAccount.TSAImageAPI.URL).to.include('cdn'),
+                expect(updatedAccount.TSASignatureAPI.URL).to.include('f8764769ecfa41a197dce41c1468aa55.png'),
+                // expect(updatedAccount.TSASignatureAPI.URL).to.include('cdn'),
                 expect(updatedAccount.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
+                // expect(updatedAccount.TSAAttachmentAPI.URL).to.include('cdn'),
+            ]);
+        });
+
+        it('Validate PNS after Update', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[1] || !schema[0].Key.startsWith('Log_Update') || schema.length < 2) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Hidden).to.be.false;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID);
+            expect(schema[2]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                {
+                    NewValue: 'City update',
+                    OldValue: 'City',
+                    FieldID: 'City',
+                },
+                {
+                    NewValue: 35,
+                    OldValue: 30,
+                    FieldID: 'Debts30',
+                },
+                {
+                    NewValue: 65,
+                    OldValue: 60,
+                    FieldID: 'Debts60',
+                },
+                {
+                    NewValue: 95,
+                    OldValue: 90,
+                    FieldID: 'Debts90',
+                },
+                {
+                    NewValue: 105,
+                    OldValue: 100,
+                    FieldID: 'DebtsAbove90',
+                },
+                {
+                    NewValue: 15,
+                    OldValue: 10,
+                    FieldID: 'Discount',
+                },
+                {
+                    NewValue: 'Test2@test.com',
+                    OldValue: 'Test1@test.com',
+                    FieldID: 'Email',
+                },
+                {
+                    NewValue: '555-123456',
+                    OldValue: '555-1234',
+                    FieldID: 'Mobile',
+                },
+                {
+                    NewValue: updatedAccount.Name,
+                    OldValue: createdAccount.Name,
+                    FieldID: 'Name',
+                },
+                {
+                    NewValue: 'Note 5',
+                    OldValue: 'Note 1',
+                    FieldID: 'Note',
+                },
+                {
+                    NewValue: '555-43210',
+                    OldValue: '555-4321',
+                    FieldID: 'Phone',
+                },
+                {
+                    NewValue: 'Prop 11',
+                    OldValue: 'Prop 1',
+                    FieldID: 'Prop1',
+                },
+                {
+                    NewValue: 'Prop 22',
+                    OldValue: 'Prop 2',
+                    FieldID: 'Prop2',
+                },
+                {
+                    NewValue: 'Prop 33',
+                    OldValue: 'Prop 3',
+                    FieldID: 'Prop3',
+                },
+                {
+                    NewValue: 'Prop 44',
+                    OldValue: 'Prop 4',
+                    FieldID: 'Prop4',
+                },
+                {
+                    NewValue: 'Prop 55',
+                    OldValue: 'Prop 5',
+                    FieldID: 'Prop5',
+                },
+                {
+                    NewValue: 'California',
+                    OldValue: 'New York',
+                    FieldID: 'State',
+                },
+                {
+                    NewValue: 'Street 5',
+                    OldValue: 'Street 1',
+                    FieldID: 'Street',
+                },
+                {
+                    NewValue: '1234567',
+                    OldValue: '12345',
+                    FieldID: 'ZipCode',
+                },
+                {
+                    NewValue: '15',
+                    OldValue: '10',
+                    FieldID: 'TSACurrencyAPI',
+                },
+                {
+                    NewValue: '18510',
+                    OldValue: '18506',
+                    FieldID: 'TSADateAPI',
+                },
+                {
+                    NewValue: '1598392800',
+                    OldValue: '1598907600',
+                    FieldID: 'TSADateTimeAPI',
+                },
+                {
+                    NewValue: '5.2',
+                    OldValue: '5.5',
+                    FieldID: 'TSADecimalNumberAPI',
+                },
+                {
+                    NewValue: 'C',
+                    OldValue: 'A',
+                    FieldID: 'TSAMultiChoiceAPI',
+                },
+                {
+                    NewValue: '2',
+                    OldValue: '5',
+                    FieldID: 'TSANumberAPI',
+                },
+                {
+                    NewValue: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze\r\nUpdated',
+                    OldValue: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nAmaze',
+                    FieldID: 'TSAParagraphAPI',
+                },
+                {
+                    NewValue: '972555432512',
+                    OldValue: '9725554325',
+                    FieldID: 'TSAPhoneNumberAPI',
+                },
+                {
+                    NewValue: 'Random TEXT',
+                    OldValue: 'Random text',
+                    FieldID: 'TSASingleLineAPI',
+                },
+                {
+                    NewValue: 'CA',
+                    OldValue: 'NY',
+                    FieldID: 'StateISOAlpha2Code',
+                },
+                {
+                    NewValue: 5,
+                    OldValue: 32,
+                    FieldID: 'StateID',
+                },
+            ]);
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
+                'City',
+                'Debts30',
+                'Debts60',
+                'Debts90',
+                'DebtsAbove90',
+                'Discount',
+                'Email',
+                'Mobile',
+                'Name',
+                'Note',
+                'Phone',
+                'Prop1',
+                'Prop2',
+                'Prop3',
+                'Prop4',
+                'Prop5',
+                'State',
+                'Street',
+                'ZipCode',
+                'TSACurrencyAPI',
+                'TSADateAPI',
+                'TSADateTimeAPI',
+                'TSADecimalNumberAPI',
+                'TSAMultiChoiceAPI',
+                'TSANumberAPI',
+                'TSAParagraphAPI',
+                'TSAPhoneNumberAPI',
+                'TSASingleLineAPI',
+                'StateISOAlpha2Code',
+                'StateID',
             ]);
         });
 
@@ -549,6 +851,57 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     .to.be.an('array')
                     .with.lengthOf(0),
             ]);
+        });
+
+        it('Validate PNS after Delete', async () => {
+            let schema;
+            let maxLoopsCounter = _MAX_LOOPS;
+            do {
+                generalService.sleep(1500);
+                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
+                    order_by: 'CreationDateTime DESC',
+                });
+                maxLoopsCounter--;
+            } while (
+                (!schema[2] || !schema[0].Key.startsWith('Log_Update') || schema.length < 3) &&
+                maxLoopsCounter > 0
+            );
+            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID);
+            expect(schema[3]).to.be.undefined;
+            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
+                {
+                    NewValue: true,
+                    OldValue: false,
+                    FieldID: 'Hidden',
+                },
+            ]);
+            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
+            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
+        });
+
+        it(`Unsubscribe from PNS`, async () => {
+            const subscriptionBody: Subscription = {
+                AddonRelativeURL: '/logger/update_object_pns',
+                Type: 'data',
+                Hidden: true,
+                AddonUUID: PepperiOwnerID,
+                FilterPolicy: {
+                    Resource: ['accounts'],
+                    Action: ['update', 'insert', 'remove' as any],
+                    AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                },
+                Name: 'PNS_Objects_Test',
+            };
+            const subscribeResponse = await pepperiNotificationServiceService.subscribe(subscriptionBody);
+            expect(subscribeResponse).to.have.property('Name').a('string').that.is.equal(subscriptionBody.Name);
+            expect(subscribeResponse).to.have.property('Hidden').a('boolean').that.is.true;
+
+            const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                'PNS_Objects_Test',
+            );
+            expect(getSubscribeResponse).to.deep.equal([]);
         });
 
         it('Check Hidden=false after update', async () => {
@@ -677,6 +1030,59 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(bulkUpdateAccounts[4].Name).to.include('Update');
         });
 
+        it('Bulk mixed file update accounts', async () => {
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name'],
+                Lines: [
+                    [bulkAccountExternalID + ' 1', 'Bulk Account 1 Update'],
+                    [bulkAccountExternalID + ' 2', 'Bulk Account 2 Update'],
+                    [bulkAccountExternalID + ' 3', 'Bulk Account 3'],
+                    [bulkAccountExternalID + ' 4', 'Bulk Account 4'],
+                    [bulkAccountExternalID + ' 5', 'Bulk Account 5'],
+                    [bulkAccountExternalID + ' 6', 'Bulk Account 6'],
+                    [bulkAccountExternalID + ' 7', 'Bulk Account 7'],
+                    [bulkAccountExternalID + ' 1', 'Bulk Account 1 Update'],
+                    [bulkAccountExternalID + ' 2', 'Bulk Account 2 Update'],
+                ],
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify bulk update jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(9),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(2),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(3),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(2),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed file accounts update', async () => {
+            bulkUpdateAccounts = await service.getAccounts({
+                where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+            });
+            expect(bulkUpdateAccounts[0].Name).to.include('Update'),
+                expect(bulkUpdateAccounts[1].Name).to.include('Update'),
+                expect(bulkUpdateAccounts[2].Name).to.include('Bulk Account 3'),
+                expect(bulkUpdateAccounts[3].Name).to.include('Bulk Account 4'),
+                expect(bulkUpdateAccounts[4].Name).to.include('Bulk Account 5'),
+                expect(bulkUpdateAccounts[5].Name).to.include('Bulk Account 6'),
+                expect(bulkUpdateAccounts[6].Name).to.include('Bulk Account 7');
+        });
+
         it('Delete bulk accounts', async () => {
             bulkAccounts = await service.getAccounts({
                 where: "ExternalID like '%" + bulkAccountExternalID + "%'",
@@ -687,6 +1093,8 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(await service.deleteAccount(bulkAccounts[2].InternalID)).to.be.true,
                 expect(await service.deleteAccount(bulkAccounts[3].InternalID)).to.be.true,
                 expect(await service.deleteAccount(bulkAccounts[4].InternalID)).to.be.true,
+                expect(await service.deleteAccount(bulkUpdateAccounts[5].InternalID)).to.be.true,
+                expect(await service.deleteAccount(bulkUpdateAccounts[6].InternalID)).to.be.true,
                 expect(
                     await service.getAccounts({
                         where: "ExternalID like '%" + bulkAccountExternalID + "%'",

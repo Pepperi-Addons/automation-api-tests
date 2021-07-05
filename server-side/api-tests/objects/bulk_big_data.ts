@@ -8,6 +8,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
     const it = tester.it;
 
     const bulkAccountExternalID = 'API bulk 60K';
+    const bulkMixedAccountExternalID = 'API bulk 10k';
     const UDTRandom = 'Big Bulk UDT';
     let runAccountTest = await service.countAccounts({
         where: "ExternalID like '%API bulk 60K%'",
@@ -98,7 +99,8 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk 60,000 accounts remove hidden jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+                generalService.sleep(2000); //DI-18235
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -141,7 +143,8 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk 60,000 accounts delete jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+                generalService.sleep(2000); //DI-18235
                 expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -173,6 +176,384 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 ]);
             });
         }
+
+        it('Bulk mixed 10,000 accounts', async () => {
+            bulkAccountArray = service.createBulkMixedArray(10000, bulkMixedAccountExternalID);
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name', 'Hidden'],
+                Lines: bulkAccountArray,
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+            generalService.sleep(5000); //DI-18235
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed 10,000 accounts update', async () => {
+            return Promise.all([
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+            ]);
+        });
+
+        it('Bulk mixed 10,000 accounts delete', async () => {
+            bulkAccountArray = service.createBulkMixedArrayDelete(10000, bulkMixedAccountExternalID);
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name', 'Hidden'],
+                Lines: bulkAccountArray,
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+            generalService.sleep(2000); //DI-18235
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed 10,000 accounts delete', async () => {
+            return Promise.all([
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+            ]);
+        });
+
+        it('Bulk mixed 10,000 accounts (beginning of csv)', async () => {
+            bulkAccountArray = service.createBulkMixedArrayStart(10000, bulkMixedAccountExternalID);
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name', 'Hidden'],
+                Lines: bulkAccountArray,
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+            generalService.sleep(5000); //DI-18235
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed 10,000 accounts update (beginning of csv)', async () => {
+            return Promise.all([
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+            ]);
+        });
+
+        it('Bulk mixed 10,000 accounts delete (beginning of csv)', async () => {
+            bulkAccountArray = service.createBulkMixedArrayStartDelete(10000, bulkMixedAccountExternalID);
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name', 'Hidden'],
+                Lines: bulkAccountArray,
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+            generalService.sleep(2000); //DI-18235
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed 10,000 accounts delete (beginning of csv)', async () => {
+            return Promise.all([
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+            ]);
+        });
+
+        it('Bulk mixed 10,000 accounts (ending of csv)', async () => {
+            bulkAccountArray = service.createBulkMixedArrayEnd(10000, bulkMixedAccountExternalID);
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name', 'Hidden'],
+                Lines: bulkAccountArray,
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+            generalService.sleep(5000); //DI-18235
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed 10,000 accounts update (ending of csv)', async () => {
+            return Promise.all([
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+            ]);
+        });
+
+        it('Bulk mixed 10,000 accounts delete (ending of csv)', async () => {
+            bulkAccountArray = service.createBulkMixedArrayEndDelete(10000, bulkMixedAccountExternalID);
+            bulkCreateAccount = await service.bulkCreate('accounts', {
+                Headers: ['ExternalID', 'Name', 'Hidden'],
+                Lines: bulkAccountArray,
+            });
+            expect(bulkCreateAccount.JobID).to.be.a('number'),
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+        });
+
+        it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
+            bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
+            generalService.sleep(5000); //DI-18235
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                ),
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
+        });
+
+        it('Verify bulk mixed 10,000 accounts delete (ending of csv)', async () => {
+            return Promise.all([
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Update%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                        include_deleted: true,
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(5000),
+                expect(
+                    await service.countAccounts({
+                        where: "Name like '%Bulk Account Ignore%'",
+                    }),
+                )
+                    .to.be.a('number')
+                    .and.equals(0),
+            ]);
+        });
 
         it('Verify 10,000 UDT rows available for test', async () => {
             return Promise.all([
@@ -213,7 +594,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 60000);
                 expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
@@ -257,7 +638,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             });
 
             it('Verify bulk jobinfo', async () => {
-                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
+                bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 60000);
                 expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
