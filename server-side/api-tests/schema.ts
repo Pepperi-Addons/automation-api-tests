@@ -2456,6 +2456,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.insertDataToCPIMetaDataTableSecError =
                 'One of parameters is wrong: ' + logcash.insertDataToCPIMetaDataTableSec;
         }
+        generalService.sleep(20000);
         await getDataFromCPIMetaDataTableSec();
     }
 
