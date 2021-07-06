@@ -154,8 +154,16 @@ export default class GeneralService {
 
     async getAuditLogResultObjectIfValid(uri, loopsAmount?) {
         let auditLogResponse = await this.papiClient.get(uri);
-        auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
-
+        try {
+            auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
+        } catch (error) {
+            if (auditLogResponse === null) {
+                console.log('Audit Log was not found, waiting...');
+                this.sleep(4000);
+                auditLogResponse = await this.papiClient.get(uri);
+                auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
+            }
+        }
         //This loop is used for cases where AuditLog was not created at all (This can happen and it is valid)
         if (auditLogResponse.UUID.length < 10 || !JSON.stringify(auditLogResponse).includes('AuditInfo')) {
             console.log('Retray - No Audit Log found');
@@ -211,6 +219,7 @@ export default class GeneralService {
             if (
                 (auditLogResponse.AuditType != 'action' && auditLogResponse.AuditType != 'data') ||
                 (auditLogResponse.Event.Type != 'code_job_execution' &&
+                    auditLogResponse.Event.Type != 'addon_job_execution' &&
                     auditLogResponse.Event.Type != 'scheduler' &&
                     auditLogResponse.Event.Type != 'sync' &&
                     auditLogResponse.Event.Type != 'deployment') ||
