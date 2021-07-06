@@ -143,6 +143,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                     try {
                         purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                     } catch (error) {
+                        purgedSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                         expect(error.message).to.includes(
                             `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
                         );
