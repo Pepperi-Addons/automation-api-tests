@@ -288,10 +288,10 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(postFieldsResponse.CreationDateTime).to.includes('Z');
                 expect(postFieldsResponse.ModificationDateTime).to.includes(new Date().toISOString().split('T')[0]);
                 expect(postFieldsResponse.ModificationDateTime).to.includes('Z');
-                expect(postFieldsResponse.FullPublish).to.be.false;
+                //expect(postFieldsResponse.FullPublish).to.be.false;
                 expect(postFieldsResponse.Hidden).to.be.false;
                 expect(postFieldsResponse.Key).to.be.equal('meta_data');
-                expect(postFieldsResponse.RunDateTime).to.be.null;
+                //expect(postFieldsResponse.RunDateTime).to.be.null;
                 expect(postFieldsResponse.RunTime).to.be.null;
                 expect(postFieldsResponse.all_activities_fields).to.include.members(uiDataObject.all_activities_fields);
                 expect(postFieldsResponse.transaction_lines_fields).to.include.members(
