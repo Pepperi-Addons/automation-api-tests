@@ -136,7 +136,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             'Account.Parent.City',
             'Catalog.Description',
             'Catalog.ExternalID',
-            'Catalog.TSAImage',
+            // 'Catalog.TSAImage',
             'ContactPerson.ExternalID',
             'ContactPerson.FirstName',
             'ContactPerson.Mobile',
@@ -330,6 +330,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     (pollingResponse.Status == 'InProgress' || pollingResponse.Status == '') &&
                     maxLoopsCounter > 0
                 );
+                expect(pollingResponse.Message).to.equal('');
                 expect(pollingResponse.Status).to.equal('Success');
             });
 
@@ -363,6 +364,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     (pollingResponse.Status == 'InProgress' || pollingResponse.Status == '') &&
                     maxLoopsCounter > 0
                 );
+                expect(pollingResponse.Message).to.equal('');
                 expect(pollingResponse.Status).to.equal('Success');
             });
         });
