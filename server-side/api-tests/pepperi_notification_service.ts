@@ -4,6 +4,7 @@ import { PepperiNotificationServiceService } from '../services/pepperi-notificat
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
 import { ResourceTypes } from '../services/general.service';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function PepperiNotificationServiceTests(
     generalService: GeneralService,
@@ -19,6 +20,9 @@ export async function PepperiNotificationServiceTests(
     const it = tester.it;
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+
+    const _Test_UUID = uuidv4();
+    pepperiNotificationServiceService.papiClient['options'].actionUUID = _Test_UUID;
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
@@ -88,7 +92,7 @@ export async function PepperiNotificationServiceTests(
                         }
                     });
 
-                    it(`Subscribe And Validate Get With Where (DI-18054)`, async () => {
+                    it(`Subscribe And Validate Get With Where (DI-18054) (Test GUID: ${_Test_UUID}`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
@@ -509,6 +513,7 @@ export async function PepperiNotificationServiceTests(
                                 method: 'POST',
                                 body: JSON.stringify(subscriptionBody),
                                 headers: {
+                                    'X-Pepperi-ActionID': _Test_UUID,
                                     'X-Pepperi-OwnerID': createdAddon.Body.UUID,
                                     'X-Pepperi-SecretKey': addonSK,
                                 },
@@ -521,7 +526,7 @@ export async function PepperiNotificationServiceTests(
                         );
                     });
 
-                    it('Subscribe With New Addon', async () => {
+                    it(`Subscribe With New Addon (Test GUID: ${_Test_UUID}`, async () => {
                         const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/test/go',
@@ -537,6 +542,7 @@ export async function PepperiNotificationServiceTests(
                                 method: 'POST',
                                 body: JSON.stringify(subscriptionBody),
                                 headers: {
+                                    'X-Pepperi-ActionID': _Test_UUID,
                                     'X-Pepperi-OwnerID': createdAddon.Body.UUID,
                                     'X-Pepperi-SecretKey': addonSK,
                                 },
