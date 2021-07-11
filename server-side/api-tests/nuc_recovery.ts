@@ -470,7 +470,8 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         });
                         maxLoopsCounter--;
                     } while (
-                        (!schema[0].Key.startsWith('Log_Update') ||
+                        (schema.length < 3 ||
+                            !schema[0].Key.startsWith('Log_Update') ||
                             schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
                                 'UnitsQuantity') &&
                         maxLoopsCounter > 0
@@ -515,7 +516,8 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         });
                         maxLoopsCounter--;
                     } while (
-                        (!schema[0].Key.startsWith('Log_Update') ||
+                        (schema.length < 4 ||
+                            !schema[0].Key.startsWith('Log_Update') ||
                             schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
                                 'UnitDiscountPercentage') &&
                         maxLoopsCounter > 0
@@ -752,7 +754,10 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                         } while (
                                             (!schema[0].Key.startsWith('Log_Update') ||
                                                 schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID == 'UnitsQuantity') &&
+                                                    .FieldID == 'UnitsQuantity' ||
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .NewValue ==
+                                                    11 * (1 + i)) &&
                                             maxLoopsCounter > 0
                                         );
                                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
@@ -785,7 +790,9 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                         } while (
                                             (!schema[0].Key.startsWith('Log_Update') ||
                                                 schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID != 'UnitsQuantity') &&
+                                                    .FieldID != 'UnitsQuantity' ||
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .NewValue == 0) &&
                                             maxLoopsCounter > 0
                                         );
                                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
@@ -975,7 +982,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                     let schema;
                                     let maxLoopsCounter = _MAX_LOOPS;
                                     do {
-                                        generalService.sleep(1500);
+                                        generalService.sleep(8000);
                                         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
                                             order_by: 'CreationDateTime DESC',
                                         });
