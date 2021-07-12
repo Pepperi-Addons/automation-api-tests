@@ -6,6 +6,19 @@ import { ADALService } from '../services/adal.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ResourceTypes } from '../services/general.service';
 
+let isWACD = false;
+let isSDK = false;
+
+export async function NucRecoveryWACDTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    isWACD = true;
+    await NucRecoveryTests(generalService, request, tester);
+}
+
+export async function NucRecoverySDKTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    isSDK = true;
+    await NucRecoveryTests(generalService, request, tester);
+}
+
 export async function NucRecoveryTests(generalService: GeneralService, request, tester: TesterFunctions) {
     NucRecoveryService;
     const nucRecoveryService = new NucRecoveryService(generalService);
@@ -554,6 +567,13 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         Name: 'PNS Tests Scenarios Without POST from SDK Endpoints',
                     },
                 ];
+                if (isWACD) {
+                    delete pnsTestScenariosEndpointsArr[1];
+                    pnsTestScenariosEndpointsArr.length = 1;
+                } else if (isSDK) {
+                    delete pnsTestScenariosEndpointsArr[2];
+                    pnsTestScenariosEndpointsArr.length = 1;
+                }
                 for (let j = 0; j < pnsTestScenariosEndpointsArr.length; j++) {
                     const testEndpointName = pnsTestScenariosEndpointsArr[j].Name;
                     const testEndpointType = pnsTestScenariosEndpointsArr[j].Type;
