@@ -837,6 +837,7 @@ export async function PepperiNotificationServiceTests(
                                 schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 2) &&
                             maxLoopsCounter > 0
                         );
+
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             installedAddon.UUID,
@@ -1038,17 +1039,14 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema.length < 2 ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 3) &&
+                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.include(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(3);
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2); //(3); Changed when Action ID was added to PNS (12/07/2021)
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
                             'Values',
                         );
@@ -1065,7 +1063,7 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
                         expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
-                            'ModificationActionUUID',
+                            //'ModificationActionUUID', // Changed when Action ID was added to PNS (12/07/2021)
                             'ModificationDateTime',
                             'Values',
                         ]);
