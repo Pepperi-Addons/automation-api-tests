@@ -421,6 +421,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     const createAccountResponse = await generalService.fetchStatus('/accounts', {
                                         method: 'POST',
                                         body: JSON.stringify({
+                                            Name: 'Data Index Tests',
                                             ExternalID: testDataAccountExternalID,
                                             [allActivitiesFieldName.split('.')[1]]: createdField,
                                         }),
