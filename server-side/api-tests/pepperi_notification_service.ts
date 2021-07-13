@@ -1047,17 +1047,17 @@ export async function PepperiNotificationServiceTests(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
                         expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2); //(3); Changed when Action ID was added to PNS (12/07/2021)
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
                             'Values',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.be.null;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[0]).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.be.null;
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[0]).to.equal(
                             'Value1',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[1]).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[1]).to.equal(
                             'Value2',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[2]).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[2]).to.equal(
                             'Value3',
                         );
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
