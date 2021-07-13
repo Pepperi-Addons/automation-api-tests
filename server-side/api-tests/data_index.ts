@@ -269,6 +269,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 const auditLogCreate = await dataIndexService.cleanDataIndex();
                 expect(auditLogCreate).to.have.property('URI');
 
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
                 expect(auditLogResponse.Status.ID).to.be.equal(1);
 
@@ -281,10 +282,10 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 const auditLogCreate = await dataIndexService.exportDataToDataIndex(uiDataObject);
                 expect(auditLogCreate).to.have.property('URI');
 
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
                 expect(auditLogResponse.Status.ID).to.be.equal(1);
                 const postFieldsResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
-
                 expect(postFieldsResponse.CreationDateTime).to.includes('Z');
                 expect(postFieldsResponse.ModificationDateTime).to.includes(new Date().toISOString().split('T')[0]);
                 expect(postFieldsResponse.ModificationDateTime).to.includes('Z');
@@ -304,6 +305,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 const auditLogCreate = await dataIndexService.rebuildAllActivities();
                 expect(auditLogCreate).to.have.property('URI');
 
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
                 expect(auditLogResponse.Status.ID).to.be.equal(1);
 
@@ -339,6 +341,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 const auditLogCreate = await dataIndexService.rebuildTransactionLines();
                 expect(auditLogCreate).to.have.property('URI');
 
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
                 expect(auditLogResponse.Status.ID).to.be.equal(1);
 
