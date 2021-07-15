@@ -999,28 +999,28 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 },
                 {
                     FieldID: 'TSACheckboxAPI',
-                    NewValue: 'False',
-                    OldValue: 'True',
+                    NewValue: false,
+                    OldValue: true,
                 },
                 {
                     FieldID: 'TSACurrencyAPI',
-                    NewValue: '15',
-                    OldValue: '10',
+                    NewValue: 15,
+                    OldValue: 10,
                 },
                 {
                     FieldID: 'TSADateAPI',
-                    NewValue: '18536',
-                    OldValue: '18506',
+                    NewValue: '2020-10-01T12:00:00Z',
+                    OldValue: '2020-09-01T12:00:00Z',
                 },
                 {
                     FieldID: 'TSADateTimeAPI',
-                    NewValue: '1597179600',
-                    OldValue: '1598907600',
+                    NewValue: '2020-08-11T21:00:00Z',
+                    OldValue: '2020-08-31T21:00:00Z',
                 },
                 {
                     FieldID: 'TSADecimalNumberAPI',
-                    NewValue: '5.2',
-                    OldValue: '5.5',
+                    NewValue: 5.2,
+                    OldValue: 5.5,
                 },
                 {
                     FieldID: 'TSADropdownAPI',
@@ -1039,13 +1039,13 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 },
                 {
                     FieldID: 'TSAMultiChoiceAPI',
-                    NewValue: 'B',
-                    OldValue: 'A',
+                    NewValue: ['B'],
+                    OldValue: ['A'],
                 },
                 {
                     FieldID: 'TSANumberAPI',
-                    NewValue: '2',
-                    OldValue: '5',
+                    NewValue: 2,
+                    OldValue: 5,
                 },
                 {
                     FieldID: 'TSAParagraphAPI',
@@ -1299,28 +1299,28 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 },
                 {
                     FieldID: 'TSACheckboxAPI',
-                    NewValue: 'False',
-                    OldValue: 'True',
+                    NewValue: false,
+                    OldValue: true,
                 },
                 {
                     FieldID: 'TSACurrencyAPI',
-                    NewValue: '15',
-                    OldValue: '10',
+                    NewValue: 15,
+                    OldValue: 10,
                 },
                 {
                     FieldID: 'TSADateAPI',
-                    NewValue: '18510',
-                    OldValue: '18506',
+                    NewValue: '2020-09-05T12:00:00Z',
+                    OldValue: '2020-09-01T12:00:00Z',
                 },
                 {
                     FieldID: 'TSADateTimeAPI',
-                    NewValue: '1601499600',
-                    OldValue: '1598907600',
+                    NewValue: '2020-09-30T21:00:00Z',
+                    OldValue: '2020-08-31T21:00:00Z',
                 },
                 {
                     FieldID: 'TSADecimalNumberAPI',
-                    NewValue: '0.5',
-                    OldValue: '5.5',
+                    NewValue: 0.5,
+                    OldValue: 5.5,
                 },
                 {
                     FieldID: 'TSADropdownAPI',
@@ -1349,13 +1349,13 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 },
                 {
                     FieldID: 'TSAMultiChoiceAPI',
-                    NewValue: 'B',
-                    OldValue: 'A',
+                    NewValue: ['B'],
+                    OldValue: ['A'],
                 },
                 {
                     FieldID: 'TSANumberAPI',
-                    NewValue: '2',
-                    OldValue: '5',
+                    NewValue: 2,
+                    OldValue: 5,
                 },
                 {
                     FieldID: 'TSAParagraphAPI',
@@ -1424,14 +1424,39 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         //     }
         // });
 
-        // it('Archive transaction and reload nuc', async () => {
-        //     let ArchiveJob = await service.archiveTransaction({transactions: [updatedTransaction.InternalID]});
-        //     let ArchiveResult = await service.getArchiveJob(ArchiveJob.URI);
-        //     expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded'),
-        //     expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
-        //     let ReloadNuc = await service.reloadNuc();
-        //     expect(await service.getTransactionByID(updatedTransaction.InternalID)).to.be.an('array').with.lengthOf(0);
-        // });
+        it('Archive transaction and reload nuc', async () => {
+            const ArchiveJob = await service.archiveTransaction({ transactions: [updatedTransaction.InternalID] });
+            const ArchiveResult = await service.waitForArchiveJobStatus(ArchiveJob.URI, 30000);
+            expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded'),
+                expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
+            await service.reloadNuc();
+            await expect(service.getTransactionByID(updatedTransaction.InternalID)).eventually.to.be.rejectedWith(
+                'failed with status: 404 - Not Found error: {"fault":{"faultstring":"Object ID does not exist.","detail":{"errorcode":"InvalidParameter"',
+            );
+        });
+
+        it('Update transaction that is not on NUC', async () => {
+            const UpdatedTransactionNotOnNuc = await service.createTransaction({
+                ExternalID: updatedTransaction.ExternalID,
+                ActivityTypeID: atds[0].TypeID,
+                Account: {
+                    Data: {
+                        InternalID: transactionAccount.InternalID,
+                    },
+                },
+                TSADecimalNumberAPI: 10.5,
+                TSAEmailAPI: 'Test123456@test.com',
+                TSAMultiChoiceAPI: 'B',
+                TSANumberAPI: 70,
+                TSASingleLineAPI: 'Random text nuc test',
+            });
+            expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID),
+                expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID),
+                expect(UpdatedTransactionNotOnNuc).to.have.property('Archive').that.is.a('boolean').and.is.false,
+                expect(await service.getTransaction({ where: `InternalID=${updatedTransaction.InternalID}` }))
+                    .to.be.an('array')
+                    .with.lengthOf(1);
+        });
 
         it('Delete transaction', async () => {
             expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.true,
@@ -1451,12 +1476,12 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 });
                 maxLoopsCounter--;
             } while (
-                (!schema[8] || !schema[0].Key.startsWith('Log_Update') || schema.length < 9) &&
+                (!schema[8] || !schema[0].Key.startsWith('Log_Update') || schema.length < 10) &&
                 maxLoopsCounter > 0
             );
             expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
             expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdTransaction.UUID);
-            expect(schema[9]).to.be.undefined;
+            expect(schema[10]).to.be.undefined;
             expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
                 {
                     NewValue: true,
