@@ -42,23 +42,40 @@ export class DataIndexService {
         }
     }
 
-    // getDataViewByID(id: number) {
-    //     return this.papiClient.metaData.dataViews.get(id);
-    // }
+    cleanDataIndex() {
+        return this.generalService.papiClient.post(
+            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/delete_index',
+        );
+    }
 
-    // getDataViews(options?: FindOptions) {
-    //     return this.papiClient.metaData.dataViews.find(options);
-    // }
+    exportDataToDataIndex(data) {
+        return this.generalService.papiClient.post(
+            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/save_ui_data',
+            data,
+        );
+    }
 
-    // getAllDataViews(options?: FindOptions) {
-    //     return this.papiClient.metaData.dataViews.iter(options).toArray();
-    // }
+    rebuildAllActivities() {
+        return this.generalService.papiClient.post(
+            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/all_activities_rebuild',
+        );
+    }
 
-    // postDataView(dataView: DataView) {
-    //     return this.papiClient.metaData.dataViews.upsert(dataView);
-    // }
+    pollAllActivities() {
+        return this.generalService.papiClient.post(
+            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/all_activities_polling',
+        );
+    }
 
-    // postDataViewBatch(dataViewArr: DataView[]) {
-    //     return this.papiClient.metaData.dataViews.batch(dataViewArr);
-    // }
+    rebuildTransactionLines() {
+        return this.generalService.papiClient.post(
+            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/transaction_lines_rebuild',
+        );
+    }
+
+    pollTransactionLines() {
+        return this.generalService.papiClient.post(
+            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/transaction_lines_polling',
+        );
+    }
 }

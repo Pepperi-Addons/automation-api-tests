@@ -6,6 +6,19 @@ import { ADALService } from '../services/adal.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ResourceTypes } from '../services/general.service';
 
+let isWACD = false;
+let isSDK = false;
+
+export async function NucRecoveryWACDTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    isWACD = true;
+    await NucRecoveryTests(generalService, request, tester);
+}
+
+export async function NucRecoverySDKTests(generalService: GeneralService, request, tester: TesterFunctions) {
+    isSDK = true;
+    await NucRecoveryTests(generalService, request, tester);
+}
+
 export async function NucRecoveryTests(generalService: GeneralService, request, tester: TesterFunctions) {
     NucRecoveryService;
     const nucRecoveryService = new NucRecoveryService(generalService);
@@ -143,6 +156,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                     try {
                         purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                     } catch (error) {
+                        purgedSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                         expect(error.message).to.includes(
                             `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
                         );
@@ -469,7 +483,8 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         });
                         maxLoopsCounter--;
                     } while (
-                        (!schema[0].Key.startsWith('Log_Update') ||
+                        (schema.length < 3 ||
+                            !schema[0].Key.startsWith('Log_Update') ||
                             schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
                                 'UnitsQuantity') &&
                         maxLoopsCounter > 0
@@ -514,7 +529,8 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         });
                         maxLoopsCounter--;
                     } while (
-                        (!schema[0].Key.startsWith('Log_Update') ||
+                        (schema.length < 4 ||
+                            !schema[0].Key.startsWith('Log_Update') ||
                             schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
                                 'UnitDiscountPercentage') &&
                         maxLoopsCounter > 0
@@ -551,6 +567,13 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         Name: 'PNS Tests Scenarios Without POST from SDK Endpoints',
                     },
                 ];
+                if (isWACD) {
+                    delete pnsTestScenariosEndpointsArr[1];
+                    pnsTestScenariosEndpointsArr.length = 1;
+                } else if (isSDK) {
+                    delete pnsTestScenariosEndpointsArr[2];
+                    pnsTestScenariosEndpointsArr.length = 1;
+                }
                 for (let j = 0; j < pnsTestScenariosEndpointsArr.length; j++) {
                     const testEndpointName = pnsTestScenariosEndpointsArr[j].Name;
                     const testEndpointType = pnsTestScenariosEndpointsArr[j].Type;
@@ -751,7 +774,10 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                         } while (
                                             (!schema[0].Key.startsWith('Log_Update') ||
                                                 schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID == 'UnitsQuantity') &&
+                                                    .FieldID == 'UnitsQuantity' ||
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .NewValue ==
+                                                    11 * (1 + i)) &&
                                             maxLoopsCounter > 0
                                         );
                                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
@@ -784,7 +810,9 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                         } while (
                                             (!schema[0].Key.startsWith('Log_Update') ||
                                                 schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID != 'UnitsQuantity') &&
+                                                    .FieldID != 'UnitsQuantity' ||
+                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
+                                                    .NewValue == 0) &&
                                             maxLoopsCounter > 0
                                         );
                                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
@@ -974,7 +1002,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                     let schema;
                                     let maxLoopsCounter = _MAX_LOOPS;
                                     do {
-                                        generalService.sleep(1500);
+                                        generalService.sleep(8000);
                                         schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
                                             order_by: 'CreationDateTime DESC',
                                         });

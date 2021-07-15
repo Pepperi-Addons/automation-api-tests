@@ -114,6 +114,87 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //     'Transaction.AdditionalAccount.Status',
     // ];
 
+    const uiDataObject = {
+        all_activities_fields: [
+            'ExternalID',
+            'TaxPercentage',
+            'Remark',
+            'CreationDateTime',
+            'SubTotal',
+            'Status',
+            'DiscountPercentage',
+            // 'TSATestIndexString',
+            // 'TSATestIndexTime',
+            // 'TSATestIndexCalculated',
+            // 'TSATestIndexAttachment',
+            // 'TSATestIndexNumber',
+            // 'TSATestIndexDecimalNumber',
+            'Account.ExternalID',
+            'Account.City',
+            'Account.Country',
+            'Account.Status',
+            'Account.Parent.City',
+            'Catalog.Description',
+            'Catalog.ExternalID',
+            // 'Catalog.TSAImage',
+            'ContactPerson.ExternalID',
+            'ContactPerson.FirstName',
+            'ContactPerson.Mobile',
+            'Creator.ExternalID',
+            'Creator.FirstName',
+            'Creator.Mobile',
+            'Agent.ExternalID',
+            'Agent.FirstName',
+            'Agent.Mobile',
+            'OriginAccount.ExternalID',
+            'OriginAccount.City',
+            'OriginAccount.Status',
+            'AdditionalAccount.ExternalID',
+            'AdditionalAccount.City',
+            'AdditionalAccount.Status',
+        ],
+        transaction_lines_fields: [
+            // 'TSATestIndexString',
+            // 'TSATestIndexTime',
+            // 'TSATestIndexCalculated',
+            // 'TSATestIndexNumber',
+            // 'TSATestIndexDecimalNumber',
+            'LineNumber',
+            'DeliveryDate',
+            'TotalUnitsPriceAfterDiscount',
+            'TotalUnitsPriceBeforeDiscount',
+            'Item.ExternalID',
+            'Item.Name',
+            'UnitDiscountPercentage',
+            'CreationDateTime',
+            'Transaction.ExternalID',
+            'Transaction.InternalID',
+            'Transaction.Remark',
+            'Transaction.CreationDateTime',
+            'Transaction.SubTotal',
+            'Transaction.Status',
+            'Transaction.DiscountPercentage',
+            'Transaction.Account.ExternalID',
+            // 'Transaction.Account.TSAPaymentMethod',
+            'Transaction.Account.ZipCode',
+            'Transaction.Account.Status',
+            'Transaction.Account.City',
+            'Transaction.Account.Parent.City',
+            'Transaction.Agent.ExternalID',
+            'Transaction.Agent.FirstName',
+            'Transaction.Agent.Mobile',
+            'Transaction.ContactPerson.ExternalID',
+            'Transaction.ContactPerson.FirstName',
+            'Transaction.ContactPerson.Mobile',
+            'Transaction.OriginAccount.ExternalID',
+            'Transaction.OriginAccount.City',
+            'Transaction.OriginAccount.Status',
+            'Transaction.AdditionalAccount.ExternalID',
+            'Transaction.AdditionalAccount.City',
+            'Transaction.AdditionalAccount.Status',
+        ],
+    };
+
     //#region Upgrade Data Index
     //TODO: Remove this (1.0.50) and work on the actually latest version
     //when shir or meital will refactor Data Index to work with the new framework changes
@@ -183,6 +264,114 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             }
         });
 
+        describe('Export', () => {
+            it('Clean Data Index', async () => {
+                const auditLogCreate = await dataIndexService.cleanDataIndex();
+                expect(auditLogCreate).to.have.property('URI');
+
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
+                const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
+                expect(auditLogResponse.Status.ID).to.be.equal(1);
+
+                const exportResponse = JSON.parse(auditLogResponse.AuditInfo.ResultObject);
+                expect(exportResponse.success).to.be.true;
+                expect(exportResponse.resultObject.Message).to.include('Clear index successfully on ElasticSearch');
+            });
+
+            it('Post Fields To Export', async () => {
+                const auditLogCreate = await dataIndexService.exportDataToDataIndex(uiDataObject);
+                expect(auditLogCreate).to.have.property('URI');
+
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
+                const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
+                expect(auditLogResponse.Status.ID).to.be.equal(1);
+                const postFieldsResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
+                expect(postFieldsResponse.CreationDateTime).to.includes('Z');
+                expect(postFieldsResponse.ModificationDateTime).to.includes(new Date().toISOString().split('T')[0]);
+                expect(postFieldsResponse.ModificationDateTime).to.includes('Z');
+                //expect(postFieldsResponse.FullPublish).to.be.false;
+                expect(postFieldsResponse.Hidden).to.be.false;
+                expect(postFieldsResponse.Key).to.be.equal('meta_data');
+                //expect(postFieldsResponse.RunDateTime).to.be.null;
+                expect(postFieldsResponse.RunTime).to.be.null;
+                expect(postFieldsResponse.all_activities_fields).to.include.members(uiDataObject.all_activities_fields);
+                expect(postFieldsResponse.transaction_lines_fields).to.include.members(
+                    uiDataObject.transaction_lines_fields,
+                );
+            });
+
+            it('All Activities Rebuild', async () => {
+                generalService.sleep(4000);
+                const auditLogCreate = await dataIndexService.rebuildAllActivities();
+                expect(auditLogCreate).to.have.property('URI');
+
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
+                const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
+                expect(auditLogResponse.Status.ID).to.be.equal(1);
+
+                const rebuildResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
+                expect(rebuildResponse.success).to.be.true;
+            });
+
+            it('All Activities Polling', async () => {
+                let pollingResponse;
+                let maxLoopsCounter = 90;
+                do {
+                    generalService.sleep(2000);
+                    const auditLogCreate = await dataIndexService.pollAllActivities();
+                    expect(auditLogCreate).to.have.property('URI');
+
+                    const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(
+                        auditLogCreate.URI,
+                        40,
+                    );
+                    expect(auditLogResponse.Status.ID).to.be.equal(1);
+                    pollingResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
+                    maxLoopsCounter--;
+                } while (
+                    (pollingResponse.Status == 'InProgress' || pollingResponse.Status == '') &&
+                    maxLoopsCounter > 0
+                );
+                expect(pollingResponse.Message).to.equal('');
+                expect(pollingResponse.Status).to.equal('Success');
+            });
+
+            it('Transaction Lines Rebuild', async () => {
+                generalService.sleep(4000);
+                const auditLogCreate = await dataIndexService.rebuildTransactionLines();
+                expect(auditLogCreate).to.have.property('URI');
+
+                generalService.sleep(3000); //Sleep was added after tests start to be flaky in EU in some case - this was never reporuced locally
+                const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
+                expect(auditLogResponse.Status.ID).to.be.equal(1);
+
+                const rebuildResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
+                expect(rebuildResponse.success).to.be.true;
+            });
+
+            it('Transaction Lines Polling', async () => {
+                let pollingResponse;
+                let maxLoopsCounter = 90;
+                do {
+                    generalService.sleep(2000);
+                    const auditLogCreate = await dataIndexService.pollTransactionLines();
+                    expect(auditLogCreate).to.have.property('URI');
+                    const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(
+                        auditLogCreate.URI,
+                        40,
+                    );
+                    expect(auditLogResponse.Status.ID).to.be.equal(1);
+                    pollingResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
+                    maxLoopsCounter--;
+                } while (
+                    (pollingResponse.Status == 'InProgress' || pollingResponse.Status == '') &&
+                    maxLoopsCounter > 0
+                );
+                expect(pollingResponse.Message).to.equal('');
+                expect(pollingResponse.Status).to.equal('Success');
+            });
+        });
+
         describe('All Activities', () => {
             describe('CRUD Index of Fields', () => {
                 for (let index = 0; index < all_activities_fields.length; index++) {
@@ -232,6 +421,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                     const createAccountResponse = await generalService.fetchStatus('/accounts', {
                                         method: 'POST',
                                         body: JSON.stringify({
+                                            Name: 'Data Index Tests',
                                             ExternalID: testDataAccountExternalID,
                                             [allActivitiesFieldName.split('.')[1]]: createdField,
                                         }),

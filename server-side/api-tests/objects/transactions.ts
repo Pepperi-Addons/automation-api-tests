@@ -642,7 +642,6 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Create transaction', async () => {
-            generalService.sleep(4000);
             transactionExternalID = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
             const catalogs = await generalService.getCatalogs();
             createdTransaction = await service.createTransaction({

@@ -4,6 +4,7 @@ import { PepperiNotificationServiceService } from '../services/pepperi-notificat
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
 import { ResourceTypes } from '../services/general.service';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function PepperiNotificationServiceTests(
     generalService: GeneralService,
@@ -19,6 +20,10 @@ export async function PepperiNotificationServiceTests(
     const it = tester.it;
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+
+    const _Test_UUID_Subscription = uuidv4();
+    const _Test_UUID_Second_Addon = uuidv4();
+    pepperiNotificationServiceService.papiClient['options'].actionUUID = _Test_UUID_Subscription;
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
@@ -88,7 +93,7 @@ export async function PepperiNotificationServiceTests(
                         }
                     });
 
-                    it(`Subscribe And Validate Get With Where (DI-18054)`, async () => {
+                    it(`Subscribe And Validate Get With Where (DI-18054) (Test GUID: ${_Test_UUID_Subscription}`, async () => {
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/logger/update_pns_test',
                             Type: 'data',
@@ -493,7 +498,7 @@ export async function PepperiNotificationServiceTests(
                         expect(versionsArr[0].Version).to.equal(postAddonApiResponse.AuditInfo.ToVersion);
                     });
 
-                    it('Subscribe With New Addon With Wrong AddonRelativeURL (Negative)', async () => {
+                    it(`Subscribe With New Addon With Wrong AddonRelativeURL (Negative) ${_Test_UUID_Second_Addon}`, async () => {
                         const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/test',
@@ -509,6 +514,7 @@ export async function PepperiNotificationServiceTests(
                                 method: 'POST',
                                 body: JSON.stringify(subscriptionBody),
                                 headers: {
+                                    'X-Pepperi-ActionID': _Test_UUID_Second_Addon,
                                     'X-Pepperi-OwnerID': createdAddon.Body.UUID,
                                     'X-Pepperi-SecretKey': addonSK,
                                 },
@@ -521,7 +527,7 @@ export async function PepperiNotificationServiceTests(
                         );
                     });
 
-                    it('Subscribe With New Addon', async () => {
+                    it(`Subscribe With New Addon (Test GUID: ${_Test_UUID_Second_Addon}`, async () => {
                         const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
                         const subscriptionBody: Subscription = {
                             AddonRelativeURL: '/test/go',
@@ -537,6 +543,7 @@ export async function PepperiNotificationServiceTests(
                                 method: 'POST',
                                 body: JSON.stringify(subscriptionBody),
                                 headers: {
+                                    'X-Pepperi-ActionID': _Test_UUID_Second_Addon,
                                     'X-Pepperi-OwnerID': createdAddon.Body.UUID,
                                     'X-Pepperi-SecretKey': addonSK,
                                 },
@@ -567,7 +574,10 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
+                            (!schema[0] ||
+                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
+                                schema.length < 2 ||
+                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 0) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
@@ -632,7 +642,10 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 3) &&
+                            (!schema[0] ||
+                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
+                                schema.length < 3 ||
+                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 4) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
@@ -720,7 +733,10 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 4) &&
+                            (!schema[0] ||
+                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
+                                schema.length < 4 ||
+                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 4) &&
                             maxLoopsCounter > 0
                         );
 
@@ -793,10 +809,15 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate Subscription Removed After Addon Uninstall (DI-17910)', async () => {
-                        generalService.sleep(5000);
-                        const getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
-                            'Subscription_Removal_Test',
-                        );
+                        let getSubscribeResponse;
+                        let maxLoopsCounter = 90;
+                        do {
+                            generalService.sleep(2000);
+                            getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
+                                'Subscription_Removal_Test',
+                            );
+                            maxLoopsCounter--;
+                        } while (getSubscribeResponse[0] && maxLoopsCounter > 0);
                         expect(getSubscribeResponse).to.deep.equal([]);
                     });
 
@@ -810,9 +831,13 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 5) &&
+                            (!schema[0] ||
+                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
+                                schema.length < 5 ||
+                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 2) &&
                             maxLoopsCounter > 0
                         );
+
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             installedAddon.UUID,
@@ -977,7 +1002,9 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test')) &&
+                            (!schema[0] ||
+                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
+                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 0) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
@@ -1019,24 +1046,24 @@ export async function PepperiNotificationServiceTests(
                         expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.include(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(3);
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2); //(3); Changed when Action ID was added to PNS (12/07/2021)
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
                             'Values',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.be.null;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[0]).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.be.null;
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[0]).to.equal(
                             'Value1',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[1]).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[1]).to.equal(
                             'Value2',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue[2]).to.equal(
+                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[2]).to.equal(
                             'Value3',
                         );
                         expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
                         expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
                         expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
-                            'ModificationActionUUID',
+                            //'ModificationActionUUID', // Changed when Action ID was added to PNS (12/07/2021)
                             'ModificationDateTime',
                             'Values',
                         ]);
@@ -1065,7 +1092,10 @@ export async function PepperiNotificationServiceTests(
                             });
                             maxLoopsCounter--;
                         } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 3) &&
+                            (!schema[0] ||
+                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
+                                schema.length < 3 ||
+                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 0) &&
                             maxLoopsCounter > 0
                         );
                         expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
