@@ -1480,7 +1480,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             );
             expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
             expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdTransaction.UUID);
-            expect(schema[10]).to.be.undefined;
+            expect(schema[11]).to.be.undefined;
             expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
                 {
                     NewValue: true,
