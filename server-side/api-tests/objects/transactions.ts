@@ -1475,7 +1475,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 });
                 maxLoopsCounter--;
             } while (
-                (!schema[8] || !schema[0].Key.startsWith('Log_Update') || schema.length < 10) &&
+                (!schema[8] || !schema[0].Key.startsWith('Log_Update') || schema.length < 11) &&
                 maxLoopsCounter > 0
             );
             expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
