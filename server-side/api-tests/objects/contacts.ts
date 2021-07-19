@@ -611,28 +611,28 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                 },
                 {
                     FieldID: 'TSACheckboxAPI',
-                    NewValue: 'False',
-                    OldValue: 'True',
+                    NewValue: false,
+                    OldValue: true,
                 },
                 {
                     FieldID: 'TSACurrencyAPI',
-                    NewValue: '15',
-                    OldValue: '10',
+                    NewValue: 15,
+                    OldValue: 10,
                 },
                 {
                     FieldID: 'TSADateAPI',
-                    NewValue: '18507',
-                    OldValue: '18506',
+                    NewValue: '2020-09-02T12:00:00Z',
+                    OldValue: '2020-09-01T12:00:00Z',
                 },
                 {
                     FieldID: 'TSADateTimeAPI',
-                    NewValue: '1596229200',
-                    OldValue: '1598907600',
+                    NewValue: '2020-07-31T21:00:00Z',
+                    OldValue: '2020-08-31T21:00:00Z',
                 },
                 {
                     FieldID: 'TSADecimalNumberAPI',
-                    NewValue: '6.2',
-                    OldValue: '5.5',
+                    NewValue: 6.2,
+                    OldValue: 5.5,
                 },
                 {
                     FieldID: 'TSADropdownAPI',
@@ -661,13 +661,13 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                 },
                 {
                     FieldID: 'TSAMultiChoiceAPI',
-                    NewValue: 'B',
-                    OldValue: 'A',
+                    NewValue: ['B'],
+                    OldValue: ['A'],
                 },
                 {
                     FieldID: 'TSANumberAPI',
-                    NewValue: '3',
-                    OldValue: '5',
+                    NewValue: 3,
+                    OldValue: 5,
                 },
                 {
                     FieldID: 'TSAParagraphAPI',

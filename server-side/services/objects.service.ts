@@ -195,6 +195,18 @@ export class ObjectsService {
         return this.papiClient.get(URI);
     }
 
+    async waitForArchiveJobStatus(URI, maxTime: number) {
+        const maxLoops = maxTime / apiCallsInterval;
+        let counter = 0;
+        let apiGetResponse;
+        do {
+            this.generalService.sleep(apiCallsInterval);
+            apiGetResponse = await this.getArchiveJob(URI);
+            counter++;
+        } while (apiGetResponse.Status == 'InProgress' && counter < maxLoops);
+        return apiGetResponse;
+    }
+
     createAccount(body: Account): Promise<Account> {
         return this.papiClient.accounts.upsert(body);
     }
