@@ -1,4 +1,4 @@
-import { PapiClient, FindOptions, Item } from '@pepperi-addons/papi-sdk';
+import { PapiClient, FindOptions, Relation } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export class AddonRelationService {
@@ -8,10 +8,11 @@ export class AddonRelationService {
     constructor(public service: GeneralService) {
         this.papiClient = service.papiClient;
         this.generalService = service;
+        this.papiClient['addonUUID'] = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
     }
 
-    getItems(options?: FindOptions): Promise<Item[]> {
-        return this.papiClient.items.find(options);
+    getRelationSDK(options?: FindOptions): Promise<Relation[]> {
+        return this.papiClient.addons.data.relations.find(options);
     }
 
     async getRelation(headers?: { [key: string]: string }) {
@@ -21,6 +22,10 @@ export class AddonRelationService {
                 headers: headers,
             })
             .then((res) => res.Body);
+    }
+
+    async postRelationSDK(body: Relation) {
+        return this.papiClient.addons.data.relations.upsert(body);
     }
 
     async getRelationWithName(headers: { [key: string]: string }, name: string) {
