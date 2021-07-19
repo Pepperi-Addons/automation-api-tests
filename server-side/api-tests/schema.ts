@@ -27,7 +27,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     //#region Upgrade ADAL
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Pepperitest (Jenkins Special Addon) - Code Jobs': ['48d20f0b-369a-4b34-b48a-ffe245088513', 'Ver1'],
+        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, 'Ver1'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
