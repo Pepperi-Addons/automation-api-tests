@@ -27,10 +27,13 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     //#region Upgrade ADAL
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        "Pepperitest (Jenkins Special Addon) - Code Jobs": ['48d20f0b-369a-4b34-b48a-ffe245088513', 'Ver1'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
+    //debugger;
+    const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
 //#region Mocha
     describe('ADAL Tests Suites', () => {
         describe('Prerequisites Addon for ADAL Tests', () => {
@@ -283,7 +286,16 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 assert(logcash.getDataFromTableKeyWhereClause.Status, logcash.getDataFromTableKeyWhereClause.Error);
             });
         });
+
+        describe('where clause with LIKE', () => {
+            it('where clause by Key', async () => {
+                assert(logcash.getDataFromCPIMetaDataTableSecStatus, logcash.getDataFromCPIMetaDataTableSecError);
+            });
+        });
     });
+
+     
+                
 //#endregion Mocha
 
     //get secret key
@@ -2441,7 +2453,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 }),
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
             logcash.insertDataToCPIMetaDataTableSec.Column1[0] == 'Value4' &&
             logcash.insertDataToCPIMetaDataTableSec.Column1[1] == 'Value5' &&
@@ -2464,7 +2476,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         logcash.getDataFromCPIMetaDataTableSecStatus = true;
         logcash.getDataFromCPIMetaDataTable = await generalService
             .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadataSec.Name +
-            "?where=Key LIKE '%Key4%'", {
+            "?where=Key LIKE '%25Key4%25'", {
 
                 method: 'GET',
                 headers: {
@@ -2474,34 +2486,15 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 },
             })
             .then((res) => res.Body);
-        debugger;
-        for (const key in logcash.getDataFromCPIMetaDataTableSec[0]) {
-            if (key == 'Column1') {
-                for (let index = 0; index < logcash.getDataFromCPIMetaDataTableSec[0].Column1.length; index++) {
-                    if (
-                        logcash.getDataFromCPIMetaDataTableSec[0].Column1[index] !=
-                        logcash.insertDataToCPIMetaDataTableSec[key][index]
-                    ) {
-                        logcash.getDataFromCPIMetaDataTableSecStatus = false;
-                        logcash.getDataFromCPIMetaDataTableSecError =
-                            'Objects (fields data) between POST body and get is different.Post result is: ' +
-                            logcash.insertDataToCPIMetaDataTableSec +
-                            'Get result: ' +
-                            logcash.getDataFromCPIMetaDataTableSec;
-                    }
-                }
-            } else {
-                if (logcash.insertDataToCPIMetaDataTableSec[key] != logcash.getDataFromCPIMetaDataTableSec[0][key]) {
-                    logcash.getDataFromCPIMetaDataTableSecStatus = false;
-                    logcash.getDataFromCPIMetaDataTableSecError =
-                        'Objects (fields data) between POST body and get is different.Post result is: ' +
-                        logcash.insertDataToCPIMetaDataTableSec +
-                        'Get result: ' +
-                        logcash.getDataFromCPIMetaDataTableSec;
-                }
+        //debugger;
+            if (logcash.getDataFromCPIMetaDataTable.length == 1 && logcash.getDataFromCPIMetaDataTable[0].Key == 'testKey4'){
+                logcash.getDataFromCPIMetaDataTableSecStatus = true
             }
-            //debugger;
-        }
+            else{
+                logcash.getDataFromCPIMetaDataTableSecStatus = false;
+                logcash.getDataFromCPIMetaDataTableSecError = ('Get wrong Key. A reult will like to Key4, but actuall get ' + logcash.getDataFromCPIMetaDataTable[0].Key)
+            }
+
 
         //await getDataFromUDTTable();
     }
