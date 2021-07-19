@@ -8,7 +8,7 @@ export class AddonRelationService {
     constructor(public service: GeneralService) {
         this.papiClient = service.papiClient;
         this.generalService = service;
-        this.papiClient['addonUUID'] ='eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+        this.papiClient['addonUUID'] = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
     }
 
     getRelationSDK(options?: FindOptions): Promise<Relation[]> {
@@ -24,7 +24,7 @@ export class AddonRelationService {
             .then((res) => res.Body);
     }
 
-    async postRelationSDK(body:Relation) {
+    async postRelationSDK(body: Relation) {
         return this.papiClient.addons.data.relations.upsert(body);
     }
 

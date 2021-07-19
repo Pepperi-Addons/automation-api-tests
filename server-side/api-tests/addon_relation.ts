@@ -334,7 +334,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
             it(`Get addon Relation`, async () => {
                 //const secretKey = await relationService.getSecretKey()
                 const relationResponce = await relationService.getRelation(
-                //const relationResponce = await relationService.getRelation2(
+                    //const relationResponce = await relationService.getRelation2(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
                         'X-Pepperi-SecretKey': secretKey,

@@ -27,14 +27,14 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     //#region Upgrade ADAL
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        "Pepperitest (Jenkins Special Addon) - Code Jobs": ['48d20f0b-369a-4b34-b48a-ffe245088513', 'Ver1'],
+        'Pepperitest (Jenkins Special Addon) - Code Jobs': ['48d20f0b-369a-4b34-b48a-ffe245088513', 'Ver1'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
     //debugger;
-    const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
-//#region Mocha
+    //const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //#region Mocha
     describe('ADAL Tests Suites', () => {
         describe('Prerequisites Addon for ADAL Tests', () => {
             //Test Data
@@ -294,9 +294,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         });
     });
 
-     
-                
-//#endregion Mocha
+    //#endregion Mocha
 
     //get secret key
     async function getSecretKey() {
@@ -549,7 +547,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         }
         await insertDataToTableWithoutOwnerIDNegative();
     }
-//#endregion Schema creation
+    //#endregion Schema creation
     //#region Insert/upsert data
     async function insertDataToTableWithoutOwnerIDNegative() {
         logcash.insertDataToTableWithoutOwnerIDNegative = await generalService
@@ -2399,7 +2397,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     }
     //#endregion ExpirationDateTime
 
-    //#region CPI_meta_data where clause 
+    //#region CPI_meta_data where clause
     async function createSchemaWithTypeCPIMetadataSec() {
         logcash.createSchemaWithTypeCPIMetadataSec = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
@@ -2431,27 +2429,31 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         } else {
             logcash.createSchemaWithTypeCPIMetadataSecStatus = false;
             logcash.createSchemaWithTypeCPIMetadataSecErrorMessage =
-                'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaWithTypeCPIMetadataSec;
+                'One of parameters on Schema creation get with wrong value: ' +
+                logcash.createSchemaWithTypeCPIMetadataSec;
         }
         await insertDataToCPIMetaDataTableSec();
     }
 
     async function insertDataToCPIMetaDataTableSec() {
         logcash.insertDataToCPIMetaDataTableSec = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadataSec.Name, {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadataSec.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Key: 'testKey4',
+                        Column1: ['Value4', 'Value5', 'Value6'],
+                        ColStr1: 'testStr1',
+                        ColStr2: 'testStr2',
+                    }),
                 },
-                body: JSON.stringify({
-                    Key: 'testKey4',
-                    Column1: ['Value4', 'Value5', 'Value6'],
-                    ColStr1: 'testStr1',
-                    ColStr2: 'testStr2'
-                }),
-            })
+            )
             .then((res) => res.Body);
         //debugger;
         if (
@@ -2459,7 +2461,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.insertDataToCPIMetaDataTableSec.Column1[1] == 'Value5' &&
             logcash.insertDataToCPIMetaDataTableSec.Column1[2] == 'Value6' &&
             logcash.insertDataToCPIMetaDataTableSec.Key == 'testKey4' &&
-            logcash.insertDataToCPIMetaDataTableSec.ColStr1 == 'testStr1'&&
+            logcash.insertDataToCPIMetaDataTableSec.ColStr1 == 'testStr1' &&
             logcash.insertDataToCPIMetaDataTableSec.ColStr2 == 'testStr2'
         ) {
             logcash.insertDataToCPIMetaDataTableSecStatus = true;
@@ -2475,28 +2477,37 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     async function getDataFromCPIMetaDataTableSec() {
         logcash.getDataFromCPIMetaDataTableSecStatus = true;
         logcash.getDataFromCPIMetaDataTable = await generalService
-            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithTypeCPIMetadataSec.Name +
-            "?where=Key LIKE '%25Key4%25'", {
-
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithTypeCPIMetadataSec.Name +
+                    "?where=Key LIKE '%25Key4%25'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-            if (logcash.getDataFromCPIMetaDataTable.length == 1 && logcash.getDataFromCPIMetaDataTable[0].Key == 'testKey4'){
-                logcash.getDataFromCPIMetaDataTableSecStatus = true
-            }
-            else{
-                logcash.getDataFromCPIMetaDataTableSecStatus = false;
-                logcash.getDataFromCPIMetaDataTableSecError = ('Get wrong Key. A reult will like to Key4, but actuall get ' + logcash.getDataFromCPIMetaDataTable[0].Key)
-            }
-
+        if (
+            logcash.getDataFromCPIMetaDataTable.length == 1 &&
+            logcash.getDataFromCPIMetaDataTable[0].Key == 'testKey4'
+        ) {
+            logcash.getDataFromCPIMetaDataTableSecStatus = true;
+        } else {
+            logcash.getDataFromCPIMetaDataTableSecStatus = false;
+            logcash.getDataFromCPIMetaDataTableSecError =
+                'Get wrong Key. A reult will like to Key4, but actuall get ' +
+                logcash.getDataFromCPIMetaDataTable[0].Key;
+        }
 
         //await getDataFromUDTTable();
     }
-    //#endregion CPI_meta_data where clause 
+    //#endregion CPI_meta_data where clause
 }
