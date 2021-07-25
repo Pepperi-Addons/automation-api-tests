@@ -87,12 +87,14 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     let _body = {} as SyncBody;
     let isSkip = false;
     let _accountExternalIDStr;
+    let _accountUUID;
     let _activityTypeIDStr;
 
     //Test Prerequisites
     try {
         accounts = await service.papiClient.accounts.find({ page_size: 1 });
         _accountExternalIDStr = accounts[0].ExternalID?.toString();
+        _accountUUID = accounts[0].UUID;
         let transaction: Transaction;
         try {
             transactions = await service.papiClient.transactions.find({ where: `Type='Sales Order'`, page_size: 1 });
@@ -115,6 +117,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 2: {
                     Headers: [
                         'AccountExternalID',
+                        'AccountUUID',
                         'DiscountPercentage',
                         'ExternalID',
                         'ActivityTypeID',
@@ -126,7 +129,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     Lines: [
                         [
                             _accountExternalIDStr,
-                            new Date().getTime().toString(),
+                            _accountUUID,
+                            Math.floor(Math.random() * 100),
                             Math.floor(Math.random() * 100000000000).toString() +
                                 Math.random().toString(36).substring(10),
                             _activityTypeIDStr,
@@ -137,7 +141,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         ],
                         [
                             _accountExternalIDStr,
-                            new Date().getTime().toString(),
+                            _accountUUID,
+                            Math.floor(Math.random() * 100),
                             Math.floor(Math.random() * 100000000000).toString() +
                                 Math.random().toString(36).substring(10),
                             _activityTypeIDStr,
@@ -231,7 +236,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.LocalDataUpdates = {} as any;
                     Object.assign(testBody.LocalDataUpdates, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] =
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
                             Math.floor(Math.random() * 100000000000).toString() +
                             Math.random().toString(36).substring(10);
                     }
@@ -279,6 +284,43 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     }
                     return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
                 });
+
+                it('Simple Sync Put Data Members Validation (Missing AccountExternalID - NUC 9.5.89)', async () => {
+                    const testBody = {} as SyncBody;
+                    Object.assign(testBody, _body);
+                    testBody.LocalDataUpdates = {} as any;
+                    Object.assign(testBody.LocalDataUpdates, _localData);
+                    for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][0] = '';
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
+                            Math.floor(Math.random() * 100000000000).toString() +
+                            Math.random().toString(36).substring(10);
+                    }
+                    testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
+                    const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
+                    if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
+                        return Promise.all[
+                            (await expect(
+                                syncPostGetValidation(
+                                    syncDataMembersValidationPut.apiGetResponse,
+                                    syncDataMembersValidationPut.testBody,
+                                ),
+                            )
+                                .eventually.to.have.property('TestResult')
+                                .that.contain('Pass' as TestResult),
+                            expect(
+                                orderCreationValidation(
+                                    syncDataMembersValidationPut.apiGetResponse,
+                                    syncDataMembersValidationPut.testBody,
+                                ),
+                            )
+                                .eventually.to.have.property('TestResult')
+                                .that.contain('Pass' as TestResult))
+                        ];
+                    } else {
+                        return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                    }
+                });
             }
 
             if (isPutResync) {
@@ -311,7 +353,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.LocalDataUpdates = {} as any;
                     Object.assign(testBody.LocalDataUpdates, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] =
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
                             Math.floor(Math.random() * 100000000000).toString() +
                             Math.random().toString(36).substring(10);
                     }
@@ -325,7 +367,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.LocalDataUpdates = {} as any;
                     Object.assign(testBody.LocalDataUpdates, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][2] =
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
                             Math.floor(Math.random() * 100000000000).toString() +
                             Math.random().toString(36).substring(10);
                     }
@@ -356,16 +398,17 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         for (let index = 0; index < syncDataArray.length; index++) {
                             syncDataArray[index] = [];
                             syncDataArray[index][0] = _accountExternalIDStr;
-                            syncDataArray[index][1] = new Date().getTime().toString();
-                            syncDataArray[index][2] =
+                            syncDataArray[index][1] = _accountUUID;
+                            syncDataArray[index][2] = Math.floor(Math.random() * 100);
+                            syncDataArray[index][3] =
                                 Math.floor(Math.random() * 100000000000).toString() +
                                 Math.random().toString(36).substring(10);
-                            syncDataArray[index][3] = _activityTypeIDStr;
-                            syncDataArray[index][4] = _agentExternalID;
-                            syncDataArray[index][5] = _catalogExternalID;
-                            syncDataArray[index][6] =
+                            syncDataArray[index][4] = _activityTypeIDStr;
+                            syncDataArray[index][5] = _agentExternalID;
+                            syncDataArray[index][6] = _catalogExternalID;
+                            syncDataArray[index][7] =
                                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec sapien ipsum. Curabitur vel scelerisque tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. Aliquam lacus metus, pulvinar sit amet elit quis, dictum maximus leo. Suspendisse potenti. Pellentesque suscipit, ante non ullamcorper porta, mauris tortor bibendum orci, et tincidunt lacus risus semper urna. Cras quis neque ligula. Aenean id ex eu diam sodales placerat id nec metus. Sed at vulputate ipsum. Duis aliquam sapien ligula, ut gravida urna congue in. Suspendisse molestie nisl quis volutpat commodo. Vivamus laoreet viverra dui et consectetur. Aenean egestas maximus urna quis maximus. Nullam suscipit faucibus magna, in dignissim dui aliquam quis. Sed dapibus neque vitae ante dignissim, eget consectetur est viverra. Nunc massa justo, sagittis vitae tortor vitae, aliquet laoreet leo. Quisque volutpat mollis metus, ac sodales enim euismod et. Nunc leo justo, scelerisque sit amet pellentesque sed, congue ut libero. Mauris bibendum metus eros, cursus tristique metus tristique et. Donec ac vehicula massa. Aliquam pharetra sit amet nunc sed tincidunt. Mauris bibendum euismod augue vel rhoncus. Aenean egestas tellus leo, sed egestas odio vehicula a. Sed facilisis vulputate mi, a imperdiet ipsum sollicitudin sit amet. Phasellus gravida gravida orci non imperdiet. Vivamus quis libero nec lorem porttitor maximus. Duis placerat sagittis sem. Suspendisse ut faucibus justo. Pellentesque quis sapien elit. Donec dapibus sed nisi at euismod. Sed ac fringilla nisl. Duis nec purus dolor. Aenean vestibulum vehicula risus eget blandit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur porttitor non lorem sed placerat. Quisque sodales maximus lorem, nec porta nunc fermentum sit amet. Integer euismod sollicitudin euismod. Ut consequat nec ligula et dapibus. Quisque ipsum nulla, convallis id ultricies sed, pharetra quis risus. Praesent vel laoreet sem. In sagittis purus at justo blandit maximus. Integer vulputate blandit lectus nec auctor. Phasellus facilisis, libero quis malesuada egestas, lacus felis cursus ex, nec faucibus dolor mauris nec ipsum. In nibh purus, imperdiet a magna ut, gravida vulputate justo. Interdum et malesuada fames ac ante ipsum primis in faucibus. In eget leo eget lectus auctor tincidunt. Nullam quis vestibulum augue, id sodales est. Fusce faucibus risus velit, vestibulum tincidunt lectus hendrerit id. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In hac habitasse platea dictumst. Praesent elementum consectetur purus. Aliquam ut neque consectetur, gravida velit ac, venenatis nisl. Etiam iaculis ligula ipsum, eget placerat lacus vestibulum sed. Vestibulum non risus sollicitudin, elementum ante quis, convallis orci. Ut sed mattis magna, non tincidunt tortor. Ut pulvinar, neque id feugiat lacinia, est erat volutpat lacus, ut elementum diam sem at diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In auctor consectetur accumsan. Quisque aliquam euismod viverra. Pellentesque finibus non orci sollicitudin consectetur. Aenean nulla massa, bibendum sed lectus sit amet, iaculis sodales nibh. Nulla convallis mi ac magna rutrum, consectetur condimentum nibh rutrum. Integer rhoncus sed ligula ut pharetra. Maecenas tortor erat, interdum vitae interdum sit amet, malesuada vel nulla. Aliquam a ex euismod, malesuada sapien ac, suscipit neque. Curabitur eget lectus enim. Integer feugiat lorem orci, non ornare justo aliquet ut. Pellentesque dignissim, est eu hendrerit ultrices, ipsum justo semper mi, mattis suscipit ligula sapien id ex. Fusce vitae sem vehicula, finibus nulla ultricies, commodo nisi. Etiam finibus odio ut lacinia dictum. Aenean a magna sit amet massa feugiat laoreet hendrerit id nisl. Fusce eu diam at nunc maximus lobortis ut sit amet lacus. In pharetra nisi justo, sed porta tellus euismod in. Sed at tincidunt magna, ut volutpat justo. Aliquam mollis euismod velit, in sollicitudin libero ultricies at. Etiam quis erat id turpis interdum facilisis. Praesent sodales nisl id dolor porttitor malesuada. Integer vitae consequat magna. Nullam gravida ultricies arcu, sit amet volutpat diam efficitur ut. In tincidunt mattis metus a scelerisque. Donec sit amet urna vehicula dui aliquet cursus vitae eget diam. Maecenas ac faucibus mauris. Suspendisse lectus tortor, pretium nec est in, luctus accumsan erat. Duis suscipit leo elementum lacus sagittis, sit amet tempor nulla mollis. Quisque lectus lectus, laoreet et dapibus id, aliquam vel arcu. Morbi sapien libero, malesuada a sem quis, iaculis iaculis mauris. Proin diam elit, semper a libero vitae, pulvinar auctor dui. Morbi quis turpis a neque condimentum feugiat. Nulla euismod lacus sed nunc ullamcorper ultrices. Quisque facilisis ullamcorper metus. In posuere ac sapien a sagittis. Nullam quis pharetra turpis. Aliquam consequat lacus a augue gravida posuere. Quisque porta, orci ac malesuada congue, lectus ligula bibendum sem, vel condimentum erat velit sed urna. Vivamus elementum felis quis dui vestibulum, volutpat consectetur odio dictum. Praesent non mattis augue, vitae facilisis metus. Praesent varius risus eu gravida ultrices. Ut arcu tellus, gravida eu elit sed, congue scelerisque orci. Etiam at ipsum pharetra, cursus nulla at, congue urna. Phasellus id ultricies nisl. Nullam id mi sit amet magna euismod euismod at et turpis. Suspendisse congue dolor id massa lobortis condimentum sed eget magna. Sed a lectus sit amet magna dapibus fringilla. Cras lectus enim, facilisis ac blandit id, ullamcorper id ante. Donec sed leo et erat convallis dapibus ac id eros. Vestibulum non rutrum diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec vel faucibus mauris, a pulvinar sem. Donec vitae suscipit purus, porttitor consequat vel.';
-                            syncDataArray[index][7] = `-${Math.floor(Math.random() * 1000100).toString()}`;
+                            syncDataArray[index][8] = `-${Math.floor(Math.random() * 1000100).toString()}`;
                             generalService.sleep(Math.floor(Math.random() * 10));
                         }
                         testBody['LocalDataUpdates' as any].jsonBody[2].Line = syncDataArray;
@@ -622,9 +665,10 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             //Add one order line in every iteration
             testBody['LocalDataUpdates' as any].jsonBody[2].Lines.push([
                 _localData.jsonBody[2].Lines[0][0],
-                new Date().getTime().toString(),
+                _accountUUID,
+                Math.floor(Math.random() * 100),
                 Math.floor(Math.random() * 1000000000000).toString() + Math.random().toString(36).substring(10),
-                _localData.jsonBody[2].Lines[0][3],
+                _localData.jsonBody[2].Lines[0][4],
                 _agentExternalID,
                 _catalogExternalID,
                 `Test ${Math.floor(Math.random() * 1000000).toString()}`,
@@ -816,8 +860,14 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         }.`,
                     } as TestObject;
                 }
+                let parsedXmlResponse;
+                try {
+                    parsedXmlResponse = JSON.stringify(putXmlResponse);
+                } catch (error) {
+                    parsedXmlResponse = putXmlResponse;
+                }
                 return {
-                    TestResult: `Error in the put: ${putXmlResponse}.`,
+                    TestResult: `Error in the put: ${parsedXmlResponse}.`,
                 } as TestObject;
             }
         }
