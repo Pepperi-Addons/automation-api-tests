@@ -952,14 +952,15 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 j = j + skipTransactionsSize
             ) {
                 const getTransactionsLines = await service.papiClient.allActivities.find({
-                    where: `ExternalID='${testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][2]}'`,
+                    where: `ExternalID='${testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][3]}'`,
                 });
                 if (getTransactionsLines.length > 0) {
                     for (let index = 0; index < localTestValuesArr.length; index++) {
                         try {
                             if (
+                                localTestValuesArr[index] != 'AccountUUID' &&
                                 getTransactionsLines[0][localTestValuesArr[index]] !=
-                                testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][index]
+                                    testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][index]
                             ) {
                                 console.log(
                                     `Is this: ${getTransactionsLines[0][localTestValuesArr[index]]}, equal to this: ${
@@ -981,7 +982,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     }
                 } else {
                     errorMessage += `New transaction with ExternalID = ${
-                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][2]
+                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][3]
                     }, was not found | `;
                 }
             }
