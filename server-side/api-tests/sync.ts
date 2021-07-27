@@ -245,20 +245,20 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                         return Promise.all[
                             (await expect(
-                                syncPostGetValidation(
+                                await syncPostGetValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
                                 ),
                             )
-                                .eventually.to.have.property('TestResult')
+                                .to.have.property('TestResult')
                                 .that.contain('Pass' as TestResult),
                             expect(
-                                orderCreationValidation(
+                                await orderCreationValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
                                 ),
                             )
-                                .eventually.to.have.property('TestResult')
+                                .to.have.property('TestResult')
                                 .that.contain('Pass' as TestResult))
                         ];
                     } else {
@@ -274,12 +274,12 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
                         return expect(
-                            syncPostGetValidation(
+                            await syncPostGetValidation(
                                 syncDataMembersValidationGet.apiGetResponse,
                                 syncDataMembersValidationGet.testBody,
                             ),
                         )
-                            .eventually.to.have.property('TestResult')
+                            .to.have.property('TestResult')
                             .that.contain('Pass' as TestResult);
                     }
                     return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
@@ -301,20 +301,20 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                         return Promise.all[
                             (await expect(
-                                syncPostGetValidation(
+                                await syncPostGetValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
                                 ),
                             )
-                                .eventually.to.have.property('TestResult')
+                                .to.have.property('TestResult')
                                 .that.contain('Pass' as TestResult),
                             expect(
-                                orderCreationValidation(
+                                await orderCreationValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
                                 ),
                             )
-                                .eventually.to.have.property('TestResult')
+                                .to.have.property('TestResult')
                                 .that.contain('Pass' as TestResult))
                         ];
                     } else {
@@ -418,20 +418,20 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
                             return Promise.all[
                                 (await expect(
-                                    syncPostGetValidation(
+                                    await syncPostGetValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
                                     ),
                                 )
-                                    .eventually.to.have.property('TestResult')
+                                    .to.have.property('TestResult')
                                     .that.contain('Pass' as TestResult),
                                 await expect(
-                                    orderCreationValidation(
+                                    await orderCreationValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
                                     ),
                                 )
-                                    .eventually.to.have.property('TestResult')
+                                    .to.have.property('TestResult')
                                     .that.contain('Pass' as TestResult))
                             ];
                         } else {
@@ -930,12 +930,16 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             }
             for (let index = 0; index < localTestValuesArr.length; index++) {
                 if (localTestValuesArr[index] == 'AgentWrntyID') {
-                    localTestValuesArr.pop();
-                    index--;
+                    localTestValuesArr.splice(index, 1);
                 }
                 if (localTestValuesArr[index] == 'CatalogWrntyID') {
-                    localTestValuesArr.pop();
-                    index--;
+                    localTestValuesArr.splice(index, 1);
+                }
+                if (localTestValuesArr[index] == 'AccountUUID') {
+                    localTestValuesArr.splice(index, 1);
+                }
+                if (localTestValuesArr[index] == 'WrntyID') {
+                    localTestValuesArr.splice(index, 1);
                 }
             }
         }
@@ -957,18 +961,27 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 if (getTransactionsLines.length > 0) {
                     for (let index = 0; index < localTestValuesArr.length; index++) {
                         try {
+                            if (testBody['LocalDataUpdates'].jsonBody[2].Lines[j] == '') {
+                                index++;
+                            }
                             if (
-                                localTestValuesArr[index] != 'AccountUUID' &&
+                                testBody['LocalDataUpdates'].jsonBody[2].Lines[j][index] != '' &&
                                 getTransactionsLines[0][localTestValuesArr[index]] !=
-                                    testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][index]
+                                    testBody['LocalDataUpdates'].jsonBody[2].Lines[j][
+                                        index > 0 ? (index > 3 ? index + 3 : index + 1) : index
+                                    ]
                             ) {
                                 console.log(
                                     `Is this: ${getTransactionsLines[0][localTestValuesArr[index]]}, equal to this: ${
-                                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][index]
+                                        testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][
+                                            index > 0 ? (index > 3 ? index + 3 : index + 1) : index
+                                        ]
                                     }`,
                                 );
                                 errorMessage += `Missmatch sent Property: ${
-                                    testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][index]
+                                    testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][
+                                        index > 0 ? (index > 3 ? index + 3 : index + 1) : index
+                                    ]
                                 } Not identical to recived Property: ${
                                     getTransactionsLines[0][localTestValuesArr[index]]
                                 } | `;
