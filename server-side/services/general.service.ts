@@ -276,6 +276,7 @@ export default class GeneralService {
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
+                addonName == 'WebAPI Platform' ||
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
@@ -297,6 +298,7 @@ export default class GeneralService {
                 try {
                     varLatestVersion = fetchVarResponse.Body[0].Version;
                 } catch (error) {
+                    debugger;
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             varLatestVersion.Status
