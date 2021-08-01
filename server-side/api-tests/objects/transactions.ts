@@ -1434,7 +1434,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             );
         });
 
-        it('Update transaction that is not on NUC', async () => {
+        it('Update transaction that is not on NUC ExternalID', async () => {
             const UpdatedTransactionNotOnNuc = await service.createTransaction({
                 ExternalID: updatedTransaction.ExternalID,
                 ActivityTypeID: atds[0].TypeID,
@@ -1448,6 +1448,40 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 TSAMultiChoiceAPI: 'B',
                 TSANumberAPI: 70,
                 TSASingleLineAPI: 'Random text nuc test',
+            });
+            expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID),
+                expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID),
+                expect(UpdatedTransactionNotOnNuc).to.have.property('Archive').that.is.a('boolean').and.is.false,
+                expect(await service.getTransaction({ where: `InternalID=${updatedTransaction.InternalID}` }))
+                    .to.be.an('array')
+                    .with.lengthOf(1);
+        });
+
+        it('Archive transaction and reload nuc', async () => {
+            const ArchiveJob = await service.archiveTransaction({ transactions: [updatedTransaction.InternalID] });
+            const ArchiveResult = await service.waitForArchiveJobStatus(ArchiveJob.URI, 30000);
+            expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded'),
+                expect(ArchiveResult).to.have.property('RecordsCount').that.equals(1);
+            await service.reloadNuc();
+            await expect(service.getTransactionByID(updatedTransaction.InternalID)).eventually.to.be.rejectedWith(
+                'failed with status: 404 - Not Found error: {"fault":{"faultstring":"Object ID does not exist.","detail":{"errorcode":"InvalidParameter"',
+            );
+        });
+
+        it('Update transaction that is not on NUC UUID', async () => {
+            const UpdatedTransactionNotOnNuc = await service.createTransaction({
+                UUID: updatedTransaction.UUID,
+                ActivityTypeID: atds[0].TypeID,
+                Account: {
+                    Data: {
+                        InternalID: transactionAccount.InternalID,
+                    },
+                },
+                TSADecimalNumberAPI: 11.5,
+                TSAEmailAPI: 'Test1234566@test.com',
+                TSAMultiChoiceAPI: 'A',
+                TSANumberAPI: 75,
+                TSASingleLineAPI: 'Random text nuc test 2',
             });
             expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID),
                 expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID),
