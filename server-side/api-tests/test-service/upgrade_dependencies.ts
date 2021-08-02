@@ -17,11 +17,11 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'Cross Platforms API': [
             '00000000-0000-0000-0000-000000abcdef',
-            request.body.crossPlatformsAPI ? `${request.body.crossPlatformsAPI}` : 'V',
+            request.body.crossPlatformsApi ? `${request.body.crossPlatformsApi}` : 'V',
         ],
         'WebAPI Platform': [
             '00000000-0000-0000-0000-0000003eba91',
-            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.6',
+            request.body.webAppApiPlatform ? `${request.body.webAppApiPlatform}` : '16.6',
         ],
         'WebApp Platform': [
             '00000000-0000-0000-1234-000000000b2b',
@@ -37,11 +37,14 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'Data Views API': [
             '484e7f22-796a-45f8-9082-12a734bac4e8',
-            request.body.dataViewsAPI ? `${request.body.dataViewsAPI}` : '1.',
+            request.body.dataViewsApi ? `${request.body.dataViewsApi}` : '1.',
         ],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+        'Pepperi Notification Service': [
+            '00000000-0000-0000-0000-000000040fa9',
+            request.body.pepperiNotificationService ? `${request.body.pepperiNotificationService}` : '',
+        ],
+        relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', request.body.relations ? `${request.body.relations}` : ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
