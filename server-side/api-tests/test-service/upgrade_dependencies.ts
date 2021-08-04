@@ -19,9 +19,9 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             '00000000-0000-0000-0000-000000abcdef',
             request.body.crossPlatformsApi ? `${request.body.crossPlatformsApi}` : 'V',
         ],
-        'WebAPI Platform': [
+        'WebApp API Framework': [
             '00000000-0000-0000-0000-0000003eba91',
-            request.body.webAppApiPlatform ? `${request.body.webAppApiPlatform}` : '16.6',
+            request.body.webAppApiFramework ? `${request.body.webAppApiFramework}` : '16.6',
         ],
         'WebApp Platform': [
             '00000000-0000-0000-1234-000000000b2b',

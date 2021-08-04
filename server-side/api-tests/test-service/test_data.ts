@@ -2,7 +2,7 @@ import GeneralService, { TesterFunctions } from '../../services/general.service'
 
 const installedAddons = {
     'Services Framework': '' as any,
-    'WebAPI Platform': '' as any,
+    'WebApp API Framework': '' as any,
     'WebApp Platform': '' as any,
     'Data Views API': '' as any,
     'Addons Manager': '' as any,
@@ -23,8 +23,8 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
         if (installedAddonsArr[index].Addon !== null) {
             if (installedAddonsArr[index].Addon.Name == 'Services Framework')
                 installedAddons['Services Framework'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'WebAPI Platform')
-                installedAddons['WebAPI Platform'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'WebApp API Framework')
+                installedAddons['WebApp API Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'WebApp Platform')
                 installedAddons['WebApp Platform'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Data Views API')
@@ -65,10 +65,9 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 const regexMatched = installedAddons['Cross Platforms API'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`WebAPI Platform | Version: ${installedAddons['WebAPI Platform']}`, () => {
-                //Comment out on 01/08/2021 by oren since 'WebAPI Platform' name is temporary
-                //const regexMatched = installedAddons['WebAPI Platform'].replace(regex, '');
-                //expect(regexMatched.length).to.be.above(2);
+            it(`WebApp API Framework | Version: ${installedAddons['WebApp API Framework']}`, () => {
+                const regexMatched = installedAddons['WebApp API Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
             });
             it(`WebApp Platform | Version: ${installedAddons['WebApp Platform']}`, () => {
                 const regexMatched = installedAddons['WebApp Platform'].replace(regex, '');
