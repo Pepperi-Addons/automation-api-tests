@@ -276,7 +276,7 @@ export default class GeneralService {
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
-                addonName == 'WebAPI Platform' ||
+                addonName == 'WebApp API Framework' ||
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
