@@ -7,7 +7,7 @@ export class ADALService {
         return this.papiClient.addons.data.schemes.post(addonDataScheme);
     }
 
-    getDataFromSchema(uuid: string, tableName: string, options: FindOptions) {
+    getDataFromSchema(uuid: string, tableName: string, options?: FindOptions) {
         return this.papiClient.addons.data.uuid(uuid).table(tableName).find(options);
     }
 
