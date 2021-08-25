@@ -27,6 +27,7 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
@@ -1191,9 +1192,150 @@ export async function PepperiNotificationServiceTests(
                         });
                 });
 
+                it(`PNS Remove And Restore Subscription Inside Installation (DI-18555, DI-18570, DI-18389)`, async () => {
+                    const testDataAddonUUID = 'd9999883-ef9a-4295-99db-2f1d3fc34af6';
+                    const testDataAddonVersion = '0.0.34';
+                    const testDataAddonSchemaName = 'TypeScript Installation Schema';
+
+                    //Uninstall
+                    const uninstallAddonBeforeTest = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testDataAddonUUID)
+                        .uninstall();
+
+                    expect(uninstallAddonBeforeTest).to.have.property('URI');
+                    const uninstallAddonBeforeTestApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        uninstallAddonBeforeTest.URI,
+                        40,
+                    );
+                    expect(uninstallAddonBeforeTestApiResponse.Status.ID).to.be.not.equal(
+                        2,
+                        'Failed To Remove NG-10 Addon',
+                    );
+
+                    //Install
+                    const installedAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testDataAddonUUID)
+                        .install(testDataAddonVersion);
+
+                    expect(installedAddon).to.have.property('URI');
+                    const installedAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        installedAddon.URI,
+                        40,
+                    );
+                    expect(installedAddonApiResponse.Status.ID).to.be.equal(1, 'Install Failed');
+
+                    //Validate Subscription created
+                    let getSubscriptionsResponse = await pepperiNotificationServiceService.findSubscriptions();
+                    const expectedSubscriptions = [
+                        'uninstalled-addon-adal-subscription',
+                        'uninstalled-addon-pns-subscription',
+                        'Test_Update_PNS',
+                    ];
+                    let testResults = [false, false, false];
+                    for (let index = 0; index < getSubscriptionsResponse.length; index++) {
+                        const subscription = getSubscriptionsResponse[index];
+                        if (
+                            subscription.Name == expectedSubscriptions[0] &&
+                            subscription.AddonUUID == '00000000-0000-0000-0000-00000000ada1'
+                        ) {
+                            testResults[0] = true;
+                        } else if (
+                            subscription.Name == expectedSubscriptions[1] &&
+                            subscription.AddonUUID == '00000000-0000-0000-0000-000000040fa9'
+                        ) {
+                            testResults[1] = true;
+                        } else if (
+                            subscription.Name == expectedSubscriptions[2] &&
+                            subscription.AddonUUID == 'd9999883-ef9a-4295-99db-2f1d3fc34af6'
+                        ) {
+                            testResults[2] = true;
+                        }
+                    }
+
+                    expect(testResults[0]).to.be.equal(
+                        true,
+                        'Missing Subscription: uninstalled-addon-adal-subscription',
+                    );
+                    expect(testResults[1]).to.be.equal(
+                        true,
+                        'Missing Subscription: uninstalled-addon-pns-subscription',
+                    );
+                    expect(testResults[2]).to.be.equal(true, 'Missing Subscription: Test_Update_PNS');
+
+                    //Validate Schema created
+                    let schema;
+                    let maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(1500);
+                        schema = await adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName);
+                        maxLoopsCounter--;
+                    } while (schema[0] == undefined && maxLoopsCounter > 0);
+                    expect(schema[0]).to.be.undefined;
+
+                    schema = await generalService.fetchStatus('/addons/data/schemes', {
+                        method: `GET`,
+                        headers: {
+                            'X-Pepperi-OwnerID': testDataAddonUUID,
+                        },
+                    });
+                    expect(schema.Body[0].Name).to.equal(testDataAddonSchemaName);
+
+                    const uninstallAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testDataAddonUUID)
+                        .uninstall();
+
+                    expect(uninstallAddon).to.have.property('URI');
+                    const uninstallAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        uninstallAddon.URI,
+                        40,
+                    );
+                    expect(uninstallAddonApiResponse.Status.ID).to.be.equal(1, 'Uninstall Faild');
+                    generalService.sleep(1500);
+
+                    //Validate Subscription created
+                    getSubscriptionsResponse = await pepperiNotificationServiceService.findSubscriptions();
+                    testResults = [false, false, false];
+                    for (let index = 0; index < getSubscriptionsResponse.length; index++) {
+                        const subscription = getSubscriptionsResponse[index];
+                        if (
+                            subscription.Name == expectedSubscriptions[0] &&
+                            subscription.AddonUUID == '00000000-0000-0000-0000-00000000ada1'
+                        ) {
+                            testResults[0] = true;
+                        } else if (
+                            subscription.Name == expectedSubscriptions[1] &&
+                            subscription.AddonUUID == '00000000-0000-0000-0000-000000040fa9'
+                        ) {
+                            testResults[1] = true;
+                        } else if (
+                            subscription.Name == expectedSubscriptions[2] &&
+                            subscription.AddonUUID == 'd9999883-ef9a-4295-99db-2f1d3fc34af6'
+                        ) {
+                            testResults[2] = true;
+                        }
+                    }
+
+                    expect(testResults[0]).to.be.equal(
+                        true,
+                        'Missing Subscription: uninstalled-addon-adal-subscription',
+                    );
+                    expect(testResults[1]).to.be.equal(
+                        true,
+                        'Missing Subscription: uninstalled-addon-pns-subscription',
+                    );
+                    expect(testResults[2]).to.be.equal(false, 'Subscription Not Remved (DI-18555): Test_Update_PNS');
+
+                    //Validate Schema created
+                    await expect(
+                        adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName),
+                    ).eventually.to.be.rejectedWith(
+                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist, for table = TypeScript Installation Schema`,
+                    );
+                });
+
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
                     const uninstalledAddon = await generalService.papiClient.addons.installedAddons
-                        .addonUUID('00000000-0000-0000-0000-000000040fa9')
+                        .addonUUID(testData['Pepperi Notification Service'][0])
                         .uninstall();
 
                     expect(uninstalledAddon).to.have.property('URI');
@@ -1206,15 +1348,71 @@ export async function PepperiNotificationServiceTests(
                     expect(postAddonApiResponse.Status.ID).to.be.equal(1);
 
                     const deleteAddon = await generalService.papiClient
-                        .delete('/addons/installed_addons/00000000-0000-0000-0000-000000040fa9')
+                        .delete(`/addons/installed_addons/${testData['Pepperi Notification Service'][0]}`)
                         .catch((res) => res);
 
-                    await expect(deleteAddon.message).to.include(
+                    expect(deleteAddon.message).to.include(
                         'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Current user cannot delete this, or UUID was not in the database',
                     );
 
                     const installAddon = await generalService.areAddonsInstalled(testData);
-                    await expect(installAddon[0]).to.be.true;
+                    expect(installAddon[0]).to.be.true;
+                    expect(installAddon[1]).to.be.true;
+                });
+
+                it(`Verify ADAL Upgraded After PNS`, async () => {
+                    //Downgrade ADAL
+                    let downgradeAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testData['Pepperi Notification Service'][0])
+                        .downgrade('1.0.101');
+
+                    expect(downgradeAddon).to.have.property('URI');
+
+                    let postDowngradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        downgradeAddon.URI,
+                        40,
+                    );
+
+                    expect(postDowngradeApiResponse.Status.ID).to.be.equal(1);
+
+                    //Downgrade PNS
+                    downgradeAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testData['ADAL'][0])
+                        .downgrade('1.0.131');
+
+                    expect(downgradeAddon).to.have.property('URI');
+
+                    postDowngradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        downgradeAddon.URI,
+                        40,
+                    );
+
+                    expect(postDowngradeApiResponse.Status.ID).to.be.equal(1);
+
+                    //Upgrade ADAL
+                    let upgradeAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testData['Pepperi Notification Service'][0])
+                        .upgrade('1.0.110');
+
+                    expect(upgradeAddon).to.have.property('URI');
+
+                    let postUpgradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        upgradeAddon.URI,
+                        40,
+                    );
+
+                    expect(postUpgradeApiResponse.Status.ID).to.be.equal(1);
+
+                    //Upgrade PNS
+                    upgradeAddon = await generalService.papiClient.addons.installedAddons
+                        .addonUUID(testData['ADAL'][0])
+                        .upgrade('1.0.167');
+
+                    expect(upgradeAddon).to.have.property('URI');
+
+                    postUpgradeApiResponse = await generalService.getAuditLogResultObjectIfValid(upgradeAddon.URI, 40);
+
+                    expect(postUpgradeApiResponse.Status.ID).to.be.equal(1);
                 });
             });
         });

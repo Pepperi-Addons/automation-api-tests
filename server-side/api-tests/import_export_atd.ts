@@ -3243,41 +3243,26 @@ function RemoveUntestedMembers(testedObject) {
     }
 }
 
-function compareByName(a, b) {
-    const beforeName = a.Name;
-    const afterName = b.Name;
-
-    let comparison = 0;
-    if (beforeName > afterName) {
-        comparison = 1;
-    } else if (beforeName < afterName) {
-        comparison = -1;
+const compareByName = (a, b) => {
+    if (a.Name > b.Name) {
+        return 1;
+    } else if (a.Name < b.Name) {
+        return -1;
     }
-    return comparison;
-}
+};
 
-function compareByContextName(a, b) {
-    const beforeName = a.Context.Name;
-    const afterName = b.Context.Name;
-
-    let comparison = 0;
-    if (beforeName > afterName) {
-        comparison = 1;
-    } else if (beforeName < afterName) {
-        comparison = -1;
+const compareByContextName = (a, b) => {
+    if (a.Context.Name > b.Context.Name) {
+        return 1;
+    } else if (a.Context.Name < b.Context.Name) {
+        return -1;
     }
-    return comparison;
-}
+};
 
-function compareByFieldID(a, b) {
-    const beforeFieldID = a.FieldID;
-    const afterFieldID = b.FieldID;
-
-    let comparison = 0;
-    if (beforeFieldID > afterFieldID) {
-        comparison = 1;
-    } else if (beforeFieldID < afterFieldID) {
-        comparison = -1;
+const compareByFieldID = (a, b) => {
+    if (a.FieldID > b.FieldID) {
+        return 1;
+    } else if (a.FieldID < b.FieldID) {
+        return -1;
     }
-    return comparison;
-}
+};
