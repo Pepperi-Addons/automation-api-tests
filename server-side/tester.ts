@@ -9,7 +9,7 @@ import { Client } from '@pepperi-addons/debug-server';
 chai.use(promised);
 
 export default function Tester(client?: Client, testName?: string, environment?: string) {
-    const isLocal = client ? client.AssetsBaseUrl.includes('/localhost:') : false;
+    const isLocal = client ? client.AssetsBaseUrl.includes('/localhost:') : true;
     const testObject = {};
     const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
         environment ? environment : 'Default'

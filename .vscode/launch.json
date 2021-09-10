@@ -28,6 +28,12 @@
             },
             "runtimeExecutable": "${workspaceFolder}/server-side/node_modules/.bin/nodemon",
             "restart": true,
-        }
+        },
+        {
+            "command": "cd ./server-side",
+            "name": "Listen To NPM Scripts",
+            "request": "launch",
+            "type":"node-terminal"
+        },
     ]
 }

@@ -220,7 +220,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, true); // false);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false); // false);
     //#endregion Upgrade ImportExportATD and Data Views API
 
     //Clean the ATD and UDT from failed tests before starting a new test
@@ -2072,7 +2072,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         FileName: 'Label_Only_1_1_176.json',
                         MimeType: 'application/json',
                         Title: 'Label Only',
-                        URL: '  ',
+                        URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/7c44ef18-6c35-4109-8d7d-ce4cb5adb4e3/Label_Only_1_1_176.json',
                     },
                     //EU - S3
                     {
@@ -2115,54 +2115,14 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         let ATDExportResponse;
                         let ATDImportResponse;
                         it('Post ATD to Override Existing ATD', async () => {
-                            let references;
-                            try {
-                                references = await generalService
-                                    .fetchStatus(TransactionsATDArr[index].URL)
-                                    .then((res) => res.Body)
-                                    .then((atd) => atd.References);
-                            } catch (error) {
-                                console.log('Debug Transactions: ' + TransactionsATDArr[index].URL);
-                                console.log('Debug error: ' + error);
-                                try {
-                                    references = await generalService
-                                        .fetchStatus(TransactionsATDArr[index].URL)
-                                        .then((res) => res.Body)
-                                        .then((atd) => atd.References);
-                                } catch (error) {
-                                    console.log('2nd also failed Transactions: ' + TransactionsATDArr[index].URL);
-                                    console.log('2nd also failed error: ' + error);
-                                }
-                            }
+                            const references = await generalService
+                                .fetchStatus(TransactionsATDArr[index].URL)
+                                .then((res) => res.Body)
+                                .then((atd) => atd.References);
 
-                            // }
-                            // const references = await generalService
-                            //     .fetchStatus(TransactionsATDArr[index].URL)
-                            //     .then((res) => res.Body)
-                            //     .then((atd) => atd.References);
-
-                            let mappingResponse = await importExportATDService.exportMappingATD({
+                            const mappingResponse = await importExportATDService.exportMappingATD({
                                 References: references,
                             });
-                            try {
-                                mappingResponse = await importExportATDService.exportMappingATD({
-                                    References: references,
-                                });
-                            } catch (error) {
-                                console.log('Debug references: ' + references);
-                                console.log('Debug error: ' + error);
-                                try {
-                                    mappingResponse = await importExportATDService.exportMappingATD({
-                                        References: references,
-                                    });
-                                } catch (error) {
-                                    console.log('2nd also failed references: ' + references);
-                                    console.log('2nd also failed error: ' + error);
-                                }
-                            }
-                            // const mappingResponse = await importExportATDService.exportMappingATD({
-                            //     References: references,
-                            // });
 
                             ATDImportResponse = await importExportATDService
                                 .importATD('transactions', testATDInternalID, {

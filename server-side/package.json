@@ -18,11 +18,12 @@
         "lint": "eslint --ext .ts .",
         "fix-lint": "eslint --ext .ts . --fix",
         "update": "npm install @pepperi-addons/debug-server@latest && npm install @pepperi-addons/papi-sdk@latest",
-        "learn": "ts-mocha ./learn/baseTestExample.ts",
-        "learn-i": "ts-mocha ./learn/intervalTestExample.ts",
-        "learn-p": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_All' --parallel --timeout 20000 ./learn/*Test.ts",
-        "learn-pb": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Base' --timeout 20000 ./learn/parallelBaseTest.ts",
-        "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn/parallelIntervalTest.ts"
+        "learn": "ts-mocha ./learn-tests/baseTestExample.ts",
+        "learn-i": "ts-mocha ./learn-tests/intervalTestExample.ts",
+        "learn-p": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_All' --parallel --timeout 20000 ./learn-tests/*Test.ts",
+        "learn-pb": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Base' --timeout 20000 ./learn-tests/parallelBaseTest.ts",
+        "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn-tests/parallelIntervalTest.ts",
+        "login-test": "ts-mocha  ./ui-tests/login.ts"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
@@ -30,8 +31,10 @@
         "@types/chai-as-promised": "^7.1.2",
         "@types/node": "^10.17.24",
         "@types/node-fetch": "^2.5.7",
+        "@types/selenium-webdriver": "^4.0.15",
         "@typescript-eslint/eslint-plugin": "^3.5.0",
         "@typescript-eslint/parser": "^3.5.0",
+        "chromedriver": "^93.0.1",
         "eslint": "^7.3.1",
         "eslint-config-prettier": "^6.11.0",
         "eslint-plugin-prettier": "^3.1.4",
@@ -39,8 +42,9 @@
         "prettier": "^2.0.5",
         "rollup": "^2.10.9",
         "rollup-plugin-typescript2": "^0.27.1",
+        "selenium-webdriver": "^4.0.0-rc-1",
         "ts-node": "^8.10.2",
-        "typescript": "~3.8.0"
+        "typescript": "^4.4.2"
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "^0.0.32",
