@@ -67,8 +67,8 @@ export default function Tester(client?: Client, testName?: string, environment?:
                                     let res;
                                     try {
                                         res = JSON.parse(data.toString());
-                                    } catch (e) {
-                                        return resolve(e.toString());
+                                    } catch (error) {
+                                        return resolve(error.toString());
                                     }
 
                                     //Test results report might be to big for the addon, so remove some data from response

@@ -634,9 +634,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             ) {
                 return 'Error in UUID in Code Job API Response';
             }
-        } catch (e) {
-            e.stack = 'UUID in Code Job API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            error.stack = 'UUID in Code Job API Response:\n' + error.stack;
+            return error;
         }
         //Check Date and Time
         try {
@@ -646,9 +646,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             ) {
                 return 'Error in Date and Time in Code Job API Response';
             }
-        } catch (e) {
-            e.stack = 'Date and Time in Code Job API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            error.stack = 'Date and Time in Code Job API Response:\n' + error.stack;
+            return error;
         }
         //Check Type and Event
         try {
@@ -663,9 +663,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             ) {
                 return 'The Type or Event contain wrong data';
             }
-        } catch (e) {
-            e.stack = 'Type and Event in Code Job API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            error.stack = 'Type and Event in Code Job API Response:\n' + error.stack;
+            return error;
         }
         //Check Result Object
         try {
@@ -677,9 +677,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                     return 'Error in execution result';
                 }
             }
-        } catch (e) {
-            e.stack = 'Draft Code Error in Code Job API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            error.stack = 'Draft Code Error in Code Job API Response:\n' + error.stack;
+            return error;
         }
         return true;
     }

@@ -3,7 +3,7 @@ module.exports = {
     parserOptions: {
         ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
         sourceType: "module", // Allows for the use of imports
-        project: "./tsconfig.json",
+        project: "./tsconfig-eslint.json", // Changed from tsconfig.json to tsconfig-eslint.json since ts 4 compiler need useUnknownInCatchVariables=true but linting need this one false
     },
     extends: [
         "plugin:@typescript-eslint/recommended", // Uses the recommended rules from the @typescript-eslint/eslint-plugin

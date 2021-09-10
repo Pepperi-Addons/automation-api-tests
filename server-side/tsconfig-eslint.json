@@ -11,7 +11,6 @@
     "noImplicitAny": false,
     "allowJs": true,
     "resolveJsonModule": true,
-    "useUnknownInCatchVariables": false, // allow to catch errors in TS Version 4*
   },
   "exclude": [
     "./build/**",
