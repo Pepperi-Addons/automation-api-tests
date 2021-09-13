@@ -47,6 +47,10 @@ import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
 //#endregion Yoni's Tests
 
+//#region Evgeny's Tests
+import { DataVisualisationTests } from './api-tests/data_visualisation';
+//#endregion Evgenys's Tests
+
 import {
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
@@ -993,7 +997,7 @@ export async function elastic_search(client: Client, request: Request, testerFun
 
 export async function open_catalog(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Open_catalog';
+    testName = 'Open_Catalog';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -1016,6 +1020,32 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     return testResult;
 }
 //#endregion Yoni's Tests
+
+//#region Evgeny's Tests
+export async function data_visualisation(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Visualisation';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DataVisualisationTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+//#endregion Evgeny's Tests
 
 //#region import export ATD Tests
 export async function import_export_atd_activities(client: Client, request: Request, testerFunctions: TesterFunctions) {
