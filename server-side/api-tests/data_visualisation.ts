@@ -1,10 +1,10 @@
 import { Transaction } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService } from '../services/data_visualisation.service';
+// import { DataVisualisationService } from '../services/data_visualisation.service';
 import { ObjectsService } from '../services/objects.service';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    // const dataVisualisationService = new DataVisualisationService(generalService.papiClient);//just for lint issue 
+    // const dataVisualisationService = new DataVisualisationService(generalService.papiClient);//just for lint issue
     const objectsService = new ObjectsService(generalService);
 
     const describe = tester.describe;
