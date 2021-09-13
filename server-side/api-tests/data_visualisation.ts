@@ -4,7 +4,7 @@ import { DataVisualisationService } from '../services/data_visualisation.service
 import { ObjectsService } from '../services/objects.service';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataVisualisationService = new DataVisualisationService(generalService.papiClient);
+    // const dataVisualisationService = new DataVisualisationService(generalService.papiClient);//just for lint issue 
     const objectsService = new ObjectsService(generalService);
 
     const describe = tester.describe;
@@ -14,7 +14,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     //#region Upgrade Data Visualisation
     const testData = {
         // 'data-visualization': ['43d4fe5c-7c60-4a91-9d65-8580dc47a4bd', ''],
-        'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.',]
+        'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -54,12 +54,11 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             }
         });
 
-
         describe('Endpoints', () => {
             describe('GET', () => {
                 it('Get Transaction', async () => {
                     const transaction: Transaction = await objectsService.getTransaction();
-                    const transactionFromFetch: Transaction = await generalService.fetchStatus("/transactions");
+                    const transactionFromFetch: Transaction = await generalService.fetchStatus('/transactions');
                     expect(transaction).to.deep.equal(transactionFromFetch.Body);
                 });
             });
