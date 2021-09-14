@@ -323,12 +323,6 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestVersion);
-            // this.sleep(4000); //Test upgrade status only after 4 seconds.
-            // let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-            // if (auditLogResponse.Status.Name == 'InProgress') {
-            //     this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-            //     auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-            // }
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
             if (auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
@@ -342,12 +336,6 @@ export default class GeneralService {
                         .downgrade(varLatestVersion);
                     this.sleep(4000); //Test downgrade status only after 4 seconds.
                     auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-                    // if (auditLogResponse.Status.Name == 'InProgress') {
-                    //     this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                    //     auditLogResponse = await this.papiClient.auditLogs
-                    //         .uuid(upgradeResponse.ExecutionUUID as any)
-                    //         .get();
-                    // }
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
