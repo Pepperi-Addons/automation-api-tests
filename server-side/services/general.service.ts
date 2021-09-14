@@ -335,7 +335,6 @@ export default class GeneralService {
                         .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
                     this.sleep(4000); //Test downgrade status only after 4 seconds.
-                    auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
