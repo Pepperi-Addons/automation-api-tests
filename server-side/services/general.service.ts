@@ -237,6 +237,7 @@ export default class GeneralService {
     async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
         const isInstalledArr: boolean[] = [];
         const installedAddonsArr = await this.getAddons({ page_size: -1 });
+        let installResponse;
         for (const addonUUID in testData) {
             let isInstalled = false;
             for (let i = 0; i < installedAddonsArr.length; i++) {
@@ -253,9 +254,11 @@ export default class GeneralService {
                         .addonUUID(`${testData[addonUUID][0]}`)
                         .install('0.0.235');
                 } else {
-                    await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonUUID][0]}`).install();
+                    installResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${testData[addonUUID][0]}`)
+                        .install();
                 }
-                this.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+                await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
             }
             isInstalledArr.push(true);
         }
@@ -320,12 +323,13 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestVersion);
-            this.sleep(4000); //Test upgrade status only after 4 seconds.
-            let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-            if (auditLogResponse.Status.Name == 'InProgress') {
-                this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-            }
+            // this.sleep(4000); //Test upgrade status only after 4 seconds.
+            // let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
+            // if (auditLogResponse.Status.Name == 'InProgress') {
+            //     this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+            //     auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
+            // }
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
             if (auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -337,15 +341,14 @@ export default class GeneralService {
                         .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
                     this.sleep(4000); //Test downgrade status only after 4 seconds.
-                    let auditLogResponse = await this.papiClient.auditLogs
-                        .uuid(upgradeResponse.ExecutionUUID as any)
-                        .get();
-                    if (auditLogResponse.Status.Name == 'InProgress') {
-                        this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                        auditLogResponse = await this.papiClient.auditLogs
-                            .uuid(upgradeResponse.ExecutionUUID as any)
-                            .get();
-                    }
+                    auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
+                    // if (auditLogResponse.Status.Name == 'InProgress') {
+                    //     this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
+                    //     auditLogResponse = await this.papiClient.auditLogs
+                    //         .uuid(upgradeResponse.ExecutionUUID as any)
+                    //         .get();
+                    // }
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
                 }
