@@ -1396,7 +1396,7 @@ export async function objects_pns(client: Client, request: Request, testerFuncti
 
 export async function nuc_recovery(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'NUC_Recovery_SDK';
+    testName = 'NUC_Recovery';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -1444,7 +1444,7 @@ export async function nuc_recovery_sdk(client: Client, request: Request, testerF
 
 export async function nuc_recovery_wacd(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'NUC_Recovery';
+    testName = 'NUC_Recovery_WACD';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
