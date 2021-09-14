@@ -9,7 +9,7 @@ import { Client } from '@pepperi-addons/debug-server';
 chai.use(promised);
 
 export default function Tester(client?: Client, testName?: string, environment?: string) {
-    const isLocal = client ? client.AssetsBaseUrl.includes('/localhost:') : false;
+    const isLocal = client ? client.AssetsBaseUrl.includes('/localhost:') : true;
     const testObject = {};
     const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
         environment ? environment : 'Default'
@@ -38,6 +38,12 @@ export default function Tester(client?: Client, testName?: string, environment?:
             const suite = new Mocha.Suite(name);
             context?.addSuite(suite);
             context = suite;
+
+            // //Oren
+            // debugger;
+            // suite._afterEach.push(new Hook('"after each" hook', fn));
+            // // //Oren
+
             fn();
             context = suite.parent;
         },
@@ -56,6 +62,18 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     .run((failures) => {
                         console.log(failures);
                     })
+                    .on('suite', () => {
+                        // debugger;
+                    })
+                    .on('suite end', () => {
+                        // debugger;
+                    })
+                    .on('test', () => {
+                        // debugger;
+                    })
+                    .on('test end', () => {
+                        //   debugger;
+                    })
                     .on('end', () => {
                         // resolve((runner as any).testResults);
                         setTimeout(() => {
@@ -67,8 +85,8 @@ export default function Tester(client?: Client, testName?: string, environment?:
                                     let res;
                                     try {
                                         res = JSON.parse(data.toString());
-                                    } catch (e) {
-                                        return resolve(e.toString());
+                                    } catch (error) {
+                                        return resolve(error.toString());
                                     }
 
                                     //Test results report might be to big for the addon, so remove some data from response

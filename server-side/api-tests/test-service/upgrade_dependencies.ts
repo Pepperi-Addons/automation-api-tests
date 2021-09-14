@@ -45,6 +45,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             request.body.pepperiNotificationService ? `${request.body.pepperiNotificationService}` : '',
         ],
         relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', request.body.relations ? `${request.body.relations}` : ''],
+        'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 

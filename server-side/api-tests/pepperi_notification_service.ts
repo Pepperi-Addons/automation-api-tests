@@ -1192,7 +1192,7 @@ export async function PepperiNotificationServiceTests(
                         });
                 });
 
-                it(`PNS Remove And Restore Subscription Inside Installation (DI-18555, DI-18570, DI-18389)`, async () => {
+                it(`PNS Remove And Restore Subscription Inside Installation (DI-18555, DI-18570, DI-18389, DI-18183)`, async () => {
                     const testDataAddonUUID = 'd9999883-ef9a-4295-99db-2f1d3fc34af6';
                     const testDataAddonVersion = '0.0.34';
                     const testDataAddonSchemaName = 'TypeScript Installation Schema';

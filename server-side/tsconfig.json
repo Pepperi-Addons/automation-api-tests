@@ -10,7 +10,7 @@
     "sourceMap": true,
     "noImplicitAny": false,
     "allowJs": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
   },
   "exclude": [
     "./build/**",
