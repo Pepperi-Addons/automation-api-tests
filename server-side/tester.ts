@@ -38,6 +38,12 @@ export default function Tester(client?: Client, testName?: string, environment?:
             const suite = new Mocha.Suite(name);
             context?.addSuite(suite);
             context = suite;
+
+            // //Oren
+            // debugger;
+            // suite._afterEach.push(new Hook('"after each" hook', fn));
+            // // //Oren
+
             fn();
             context = suite.parent;
         },
@@ -55,6 +61,18 @@ export default function Tester(client?: Client, testName?: string, environment?:
                 mocha
                     .run((failures) => {
                         console.log(failures);
+                    })
+                    .on('suite', () => {
+                        // debugger;
+                    })
+                    .on('suite end', () => {
+                        // debugger;
+                    })
+                    .on('test', () => {
+                        // debugger;
+                    })
+                    .on('test end', () => {
+                        //   debugger;
                     })
                     .on('end', () => {
                         // resolve((runner as any).testResults);

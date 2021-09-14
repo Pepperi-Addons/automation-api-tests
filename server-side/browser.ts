@@ -1,6 +1,7 @@
 import 'chromedriver';
 import { Builder, ThenableWebDriver, /*WebElement,*/ By, WebElementPromise } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import { writeFileSync } from 'fs';
 
 // import { Page, NewablePage, WebComponent, WaitCondition } from './';
 
@@ -30,6 +31,13 @@ export class Browser {
         } else {
             await this.driver.manage().deleteAllCookies();
         }
+    }
+
+    // public async takeScreenshot(driver, file){
+    public async takeScreenshot() {
+        const image = await this.driver.takeScreenshot();
+        await writeFileSync('C:/Users/OrenViDev/Desktop/oren.png', image, 'base64');
+        return image;
     }
 
     //   public async wait(condition: WaitCondition) {
