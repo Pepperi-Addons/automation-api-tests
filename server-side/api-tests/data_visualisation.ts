@@ -65,8 +65,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('Name');
                         expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('Type');
+                        expect(jsonChartData["Type"]).to.be.oneOf(["Single", "Series", "MultiSeries"]);
                         expect(jsonChartData).to.have.own.property('ScriptURI');
                         expect(jsonChartData).to.have.own.property('ReadOnly');
+                        expect(jsonChartData["ReadOnly"]).to.be.an('Boolean');
                     });
                 });
             });
