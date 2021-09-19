@@ -226,6 +226,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             !schema[0] ||
                             (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0)
@@ -305,6 +306,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
                             maxLoopsCounter > 0
@@ -574,6 +576,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] ||
                                 !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
@@ -642,6 +645,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] ||
                                 !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
@@ -733,6 +737,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] ||
                                 !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
@@ -823,6 +828,7 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Addon Uninstall', async () => {
+                        //TODO: investigate why this test fail
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
                         do {
@@ -831,6 +837,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] ||
                                 !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
@@ -994,6 +1001,7 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After New Schema Creation (DI-18069)', async () => {
+                        //TODO: investigate why this test fail
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
                         do {
@@ -1002,6 +1010,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] ||
                                 !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
@@ -1031,6 +1040,7 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Existing Schema Update (DI-17875)', async () => {
+                        //TODO: investigate why this test fail
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
                         do {
@@ -1039,6 +1049,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
                             maxLoopsCounter > 0
@@ -1084,6 +1095,7 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After New Schema Purge', async () => {
+                        //TODO: investigate why this test fail
                         let schema;
                         let maxLoopsCounter = _MAX_LOOPS;
                         do {
@@ -1092,6 +1104,7 @@ export async function PepperiNotificationServiceTests(
                                 order_by: 'CreationDateTime DESC',
                             });
                             maxLoopsCounter--;
+                            console.log({ getDataFromSchema: schema });
                         } while (
                             (!schema[0] ||
                                 !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
@@ -1192,7 +1205,7 @@ export async function PepperiNotificationServiceTests(
                         });
                 });
 
-                it(`PNS Remove And Restore Subscription Inside Installation (DI-18555, DI-18570, DI-18389, DI-18183)`, async () => {
+                it(`PNS Remove And Restore Subscription Inside Installation (DI-18555, DI-18570, DI-18389)`, async () => {
                     const testDataAddonUUID = 'd9999883-ef9a-4295-99db-2f1d3fc34af6';
                     const testDataAddonVersion = '0.0.34';
                     const testDataAddonSchemaName = 'TypeScript Installation Schema';
@@ -1269,6 +1282,7 @@ export async function PepperiNotificationServiceTests(
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName);
                         maxLoopsCounter--;
+                        console.log({ getDataFromSchema: schema });
                     } while (schema[0] == undefined && maxLoopsCounter > 0);
                     expect(schema[0]).to.be.undefined;
 
@@ -1293,7 +1307,13 @@ export async function PepperiNotificationServiceTests(
                     generalService.sleep(1500);
 
                     //Validate Subscription created
-                    getSubscriptionsResponse = await pepperiNotificationServiceService.findSubscriptions();
+                    maxLoopsCounter = _MAX_LOOPS;
+                    do {
+                        generalService.sleep(3000);
+                        getSubscriptionsResponse = await pepperiNotificationServiceService.findSubscriptions();
+                        maxLoopsCounter--;
+                    } while (getSubscriptionsResponse.length > 3 && maxLoopsCounter > 0);
+
                     testResults = [false, false, false];
                     for (let index = 0; index < getSubscriptionsResponse.length; index++) {
                         const subscription = getSubscriptionsResponse[index];
@@ -1334,6 +1354,7 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
+                    //TODO: investigate why this test fail
                     const uninstalledAddon = await generalService.papiClient.addons.installedAddons
                         .addonUUID(testData['Pepperi Notification Service'][0])
                         .uninstall();
@@ -1361,6 +1382,7 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Verify ADAL Upgraded After PNS`, async () => {
+                    //TODO: investigate why this test fail
                     //Downgrade ADAL
                     let downgradeAddon = await generalService.papiClient.addons.installedAddons
                         .addonUUID(testData['Pepperi Notification Service'][0])

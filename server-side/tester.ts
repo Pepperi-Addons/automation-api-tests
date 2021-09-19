@@ -71,8 +71,10 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     .on('test', () => {
                         // debugger;
                     })
-                    .on('test end', () => {
-                        //   debugger;
+                    .on('test end', (data) => {
+                        if (data.state != 'passed') {
+                            //debugger;
+                        }
                     })
                     .on('end', () => {
                         // resolve((runner as any).testResults);
