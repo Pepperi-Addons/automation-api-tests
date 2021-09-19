@@ -53,19 +53,21 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
         describe('Endpoints', () => {
             describe('GET', () => {
-                it('Get Charts - Retriving data and validating its format', async () => {
+                it('Get Charts - Retriving chart data and validating its format', async () => {
                     const chart = await dataVisualisationService.getChartsAsync();
                     // const chartFromFetch: Chart = await generalService
                     // .fetchStatus('https://papi.pepperi.com/V1.0/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts');
                     const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chart.URI, 40);
                     // const chartAuditLogFetch = await generalService.getAuditLogResultObjectIfValid(chartFromFetch.Body.URI, 40);
                     const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
-                    jsonDataFromAuditLog.forEach(jsonDataForChart => {
-                        console.log("key=>",jsonDataForChart.Key);
-                        console.log("name=>",jsonDataForChart.Name);
+                    jsonDataFromAuditLog.forEach(jsonChartData => {
+                        expect(jsonChartData).to.have.own.property('Key');
+                        expect(jsonChartData).to.have.own.property('Name');
+                        expect(jsonChartData).to.have.own.property('Description');
+                        expect(jsonChartData).to.have.own.property('Type');
+                        expect(jsonChartData).to.have.own.property('ScriptURI');
+                        expect(jsonChartData).to.have.own.property('ReadOnly');
                     });
-                    debugger;
-                    // expect(JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject)).to.deep.equal(JSON.parse(chartAuditLogFetch.AuditInfo.ResultObject));
                 });
             });
         });
