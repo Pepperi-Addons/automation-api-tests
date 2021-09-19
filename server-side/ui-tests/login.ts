@@ -6,7 +6,7 @@ import { Browser /*, ensure*/ } from '../browser';
 // import { Builder, ThenableWebDriver, WebElement, By, WebElementPromise, until } from 'selenium-webdriver';
 // import { AllPages } from '../pages';
 
-const { describe, expect, it, run } = tester(undefined, 'CLI', 'Stage');
+const { describe, expect, it, run, evgeny } = tester(undefined, 'CLI', 'Stage');
 
 // testEnvironment = client.BaseURL.includes('staging')
 // ? 'Sandbox'
@@ -21,6 +21,12 @@ const { describe, expect, it, run } = tester(undefined, 'CLI', 'Stage');
 
 // const service = new GeneralService(client);
 
+evgeny('first test',function(){
+    console.log("test");
+});
+evgeny('sec test',function(){
+    console.log("test2");
+});
 describe('First UI Tests Suit', function () {
     it('Login', async function () {
         const driver = new Browser('chrome');
