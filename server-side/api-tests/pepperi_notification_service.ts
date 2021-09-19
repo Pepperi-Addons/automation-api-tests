@@ -83,9 +83,11 @@ export async function PepperiNotificationServiceTests(
                             try {
                                 purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                             } catch (error) {
-                                expect(error.message).to.includes(
-                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                                );
+                                expect(error)
+                                    .to.have.property('message')
+                                    .that.includes(
+                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                    );
                             }
                             const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                             expect(purgedSchema).to.equal('');
@@ -370,9 +372,11 @@ export async function PepperiNotificationServiceTests(
                             try {
                                 purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                             } catch (error) {
-                                expect(error.message).to.includes(
-                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                                );
+                                expect(error)
+                                    .to.have.property('message')
+                                    .that.includes(
+                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                    );
                             }
                             const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                             expect(purgedSchema).to.equal('');
@@ -943,9 +947,11 @@ export async function PepperiNotificationServiceTests(
                             try {
                                 purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                             } catch (error) {
-                                expect(error.message).to.includes(
-                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                                );
+                                expect(error)
+                                    .to.have.property('message')
+                                    .that.includes(
+                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                    );
                             }
                             const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                             expect(purgedSchema).to.equal('');
@@ -1087,9 +1093,11 @@ export async function PepperiNotificationServiceTests(
                         try {
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
-                            expect(error.message).to.includes(
-                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                            );
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                );
                         }
                         expect(purgedSchema).to.equal('');
                     });

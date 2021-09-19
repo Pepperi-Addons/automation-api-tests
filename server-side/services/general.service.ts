@@ -199,7 +199,9 @@ export default class GeneralService {
                 return 'Error in UUID in Audit Log API Response';
             }
         } catch (error) {
-            error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Date and Time
@@ -211,7 +213,9 @@ export default class GeneralService {
                 return 'Error in Date and Time in Audit Log API Response';
             }
         } catch (error) {
-            error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Type and Event
@@ -228,7 +232,9 @@ export default class GeneralService {
                 return 'Error in Type and Event in Audit Log API Response';
             }
         } catch (error) {
-            error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            }
             return error;
         }
         return auditLogResponse;
