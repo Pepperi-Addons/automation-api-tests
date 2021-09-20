@@ -13,8 +13,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'Services Framework': [
             '00000000-0000-0000-0000-000000000a91',
-            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5.438',
-            //'9.5', Run the tests on 9.5.438 since there are bugs in 9.5.441 and the version can't be changed to unavilable now
+            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5',
         ],
         'Cross Platforms API': [
             '00000000-0000-0000-0000-000000abcdef',
