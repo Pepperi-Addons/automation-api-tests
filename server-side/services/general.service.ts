@@ -153,6 +153,7 @@ export default class GeneralService {
     }
 
     async getAuditLogResultObjectIfValid(uri, loopsAmount?) {
+        this.sleep(3000); //This was addded here after tests faild on the server - this was never reproduced locally
         let auditLogResponse = await this.papiClient.get(uri);
         try {
             auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
@@ -340,7 +341,6 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
-                    this.sleep(4000); //Test downgrade status only after 4 seconds.
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
