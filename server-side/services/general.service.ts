@@ -153,6 +153,7 @@ export default class GeneralService {
     }
 
     async getAuditLogResultObjectIfValid(uri, loopsAmount?) {
+        this.sleep(3000); //This was addded here after tests faild on the server - this was never reproduced locally
         let auditLogResponse = await this.papiClient.get(uri);
         try {
             auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
@@ -199,7 +200,9 @@ export default class GeneralService {
                 return 'Error in UUID in Audit Log API Response';
             }
         } catch (error) {
-            error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Date and Time
@@ -211,7 +214,9 @@ export default class GeneralService {
                 return 'Error in Date and Time in Audit Log API Response';
             }
         } catch (error) {
-            error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Type and Event
@@ -228,7 +233,9 @@ export default class GeneralService {
                 return 'Error in Type and Event in Audit Log API Response';
             }
         } catch (error) {
-            error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            }
             return error;
         }
         return auditLogResponse;
@@ -334,7 +341,6 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
-                    this.sleep(4000); //Test downgrade status only after 4 seconds.
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
