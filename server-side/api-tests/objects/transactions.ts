@@ -1359,7 +1359,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             }
 
             expect(schema, JSON.stringify(schema)).to.not.be.an('array');
-                        expect(schema.Hidden).to.be.false;
+            expect(schema.Hidden).to.be.false;
             expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdTransaction.UUID);
             expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
                 {
@@ -1541,8 +1541,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 Resource: ['transactions'],
                 Action: ['update'],
-                ModifiedFields: ['Hidden'
-                ],
+                ModifiedFields: ['Hidden'],
             };
             const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
                 'Log_Update',

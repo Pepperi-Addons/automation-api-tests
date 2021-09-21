@@ -847,7 +847,8 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                                 schema.Message.Message.ModifiedObjects[0].ModifiedFields[0],
                                             ).to.deep.equal({
                                                 NewValue: scenario == 1 ? 11 : scenario == 0 ? 44 : 22,
-                                                OldValue: scenario == 1 ? endpoint ==0? 15: 44 : scenario == 0 ? 22 : 11,
+                                                OldValue:
+                                                    scenario == 1 ? (endpoint == 0 ? 15 : 44) : scenario == 0 ? 22 : 11,
                                                 FieldID: 'UnitsQuantity',
                                             });
                                         } else {
