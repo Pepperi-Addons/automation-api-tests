@@ -48,21 +48,9 @@ function testDataNewAddon(testNumber) {
 function testDataNewAddonVersion(addonUUID, testNumber) {
     return {
         AddonUUID: addonUUID,
-        Version: 'Pepperitest Test Version ' + testNumber, //Name here can't be changed or it will send messages VIA teams
+        Version: '0.0.' + testNumber,
     };
 }
-
-//This was never used
-// function testDataNewAddonVersionBulk(addonUUID, testNumberArr) {
-//     for (let index = 0; index < testNumberArr.length; index++) {
-//         return [
-//             {
-//                 AddonUUID: addonUUID,
-//                 Version: 'Pepperitest Test Version ' + testNumberArr[index],
-//             },
-//         ];
-//     }
-// }
 
 //Prerequisites for test
 let testDate = new Date();
@@ -945,10 +933,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -1096,10 +1081,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -1234,10 +1216,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -1429,10 +1408,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsInstallAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -1624,10 +1600,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -1844,10 +1817,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -2050,10 +2020,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -2256,10 +2223,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUpgradeToNewestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -2462,10 +2426,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -2670,10 +2631,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 //Make all version that are not installed not available
                 if (index > 0) {
                     versionTestDataBody.Available = false;
@@ -2870,10 +2828,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -3082,10 +3037,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUpgradeAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -3287,10 +3239,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -3507,10 +3456,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -3713,10 +3659,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2 || index == 0) {
                     versionTestDataBody.Available = false;
                 }
@@ -3920,10 +3863,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsDowngradeToOldestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -4125,10 +4065,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsDowngradeAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -4330,10 +4267,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUninstallAddon.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -4515,10 +4449,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -4731,10 +4662,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUninstallAddonWithDeletedAddon.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -4934,10 +4862,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUninstallAddonAndUpgrade.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -5150,10 +5075,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUninstallAddonAndDowngrade.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -5371,10 +5293,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsInstallAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -5395,8 +5314,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141.1',
+                            papi: '9.5.438',
+                            cpapi: '1.5.193',
                             webapp: '16.41.34',
                             data_views: '0.0.35',
                         },
@@ -5416,8 +5335,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141',
+                            papi: '9.5.438',
+                            cpapi: '9.5.193',
                             webapp: '16.41.34',
                             data_views: '0.0.35',
                         },
@@ -5479,7 +5398,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Installed version results
             if (testName.includes('Negative')) {
                 const isErrorMessage = postAddonApiResponse.AuditInfo.ErrorMessage.includes(
-                    'Invalid dependencies configuration - cpapi dependency version V141.1 does not exists',
+                    'Invalid dependencies configuration - cpapi dependency version 1.5.193 does not exists',
                 );
                 addTestResultUnderHeadline(testName, 'Correct Dependency Error Message', isErrorMessage);
                 mandatoryStepsInstallAddonWithVersion.InstallCorrectAddon = isErrorMessage;
@@ -5665,10 +5584,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsInstallAddonWithVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -5690,8 +5606,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 },
                             ],
                             Dependencies: {
-                                papi: '9.5.301',
-                                cpapi: 'V141',
+                                papi: '9.5.438',
+                                cpapi: '9.5.193',
                                 webapp: '16.41.34',
                                 data_views: '0.0.37.1',
                             },
@@ -5711,8 +5627,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 },
                             ],
                             Dependencies: {
-                                papi: '9.5.301',
-                                cpapi: 'V141',
+                                papi: '9.5.438',
+                                cpapi: '9.5.193',
                                 webapp: varLatestWebAppVersion,
                                 data_views: '0.0.38',
                             },
@@ -5733,8 +5649,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141',
+                            papi: '9.5.438',
+                            cpapi: '9.5.193',
                             webapp: '16.41.34',
                             data_views: '0.0.37',
                         },
@@ -5999,10 +5915,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsUpgradeToNewestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -6023,8 +5936,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141',
+                            papi: '9.5.438',
+                            cpapi: '9.5.193',
                             webapp: '16.41.34.1',
                             data_views: '0.0.35',
                         },
@@ -6044,8 +5957,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141',
+                            papi: '9.5.438',
+                            cpapi: '9.5.193',
                             webapp: '16.41.34',
                             data_views: '0.0.35',
                         },
@@ -6305,10 +6218,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsDowngradeToOldestAddonVersion.createAddon = testDataBody.Name == createApiResponse.Body.Name;
 
             for (let index = 0; index < versionsArr.length; index++) {
-                versionTestDataBody = testDataNewAddonVersion(
-                    createApiResponse.Body.UUID,
-                    Math.floor(Math.random() * 1000000).toString(),
-                );
+                versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
                 }
@@ -6329,8 +6239,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141',
+                            papi: '9.5.438',
+                            cpapi: '9.5.193',
                             webapp: '16.41.34',
                             data_views: '0.0.35.1',
                         },
@@ -6350,8 +6260,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             },
                         ],
                         Dependencies: {
-                            papi: '9.5.301',
-                            cpapi: 'V141',
+                            papi: '9.5.438',
+                            cpapi: '9.5.193',
                             webapp: '16.41.34',
                             data_views: '0.0.35',
                         },

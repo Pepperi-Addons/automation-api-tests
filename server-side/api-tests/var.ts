@@ -3701,7 +3701,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         addTestResultUnderHeadline(
             testName,
-            '0.0.1 Creatred',
+            'Verstion 0.0.1 Creatred',
             createVersionApiResponseArr[0].Body.Version == '0.0.1'
                 ? true
                 : 'The 0.0.1 Creation failed with response of: ' + createVersionApiResponseArr[0],
@@ -3709,7 +3709,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         addTestResultUnderHeadline(
             testName,
-            '0.0.1 Creatred',
+            'Verstion 0.0.1 Creatred',
             createVersionApiResponseArr[1].Body.Version == '0.0.2'
                 ? true
                 : 'The 0.0.2 Creation failed with response of: ' + createVersionApiResponseArr[1],
@@ -3717,7 +3717,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         addTestResultUnderHeadline(
             testName,
-            '0.0.1 Creatred',
+            'Verstion 0.0.3 Creatred',
             createVersionApiResponseArr[2].Body.Version == '0.0.3'
                 ? true
                 : 'The 0.0.3 Creation failed with response of: ' + createVersionApiResponseArr[2],
