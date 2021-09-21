@@ -1172,6 +1172,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Validate PNS after Delete', async () => {
+            generalService.sleep(4000); //EU is slower and there are two similar schema, so this wait is mandatory for EU and for slow server time
             const filter: FilterAttributes = {
                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 Resource: ['transaction_lines'],
@@ -1536,6 +1537,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Validate PNS after Delete', async () => {
+            generalService.sleep(4000); //EU is slower and there are two similar schema, so this wait is mandatory for EU and for slow server time
             const filter: FilterAttributes = {
                 AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
                 Resource: ['transactions'],
