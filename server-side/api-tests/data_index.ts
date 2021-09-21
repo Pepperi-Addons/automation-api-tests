@@ -6,7 +6,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const objectsService = new ObjectsService(generalService);
     const dataIndexService = new DataIndexService(generalService);
 
-    const _MAX_LOOPS_COUNTER = 10;
+    const _MAX_LOOPS = 10;
     const _INTERVAL_TIMER = 5000;
 
     const describe = tester.describe;
@@ -469,7 +469,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
                             it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
                                 //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                let maxLoopsCounter = _MAX_LOOPS;
                                 let isCreatedField = false;
                                 do {
                                     maxLoopsCounter--;
@@ -582,7 +582,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
                             it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
                                 //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                let maxLoopsCounter = _MAX_LOOPS;
                                 let isExistedField = false;
                                 do {
                                     maxLoopsCounter--;
@@ -701,7 +701,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
                             it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
                                 //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                let maxLoopsCounter = _MAX_LOOPS;
                                 let isEmptyField = false;
                                 do {
                                     maxLoopsCounter--;
@@ -787,7 +787,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
                             it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
                                 //try for 50 seconds to get the updated fields
-                                let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+                                let maxLoopsCounter = _MAX_LOOPS;
                                 let isEmptyField = false;
                                 do {
                                     maxLoopsCounter--;
@@ -989,7 +989,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
             //                     it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
             //                         //try for 50 seconds to get the updated fields
-            //                         let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                         let maxLoopsCounter = _MAX_LOOPS;
             //                         let isExistedField = false;
             //                         do {
             //                             maxLoopsCounter--;
@@ -1077,7 +1077,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
             //                     it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
             //                         //try for 50 seconds to get the updated fields
-            //                         let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                         let maxLoopsCounter = _MAX_LOOPS;
             //                         let isCreatedField = false;
             //                         do {
             //                             maxLoopsCounter--;
@@ -1198,7 +1198,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
             //                     it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
             //                         //try for 50 seconds to get the updated fields
-            //                         let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                         let maxLoopsCounter = _MAX_LOOPS;
             //                         let isEmptyField = false;
             //                         do {
             //                             maxLoopsCounter--;
@@ -1286,7 +1286,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
             //                     it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
             //                         //try for 50 seconds to get the updated fields
-            //                         let maxLoopsCounter = _MAX_LOOPS_COUNTER;
+            //                         let maxLoopsCounter = _MAX_LOOPS;
             //                         let isEmptyField = false;
             //                         do {
             //                             maxLoopsCounter--;
