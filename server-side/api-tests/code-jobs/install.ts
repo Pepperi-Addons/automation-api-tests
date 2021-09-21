@@ -22,7 +22,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
     //const versionsArr = [];
     const functionNameWithBody = 'oleg';
     let bodyValue: any = {};
-    const version = 'Ver1';
+    const version = '0.0.1';
 
     await installDistributorAddon();
 
@@ -111,7 +111,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
     //#region assync addon test with version
     async function getAsyncAddonValueWithVersion() {
         CallbackCash.addonValueWithVersion = await service.get(
-            '/addons/api/async/' + addonUUID + '/version/Ver2/' + jsFileName + '/' + functionName,
+            '/addons/api/async/' + addonUUID + '/version/0.0.2/' + jsFileName + '/' + functionName,
         );
         //debugger;
         await getAuditLogFromGetAddonValueWithVersion();
@@ -126,13 +126,13 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         CallbackCash.resultFromAsyncAddonValueWithVersion = JSON.parse(
             CallbackCash.auditResultWithVersion.AuditInfo.ResultObject,
         );
-        if (CallbackCash.resultFromAsyncAddonValueWithVersion.resultObject.msg == 'hello world - ver2') {
+        if (CallbackCash.resultFromAsyncAddonValueWithVersion.resultObject.msg == 'hello world - 0.0.2') {
             logcash.resultFromAsyncAddonValueWithVersion = true;
         } else {
             //
             logcash.resultFromAsyncAddonValueWithVersion = false;
             logcash.resultFromAsyncAddonValueErrorWithVersion =
-                'The async addon (with addon var version Ver2) function without params not returned value on audit log. The addon UUID is ' +
+                'The async addon (with addon var version 0.0.2) function without params not returned value on audit log. The addon UUID is ' +
                 addonUUID +
                 'JS file name is ' +
                 jsFileName +
@@ -151,7 +151,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         } else {
             logcash.resultFromSyncAddonValue = false;
             logcash.resultFromSyncAddonValueError =
-                'The addon function (sync with VAR addon version = Ver2) without params not returned value on function body. The addon UUID is ' +
+                'The addon function (sync with VAR addon version = 0.0.2) without params not returned value on function body. The addon UUID is ' +
                 addonUUID +
                 'JS file name is ' +
                 jsFileName +
@@ -164,12 +164,12 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
     //#region synced addon test with version
     async function getSyncedAddoValueWithVersion() {
         CallbackCash.addonValueWithVersion2 = await service.get(
-            '/addons/api/' + addonUUID + '/version/Ver2/' + jsFileName + '/' + functionName,
+            '/addons/api/' + addonUUID + '/version/0.0.2/' + jsFileName + '/' + functionName,
         );
         //debugger;
         if (
             CallbackCash.addonValueWithVersion2.success == true &&
-            CallbackCash.addonValueWithVersion2.resultObject.msg == 'hello world - ver2'
+            CallbackCash.addonValueWithVersion2.resultObject.msg == 'hello world - 0.0.2'
         ) {
             logcash.resultFromSyncAddonValueWithVersion2 = true;
         } else {
@@ -219,13 +219,13 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         await postAsyncAddonValueWithBodyWithVersion();
     }
 
-    //#region Get async addon value with v=body with version Ver2
+    //#region Get async addon value with v=body with version 0.0.2
     async function postAsyncAddonValueWithBodyWithVersion() {
         bodyValue = {
             a: 5,
         };
         CallbackCash.addonValueWithBodyWithVersion = await service.post(
-            '/addons/api/async/' + addonUUID + '/version/Ver2/' + jsFileName + '/' + functionNameWithBody,
+            '/addons/api/async/' + addonUUID + '/version/0.0.2/' + jsFileName + '/' + functionNameWithBody,
             bodyValue,
         );
         //debugger;
@@ -247,7 +247,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
             //
             logcash.resultFromAsyncAddonValueWithBodyWithVersion = false;
             logcash.resultFromAsyncAddonValueWithBodyWithVersionError =
-                'The async addon function with params and with Addon version Ver2 not returned value on audit log. The addon UUID is ' +
+                'The async addon function with params and with Addon version 0.0.2 not returned value on audit log. The addon UUID is ' +
                 addonUUID +
                 'JS file name is ' +
                 jsFileName +
@@ -256,11 +256,11 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         }
         await postSyncAddonValueWithBody();
     }
-    //#endregion Get async addon value with v=body with version Ver2
+    //#endregion Get async addon value with v=body with version 0.0.2
 
     async function postSyncAddonValueWithBody() {
         logcash.resultFromAsyncAddonValueWithBodyWithVersionError =
-            'The async addon function with params and with Addon version Ver2 not returned value on audit log. The addon UUID is ' +
+            'The async addon function with params and with Addon version 0.0.2 not returned value on audit log. The addon UUID is ' +
             addonUUID +
             'JS file name is ' +
             jsFileName +
@@ -292,13 +292,13 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         await postSyncAddonValueWithBodyWithVersion();
     }
 
-    //#region post addon value (sync) with body and var addon version Ver2
+    //#region post addon value (sync) with body and var addon version 0.0.2
     async function postSyncAddonValueWithBodyWithVersion() {
         bodyValue = {
             a: 6,
         };
         CallbackCash.syncedAddonValueWithBodyWithVersion = await service.post(
-            '/addons/api/' + addonUUID + '/version/Ver2/' + jsFileName + '/' + functionNameWithBody,
+            '/addons/api/' + addonUUID + '/version/0.0.2/' + jsFileName + '/' + functionNameWithBody,
             bodyValue,
         );
         //debugger;
@@ -310,7 +310,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         } else {
             logcash.resultFromSyncedAddonValueWithBodyWithVersion = false;
             logcash.resultFromSyncedAddonValueWithBodyWithVersionError =
-                'The addon function (sync) without params and with VAR addon version = Ver2 not returned value (or value is wrong) on function body. The addon UUID is ' +
+                'The addon function (sync) without params and with VAR addon version = 0.0.2 not returned value (or value is wrong) on function body. The addon UUID is ' +
                 addonUUID +
                 'JS file name is ' +
                 jsFileName +
@@ -320,7 +320,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
 
         await postSyncAddonValueWitouthBody();
     }
-    //#endregion post addon value (sync) with body and var addon version Ver2
+    //#endregion post addon value (sync) with body and var addon version 0.0.2
 
     async function postSyncAddonValueWitouthBody() {
         CallbackCash.syncAddonValueWitouthBody = await service.post(

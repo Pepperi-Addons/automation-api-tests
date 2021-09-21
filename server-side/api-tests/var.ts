@@ -3639,11 +3639,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const fileAsSBase64Arr: string[] = [];
         const createVersionApiResponseArr: any[] = [];
         //Ver 1
-        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver1.js'));
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/0.0.1.js'));
 
         let versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
-            Version: 'Ver1',
+            Version: '0.0.1',
             Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[0] }],
         };
         createVersionApiResponseArr.push(
@@ -3660,10 +3660,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Ver 2
-        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver2.js'));
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/0.0.2.js'));
         versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
-            Version: 'Ver2',
+            Version: '0.0.2',
             Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[1] }],
         };
         createVersionApiResponseArr.push(
@@ -3680,10 +3680,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
 
         //Ver 3
-        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/ver3.js'));
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/0.0.3.js'));
         versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
-            Version: 'Ver3',
+            Version: '0.0.3',
             Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[2] }],
         };
         createVersionApiResponseArr.push(
@@ -3701,26 +3701,26 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         addTestResultUnderHeadline(
             testName,
-            'Ver1 Creatred',
-            createVersionApiResponseArr[0].Body.Version == 'Ver1'
+            '0.0.1 Creatred',
+            createVersionApiResponseArr[0].Body.Version == '0.0.1'
                 ? true
-                : 'The Ver1 Creation failed with response of: ' + createVersionApiResponseArr[0],
+                : 'The 0.0.1 Creation failed with response of: ' + createVersionApiResponseArr[0],
         );
 
         addTestResultUnderHeadline(
             testName,
-            'Ver1 Creatred',
-            createVersionApiResponseArr[1].Body.Version == 'Ver2'
+            '0.0.1 Creatred',
+            createVersionApiResponseArr[1].Body.Version == '0.0.2'
                 ? true
-                : 'The Ver2 Creation failed with response of: ' + createVersionApiResponseArr[1],
+                : 'The 0.0.2 Creation failed with response of: ' + createVersionApiResponseArr[1],
         );
 
         addTestResultUnderHeadline(
             testName,
-            'Ver1 Creatred',
-            createVersionApiResponseArr[2].Body.Version == 'Ver3'
+            '0.0.1 Creatred',
+            createVersionApiResponseArr[2].Body.Version == '0.0.3'
                 ? true
-                : 'The Ver3 Creation failed with response of: ' + createVersionApiResponseArr[2],
+                : 'The 0.0.3 Creation failed with response of: ' + createVersionApiResponseArr[2],
         );
 
         //This can be use to easily extract the token to the console

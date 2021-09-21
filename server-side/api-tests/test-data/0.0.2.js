@@ -2,7 +2,7 @@ exports.ido = (Client, Request) => {
     var ret = {};
     ret.success = true;
     ret.resultObject = {};
-    ret.resultObject.msg = "hello world - ver2";
+    ret.resultObject.msg = "hello world - 0.0.2";
     return ret;
 }
 

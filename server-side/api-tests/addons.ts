@@ -83,7 +83,7 @@ function addInstalledAddonVersionsTestObject(testDataBody, installedAddons, newV
     testDataBody.ApiData.installedAddonsVersions.push({
         AddonUUID: installedAddons.Addon.UUID,
         Available: true,
-        Phased: newVersionName == 'ver2' || newVersionName == 'ver4' ? false : true,
+        Phased: newVersionName == '0.0.2' || newVersionName == '0.0.3' ? false : true,
         //Hidden: false,
         Version: newVersionName,
         CreationDateTime: newVersionDate.toISOString(),
@@ -137,7 +137,7 @@ function createNewMaintenanceTestDataObject(upgradeAfterDate, upgradeAfterPercen
 
     //installedAddons
     for (let index = 0; index < addonsAmount; index++) {
-        addInstalledAddonTestObject(testDataBody, 'ver1');
+        addInstalledAddonTestObject(testDataBody, '0.0.1');
     }
 
     //installedAddonsVersions
@@ -8494,7 +8494,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     testDataObject['ApiData']['installedAddonsVersions'][index + j].StartPhasedDateTime = new Date(
                         tempFifthDate,
                     ).toISOString();
-                    if (testDataObject['ApiData']['installedAddonsVersions'][index + j].Version == 'ver1') {
+                    if (testDataObject['ApiData']['installedAddonsVersions'][index + j].Version == '0.0.1') {
                         testDataObject['ApiData']['installedAddonsVersions'][index + j].StartPhasedDateTime = new Date(
                             Number(tempFifthDate) - 1000 * 60 - 1,
                         ).toISOString();
@@ -8505,7 +8505,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     testDate = new Date(testDate.getTime() - 1000 * 1 - 1);
                 }
                 //Make the order of versions DESC
-                if (testDataObject['ApiData']['installedAddonsVersions'][0 + j].Version == 'ver1') {
+                if (testDataObject['ApiData']['installedAddonsVersions'][0 + j].Version == '0.0.1') {
                     const tempVersion = testDataObject['ApiData']['installedAddonsVersions'][0 + j];
                     testDataObject['ApiData']['installedAddonsVersions'][0 + j] =
                         testDataObject['ApiData']['installedAddonsVersions'][1 + j];
