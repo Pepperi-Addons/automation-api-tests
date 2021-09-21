@@ -35,7 +35,7 @@ export async function PepperiNotificationServiceTests(
 
     describe('Pepperi Notification Service Tests Suites', () => {
         const schemaName = 'PNS Test';
-        const _MAX_LOOPS = 90;
+        const _MAX_LOOPS = 40;
         let atdArr;
         let catalogArr: Catalog[];
         let transactionAccount;
