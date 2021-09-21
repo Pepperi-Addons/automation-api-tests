@@ -126,7 +126,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         CallbackCash.resultFromAsyncAddonValueWithVersion = JSON.parse(
             CallbackCash.auditResultWithVersion.AuditInfo.ResultObject,
         );
-        if (CallbackCash.resultFromAsyncAddonValueWithVersion.resultObject.msg == 'hello world - 0.0.2') {
+        if (CallbackCash.resultFromAsyncAddonValueWithVersion.resultObject.msg == 'hello world - ver2') {
             logcash.resultFromAsyncAddonValueWithVersion = true;
         } else {
             //
@@ -169,7 +169,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         //debugger;
         if (
             CallbackCash.addonValueWithVersion2.success == true &&
-            CallbackCash.addonValueWithVersion2.resultObject.msg == 'hello world - 0.0.2'
+            CallbackCash.addonValueWithVersion2.resultObject.msg == 'hello world - ver2'
         ) {
             logcash.resultFromSyncAddonValueWithVersion2 = true;
         } else {
