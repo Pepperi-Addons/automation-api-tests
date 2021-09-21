@@ -11,6 +11,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 import { performance } from 'perf_hooks';
+import { ADALService } from './adal.service';
 
 declare type ClientData =
     | 'UserEmail'
@@ -51,8 +52,17 @@ export declare type ResourceTypes =
     | 'installed_addons'
     | 'schemes';
 
+export interface FilterAttributes {
+    AddonUUID: string[]; //Tests only support one AddonUUID but FilterAttributes interface keep the format of ADAL
+    Resource: string[]; //Tests only support one Resource but FilterAttributes interface keep the format of ADAL
+    Action: string[]; //Tests only support one Action but FilterAttributes interface keep the format of ADAL
+    ModifiedFields: string[];
+    UserUUID?: string[]; //Tests only support one UserUUID but FilterAttributes interface keep the format of ADAL
+}
+
 export default class GeneralService {
     papiClient: PapiClient;
+    adalService: ADALService;
 
     constructor(private client: Client) {
         this.papiClient = new PapiClient({
@@ -61,6 +71,7 @@ export default class GeneralService {
             addonUUID: client.AddonUUID.length > 10 ? client.AddonUUID : 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
             addonSecretKey: client.AddonSecretKey,
         });
+        this.adalService = new ADALService(this.papiClient);
     }
 
     sleep(ms) {
@@ -441,6 +452,65 @@ export default class GeneralService {
                     Error: error.message,
                 };
             });
+    }
+
+    async getLatestSchemaByKeyAndFilterAttributes(
+        key: string,
+        addonUUID: string,
+        tableName: string,
+        filterAttributes: FilterAttributes,
+        loopsAmount?,
+    ) {
+        let schemaArr, latestSchema;
+        let maxLoopsCounter = loopsAmount === undefined ? 12 : loopsAmount;
+        do {
+            this.sleep(1500);
+            schemaArr = await this.adalService.getDataFromSchema(addonUUID, tableName, {
+                order_by: 'CreationDateTime DESC',
+            });
+            maxLoopsCounter--;
+            latestSchema = this.extractSchema(schemaArr, key, filterAttributes);
+        } while (Array.isArray(latestSchema) && maxLoopsCounter > 0);
+        return latestSchema;
+    }
+
+    extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
+        outerLoop: for (let j = 0; j < schema.length; j++) {
+            const entery = schema[j];
+            if (!entery.Key.startsWith(key) || entery.IsTested) {
+                continue;
+            }
+            if (filterAttributes.AddonUUID) {
+                if (entery.Message.FilterAttributes.AddonUUID != filterAttributes.AddonUUID[0]) {
+                    continue;
+                }
+            }
+            if (filterAttributes.Resource) {
+                if (entery.Message.FilterAttributes.Resource != filterAttributes.Resource[0]) {
+                    continue;
+                }
+            }
+            if (filterAttributes.Action) {
+                if (entery.Message.FilterAttributes.Action != filterAttributes.Action[0]) {
+                    continue;
+                }
+            }
+            if (filterAttributes.ModifiedFields) {
+                if (entery.Message.FilterAttributes.ModifiedFields.length != filterAttributes.ModifiedFields.length) {
+                    continue;
+                }
+                for (let i = 0; i < filterAttributes.ModifiedFields.length; i++) {
+                    const field = filterAttributes.ModifiedFields[i];
+                    if (entery.Message.FilterAttributes.ModifiedFields.includes(field)) {
+                        continue;
+                    } else {
+                        continue outerLoop;
+                    }
+                }
+            }
+            return schema[j];
+        }
+        return schema;
     }
 }
 

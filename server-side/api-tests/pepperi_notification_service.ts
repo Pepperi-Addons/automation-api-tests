@@ -1,9 +1,8 @@
 import { Catalog, Subscription, Addon, AddonVersion } from '@pepperi-addons/papi-sdk';
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { TesterFunctions, ResourceTypes, FilterAttributes } from '../services/general.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
-import { ResourceTypes } from '../services/general.service';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function PepperiNotificationServiceTests(
@@ -36,7 +35,7 @@ export async function PepperiNotificationServiceTests(
 
     describe('Pepperi Notification Service Tests Suites', () => {
         const schemaName = 'PNS Test';
-        const _MAX_LOOPS = 12;
+        const _MAX_LOOPS = 90;
         let atdArr;
         let catalogArr: Catalog[];
         let transactionAccount;
@@ -220,24 +219,24 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Update', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            !schema[0] ||
-                            (!schema[0].Key.startsWith('Log_Update_PNS_Test') && maxLoopsCounter > 0)
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            Resource: ['transactions'],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID', 'CatalogPriceFactor'],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             createdTransaction.UUID,
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
                             {
                                 NewValue: 'PNS Tests',
                                 OldValue: '',
@@ -300,25 +299,24 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Not Triggered After Update', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                            Resource: ['transactions'],
+                            Action: ['update'],
+                            ModifiedFields: ['Remark', 'TaxPercentage', 'ExternalID', 'CatalogPriceFactor'],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             createdTransaction.UUID,
                         );
-                        expect(schema[1]).to.be.undefined;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
                             {
                                 NewValue: 'PNS Tests',
                                 OldValue: '',
@@ -440,7 +438,7 @@ export async function PepperiNotificationServiceTests(
                         for (let index = 0; index < versionsArr.length; index++) {
                             versiontestAddon = {
                                 AddonUUID: createdAddon.Body.UUID,
-                                Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(), //Name here can't be changed or it will send messages VIA teams
+                                Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                             };
                             versiontestAddon.Phased = true;
                             versiontestAddon.StartPhasedDateTime = new Date().toJSON();
@@ -459,9 +457,9 @@ export async function PepperiNotificationServiceTests(
                                 .then((res) => res.Body);
                         }
                         expect(createdAddon.Body.Name).to.equal(testAddon.Name);
-                        expect(versionsArr[0].Version).to.contain('Pepperitest Test Version ');
-                        expect(versionsArr[1].Version).to.contain('Pepperitest Test Version ');
-                        expect(versionsArr[2].Version).to.contain('Pepperitest Test Version ');
+                        expect(versionsArr[0].Version).to.contain('0.0.1');
+                        expect(versionsArr[1].Version).to.contain('0.0.2');
+                        expect(versionsArr[2].Version).to.contain('0.0.3');
                     });
 
                     it('Install Addon', async () => {
@@ -472,7 +470,7 @@ export async function PepperiNotificationServiceTests(
                         //console.log({ Post_Addon_with_Version: postInstallAddonApiResponse });
 
                         let postAddonApiResponse;
-                        let maxLoopsCounter = 90;
+                        let maxLoopsCounter = _MAX_LOOPS;
                         do {
                             generalService.sleep(2000);
                             postAddonApiResponse = await generalService.papiClient.get(
@@ -572,38 +570,42 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Addon Installation', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema.length < 2 ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 0) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            Resource: ['installed_addons'],
+                            Action: ['insert'],
+                            ModifiedFields: [],
+                        };
+                        let schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[1].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                            installedAddon.UUID,
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-                        expect(schema[1].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                             '00000000-0000-0000-0000-000000000000',
                         );
-                        expect(schema[1].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
-                        expect(schema[1].Message.FilterAttributes.Resource).to.equal('installed_addons');
-                        expect(schema[1].Message.FilterAttributes.Action).to.equal('insert');
-                        expect(schema[1].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('insert');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+
+                        filter.Action = ['update'];
+                        schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
+                        );
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(installedAddon.UUID);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('update');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it('Upgrade Addon', async () => {
@@ -614,7 +616,7 @@ export async function PepperiNotificationServiceTests(
                         //console.log({ Post_Addon_with_Version: postUpgradeAddonApiResponse });
 
                         let postAddonApiResponse;
-                        let maxLoopsCounter = 90;
+                        let maxLoopsCounter = _MAX_LOOPS;
                         do {
                             generalService.sleep(2000);
                             postAddonApiResponse = await generalService.papiClient.get(
@@ -641,59 +643,50 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Addon Upgrade', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema.length < 3 ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 4) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            Resource: ['installed_addons'],
+                            Action: ['update'],
+                            ModifiedFields: ['SystemData', 'ModificationDate', 'Version', 'LastUpgradeDateTime'],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                            installedAddon.UUID,
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(installedAddon.UUID);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('update');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([
                             'SystemData',
                             'ModificationDate',
                             'Version',
                             'LastUpgradeDateTime',
                         ]);
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
-                            'Pepperitest Test Version ',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.equal('{}');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include('0.0.');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.equal('{}');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
                             'SystemData',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
                             'ModificationDate',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue).to.include(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue).to.include(
                             versionsArr[2].Version,
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.include(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.include(
                             versionsArr[0].Version,
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
-                            'Version',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[3].NewValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[3].OldValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[3].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal('Version');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[3].NewValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[3].OldValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[3].FieldID).to.equal(
                             'LastUpgradeDateTime',
                         );
                     });
@@ -706,7 +699,7 @@ export async function PepperiNotificationServiceTests(
                         //console.log({ Post_Addon_with_Version: postDowngradeAddonApiResponse });
 
                         let postAddonApiResponse;
-                        let maxLoopsCounter = 90;
+                        let maxLoopsCounter = _MAX_LOOPS;
                         do {
                             generalService.sleep(2000);
                             postAddonApiResponse = await generalService.papiClient.get(
@@ -733,62 +726,51 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Addon Downgrade', async () => {
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema.length < 4 ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 4) &&
-                            maxLoopsCounter > 0
+                        generalService.sleep(5000); //This is added to reduce flakyness of this test on the server - but as any PNS test - this can be flaky
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            Resource: ['installed_addons'],
+                            Action: ['update'],
+                            ModifiedFields: ['SystemData', 'ModificationDate', 'Version', 'LastUpgradeDateTime'],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                            installedAddon.UUID,
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(installedAddon.UUID);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(4);
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('update');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([
                             'SystemData',
                             'ModificationDate',
                             'Version',
                             'LastUpgradeDateTime',
                         ]);
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
-                            'Pepperitest Test Version ',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.include(
-                            'Pepperitest Test Version ',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include('0.0.');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.include('0.0.');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
                             'SystemData',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
                             'ModificationDate',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue).to.include(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[2].NewValue).to.include(
                             versionsArr[1].Version,
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.include(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[2].OldValue).to.include(
                             versionsArr[2].Version,
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal(
-                            'Version',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[3].NewValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[3].OldValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[3].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[2].FieldID).to.equal('Version');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[3].NewValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[3].OldValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[3].FieldID).to.equal(
                             'LastUpgradeDateTime',
                         );
                     });
@@ -801,7 +783,7 @@ export async function PepperiNotificationServiceTests(
                         //console.log({ Post_Addon_Uninstall: postUninstallAddonApiResponse });
 
                         let postAddonApiResponse;
-                        let maxLoopsCounter = 90;
+                        let maxLoopsCounter = _MAX_LOOPS;
                         if (postUninstallAddonApiResponse.URI != undefined) {
                             do {
                                 generalService.sleep(2000);
@@ -820,7 +802,7 @@ export async function PepperiNotificationServiceTests(
 
                     it('Validate Subscription Removed After Addon Uninstall (DI-17910)', async () => {
                         let getSubscribeResponse;
-                        let maxLoopsCounter = 90;
+                        let maxLoopsCounter = _MAX_LOOPS;
                         do {
                             generalService.sleep(2000);
                             getSubscribeResponse = await pepperiNotificationServiceService.getSubscriptionsbyName(
@@ -832,43 +814,34 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Addon Uninstall', async () => {
-                        //TODO: investigate why this test fail
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema.length < 5 ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 2) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                            Resource: ['installed_addons'],
+                            Action: ['update'],
+                            ModifiedFields: ['Hidden', 'ModificationDate'],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
-                            installedAddon.UUID,
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2);
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('installed_addons');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(installedAddon.UUID);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2);
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('update');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([
                             'Hidden',
                             'ModificationDate',
                         ]);
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.be.true;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.be.false;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
-                            'Hidden',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.be.true;
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.be.false;
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal('Hidden');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
                             'ModificationDate',
                         );
                     });
@@ -1007,30 +980,27 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After New Schema Creation (DI-18069)', async () => {
-                        //TODO: investigate why this test fail
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 0) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            Resource: ['schemes'],
+                            Action: ['insert'],
+                            ModifiedFields: [],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.include(
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.include(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('insert');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('schemes');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('insert');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it(`Create New Schema`, async () => {
@@ -1046,41 +1016,38 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After Existing Schema Update (DI-17875)', async () => {
-                        //TODO: investigate why this test fail
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] || !schema[0].Key.startsWith('Log_Update_PNS_Test') || schema.length < 2) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            Resource: ['schemes'],
+                            Action: ['update'],
+                            ModifiedFields: ['ModificationDateTime', 'Values'],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.include(
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.include(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2); //(3); Changed when Action ID was added to PNS (12/07/2021)
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal(
-                            'Values',
-                        );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.be.null;
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[0]).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(2); //(3); Changed when Action ID was added to PNS (12/07/2021)
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].FieldID).to.equal('Values');
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.be.null;
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[0]).to.equal(
                             'Value1',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[1]).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[1]).to.equal(
                             'Value2',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[2]).to.equal(
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue[2]).to.equal(
                             'Value3',
                         );
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('update');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('schemes');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('update');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([
                             //'ModificationActionUUID', // Changed when Action ID was added to PNS (12/07/2021)
                             'ModificationDateTime',
                             'Values',
@@ -1103,31 +1070,27 @@ export async function PepperiNotificationServiceTests(
                     });
 
                     it('Validate PNS Triggered After New Schema Purge', async () => {
-                        //TODO: investigate why this test fail
-                        let schema;
-                        let maxLoopsCounter = _MAX_LOOPS;
-                        do {
-                            generalService.sleep(1500);
-                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                order_by: 'CreationDateTime DESC',
-                            });
-                            maxLoopsCounter--;
-                            console.log({ getDataFromSchema: schema });
-                        } while (
-                            (!schema[0] ||
-                                !schema[0].Key.startsWith('Log_Update_PNS_Test') ||
-                                schema.length < 3 ||
-                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length != 0) &&
-                            maxLoopsCounter > 0
+                        const filter: FilterAttributes = {
+                            AddonUUID: ['00000000-0000-0000-0000-00000000ada1'],
+                            Resource: ['schemes'],
+                            Action: ['remove'],
+                            ModifiedFields: [],
+                        };
+                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                            'Log_Update_PNS_Test',
+                            PepperiOwnerID,
+                            schemaName,
+                            filter,
                         );
-                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.include(
+                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                        expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
+                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.include(
                             'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe_PNS Schema Test',
                         );
-                        expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
-                        expect(schema[0].Message.FilterAttributes.Resource).to.equal('schemes');
-                        expect(schema[0].Message.FilterAttributes.Action).to.equal('remove');
-                        expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
+                        expect(schema.Message.FilterAttributes.Resource).to.equal('schemes');
+                        expect(schema.Message.FilterAttributes.Action).to.equal('remove');
+                        expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
                     });
 
                     it(`Unsubscribe And Validate Get With Where (DI-18054)`, async () => {
@@ -1285,15 +1248,15 @@ export async function PepperiNotificationServiceTests(
 
                     //Validate Schema created
                     let schema;
-                    let maxLoopsCounter = _MAX_LOOPS;
+                    let maxLoopsCounter = 12;
                     do {
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName);
                         maxLoopsCounter--;
                         console.log({ getDataFromSchema: schema });
                     } while (schema[0] == undefined && maxLoopsCounter > 0);
-                    expect(schema[0]).to.be.undefined;
 
+                    expect(schema[0]).to.be.undefined;
                     schema = await generalService.fetchStatus('/addons/data/schemes', {
                         method: `GET`,
                         headers: {
@@ -1305,8 +1268,8 @@ export async function PepperiNotificationServiceTests(
                     const uninstallAddon = await generalService.papiClient.addons.installedAddons
                         .addonUUID(testDataAddonUUID)
                         .uninstall();
-
                     expect(uninstallAddon).to.have.property('URI');
+
                     const uninstallAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
                         uninstallAddon.URI,
                         40,
@@ -1362,7 +1325,6 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
-                    //TODO: investigate why this test fail
                     const uninstalledAddon = await generalService.papiClient.addons.installedAddons
                         .addonUUID(testData['Pepperi Notification Service'][0])
                         .uninstall();
@@ -1390,7 +1352,6 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Verify ADAL Upgraded After PNS`, async () => {
-                    //TODO: investigate why this test fail
                     //Downgrade ADAL
                     let downgradeAddon = await generalService.papiClient.addons.installedAddons
                         .addonUUID(testData['Pepperi Notification Service'][0])

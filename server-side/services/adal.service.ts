@@ -7,12 +7,12 @@ export class ADALService {
         return this.papiClient.addons.data.schemes.post(addonDataScheme);
     }
 
-    getDataFromSchema(uuid: string, tableName: string, options?: FindOptions) {
-        return this.papiClient.addons.data.uuid(uuid).table(tableName).find(options);
+    getDataFromSchema(addonUUID: string, tableName: string, options?: FindOptions) {
+        return this.papiClient.addons.data.uuid(addonUUID).table(tableName).find(options);
     }
 
-    postDataToSchema(uuid: string, tableName: string, addonData: AddonData) {
-        return this.papiClient.addons.data.uuid(uuid).table(tableName).upsert(addonData);
+    postDataToSchema(addonUUID: string, tableName: string, addonData: AddonData) {
+        return this.papiClient.addons.data.uuid(addonUUID).table(tableName).upsert(addonData);
     }
 
     deleteSchema(tableName: string) {

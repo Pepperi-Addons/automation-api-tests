@@ -23,7 +23,7 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
     const functionNameWithBody = 'oleg';
     const functionNamePapiTransaction = 'getTransactions';
     //let bodyValue: any = {};
-    const version = 'Ver1';
+    const version = '0.0.1';
     let listLength = 0;
     let addonJobBody: any = {};
 

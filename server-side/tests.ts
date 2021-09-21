@@ -65,7 +65,6 @@ import {
 } from './api-tests/import_export_atd';
 import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
-import { ObjectsPNSTests } from './api-tests/objects_pns';
 import { NucRecoveryTests, NucRecoverySDKTests, NucRecoveryWACDTests } from './api-tests/nuc_recovery';
 import { DataIndexTests } from './api-tests/data_index';
 import { CPINodeTests } from './api-tests/cpi_node';
@@ -1365,30 +1364,6 @@ export async function pepperi_notification_service(client: Client, request: Requ
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         PepperiNotificationServiceTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    service.PrintMemoryUseToLog('End', testName);
-    return testResult;
-}
-
-export async function objects_pns(client: Client, request: Request, testerFunctions: TesterFunctions) {
-    const service = new GeneralService(client);
-    testName = 'Pepperi_Notification_Service';
-    service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ObjectsPNSTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
