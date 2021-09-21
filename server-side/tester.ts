@@ -73,7 +73,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     })
                     .on('test end', (data) => {
                         if (data.state != 'passed') {
-                            //debugger;
+                            // debugger;
                         }
                     })
                     .on('end', () => {
