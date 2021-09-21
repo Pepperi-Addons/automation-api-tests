@@ -986,12 +986,29 @@ export async function PepperiNotificationServiceTests(
                             Action: ['insert'],
                             ModifiedFields: [],
                         };
-                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                        let schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
                             'Log_Update_PNS_Test',
                             PepperiOwnerID,
                             schemaName,
                             filter,
                         );
+
+                        //In case of mixing the order of schemas, remove the schema and try to get the correct one again
+                        if (!Array.isArray(schema)) {
+                            await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                                Key: schema.Key,
+                                IsTested: true,
+                            });
+                            if (schema.Message.Message.ModifiedObjects[0].ObjectKey.includes('PNS Test')) {
+                                schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                                    'Log_Update_PNS_Test',
+                                    PepperiOwnerID,
+                                    schemaName,
+                                    filter,
+                                );
+                            }
+                        }
+
                         expect(schema, JSON.stringify(schema)).to.not.be.an('array');
                         expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                         expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.include(
@@ -1209,6 +1226,7 @@ export async function PepperiNotificationServiceTests(
                     expect(installedAddonApiResponse.Status.ID).to.be.equal(1, 'Install Failed');
 
                     //Validate Subscription created
+                    generalService.sleep(4000); //The test if flaky in EU - This should solve it but if not, the test should fail
                     let getSubscriptionsResponse = await pepperiNotificationServiceService.findSubscriptions();
                     const expectedSubscriptions = [
                         'uninstalled-addon-adal-subscription',
@@ -1253,7 +1271,6 @@ export async function PepperiNotificationServiceTests(
                         generalService.sleep(1500);
                         schema = await adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName);
                         maxLoopsCounter--;
-                        console.log({ getDataFromSchema: schema });
                     } while (schema[0] == undefined && maxLoopsCounter > 0);
 
                     expect(schema[0]).to.be.undefined;
@@ -1279,11 +1296,15 @@ export async function PepperiNotificationServiceTests(
 
                     //Validate Subscription created
                     maxLoopsCounter = _MAX_LOOPS;
+                    let removedSubscription;
                     do {
                         generalService.sleep(3000);
                         getSubscriptionsResponse = await pepperiNotificationServiceService.findSubscriptions();
                         maxLoopsCounter--;
-                    } while (getSubscriptionsResponse.length > 3 && maxLoopsCounter > 0);
+                        removedSubscription = getSubscriptionsResponse.filter((subscription) => {
+                            subscription.Name == expectedSubscriptions[2];
+                        });
+                    } while (removedSubscription.length != 0 && maxLoopsCounter > 0);
 
                     testResults = [false, false, false];
                     for (let index = 0; index < getSubscriptionsResponse.length; index++) {
