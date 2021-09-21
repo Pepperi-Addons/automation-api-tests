@@ -751,9 +751,7 @@ export async function PepperiNotificationServiceTests(
                             'Version',
                             'LastUpgradeDateTime',
                         ]);
-                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
-                            '0.0. ',
-                        );
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include('0.0.');
                         expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.include('0.0.');
                         expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
                             'SystemData',
