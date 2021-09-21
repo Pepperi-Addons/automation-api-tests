@@ -48,7 +48,7 @@ function testDataNewAddon(testNumber) {
 function testDataNewAddonVersion(addonUUID, testNumber) {
     return {
         AddonUUID: addonUUID,
-        Version: '0.0.' + testNumber,
+        Version: '0.0.' + testNumber, //Name here can't be changed or it will send messages VIA teams
     };
 }
 

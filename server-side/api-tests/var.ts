@@ -13,21 +13,9 @@ function testDataNewAddon(testNumber) {
 function testDataNewAddonVersion(addonUUID, testNumber) {
     return {
         AddonUUID: addonUUID,
-        Version: 'Pepperitest Test Version ' + testNumber, //Name here can't be changed or it will send messages VIA teams
+        Version: '0.0.' + testNumber, //Name here can't be changed or it will send messages VIA teams
     };
 }
-
-//This was never used
-// function testDataNewAddonVersionBulk(addonUUID, testNumberArr) {
-//     for (let index = 0; index < testNumberArr.length; index++) {
-//         return [
-//             {
-//                 AddonUUID: addonUUID,
-//                 Version: 'Pepperitest Test Version ' + testNumberArr[index],
-//             },
-//         ];
-//     }
-// }
 
 //This was replaces to prevent file reading from the server (it might cause crashes of node.js)
 // function testDatagetBase64FileFromFileAtPath(pathOfFileToReadFrom) {
@@ -720,10 +708,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 body: JSON.stringify(testDataBody),
             },
         );
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.Body.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
+        const versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, 1) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
         const createVersionApiResponse = await generalService.fetchStatus(
@@ -1116,10 +1101,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 body: JSON.stringify(testDataBody),
             },
         );
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.Body.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
+        const versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, 1) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
         const createVersionApiResponse = await generalService.fetchStatus(
@@ -1442,10 +1424,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
         const versionTestDataBody = [, , ,] as any;
         for (let index = 0; index < versionTestDataBody.length; index++) {
-            versionTestDataBody[index] = testDataNewAddonVersion(
-                createApiResponse.Body.UUID,
-                Math.floor(Math.random() * 1000000).toString(),
-            );
+            versionTestDataBody[index] = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
             versionTestDataBody[index].Phased = true;
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
@@ -1639,10 +1618,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
         const versionTestDataBody = [, , ,] as any;
         for (let index = 0; index < versionTestDataBody.length; index++) {
-            versionTestDataBody[index] = testDataNewAddonVersion(
-                createApiResponse.Body.UUID,
-                Math.floor(Math.random() * 1000000).toString(),
-            );
+            versionTestDataBody[index] = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
             versionTestDataBody[index].Phased = true;
             versionTestDataBody[index].StartPhasedDateTime = new Date().toJSON();
         }
@@ -1730,10 +1706,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 body: JSON.stringify(testDataBody),
             },
         );
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.Body.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        ) as any;
+        const versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, 1) as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
         const createVersionApiResponse = await generalService.fetchStatus(
@@ -1971,7 +1944,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
         //console.log({ Addon_Created_For_No_UUID_Test: createApiResponse });
         const versionTestDataBody = {
-            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: '0.0.1',
         } as any;
         versionTestDataBody.Phased = true;
         versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2070,16 +2043,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(
-                    testDataNewAddonVersion(
-                        createApiResponse.Body.UUID,
-                        Math.floor(Math.random() * 1000000).toString(),
-                    ),
-                ),
+                body: JSON.stringify(testDataNewAddonVersion(createApiResponse.Body.UUID, 1)),
             },
         );
         const versionTestDataBody = {
-            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: '0.0.5',
             UUID: createVersionApiResponse.Body.UUID,
         };
 
@@ -2188,12 +2156,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(
-                    testDataNewAddonVersion(
-                        createApiResponse.Body.UUID,
-                        Math.floor(Math.random() * 1000000).toString(),
-                    ),
-                ),
+                body: JSON.stringify(testDataNewAddonVersion(createApiResponse.Body.UUID, 1)),
             },
         );
         const versionTestDataBody = {
@@ -2305,16 +2268,11 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 headers: {
                     Authorization: request.body.varKey,
                 },
-                body: JSON.stringify(
-                    testDataNewAddonVersion(
-                        createApiResponse.Body.UUID,
-                        Math.floor(Math.random() * 1000000).toString(),
-                    ),
-                ),
+                body: JSON.stringify(testDataNewAddonVersion(createApiResponse.Body.UUID, 1)),
             },
         );
         const versionTestDataBody = {
-            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: '0.0.1',
             UUID: createVersionApiResponse.Body.UUID.substring(0, createVersionApiResponse.Body.UUID.length - 2) + '00',
         };
         const createVersionApiNegativeResponse = await generalService.fetchStatus(
@@ -2415,10 +2373,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
                 body: JSON.stringify(testDataBody),
             },
         );
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.Body.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        );
+        const versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, 1);
         const createVersionApiResponse = await generalService.fetchStatus(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
@@ -2565,7 +2520,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const fileAsSBase64 = await testDatagetBase64FileFromText();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
-            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: '0.0.1',
             //TODO: fix this capital letter when it will be decided
             //Capital letter no longer valid temp patch "installation" instead of "Installation"
             Files: [{ FileName: 'installation.js', URL: '', Base64Content: fileAsSBase64 }],
@@ -2721,7 +2676,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         const fileAsSBase64 = await testDatagetBase64FileFromText();
         const versionTestDataBody = {
             AddonUUID: createApiResponse.Body.UUID,
-            Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+            Version: '0.0.1',
             //TODO: fix this capital letter when it will be decided
             //Capital letter no longer valid temp patch "other" instead of "Other"
             Files: [{ FileName: 'other.js', URL: '', Base64Content: fileAsSBase64 }],
@@ -2891,7 +2846,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         if (testName.includes('Negative')) {
             versionTestDataBody = {
                 AddonUUID: createApiResponse.Body.UUID,
-                Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+                Version: '0.0.1',
                 //TODO: fix this capital letter when it will be decided
                 //Capital letter no longer valid temp patch "other" instead of "Other"
                 Files: [
@@ -2908,7 +2863,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         } else {
             versionTestDataBody = {
                 AddonUUID: createApiResponse.Body.UUID,
-                Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(),
+                Version: '0.0.1',
                 //TODO: fix this capital letter when it will be decided
                 //Capital letter no longer valid temp patch "other" instead of "Other"
                 Files: [
@@ -3271,10 +3226,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
         //console.log({ Addon_Created_For_Update_Version_Test: createApiResponse });
 
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.Body.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        );
+        const versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, 1);
         const createVersionApiResponse = await generalService.fetchStatus(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {
@@ -3485,10 +3437,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         );
         //console.log({ Addon_Created_For_Update_Version_Test: createApiResponse });
 
-        const versionTestDataBody = testDataNewAddonVersion(
-            createApiResponse.Body.UUID,
-            Math.floor(Math.random() * 1000000).toString(),
-        );
+        const versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, 1);
         const createVersionApiResponse = await generalService.fetchStatus(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
             {

@@ -1194,7 +1194,6 @@ export async function TransactionTests(generalService: GeneralService, tester: T
 
             expect(schema, JSON.stringify(schema)).to.not.be.an('array');
             expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(addedTransactionLines.UUID);
-            expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdTransactionLines.UUID);
             expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
                 {
                     NewValue: true,

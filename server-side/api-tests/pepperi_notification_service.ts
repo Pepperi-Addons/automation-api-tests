@@ -438,7 +438,7 @@ export async function PepperiNotificationServiceTests(
                         for (let index = 0; index < versionsArr.length; index++) {
                             versiontestAddon = {
                                 AddonUUID: createdAddon.Body.UUID,
-                                Version: 'Pepperitest Test Version ' + Math.floor(Math.random() * 1000000).toString(), //Name here can't be changed or it will send messages VIA teams
+                                Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                             };
                             versiontestAddon.Phased = true;
                             versiontestAddon.StartPhasedDateTime = new Date().toJSON();
@@ -457,9 +457,9 @@ export async function PepperiNotificationServiceTests(
                                 .then((res) => res.Body);
                         }
                         expect(createdAddon.Body.Name).to.equal(testAddon.Name);
-                        expect(versionsArr[0].Version).to.contain('Pepperitest Test Version ');
-                        expect(versionsArr[1].Version).to.contain('Pepperitest Test Version ');
-                        expect(versionsArr[2].Version).to.contain('Pepperitest Test Version ');
+                        expect(versionsArr[0].Version).to.contain('0.0.1');
+                        expect(versionsArr[1].Version).to.contain('0.0.2');
+                        expect(versionsArr[2].Version).to.contain('0.0.3');
                     });
 
                     it('Install Addon', async () => {
@@ -667,9 +667,7 @@ export async function PepperiNotificationServiceTests(
                             'Version',
                             'LastUpgradeDateTime',
                         ]);
-                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
-                            'Pepperitest Test Version ',
-                        );
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include('0.0.');
                         expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.equal('{}');
                         expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
                             'SystemData',
@@ -754,11 +752,9 @@ export async function PepperiNotificationServiceTests(
                             'LastUpgradeDateTime',
                         ]);
                         expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include(
-                            'Pepperitest Test Version ',
+                            '0.0. ',
                         );
-                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.include(
-                            'Pepperitest Test Version ',
-                        );
+                        expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.include('0.0.');
                         expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal(
                             'SystemData',
                         );

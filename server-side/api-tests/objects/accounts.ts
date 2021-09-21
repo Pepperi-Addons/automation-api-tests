@@ -513,11 +513,11 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             }
 
             expect(schema, JSON.stringify(schema)).to.not.be.an('array');
-            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID);
-            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
-            expect(schema[0].Message.FilterAttributes.Resource).to.include('accounts');
-            expect(schema[0].Message.FilterAttributes.Action).to.include('insert');
+            expect(schema.Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdAccount.UUID);
+            expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+            expect(schema.Message.FilterAttributes.Resource).to.include('accounts');
+            expect(schema.Message.FilterAttributes.Action).to.include('insert');
         });
 
         // it('Verify attachment URL', async () => {
