@@ -335,7 +335,6 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         let bulkActivities;
         let bulkUpdateActivities;
         const schemaName = 'PNS Objects Test';
-        const _MAX_LOOPS = 12;
 
         it('Create account and TSAs for activity CRUD', async () => {
             atds = await service.getATD('activities');
