@@ -33,6 +33,13 @@ describe('First UI Tests Suit', function () {
         await driver.navigate('https://app.pepperi.com/');
         // generalService.sleep(6000)
         debugger;
+        //Take Screen Shot
+        // // let testCaseName: string = this.currentTest.title;
+        // driver.takeScreenshot().then((data) => {
+        //     const screenshotPath = `TestResults/Screenshots/${'First UI Tests Suit'}.png`;
+        //     console.log(`Saving Screenshot as: ${screenshotPath}`);
+        //     // fs.writeFileSync(screenshotPath, data, 'base64');
+        // });
         const emailField = await driver.findElement('#email');
         await emailField.click();
         await emailField.sendKeys('This is how simple it is');

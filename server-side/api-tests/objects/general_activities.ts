@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { TesterFunctions, FilterAttributes } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { ApiFieldObject, Subscription } from '@pepperi-addons/papi-sdk';
 import { ADALService } from '../../services/adal.service';
@@ -335,7 +335,6 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         let bulkActivities;
         let bulkUpdateActivities;
         const schemaName = 'PNS Objects Test';
-        const _MAX_LOOPS = 12;
 
         it('Create account and TSAs for activity CRUD', async () => {
             atds = await service.getATD('activities');
@@ -354,9 +353,11 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 try {
                     purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                 } catch (error) {
-                    expect(error.message).to.includes(
-                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                    );
+                    expect(error)
+                        .to.have.property('message')
+                        .that.includes(
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                        );
                 }
                 const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                 expect(purgedSchema).to.equal('');
@@ -486,24 +487,32 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         });
 
         it('Validate PNS after Insert', async () => {
-            let schema;
-            let maxLoopsCounter = _MAX_LOOPS;
-            do {
-                generalService.sleep(1500);
-                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                    order_by: 'CreationDateTime DESC',
-                });
-                maxLoopsCounter--;
-            } while (
-                (!schema[0] || !schema[0].Key.startsWith('Log_Update') || schema.length < 1) &&
-                maxLoopsCounter > 0
+            const filter: FilterAttributes = {
+                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                Resource: ['activities'],
+                Action: ['insert'],
+                ModifiedFields: [],
+            };
+            const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                'Log_Update',
+                PepperiOwnerID,
+                schemaName,
+                filter,
             );
-            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdActivity.UUID);
-            expect(schema[1]).to.be.undefined;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
-            expect(schema[0].Message.FilterAttributes.Resource).to.include('activities');
-            expect(schema[0].Message.FilterAttributes.Action).to.include('insert');
+
+            if (!Array.isArray(schema)) {
+                await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                    Key: schema.Key,
+                    IsTested: true,
+                });
+            }
+
+            expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+            expect(schema.Key).to.be.a('String').and.contain('Log_Update');
+            expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdActivity.UUID);
+            expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.be.null;
+            expect(schema.Message.FilterAttributes.Resource).to.include('activities');
+            expect(schema.Message.FilterAttributes.Action).to.include('insert');
         });
 
         it('Update activity', async () => {
@@ -599,23 +608,49 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         });
 
         it('Validate PNS after Update', async () => {
-            let schema;
-            let maxLoopsCounter = _MAX_LOOPS;
-            do {
-                generalService.sleep(1500);
-                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                    order_by: 'CreationDateTime DESC',
-                });
-                maxLoopsCounter--;
-            } while (
-                (!schema[1] || !schema[0].Key.startsWith('Log_Update') || schema.length < 2) &&
-                maxLoopsCounter > 0
+            const filter: FilterAttributes = {
+                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                Resource: ['activities'],
+                Action: ['update'],
+                ModifiedFields: [
+                    'Status',
+                    'Title',
+                    'TSACheckboxAPI',
+                    'TSACurrencyAPI',
+                    'TSADateAPI',
+                    'TSADateTimeAPI',
+                    'TSADecimalNumberAPI',
+                    'TSADropdownAPI',
+                    'TSAEmailAPI',
+                    'TSAHtmlAPI',
+                    'TSALimitedLineAPI',
+                    'TSALinkAPI',
+                    'TSAMultiChoiceAPI',
+                    'TSANumberAPI',
+                    'TSAParagraphAPI',
+                    'TSAPhoneNumberAPI',
+                    'TSASingleLineAPI',
+                    'StatusName',
+                ],
+            };
+            const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                'Log_Update',
+                PepperiOwnerID,
+                schemaName,
+                filter,
             );
-            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-            expect(schema[0].Hidden).to.be.false;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdActivity.UUID);
-            expect(schema[2]).to.be.undefined;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
+
+            if (!Array.isArray(schema)) {
+                await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                    Key: schema.Key,
+                    IsTested: true,
+                });
+            }
+
+            expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+            expect(schema.Hidden).to.be.false;
+            expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdActivity.UUID);
+            expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.deep.equal([
                 {
                     FieldID: 'Status',
                     NewValue: 2,
@@ -707,9 +742,9 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     OldValue: 'InCreation',
                 },
             ]);
-            expect(schema[0].Message.FilterAttributes.Resource).to.include('activities');
-            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.include.members([
+            expect(schema.Message.FilterAttributes.Resource).to.include('activities');
+            expect(schema.Message.FilterAttributes.Action).to.include('update');
+            expect(schema.Message.FilterAttributes.ModifiedFields).to.include.members([
                 'Status',
                 'Title',
                 'TSACheckboxAPI',
@@ -763,31 +798,38 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         });
 
         it('Validate PNS after Delete', async () => {
-            let schema;
-            let maxLoopsCounter = _MAX_LOOPS;
-            do {
-                generalService.sleep(1500);
-                schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                    order_by: 'CreationDateTime DESC',
-                });
-                maxLoopsCounter--;
-            } while (
-                (!schema[2] || !schema[0].Key.startsWith('Log_Update') || schema.length < 3) &&
-                maxLoopsCounter > 0
+            const filter: FilterAttributes = {
+                AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                Resource: ['activities'],
+                Action: ['update'],
+                ModifiedFields: ['Hidden'],
+            };
+            const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                'Log_Update',
+                PepperiOwnerID,
+                schemaName,
+                filter,
             );
-            expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-            expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdActivity.UUID);
-            expect(schema[3]).to.be.undefined;
-            expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
+
+            if (!Array.isArray(schema)) {
+                await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                    Key: schema.Key,
+                    IsTested: true,
+                });
+            }
+
+            expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+            expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(createdActivity.UUID);
+            expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields).to.be.deep.equal([
                 {
                     NewValue: true,
                     OldValue: false,
                     FieldID: 'Hidden',
                 },
             ]);
-            expect(schema[0].Message.FilterAttributes.Resource).to.include('activities');
-            expect(schema[0].Message.FilterAttributes.Action).to.include('update');
-            expect(schema[0].Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
+            expect(schema.Message.FilterAttributes.Resource).to.include('activities');
+            expect(schema.Message.FilterAttributes.Action).to.include('update');
+            expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal(['Hidden']);
         });
 
         it('Check Hidden=false after update', async () => {

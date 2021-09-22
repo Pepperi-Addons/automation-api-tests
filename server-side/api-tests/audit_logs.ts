@@ -635,7 +635,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 return 'Error in UUID in Code Job API Response';
             }
         } catch (error) {
-            error.stack = 'UUID in Code Job API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'UUID in Code Job API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Date and Time
@@ -647,7 +649,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 return 'Error in Date and Time in Code Job API Response';
             }
         } catch (error) {
-            error.stack = 'Date and Time in Code Job API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Date and Time in Code Job API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Type and Event
@@ -664,7 +668,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 return 'The Type or Event contain wrong data';
             }
         } catch (error) {
-            error.stack = 'Type and Event in Code Job API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Type and Event in Code Job API Response:\n' + error.stack;
+            }
             return error;
         }
         //Check Result Object
@@ -678,7 +684,9 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 }
             }
         } catch (error) {
-            error.stack = 'Draft Code Error in Code Job API Response:\n' + error.stack;
+            if (error instanceof Error) {
+                error.stack = 'Draft Code Error in Code Job API Response:\n' + error.stack;
+            }
             return error;
         }
         return true;

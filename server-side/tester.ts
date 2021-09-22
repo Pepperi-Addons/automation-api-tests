@@ -76,6 +76,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     .on('test', () => {
                         // debugger;
                     })
+<<<<<<< HEAD
                     .on('test end', () => {
                         //   debugger;
                           for (let index = 0; index < testArr.length; index++) {
@@ -83,6 +84,12 @@ export default function Tester(client?: Client, testName?: string, environment?:
                               element();
                             //   debugger;
                           }
+=======
+                    .on('test end', (data) => {
+                        if (data.state != 'passed') {
+                            // debugger;
+                        }
+>>>>>>> main
                     })
                     .on('end', () => {
                         // resolve((runner as any).testResults);
@@ -96,7 +103,11 @@ export default function Tester(client?: Client, testName?: string, environment?:
                                     try {
                                         res = JSON.parse(data.toString());
                                     } catch (error) {
-                                        return resolve(error.toString());
+                                        if (error instanceof Error) {
+                                            return resolve(error.toString());
+                                        } else {
+                                            return resolve(String(error));
+                                        }
                                     }
 
                                     //Test results report might be to big for the addon, so remove some data from response
