@@ -10,7 +10,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
     //#region Upgrade Data Visualisation
     const testData = {
-        // 'data-visualization': ['43d4fe5c-7c60-4a91-9d65-8580dc47a4bd', ''],
         'Training Template': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
@@ -54,12 +53,23 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         describe('Endpoints', () => {
             describe('GET', () => {
                 it('Get Charts - Retriving chart data and validating its format', async () => {
+                    const URL = require("url").URL;
+                    const stringIsAValidUrl = (s) => {
+                        try {
+                          new URL(s);
+                          return true;
+                        } catch (err) {
+                          return false;
+                        }
+                      };
+                    
                     const chart = await dataVisualisationService.getChartsAsync();
                     // const chartFromFetch: Chart = await generalService
                     // .fetchStatus('https://papi.pepperi.com/V1.0/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts');
                     const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chart.URI, 40);
                     // const chartAuditLogFetch = await generalService.getAuditLogResultObjectIfValid(chartFromFetch.Body.URI, 40);
                     const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
+                    expect(chartAuditLogAsync["Status"]["Name"]).to.equal('Success');
                     jsonDataFromAuditLog.forEach(jsonChartData => {
                         expect(jsonChartData).to.have.own.property('Key');
                         expect(jsonChartData).to.have.own.property('Name');
@@ -67,6 +77,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('Type');
                         expect(jsonChartData["Type"]).to.be.oneOf(["Single", "Series", "MultiSeries"]);
                         expect(jsonChartData).to.have.own.property('ScriptURI');
+                        expect(stringIsAValidUrl(jsonChartData['ScriptURI'])).to.equal(true);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
                         expect(jsonChartData["ReadOnly"]).to.be.an('Boolean');
                     });
