@@ -1,4 +1,5 @@
 import { PapiClient, DataView, FindOptions } from '@pepperi-addons/papi-sdk';
+import GeneralService from './general.service';
 
 export interface Chart {
     // InternalID?: number;
@@ -20,20 +21,10 @@ export interface Chart {
 
     [key: string]: any;
 }
-// [
-// 	{ 
-// 		"Key": "1234-567890-43213", // generate new guid   
-// 		"Name": "my-chart", 
-// 		"Description": "my chart",
-// 		"Type": "Single"|"Series"|"MultiSeries", // mandatory on create
-		
-// 		// http or base 64
-// 		"ScriptURI": "https://cdn.pepperi.com/1110703/CustomizationFile/1.js" 
-// 		"ReadOnly": true
-// 	}
-// ]
+
+
 export class DataVisualisationService {
-    constructor(public papiClient: PapiClient) {}
+    constructor(public papiClient: PapiClient) { }
 
     // getDataViewByID(id: number) {
     //     return this.papiClient.metaData.dataViews.get(id);
@@ -51,9 +42,28 @@ export class DataVisualisationService {
     //     return this.papiClient.metaData.dataViews.iter(options).toArray();
     // }
 
-    // postDataView(dataView: DataView) {
-    //     return this.papiClient.metaData.dataViews.upsert(dataView);
+    // postChart(chart: any) {
+    //     // return this.papiClient.metaData.dataViews.upsert(chart);
+    //     return this.papiClient
+    //         .post('/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts', chart);
+    //     ;
     // }
+
+    postChartAsync(generalService: GeneralService, chart: any, argHeaders?: any) {
+        if (argHeaders)
+            return generalService
+                .fetchStatus('/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts', {
+                    method: 'POST',
+                    body: JSON.stringify(chart),
+                    headers: argHeaders
+                });
+        else
+            return generalService
+                .fetchStatus('/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts', {
+                    method: 'POST',
+                    body: JSON.stringify(chart)
+                });
+    }
 
     // postDataViewBatch(dataViewArr: DataView[]) {
     //     return this.papiClient.metaData.dataViews.batch(dataViewArr);
