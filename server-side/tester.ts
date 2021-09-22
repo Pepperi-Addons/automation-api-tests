@@ -11,14 +11,13 @@ chai.use(promised);
 export default function Tester(client?: Client, testName?: string, environment?: string) {
     const isLocal = client ? client.AssetsBaseUrl.includes('/localhost:') : true;
     const testObject = {};
-    const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
-        environment ? environment : 'Default'
-    }-Tests-Results-${new Date()
-        .toISOString()
-        .substring(0, 16)
-        .replace(/-/g, '.')
-        .replace(/:/g, '_')
-        .replace(/T/g, 'T_')}`;
+    const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${environment ? environment : 'Default'
+        }-Tests-Results-${new Date()
+            .toISOString()
+            .substring(0, 16)
+            .replace(/-/g, '.')
+            .replace(/:/g, '_')
+            .replace(/T/g, 'T_')}`;
     const fileName = 'report';
     const mocha = new Mocha({
         reporter: Mochawesome,
@@ -32,7 +31,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
     });
     const root = mocha.suite;
     let context: Suite | undefined = root;
-    const testArr:any[] = [];
+    const testArr: any[] = [];
     return {
         describe: (name: string, fn: () => any) => {
             const suite = new Mocha.Suite(name);
@@ -56,7 +55,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
 
         assert: assert,
 
-        evgeny: (name:string, fn:any) =>{
+        evgeny: (name: string, fn: any) => {
             debugger;
             testArr.push(fn);
         },
@@ -76,20 +75,10 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     .on('test', () => {
                         // debugger;
                     })
-<<<<<<< HEAD
-                    .on('test end', () => {
-                        //   debugger;
-                          for (let index = 0; index < testArr.length; index++) {
-                              const element = testArr[index];
-                              element();
-                            //   debugger;
-                          }
-=======
                     .on('test end', (data) => {
                         if (data.state != 'passed') {
                             // debugger;
                         }
->>>>>>> main
                     })
                     .on('end', () => {
                         // resolve((runner as any).testResults);
