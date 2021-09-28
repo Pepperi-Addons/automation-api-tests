@@ -26,6 +26,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
             reportDir: mochaDir,
             reportFilename: fileName,
             html: isLocal,
+            autoOpen: isLocal,
             consoleReporter: 'none',
         },
         timeout: 1200000,
