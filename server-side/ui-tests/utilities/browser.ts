@@ -173,9 +173,9 @@ export class Browser {
             .manage()
             .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         if (elArr === undefined) {
-            throw new Error(`After few retires the maxAttmpts of: ${loopCounter} Riched,
-            with wait time of: ${waitUntil}, for selector of ${selector},
-            The test must end, The element is: ${elArr}`);
+            throw new Error(
+                `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is: ${elArr}`,
+            );
         }
         return elArr;
     }

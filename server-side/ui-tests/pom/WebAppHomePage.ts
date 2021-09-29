@@ -5,7 +5,7 @@ import { Locator, By } from 'selenium-webdriver';
 
 export class WebAppHomePage extends Page {
     constructor(browser: Browser) {
-        super(browser, `${config.baseUrl}`);
+        super(browser, `${config.baseUrl}/HomePage`);
     }
 
     public Main: Locator = By.css('#mainButton');

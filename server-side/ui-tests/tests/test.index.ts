@@ -21,13 +21,13 @@ const varPass = process.env.npm_config_var_pass as string;
 
     const generalService = new GeneralService(client);
 
-    // await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+    await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
 
-    // await upgradeDependenciesTests(generalService, varPass);
+    await upgradeDependenciesTests(generalService, varPass);
 
-    // await LoginTest(email, pass);
+    await LoginTest(email, pass);
 
-    await OrdersTest(email, pass, generalService);
+    await OrdersTest(email, pass, client);
 
     run();
 })();
