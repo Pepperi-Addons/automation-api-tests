@@ -27,12 +27,12 @@ export class Browser {
         return await this.driver.navigate().to(url);
     }
 
-    public async click(selector: Locator, index = 0): Promise<void> {
+    public async click(selector: Locator, index = 0, waitUntil = 30000, maxAttmpts = 30): Promise<void> {
         let allowRetry = false;
         let maxRefreshAllowed = 3;
         do {
             try {
-                await (await this.findElements(selector))[index].click();
+                await (await this.findElements(selector, waitUntil, maxAttmpts))[index].click();
                 allowRetry = false;
             } catch (error) {
                 if (error instanceof Error) {
@@ -180,8 +180,8 @@ export class Browser {
         return elArr;
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 30000): Promise<boolean> {
-        if ((await this.findElement(selector, waitUntil)) === undefined) {
+    public async untilIsVisible(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<boolean> {
+        if ((await this.findElement(selector, waitUntil, maxAttmpts)) === undefined) {
             return false;
         }
         return true;

@@ -12,16 +12,16 @@ export abstract class Page {
         return await this.browser.navigate(this.url);
     }
 
-    public async click(selector: Locator, index = 0): Promise<void> {
-        return await this.browser.click(selector, index);
+    public async click(selector: Locator, index = 0, waitUntil = 30000, maxAttmpts = 30): Promise<void> {
+        return await this.browser.click(selector, index, waitUntil, maxAttmpts);
     }
 
     public async sendKeys(selector: Locator, keys: string | number, index = 0): Promise<void> {
         return await this.browser.sendKeys(selector, keys, index);
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 30000): Promise<boolean> {
-        return await this.browser.untilIsVisible(selector, waitUntil);
+    public async untilIsVisible(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<boolean> {
+        return await this.browser.untilIsVisible(selector, waitUntil, maxAttmpts);
     }
 
     public constructor(protected browser: Browser, url: string) {

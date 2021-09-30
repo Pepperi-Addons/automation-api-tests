@@ -69,7 +69,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
             //Validating new order
             const webAppDialog = new WebAppDialog(driver);
-            await webAppDialog.selectDialogBox();
+            await webAppDialog.selectDialogBoxBeforeNewOrder();
 
             //Sorting items by price
             const oren: string[][] = await webAppList.getCartListGridlineAsMatrix();

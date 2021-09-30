@@ -13,7 +13,25 @@ export class WebAppDialog extends Page {
     public Content: Locator = By.css('pep-dialog-content');
     public ButtonArr: Locator = By.css('pep-dialog button');
 
-    public async selectDialogBox(buttonText = 'Yes'): Promise<void> {
+    public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
+        //Click to dismiss if dialog box found
+        await this.browser.findElements(this.ButtonArr, 5000, 6).then(
+            async (res) => {
+                for (let i = 0; i < res.length; i++) {
+                    if ((await res[i].getText()).trim() == buttonText) {
+                        res[i].click();
+                    }
+                }
+            },
+            () => {
+                console.log(`Element ${this.ButtonArr.toString()} not found`);
+            },
+        );
+        return;
+    }
+
+    public async selectDialogBox(buttonText: string): Promise<void> {
+        //Click to dismiss if dialog box found
         await this.browser.findElements(this.ButtonArr, 5000, 6).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
