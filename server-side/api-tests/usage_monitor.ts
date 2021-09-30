@@ -1,7 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { UsageMonitorService } from '../services/usage-monitor.service';
 
-
 export async function UsageMonitorTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
@@ -12,7 +11,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
 
     //#region Upgrade ADAL
     const testData = {
-        'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', '']
+        'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -62,27 +61,26 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
                 // debugger
 
                 //usageMonitorService
-               const lastVersion = await usageMonitorService.get();
+                const lastVersion = await usageMonitorService.get();
                 //debugger;
 
                 const tempTestData = {
-                    'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', testBaseVersion]
+                    'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', testBaseVersion],
                 };
                 await generalService.chnageVersion(request.body.varKey, tempTestData, false);
                 const baseVersion = await usageMonitorService.get();
                 //debugger;
-                delete baseVersion.ExpirationDateTime
-                delete baseVersion.Key
-                delete lastVersion.ExpirationDateTime
-                delete lastVersion.Key
-                delete baseVersion.ExternalData
-                delete lastVersion.ExternalData
+                delete baseVersion.ExpirationDateTime;
+                delete baseVersion.Key;
+                delete lastVersion.ExpirationDateTime;
+                delete lastVersion.Key;
+                delete baseVersion.ExternalData;
+                delete lastVersion.ExternalData;
                 // oleg2.Setup.Contacts
                 // oleg2.Setup.LicensedUsers
-                expect(lastVersion).to.deep.equal(baseVersion)
+                expect(lastVersion).to.deep.equal(baseVersion);
 
                 //debugger
-
             });
 
             ///////////////////////////////////
