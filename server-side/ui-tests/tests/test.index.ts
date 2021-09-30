@@ -13,15 +13,15 @@ import { OrdersTest } from './orders';
 /**
  * To run this script from CLI please replace each <> with the correct user information:
  * npm run ui-show-report --server=stage --chrome_headless=false --user_email=<> --user_pass=<> --var_pass='<>'
- * 
+ *
  * There are two scripts that should be used with the default seetings:
  * 1. ui-cli-report - This script for executing the script in Jenkins.
  * 2. ui-show-repor - This will open the browser with the report when the test finished.
- * 
+ *
  * Used Params are:
  * 1. server - This switch between 'stage' for stage or any for 'production'.
  * 2. chrome_headless - This switch accept boolean value
-*/
+ */
 
 chai.use(promised);
 
