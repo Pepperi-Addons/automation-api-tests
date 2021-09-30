@@ -26,8 +26,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
 
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, 'Ver1'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -892,6 +892,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             }
         } else {
             logcash.hardDeleteOnNotHiddenNegativeStatus == false;
+            debugger;
             logcash.hardDeleteOnNotHiddenNegativeError ==
                 'Hard delete will fail becouse object is not hidden, but actually get  ' +
                     logcash.hardDeleteOnNotHiddenNegative;
@@ -936,6 +937,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableHidden.Status = true;
         } else {
             logcash.getDataFromTableHidden.Status = false;
+            debugger;
             logcash.getDataFromTableHidden.Error =
                 'Result will be one object, and not: ' + logcash.getDataFromTableHidden;
         }
@@ -1096,6 +1098,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
 
     async function getDataFromTableIncludeHiddenAfterForce() {
         //logcash.getDataFromTableTwoKeystatus = true;
+        //debugger;
         logcash.getDataFromTableIncludeHiddenAfterForce = await generalService
             .fetchStatus(
                 baseURL +
@@ -1119,6 +1122,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableIncludeHiddenAfterForce.Status = true;
         } else {
             logcash.getDataFromTableIncludeHiddenAfterForce.Status = false;
+            debugger;
             logcash.getDataFromTableIncludeHiddenAfterForce.Error =
                 'Result will be one object, the hard_delete function is failed: ' +
                 logcash.getDataFromTableIncludeHiddenAfterForce;
