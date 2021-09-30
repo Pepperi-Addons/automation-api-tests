@@ -1,10 +1,9 @@
 import { Catalog, Subscription, Item } from '@pepperi-addons/papi-sdk';
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { TesterFunctions, ResourceTypes, FilterAttributes } from '../services/general.service';
 import { NucleusFlagType, NucRecoveryService } from '../services/nuc_recovery.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
-import { ResourceTypes } from '../services/general.service';
 
 let isWACD = false;
 let isSDK = false;
@@ -43,7 +42,6 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
     describe('Pepperi Notification Service Tests Suites', () => {
         const testID = Math.floor(Math.random() * 10000000);
         const schemaName = 'NUC Test';
-        const _MAX_LOOPS = 12;
         let atdArr;
         let catalogArr: Catalog[];
         let itemArr: Item[];
@@ -157,9 +155,11 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
                     } catch (error) {
                         purgedSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-                        expect(error.message).to.includes(
-                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
-                        );
+                        expect(error)
+                            .to.have.property('message')
+                            .that.includes(
+                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                            );
                     }
                     const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
                     expect(purgedSchema).to.equal('');
@@ -312,19 +312,29 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                 });
 
                 it('Validate PNS Triggered for Insert', async () => {
-                    let schema;
-                    let maxLoopsCounter = _MAX_LOOPS;
-                    do {
-                        generalService.sleep(1500);
-                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'CreationDateTime DESC',
-                        });
-                        maxLoopsCounter--;
-                    } while ((schema.length <= 0 || !schema[0].Key.startsWith('Log_Insert')) && maxLoopsCounter > 0);
-                    expect(schema[0].Key).to.be.a('String').and.contain('Insert');
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
-                        createdTransactionLines.UUID,
+                    const filter: FilterAttributes = {
+                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        Resource: ['transaction_lines'],
+                        Action: ['insert'],
+                        ModifiedFields: [],
+                    };
+
+                    const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                        'Log_Insert',
+                        PepperiOwnerID,
+                        schemaName,
+                        filter,
                     );
+
+                    if (!Array.isArray(schema)) {
+                        await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                            Key: schema.Key,
+                            IsTested: true,
+                        });
+                    }
+
+                    expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                    expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.equal(createdTransactionLines.UUID);
                 });
 
                 it('Validate New Transaction Line Created (TSA1 - UnitsQuantity = 25)', async () => {
@@ -347,25 +357,31 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                 });
 
                 it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 40)', async () => {
-                    let schema;
-                    let maxLoopsCounter = _MAX_LOOPS;
-                    do {
-                        generalService.sleep(1500);
-                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'CreationDateTime DESC',
-                        });
-                        maxLoopsCounter--;
-                    } while (
-                        (!schema[0].Key.startsWith('Log_Update') ||
-                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
-                                'UnitDiscountPercentage') &&
-                        maxLoopsCounter > 0
+                    const filter: FilterAttributes = {
+                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        Resource: ['transaction_lines'],
+                        Action: ['update'],
+                        ModifiedFields: ['UnitDiscountPercentage'],
+                    };
+                    const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                        'Log_Update_Transaction_Line',
+                        PepperiOwnerID,
+                        schemaName,
+                        filter,
                     );
-                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+
+                    if (!Array.isArray(schema)) {
+                        await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                            Key: schema.Key,
+                            IsTested: true,
+                        });
+                    }
+
+                    expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                    expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                         createdTransactionLines.UUID,
                     );
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
                         NewValue: 40,
                         OldValue: 0,
                         FieldID: 'UnitDiscountPercentage',
@@ -474,26 +490,29 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                 });
 
                 it('Validate PNS Triggered for WACD Update (TSA1 - UnitsQuantity = 15)', async () => {
-                    let schema;
-                    let maxLoopsCounter = _MAX_LOOPS;
-                    do {
-                        generalService.sleep(1500);
-                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'CreationDateTime DESC',
+                    const filter: FilterAttributes = {
+                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        Resource: ['transaction_lines'],
+                        Action: ['update'],
+                        ModifiedFields: ['UnitsQuantity'],
+                    };
+                    const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                        'Log_Update_Transaction_Line',
+                        PepperiOwnerID,
+                        schemaName,
+                        filter,
+                    );
+
+                    if (!Array.isArray(schema)) {
+                        await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                            Key: schema.Key,
+                            IsTested: true,
                         });
-                        maxLoopsCounter--;
-                    } while (
-                        (schema.length < 3 ||
-                            !schema[0].Key.startsWith('Log_Update') ||
-                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
-                                'UnitsQuantity') &&
-                        maxLoopsCounter > 0
-                    );
-                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
-                        createdTransactionLines.UUID,
-                    );
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                    }
+
+                    expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                    expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.equal(createdTransactionLines.UUID);
+                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
                         NewValue: 15,
                         OldValue: 25,
                         FieldID: 'UnitsQuantity',
@@ -520,26 +539,29 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                 });
 
                 it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 60)', async () => {
-                    let schema;
-                    let maxLoopsCounter = _MAX_LOOPS;
-                    do {
-                        generalService.sleep(1500);
-                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                            order_by: 'CreationDateTime DESC',
+                    const filter: FilterAttributes = {
+                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                        Resource: ['transaction_lines'],
+                        Action: ['update'],
+                        ModifiedFields: ['UnitDiscountPercentage'],
+                    };
+                    const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                        'Log_Update_Transaction_Line',
+                        PepperiOwnerID,
+                        schemaName,
+                        filter,
+                    );
+
+                    if (!Array.isArray(schema)) {
+                        await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                            Key: schema.Key,
+                            IsTested: true,
                         });
-                        maxLoopsCounter--;
-                    } while (
-                        (schema.length < 4 ||
-                            !schema[0].Key.startsWith('Log_Update') ||
-                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID !=
-                                'UnitDiscountPercentage') &&
-                        maxLoopsCounter > 0
-                    );
-                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
-                        createdTransactionLines.UUID,
-                    );
-                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                    }
+
+                    expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                    expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.equal(createdTransactionLines.UUID);
+                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
                         NewValue: 60,
                         OldValue: 40,
                         FieldID: 'UnitDiscountPercentage',
@@ -574,9 +596,9 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                     delete pnsTestScenariosEndpointsArr[2];
                     pnsTestScenariosEndpointsArr.length = 1;
                 }
-                for (let j = 0; j < pnsTestScenariosEndpointsArr.length; j++) {
-                    const testEndpointName = pnsTestScenariosEndpointsArr[j].Name;
-                    const testEndpointType = pnsTestScenariosEndpointsArr[j].Type;
+                for (let endpoint = 0; endpoint < pnsTestScenariosEndpointsArr.length; endpoint++) {
+                    const testEndpointName = pnsTestScenariosEndpointsArr[endpoint].Name;
+                    const testEndpointType = pnsTestScenariosEndpointsArr[endpoint].Type;
                     describe(testEndpointName, () => {
                         const pnsTestScenariosArr = [
                             {
@@ -596,9 +618,9 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                 Name: 'Stop After PNS',
                             },
                         ];
-                        for (let i = 0; i < pnsTestScenariosArr.length; i++) {
-                            const testName = pnsTestScenariosArr[i].Name;
-                            const testType = pnsTestScenariosArr[i].Type;
+                        for (let scenario = 0; scenario < pnsTestScenariosArr.length; scenario++) {
+                            const testName = pnsTestScenariosArr[scenario].Name;
+                            const testType = pnsTestScenariosArr[scenario].Type;
                             describe(testName, () => {
                                 it('Reset The Transaction With SDK (TSA2 - UnitDiscountPercentage = 0)', async () => {
                                     const updatedTransactionLine = await objectsService.createTransactionLine({
@@ -613,39 +635,41 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                 });
 
                                 it('Validate PNS Triggered for SDK Rest (TSA2 - UnitDiscountPercentage = 0)', async () => {
-                                    let schema;
-                                    let maxLoopsCounter = _MAX_LOOPS;
-                                    do {
-                                        generalService.sleep(1500);
-                                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                            order_by: 'CreationDateTime DESC',
-                                        });
-                                        maxLoopsCounter--;
-                                    } while (
-                                        (!schema[0].Key.startsWith('Log_Update') ||
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue !=
-                                                0) &&
-                                        maxLoopsCounter > 0
+                                    const filter: FilterAttributes = {
+                                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                                        Resource: ['transaction_lines'],
+                                        Action: ['update'],
+                                        ModifiedFields: ['UnitDiscountPercentage'],
+                                    };
+                                    const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                                        'Log_Update_Transaction_Line',
+                                        PepperiOwnerID,
+                                        schemaName,
+                                        filter,
                                     );
-                                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+
+                                    if (!Array.isArray(schema)) {
+                                        await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                                            Key: schema.Key,
+                                            IsTested: true,
+                                        });
+                                    }
+
+                                    expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                                    expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
                                         createdTransactionLines.UUID,
                                     );
-                                    expect(
-                                        schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                    ).to.deep.equal({
+                                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
                                         NewValue: 0,
                                         OldValue: 60,
                                         FieldID: 'UnitDiscountPercentage',
                                     });
-                                    expect(schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(
-                                        1,
-                                    );
+                                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(1);
                                 });
 
                                 it(`Post PUT That ${testName} TestID ${
-                                    testID + i + 1 + j * pnsTestScenariosArr.length
-                                } (TSA1 - UnitsQuantity = ${j > 0 ? 44 : 11 * (1 + i)})`, async () => {
+                                    testID + scenario + 1 + endpoint * pnsTestScenariosArr.length
+                                } (TSA1 - UnitsQuantity = ${endpoint > 0 ? 44 : 11 * (1 + scenario)})`, async () => {
                                     const putSyncResponse = await nucRecoveryService.putSync(
                                         {
                                             putData: {
@@ -668,7 +692,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                                             itemArr[0].ExternalID,
                                                             '0',
                                                             String(createdTransaction.UUID),
-                                                            `${11 * (1 + i)}`,
+                                                            `${11 * (1 + scenario)}`,
                                                             String(Math.floor(Math.random() * -1000000)),
                                                             '0',
                                                         ],
@@ -677,7 +701,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                             },
                                             nucleus_crud_type: testType,
                                         },
-                                        testID + i + 1 + j * pnsTestScenariosArr.length,
+                                        testID + scenario + 1 + endpoint * pnsTestScenariosArr.length,
                                     );
 
                                     console.log({ testType: putSyncResponse });
@@ -689,20 +713,20 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                     //console.log({ getCreatedTransactionLineResponse: getCreatedTransactionLineResponse });
 
                                     if (testName == 'Stop After DB') {
-                                        if (j > 0) {
+                                        if (endpoint > 0) {
                                             expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(44);
                                         } else {
                                             expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(15);
                                         }
                                     } else if (testName == 'Stop After Redis') {
                                         expect(getCreatedTransactionLineResponse[0].UnitsQuantity).to.equal(
-                                            11 * (1 + i - 1),
+                                            11 * (1 + scenario - 1),
                                         );
                                     } else {
                                         return Promise.all([
                                             expect(getCreatedTransactionLineResponse[0]).to.include({
                                                 LineNumber: 0,
-                                                UnitsQuantity: 11 * (1 + i),
+                                                UnitsQuantity: 11 * (1 + scenario),
                                             }),
                                             expect(JSON.stringify(getCreatedTransactionLineResponse[0].Item)).equals(
                                                 JSON.stringify({
@@ -761,88 +785,95 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
                                 if (testName == 'Stop After PNS') {
                                     it(`Validate PNS Triggered for WACD Update (TSA1 - UnitsQuantity = ${
-                                        11 * (1 + i)
+                                        11 * (1 + scenario)
                                     } (Negative)`, async () => {
-                                        let schema;
-                                        let maxLoopsCounter = _MAX_LOOPS;
-                                        do {
-                                            generalService.sleep(1500);
-                                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                                order_by: 'CreationDateTime DESC',
-                                            });
-                                            maxLoopsCounter--;
-                                        } while (
-                                            (!schema[0].Key.startsWith('Log_Update') ||
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID == 'UnitsQuantity' ||
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .NewValue ==
-                                                    11 * (1 + i)) &&
-                                            maxLoopsCounter > 0
+                                        const filter: FilterAttributes = {
+                                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                                            Resource: ['transaction_lines'],
+                                            Action: ['update'],
+                                            ModifiedFields: ['UnitsQuantity'],
+                                        };
+                                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                                            'Log_Update_Transaction_Line',
+                                            PepperiOwnerID,
+                                            schemaName,
+                                            filter,
                                         );
-                                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
+
+                                        if (!Array.isArray(schema)) {
+                                            await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                                                Key: schema.Key,
+                                                IsTested: true,
+                                            });
+                                        }
+
+                                        expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                                        expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
                                             createdTransactionLines.UUID,
                                         );
                                         expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            schema.Message.Message.ModifiedObjects[0].ModifiedFields[0],
                                         ).to.deep.equal({
-                                            NewValue: 11 * (1 + i),
-                                            OldValue: 11 * (1 + i - 2),
+                                            NewValue: 11 * (1 + scenario),
+                                            OldValue: 11 * (1 + scenario - 2),
                                             FieldID: 'UnitsQuantity',
                                         });
                                         expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length,
+                                            schema.Message.Message.ModifiedObjects[0].ModifiedFields.length,
                                         ).to.equal(1);
                                     });
                                 } else {
                                     it(`Validate PNS Not Triggered for WACD Update (TSA1 - UnitsQuantity = ${
-                                        11 * (1 + i)
+                                        11 * (1 + scenario)
                                     } (Negative)`, async () => {
-                                        let schema;
-                                        let maxLoopsCounter = _MAX_LOOPS;
-                                        do {
-                                            generalService.sleep(1500);
-                                            schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                                order_by: 'CreationDateTime DESC',
+                                        const filter: FilterAttributes = {
+                                            AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                                            Resource: ['transaction_lines'],
+                                            Action: ['update'],
+                                            ModifiedFields: ['UnitsQuantity'],
+                                        };
+                                        const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                                            'Log_Update_Transaction_Line',
+                                            PepperiOwnerID,
+                                            schemaName,
+                                            filter,
+                                        );
+                                        if (!Array.isArray(schema)) {
+                                            await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                                                Key: schema.Key,
+                                                IsTested: true,
                                             });
-                                            maxLoopsCounter--;
-                                        } while (
-                                            (!schema[0].Key.startsWith('Log_Update') ||
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID != 'UnitsQuantity' ||
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .NewValue == 0) &&
-                                            maxLoopsCounter > 0
-                                        );
-                                        expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                                        expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.equal(
-                                            createdTransactionLines.UUID,
-                                        );
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 0,
-                                            OldValue: 60,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields.length,
-                                        ).to.equal(1);
+                                            expect(
+                                                schema.Message.Message.ModifiedObjects[0].ModifiedFields[0],
+                                            ).to.deep.equal({
+                                                NewValue: scenario == 1 ? 11 : scenario == 0 ? 44 : 22,
+                                                OldValue:
+                                                    scenario == 1 ? (endpoint == 0 ? 15 : 44) : scenario == 0 ? 22 : 11,
+                                                FieldID: 'UnitsQuantity',
+                                            });
+                                        } else {
+                                            expect(schema, JSON.stringify(schema)).to.be.an('array');
+                                        }
                                     });
                                 }
 
                                 it(`Validate New Transaction Line Updated (TSA1 - UnitsQuantity = ${
-                                    i == 0 ? (j > 0 ? 44 : 15) : i == 2 ? 11 * (1 + i - 1) : 11 * (1 + i)
-                                })${i == 0 ? ' (Negative)' : i == 2 ? ' (Negative)' : ''}`, async () => {
+                                    scenario == 0
+                                        ? endpoint > 0
+                                            ? 44
+                                            : 15
+                                        : scenario == 2
+                                        ? 11 * (1 + scenario - 1)
+                                        : 11 * (1 + scenario)
+                                })${scenario == 0 ? ' (Negative)' : scenario == 2 ? ' (Negative)' : ''}`, async () => {
                                     const createdObject = await objectsService.getTransactionByID(
                                         createdTransaction.InternalID,
                                     );
                                     expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
                                         createdTransactionLines.InternalID,
                                     );
-                                    if (i == 0) {
-                                        if (j > 0) {
+                                    if (scenario == 0) {
+                                        if (endpoint > 0) {
                                             expect(
                                                 createdObject['TransactionLines' as any].Data[0].UnitsQuantity,
                                             ).to.equal(44);
@@ -851,13 +882,13 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                                 createdObject['TransactionLines' as any].Data[0].UnitsQuantity,
                                             ).to.equal(15);
                                         }
-                                    } else if (i == 2) {
+                                    } else if (scenario == 2) {
                                         expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                            11 * (1 + i - 1),
+                                            11 * (1 + scenario - 1),
                                         );
                                     } else {
                                         expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                            11 * (1 + i),
+                                            11 * (1 + scenario),
                                         );
                                     }
                                     expect(
@@ -868,7 +899,11 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
                                 if (testEndpointType == 'WACD') {
                                     it(`Update Transaction Line With WACD TestID ${
-                                        testID + i + 1 + j * pnsTestScenariosArr.length + pnsTestScenariosArr.length
+                                        testID +
+                                        scenario +
+                                        1 +
+                                        endpoint * pnsTestScenariosArr.length +
+                                        pnsTestScenariosArr.length
                                     } (TSA2 - UnitDiscountPercentage = 60)`, async () => {
                                         const putSyncResponse = await nucRecoveryService.putSync(
                                             {
@@ -901,9 +936,9 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                                 },
                                             },
                                             testID +
-                                                i +
+                                                scenario +
                                                 1 +
-                                                j * pnsTestScenariosArr.length +
+                                                endpoint * pnsTestScenariosArr.length +
                                                 pnsTestScenariosArr.length,
                                         );
 
@@ -919,14 +954,14 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                         if (testName == 'Stop After Redis') {
                                             expect(getCreatedTransactionLineResponse[0]).to.include({
                                                 LineNumber: 0,
-                                                UnitsQuantity: 11 * (1 + i - 1),
+                                                UnitsQuantity: 11 * (1 + scenario - 1),
                                                 UnitDiscountPercentage: 60,
                                             });
                                         } else {
                                             return Promise.all([
                                                 expect(getCreatedTransactionLineResponse[0]).to.include({
                                                     LineNumber: 0,
-                                                    UnitsQuantity: 11 * (1 + i),
+                                                    UnitsQuantity: 11 * (1 + scenario),
                                                     UnitDiscountPercentage: 60,
                                                 }),
                                                 expect(
@@ -999,163 +1034,41 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                 }
 
                                 it('Validate PNS Triggered for SDK Update (TSA2 - UnitDiscountPercentage = 60)', async () => {
-                                    let schema;
-                                    let maxLoopsCounter = _MAX_LOOPS;
-                                    do {
-                                        generalService.sleep(8000);
-                                        schema = await adalService.getDataFromSchema(PepperiOwnerID, schemaName, {
-                                            order_by: 'CreationDateTime DESC',
-                                        });
-                                        maxLoopsCounter--;
-                                    } while (
-                                        (!schema[0].Key.startsWith('Log_Update') ||
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue ==
-                                                0 ||
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue ==
-                                                0 ||
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID ==
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0]
-                                                    .FieldID) &&
-                                        maxLoopsCounter > 0
+                                    const filter: FilterAttributes = {
+                                        AddonUUID: ['00000000-0000-0000-0000-00000000c07e'],
+                                        Resource: ['transaction_lines'],
+                                        Action: ['update'],
+                                        ModifiedFields: ['UnitDiscountPercentage'],
+                                    };
+                                    const schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
+                                        'Log_Update_Transaction_Line',
+                                        PepperiOwnerID,
+                                        schemaName,
+                                        filter,
                                     );
-                                    expect(schema[0].Key).to.be.a('String').and.contain('Log_Update');
-                                    expect(schema[0].Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
+
+                                    if (!Array.isArray(schema)) {
+                                        await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+                                            Key: schema.Key,
+                                            IsTested: true,
+                                        });
+                                    }
+
+                                    expect(schema, JSON.stringify(schema)).to.not.be.an('array');
+                                    expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(
                                         createdTransactionLines.UUID,
                                     );
-                                    if (i == 0) {
-                                        try {
-                                            expect(
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 60,
-                                                OldValue: 0,
-                                                FieldID: 'UnitDiscountPercentage',
-                                            });
-                                            expect(
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: j > 0 ? 44 : 15,
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                        } catch (error) {
-                                            //The order of the PNS trigger can be diffrent it's not a bug
-                                            expect(
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 60,
-                                                OldValue: 0,
-                                                FieldID: 'UnitDiscountPercentage',
-                                            });
-                                            expect(
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: j > 0 ? 44 : 15,
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                        }
-                                    } else if (i == 1) {
-                                        try {
-                                            expect(
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: 11 * (1 + i - 1),
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                            expect(
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 60,
-                                                OldValue: 0,
-                                                FieldID: 'UnitDiscountPercentage',
-                                            });
-                                        } catch (error) {
-                                            //The order of the PNS trigger can be diffrent it's not a bug
-                                            expect(
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: 11 * (1 + i - 1),
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                            expect(
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 60,
-                                                OldValue: 0,
-                                                FieldID: 'UnitDiscountPercentage',
-                                            });
-                                        }
-                                    } else if (i == 2) {
-                                        expect(
-                                            schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 60,
-                                            OldValue: 0,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                        expect(
-                                            schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                        ).to.deep.equal({
-                                            NewValue: 0,
-                                            OldValue: 60,
-                                            FieldID: 'UnitDiscountPercentage',
-                                        });
-                                    } else {
-                                        try {
-                                            expect(
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 60,
-                                                OldValue: 0,
-                                                FieldID: 'UnitDiscountPercentage',
-                                            });
-                                            expect(
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: 11 * (1 + i - 2),
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                            expect(
-                                                schema[2].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: 11 * (1 + i - 2),
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                        } catch (error) {
-                                            expect(
-                                                schema[0].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 60,
-                                                OldValue: 0,
-                                                FieldID: 'UnitDiscountPercentage',
-                                            });
-                                            expect(
-                                                schema[1].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: 11 * (1 + i - 2),
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                            expect(
-                                                schema[2].Message.Message.ModifiedObjects[0].ModifiedFields[0],
-                                            ).to.deep.equal({
-                                                NewValue: 11 * (1 + i),
-                                                OldValue: 11 * (1 + i - 2),
-                                                FieldID: 'UnitsQuantity',
-                                            });
-                                        }
-                                    }
+                                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0]).to.deep.equal({
+                                        NewValue: 60,
+                                        OldValue: 0,
+                                        FieldID: 'UnitDiscountPercentage',
+                                    });
                                 });
 
                                 it(`Validate Transaction Line Updated (TSA2 - UnitDiscountPercentage = 60)${
-                                    i == 2
-                                        ? ` (TSA1 - UnitsQuantity = ${11 * (1 + i - 1)}) (Negative)`
-                                        : ` (TSA1 - UnitsQuantity = ${11 * (1 + i)})`
+                                    scenario == 2
+                                        ? ` (TSA1 - UnitsQuantity = ${11 * (1 + scenario - 1)}) (Negative)`
+                                        : ` (TSA1 - UnitsQuantity = ${11 * (1 + scenario)})`
                                 }`, async () => {
                                     const updatedTransactionLine = await objectsService.getTransactionLinesByID(
                                         createdTransactionLines.InternalID,
@@ -1163,18 +1076,18 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                     expect(updatedTransactionLine.InternalID).to.equal(
                                         createdTransactionLines.InternalID,
                                     );
-                                    if (i == 2) {
-                                        expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + i - 1));
+                                    if (scenario == 2) {
+                                        expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + scenario - 1));
                                     } else {
-                                        expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + i));
+                                        expect(updatedTransactionLine.UnitsQuantity).to.equal(11 * (1 + scenario));
                                     }
                                     expect(updatedTransactionLine.UnitDiscountPercentage).to.equal(60);
                                 });
 
                                 it(`Validate Transaction Updated (TSA2 - UnitDiscountPercentage = 60)${
-                                    i == 2
-                                        ? ` (TSA1 - UnitsQuantity = ${11 * (1 + i - 1)}) (Negative)`
-                                        : ` (TSA1 - UnitsQuantity = ${11 * (1 + i)})`
+                                    scenario == 2
+                                        ? ` (TSA1 - UnitsQuantity = ${11 * (1 + scenario - 1)}) (Negative)`
+                                        : ` (TSA1 - UnitsQuantity = ${11 * (1 + scenario)})`
                                 }`, async () => {
                                     const createdObject = await objectsService.getTransactionByID(
                                         createdTransaction.InternalID,
@@ -1182,13 +1095,13 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                                     expect(createdObject['TransactionLines' as any].Data[0].InternalID).to.equal(
                                         createdTransactionLines.InternalID,
                                     );
-                                    if (i == 2) {
+                                    if (scenario == 2) {
                                         expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                            11 * (1 + i - 1),
+                                            11 * (1 + scenario - 1),
                                         );
                                     } else {
                                         expect(createdObject['TransactionLines' as any].Data[0].UnitsQuantity).to.equal(
-                                            11 * (1 + i),
+                                            11 * (1 + scenario),
                                         );
                                     }
                                     expect(

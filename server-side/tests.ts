@@ -48,6 +48,10 @@ import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
 //#endregion Yoni's Tests
 
+//#region Evgeny's Tests
+import { DataVisualisationTests } from './api-tests/data_visualisation';
+//#endregion Evgenys's Tests
+
 import {
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
@@ -62,7 +66,6 @@ import {
 } from './api-tests/import_export_atd';
 import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
-import { ObjectsPNSTests } from './api-tests/objects_pns';
 import { NucRecoveryTests, NucRecoverySDKTests, NucRecoveryWACDTests } from './api-tests/nuc_recovery';
 import { DataIndexTests } from './api-tests/data_index';
 import { CPINodeTests } from './api-tests/cpi_node';
@@ -1018,7 +1021,7 @@ export async function elastic_search(client: Client, request: Request, testerFun
 
 export async function open_catalog(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Open_catalog';
+    testName = 'Open_Catalog';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -1041,6 +1044,32 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     return testResult;
 }
 //#endregion Yoni's Tests
+
+//#region Evgeny's Tests
+export async function data_visualisation(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Visualisation';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DataVisualisationTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+//#endregion Evgeny's Tests
 
 //#region import export ATD Tests
 export async function import_export_atd_activities(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1365,33 +1394,9 @@ export async function pepperi_notification_service(client: Client, request: Requ
     return testResult;
 }
 
-export async function objects_pns(client: Client, request: Request, testerFunctions: TesterFunctions) {
-    const service = new GeneralService(client);
-    testName = 'Pepperi_Notification_Service';
-    service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ObjectsPNSTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    service.PrintMemoryUseToLog('End', testName);
-    return testResult;
-}
-
 export async function nuc_recovery(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'NUC_Recovery_SDK';
+    testName = 'NUC_Recovery';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -1439,7 +1444,7 @@ export async function nuc_recovery_sdk(client: Client, request: Request, testerF
 
 export async function nuc_recovery_wacd(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'NUC_Recovery';
+    testName = 'NUC_Recovery_WACD';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'

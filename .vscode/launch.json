@@ -13,9 +13,10 @@
             ],
             "cwd": "${workspaceFolder}/server-side",
             "program": "${workspaceFolder}/server-side/app.local.ts",
-            "outFiles": [
-                "${workspaceFolder}/server-side/build/*/*.js"
-            ],
+            // In the QA we prefer to debug on the Ts files, but this can be changed depending on what we are testing.
+            // "outFiles": [
+            //     "${workspaceFolder}/server-side/build/*/*.js"
+            // ],
             "preLaunchTask": {
                 "label": "Build API",
                 "type": "typescript",
@@ -28,6 +29,12 @@
             },
             "runtimeExecutable": "${workspaceFolder}/server-side/node_modules/.bin/nodemon",
             "restart": true,
-        }
+        },
+        {
+            "command": "cd ./server-side",
+            "name": "Listen To NPM Scripts",
+            "request": "launch",
+            "type":"node-terminal"
+        },
     ]
 }

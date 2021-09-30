@@ -11,6 +11,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 import { performance } from 'perf_hooks';
+import { ADALService } from './adal.service';
 
 declare type ClientData =
     | 'UserEmail'
@@ -51,8 +52,17 @@ export declare type ResourceTypes =
     | 'installed_addons'
     | 'schemes';
 
+export interface FilterAttributes {
+    AddonUUID: string[]; //Tests only support one AddonUUID but FilterAttributes interface keep the format of ADAL
+    Resource: string[]; //Tests only support one Resource but FilterAttributes interface keep the format of ADAL
+    Action: string[]; //Tests only support one Action but FilterAttributes interface keep the format of ADAL
+    ModifiedFields: string[];
+    UserUUID?: string[]; //Tests only support one UserUUID but FilterAttributes interface keep the format of ADAL
+}
+
 export default class GeneralService {
     papiClient: PapiClient;
+    adalService: ADALService;
 
     constructor(private client: Client) {
         this.papiClient = new PapiClient({
@@ -61,6 +71,7 @@ export default class GeneralService {
             addonUUID: client.AddonUUID.length > 10 ? client.AddonUUID : 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
             addonSecretKey: client.AddonSecretKey,
         });
+        this.adalService = new ADALService(this.papiClient);
     }
 
     sleep(ms) {
@@ -153,6 +164,7 @@ export default class GeneralService {
     }
 
     async getAuditLogResultObjectIfValid(uri, loopsAmount?) {
+        this.sleep(3000); //This was addded here after tests faild on the server - this was never reproduced locally
         let auditLogResponse = await this.papiClient.get(uri);
         try {
             auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
@@ -198,9 +210,11 @@ export default class GeneralService {
             ) {
                 return 'Error in UUID in Audit Log API Response';
             }
-        } catch (e) {
-            e.stack = 'UUID in Audit Log API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            }
+            return error;
         }
         //Check Date and Time
         try {
@@ -210,9 +224,11 @@ export default class GeneralService {
             ) {
                 return 'Error in Date and Time in Audit Log API Response';
             }
-        } catch (e) {
-            e.stack = 'Date and Time in Audit Log API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            }
+            return error;
         }
         //Check Type and Event
         try {
@@ -227,9 +243,11 @@ export default class GeneralService {
             ) {
                 return 'Error in Type and Event in Audit Log API Response';
             }
-        } catch (e) {
-            e.stack = 'Type and Event in Audit Log API Response:\n' + e.stack;
-            return e;
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            }
+            return error;
         }
         return auditLogResponse;
     }
@@ -237,6 +255,7 @@ export default class GeneralService {
     async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
         const isInstalledArr: boolean[] = [];
         const installedAddonsArr = await this.getAddons({ page_size: -1 });
+        let installResponse;
         for (const addonUUID in testData) {
             let isInstalled = false;
             for (let i = 0; i < installedAddonsArr.length; i++) {
@@ -249,13 +268,15 @@ export default class GeneralService {
             }
             if (!isInstalled) {
                 if (testData[addonUUID][0] == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
-                    await this.papiClient.addons.installedAddons
+                    installResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${testData[addonUUID][0]}`)
                         .install('0.0.235');
                 } else {
-                    await this.papiClient.addons.installedAddons.addonUUID(`${testData[addonUUID][0]}`).install();
+                    installResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${testData[addonUUID][0]}`)
+                        .install();
                 }
-                this.sleep(20000); //If addon needed to be installed, just wait 20 seconds, this should not happen.
+                await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
             }
             isInstalledArr.push(true);
         }
@@ -320,12 +341,7 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestVersion);
-            this.sleep(4000); //Test upgrade status only after 4 seconds.
-            let auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-            if (auditLogResponse.Status.Name == 'InProgress') {
-                this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                auditLogResponse = await this.papiClient.auditLogs.uuid(upgradeResponse.ExecutionUUID as any).get();
-            }
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
             if (auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -336,16 +352,7 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
-                    this.sleep(4000); //Test downgrade status only after 4 seconds.
-                    let auditLogResponse = await this.papiClient.auditLogs
-                        .uuid(upgradeResponse.ExecutionUUID as any)
-                        .get();
-                    if (auditLogResponse.Status.Name == 'InProgress') {
-                        this.sleep(20000); //Wait another 20 seconds and try again (fail the test if client wait more then 20+4 seconds)
-                        auditLogResponse = await this.papiClient.auditLogs
-                            .uuid(upgradeResponse.ExecutionUUID as any)
-                            .get();
-                    }
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
                 }
@@ -445,6 +452,65 @@ export default class GeneralService {
                     Error: error.message,
                 };
             });
+    }
+
+    async getLatestSchemaByKeyAndFilterAttributes(
+        key: string,
+        addonUUID: string,
+        tableName: string,
+        filterAttributes: FilterAttributes,
+        loopsAmount?,
+    ) {
+        let schemaArr, latestSchema;
+        let maxLoopsCounter = loopsAmount === undefined ? 12 : loopsAmount;
+        do {
+            this.sleep(1500);
+            schemaArr = await this.adalService.getDataFromSchema(addonUUID, tableName, {
+                order_by: 'CreationDateTime DESC',
+            });
+            maxLoopsCounter--;
+            latestSchema = this.extractSchema(schemaArr, key, filterAttributes);
+        } while (Array.isArray(latestSchema) && maxLoopsCounter > 0);
+        return latestSchema;
+    }
+
+    extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
+        outerLoop: for (let j = 0; j < schema.length; j++) {
+            const entery = schema[j];
+            if (!entery.Key.startsWith(key) || entery.IsTested) {
+                continue;
+            }
+            if (filterAttributes.AddonUUID) {
+                if (entery.Message.FilterAttributes.AddonUUID != filterAttributes.AddonUUID[0]) {
+                    continue;
+                }
+            }
+            if (filterAttributes.Resource) {
+                if (entery.Message.FilterAttributes.Resource != filterAttributes.Resource[0]) {
+                    continue;
+                }
+            }
+            if (filterAttributes.Action) {
+                if (entery.Message.FilterAttributes.Action != filterAttributes.Action[0]) {
+                    continue;
+                }
+            }
+            if (filterAttributes.ModifiedFields) {
+                if (entery.Message.FilterAttributes.ModifiedFields.length != filterAttributes.ModifiedFields.length) {
+                    continue;
+                }
+                for (let i = 0; i < filterAttributes.ModifiedFields.length; i++) {
+                    const field = filterAttributes.ModifiedFields[i];
+                    if (entery.Message.FilterAttributes.ModifiedFields.includes(field)) {
+                        continue;
+                    } else {
+                        continue outerLoop;
+                    }
+                }
+            }
+            return schema[j];
+        }
+        return schema;
     }
 }
 

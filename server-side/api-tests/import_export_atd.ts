@@ -215,10 +215,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     const testData = {
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
         ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
+        'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+        relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, true); //false);
+    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false); // false);
     //#endregion Upgrade ImportExportATD and Data Views API
 
     //Clean the ATD and UDT from failed tests before starting a new test
@@ -1975,7 +1977,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         Description: 'Exported from Winzer in 30.03.2021',
                         FileName: 'Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                         MimeType: 'application/json',
-                        Title: 'Sales Order Winzer DEV (New)',
+                        //Title: 'Sales Order Winzer DEV (New)',
+                        Title: 'Sales Order Winzer DEV (New) - Verify (DI-18616)',
                         URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/08914b6b-372c-42ed-b5af-052fbf1f3e34/Sales_Order_Winzer_DEV_(New)_1_1_176.json',
                     },
                 ];
@@ -1985,7 +1988,6 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     //Production - S3
                     {
                         InternalID: 305086,
-
                         Description: 'Exported from Winzer in 30.03.2021',
                         FileName: 'Sales_Order_Legacy_1_1_176.json',
                         MimeType: 'application/json',
@@ -2117,6 +2119,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 .fetchStatus(TransactionsATDArr[index].URL)
                                 .then((res) => res.Body)
                                 .then((atd) => atd.References);
+
                             const mappingResponse = await importExportATDService.exportMappingATD({
                                 References: references,
                             });
