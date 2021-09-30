@@ -58,8 +58,8 @@ export class WebAppList extends Page {
         return;
     }
 
-    public async clickOnFromListRowWebElement(position = 0): Promise<void> {
-        return await this.click(this.ListRowElements, position);
+    public async clickOnFromListRowWebElement(position = 0, waitUntil = 30000, maxAttmpts = 30): Promise<void> {
+        return await this.click(this.ListRowElements, position, waitUntil, maxAttmpts);
     }
 
     public async selectCardWebElement(position = 0): Promise<WebElement> {
