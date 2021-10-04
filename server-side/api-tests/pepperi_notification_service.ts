@@ -1205,7 +1205,7 @@ export async function PepperiNotificationServiceTests(
 
                     expect(uninstallAddonBeforeTest).to.have.property('URI');
                     const uninstallAddonBeforeTestApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        uninstallAddonBeforeTest.URI,
+                        uninstallAddonBeforeTest.URI as string,
                         40,
                     );
                     expect(uninstallAddonBeforeTestApiResponse.Status.ID).to.be.not.equal(
@@ -1220,7 +1220,7 @@ export async function PepperiNotificationServiceTests(
 
                     expect(installedAddon).to.have.property('URI');
                     const installedAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        installedAddon.URI,
+                        installedAddon.URI as string,
                         40,
                     );
                     expect(installedAddonApiResponse.Status.ID).to.be.equal(1, 'Install Failed');
@@ -1288,7 +1288,7 @@ export async function PepperiNotificationServiceTests(
                     expect(uninstallAddon).to.have.property('URI');
 
                     const uninstallAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        uninstallAddon.URI,
+                        uninstallAddon.URI as string,
                         40,
                     );
                     expect(uninstallAddonApiResponse.Status.ID).to.be.equal(1, 'Uninstall Faild');
@@ -1353,7 +1353,7 @@ export async function PepperiNotificationServiceTests(
                     expect(uninstalledAddon).to.have.property('URI');
 
                     const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        uninstalledAddon.URI,
+                        uninstalledAddon.URI as string,
                         40,
                     );
 
@@ -1381,7 +1381,7 @@ export async function PepperiNotificationServiceTests(
                     expect(downgradeAddon).to.have.property('URI');
 
                     let postDowngradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        downgradeAddon.URI,
+                        downgradeAddon.URI as string,
                         40,
                     );
 
@@ -1395,7 +1395,7 @@ export async function PepperiNotificationServiceTests(
                     expect(downgradeAddon).to.have.property('URI');
 
                     postDowngradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        downgradeAddon.URI,
+                        downgradeAddon.URI as string,
                         40,
                     );
 
@@ -1409,7 +1409,7 @@ export async function PepperiNotificationServiceTests(
                     expect(upgradeAddon).to.have.property('URI');
 
                     let postUpgradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                        upgradeAddon.URI,
+                        upgradeAddon.URI as string,
                         40,
                     );
 
@@ -1422,7 +1422,10 @@ export async function PepperiNotificationServiceTests(
 
                     expect(upgradeAddon).to.have.property('URI');
 
-                    postUpgradeApiResponse = await generalService.getAuditLogResultObjectIfValid(upgradeAddon.URI, 40);
+                    postUpgradeApiResponse = await generalService.getAuditLogResultObjectIfValid(
+                        upgradeAddon.URI as string,
+                        40,
+                    );
 
                     expect(postUpgradeApiResponse.Status.ID).to.be.equal(1);
                 });

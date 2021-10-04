@@ -40,11 +40,6 @@ export default function Tester(client?: Client, testName?: string, environment?:
             context?.addSuite(suite);
             context = suite;
 
-            // //Oren
-            // debugger;
-            // suite._afterEach.push(new Hook('"after each" hook', fn));
-            // // //Oren
-
             fn();
             context = suite.parent;
         },
