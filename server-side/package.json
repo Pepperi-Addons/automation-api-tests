@@ -25,7 +25,7 @@
         "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn-tests/parallelIntervalTest.ts",
         "ui-cli-report": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
         "ui-show-report": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
-        "postui-cli-report": "@powershell Compress-Archive -Path 'F:/Jenkins/UITests/server-side/mochawesome-report' -DestinationPath 'F:/Jenkins/UITests/server-side/mochawesome-report' -Force"
+        "apostui-cli-report": "@powershell Compress-Archive -Path 'F:/Jenkins/UITests/server-side/mochawesome-report' -DestinationPath 'F:/Jenkins/UITests/server-side/mochawesome-report' -Force"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
