@@ -1532,7 +1532,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             const ArchiveJob = await service.archiveTransaction({ transactions: [updatedTransaction.InternalID] });
             const ArchiveResult = await service.waitForArchiveJobStatus(ArchiveJob.URI, 30000);
             expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded'),
-                expect(ArchiveResult).to.have.property('RecordsCount').that.equals(1);
+                expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
             await service.reloadNuc();
             await expect(service.getTransactionByID(updatedTransaction.InternalID)).eventually.to.be.rejectedWith(
                 'failed with status: 404 - Not Found error: {"fault":{"faultstring":"Object ID does not exist.","detail":{"errorcode":"InvalidParameter"',

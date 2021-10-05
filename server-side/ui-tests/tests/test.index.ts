@@ -81,7 +81,13 @@ function createClient(authorization) {
 
 function getSecret() {
     const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))['AddonUUID'];
-    const sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+    let sk;
+    try {
+        sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+    } catch (error) {
+        console.log(`SK Not found: ${error}`);
+        sk = '00000000-0000-0000-0000-000000000000';
+    }
     return [addonUUID, sk];
 }
 
