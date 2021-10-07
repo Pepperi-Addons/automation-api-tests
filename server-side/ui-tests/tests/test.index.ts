@@ -9,6 +9,7 @@ import { TestDataTest } from '../../api-tests/test-service/test_data';
 import { Client } from '@pepperi-addons/debug-server';
 import { LoginTest } from './login';
 import { OrdersTest } from './orders';
+// import { ObjectsService } from '../../services/objects.service';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -33,8 +34,55 @@ const varPass = process.env.npm_config_var_pass as string;
     const client = await initiateTester();
 
     const generalService = new GeneralService(client);
+    // const objectsService = new ObjectsService(generalService);
 
     await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+
+    // const filesFromFile = fs.readFileSync('../server-side/api-tests/test-data/items.json', {
+    //     encoding: 'utf8',
+    //     flag: 'r',
+    // });
+    // const objects = JSON.parse(filesFromFile);
+
+    // const filteredArray = objects.filter((item) => item.hasOwnProperty('Image'));
+
+    // for (let j = 0; j < filteredArray.length; j++) {
+    //     for (const key in filteredArray[j]) {
+    //         if (
+    //             filteredArray[j][key] === null ||
+    //             JSON.stringify(filteredArray[j][key]) === '{}' ||
+    //             objects[j][key] === ''
+    //         ) {
+    //             delete filteredArray[j][key];
+    //         }
+    //         if (
+    //             key === 'Hidden' ||
+    //             key === 'InternalID' ||
+    //             key === 'UUID' ||
+    //             key === 'Inventory' ||
+    //             key === 'CreationDateTime' ||
+    //             key === 'ModificationDateTime'
+    //         ) {
+    //             delete filteredArray[j][key];
+    //         }
+    //         if (key === 'Parent') {
+    //             delete filteredArray[j][key].URI;
+    //             delete filteredArray[j][key].Data.InternalID;
+    //             delete filteredArray[j][key].Data.UUID;
+    //         }
+    //     }
+
+    //     await objectsService.postItem(filteredArray[j]);
+    // }
+
+    // fs.writeFileSync('mynewfile3.txt', JSON.stringify(objects), 'utf-8');
+
+    // const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+
+    // for (let i = 0; i < itemsArr.length; i++) {
+    //     const deleted = await generalService.papiClient.items.delete(itemsArr[i].InternalID as number);
+    //     console.log(deleted);
+    // }
 
     await upgradeDependenciesTests(generalService, varPass);
 
@@ -53,7 +101,10 @@ async function initiateTester(): Promise<Client> {
     urlencoded.append('grant_type', 'password');
     urlencoded.append('client_id', 'ios.com.wrnty.peppery');
 
-    const getToken = await fetch('https://idp.sandbox.pepperi.com/connect/token', { method: 'POST', body: urlencoded })
+    const getToken = await fetch(
+        `https://idp${process.env.npm_config_server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`,
+        { method: 'POST', body: urlencoded },
+    )
         .then((res) => res.text())
         .then((res) => (res ? JSON.parse(res) : ''));
 

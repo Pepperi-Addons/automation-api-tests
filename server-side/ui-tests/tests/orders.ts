@@ -95,7 +95,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                     title: `Image of order item number: ${i}`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
-                await driver.sleep(500);
+                driver.sleep(500);
             }
 
             await webAppList.click(webAppTopBar.CartViewBtn);
@@ -120,7 +120,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                 //Remove this dialog box and continue the test
                 await webAppDialog.selectDialogBox('Close');
-                await driver.sleep(400);
+                driver.sleep(400);
                 const base64Image2 = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Closed the dialog box`,
@@ -298,7 +298,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                         //Remove this dialog box and continue the test
                         await webAppDialog.selectDialogBox('Close');
-                        await driver.sleep(400);
+                        driver.sleep(400);
                         const base64Image2 = await driver.saveScreenshots();
                         addContext(this, {
                             title: `Closed the dialog box`,

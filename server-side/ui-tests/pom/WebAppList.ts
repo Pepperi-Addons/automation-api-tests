@@ -51,7 +51,7 @@ export class WebAppList extends Page {
         let loopCounter = ms ? ms / 1500 : 20;
         do {
             tempListItemsLength = tempListItems.length;
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             tempListItems = await this.browser.findElements(selector);
             loopCounter--;
         } while (tempListItems.length > tempListItemsLength && loopCounter > 0);

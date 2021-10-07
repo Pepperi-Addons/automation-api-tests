@@ -52,7 +52,7 @@ export class Browser {
                             allowRetry = true;
                             await this.driver.navigate().refresh();
                             //This means that elements removed while scrolling (this is normal behavior of the webapp)
-                            await this.sleep(15000);
+                            this.sleep(15000);
                             try {
                                 await this.driver.executeScript(
                                     `document.querySelectorAll("${selector['value']}")[${index}].click();`,
@@ -105,7 +105,7 @@ export class Browser {
                             allowRetry = true;
                             await this.driver.navigate().refresh();
                             //This means that elements removed while scrolling (this is normal behavior of the webapp)
-                            await this.sleep(15000);
+                            this.sleep(15000);
                             try {
                                 await this.driver.executeScript(
                                     `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
@@ -144,7 +144,7 @@ export class Browser {
         let isElVisible = false;
         let loopCounter = maxAttmpts > 50 ? 30 : maxAttmpts;
         do {
-            await this.sleep(600);
+            this.sleep(600);
             elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
                 (webElement) => webElement,
                 (error) => {
@@ -192,7 +192,11 @@ export class Browser {
     }
 
     public sleep(ms: number) {
-        return this.driver.sleep(ms);
+        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
+        const start = new Date().getTime(),
+            expire = start + ms;
+        while (new Date().getTime() < expire) {}
+        return;
     }
 
     public async clearCookies(url?: string): Promise<void> {
