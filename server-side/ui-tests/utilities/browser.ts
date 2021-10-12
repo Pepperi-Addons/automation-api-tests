@@ -158,9 +158,7 @@ export class Browser {
                         if (error.name === 'StaleElementReferenceError') {
                             return false;
                         } else {
-                            console.log('Oren Total Error: ' + error);
-                            debugger;
-                            return false;
+                            throw new Error(`Element.isDisplayed throw error: ${error}`);
                         }
                     },
                 );
@@ -175,6 +173,11 @@ export class Browser {
         if (elArr === undefined) {
             throw new Error(
                 `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is: ${elArr}`,
+            );
+        }
+        if (isElVisible === false) {
+            throw new Error(
+                `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is not visible`,
             );
         }
         return elArr;

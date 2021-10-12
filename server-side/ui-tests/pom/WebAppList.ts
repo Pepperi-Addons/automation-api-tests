@@ -19,6 +19,8 @@ export class WebAppList extends Page {
 
     public ListRowElements: Locator = By.css('pep-list .table-row-fieldset');
 
+    public TotalResultsText: Locator = By.css('.bold.number');
+
     public CardListElements: Locator = By.css('pep-list .scrollable-content > div pep-form');
 
     public CartListElements: Locator = By.css('pep-list pep-form');
@@ -32,6 +34,8 @@ export class WebAppList extends Page {
     public CartListElementsInternalBtn: Locator = By.css('pep-form pep-internal-menu button');
 
     public CartListElementsGridLineViewInternalBtn: Locator = By.css('pep-list pep-internal-button');
+
+    public CartListGridLineHeaderItemPrice: Locator = By.css('label#ItemPrice');
 
     public async validateListRowElements(ms?: number): Promise<void> {
         return await this.validateElements(this.ListRowElements, ms);
@@ -124,5 +128,16 @@ export class WebAppList extends Page {
         await this.validateCartListRowElements();
         await this.browser.click(this.CartListElementsQuantityInput, index);
         return await this.browser.sendKeys(this.CartListElementsQuantityInput, inputText, index);
+    }
+
+    public getPriceFromLineOfMatrix(line: string): number {
+        const textArr = line.split('\n');
+        for (let i = 0; i < textArr.length; i++) {
+            const element = textArr[i];
+            if (element.startsWith('$')) {
+                return Number(element.substring(1));
+            }
+        }
+        return 0;
     }
 }

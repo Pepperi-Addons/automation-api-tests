@@ -42,7 +42,7 @@ export async function OpenCatalogTests(generalService: GeneralService, tester: T
         let openCatalogItems;
 
         it('Get items via Open Catalog and papi and compare total count', async () => {
-            papiItems = await openCatalogService.getItems("?where=ExternalID not like '%PPI%'");
+            papiItems = await openCatalogService.getItems("?where=ExternalID NOT LIKE '%PPI%'");
             expect(papiItems).to.be.an('array');
             openCatalogItems = await openCatalogService.getOpenCatalogItems(
                 '?include_count=true&order_by=ItemExternalID.Value',

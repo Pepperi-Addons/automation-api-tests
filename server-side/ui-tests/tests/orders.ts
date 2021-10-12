@@ -72,23 +72,55 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
             //Sorting items by price
-            const oren: string[][] = await webAppList.getCartListGridlineAsMatrix();
-            console.table(oren);
-            const sorteByPrice = oren.sort(compareArrayByPriceInDollar);
-            console.table(sorteByPrice);
+            await webAppList.click(webAppTopBar.ChangeViewButton);
+            await webAppTopBar.selectFromMenuByText('Grid Line');
+            await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+            //This sleep is mandaroy while the list is re-sorting after the sorting click
+            driver.sleep(3000);
+            const cartItems = await driver.findElements(webAppList.CartListElements);
+            let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+            let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+
+            //Verify that matrix is sorted as expected
+            if (topPrice < secondPrice) {
+                await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+                //This sleep is mandaroy while the list is re-sorting after the sorting click
+                driver.sleep(3000);
+                const cartItems = await driver.findElements(webAppList.CartListElements);
+                topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+                secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+            }
+
+            addContext(this, {
+                title: `The two top items after the sort`,
+                value: [topPrice, secondPrice],
+            });
+
+            expect(topPrice).to.be.above(secondPrice);
+
+            const cartMatrix: string[][] = await webAppList.getCartListGridlineAsMatrix();
+            //console.table(cartMatrix);
+            const sorteCartMatrixByPrice = cartMatrix.sort(compareArrayByPriceInDollar);
+            //console.table(sorteCartMatrixByPrice);
+            for (let i = 0; i < cartMatrix.length; i++) {
+                expect(cartMatrix[i]).to.equal(sorteCartMatrixByPrice[i]);
+                // console.log(cartMatrix[i], sorteCartMatrixByPrice[i]);
+            }
 
             addContext(this, {
                 title: `The items from the UI (soreted by price)`,
-                value: sorteByPrice,
+                value: sorteCartMatrixByPrice,
             });
 
             const totalPrice =
-                Number(sorteByPrice[0][2].substring(1)) +
-                Number(sorteByPrice[1][2].substring(1)) +
-                Number(sorteByPrice[2][2].substring(1));
+                Number(sorteCartMatrixByPrice[0][2].substring(1)) +
+                Number(sorteCartMatrixByPrice[1][2].substring(1)) +
+                Number(sorteCartMatrixByPrice[2][2].substring(1));
             //Adding most expensive items to cart
             for (let i = 0; i < 3; i++) {
-                await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteByPrice[i][1] + Key.ENTER);
+                await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteCartMatrixByPrice[i][1] + Key.ENTER);
                 await webAppList.sendKysToInputListRowWebElement(0, 1);
                 const base64Image = await driver.saveScreenshots();
                 addContext(this, {
@@ -254,24 +286,59 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                     //Sorting items by price
                     const webAppList = new WebAppList(driver);
-                    const oren: string[][] = await webAppList.getCartListGridlineAsMatrix();
-                    console.table(oren);
-                    const sorteByPrice = oren.sort(compareArrayByPriceInDollar);
-                    console.table(sorteByPrice);
+                    const webAppTopBar = new WebAppTopBar(driver);
+                    await webAppList.click(webAppTopBar.ChangeViewButton);
+                    await webAppTopBar.selectFromMenuByText('Grid Line');
+                    await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+                    //This sleep is mandaroy while the list is re-sorting after the sorting click
+                    driver.sleep(3000);
+                    const cartItems = await driver.findElements(webAppList.CartListElements);
+                    let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+                    let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+
+                    //Verify that matrix is sorted as expected
+                    if (topPrice < secondPrice) {
+                        await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+                        //This sleep is mandaroy while the list is re-sorting after the sorting click
+                        driver.sleep(3000);
+                        const cartItems = await driver.findElements(webAppList.CartListElements);
+                        topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+                        secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+                    }
+
+                    addContext(this, {
+                        title: `The two top items after the sort`,
+                        value: [topPrice, secondPrice],
+                    });
+
+                    expect(topPrice).to.be.above(secondPrice);
+
+                    const cartMatrix: string[][] = await webAppList.getCartListGridlineAsMatrix();
+                    //console.table(cartMatrix);
+                    const sorteCartMatrixByPrice = cartMatrix.sort(compareArrayByPriceInDollar);
+                    //console.table(sorteCartMatrixByPrice);
+                    for (let i = 0; i < cartMatrix.length; i++) {
+                        expect(cartMatrix[i]).to.equal(sorteCartMatrixByPrice[i]);
+                        // console.log(cartMatrix[i], sorteCartMatrixByPrice[i]);
+                    }
 
                     addContext(this, {
                         title: `The items from the UI (soreted by price)`,
-                        value: sorteByPrice,
+                        value: sorteCartMatrixByPrice,
                     });
 
                     const totalPrice =
-                        Number(sorteByPrice[0][2].substring(1)) +
-                        Number(sorteByPrice[1][2].substring(1)) +
-                        Number(sorteByPrice[2][2].substring(1));
+                        Number(sorteCartMatrixByPrice[0][2].substring(1)) +
+                        Number(sorteCartMatrixByPrice[1][2].substring(1)) +
+                        Number(sorteCartMatrixByPrice[2][2].substring(1));
                     //Adding most expensive items to cart
-                    const webAppTopBar = new WebAppTopBar(driver);
                     for (let i = 0; i < 3; i++) {
-                        await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteByPrice[i][1] + Key.ENTER);
+                        await webAppList.sendKeys(
+                            webAppTopBar.SearchFieldInput,
+                            sorteCartMatrixByPrice[i][1] + Key.ENTER,
+                        );
                         await webAppList.sendKysToInputListRowWebElement(0, 1);
                     }
 

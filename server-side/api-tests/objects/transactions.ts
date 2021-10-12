@@ -1699,7 +1699,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 expect(
                     await service.getBulk(
                         'transactions',
-                        "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                        "?where=ExternalID LIKE '%" + bulkTransactionExternalID + "%'",
                     ),
                 )
                     .to.be.an('array')
@@ -1771,7 +1771,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         it('Verify bulk transaction headers update', async () => {
             bulkUpdateTransactions = await service.getBulk(
                 'transactions',
-                "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                "?where=ExternalID LIKE '%" + bulkTransactionExternalID + "%'",
             );
             expect(bulkUpdateTransactions[0].Status).to.equal(2),
                 expect(bulkUpdateTransactions[1].Status).to.equal(2),
@@ -1902,7 +1902,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         it('Delete bulk transaction headers', async () => {
             bulkTransactions = await service.getBulk(
                 'transactions',
-                "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                "?where=ExternalID LIKE '%" + bulkTransactionExternalID + "%'",
             );
             return Promise.all([
                 expect(await service.deleteTransaction(bulkTransactions[0].InternalID)).to.be.true,
@@ -1913,7 +1913,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 expect(
                     await service.getBulk(
                         'transactions',
-                        "?where=ExternalID like '%" + bulkTransactionExternalID + "%'",
+                        "?where=ExternalID LIKE '%" + bulkTransactionExternalID + "%'",
                     ),
                 )
                     .to.be.an('array')
