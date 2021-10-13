@@ -18,7 +18,14 @@ export class WebAppLoginPage extends Page {
 
     public async signInAs(email: string, password: string) {
         await this.browser.clearCookies();
-        await this.browser.sendKeys(this.Email, email);
+        try {
+            await this.browser.sendKeys(this.Email, email);
+        } catch (error) {
+            console.log(`Login page not loaded, attempting again before failing the test, Error was: ${error}`);
+            await this.navigate();
+            this.browser.sleep(6000);
+            await this.browser.sendKeys(this.Email, email);
+        }
         await this.browser.click(this.Next);
         await this.browser.sendKeys(this.Password, password);
         await this.browser.click(this.LoginBtn);
