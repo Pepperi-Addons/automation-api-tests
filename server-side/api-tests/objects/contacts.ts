@@ -903,7 +903,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
 
         it('Verify bulk created contacts', async () => {
             return Promise.all([
-                expect(await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"))
+                expect(await service.getBulk('contacts', "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'"))
                     .to.be.an('array')
                     .with.lengthOf(5),
             ]);
@@ -912,7 +912,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
         it('Connect bulk created contacts as buyers', async () => {
             const connectAsBuyerContacts = await service.getBulk(
                 'contacts',
-                "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+                "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
             );
             connectAsBuyerContacts.map((contact) => {
                 expect(contact).to.not.have.property('SecurityGroupUUID'),
@@ -935,7 +935,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
 
             const connectedContacts = await service.getBulk(
                 'contacts',
-                "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer",
+                "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer",
             );
             connectedContacts.map((contact) => {
                 expect(contact, 'Buyer security group UUID').to.have.property('SecurityGroupUUID').that.is.a('string')
@@ -954,7 +954,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
 
             const DisconnectedBuyers = await service.getBulk(
                 'contacts',
-                "?where=ExternalID like '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+                "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
             );
             DisconnectedBuyers.map((contact) => {
                 expect(contact).to.not.have.property('SecurityGroupUUID'),
@@ -1001,7 +1001,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
         it('Verify bulk contacts update', async () => {
             bulkUpdateContacts = await service.getBulk(
                 'contacts',
-                "?where=ExternalID like '%" + bulkContactExternalID + "%'",
+                "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'",
             );
             expect(bulkUpdateContacts[0].FirstName).to.include('Update'),
                 expect(bulkUpdateContacts[1].FirstName).to.include('Update'),
@@ -1013,7 +1013,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
         it('Delete bulk contacts', async () => {
             bulkContacts = await service.getBulk(
                 'contacts',
-                "?where=ExternalID like '%" + bulkContactExternalID + "%'",
+                "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'",
             );
             return Promise.all([
                 expect(await service.deleteContact(bulkContacts[0].InternalID)).to.be.true,
@@ -1021,7 +1021,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                 expect(await service.deleteContact(bulkContacts[2].InternalID)).to.be.true,
                 expect(await service.deleteContact(bulkContacts[3].InternalID)).to.be.true,
                 expect(await service.deleteContact(bulkContacts[4].InternalID)).to.be.true,
-                expect(await service.getBulk('contacts', "?where=ExternalID like '%" + bulkContactExternalID + "%'"))
+                expect(await service.getBulk('contacts', "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'"))
                     .to.be.an('array')
                     .with.lengthOf(0),
             ]);

@@ -1029,7 +1029,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             return Promise.all([
                 expect(
                     await service.getAccounts({
-                        where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                        where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
                     }),
                 )
                     .to.be.an('array')
@@ -1075,7 +1075,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
 
         it('Verify bulk accounts update', async () => {
             bulkUpdateAccounts = await service.getAccounts({
-                where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
             });
             expect(bulkUpdateAccounts[0].Name).to.include('Update'),
                 expect(bulkUpdateAccounts[1].Name).to.include('Update'),
@@ -1126,7 +1126,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
 
         it('Verify bulk mixed file accounts update', async () => {
             bulkUpdateAccounts = await service.getAccounts({
-                where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
             });
             expect(bulkUpdateAccounts[0].Name).to.include('Update'),
                 expect(bulkUpdateAccounts[1].Name).to.include('Update'),
@@ -1139,7 +1139,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
 
         it('Delete bulk accounts', async () => {
             bulkAccounts = await service.getAccounts({
-                where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
             });
             return Promise.all([
                 expect(await service.deleteAccount(bulkAccounts[0].InternalID)).to.be.true,
@@ -1151,7 +1151,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 expect(await service.deleteAccount(bulkUpdateAccounts[6].InternalID)).to.be.true,
                 expect(
                     await service.getAccounts({
-                        where: "ExternalID like '%" + bulkAccountExternalID + "%'",
+                        where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
                     }),
                 )
                     .to.be.an('array')

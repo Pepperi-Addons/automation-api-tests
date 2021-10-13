@@ -897,7 +897,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
 
         it('Verify bulk created activities', async () => {
             return Promise.all([
-                expect(await service.getBulk('activities', "?where=ExternalID like '%" + bulkActivityExternalID + "%'"))
+                expect(await service.getBulk('activities', "?where=ExternalID LIKE '%" + bulkActivityExternalID + "%'"))
                     .to.be.an('array')
                     .with.lengthOf(5),
             ]);
@@ -942,7 +942,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         it('Verify bulk activities update', async () => {
             bulkUpdateActivities = await service.getBulk(
                 'activities',
-                "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+                "?where=ExternalID LIKE '%" + bulkActivityExternalID + "%'",
             );
             expect(bulkUpdateActivities[0].Status).to.equal(2),
                 expect(bulkUpdateActivities[1].Status).to.equal(2),
@@ -954,7 +954,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         it('Delete bulk activities', async () => {
             bulkActivities = await service.getBulk(
                 'activities',
-                "?where=ExternalID like '%" + bulkActivityExternalID + "%'",
+                "?where=ExternalID LIKE '%" + bulkActivityExternalID + "%'",
             );
             return Promise.all([
                 expect(await service.deleteActivity(bulkActivities[0].InternalID)).to.be.true,
@@ -962,7 +962,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 expect(await service.deleteActivity(bulkActivities[2].InternalID)).to.be.true,
                 expect(await service.deleteActivity(bulkActivities[3].InternalID)).to.be.true,
                 expect(await service.deleteActivity(bulkActivities[4].InternalID)).to.be.true,
-                expect(await service.getBulk('activities', "?where=ExternalID like '%" + bulkActivityExternalID + "%'"))
+                expect(await service.getBulk('activities', "?where=ExternalID LIKE '%" + bulkActivityExternalID + "%'"))
                     .to.be.an('array')
                     .with.lengthOf(0),
             ]);

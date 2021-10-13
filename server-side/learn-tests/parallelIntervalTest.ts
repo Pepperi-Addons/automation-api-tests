@@ -1,14 +1,12 @@
 import { describe, it } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-// import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
 describe('learning about mocha in parallel (base)', function () {
     it('check properties on object in base', async function () {
         expect(true).to.be.true;
-        // await addContext(this, 'C:/Users/OrenViDev/Desktop/oren.png');
     });
 
     it('Positive Promise Base', async function () {

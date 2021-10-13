@@ -32,6 +32,10 @@ export class ObjectsService {
         return this.papiClient.items.find(options);
     }
 
+    postItem(item: Item): Promise<Item> {
+        return this.papiClient.items.upsert(item);
+    }
+
     getUsers(options?: FindOptions): Promise<User[]> {
         return this.papiClient.users.find(options);
     }

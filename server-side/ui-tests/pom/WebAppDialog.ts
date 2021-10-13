@@ -15,7 +15,7 @@ export class WebAppDialog extends Page {
 
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
         //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 5000, 6).then(
+        await this.browser.findElements(this.ButtonArr, 3000, 3).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
@@ -32,7 +32,7 @@ export class WebAppDialog extends Page {
 
     public async selectDialogBox(buttonText: string): Promise<void> {
         //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 5000, 6).then(
+        await this.browser.findElements(this.ButtonArr, 4000, 3).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
