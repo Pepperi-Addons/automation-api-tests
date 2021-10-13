@@ -156,7 +156,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
 async function replaceItems(generalService: GeneralService) {
     const objectsService = new ObjectsService(generalService);
     const getAllItems = await objectsService.getItems();
-    if (getAllItems.length < 5) {
+    if (getAllItems.length > 5) {
         describe("Don't Replace Items", function () {
             it("The Test Of Repleace Items Is Limited For Safty Reasons - Won't Run When More Then 5 Items Exist", async function () {
                 expect(true).to.be.true;
