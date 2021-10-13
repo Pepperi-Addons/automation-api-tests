@@ -30,9 +30,11 @@ export class WebAppTopBar extends Page {
 
     public CartContinueOrderingBtn: Locator = By.css('[data-qa="continueOrderingButton"]');
 
-    public async selectFromMenuByText(buttonText: string): Promise<void> {
+    public async selectFromMenuByText(menu: Locator, buttonText: string): Promise<void> {
+        this.browser.sleep(1000);
+        await this.browser.click(menu, 0, 4000, 3);
         //This is mandatory wait while the buttons on the menu are loading and might change
-        this.browser.sleep(2000);
+        this.browser.sleep(1000);
         await this.browser.findElements(this.ChangeViewMenuButtons, 4000, 3).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {

@@ -21,7 +21,7 @@
         "UPC": "100000195"
     },
     {
-        "ExternalID": "PMS-03-FCT6_l_1",
+        "ExternalID": "PMS-03-FCT6_l_2",
         "AllowDecimal": false,
         "MainCategoryID": "Paul Pitchell",
         "CaseQuantity": 1,
@@ -36,7 +36,7 @@
         "LongDescription": "Since ancient times makeup has been used to enhance beauty. Take the ancient Egyptians for example who wore makeup made of lead ore and copper. Women of the ancient world were often innovative when it came to their cosmetic needs. Berries were used to darken lips, the ashes of burnt matches were used to darken eyes, and much more.\n\nToday, we have developed makeup for practically every application you can think of. From making eyes pop with eyeshadow palettes to hiding undesirable pores, makeup has come a long way (we even have vegan makeup). To truly appreciate where we are today as opposed to where we used to be, let's take a look at the rich history of makeup.",
         "MainCategory": "Paul Pitchell",
         "MinimumQuantity": 1,
-        "Name": "Full Circle Leave-In Treatment 1",
+        "Name": "Full Circle Leave-In Treatment 2",
         "Price": 51.5,
         "Prop1": "C",
         "Prop3": "Shampoo",
@@ -105,7 +105,7 @@
         "LongDescription": "Since ancient times makeup has been used to enhance beauty. Take the ancient Egyptians for example who wore makeup made of lead ore and copper. Women of the ancient world were often innovative when it came to their cosmetic needs. Berries were used to darken lips, the ashes of burnt matches were used to darken eyes, and much more.\n\nToday, we have developed makeup for practically every application you can think of. From making eyes pop with eyeshadow palettes to hiding undesirable pores, makeup has come a long way (we even have vegan makeup). To truly appreciate where we are today as opposed to where we used to be, let's take a look at the rich history of makeup.",
         "MainCategory": "Paul Pitchell",
         "MinimumQuantity": 1,
-        "Name": "Spring Loaded Frizz-Fighting Shampoo 1",
+        "Name": "Spring Loaded Frizz-Fighting Shampoo 2",
         "Price": 49,
         "Prop1": "C",
         "Prop3": "Shampoo",
@@ -128,7 +128,7 @@
         "LongDescription": "Since ancient times makeup has been used to enhance beauty. Take the ancient Egyptians for example who wore makeup made of lead ore and copper. Women of the ancient world were often innovative when it came to their cosmetic needs. Berries were used to darken lips, the ashes of burnt matches were used to darken eyes, and much more.\n\nToday, we have developed makeup for practically every application you can think of. From making eyes pop with eyeshadow palettes to hiding undesirable pores, makeup has come a long way (we even have vegan makeup). To truly appreciate where we are today as opposed to where we used to be, let's take a look at the rich history of makeup.",
         "MainCategory": "Paul Pitchell",
         "MinimumQuantity": 1,
-        "Name": "Spring Loaded Frizz-Fighting Shampoo 2",
+        "Name": "Spring Loaded Frizz-Fighting Shampoo 2 (8.5oz)",
         "Price": 48.75,
         "Prop1": "C",
         "Prop3": "Shampoo",
@@ -201,7 +201,7 @@
         "UPC": "100000179"
     },
     {
-        "ExternalID": "Full Circle Leave-In Treatment",
+        "ExternalID": "PMS-03-FCT6_l_1",
         "AllowDecimal": false,
         "MainCategoryID": "Paul Pitchell",
         "CaseQuantity": 1,
@@ -1183,28 +1183,6 @@
         "Prop3": "Lip",
         "SecondaryPrice": 26,
         "UPC": "100000164"
-    },
-    {
-        "ExternalID": "Spring Loaded Frizz-Fighting Shampoo",
-        "AllowDecimal": false,
-        "MainCategoryID": "Paul Pitchell",
-        "CaseQuantity": 1,
-        "CostPrice": 10,
-        "Discount": 0,
-        "FutureAvailabilityQuantity": 0,
-        "Image": {
-            "URL": "https://cdn.pepperi.com/WrntyImages/30013721/PortfolioItems/4/65844984_5_200x200.jpg",
-            "Content": ""
-        },
-        "LongDescription": "Since ancient times makeup has been used to enhance beauty. Take the ancient Egyptians for example who wore makeup made of lead ore and copper. Women of the ancient world were often innovative when it came to their cosmetic needs. Berries were used to darken lips, the ashes of burnt matches were used to darken eyes, and much more.\n\nToday, we have developed makeup for practically every application you can think of. From making eyes pop with eyeshadow palettes to hiding undesirable pores, makeup has come a long way (we even have vegan makeup). To truly appreciate where we are today as opposed to where we used to be, let's take a look at the rich history of makeup.",
-        "MainCategory": "Paul Pitchell",
-        "MinimumQuantity": 1,
-        "Name": "Spring Loaded Frizz-Fighting Shampoo 1",
-        "Price": 27.25,
-        "Prop1": "B",
-        "Prop3": "Shampoo",
-        "SecondaryPrice": 2199,
-        "UPC": "100000035"
     },
     {
         "ExternalID": "Frag006",

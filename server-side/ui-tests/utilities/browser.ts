@@ -27,7 +27,7 @@ export class Browser {
         return await this.driver.navigate().to(url);
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 30000, maxAttmpts = 30): Promise<void> {
+    public async click(selector: Locator, index = 0, waitUntil = 20000, maxAttmpts = 6): Promise<void> {
         let allowRetry = false;
         let maxRefreshAllowed = 3;
         do {
@@ -132,17 +132,17 @@ export class Browser {
         return;
     }
 
-    public async findElement(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<WebElement> {
+    public async findElement(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, maxAttmpts).then((webElement) =>
             webElement ? webElement[0] : webElement,
         );
     }
 
-    public async findElements(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<WebElement[]> {
+    public async findElements(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         let elArr;
         let isElVisible = false;
-        let loopCounter = maxAttmpts > 50 ? 30 : maxAttmpts;
+        let loopCounter = maxAttmpts > 20 ? 20 : maxAttmpts;
         do {
             this.sleep(600);
             elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
@@ -183,7 +183,7 @@ export class Browser {
         return elArr;
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<boolean> {
+    public async untilIsVisible(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<boolean> {
         if ((await this.findElement(selector, waitUntil, maxAttmpts)) === undefined) {
             return false;
         }

@@ -72,8 +72,7 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
             //Sorting items by price
-            await webAppList.click(webAppTopBar.ChangeViewButton);
-            await webAppTopBar.selectFromMenuByText('Grid View');
+            await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
             await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
             //This sleep is mandaroy while the list is re-sorting after the sorting click
@@ -291,8 +290,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                     //Sorting items by price
                     const webAppList = new WebAppList(driver);
                     const webAppTopBar = new WebAppTopBar(driver);
-                    await webAppList.click(webAppTopBar.ChangeViewButton);
-                    await webAppTopBar.selectFromMenuByText('Grid View');
+                    await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
                     await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
                     //This sleep is mandaroy while the list is re-sorting after the sorting click
