@@ -14,6 +14,7 @@ export class Browser {
         }
         this.options.addArguments('--disable-gpu');
         this.options.addArguments(' --disable-software-rasterizer');
+        this.options.excludeSwitches('enable-logging');
         this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
         this.driver.manage().window().maximize();
         this.driver.manage().setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });

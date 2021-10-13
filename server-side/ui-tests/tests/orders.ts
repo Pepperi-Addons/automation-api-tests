@@ -28,6 +28,8 @@ export async function OrdersTest(email: string, password: string, client: Client
     let driver: Browser;
 
     describe('Orders UI Tests Suit (New Browser per test (it) scenarios)', async function () {
+        this.retries(3);
+
         beforeEach(async function () {
             driver = new Browser('chrome');
         });
@@ -161,7 +163,18 @@ export async function OrdersTest(email: string, password: string, client: Client
             }
 
             //Validating transaction created via the API
-            const lastTransaction = await objectsService.getTransaction({ order_by: 'ModificationDateTime DESC' });
+            let lastTransaction;
+            let loopCounter = 20;
+            do {
+                lastTransaction = await objectsService.getTransaction({
+                    order_by: 'ModificationDateTime DESC',
+                });
+                if (lastTransaction[0].Status != 2) {
+                    generalService.sleep(2000);
+                }
+                loopCounter--;
+            } while (lastTransaction[0].Status != 2 && loopCounter > 0);
+
             const lastTransactionLines = await objectsService.getTransactionLines({
                 where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
             });
@@ -210,6 +223,9 @@ export async function OrdersTest(email: string, password: string, client: Client
         let activityTypeId;
         let transactionId;
         let transactionUUID;
+
+        this.retries(3);
+
         before(async function () {
             driver = new Browser('chrome');
         });
@@ -376,9 +392,17 @@ export async function OrdersTest(email: string, password: string, client: Client
                     }
 
                     //Validating transaction created via the API
-                    const lastTransaction = await objectsService.getTransaction({
-                        order_by: 'ModificationDateTime DESC',
-                    });
+                    let lastTransaction;
+                    let loopCounter = 20;
+                    do {
+                        lastTransaction = await objectsService.getTransaction({
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                        if (lastTransaction[0].Status != 2) {
+                            generalService.sleep(2000);
+                        }
+                        loopCounter--;
+                    } while (lastTransaction[0].Status != 2 && loopCounter > 0);
 
                     addContext(this, {
                         title: `Last transaction lines total price from API`,
