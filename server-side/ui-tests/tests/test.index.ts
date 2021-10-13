@@ -36,13 +36,13 @@ const varPass = process.env.npm_config_var_pass as string;
 
     const generalService = new GeneralService(client);
 
+    await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+
     //Reset the needed UI Controls for the UI tests.
-    // await replaceUIControls(generalService);
+    await replaceUIControls(generalService);
 
     //Verify all items exist or replace them
     await replaceItems(generalService);
-
-    await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
 
     await upgradeDependenciesTests(generalService, varPass);
 
@@ -156,9 +156,9 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
 async function replaceItems(generalService: GeneralService) {
     const objectsService = new ObjectsService(generalService);
     const getAllItems = await objectsService.getItems();
-    if (getAllItems.length > 20) {
+    if (getAllItems.length > 5) {
         describe("Don't Replace Items", function () {
-            it("The Test Of Repleace Items Is Limited For Safty Reasons - Won't Run When More Then 20 Items Exist", async function () {
+            it("The Test Of Repleace Items Is Limited For Safty Reasons - Won't Run When More Then 5 Items Exist", async function () {
                 expect(true).to.be.true;
             });
         });
@@ -212,11 +212,10 @@ async function replaceItems(generalService: GeneralService) {
                     try {
                         postItemsResponse = await objectsService.postItem(filteredArray[j]);
                     } catch (error) {
-                        console.log(JSON.stringify(filteredArray[j]));
-                        postItemsResponse = {};
-                        postItemsResponse.Hidden = false;
-                        postItemsResponse.InternalID = 10;
-                        debugger;
+                        console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
+                        //In cases when post item randomally fails, wait and try again before failing the test
+                        generalService.sleep(4000);
+                        postItemsResponse = await objectsService.postItem(filteredArray[j]);
                     }
                     expect(postItemsResponse.Hidden).to.be.false;
                     expect(postItemsResponse.InternalID).to.be.above(0);
@@ -230,8 +229,6 @@ async function replaceItems(generalService: GeneralService) {
 }
 
 async function replaceUIControls(generalService: GeneralService) {
-    const objectsService = new ObjectsService(generalService);
-
     describe('Replace UIControls', function () {
         //Add new UIControls from local file
         const uIControlArrFromFile = fs.readFileSync('../server-side/api-tests/test-data/UIControls.json', {
@@ -256,11 +253,13 @@ async function replaceUIControls(generalService: GeneralService) {
                             title: 'Test Data',
                             value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
                         });
-                        const uiControlFromAPI = catalogSelectionCard[0].UIControlData.split('CatalogSelectionCard');
+                        const uiControlFromAPI = catalogSelectionCard[i].UIControlData.split('CatalogSelectionCard');
                         const uiControlFromFile = uIControlArr[j].UIControlData.split('CatalogSelectionCard');
-                        catalogSelectionCard[0].UIControlData = uiControlFromAPI[0] + uiControlFromFile[1];
+                        catalogSelectionCard[
+                            i
+                        ].UIControlData = `${uiControlFromAPI[0]}CatalogSelectionCard${uiControlFromFile[1]}`;
                         const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
-                            catalogSelectionCard[0],
+                            catalogSelectionCard[i],
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('CatalogSelectionCard');
@@ -277,11 +276,11 @@ async function replaceUIControls(generalService: GeneralService) {
                             title: 'Test Data',
                             value: `Add UIControls ${catalogForm[i]['Type']}, ${catalogForm[i]['InternalID']}`,
                         });
-                        const uiControlFromAPI = catalogForm[0].UIControlData.split('CatalogForm');
+                        const uiControlFromAPI = catalogForm[i].UIControlData.split('CatalogForm');
                         const uiControlFromFile = uIControlArr[j].UIControlData.split('CatalogForm');
-                        catalogForm[0].UIControlData = uiControlFromAPI[0] + uiControlFromFile[1];
+                        catalogForm[i].UIControlData = `${uiControlFromAPI[0]}CatalogForm${uiControlFromFile[1]}`;
                         const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
-                            catalogForm[0],
+                            catalogForm[i],
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('CatalogForm');
@@ -298,11 +297,11 @@ async function replaceUIControls(generalService: GeneralService) {
                             title: 'Test Data',
                             value: `Add UIControls ${orderViewsMenu[i]['Type']}, ${orderViewsMenu[i]['InternalID']}`,
                         });
-                        const uiControlFromAPI = orderViewsMenu[0].UIControlData.split('CatalogForm');
-                        const uiControlFromFile = uIControlArr[j].UIControlData.split('CatalogForm');
-                        orderViewsMenu[0].UIControlData = uiControlFromAPI[0] + uiControlFromFile[1];
+                        const uiControlFromAPI = orderViewsMenu[i].UIControlData.split('OrderViewsMenu');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderViewsMenu');
+                        orderViewsMenu[i].UIControlData = `${uiControlFromAPI[0]}OrderViewsMenu${uiControlFromFile[1]}`;
                         const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
-                            orderViewsMenu[0],
+                            orderViewsMenu[i],
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('OrderViewsMenu');

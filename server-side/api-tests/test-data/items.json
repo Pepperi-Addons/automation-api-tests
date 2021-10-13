@@ -21,29 +21,6 @@
         "UPC": "100000195"
     },
     {
-        "ExternalID": "Fixed1",
-        "AllowDecimal": false,
-        "MainCategoryID": "Pharmacy",
-        "CampaignID": 257490,
-        "CaseQuantity": 1,
-        "CostPrice": 10,
-        "Discount": 0,
-        "FutureAvailabilityQuantity": 0,
-        "Image": {
-            "URL": "https://cdn.pepperi.com/WrntyImages/30013721/PortfolioItems/9/65845179_4_200x200.jpg",
-            "Content": ""
-        },
-        "LongDescription": "Since ancient times makeup has been used to enhance beauty. Take the ancient Egyptians for example who wore makeup made of lead ore and copper. Women of the ancient world were often innovative when it came to their cosmetic needs. Berries were used to darken lips, the ashes of burnt matches were used to darken eyes, and much more.\n\nToday, we have developed makeup for practically every application you can think of. From making eyes pop with eyeshadow palettes to hiding undesirable pores, makeup has come a long way (we even have vegan makeup). To truly appreciate where we are today as opposed to where we used to be, let's take a look at the rich history of makeup.",
-        "MainCategory": "Pharmacy",
-        "MinimumQuantity": 1,
-        "Name": "Polish 3 for $5",
-        "Price": 55,
-        "Prop1": "C",
-        "Prop3": "Packs",
-        "SecondaryPrice": 0,
-        "UPC": "100000156"
-    },
-    {
         "ExternalID": "PMS-03-FCT6_l_1",
         "AllowDecimal": false,
         "MainCategoryID": "Paul Pitchell",

@@ -133,7 +133,17 @@ export class WebAppList extends Page {
     public getPriceFromLineOfMatrix(line: string): number {
         const textArr = line.split('\n');
         for (let i = 0; i < textArr.length; i++) {
-            const element = textArr[i];
+            const element = textArr[i].replace(/\s/g, '');
+            if (element.startsWith('$')) {
+                return Number(element.substring(1));
+            }
+        }
+        return 0;
+    }
+
+    public getPriceFromArray(textArr: string[]): number {
+        for (let i = 0; i < textArr.length; i++) {
+            const element = textArr[i].replace(/\s/g, '');
             if (element.startsWith('$')) {
                 return Number(element.substring(1));
             }

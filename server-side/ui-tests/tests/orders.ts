@@ -73,7 +73,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
             //Sorting items by price
             await webAppList.click(webAppTopBar.ChangeViewButton);
-            await webAppTopBar.selectFromMenuByText('Grid Line');
+            await webAppTopBar.selectFromMenuByText('Grid View');
             await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
             //This sleep is mandaroy while the list is re-sorting after the sorting click
@@ -115,9 +115,10 @@ export async function OrdersTest(email: string, password: string, client: Client
             });
 
             const totalPrice =
-                Number(sorteCartMatrixByPrice[0][2].substring(1)) +
-                Number(sorteCartMatrixByPrice[1][2].substring(1)) +
-                Number(sorteCartMatrixByPrice[2][2].substring(1));
+                webAppList.getPriceFromArray(sorteCartMatrixByPrice[0]) +
+                webAppList.getPriceFromArray(sorteCartMatrixByPrice[1]) +
+                webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
+
             //Adding most expensive items to cart
             for (let i = 0; i < 3; i++) {
                 await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteCartMatrixByPrice[i][1] + Key.ENTER);
@@ -198,6 +199,9 @@ export async function OrdersTest(email: string, password: string, client: Client
 
             expect(PriceOfMostExpensiveItems).to.equal(totalPrice);
             await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
+
+            const testDataTransaction = await objectsService.deleteTransaction(Number(lastTransaction[0].InternalID));
+            expect(testDataTransaction).to.be.true;
         });
     });
 
@@ -288,7 +292,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                     const webAppList = new WebAppList(driver);
                     const webAppTopBar = new WebAppTopBar(driver);
                     await webAppList.click(webAppTopBar.ChangeViewButton);
-                    await webAppTopBar.selectFromMenuByText('Grid Line');
+                    await webAppTopBar.selectFromMenuByText('Grid View');
                     await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
                     //This sleep is mandaroy while the list is re-sorting after the sorting click
@@ -330,9 +334,9 @@ export async function OrdersTest(email: string, password: string, client: Client
                     });
 
                     const totalPrice =
-                        Number(sorteCartMatrixByPrice[0][2].substring(1)) +
-                        Number(sorteCartMatrixByPrice[1][2].substring(1)) +
-                        Number(sorteCartMatrixByPrice[2][2].substring(1));
+                        webAppList.getPriceFromArray(sorteCartMatrixByPrice[0]) +
+                        webAppList.getPriceFromArray(sorteCartMatrixByPrice[1]) +
+                        webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
                     //Adding most expensive items to cart
                     for (let i = 0; i < 3; i++) {
                         await webAppList.sendKeys(

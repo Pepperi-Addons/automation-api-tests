@@ -33,7 +33,7 @@ export class WebAppTopBar extends Page {
     public async selectFromMenuByText(buttonText: string): Promise<void> {
         //This is mandatory wait while the buttons on the menu are loading and might change
         this.browser.sleep(2000);
-        await this.browser.findElements(this.ChangeViewMenuButtons, 5000, 6).then(
+        await this.browser.findElements(this.ChangeViewMenuButtons, 4000, 3).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {

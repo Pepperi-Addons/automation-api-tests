@@ -136,7 +136,11 @@ export default class GeneralService {
     //#endregion getDate
 
     getServer() {
-        return this.client.BaseURL.includes('staging') ? 'Sandbox' : 'Production';
+        return this.client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : this.client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
     }
 
     getClientData(data: ClientData): string {
