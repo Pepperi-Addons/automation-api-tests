@@ -153,8 +153,10 @@ export class Browser {
                 },
             );
             if (elArr && elArr[0]) {
-                isElVisible = await elArr[0].isDisplayed().then(
-                    (res) => res,
+                isElVisible = await this.driver.wait(until.elementIsVisible(elArr[0]), waitUntil).then(
+                    async (res) => {
+                        return await res.isDisplayed();
+                    },
                     (error) => {
                         if (error.name === 'StaleElementReferenceError') {
                             return false;
