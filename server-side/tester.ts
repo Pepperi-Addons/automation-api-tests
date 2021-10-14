@@ -25,6 +25,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
             reportDir: mochaDir,
             reportFilename: fileName,
             html: isLocal,
+            autoOpen: isLocal,
             consoleReporter: 'none',
         },
         timeout: 1200000,
@@ -37,11 +38,6 @@ export default function Tester(client?: Client, testName?: string, environment?:
             const suite = new Mocha.Suite(name);
             context?.addSuite(suite);
             context = suite;
-
-            // //Oren
-            // debugger;
-            // suite._afterEach.push(new Hook('"after each" hook', fn));
-            // // //Oren
 
             fn();
             context = suite.parent;

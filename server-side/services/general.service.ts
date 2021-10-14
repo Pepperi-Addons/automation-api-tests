@@ -136,7 +136,11 @@ export default class GeneralService {
     //#endregion getDate
 
     getServer() {
-        return this.client.BaseURL.includes('staging') ? 'Sandbox' : 'Production';
+        return this.client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : this.client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
     }
 
     getClientData(data: ClientData): string {
@@ -163,42 +167,29 @@ export default class GeneralService {
         return this.papiClient.metaData.type(resource_name).types.get();
     }
 
-    async getAuditLogResultObjectIfValid(uri, loopsAmount?) {
-        this.sleep(3000); //This was addded here after tests faild on the server - this was never reproduced locally
-        let auditLogResponse = await this.papiClient.get(uri);
-        try {
-            auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
-        } catch (error) {
+    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30) {
+        let auditLogResponse;
+        do {
+            auditLogResponse = await this.papiClient.get(uri);
+            auditLogResponse =
+                auditLogResponse === null
+                    ? auditLogResponse
+                    : auditLogResponse[0] === undefined
+                    ? auditLogResponse
+                    : auditLogResponse[0];
+            //This case is used when AuditLog was not created at all (This can happen and it is valid)
             if (auditLogResponse === null) {
-                console.log('Audit Log was not found, waiting...');
                 this.sleep(4000);
-                auditLogResponse = await this.papiClient.get(uri);
-                auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
+                console.log('Audit Log was not found, waiting...');
+                loopsAmount--;
             }
-        }
-        //This loop is used for cases where AuditLog was not created at all (This can happen and it is valid)
-        if (auditLogResponse.UUID.length < 10 || !JSON.stringify(auditLogResponse).includes('AuditInfo')) {
-            console.log('Retray - No Audit Log found');
-            let retrayGetCall = loopsAmount + 2;
-            do {
-                this.sleep(800);
-                auditLogResponse = await this.papiClient.get(uri);
-                auditLogResponse = auditLogResponse[0] === undefined ? auditLogResponse : auditLogResponse[0];
-                retrayGetCall--;
-            } while (auditLogResponse.UUID.length < 10 && retrayGetCall > 0);
-        }
-
-        let loopsCounter = 0;
-        //This loop will only retray the get call again as many times as the "loopsAmount"
-        if (auditLogResponse.Status.ID == '2') {
-            loopsAmount = loopsAmount === undefined ? 2 : loopsAmount;
-            console.log('Status ID is 2, Retray ' + loopsAmount + ' Times.');
-            while (auditLogResponse.Status.ID == '2' && loopsCounter < loopsAmount) {
-                auditLogResponse = await this.papiClient.get(uri);
+            //This case will only retray the get call again as many times as the "loopsAmount"
+            else if (auditLogResponse.Status.ID == '2') {
                 this.sleep(2000);
-                loopsCounter++;
+                console.log('IN_Prog: Status ID is 2, Retray ' + loopsAmount + ' Times.');
+                loopsAmount--;
             }
-        }
+        } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
 
         //Check UUID
         try {
@@ -302,6 +293,14 @@ export default class GeneralService {
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
+            //This was added at 03/10/2021 by Oren - Until it will be decided what to do with PNS tests
+            if (addonName == 'Pepperi Notification Service') {
+                searchString = `AND Version Like '${'1.0.110'}%'`;
+            }
+            //This was added at 07/10/2021 by Oren - Since there is a problem with new papi versions
+            if (addonName == 'Services Framework') {
+                searchString = `AND Version Like '${'9.5.443'}%'`;
+            }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',
@@ -341,7 +340,7 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestVersion);
-            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
             if (auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -352,7 +351,7 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
-                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI, 40);
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
                 }

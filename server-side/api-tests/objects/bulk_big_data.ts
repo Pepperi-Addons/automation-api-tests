@@ -11,12 +11,12 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
     const bulkMixedAccountExternalID = 'API bulk 10k';
     const UDTRandom = 'Big Bulk UDT';
     let runAccountTest = await service.countAccounts({
-        where: "ExternalID like '%API bulk 60K%'",
+        where: "ExternalID LIKE '%API bulk 60K%'",
         include_deleted: true,
     });
 
     const runUDTTest = await service.countUDTRows({
-        where: "MapDataExternalID like '%Big Bulk UDT%'",
+        where: "MapDataExternalID LIKE '%Big Bulk UDT%'",
         include_deleted: true,
     });
 
@@ -66,7 +66,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         //     return Promise.all([
         //         expect(
         //             await service.countAccounts({
-        //                 where: "ExternalID like '%API bulk 60K%'",
+        //                 where: "ExternalID LIKE '%API bulk 60K%'",
         //             }),
         //         )
         //             .to.be.a('number')
@@ -78,7 +78,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "ExternalID like '%API bulk 60K%'",
+                        where: "ExternalID LIKE '%API bulk 60K%'",
                         include_deleted: true,
                     }),
                 )
@@ -124,7 +124,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 return Promise.all([
                     expect(
                         await service.countAccounts({
-                            where: "ExternalID like '%API bulk 60K%'",
+                            where: "ExternalID LIKE '%API bulk 60K%'",
                         }),
                     )
                         .to.be.a('number')
@@ -168,7 +168,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 return Promise.all([
                     expect(
                         await service.countAccounts({
-                            where: "ExternalID like '%API bulk 60K%'",
+                            where: "ExternalID LIKE '%API bulk 60K%'",
                         }),
                     )
                         .to.be.a('number')
@@ -213,14 +213,14 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                     }),
                 )
                     .to.be.a('number')
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                         include_deleted: true,
                     }),
                 )
@@ -228,7 +228,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                     }),
                 )
                     .to.be.a('number')
@@ -272,14 +272,14 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                     }),
                 )
                     .to.be.a('number')
                     .and.equals(0),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                         include_deleted: true,
                     }),
                 )
@@ -287,7 +287,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                         include_deleted: true,
                     }),
                 )
@@ -295,7 +295,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                     }),
                 )
                     .to.be.a('number')
@@ -339,14 +339,14 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                     }),
                 )
                     .to.be.a('number')
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                         include_deleted: true,
                     }),
                 )
@@ -354,7 +354,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                     }),
                 )
                     .to.be.a('number')
@@ -398,14 +398,14 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                     }),
                 )
                     .to.be.a('number')
                     .and.equals(0),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                         include_deleted: true,
                     }),
                 )
@@ -413,7 +413,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                         include_deleted: true,
                     }),
                 )
@@ -421,7 +421,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                     }),
                 )
                     .to.be.a('number')
@@ -465,14 +465,14 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                     }),
                 )
                     .to.be.a('number')
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                         include_deleted: true,
                     }),
                 )
@@ -480,7 +480,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                     }),
                 )
                     .to.be.a('number')
@@ -524,14 +524,14 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                     }),
                 )
                     .to.be.a('number')
                     .and.equals(0),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Update%'",
+                        where: "Name LIKE '%Bulk Account Update%'",
                         include_deleted: true,
                     }),
                 )
@@ -539,7 +539,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                         include_deleted: true,
                     }),
                 )
@@ -547,7 +547,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     .and.equals(5000),
                 expect(
                     await service.countAccounts({
-                        where: "Name like '%Bulk Account Ignore%'",
+                        where: "Name LIKE '%Bulk Account Ignore%'",
                     }),
                 )
                     .to.be.a('number')
@@ -559,7 +559,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
             return Promise.all([
                 expect(
                     await service.countUDTRows({
-                        where: "MapDataExternalID like '%Big Bulk UDT%'",
+                        where: "MapDataExternalID LIKE '%Big Bulk UDT%'",
                         include_deleted: true,
                     }),
                 )
@@ -618,7 +618,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 return Promise.all([
                     expect(
                         await service.countUDTRows({
-                            where: "MapDataExternalID like '%Big Bulk UDT%'",
+                            where: "MapDataExternalID LIKE '%Big Bulk UDT%'",
                             include_deleted: true,
                         }),
                     )
@@ -662,7 +662,7 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 return Promise.all([
                     expect(
                         await service.countUDTRows({
-                            where: "MapDataExternalID like '%Big Bulk UDT%'",
+                            where: "MapDataExternalID LIKE '%Big Bulk UDT%'",
                         }),
                     )
                         .to.be.a('number')

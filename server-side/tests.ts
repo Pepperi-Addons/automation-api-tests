@@ -33,6 +33,7 @@ import { InstallTests } from './api-tests/code-jobs/install';
 import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
 import { CodeJobsAddonTests } from './api-tests/code-jobs/code_jobs_addon';
 import { AddonRelationTests } from './api-tests/addon_relation';
+import { UsageMonitorTests } from './api-tests/usage_monitor';
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
@@ -766,6 +767,30 @@ export async function addon_relations(client: Client, request: Request, testerFu
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonRelationTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function usage_monitor(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Usage_Monitor';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        UsageMonitorTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

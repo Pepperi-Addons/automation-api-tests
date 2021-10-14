@@ -13,27 +13,6 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     const expect = tester.expect;
     const it = tester.it;
 
-    // generalService.sleep(200);
-
-    // const oren = await generalService.fetchStatus('/', { method: 'GET' });
-    // console.log({ oren: oren });
-
-    // const oren2 = await generalService.fetchStatus('/%', { method: 'GET' });
-    // console.log({ oren2: oren2 });
-
-    // const oren3 = await generalService.fetchStatus('/users', { method: 'GET' });
-    // console.log({ oren3: oren3 });
-
-    // const oren4 = await generalService.fetchStatus('/users', { method: 'GET', size: 10000 });
-    // console.log({ oren4: oren4 });
-
-    // const oren5 = await generalService.fetchStatus('/users', { method: 'GET', size: 100000 });
-    // console.log({ oren5: oren5 });
-
-    // const oren6 = await generalService.fetchStatus('/users', { method: 'GET', size: 1000000 });
-    // console.log({ oren6: oren6 });
-
-    // debugger;
     const all_activities_fields = [
         //'ExternalID',
         // 'TaxPercentage',
