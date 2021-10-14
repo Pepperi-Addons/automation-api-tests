@@ -106,7 +106,7 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                 });
 
                 it(`Insert Data To Table`, async () => {
-                    const schemaName = `Oren111`;
+                    const schemaName = `TestSchemaName`;
                     const createSchemaResponse = await adalService.postSchema({ Name: schemaName });
                     //console.log({ createSchemaResponse: createSchemaResponse });
 

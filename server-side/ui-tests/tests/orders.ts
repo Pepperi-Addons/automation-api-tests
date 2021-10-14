@@ -28,6 +28,8 @@ export async function OrdersTest(email: string, password: string, client: Client
     let driver: Browser;
 
     describe('Orders UI Tests Suit (New Browser per test (it) scenarios)', async function () {
+        this.retries(3);
+
         beforeEach(async function () {
             driver = new Browser('chrome');
         });
@@ -72,30 +74,62 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
             //Sorting items by price
-            const oren: string[][] = await webAppList.getCartListGridlineAsMatrix();
-            console.table(oren);
-            const sorteByPrice = oren.sort(compareArrayByPriceInDollar);
-            console.table(sorteByPrice);
+            await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
+            await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+            //This sleep is mandaroy while the list is re-sorting after the sorting click
+            driver.sleep(3000);
+            const cartItems = await driver.findElements(webAppList.CartListElements);
+            let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+            let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+
+            //Verify that matrix is sorted as expected
+            if (topPrice < secondPrice) {
+                await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+                //This sleep is mandaroy while the list is re-sorting after the sorting click
+                driver.sleep(3000);
+                const cartItems = await driver.findElements(webAppList.CartListElements);
+                topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+                secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+            }
+
+            addContext(this, {
+                title: `The two top items after the sort`,
+                value: [topPrice, secondPrice],
+            });
+
+            expect(topPrice).to.be.above(secondPrice);
+
+            const cartMatrix: string[][] = await webAppList.getCartListGridlineAsMatrix();
+            //console.table(cartMatrix);
+            const sorteCartMatrixByPrice = cartMatrix.sort(compareArrayByPriceInDollar);
+            //console.table(sorteCartMatrixByPrice);
+            for (let i = 0; i < cartMatrix.length; i++) {
+                expect(cartMatrix[i]).to.equal(sorteCartMatrixByPrice[i]);
+                // console.log(cartMatrix[i], sorteCartMatrixByPrice[i]);
+            }
 
             addContext(this, {
                 title: `The items from the UI (soreted by price)`,
-                value: sorteByPrice,
+                value: sorteCartMatrixByPrice,
             });
 
             const totalPrice =
-                Number(sorteByPrice[0][2].substring(1)) +
-                Number(sorteByPrice[1][2].substring(1)) +
-                Number(sorteByPrice[2][2].substring(1));
+                webAppList.getPriceFromArray(sorteCartMatrixByPrice[0]) +
+                webAppList.getPriceFromArray(sorteCartMatrixByPrice[1]) +
+                webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
+
             //Adding most expensive items to cart
             for (let i = 0; i < 3; i++) {
-                await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteByPrice[i][1] + Key.ENTER);
+                await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteCartMatrixByPrice[i][1] + Key.ENTER);
                 await webAppList.sendKysToInputListRowWebElement(0, 1);
                 const base64Image = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Image of order item number: ${i}`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
-                await driver.sleep(500);
+                driver.sleep(500);
             }
 
             await webAppList.click(webAppTopBar.CartViewBtn);
@@ -120,7 +154,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                 //Remove this dialog box and continue the test
                 await webAppDialog.selectDialogBox('Close');
-                await driver.sleep(400);
+                driver.sleep(400);
                 const base64Image2 = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Closed the dialog box`,
@@ -129,7 +163,18 @@ export async function OrdersTest(email: string, password: string, client: Client
             }
 
             //Validating transaction created via the API
-            const lastTransaction = await objectsService.getTransaction({ order_by: 'ModificationDateTime DESC' });
+            let lastTransaction;
+            let loopCounter = 20;
+            do {
+                lastTransaction = await objectsService.getTransaction({
+                    order_by: 'ModificationDateTime DESC',
+                });
+                if (lastTransaction[0].Status != 2) {
+                    generalService.sleep(2000);
+                }
+                loopCounter--;
+            } while (lastTransaction[0].Status != 2 && loopCounter > 0);
+
             const lastTransactionLines = await objectsService.getTransactionLines({
                 where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
             });
@@ -166,6 +211,9 @@ export async function OrdersTest(email: string, password: string, client: Client
 
             expect(PriceOfMostExpensiveItems).to.equal(totalPrice);
             await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
+
+            const testDataTransaction = await objectsService.deleteTransaction(Number(lastTransaction[0].InternalID));
+            expect(testDataTransaction).to.be.true;
         });
     });
 
@@ -175,6 +223,9 @@ export async function OrdersTest(email: string, password: string, client: Client
         let activityTypeId;
         let transactionId;
         let transactionUUID;
+
+        this.retries(3);
+
         before(async function () {
             driver = new Browser('chrome');
         });
@@ -255,24 +306,58 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                     //Sorting items by price
                     const webAppList = new WebAppList(driver);
-                    const oren: string[][] = await webAppList.getCartListGridlineAsMatrix();
-                    console.table(oren);
-                    const sorteByPrice = oren.sort(compareArrayByPriceInDollar);
-                    console.table(sorteByPrice);
+                    const webAppTopBar = new WebAppTopBar(driver);
+                    await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
+                    await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+                    //This sleep is mandaroy while the list is re-sorting after the sorting click
+                    driver.sleep(3000);
+                    const cartItems = await driver.findElements(webAppList.CartListElements);
+                    let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+                    let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+
+                    //Verify that matrix is sorted as expected
+                    if (topPrice < secondPrice) {
+                        await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+
+                        //This sleep is mandaroy while the list is re-sorting after the sorting click
+                        driver.sleep(3000);
+                        const cartItems = await driver.findElements(webAppList.CartListElements);
+                        topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+                        secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+                    }
+
+                    addContext(this, {
+                        title: `The two top items after the sort`,
+                        value: [topPrice, secondPrice],
+                    });
+
+                    expect(topPrice).to.be.above(secondPrice);
+
+                    const cartMatrix: string[][] = await webAppList.getCartListGridlineAsMatrix();
+                    //console.table(cartMatrix);
+                    const sorteCartMatrixByPrice = cartMatrix.sort(compareArrayByPriceInDollar);
+                    //console.table(sorteCartMatrixByPrice);
+                    for (let i = 0; i < cartMatrix.length; i++) {
+                        expect(cartMatrix[i]).to.equal(sorteCartMatrixByPrice[i]);
+                        // console.log(cartMatrix[i], sorteCartMatrixByPrice[i]);
+                    }
 
                     addContext(this, {
                         title: `The items from the UI (soreted by price)`,
-                        value: sorteByPrice,
+                        value: sorteCartMatrixByPrice,
                     });
 
                     const totalPrice =
-                        Number(sorteByPrice[0][2].substring(1)) +
-                        Number(sorteByPrice[1][2].substring(1)) +
-                        Number(sorteByPrice[2][2].substring(1));
+                        webAppList.getPriceFromArray(sorteCartMatrixByPrice[0]) +
+                        webAppList.getPriceFromArray(sorteCartMatrixByPrice[1]) +
+                        webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
                     //Adding most expensive items to cart
-                    const webAppTopBar = new WebAppTopBar(driver);
                     for (let i = 0; i < 3; i++) {
-                        await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteByPrice[i][1] + Key.ENTER);
+                        await webAppList.sendKeys(
+                            webAppTopBar.SearchFieldInput,
+                            sorteCartMatrixByPrice[i][1] + Key.ENTER,
+                        );
                         await webAppList.sendKysToInputListRowWebElement(0, 1);
                     }
 
@@ -299,7 +384,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                         //Remove this dialog box and continue the test
                         await webAppDialog.selectDialogBox('Close');
-                        await driver.sleep(400);
+                        driver.sleep(400);
                         const base64Image2 = await driver.saveScreenshots();
                         addContext(this, {
                             title: `Closed the dialog box`,
@@ -308,9 +393,17 @@ export async function OrdersTest(email: string, password: string, client: Client
                     }
 
                     //Validating transaction created via the API
-                    const lastTransaction = await objectsService.getTransaction({
-                        order_by: 'ModificationDateTime DESC',
-                    });
+                    let lastTransaction;
+                    let loopCounter = 20;
+                    do {
+                        lastTransaction = await objectsService.getTransaction({
+                            order_by: 'ModificationDateTime DESC',
+                        });
+                        if (lastTransaction[0].Status != 2) {
+                            generalService.sleep(2000);
+                        }
+                        loopCounter--;
+                    } while (lastTransaction[0].Status != 2 && loopCounter > 0);
 
                     addContext(this, {
                         title: `Last transaction lines total price from API`,

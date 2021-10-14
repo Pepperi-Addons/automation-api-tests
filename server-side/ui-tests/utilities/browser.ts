@@ -14,6 +14,7 @@ export class Browser {
         }
         this.options.addArguments('--disable-gpu');
         this.options.addArguments(' --disable-software-rasterizer');
+        this.options.excludeSwitches('enable-logging');
         this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
         this.driver.manage().window().maximize();
         this.driver.manage().setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
@@ -27,7 +28,7 @@ export class Browser {
         return await this.driver.navigate().to(url);
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 30000, maxAttmpts = 30): Promise<void> {
+    public async click(selector: Locator, index = 0, waitUntil = 20000, maxAttmpts = 6): Promise<void> {
         let allowRetry = false;
         let maxRefreshAllowed = 3;
         do {
@@ -52,7 +53,7 @@ export class Browser {
                             allowRetry = true;
                             await this.driver.navigate().refresh();
                             //This means that elements removed while scrolling (this is normal behavior of the webapp)
-                            await this.sleep(15000);
+                            this.sleep(15000);
                             try {
                                 await this.driver.executeScript(
                                     `document.querySelectorAll("${selector['value']}")[${index}].click();`,
@@ -105,7 +106,7 @@ export class Browser {
                             allowRetry = true;
                             await this.driver.navigate().refresh();
                             //This means that elements removed while scrolling (this is normal behavior of the webapp)
-                            await this.sleep(15000);
+                            this.sleep(15000);
                             try {
                                 await this.driver.executeScript(
                                     `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
@@ -132,19 +133,19 @@ export class Browser {
         return;
     }
 
-    public async findElement(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<WebElement> {
+    public async findElement(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, maxAttmpts).then((webElement) =>
             webElement ? webElement[0] : webElement,
         );
     }
 
-    public async findElements(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<WebElement[]> {
+    public async findElements(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         let elArr;
         let isElVisible = false;
-        let loopCounter = maxAttmpts > 50 ? 30 : maxAttmpts;
+        let loopCounter = maxAttmpts > 20 ? 20 : maxAttmpts;
         do {
-            await this.sleep(600);
+            this.sleep(600);
             elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
                 (webElement) => webElement,
                 (error) => {
@@ -158,9 +159,7 @@ export class Browser {
                         if (error.name === 'StaleElementReferenceError') {
                             return false;
                         } else {
-                            console.log('Oren Total Error: ' + error);
-                            debugger;
-                            return false;
+                            throw new Error(`Element.isDisplayed throw error: ${error}`);
                         }
                     },
                 );
@@ -177,10 +176,15 @@ export class Browser {
                 `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is: ${elArr}`,
             );
         }
+        if (isElVisible === false) {
+            throw new Error(
+                `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is not visible`,
+            );
+        }
         return elArr;
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 30000, maxAttmpts = 30): Promise<boolean> {
+    public async untilIsVisible(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<boolean> {
         if ((await this.findElement(selector, waitUntil, maxAttmpts)) === undefined) {
             return false;
         }
@@ -192,7 +196,11 @@ export class Browser {
     }
 
     public sleep(ms: number) {
-        return this.driver.sleep(ms);
+        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
+        const start = new Date().getTime(),
+            expire = start + ms;
+        while (new Date().getTime() < expire) {}
+        return;
     }
 
     public async clearCookies(url?: string): Promise<void> {

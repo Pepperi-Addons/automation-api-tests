@@ -23,7 +23,7 @@
         "learn-p": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_All' --parallel --timeout 20000 ./learn-tests/*Test.ts",
         "learn-pb": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Base' --timeout 20000 ./learn-tests/parallelBaseTest.ts",
         "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn-tests/parallelIntervalTest.ts",
-        "ui-cli-report": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
+        "jenkins-ui-test": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
         "ui-show-report": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''"
     },
     "devDependencies": {
@@ -50,7 +50,7 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "^0.0.32",
-        "@pepperi-addons/papi-sdk": "^1.27.4",
+        "@pepperi-addons/papi-sdk": "^1.28.7",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
