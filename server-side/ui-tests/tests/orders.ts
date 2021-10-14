@@ -274,7 +274,8 @@ export async function OrdersTest(email: string, password: string, client: Client
             activityTypeId = transactionArr[0].ActivityTypeID as number;
         });
 
-        const testDataDiscountPercentage = [0, 5, 10, 20, 50, 75, 100, 200];
+        const testDataDiscountPercentage = [20, 50];
+        // const testDataDiscountPercentage = [0, 5, 10, 20, 50, 75, 100, 200];
         for (let index = 0; index < testDataDiscountPercentage.length; index++) {
             const discount = testDataDiscountPercentage[index];
             describe(`${discount}% Discount Suit`, async function () {

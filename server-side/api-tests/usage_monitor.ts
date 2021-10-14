@@ -7,7 +7,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
     const it = tester.it;
     const usageMonitorService = new UsageMonitorService(generalService);
 
-    const testBaseVersion = '1.0.37';
+    const testBaseVersion = '1.0.58';
 
     //#region Upgrade ADAL
     const testData = {
@@ -76,6 +76,10 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
                 delete lastVersion.Key;
                 delete baseVersion.ExternalData;
                 delete lastVersion.ExternalData;
+                delete baseVersion.RelationsData;
+                delete lastVersion.RelationsData;
+                delete baseVersion.Usage;
+                delete lastVersion.Usage;
                 // oleg2.Setup.Contacts
                 // oleg2.Setup.LicensedUsers
                 expect(lastVersion).to.deep.equal(baseVersion);
