@@ -12,7 +12,7 @@ export abstract class Page {
         return await this.browser.navigate(this.url);
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 20000, maxAttmpts = 6): Promise<void> {
+    public async click(selector: Locator, index = 0, waitUntil = 15000, maxAttmpts = 2): Promise<void> {
         return await this.browser.click(selector, index, waitUntil, maxAttmpts);
     }
 
@@ -20,7 +20,7 @@ export abstract class Page {
         return await this.browser.sendKeys(selector, keys, index);
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<boolean> {
+    public async untilIsVisible(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<boolean> {
         return await this.browser.untilIsVisible(selector, waitUntil, maxAttmpts);
     }
 
