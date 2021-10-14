@@ -5,7 +5,7 @@ import chrome from 'selenium-webdriver/chrome';
 export class Browser {
     private driver: ThenableWebDriver;
     private options: chrome.Options;
-    private TIMEOUT = 30000;
+    private TIMEOUT = 15000;
     public constructor(private browserName: string) {
         this.options = new chrome.Options();
         if (process.env.npm_config_chrome_headless == 'true') {
@@ -28,7 +28,7 @@ export class Browser {
         return await this.driver.navigate().to(url);
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 20000, maxAttmpts = 6): Promise<void> {
+    public async click(selector: Locator, index = 0, waitUntil = 15000, maxAttmpts = 2): Promise<void> {
         let allowRetry = false;
         let maxRefreshAllowed = 3;
         do {
@@ -133,17 +133,17 @@ export class Browser {
         return;
     }
 
-    public async findElement(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<WebElement> {
+    public async findElement(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, maxAttmpts).then((webElement) =>
             webElement ? webElement[0] : webElement,
         );
     }
 
-    public async findElements(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<WebElement[]> {
+    public async findElements(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         let elArr;
         let isElVisible = false;
-        let loopCounter = maxAttmpts > 20 ? 20 : maxAttmpts;
+        let loopCounter = maxAttmpts > 6 ? 6 : maxAttmpts;
         do {
             this.sleep(600);
             elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
@@ -153,8 +153,10 @@ export class Browser {
                 },
             );
             if (elArr && elArr[0]) {
-                isElVisible = await elArr[0].isDisplayed().then(
-                    (res) => res,
+                isElVisible = await this.driver.wait(until.elementIsVisible(elArr[0]), waitUntil).then(
+                    async (res) => {
+                        return await res.isDisplayed();
+                    },
                     (error) => {
                         if (error.name === 'StaleElementReferenceError') {
                             return false;
@@ -184,7 +186,7 @@ export class Browser {
         return elArr;
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 20000, maxAttmpts = 6): Promise<boolean> {
+    public async untilIsVisible(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<boolean> {
         if ((await this.findElement(selector, waitUntil, maxAttmpts)) === undefined) {
             return false;
         }
