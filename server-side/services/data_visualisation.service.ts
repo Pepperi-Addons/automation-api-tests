@@ -19,7 +19,22 @@ export interface Chart {
     Type: possibaleTypes;
 }
 
-const addonVersion = '0.0.26';
+export const generateRandomType = (): possibaleTypes => {
+    const num = Math.floor(Math.random() * (4 - 1) + 1);
+    switch (num) {
+        case 1:
+            return possibaleTypes.Single;
+        case 2:
+            return possibaleTypes.Series;
+        case 3:
+            return possibaleTypes.MultiSeries;
+        default:
+            //only for TS return type
+            return possibaleTypes.Single;
+    }
+};
+
+const addonVersion = '0.0.27';
 
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) {}

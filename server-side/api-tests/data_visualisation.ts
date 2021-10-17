@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
+import { DataVisualisationService, Chart, generateRandomType } from '../services/data_visualisation.service';
 import { possibaleTypes } from '../services/data_visualisation.service';
 import * as URL from 'url';
 
@@ -137,6 +137,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     describe('e2e test - upsert valid charts & validate got them all correctly', () => {
         it('testing upsert - testing whther getting valid response from server for valid charts data list upserted', async () => {
             for (let i = 0; i < listOfChartsToUpsert.length; i++) {
+                debugger;
                 const chartResponse = await dataVisualisationService.postChartAsync(
                     generalService,
                     listOfChartsToUpsert[i],
@@ -181,21 +182,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 //***global variables and helper functions***//
 
 const scriptURI = 'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
-
-const generateRandomType = (): possibaleTypes => {
-    const num = Math.floor(Math.random() * (4 - 1) + 1);
-    switch (num) {
-        case 1:
-            return possibaleTypes.Single;
-        case 2:
-            return possibaleTypes.Series;
-        case 3:
-            return possibaleTypes.MultiSeries;
-        default:
-            //for return type
-            return possibaleTypes.Single;
-    }
-};
 
 const stringIsAValidUrl = (s: string) => {
     try {
