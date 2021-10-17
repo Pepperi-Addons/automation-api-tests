@@ -2,7 +2,6 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
 import { possibaleTypes } from '../services/data_visualisation.service';
 import * as URL from 'url';
-// const URL = require('URL');
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataVisualisationService = new DataVisualisationService(generalService.papiClient); //just for lint issue
