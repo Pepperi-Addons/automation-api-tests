@@ -11,32 +11,32 @@ export interface Chart {
     ReadOnly:boolean;
     ScriptURI:string;
     Type: string;
-    // [key: string]: any;
 }
 
+const addonVersion = "0.0.26";
 
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) { }
 
     getCharts(options?: FindOptions) {
-        return this.papiClient.get('/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts');
+        return this.papiClient.get(`/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`);
     }
 
     getChartsAsync(options?: FindOptions) {
-        return this.papiClient.get('/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts');
+        return this.papiClient.get(`/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`);
     }
 
     postChartAsync(generalService: GeneralService, chart: any, argHeaders?: any) {
         if (argHeaders)
             return generalService
-                .fetchStatus('/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts', {
+                .fetchStatus(`/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`, {
                     method: 'POST',
                     body: JSON.stringify(chart),
                     headers: argHeaders
                 });
         else
             return generalService
-                .fetchStatus('/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/0.0.21/api/charts', {
+                .fetchStatus(`/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`, {
                     method: 'POST',
                     body: JSON.stringify(chart)
                 });
