@@ -11,13 +11,14 @@ chai.use(promised);
 export default function Tester(client?: Client, testName?: string, environment?: string) {
     const isLocal = client ? client.AssetsBaseUrl.includes('/localhost:') : true;
     const testObject = {};
-    const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${environment ? environment : 'Default'
-        }-Tests-Results-${new Date()
-            .toISOString()
-            .substring(0, 16)
-            .replace(/-/g, '.')
-            .replace(/:/g, '_')
-            .replace(/T/g, 'T_')}`;
+    const mochaDir = `/tmp/${testName ? testName : 'Mocha'}-${
+        environment ? environment : 'Default'
+    }-Tests-Results-${new Date()
+        .toISOString()
+        .substring(0, 16)
+        .replace(/-/g, '.')
+        .replace(/:/g, '_')
+        .replace(/T/g, 'T_')}`;
     const fileName = 'report';
     const mocha = new Mocha({
         reporter: Mochawesome,
