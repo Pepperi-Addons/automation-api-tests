@@ -109,6 +109,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     describe('e2e test - UPSERT (POST) 5 valid charts & validate GET returns all 5 correctly', () => {
         it('testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
             for (let i = 0; i < listOfChartsToUpsert.length; i++) {
+                listOfChartsToUpsert[i].Hidden = false;
                 const chartResponse = await dataVisualisationService.postChartAsync(
                     generalService,
                     listOfChartsToUpsert[i],
@@ -125,6 +126,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 expect(jsonDataFromAuditLog).to.have.own.property('Description');
                 expect(jsonDataFromAuditLog['Description']).to.equal(listOfChartsToUpsert[i]['Description']);
                 expect(jsonDataFromAuditLog).to.have.own.property('ScriptURI');
+                expect(stringIsAValidUrl(jsonDataFromAuditLog.ScriptURI)).to.equal(true);
                 expect(jsonDataFromAuditLog).to.have.own.property('ReadOnly');
                 expect(jsonDataFromAuditLog['ReadOnly']).to.be.an('Boolean');
                 //using returning data from server to save this chart script uri, read only and key attributes
@@ -135,9 +137,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         });
         it('GET all charts and test we can find all 5 valid upserted charts', async () => {
             const chartResponse = await dataVisualisationService.getChartsAsync();
-            // debugger;
             const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
-            // debugger;
             expect(chartAuditLogAsync).to.not.equal(null);
             expect(chartAuditLogAsync['Status']['Name']).to.not.equal(null);
             const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
@@ -148,6 +148,22 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             expect(upsertedChartFound).to.be.equal(listOfChartsToUpsert.length);
         });
     });
+    describe('bug verification', () => {
+        it('POST - upserting a chart with number as script uri', async () => {
+            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField("ScriptURI", dataVisualisationService, generalService, 721346);
+            expect(jsonDataFromAuditLog).to.have.own.property('success');
+            expect(jsonDataFromAuditLog.success).to.equal('Exception');
+            expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
+            expect(jsonDataFromAuditLog.errorMessage).to.include('Failed upsert file storage');
+        });
+        it('POST - upserting a chart with non url string as script uri', async () => {
+            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField("ScriptURI", dataVisualisationService, generalService, "https:fsdjkfd");
+            expect(jsonDataFromAuditLog).to.have.own.property('success');
+            expect(jsonDataFromAuditLog.success).to.equal('Exception');
+            expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
+            expect(jsonDataFromAuditLog.errorMessage).to.include('Failed upsert file storage');
+        });
+    })
 }
 
 //***global variables and helper functions***//
@@ -163,7 +179,7 @@ const stringIsAValidUrl = (s: string) => {
     }
 };
 
-//chart generic object which is manipulated for tests 
+//chart generic object which is manipulated for negative POST tests 
 const chart: Chart = {
     Description: "desc",
     Name: 'name',
@@ -175,7 +191,7 @@ async function testUpsertWithoutMandatoryField(
     chartFieldToNull: string,
     dataVisualisationService: DataVisualisationService,
     generalService: GeneralService,
-    dataToPass?: string,
+    dataToPass?: any,
 ) {
     chart.Name = generateRandomName();
     const _chart: Chart = { ...chart };

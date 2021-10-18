@@ -9,10 +9,10 @@ export interface Chart {
     Description: string;
     Name: string;
     ReadOnly: boolean;
-    ScriptURI: string;
+    ScriptURI: any;
 }
 
-const addonVersion = '0.0.28';
+const addonVersion = '0.0.30';
 
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) {}
