@@ -141,7 +141,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             expect(chartAuditLogAsync).to.not.equal(null);
             expect(chartAuditLogAsync['Status']['Name']).to.not.equal(null);
             const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
-            let upsertedChartFound: number = 0;
+            let upsertedChartFound = 0;
             jsonDataFromAuditLog.forEach((jsonChartData) => {
                 if (objectsEqual(jsonChartData, listOfChartsToUpsert)) upsertedChartFound++;
             });
@@ -150,20 +150,30 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     });
     describe('bug verification', () => {
         it('POST - upserting a chart with number as script uri', async () => {
-            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField("ScriptURI", dataVisualisationService, generalService, 721346);
+            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
+                'ScriptURI',
+                dataVisualisationService,
+                generalService,
+                721346,
+            );
             expect(jsonDataFromAuditLog).to.have.own.property('success');
             expect(jsonDataFromAuditLog.success).to.equal('Exception');
             expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
             expect(jsonDataFromAuditLog.errorMessage).to.include('Failed upsert file storage');
         });
         it('POST - upserting a chart with non url string as script uri', async () => {
-            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField("ScriptURI", dataVisualisationService, generalService, "https:fsdjkfd");
+            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
+                'ScriptURI',
+                dataVisualisationService,
+                generalService,
+                'https:fsdjkfd',
+            );
             expect(jsonDataFromAuditLog).to.have.own.property('success');
             expect(jsonDataFromAuditLog.success).to.equal('Exception');
             expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
             expect(jsonDataFromAuditLog.errorMessage).to.include('Failed upsert file storage');
         });
-    })
+    });
 }
 
 //***global variables and helper functions***//
@@ -179,9 +189,9 @@ const stringIsAValidUrl = (s: string) => {
     }
 };
 
-//chart generic object which is manipulated for negative POST tests 
+//chart generic object which is manipulated for negative POST tests
 const chart: Chart = {
-    Description: "desc",
+    Description: 'desc',
     Name: 'name',
     ScriptURI: scriptURI,
     ReadOnly: true,
@@ -202,7 +212,7 @@ async function testUpsertWithoutMandatoryField(
     return jsonDataFromAuditLog;
 }
 
-function objectsEqual(o1, listOfCharts: Chart[]) {
+function objectsEqual(o1, listOfCharts: Chart[]): boolean {
     for (let i = 0; i < listOfCharts.length; i++) {
         if (
             o1['Key'] === listOfCharts[i]['Key'] &&

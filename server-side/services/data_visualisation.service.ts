@@ -1,4 +1,4 @@
-import { PapiClient, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface Chart {
@@ -17,13 +17,13 @@ const addonVersion = '0.0.30';
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) {}
 
-    getCharts(options?: FindOptions) {
+    getCharts() {
         return this.papiClient.get(
             `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
         );
     }
 
-    getChartsAsync(options?: FindOptions) {
+    getChartsAsync() {
         return this.papiClient.get(
             `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
         );
