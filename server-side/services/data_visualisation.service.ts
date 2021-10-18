@@ -1,25 +1,51 @@
-import { PapiClient, DataView, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
+import GeneralService from './general.service';
+
+export interface Chart {
+    CreationDateTime?: string;
+    Hidden?: boolean;
+    ModificationDateTime?: string;
+    Key?: string;
+    Description: string;
+    Name: string;
+    ReadOnly: boolean;
+    ScriptURI: any;
+}
+
+const addonVersion = '0.0.30';
 
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) {}
 
-    getDataViewByID(id: number) {
-        return this.papiClient.metaData.dataViews.get(id);
+    getCharts() {
+        return this.papiClient.get(
+            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
+        );
     }
 
-    getDataViews(options?: FindOptions) {
-        return this.papiClient.metaData.dataViews.find(options);
+    getChartsAsync() {
+        return this.papiClient.get(
+            `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
+        );
     }
 
-    getAllDataViews(options?: FindOptions) {
-        return this.papiClient.metaData.dataViews.iter(options).toArray();
-    }
-
-    postDataView(dataView: DataView) {
-        return this.papiClient.metaData.dataViews.upsert(dataView);
-    }
-
-    postDataViewBatch(dataViewArr: DataView[]) {
-        return this.papiClient.metaData.dataViews.batch(dataViewArr);
+    postChartAsync(generalService: GeneralService, chart: Chart, argHeaders?: any) {
+        if (argHeaders)
+            return generalService.fetchStatus(
+                `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify(chart),
+                    headers: argHeaders,
+                },
+            );
+        else
+            return generalService.fetchStatus(
+                `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify(chart),
+                },
+            );
     }
 }
