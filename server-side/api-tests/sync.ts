@@ -173,6 +173,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             DeviceScreenSize: 9000,
             SystemName: 'OREN-PC',
             ClientDBUUID: 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString(),
+            SystemVersion: 'New version bug',
         };
     } catch (error) {
         console.log(error);

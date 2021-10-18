@@ -297,10 +297,6 @@ export default class GeneralService {
             if (addonName == 'Pepperi Notification Service') {
                 searchString = `AND Version Like '${'1.0.110'}%'`;
             }
-            //This was added at 07/10/2021 by Oren - Since there is a problem with new papi versions
-            if (addonName == 'Services Framework') {
-                searchString = `AND Version Like '${'9.5.443'}%'`;
-            }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',
