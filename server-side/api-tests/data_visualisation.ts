@@ -1,6 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart, generateRandomType } from '../services/data_visualisation.service';
-import { possibaleTypes } from '../services/data_visualisation.service';
+import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
 import * as URL from 'url';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -66,8 +65,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(jsonChartData).to.have.own.property('Key');
                     expect(jsonChartData).to.have.own.property('Name');
                     expect(jsonChartData).to.have.own.property('Description');
-                    expect(jsonChartData).to.have.own.property('Type');
-                    expect(jsonChartData['Type']).to.be.oneOf(['Single', 'Series', 'MultiSeries']);
                     expect(jsonChartData).to.have.own.property('ScriptURI');
                     expect(stringIsAValidUrl(jsonChartData['ScriptURI'])).to.equal(true);
                     expect(jsonChartData).to.have.own.property('ReadOnly');
@@ -76,7 +73,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             });
         });
         describe('POST', () => {
-            it('Upsert chart - w/o mandatory field Authorization', async () => {
+            it('Upsert chart - w/o mandatory field: Authorization', async () => {
                 const headers = {
                     Authorization: null as any,
                 };
@@ -89,42 +86,17 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     'Name',
                     dataVisualisationService,
                     generalService,
-                    tester,
                 );
                 expect(jsonDataFromAuditLog).to.have.own.property('success');
                 expect(jsonDataFromAuditLog.success).to.equal('Exception');
                 expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
                 expect(jsonDataFromAuditLog.errorMessage).to.include('Name is a required field');
             });
-            it('Upsert chart - w/o mandatory field: Type', async () => {
-                const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
-                    'Type',
-                    dataVisualisationService,
-                    generalService,
-                    tester,
-                );
-                expect(jsonDataFromAuditLog).to.have.own.property('success');
-                expect(jsonDataFromAuditLog.success).to.equal('Exception');
-                expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
-            });
-            it('Upsert chart - with not supported mandatory field Type', async () => {
-                const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
-                    'Type',
-                    dataVisualisationService,
-                    generalService,
-                    tester,
-                    'wrongType',
-                );
-                expect(jsonDataFromAuditLog).to.have.own.property('success');
-                expect(jsonDataFromAuditLog.success).to.equal('Exception');
-                expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
-            });
-            it('Upsert chart - w/o mandatory field ScriptURI', async () => {
+            it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
                 const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
                     'ScriptURI',
                     dataVisualisationService,
                     generalService,
-                    tester,
                 );
                 expect(jsonDataFromAuditLog).to.have.own.property('success');
                 expect(jsonDataFromAuditLog.success).to.equal('Exception');
@@ -134,10 +106,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         });
     });
 
-    describe('e2e test - upsert valid charts & validate got them all correctly', () => {
-        it('testing upsert - testing whther getting valid response from server for valid charts data list upserted', async () => {
+    describe('e2e test - UPSERT (POST) 5 valid charts & validate GET returns all 5 correctly', () => {
+        it('testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
             for (let i = 0; i < listOfChartsToUpsert.length; i++) {
-                debugger;
                 const chartResponse = await dataVisualisationService.postChartAsync(
                     generalService,
                     listOfChartsToUpsert[i],
@@ -153,8 +124,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 expect(jsonDataFromAuditLog['Name']).to.equal(listOfChartsToUpsert[i]['Name']);
                 expect(jsonDataFromAuditLog).to.have.own.property('Description');
                 expect(jsonDataFromAuditLog['Description']).to.equal(listOfChartsToUpsert[i]['Description']);
-                expect(jsonDataFromAuditLog).to.have.own.property('Type');
-                expect(jsonDataFromAuditLog['Type']).to.equal(listOfChartsToUpsert[i]['Type']);
                 expect(jsonDataFromAuditLog).to.have.own.property('ScriptURI');
                 expect(jsonDataFromAuditLog).to.have.own.property('ReadOnly');
                 expect(jsonDataFromAuditLog['ReadOnly']).to.be.an('Boolean');
@@ -164,13 +133,15 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 listOfChartsToUpsert[i].Key = jsonDataFromAuditLog.Key;
             }
         });
-        it('GET all charts and test we can find all valid upserted charts', async () => {
+        it('GET all charts and test we can find all 5 valid upserted charts', async () => {
             const chartResponse = await dataVisualisationService.getChartsAsync();
+            // debugger;
             const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
+            // debugger;
             expect(chartAuditLogAsync).to.not.equal(null);
             expect(chartAuditLogAsync['Status']['Name']).to.not.equal(null);
             const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
-            let upsertedChartFound = 0;
+            let upsertedChartFound: number = 0;
             jsonDataFromAuditLog.forEach((jsonChartData) => {
                 if (objectsEqual(jsonChartData, listOfChartsToUpsert)) upsertedChartFound++;
             });
@@ -192,10 +163,10 @@ const stringIsAValidUrl = (s: string) => {
     }
 };
 
+//chart generic object which is manipulated for tests 
 const chart: Chart = {
-    Description: 'test chart desc',
-    Name: 'testing chart name',
-    Type: possibaleTypes.Single,
+    Description: "desc",
+    Name: 'name',
     ScriptURI: scriptURI,
     ReadOnly: true,
 };
@@ -204,10 +175,9 @@ async function testUpsertWithoutMandatoryField(
     chartFieldToNull: string,
     dataVisualisationService: DataVisualisationService,
     generalService: GeneralService,
-    tester: TesterFunctions,
     dataToPass?: string,
 ) {
-    chart['ScriptURI'] = scriptURI;
+    chart.Name = generateRandomName();
     const _chart: Chart = { ...chart };
     _chart[chartFieldToNull] = dataToPass ? dataToPass : null;
     const chartResponse = await dataVisualisationService.postChartAsync(generalService, _chart);
@@ -223,8 +193,7 @@ function objectsEqual(o1, listOfCharts: Chart[]) {
             o1['Description'] === listOfCharts[i]['Description'] &&
             o1['Name'] === listOfCharts[i]['Name'] &&
             o1['ReadOnly'] === listOfCharts[i]['ReadOnly'] &&
-            o1['ScriptURI'] === listOfCharts[i]['ScriptURI'] &&
-            o1['Type'] === listOfCharts[i]['Type']
+            o1['ScriptURI'] === listOfCharts[i]['ScriptURI']
         )
             return true;
     }
@@ -234,15 +203,15 @@ function objectsEqual(o1, listOfCharts: Chart[]) {
 function createListOfRandCharts(): Chart[] {
     const listOfCharts: Chart[] = [];
     for (let i = 0; i < 5; i++) {
-        const randType: possibaleTypes = generateRandomType();
         const chartToPush: Chart = {
-            Description: `test-${i}`,
-            Name: `chart-name-${i}`,
+            Description: `chart-desc-${i}`,
+            Name: generateRandomName(),
             ReadOnly: false,
             ScriptURI: scriptURI,
-            Type: randType,
         };
         listOfCharts.push(chartToPush);
     }
     return listOfCharts;
 }
+
+const generateRandomName = (): string => Math.random().toString(36).substr(2, 7);

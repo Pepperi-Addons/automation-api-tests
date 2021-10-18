@@ -1,12 +1,6 @@
 import { PapiClient, FindOptions } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
-export enum possibaleTypes {
-    Single = 'Single',
-    Series = 'Series',
-    MultiSeries = 'MultiSeries',
-}
-
 export interface Chart {
     CreationDateTime?: string;
     Hidden?: boolean;
@@ -16,25 +10,9 @@ export interface Chart {
     Name: string;
     ReadOnly: boolean;
     ScriptURI: string;
-    Type: possibaleTypes;
 }
 
-export const generateRandomType = (): possibaleTypes => {
-    const num = Math.floor(Math.random() * (4 - 1) + 1);
-    switch (num) {
-        case 1:
-            return possibaleTypes.Single;
-        case 2:
-            return possibaleTypes.Series;
-        case 3:
-            return possibaleTypes.MultiSeries;
-        default:
-            //only for TS return type
-            return possibaleTypes.Single;
-    }
-};
-
-const addonVersion = '0.0.27';
+const addonVersion = '0.0.28';
 
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) {}
@@ -51,7 +29,7 @@ export class DataVisualisationService {
         );
     }
 
-    postChartAsync(generalService: GeneralService, chart: any, argHeaders?: any) {
+    postChartAsync(generalService: GeneralService, chart: Chart, argHeaders?: any) {
         if (argHeaders)
             return generalService.fetchStatus(
                 `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
