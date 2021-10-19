@@ -3,8 +3,7 @@ import { DataVisualisationService, Chart } from '../services/data_visualisation.
 import * as URL from 'url';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataVisualisationService = new DataVisualisationService(generalService); //just for lint issue
-
+    const dataVisualisationService = new DataVisualisationService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
