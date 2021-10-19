@@ -59,7 +59,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         describe('GET', () => {
             it('Get Charts - Retriving all chart data and validating its format', async () => {
                 const chartResponse: AsyncResponse = await dataVisualisationService.getChartsAsync();
-                const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
+                const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(
+                    chartResponse.URI,
+                    40,
+                );
                 expect(chartAuditLogAsync.Status?.Name).to.equal('Success');
                 const jsonDataFromAuditLog: Chart[] = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
                 jsonDataFromAuditLog.forEach((jsonChartData) => {
@@ -78,7 +81,11 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 const headers = {
                     Authorization: null as any,
                 };
-                const chartResponse: FetchStatusResponse = await dataVisualisationService.postChartAsync(generalService, chart, headers);
+                const chartResponse: FetchStatusResponse = await dataVisualisationService.postChartAsync(
+                    generalService,
+                    chart,
+                    headers,
+                );
                 expect(chartResponse.Status).to.equal(401);
                 expect(chartResponse.Body.message).to.equal('Unauthorized');
             });
@@ -138,7 +145,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         });
         it('GET all charts and test we can find all 5 valid upserted charts', async () => {
             const chartResponse: AsyncResponse = await dataVisualisationService.getChartsAsync();
-            const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
+            const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(
+                chartResponse.URI,
+                40,
+            );
             expect(chartAuditLogAsync).to.not.equal(null);
             expect(chartAuditLogAsync.Status?.Name).to.not.equal(null);
             const jsonDataFromAuditLog: Chart[] = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
@@ -179,7 +189,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
 //***global variables and helper functions***//
 
-const scriptURI: string = 'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
+const scriptURI = 'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
 
 const stringIsAValidUrl = (s: string): boolean => {
     try {
@@ -242,5 +252,3 @@ function createListOfRandCharts(): Chart[] {
 }
 
 const generateRandomName = (): string => Math.random().toString(36).substr(2, 7);
-
-

@@ -25,7 +25,7 @@ export interface AsyncResponse {
 const addonVersion = '0.0.30';
 
 export class DataVisualisationService {
-    constructor(public papiClient: PapiClient) { }
+    constructor(public papiClient: PapiClient) {}
 
     getCharts(): Promise<Chart[]> {
         return this.papiClient.get(
@@ -59,4 +59,3 @@ export class DataVisualisationService {
             );
     }
 }
-
