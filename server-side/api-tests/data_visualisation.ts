@@ -69,8 +69,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     ];
 
     for (let index = 0; index < dataStrArr.length; index++) {
-        stringIsAValidUrl(dataStrArr[index]);
-        console.log(dataStrArr[index], stringIsAValidUrl(dataStrArr[index]));
+        console.log(index, dataStrArr[index], stringIsAValidUrl(dataStrArr[index]));
     }
 
     describe('Data Visualisation Tests Suites', () => {
