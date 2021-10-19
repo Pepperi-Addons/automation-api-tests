@@ -15,7 +15,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
     //#region Upgrade ADAL
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+        'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
