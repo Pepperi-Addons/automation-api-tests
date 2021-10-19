@@ -114,7 +114,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        relations: ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+        'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
