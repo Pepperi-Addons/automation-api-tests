@@ -1,6 +1,7 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart, AuditLogJSON } from '../services/data_visualisation.service';
+import GeneralService, { FetchStatusResponse, TesterFunctions } from '../services/general.service';
+import { DataVisualisationService, Chart, AuditLogJSON, AsyncResponse } from '../services/data_visualisation.service';
 import * as URL from 'url';
+import { AuditLog } from '@pepperi-addons/papi-sdk';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataVisualisationService = new DataVisualisationService(generalService.papiClient); //just for lint issue
@@ -57,10 +58,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     describe('Endpoints', () => {
         describe('GET', () => {
             it('Get Charts - Retriving all chart data and validating its format', async () => {
-                const chartResponse = await dataVisualisationService.getChartsAsync();
-                const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
-                expect(chartAuditLogAsync['Status']['Name']).to.equal('Success');
-                const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
+                const chartResponse: AsyncResponse = await dataVisualisationService.getChartsAsync();
+                const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
+                expect(chartAuditLogAsync.Status?.Name).to.equal('Success');
+                const jsonDataFromAuditLog: Chart[] = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
                 jsonDataFromAuditLog.forEach((jsonChartData) => {
                     expect(jsonChartData).to.have.own.property('Key');
                     expect(jsonChartData).to.have.own.property('Name');
@@ -77,12 +78,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 const headers = {
                     Authorization: null as any,
                 };
-                const chartResponse = await dataVisualisationService.postChartAsync(generalService, chart, headers);
+                const chartResponse: FetchStatusResponse = await dataVisualisationService.postChartAsync(generalService, chart, headers);
                 expect(chartResponse.Status).to.equal(401);
                 expect(chartResponse.Body.message).to.equal('Unauthorized');
             });
             it('Upsert chart - w/o mandatory field: Name', async () => {
-                const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
+                const jsonDataFromAuditLog: AuditLogJSON = await testUpsertWithoutMandatoryField(
                     'Name',
                     dataVisualisationService,
                     generalService,
@@ -93,12 +94,11 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 expect(jsonDataFromAuditLog.errorMessage).to.include('Name is a required field');
             });
             it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
-                const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
+                const jsonDataFromAuditLog: AuditLogJSON = await testUpsertWithoutMandatoryField(
                     'ScriptURI',
                     dataVisualisationService,
                     generalService,
                 );
-                debugger;
                 expect(jsonDataFromAuditLog).to.have.own.property('success');
                 expect(jsonDataFromAuditLog.success).to.equal('Exception');
                 expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
@@ -111,16 +111,16 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         it('testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
             for (let i = 0; i < listOfChartsToUpsert.length; i++) {
                 listOfChartsToUpsert[i].Hidden = false;
-                const chartResponse = await dataVisualisationService.postChartAsync(
+                const chartResponse: FetchStatusResponse = await dataVisualisationService.postChartAsync(
                     generalService,
                     listOfChartsToUpsert[i],
                 );
-                const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(
+                const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(
                     chartResponse.Body.URI,
                     40,
                 );
-                expect(chartAuditLogAsync['Status']['Name']).to.equal('Success');
-                const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
+                expect(chartAuditLogAsync.Status?.Name).to.equal('Success');
+                const jsonDataFromAuditLog: Chart = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
                 expect(jsonDataFromAuditLog).to.have.own.property('Key');
                 expect(jsonDataFromAuditLog).to.have.own.property('Name');
                 expect(jsonDataFromAuditLog['Name']).to.equal(listOfChartsToUpsert[i]['Name']);
@@ -137,11 +137,11 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             }
         });
         it('GET all charts and test we can find all 5 valid upserted charts', async () => {
-            const chartResponse = await dataVisualisationService.getChartsAsync();
-            const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
+            const chartResponse: AsyncResponse = await dataVisualisationService.getChartsAsync();
+            const chartAuditLogAsync: AuditLog = await generalService.getAuditLogResultObjectIfValid(chartResponse.URI, 40);
             expect(chartAuditLogAsync).to.not.equal(null);
-            expect(chartAuditLogAsync['Status']['Name']).to.not.equal(null);
-            const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
+            expect(chartAuditLogAsync.Status?.Name).to.not.equal(null);
+            const jsonDataFromAuditLog: Chart[] = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
             let upsertedChartFound = 0;
             jsonDataFromAuditLog.forEach((jsonChartData) => {
                 if (objectsEqual(jsonChartData, listOfChartsToUpsert)) upsertedChartFound++;
@@ -151,7 +151,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     });
     describe('bug verification', () => {
         it('POST - upserting a chart with number as script uri', async () => {
-            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
+            const jsonDataFromAuditLog: AuditLogJSON = await testUpsertWithoutMandatoryField(
                 'ScriptURI',
                 dataVisualisationService,
                 generalService,
@@ -163,7 +163,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             expect(jsonDataFromAuditLog.errorMessage).to.include('Failed upsert file storage');
         });
         it('POST - upserting a chart with non url string as script uri', async () => {
-            const jsonDataFromAuditLog = await testUpsertWithoutMandatoryField(
+            const jsonDataFromAuditLog: AuditLogJSON = await testUpsertWithoutMandatoryField(
                 'ScriptURI',
                 dataVisualisationService,
                 generalService,

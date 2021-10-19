@@ -18,7 +18,7 @@ export interface AuditLogJSON {
     success: string;
 }
 
-interface AsyncResponse {
+export interface AsyncResponse {
     URI: string;
 }
 
