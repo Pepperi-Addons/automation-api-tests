@@ -33,7 +33,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
     });
     const root = mocha.suite;
     let context: Suite | undefined = root;
-    const testArr: any[] = [];
+
     return {
         describe: (name: string, fn: () => any) => {
             const suite = new Mocha.Suite(name);
@@ -51,11 +51,6 @@ export default function Tester(client?: Client, testName?: string, environment?:
         expect: expect,
 
         assert: assert,
-
-        evgeny: (name: string, fn: any) => {
-            debugger;
-            testArr.push(fn);
-        },
 
         run: () => {
             return new Promise((resolve, reject) => {
