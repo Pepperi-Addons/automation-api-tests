@@ -1,5 +1,5 @@
-import { PapiClient } from '@pepperi-addons/papi-sdk';
-import GeneralService, { FetchStatusResponse } from './general.service';
+import { PapiClient, AuditLog } from '@pepperi-addons/papi-sdk';
+import GeneralService from './general.service';
 
 export interface Chart {
     CreationDateTime?: string;
@@ -12,50 +12,29 @@ export interface Chart {
     ScriptURI: any;
 }
 
-export interface AuditLogJSON {
-    errorMessage: string;
-    resultObject: any;
-    success: string;
-}
-
-export interface AsyncResponse {
-    URI: string;
-}
-
-const addonVersion = '0.0.31';
-
 export class DataVisualisationService {
-    constructor(public papiClient: PapiClient) {}
+    papiClient: PapiClient;
+    generalService: GeneralService;
 
-    getCharts(): Promise<Chart[]> {
-        return this.papiClient.get(
-            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts?page_size=-1`,
-        );
-    }
-    //?page_size=-1
-    getChartsAsync(): Promise<AsyncResponse> {
-        return this.papiClient.get(
-            `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts?page_size=-1`,
-        );
+    constructor(public service: GeneralService) {
+        this.papiClient = service.papiClient;
+        this.generalService = service;
     }
 
-    postChartAsync(generalService: GeneralService, chart: Chart, argHeaders?: any): Promise<FetchStatusResponse> {
-        if (argHeaders)
-            return generalService.fetchStatus(
-                `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify(chart),
-                    headers: argHeaders,
-                },
-            );
-        else
-            return generalService.fetchStatus(
-                `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify(chart),
-                },
-            );
+    //This should be replace with getCharts() that will used from the sdk and will always return Chart[] => return this.papiClient.charts.find();
+    async getCharts(): Promise<Chart[]> {
+        const chartResponse = await this.papiClient.get(
+            `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts?page_size=-1`,
+        );
+        const chartAuditLogAsync: AuditLog = await this.generalService.getAuditLogResultObjectIfValid(
+            chartResponse.URI,
+            40,
+        );
+        const jsonDataFromAuditLog: Chart[] = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
+        return jsonDataFromAuditLog;
+    }
+
+    postChart(chart: Chart): Promise<Chart> {
+        return this.papiClient.post(`/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`, chart);
     }
 }

@@ -6,6 +6,7 @@ import {
     GeneralActivity,
     Transaction,
     User,
+    AuditLog,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
@@ -167,7 +168,7 @@ export default class GeneralService {
         return this.papiClient.metaData.type(resource_name).types.get();
     }
 
-    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30) {
+    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
         let auditLogResponse;
         do {
             auditLogResponse = await this.papiClient.get(uri);
@@ -199,27 +200,28 @@ export default class GeneralService {
                 auditLogResponse.UUID == auditLogResponse.Event.User.UUID ||
                 auditLogResponse.Event.User.UUID != this.getClientData('UserUUID')
             ) {
-                return 'Error in UUID in Audit Log API Response';
+                throw new Error('Error in UUID in Audit Log API Response');
             }
         } catch (error) {
             if (error instanceof Error) {
                 error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
             }
-            return error;
+            throw error;
         }
+
         //Check Date and Time
         try {
             if (
                 !auditLogResponse.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
                 !auditLogResponse.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
             ) {
-                return 'Error in Date and Time in Audit Log API Response';
+                throw new Error('Error in Date and Time in Audit Log API Response');
             }
         } catch (error) {
             if (error instanceof Error) {
                 error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
             }
-            return error;
+            throw error;
         }
         //Check Type and Event
         try {
@@ -232,13 +234,13 @@ export default class GeneralService {
                     auditLogResponse.Event.Type != 'deployment') ||
                 auditLogResponse.Event.User.Email != this.getClientData('UserEmail')
             ) {
-                return 'Error in Type and Event in Audit Log API Response';
+                throw new Error('Error in Type and Event in Audit Log API Response');
             }
         } catch (error) {
             if (error instanceof Error) {
                 error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
             }
-            return error;
+            throw error;
         }
         return auditLogResponse;
     }
@@ -267,7 +269,10 @@ export default class GeneralService {
                         .addonUUID(`${testData[addonUUID][0]}`)
                         .install();
                 }
-                await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
+                const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
+                if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
+                    isInstalledArr.push(false);
+                }
             }
             isInstalledArr.push(true);
         }
@@ -337,7 +342,7 @@ export default class GeneralService {
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
-            if (auditLogResponse.Status.Name == 'Failure') {
+            if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
@@ -349,11 +354,11 @@ export default class GeneralService {
                         .downgrade(varLatestVersion);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
-                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push(String(auditLogResponse.Status?.Name));
                 }
             } else {
                 testData[addonName].push(changeType);
-                testData[addonName].push(auditLogResponse.Status.Name);
+                testData[addonName].push(String(auditLogResponse.Status?.Name));
             }
         }
         return testData;

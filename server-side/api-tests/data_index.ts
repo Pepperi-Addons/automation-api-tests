@@ -249,7 +249,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(auditLogCreate).to.have.property('URI');
 
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
-                expect(auditLogResponse.Status.ID).to.be.equal(1);
+                expect(auditLogResponse.Status?.ID).to.be.equal(1);
 
                 const exportResponse = JSON.parse(auditLogResponse.AuditInfo.ResultObject);
                 expect(exportResponse.success).to.be.true;
@@ -261,7 +261,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(auditLogCreate).to.have.property('URI');
 
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
-                expect(auditLogResponse.Status.ID).to.be.equal(1);
+                expect(auditLogResponse.Status?.ID).to.be.equal(1);
 
                 const postFieldsResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
                 expect(postFieldsResponse.CreationDateTime).to.includes('Z');
@@ -284,7 +284,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(auditLogCreate).to.have.property('URI');
 
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
-                expect(auditLogResponse.Status.ID).to.be.equal(1);
+                expect(auditLogResponse.Status?.ID).to.be.equal(1);
 
                 const rebuildResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
                 expect(rebuildResponse.success).to.be.true;
@@ -302,7 +302,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         auditLogCreate.URI,
                         40,
                     );
-                    expect(auditLogResponse.Status.ID).to.be.equal(1);
+                    expect(auditLogResponse.Status?.ID).to.be.equal(1);
                     pollingResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
                     maxLoopsCounter--;
                 } while (
@@ -319,7 +319,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(auditLogCreate).to.have.property('URI');
 
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
-                expect(auditLogResponse.Status.ID).to.be.equal(1);
+                expect(auditLogResponse.Status?.ID).to.be.equal(1);
 
                 const rebuildResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
                 expect(rebuildResponse.success).to.be.true;
@@ -336,7 +336,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                         auditLogCreate.URI,
                         40,
                     );
-                    expect(auditLogResponse.Status.ID).to.be.equal(1);
+                    expect(auditLogResponse.Status?.ID).to.be.equal(1);
                     pollingResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
                     maxLoopsCounter--;
                 } while (

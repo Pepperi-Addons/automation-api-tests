@@ -1163,7 +1163,7 @@ export async function PepperiNotificationServiceTests(
                     uninstallAddonBeforeTest.URI as string,
                     40,
                 );
-                expect(uninstallAddonBeforeTestApiResponse.Status.ID).to.be.not.equal(
+                expect(uninstallAddonBeforeTestApiResponse.Status?.ID).to.be.not.equal(
                     2,
                     'Failed To Remove NG-10 Addon',
                 );
@@ -1178,7 +1178,7 @@ export async function PepperiNotificationServiceTests(
                     installedAddon.URI as string,
                     40,
                 );
-                expect(installedAddonApiResponse.Status.ID).to.be.equal(1, 'Install Failed');
+                expect(installedAddonApiResponse.Status?.ID).to.be.equal(1, 'Install Failed');
 
                 //Validate Subscription created
                 generalService.sleep(4000); //The test if flaky in EU - This should solve it but if not, the test should fail
@@ -1240,7 +1240,7 @@ export async function PepperiNotificationServiceTests(
                     uninstallAddon.URI as string,
                     40,
                 );
-                expect(uninstallAddonApiResponse.Status.ID).to.be.equal(1, 'Uninstall Faild');
+                expect(uninstallAddonApiResponse.Status?.ID).to.be.equal(1, 'Uninstall Faild');
                 generalService.sleep(1500);
 
                 //Validate Subscription created
@@ -1300,7 +1300,7 @@ export async function PepperiNotificationServiceTests(
                     40,
                 );
 
-                expect(postAddonApiResponse.Status.ID).to.be.equal(1);
+                expect(postAddonApiResponse.Status?.ID).to.be.equal(1);
 
                 const deleteAddon = await generalService.papiClient
                     .delete(`/addons/installed_addons/${testData['Pepperi Notification Service'][0]}`)
@@ -1328,7 +1328,7 @@ export async function PepperiNotificationServiceTests(
                     40,
                 );
 
-                expect(postDowngradeApiResponse.Status.ID).to.be.equal(1);
+                expect(postDowngradeApiResponse.Status?.ID).to.be.equal(1);
 
                 //Downgrade PNS
                 downgradeAddon = await generalService.papiClient.addons.installedAddons
@@ -1342,7 +1342,7 @@ export async function PepperiNotificationServiceTests(
                     40,
                 );
 
-                expect(postDowngradeApiResponse.Status.ID).to.be.equal(1);
+                expect(postDowngradeApiResponse.Status?.ID).to.be.equal(1);
 
                 //Upgrade ADAL
                 let upgradeAddon = await generalService.papiClient.addons.installedAddons
@@ -1356,7 +1356,7 @@ export async function PepperiNotificationServiceTests(
                     40,
                 );
 
-                expect(postUpgradeApiResponse.Status.ID).to.be.equal(1);
+                expect(postUpgradeApiResponse.Status?.ID).to.be.equal(1);
 
                 //Upgrade PNS
                 upgradeAddon = await generalService.papiClient.addons.installedAddons
@@ -1370,7 +1370,7 @@ export async function PepperiNotificationServiceTests(
                     40,
                 );
 
-                expect(postUpgradeApiResponse.Status.ID).to.be.equal(1);
+                expect(postUpgradeApiResponse.Status?.ID).to.be.equal(1);
             });
         });
     });
