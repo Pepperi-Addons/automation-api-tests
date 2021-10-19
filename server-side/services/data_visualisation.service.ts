@@ -22,20 +22,20 @@ export interface AsyncResponse {
     URI: string;
 }
 
-const addonVersion = '0.0.30';
+const addonVersion = '0.0.31';
 
 export class DataVisualisationService {
     constructor(public papiClient: PapiClient) {}
 
     getCharts(): Promise<Chart[]> {
         return this.papiClient.get(
-            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
+            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts?page_size=-1`,
         );
     }
-
+    //?page_size=-1
     getChartsAsync(): Promise<AsyncResponse> {
         return this.papiClient.get(
-            `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts`,
+            `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/version/${addonVersion}/api/charts?page_size=-1`,
         );
     }
 
