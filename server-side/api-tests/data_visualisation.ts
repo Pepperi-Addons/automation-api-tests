@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
+import { DataVisualisationService, Chart, AuditLogJSON } from '../services/data_visualisation.service';
 import * as URL from 'url';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -98,6 +98,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     dataVisualisationService,
                     generalService,
                 );
+                debugger;
                 expect(jsonDataFromAuditLog).to.have.own.property('success');
                 expect(jsonDataFromAuditLog.success).to.equal('Exception');
                 expect(jsonDataFromAuditLog).to.have.own.property('errorMessage');
@@ -178,9 +179,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
 //***global variables and helper functions***//
 
-const scriptURI = 'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
+const scriptURI: string = 'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
 
-const stringIsAValidUrl = (s: string) => {
+const stringIsAValidUrl = (s: string): boolean => {
     try {
         URL.parse(s);
         return true;
@@ -202,17 +203,17 @@ async function testUpsertWithoutMandatoryField(
     dataVisualisationService: DataVisualisationService,
     generalService: GeneralService,
     dataToPass?: any,
-) {
+): Promise<AuditLogJSON> {
     chart.Name = generateRandomName();
     const _chart: Chart = { ...chart };
     _chart[chartFieldToNull] = dataToPass ? dataToPass : null;
     const chartResponse = await dataVisualisationService.postChartAsync(generalService, _chart);
     const chartAuditLogAsync = await generalService.getAuditLogResultObjectIfValid(chartResponse.Body.URI, 40);
-    const jsonDataFromAuditLog = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
+    const jsonDataFromAuditLog: AuditLogJSON = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
     return jsonDataFromAuditLog;
 }
 
-function objectsEqual(o1, listOfCharts: Chart[]): boolean {
+function objectsEqual(o1: Chart, listOfCharts: Chart[]): boolean {
     for (let i = 0; i < listOfCharts.length; i++) {
         if (
             o1['Key'] === listOfCharts[i]['Key'] &&
@@ -241,3 +242,5 @@ function createListOfRandCharts(): Chart[] {
 }
 
 const generateRandomName = (): string => Math.random().toString(36).substr(2, 7);
+
+
