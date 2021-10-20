@@ -175,12 +175,10 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     };
 
     //#region Upgrade Data Index
-    //TODO: Remove this (1.0.50) and work on the actually latest version
-    //when shir or meital will refactor Data Index to work with the new framework changes
     const testData = {
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
         'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-        PepperiElasticSearch: ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Pepperi Elastic Search': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
