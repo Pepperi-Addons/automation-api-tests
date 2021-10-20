@@ -116,9 +116,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('Name');
                         expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('ScriptURI');
-                        expect(stringIsAValidUrl(jsonChartData['ScriptURI'])).to.equal(true);
+                        expect(stringIsAValidUrl(jsonChartData.ScriptURI)).to.equal(true);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
-                        expect(jsonChartData['ReadOnly']).to.be.a('Boolean');
+                        expect(jsonChartData.ReadOnly).to.be.a('Boolean');
                     });
                 });
             });
@@ -212,9 +212,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(chartResponse.Ok).to.be.true;
                     expect(chartResponse.Body).to.have.own.property('Key');
                     expect(chartResponse.Body).to.have.own.property('Name');
-                    expect(chartResponse.Body.Name).to.equal(listOfChartsToUpsert[i]['Name']);
+                    expect(chartResponse.Body.Name).to.equal(listOfChartsToUpsert[i].Name);
                     expect(chartResponse.Body).to.have.own.property('Description');
-                    expect(chartResponse.Body.Description).to.equal(listOfChartsToUpsert[i]['Description']);
+                    expect(chartResponse.Body.Description).to.equal(listOfChartsToUpsert[i].Description);
                     expect(chartResponse.Body).to.have.own.property('ScriptURI');
                     expect(stringIsAValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
                     expect(chartResponse.Body).to.have.own.property('ReadOnly');
