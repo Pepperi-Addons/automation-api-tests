@@ -284,8 +284,8 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     },
                 );
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.equal(
-                    'Failed due to exception: Failed upsert file storage. error: Error: https://papi.pepperi.com/V1.0/file_storage failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Invalid URL","detail":{"errorcode":"InvalidData"}}}',
+                expect(chartResponse.Body.fault.faultstring).to.includes(
+                    '/V1.0/file_storage failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Invalid URL","detail":{"errorcode":"InvalidData"}}}',
                 );
             });
         });
