@@ -12,9 +12,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
 
     function generateRandomString(len: number) {
-        let rdmString: string = "";
+        let rdmString = '';
         while (rdmString.length < len) {
-            rdmString += Math.random().toString(36).substr(2)
+            rdmString += Math.random().toString(36).substr(2);
         }
         return rdmString.substr(0, len);
     }
@@ -96,7 +96,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             describe('POST', () => {
                 describe('Positive', () => {
                     it('Basic Chart Upsert ', async () => {
-                        const chart: Chart = { Description: 'desc', Name: generateRandomString(7), ReadOnly: true, ScriptURI: scriptURI } as Chart;
+                        const chart: Chart = {
+                            Description: 'desc',
+                            Name: generateRandomString(7),
+                            ReadOnly: true,
+                            ScriptURI: scriptURI,
+                        } as Chart;
                         const chartResponse = await generalService.fetchStatus(
                             `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
                             {
@@ -120,7 +125,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
                 describe('Negative', () => {
                     it('Upsert Chart - w/o mandatory field: Authorization', async () => {
-                        const chart: Chart = { Description: 'desc', Name: generateRandomString(7), ReadOnly: true, ScriptURI: scriptURI } as Chart;
+                        const chart: Chart = {
+                            Description: 'desc',
+                            Name: generateRandomString(7),
+                            ReadOnly: true,
+                            ScriptURI: scriptURI,
+                        } as Chart;
                         const headers = {
                             Authorization: null as any,
                         };
@@ -267,7 +277,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         });
         describe('Test Clean Up (Hidden = true)', () => {
             it('All The Data Views Hidden', async () => {
-                await expect(TestCleanUp(dataVisualisationService)).eventually.to.be.above(0)
+                await expect(TestCleanUp(dataVisualisationService)).eventually.to.be.above(0);
             });
         });
     });
@@ -281,10 +291,9 @@ async function TestCleanUp(service: DataVisualisationService) {
 
     for (let index = 0; index < allChartsObjects.length; index++) {
         if (
-            allChartsObjects[index].Description.startsWith('chart-desc') &&//as all the charts im upserting to api start with this description -- wont delete templates
+            allChartsObjects[index].Description.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
             allChartsObjects[index].Hidden == false
         ) {
-
             allChartsObjects[index].Hidden = true;
             await service.postChart(allChartsObjects[index]);
             deletedCounter++;
