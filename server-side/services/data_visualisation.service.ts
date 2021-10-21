@@ -7,6 +7,7 @@ export interface Chart {
     ModificationDateTime?: string;
     Key?: string;
     Description: string;
+    FileID?: string;
     Name: string;
     ReadOnly: boolean;
     ScriptURI: any;

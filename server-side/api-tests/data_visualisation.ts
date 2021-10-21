@@ -1,6 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
-import * as URL from 'url';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataVisualisationService = new DataVisualisationService(generalService);
@@ -12,29 +11,20 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     const scriptURI =
         'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
 
-    const stringIsAValidUrl = (s: string): boolean => {
-        try {
-            URL.parse(s);
-            return true;
-        } catch (err) {
-            return false;
+    function generateRandomString(len: number) {
+        let rdmString = '';
+        while (rdmString.length < len) {
+            rdmString += Math.random().toString(36).substr(2);
         }
-    };
-
-    //chart generic object which is manipulated for negative POST tests
-    const chart: Chart = {
-        Description: 'desc',
-        Name: 'name',
-        ScriptURI: scriptURI,
-        ReadOnly: true,
-    };
+        return rdmString.substr(0, len);
+    }
 
     function createListOfRandCharts(): Chart[] {
         const listOfCharts: Chart[] = [];
         for (let i = 0; i < 5; i++) {
             const chartToPush: Chart = {
                 Description: `chart-desc-${i}`,
-                Name: Math.random().toString(36).substr(2, 7),
+                Name: generateRandomString(7),
                 ReadOnly: false,
                 ScriptURI: scriptURI,
             };
@@ -53,25 +43,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Data Visualisation
-
-    //TODO: Review with Evgeny the stringIsAValidUrl function he created...
-    const dataStrArr = [
-        'oren',
-        '',
-        '',
-        ``,
-        '1231',
-        'https://www.youtube.com/watch?v=FuDOIsVgwWE&ab_channel=JayzTwoCents',
-        'https://papi.pepperi.com/V1.0/var/addons/versions?where=AddonUUID=%27bd629d5f-a7b4-4d03-9e7c-67865a6d82a9%27%20AND%20Version%20Like%20%270.%%27&order_by=CreationDateTime%20DESC',
-        '[]',
-        '{}',
-        '[https://papi.pepperi.com/V1.0/var/addons/versions?where=AddonUUID=%27bd629d5f-a7b4-4d03-9e7c-67865a6d82a9%27%20AND%20Version%20Like%20%270.%%27&order_by=CreationDateTime%20DESC]',
-    ];
-
-    for (let index = 0; index < dataStrArr.length; index++) {
-        console.log(index, dataStrArr[index], stringIsAValidUrl(dataStrArr[index]));
-    }
-
     describe('Data Visualisation Tests Suites', () => {
         describe('Prerequisites Addon for Data Visualisation Tests', () => {
             //Test Data
@@ -106,7 +77,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             }
         });
 
-        //TODO: Endpoint: GET, POST, DELETE, PATCH, PUT
         describe('Endpoints', () => {
             describe('GET', () => {
                 it('Get Charts - Retriving all chart data and validating its format', async () => {
@@ -116,7 +86,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('Name');
                         expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('ScriptURI');
-                        expect(stringIsAValidUrl(jsonChartData.ScriptURI)).to.equal(true);
+                        expect(generalService.IsValidUrl(jsonChartData.ScriptURI)).to.equal(true);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
                         expect(jsonChartData.ReadOnly).to.be.a('Boolean');
                     });
@@ -125,8 +95,13 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
             describe('POST', () => {
                 describe('Positive', () => {
-                    //TODO: Add positive POST endpoint test
-                    it('Upsert Chart', async () => {
+                    it('Basic Chart Upsert ', async () => {
+                        const chart: Chart = {
+                            Description: 'desc',
+                            Name: generateRandomString(7),
+                            ReadOnly: true,
+                            ScriptURI: scriptURI,
+                        } as Chart;
                         const chartResponse = await generalService.fetchStatus(
                             `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
                             {
@@ -134,15 +109,28 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                                 body: JSON.stringify(chart),
                             },
                         );
-                        expect(chartResponse.Status).to.equal(400);
-                        expect(chartResponse.Body.fault.faultstring).to.equal(
-                            'Failed due to exception: A chart with this name already exist.',
-                        );
+                        expect(chartResponse.Status).to.equal(200);
+                        expect(chartResponse.Ok).to.be.true;
+                        expect(chartResponse.Body).to.have.own.property('Key');
+                        expect(chartResponse.Body).to.have.own.property('Name');
+                        expect(chartResponse.Body.Name).to.equal(chart.Name);
+                        expect(chartResponse.Body).to.have.own.property('Description');
+                        expect(chartResponse.Body.Description).to.equal(chart.Description);
+                        expect(chartResponse.Body).to.have.own.property('ScriptURI');
+                        expect(generalService.IsValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
+                        expect(chartResponse.Body).to.have.own.property('ReadOnly');
+                        expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     });
                 });
 
                 describe('Negative', () => {
                     it('Upsert Chart - w/o mandatory field: Authorization', async () => {
+                        const chart: Chart = {
+                            Description: 'desc',
+                            Name: generateRandomString(7),
+                            ReadOnly: true,
+                            ScriptURI: scriptURI,
+                        } as Chart;
                         const headers = {
                             Authorization: null as any,
                         };
@@ -175,7 +163,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
                     it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
                         const chart: Chart = {
-                            Name: Math.random().toString(36).substr(2, 7),
+                            Name: generateRandomString(7),
                             Description: '',
                             ReadOnly: true,
                         } as Chart;
@@ -216,7 +204,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(chartResponse.Body).to.have.own.property('Description');
                     expect(chartResponse.Body.Description).to.equal(listOfChartsToUpsert[i].Description);
                     expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                    expect(stringIsAValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
+                    expect(generalService.IsValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
                     expect(chartResponse.Body).to.have.own.property('ReadOnly');
                     expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     //using returning data from server to save this chart script uri, read only and key attributes
@@ -230,18 +218,16 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 const chartResponse: Chart[] = await dataVisualisationService.getCharts();
                 expect(chartResponse).to.not.equal(null);
                 expect(chartResponse.length).to.be.above(0);
-                //TODO: change how the logic of the test is working, since we probably don't want to iterate that matrix of [5, infinity]
                 let upsertedChartFound = 0;
                 for (let index = 0; index < listOfChartsToUpsert.length; index++) {
                     chartResponse.forEach((jsonChartData) => {
-                        try {
-                            expect(jsonChartData).to.deep.include(listOfChartsToUpsert[index]);
-                        } catch (error) {
-                            console.log('Error');
-                            return;
+                        if (jsonChartData.Key === listOfChartsToUpsert[index].Key) {
+                            upsertedChartFound++;
+                            delete jsonChartData.ModificationDateTime;
+                            delete jsonChartData.CreationDateTime;
+                            delete jsonChartData.FileID;
+                            expect(jsonChartData).to.deep.equal(listOfChartsToUpsert[index]);
                         }
-                        console.log('Found!');
-                        upsertedChartFound++;
                     });
                 }
                 expect(upsertedChartFound).to.be.equal(listOfChartsToUpsert.length);
@@ -251,7 +237,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         describe('Bug Verification', () => {
             it('POST - upserting a chart with number as script uri', async () => {
                 const chart: Chart = {
-                    Name: Math.random().toString(36).substr(2, 7),
+                    Name: generateRandomString(7),
                     Description: '',
                     ReadOnly: true,
                     ScriptURI: 721346,
@@ -271,7 +257,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
             it('POST - upserting a chart with non url string as script uri', async () => {
                 const chart: Chart = {
-                    Name: Math.random().toString(36).substr(2, 7),
+                    Name: generateRandomString(7),
                     Description: '',
                     ReadOnly: true,
                     ScriptURI: 'https:fsdjkfd',
@@ -284,10 +270,35 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     },
                 );
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.equal(
-                    'Failed due to exception: Failed upsert file storage. error: Error: https://papi.pepperi.com/V1.0/file_storage failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Invalid URL","detail":{"errorcode":"InvalidData"}}}',
+                expect(chartResponse.Body.fault.faultstring).to.includes(
+                    '/V1.0/file_storage failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Invalid URL","detail":{"errorcode":"InvalidData"}}}',
                 );
             });
         });
+        describe('Test Clean Up (Hidden = true)', () => {
+            it('All The Data Views Hidden', async () => {
+                await expect(TestCleanUp(dataVisualisationService)).eventually.to.be.above(0);
+            });
+        });
     });
+}
+
+//Service Functions
+//Remove all test data views (Hidden = true)
+async function TestCleanUp(service: DataVisualisationService) {
+    const allChartsObjects: Chart[] = await service.getCharts();
+    let deletedCounter = 0;
+
+    for (let index = 0; index < allChartsObjects.length; index++) {
+        if (
+            allChartsObjects[index].Description.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
+            allChartsObjects[index].Hidden == false
+        ) {
+            allChartsObjects[index].Hidden = true;
+            await service.postChart(allChartsObjects[index]);
+            deletedCounter++;
+        }
+    }
+    console.log('Hidded Charts: ' + deletedCounter);
+    return deletedCounter;
 }
