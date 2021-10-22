@@ -6,6 +6,7 @@ import { WebAppTopBar } from './WebAppTopBar';
 import { WebAppDialog } from './WebAppDialog';
 import { WebAppActivity } from './WebAppActivity';
 import { WebAppTransaction } from './WebAppTransaction';
+import { WebAppSettingsBar } from './WebAppSettingsBar';
 
 export {
     WebAppLoginPage,
@@ -16,4 +17,5 @@ export {
     WebAppDialog,
     WebAppActivity,
     WebAppTransaction,
+    WebAppSettingsBar,
 };

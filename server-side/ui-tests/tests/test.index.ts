@@ -9,6 +9,7 @@ import { TestDataTest } from '../../api-tests/test-service/test_data';
 import { Client } from '@pepperi-addons/debug-server';
 import { LoginTest } from './login';
 import { OrdersTest } from './orders';
+import { WorkflowTest } from './workflow';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
 
@@ -46,9 +47,11 @@ const varPass = process.env.npm_config_var_pass as string;
 
     // await upgradeDependenciesTests(generalService, varPass);
 
-    await LoginTest(email, pass);
+    // await LoginTest(email, pass);
 
     // await OrdersTest(email, pass, client);
+
+    await WorkflowTest(email, pass, client);
 
     run();
 })();
