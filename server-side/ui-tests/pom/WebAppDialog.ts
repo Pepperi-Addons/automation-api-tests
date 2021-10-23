@@ -10,16 +10,25 @@ export class WebAppDialog extends Page {
 
     public Dialog: Locator = By.css('pep-dialog');
     public Title: Locator = By.css('pep-dialog .dialog-title');
-    public Content: Locator = By.css('pep-dialog-content');
+    public Content: Locator = By.css('div [pep-dialog-content]');
     public ButtonArr: Locator = By.css('pep-dialog button');
+
+    ///Object Types Editor Locators
+    public EditorContent: Locator = By.css('pep-dialog .mat-dialog-content');
+    public EditorTextBoxInput: Locator = By.css('pep-dialog .mat-dialog-content pep-textbox input');
+    public EditorTextAreaInput: Locator = By.css('pep-dialog .mat-dialog-content pep-textarea [matinput]');
+    public EditorInput: Locator = By.css('pep-dialog .mat-dialog-content .pep-field input');
+    public EditorMatInput: Locator = By.css('pep-dialog .mat-dialog-content .pep-field [matinput]');
+
+    public DialogXpath: Locator = By.xpath('.//pep-dialog');
 
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
         //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 3000, 3).then(
+        await this.browser.findElements(this.ButtonArr, 3000).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
-                        res[i].click();
+                        await res[i].click();
                     }
                 }
             },
@@ -32,11 +41,11 @@ export class WebAppDialog extends Page {
 
     public async selectDialogBox(buttonText: string): Promise<void> {
         //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 4000, 3).then(
+        await this.browser.findElements(this.ButtonArr, 4000).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
-                        res[i].click();
+                        await res[i].click();
                     }
                 }
             },
@@ -44,6 +53,13 @@ export class WebAppDialog extends Page {
                 console.log(`Element ${this.ButtonArr.toString()} not found`);
             },
         );
+        return;
+    }
+
+    public async selectDialogBoxByText(btnText: string): Promise<void> {
+        const selectedBtn = Object.assign({}, this.DialogXpath);
+        selectedBtn['value'] += ` //span[contains(., '${btnText}')]`;
+        await this.browser.click(selectedBtn);
         return;
     }
 }

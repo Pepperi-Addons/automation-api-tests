@@ -38,6 +38,9 @@ export async function OrdersTest(email: string, password: string, client: Client
             if (this.currentTest.state != 'passed') {
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                driver.sleep(6000);
+                const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
                     value: url,
@@ -45,6 +48,10 @@ export async function OrdersTest(email: string, password: string, client: Client
                 addContext(this, {
                     title: `Image`,
                     value: 'data:image/png;base64,' + base64Image,
+                });
+                addContext(this, {
+                    title: 'Console Logs',
+                    value: consoleLogs,
                 });
             }
             await driver.quit();
@@ -138,8 +145,8 @@ export async function OrdersTest(email: string, password: string, client: Client
             //Wait 5 seconds and validate there are no dialogs opening up after placing order
             //Exmaple on how to write test over a known bug - let the test pass but add information to the report
             try {
-                await expect(driver.findElement(webAppDialog.Title, 5000, 2)).eventually.to.be.rejectedWith(
-                    'After few retires the maxAttmpts of: 2, Riched: 0',
+                await expect(driver.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
+                    'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
                 );
             } catch (error) {
                 const base64Image = await driver.saveScreenshots();
@@ -238,6 +245,9 @@ export async function OrdersTest(email: string, password: string, client: Client
             if (this.currentTest.state != 'passed') {
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                driver.sleep(6000);
+                const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
                     value: url,
@@ -245,6 +255,10 @@ export async function OrdersTest(email: string, password: string, client: Client
                 addContext(this, {
                     title: `Image`,
                     value: 'data:image/png;base64,' + base64Image,
+                });
+                addContext(this, {
+                    title: 'Console Logs',
+                    value: consoleLogs,
                 });
             }
         });
@@ -367,8 +381,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                     //Exmaple on how to write test over a known bug - let the test pass but add information to the report
                     const webAppDialog = new WebAppDialog(driver);
                     try {
-                        await expect(driver.findElement(webAppDialog.Title, 5000, 2)).eventually.to.be.rejectedWith(
-                            'After few retires the maxAttmpts of: 2, Riched: 0',
+                        await expect(driver.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
+                            'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
                         );
                     } catch (error) {
                         const base64Image = await driver.saveScreenshots();

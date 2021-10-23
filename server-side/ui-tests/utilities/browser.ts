@@ -28,166 +28,114 @@ export class Browser {
         return await this.driver.navigate().to(url);
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 15000, maxAttmpts = 2): Promise<void> {
-        let allowRetry = false;
-        let maxRefreshAllowed = 3;
-        do {
-            try {
-                await (await this.findElements(selector, waitUntil, maxAttmpts))[index].click();
-                allowRetry = false;
-            } catch (error) {
-                if (error instanceof Error) {
-                    if (error.name === 'StaleElementReferenceError') {
-                        allowRetry = true;
-                    } else if (
-                        error.name === 'ElementClickInterceptedError' ||
-                        error.name === 'TypeError' ||
-                        error.name === 'JavascriptError'
-                    ) {
-                        try {
-                            await this.driver.executeScript(
-                                `document.querySelectorAll("${selector['value']}")[${index}].click();`,
-                            );
-                            allowRetry = false;
-                        } catch (error) {
-                            allowRetry = true;
-                            await this.driver.navigate().refresh();
-                            //This means that elements removed while scrolling (this is normal behavior of the webapp)
-                            this.sleep(15000);
-                            try {
-                                await this.driver.executeScript(
-                                    `document.querySelectorAll("${selector['value']}")[${index}].click();`,
-                                );
-                                allowRetry = false;
-                            } catch (error) {
-                                maxRefreshAllowed--;
-                                console.log(`Max Refresh Allowed: ${maxRefreshAllowed}`);
-                                console.log('This was thrown after refresh: ' + error);
-                                if (maxRefreshAllowed <= 0) {
-                                    throw new Error(`After few refresh the maxRefreshAllowed is: ${maxRefreshAllowed},
-                                    The test must end, Last Error was: ${error}`);
-                                }
-                            }
-                        }
-                    } else {
-                        throw error;
-                    }
+    public async switchTo(iframeLocator: Locator): Promise<void> {
+        const iframe = await this.driver.findElement(iframeLocator);
+        return await this.driver.switchTo().frame(iframe);
+    }
+
+    public async switchToDefaultContent(): Promise<void> {
+        return await this.driver.switchTo().defaultContent();
+    }
+
+    public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
+        try {
+            await (await this.findElements(selector, waitUntil))[index].click();
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.name === 'StaleElementReferenceError') {
+                } else if (
+                    error.name === 'ElementClickInterceptedError' ||
+                    error.name === 'TypeError' ||
+                    error.name === 'JavascriptError'
+                ) {
+                    await this.driver.executeScript(
+                        `document.querySelectorAll("${selector['value']}")[${index}].click();`,
+                    );
                 } else {
                     throw error;
                 }
+            } else {
+                throw error;
             }
-        } while (allowRetry);
+        }
         return;
     }
 
     public async sendKeys(selector: Locator, keys: string | number, index = 0): Promise<void> {
-        let allowRetry = false;
-        let maxRefreshAllowed = 3;
-        do {
-            try {
-                await (await this.findElements(selector))[index].clear();
-                await (await this.findElements(selector))[index].sendKeys(keys);
-                allowRetry = false;
-            } catch (error) {
-                if (error instanceof Error) {
-                    if (error.name === 'StaleElementReferenceError') {
-                        allowRetry = true;
-                    } else if (
-                        error.name === 'ElementClickInterceptedError' ||
-                        error.name === 'TypeError' ||
-                        error.name === 'JavascriptError'
-                    ) {
-                        try {
-                            await this.driver.executeScript(
-                                `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
-                            );
-                            allowRetry = false;
-                        } catch (error) {
-                            allowRetry = true;
-                            await this.driver.navigate().refresh();
-                            //This means that elements removed while scrolling (this is normal behavior of the webapp)
-                            this.sleep(15000);
-                            try {
-                                await this.driver.executeScript(
-                                    `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
-                                );
-                                allowRetry = false;
-                            } catch (error) {
-                                maxRefreshAllowed--;
-                                console.log(`Max Refresh Allowed: ${maxRefreshAllowed}`);
-                                console.log('This was thrown after refresh: ' + error);
-                                if (maxRefreshAllowed <= 0) {
-                                    throw new Error(`After few refresh the maxRefreshAllowed is: ${maxRefreshAllowed},
-                                    The test must end, Last Error was: ${error}`);
-                                }
-                            }
-                        }
-                    } else {
-                        throw error;
-                    }
+        try {
+            await (await this.findElements(selector))[index].clear();
+            await (await this.findElements(selector))[index].sendKeys(keys);
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.name === 'StaleElementReferenceError') {
+                } else if (
+                    error.name === 'ElementClickInterceptedError' ||
+                    error.name === 'TypeError' ||
+                    error.name === 'JavascriptError'
+                ) {
+                    await this.driver.executeScript(
+                        `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                    );
                 } else {
                     throw error;
                 }
+            } else {
+                throw error;
             }
-        } while (allowRetry);
+        }
         return;
     }
 
-    public async findElement(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<WebElement> {
-        return await this.findElements(selector, waitUntil, maxAttmpts).then((webElement) =>
+    public async findElement(selector: Locator, waitUntil = 15000): Promise<WebElement> {
+        return await this.findElements(selector, waitUntil).then((webElement) =>
             webElement ? webElement[0] : webElement,
         );
     }
 
-    public async findElements(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<WebElement[]> {
+    public async findElements(selector: Locator, waitUntil = 15000): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
-        let elArr;
         let isElVisible = false;
-        let loopCounter = maxAttmpts > 6 ? 6 : maxAttmpts;
-        do {
-            this.sleep(600);
-            elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
-                (webElement) => webElement,
+        this.sleep(600);
+        const elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
+            (webElement) => webElement,
+            (error) => {
+                console.log(error.message);
+            },
+        );
+        if (elArr && elArr[0]) {
+            isElVisible = await this.driver.wait(until.elementIsVisible(elArr[0]), waitUntil).then(
+                async (res) => {
+                    return await res.isDisplayed();
+                },
                 (error) => {
-                    console.log(error.message);
+                    if (error.name === 'StaleElementReferenceError' || error.name === 'TimeoutError') {
+                        return false;
+                    } else {
+                        throw new Error(`Element.isDisplayed throw error: ${error}`);
+                    }
                 },
             );
-            if (elArr && elArr[0]) {
-                isElVisible = await this.driver.wait(until.elementIsVisible(elArr[0]), waitUntil).then(
-                    async (res) => {
-                        return await res.isDisplayed();
-                    },
-                    (error) => {
-                        if (error.name === 'StaleElementReferenceError') {
-                            return false;
-                        } else {
-                            throw new Error(`Element.isDisplayed throw error: ${error}`);
-                        }
-                    },
-                );
-            } else {
-                isElVisible = false;
-            }
-            loopCounter--;
-        } while (!isElVisible && loopCounter > 0);
+        } else {
+            isElVisible = false;
+        }
         await this.driver
             .manage()
             .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         if (elArr === undefined) {
             throw new Error(
-                `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is: ${elArr}`,
+                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is: ${elArr}`,
             );
         }
         if (isElVisible === false) {
             throw new Error(
-                `After few retires the maxAttmpts of: ${maxAttmpts}, Riched: ${loopCounter}, with wait time of: ${waitUntil}, for selector of ${selector}, The test must end, The element is not visible`,
+                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is not visible`,
             );
         }
         return elArr;
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 15000, maxAttmpts = 2): Promise<boolean> {
-        if ((await this.findElement(selector, waitUntil, maxAttmpts)) === undefined) {
+    public async untilIsVisible(selector: Locator, waitUntil = 15000): Promise<boolean> {
+        if ((await this.findElement(selector, waitUntil)) === undefined) {
             return false;
         }
         return true;
@@ -215,6 +163,17 @@ export class Browser {
             await this.driver.manage().deleteAllCookies();
         }
         return;
+    }
+
+    public async getConsoleLogs(): Promise<string[]> {
+        const logsArr: string[] = [];
+        const logsObj = await this.driver.manage().logs().get('browser');
+        for (const key in logsObj) {
+            const logLevelName = logsObj[key].level.name;
+            const logMessage = logsObj[key].message;
+            logsArr.push(`${logLevelName}: ${logMessage}`);
+        }
+        return logsArr;
     }
 
     public async close(): Promise<void> {
