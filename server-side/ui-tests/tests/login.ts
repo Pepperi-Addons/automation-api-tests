@@ -21,14 +21,20 @@ export async function LoginTest(email: string, password: string) {
             if (this.currentTest.state != 'passed') {
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                driver.sleep(6000);
+                const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
                     value: url,
                 });
-
                 addContext(this, {
                     title: `Image`,
                     value: 'data:image/png;base64,' + base64Image,
+                });
+                addContext(this, {
+                    title: 'Console Logs',
+                    value: consoleLogs,
                 });
             }
             await driver.close();

@@ -513,7 +513,7 @@ export default class GeneralService {
         return schema;
     }
 
-    IsValidUrl(s: string): boolean {
+    isValidUrl(s: string): boolean {
         //taken from https://tutorial.eyehunts.com/js/url-validation-regex-javascript-example-code/
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
@@ -521,10 +521,18 @@ export default class GeneralService {
                 '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
                 '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
                 '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                '(\\#[-a-z\\d_]*)?$',
-            'i',
-        ); // fragment locator
+                '(\\#[-a-z\\d_]*)?$', // fragment locator
+            'i', // makes the regex case insensitive
+        );
         return !!pattern.test(s.replace(' ', '%20'));
+    }
+
+    generateRandomString(len: number) {
+        let rdmString = '';
+        while (rdmString.length < len) {
+            rdmString += Math.random().toString(36).substr(2);
+        }
+        return rdmString.substr(0, len);
     }
 }
 
