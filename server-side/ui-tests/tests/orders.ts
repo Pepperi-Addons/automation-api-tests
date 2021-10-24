@@ -1,4 +1,3 @@
-import { ObjectsService } from './../../services/objects.service';
 import { Browser } from '../utilities/browser';
 import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
@@ -14,6 +13,7 @@ import {
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
+import { ObjectsService } from './../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { Account, Catalog, Transaction } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +24,6 @@ chai.use(promised);
 export async function OrdersTest(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-
     let driver: Browser;
 
     describe('Orders UI Tests Suit (New Browser per test (it) scenarios)', async function () {
@@ -74,6 +73,9 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(driver);
             await webAppTopBar.click(webAppTopBar.DoneBtn);
+
+            //wait one sec before cliking on catalog, to prevent click on other screen
+            driver.sleep(1000);
             await webAppList.click(webAppList.CardListElements);
 
             //Validating new order

@@ -15,6 +15,12 @@ export class Browser {
         this.options.addArguments('--disable-gpu');
         this.options.addArguments(' --disable-software-rasterizer');
         this.options.excludeSwitches('enable-logging');
+        this.options.setLoggingPrefs({
+            browser: 'ALL',
+            driver: 'ALL',
+            performance: 'ALL',
+        });
+
         this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
         this.driver.manage().window().maximize();
         this.driver.manage().setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
@@ -29,8 +35,23 @@ export class Browser {
     }
 
     public async switchTo(iframeLocator: Locator): Promise<void> {
-        const iframe = await this.driver.findElement(iframeLocator);
-        return await this.driver.switchTo().frame(iframe);
+        let iframe = await this.findElement(iframeLocator);
+        console.log(iframe);
+        await this.driver
+            .switchTo()
+            .frame(iframe)
+            .then(
+                (res) => res,
+                async (error) => {
+                    console.log(`Iframe Error: ${error}, Try again to get the Iframe`);
+                    debugger;
+                    this.sleep(4000);
+                    iframe = await this.findElement(iframeLocator);
+                    console.log(iframe);
+                    await this.driver.switchTo().frame(iframe);
+                },
+            );
+        return;
     }
 
     public async switchToDefaultContent(): Promise<void> {
@@ -95,7 +116,6 @@ export class Browser {
     public async findElements(selector: Locator, waitUntil = 15000): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         let isElVisible = false;
-        this.sleep(600);
         const elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
             (webElement) => webElement,
             (error) => {
@@ -169,9 +189,11 @@ export class Browser {
         const logsArr: string[] = [];
         const logsObj = await this.driver.manage().logs().get('browser');
         for (const key in logsObj) {
-            const logLevelName = logsObj[key].level.name;
-            const logMessage = logsObj[key].message;
-            logsArr.push(`${logLevelName}: ${logMessage}`);
+            if (logsObj[key].level.name != 'WARNING') {
+                const logLevelName = logsObj[key].level.name;
+                const logMessage = logsObj[key].message;
+                logsArr.push(`${logLevelName}: ${logMessage}`);
+            }
         }
         return logsArr;
     }

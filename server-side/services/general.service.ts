@@ -7,6 +7,7 @@ import {
     Transaction,
     User,
     AuditLog,
+    Type,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
@@ -166,6 +167,10 @@ export default class GeneralService {
 
     getTypes(resource_name: ResourceTypes) {
         return this.papiClient.metaData.type(resource_name).types.get();
+    }
+
+    getAllTypes(options?: FindOptions): Promise<Type[]> {
+        return this.papiClient.types.find(options);
     }
 
     async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
