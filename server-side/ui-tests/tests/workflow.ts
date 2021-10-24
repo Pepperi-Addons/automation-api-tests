@@ -14,10 +14,16 @@ import {
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import { Key } from 'selenium-webdriver';
+import { v4 as uuidv4 } from 'uuid';
+import { Client } from '@pepperi-addons/debug-server';
+import GeneralService from '../../services/general.service';
+import { ImportExportATDService } from '../../services/import-export-atd.service';
 
 chai.use(promised);
 
-export async function WorkflowTest(email: string, password: string) {
+export async function WorkflowTest(email: string, password: string, client: Client) {
+    const generalService = new GeneralService(client);
+    const importExportATDService = new ImportExportATDService(generalService.papiClient);
     let driver: Browser;
 
     describe('Workflow UI Tests Suit', async function () {
@@ -78,11 +84,12 @@ export async function WorkflowTest(email: string, password: string) {
 
             const addonPage = new AddonPage(driver);
 
-            //TODO: Open the known bug
             //If not in new ATD, try to remove ATD and recreate new ATD
             try {
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 expect(await addonPage.isEditorTabVisible('GeneralInfo', 45000)).to.be.true;
+                //Wait for all I freames to load after the main Iframe finished before switching between freames.
+                driver.sleep(1000);
 
                 await driver.switchToDefaultContent();
                 await addonPage.selectTabByText('Workflows');
@@ -92,15 +99,35 @@ export async function WorkflowTest(email: string, password: string) {
                 if (isPupUP == 'UI Workflow Test ATD already exists.') {
                     const base64Image = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `Known bug, will be open and DI will be added here`,
+                        title: `This should never happen since this bugwas solved in Object Types Editor Version 1.0.14`,
                         value: 'data:image/png;base64,' + base64Image,
                     });
 
                     await webAppDialog.selectDialogBox('Close');
 
+                    //Rename the ATD and Remove it with UI Delete to Reproduce the bug from version 1.0.8
+                    const tempATDExternalID = `UI Workflow Test ATD ${uuidv4()}`;
+
+                    const atdToRemove = await generalService.getAllTypes({
+                        where: `Name='UI Workflow Test ATD'`,
+                        include_deleted: true,
+                        page_size: -1,
+                    });
+
+                    await importExportATDService.postTransactionsATD({
+                        ExternalID: tempATDExternalID,
+                        InternalID: atdToRemove[0].InternalID,
+                        UUID: atdToRemove[0].UUID,
+                        Hidden: false,
+                        Description: 'UI Workflow Test ATD Description',
+                    });
+
                     const webAppList = new WebAppList(driver);
 
-                    await driver.sendKeys(webAppTopBar.EditorSearchField, 'UI Workflow Test ATD' + Key.ENTER);
+                    //Wait after POST new ATD from the API before getting it in the UI
+                    driver.sleep(4000);
+
+                    await driver.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
 
                     //Make sure ATD finish to load after search
                     driver.sleep(2000);
@@ -109,9 +136,30 @@ export async function WorkflowTest(email: string, password: string) {
 
                     await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
 
+                    //Sleep here is mandatory in the test since in case of pop-up the previous pop-up will be shown first
+                    driver.sleep(1000);
+                    let isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
+
+                    expect(isPupUP).to.equal('Are you sure you want to proceed?');
+
                     await webAppDialog.selectDialogBox('Continue');
 
+                    //Sleep here is mandatory in the test since in case of pop-up the previous pop-up will be shown first
+                    driver.sleep(1000);
+                    isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
+
+                    expect(isPupUP).to.equal('Task Delete completed successfully.');
+
+                    await webAppDialog.selectDialogBox('Close');
+
                     try {
+                        //Wait after refresh for the ATD list to load before searching for new list
+                        driver.sleep(1000);
+                        await driver.sendKeys(webAppTopBar.EditorSearchField, 'UI Workflow Test ATD' + Key.ENTER);
+
+                        //Make sure ATD finish to load after search
+                        driver.sleep(2000);
+
                         await webAppList.clickOnFromListRowWebElement();
                         throw new Error('The list should be empty, this is a bug');
                     } catch (error) {
@@ -124,8 +172,7 @@ export async function WorkflowTest(email: string, password: string) {
                     await driver.click(webAppSettingsBar.ObjectEditorTransactions);
 
                     await driver.click(webAppTopBar.EditorAddBtn);
-
-                    await driver.sendKeys(webAppDialog.EditorTextBoxInput, 'UI Workflow Test ATD');
+                    await driver.sendKeys(webAppDialog.EditorTextBoxInput, `UI Workflow Test ATD`);
                     await driver.sendKeys(
                         webAppDialog.EditorTextAreaInput,
                         'UI Workflow Test ATD Description' + Key.TAB,
@@ -134,6 +181,8 @@ export async function WorkflowTest(email: string, password: string) {
 
                     await driver.switchTo(addonPage.AddonContainerIframe);
                     expect(await addonPage.isEditorTabVisible('GeneralInfo', 45000)).to.be.true;
+                    //Wait for all I freames to load after the main Iframe finished before switching between freames.
+                    driver.sleep(1000);
 
                     await driver.switchToDefaultContent();
                     await addonPage.selectTabByText('Workflows');
@@ -142,6 +191,8 @@ export async function WorkflowTest(email: string, password: string) {
 
             await driver.switchTo(addonPage.AddonContainerIframe);
             expect(await addonPage.isEditorTabVisible('WorkflowV2', 45000)).to.be.true;
+            throw new Error('4Fun');
+
             debugger;
             //StartOrder
             const webAppHomePage = new WebAppHomePage(driver);

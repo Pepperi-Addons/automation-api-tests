@@ -51,7 +51,7 @@ const varPass = process.env.npm_config_var_pass as string;
 
     await OrdersTest(email, pass, client);
 
-    await WorkflowTest(email, pass);
+    await WorkflowTest(email, pass, client);
 
     run();
 })();
