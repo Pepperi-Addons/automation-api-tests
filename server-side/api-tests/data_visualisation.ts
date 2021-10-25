@@ -90,7 +90,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 describe('Positive', () => {
                     it('Basic Chart Upsert ', async () => {
                         const chart: Chart = {
-                            Description: 'desc',
+                            Description: 'chart-desc-basic',
                             Name: generalService.generateRandomString(7),
                             ReadOnly: true,
                             ScriptURI: scriptURI,
