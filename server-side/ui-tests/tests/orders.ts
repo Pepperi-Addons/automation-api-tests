@@ -1,4 +1,3 @@
-import { ObjectsService } from './../../services/objects.service';
 import { Browser } from '../utilities/browser';
 import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
@@ -14,6 +13,7 @@ import {
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
+import { ObjectsService } from './../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { Account, Catalog, Transaction } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +24,6 @@ chai.use(promised);
 export async function OrdersTest(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-
     let driver: Browser;
 
     describe('Orders UI Tests Suit (New Browser per test (it) scenarios)', async function () {
@@ -38,6 +37,9 @@ export async function OrdersTest(email: string, password: string, client: Client
             if (this.currentTest.state != 'passed') {
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                driver.sleep(6000);
+                const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
                     value: url,
@@ -45,6 +47,10 @@ export async function OrdersTest(email: string, password: string, client: Client
                 addContext(this, {
                     title: `Image`,
                     value: 'data:image/png;base64,' + base64Image,
+                });
+                addContext(this, {
+                    title: 'Console Logs',
+                    value: consoleLogs,
                 });
             }
             await driver.quit();
@@ -67,6 +73,9 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(driver);
             await webAppTopBar.click(webAppTopBar.DoneBtn);
+
+            //wait one sec before cliking on catalog, to prevent click on other screen
+            driver.sleep(1000);
             await webAppList.click(webAppList.CardListElements);
 
             //Validating new order
@@ -138,8 +147,8 @@ export async function OrdersTest(email: string, password: string, client: Client
             //Wait 5 seconds and validate there are no dialogs opening up after placing order
             //Exmaple on how to write test over a known bug - let the test pass but add information to the report
             try {
-                await expect(driver.findElement(webAppDialog.Title, 5000, 2)).eventually.to.be.rejectedWith(
-                    'After few retires the maxAttmpts of: 2, Riched: 0',
+                await expect(driver.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
+                    'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
                 );
             } catch (error) {
                 const base64Image = await driver.saveScreenshots();
@@ -238,6 +247,9 @@ export async function OrdersTest(email: string, password: string, client: Client
             if (this.currentTest.state != 'passed') {
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                driver.sleep(6000);
+                const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
                     value: url,
@@ -245,6 +257,10 @@ export async function OrdersTest(email: string, password: string, client: Client
                 addContext(this, {
                     title: `Image`,
                     value: 'data:image/png;base64,' + base64Image,
+                });
+                addContext(this, {
+                    title: 'Console Logs',
+                    value: consoleLogs,
                 });
             }
         });
@@ -367,8 +383,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                     //Exmaple on how to write test over a known bug - let the test pass but add information to the report
                     const webAppDialog = new WebAppDialog(driver);
                     try {
-                        await expect(driver.findElement(webAppDialog.Title, 5000, 2)).eventually.to.be.rejectedWith(
-                            'After few retires the maxAttmpts of: 2, Riched: 0',
+                        await expect(driver.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
+                            'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
                         );
                     } catch (error) {
                         const base64Image = await driver.saveScreenshots();

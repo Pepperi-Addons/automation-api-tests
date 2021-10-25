@@ -11,20 +11,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     const scriptURI =
         'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
 
-    function generateRandomString(len: number) {
-        let rdmString = '';
-        while (rdmString.length < len) {
-            rdmString += Math.random().toString(36).substr(2);
-        }
-        return rdmString.substr(0, len);
-    }
-
     function createListOfRandCharts(): Chart[] {
         const listOfCharts: Chart[] = [];
         for (let i = 0; i < 5; i++) {
             const chartToPush: Chart = {
                 Description: `chart-desc-${i}`,
-                Name: generateRandomString(7),
+                Name: generalService.generateRandomString(7),
                 ReadOnly: false,
                 ScriptURI: scriptURI,
             };
@@ -43,6 +35,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Data Visualisation
+
     describe('Data Visualisation Tests Suites', () => {
         describe('Prerequisites Addon for Data Visualisation Tests', () => {
             //Test Data
@@ -86,7 +79,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('Name');
                         expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('ScriptURI');
-                        expect(generalService.IsValidUrl(jsonChartData.ScriptURI)).to.equal(true);
+                        expect(generalService.isValidUrl(jsonChartData.ScriptURI)).to.equal(true);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
                         expect(jsonChartData.ReadOnly).to.be.a('Boolean');
                     });
@@ -98,7 +91,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     it('Basic Chart Upsert ', async () => {
                         const chart: Chart = {
                             Description: 'desc',
-                            Name: generateRandomString(7),
+                            Name: generalService.generateRandomString(7),
                             ReadOnly: true,
                             ScriptURI: scriptURI,
                         } as Chart;
@@ -117,7 +110,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(chartResponse.Body).to.have.own.property('Description');
                         expect(chartResponse.Body.Description).to.equal(chart.Description);
                         expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                        expect(generalService.IsValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
+                        expect(generalService.isValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
                         expect(chartResponse.Body).to.have.own.property('ReadOnly');
                         expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     });
@@ -127,7 +120,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     it('Upsert Chart - w/o mandatory field: Authorization', async () => {
                         const chart: Chart = {
                             Description: 'desc',
-                            Name: generateRandomString(7),
+                            Name: generalService.generateRandomString(7),
                             ReadOnly: true,
                             ScriptURI: scriptURI,
                         } as Chart;
@@ -163,7 +156,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
                     it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
                         const chart: Chart = {
-                            Name: generateRandomString(7),
+                            Name: generalService.generateRandomString(7),
                             Description: '',
                             ReadOnly: true,
                         } as Chart;
@@ -204,7 +197,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(chartResponse.Body).to.have.own.property('Description');
                     expect(chartResponse.Body.Description).to.equal(listOfChartsToUpsert[i].Description);
                     expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                    expect(generalService.IsValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
+                    expect(generalService.isValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
                     expect(chartResponse.Body).to.have.own.property('ReadOnly');
                     expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     //using returning data from server to save this chart script uri, read only and key attributes
@@ -237,7 +230,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         describe('Bug Verification', () => {
             it('POST - upserting a chart with number as script uri', async () => {
                 const chart: Chart = {
-                    Name: generateRandomString(7),
+                    Name: generalService.generateRandomString(7),
                     Description: '',
                     ReadOnly: true,
                     ScriptURI: 721346,
@@ -257,7 +250,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
             it('POST - upserting a chart with non url string as script uri', async () => {
                 const chart: Chart = {
-                    Name: generateRandomString(7),
+                    Name: generalService.generateRandomString(7),
                     Description: '',
                     ReadOnly: true,
                     ScriptURI: 'https:fsdjkfd',
@@ -276,7 +269,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             });
         });
         describe('Test Clean Up (Hidden = true)', () => {
-            it('All The Data Views Hidden', async () => {
+            it('All The Charts Hidden', async () => {
                 await expect(TestCleanUp(dataVisualisationService)).eventually.to.be.above(0);
             });
         });
@@ -284,7 +277,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 }
 
 //Service Functions
-//Remove all test data views (Hidden = true)
+//Remove all test Charts (Hidden = true)
 async function TestCleanUp(service: DataVisualisationService) {
     const allChartsObjects: Chart[] = await service.getCharts();
     let deletedCounter = 0;

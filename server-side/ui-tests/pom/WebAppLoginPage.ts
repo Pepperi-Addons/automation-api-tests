@@ -9,11 +9,8 @@ export class WebAppLoginPage extends Page {
     }
 
     public Email: Locator = By.css('#email');
-
     public Password: Locator = By.css('input[type="password"]');
-
     public Next: Locator = By.css('#nextBtn');
-
     public LoginBtn: Locator = By.css('#loginBtn');
 
     public async signInAs(email: string, password: string) {

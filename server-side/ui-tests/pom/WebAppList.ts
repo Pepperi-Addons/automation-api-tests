@@ -10,31 +10,22 @@ export class WebAppList extends Page {
     }
 
     public List: Locator = By.css('pep-list .scrollable-content');
-
     public Headers: Locator = By.css('pep-list .table-header-fieldset fieldset .header-label');
-
     public RadioButtons: Locator = By.css('pep-list .table-row-fieldset .mat-radio-button');
-
     public Cells: Locator = By.css('pep-list .table-row-fieldset .pep-report-fields');
-
     public ListRowElements: Locator = By.css('pep-list .table-row-fieldset');
-
     public TotalResultsText: Locator = By.css('.bold.number');
 
+    //Card List
     public CardListElements: Locator = By.css('pep-list .scrollable-content > div pep-form');
 
+    //Cart List
     public CartListElements: Locator = By.css('pep-list pep-form');
-
     public CartListElementsBtn: Locator = By.css('pep-form button');
-
     public CartListElementsQuantityBtn: Locator = By.css('pep-form pep-quantity-selector button');
-
     public CartListElementsQuantityInput: Locator = By.css('pep-form pep-quantity-selector input');
-
     public CartListElementsInternalBtn: Locator = By.css('pep-form pep-internal-menu button');
-
     public CartListElementsGridLineViewInternalBtn: Locator = By.css('pep-list pep-internal-button');
-
     public CartListGridLineHeaderItemPrice: Locator = By.css('label#ItemPrice');
 
     public async validateListRowElements(ms?: number): Promise<void> {
@@ -62,8 +53,8 @@ export class WebAppList extends Page {
         return;
     }
 
-    public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000, maxAttmpts = 2): Promise<void> {
-        return await this.click(this.ListRowElements, position, waitUntil, maxAttmpts);
+    public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
+        return await this.click(this.ListRowElements, position, waitUntil);
     }
 
     public async selectCardWebElement(position = 0): Promise<WebElement> {

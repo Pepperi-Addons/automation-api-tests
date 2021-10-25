@@ -9,7 +9,6 @@ export class WebAppHomePage extends Page {
     }
 
     public Main: Locator = By.css('#mainButton');
-
     public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
 
     public async clickOnBtn(btnTxt: string) {

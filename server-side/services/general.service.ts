@@ -7,6 +7,7 @@ import {
     Transaction,
     User,
     AuditLog,
+    Type,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
@@ -166,6 +167,10 @@ export default class GeneralService {
 
     getTypes(resource_name: ResourceTypes) {
         return this.papiClient.metaData.type(resource_name).types.get();
+    }
+
+    getAllTypes(options?: FindOptions): Promise<Type[]> {
+        return this.papiClient.types.find(options);
     }
 
     async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
@@ -513,7 +518,7 @@ export default class GeneralService {
         return schema;
     }
 
-    IsValidUrl(s: string): boolean {
+    isValidUrl(s: string): boolean {
         //taken from https://tutorial.eyehunts.com/js/url-validation-regex-javascript-example-code/
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
@@ -522,9 +527,17 @@ export default class GeneralService {
                 '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
                 '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
                 '(\\#[-a-z\\d_]*)?$', // fragment locator
-            'i',
+            'i', // makes the regex case insensitive
         );
         return !!pattern.test(s.replace(' ', '%20'));
+    }
+
+    generateRandomString(len: number) {
+        let rdmString = '';
+        while (rdmString.length < len) {
+            rdmString += Math.random().toString(36).substr(2);
+        }
+        return rdmString.substr(0, len);
     }
 }
 
