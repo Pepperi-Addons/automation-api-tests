@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
+import { Locator, By, WebElement } from 'selenium-webdriver';
 
 export class AddonPage extends Page {
     constructor(browser: Browser) {
@@ -16,6 +16,10 @@ export class AddonPage extends Page {
     );
     public AddonContainerTabsContent: Locator = By.css('#addNewOrderTypesCont');
     public AddonContainerIframe: Locator = By.css('iframe#myFrame');
+    public AddonContainerHiddenTabs: Locator = By.css('.ui-tabs-hide');
+
+    ///Object Types Editor Locators
+    public AddonContainerATDEditorWorkflowFlowchartIndicator: Locator = By.css('span[name="flowchart"].disabled');
 
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
@@ -28,5 +32,31 @@ export class AddonPage extends Page {
         const selectedTab = Object.assign({}, this.AddonContainerTabsContent);
         selectedTab['value'] += ` #${tabID}`;
         return await this.browser.untilIsVisible(selectedTab, waitUntil);
+    }
+
+    public async isEditorHiddenTabExist(tabID: string, waitUntil = 15000): Promise<boolean> {
+        const selectedTab = Object.assign({}, this.AddonContainerHiddenTabs);
+        selectedTab['value'] += `#${tabID}`;
+        const hiddenEl = await this.browser.findElement(selectedTab, waitUntil, false);
+        if (hiddenEl instanceof WebElement) {
+            return true;
+        }
+        return false;
+    }
+
+    public async isAdoonFullyLoaded(): Promise<boolean> {
+        let bodySize = 0;
+        do {
+            let htmlBody = await this.browser.findElement(this.HtmlBody);
+            bodySize = (await htmlBody.getAttribute('innerHTML')).length;
+            this.browser.sleep(1000);
+            htmlBody = await this.browser.findElement(this.HtmlBody);
+            if ((await htmlBody.getAttribute('innerHTML')).length == bodySize) {
+                bodySize = -1;
+            }
+        } while (bodySize != -1);
+        //TODO: This should be removed and replaced with a real "stop" condition, that will be decided later
+        this.browser.sleep(8000);
+        return true;
     }
 }

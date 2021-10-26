@@ -121,7 +121,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, true);
+    const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, false);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {

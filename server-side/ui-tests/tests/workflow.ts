@@ -5,7 +5,6 @@ import promised from 'chai-as-promised';
 import {
     WebAppLoginPage,
     WebAppHeader,
-    WebAppHomePage,
     WebAppList,
     WebAppTopBar,
     WebAppDialog,
@@ -86,13 +85,19 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
             //If not in new ATD, try to remove ATD and recreate new ATD
             try {
-                await driver.switchTo(addonPage.AddonContainerIframe);
-                expect(await addonPage.isEditorTabVisible('GeneralInfo', 45000)).to.be.true;
-                //Wait for all I freames to load after the main Iframe finished before switching between freames.
-                driver.sleep(1000);
+                //Make sure the page finish to load after creating new ATD
+                await addonPage.isSpinnerDone();
 
+                await driver.switchTo(addonPage.AddonContainerIframe);
+
+                //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+                expect(await addonPage.isEditorHiddenTabExist('WorkflowV2', 45000)).to.be.true;
+                expect(await addonPage.isEditorTabVisible('GeneralInfo')).to.be.true;
                 await driver.switchToDefaultContent();
+                await addonPage.isAdoonFullyLoaded();
                 await addonPage.selectTabByText('Workflows');
+                await driver.switchTo(addonPage.AddonContainerIframe);
+                expect(await addonPage.isEditorTabVisible('WorkflowV2')).to.be.true;
             } catch (error) {
                 await driver.switchToDefaultContent();
                 const isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
@@ -103,6 +108,10 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                         value: 'data:image/png;base64,' + base64Image,
                     });
 
+                    addContext(this, {
+                        title: `Known bug in Object Types Editor Version 1.0.8`,
+                        value: 'https://pepperi.atlassian.net/browse/DI-18699',
+                    });
                     await webAppDialog.selectDialogBox('Close');
 
                     //Rename the ATD and Remove it with UI Delete to Reproduce the bug from version 1.0.8
@@ -130,22 +139,24 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                     await driver.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
 
                     //Make sure ATD finish to load after search
-                    driver.sleep(2000);
+                    await addonPage.isSpinnerDone();
 
                     await webAppList.clickOnFromListRowWebElement();
 
                     await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
 
-                    //Sleep here is mandatory in the test since in case of pop-up the previous pop-up will be shown first
-                    driver.sleep(1000);
+                    //Make sure all loading is done after Delete
+                    await addonPage.isSpinnerDone();
+
                     let isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
 
                     expect(isPupUP).to.equal('Are you sure you want to proceed?');
 
                     await webAppDialog.selectDialogBox('Continue');
 
-                    //Sleep here is mandatory in the test since in case of pop-up the previous pop-up will be shown first
-                    driver.sleep(1000);
+                    //Make sure all loading is done after Continue
+                    await addonPage.isSpinnerDone();
+
                     isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
 
                     expect(isPupUP).to.equal('Task Delete completed successfully.');
@@ -154,13 +165,13 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
                     try {
                         //Wait after refresh for the ATD list to load before searching for new list
-                        driver.sleep(1000);
+                        await addonPage.isSpinnerDone();
                         await driver.sendKeys(webAppTopBar.EditorSearchField, 'UI Workflow Test ATD' + Key.ENTER);
 
                         //Make sure ATD finish to load after search
-                        driver.sleep(2000);
+                        await addonPage.isSpinnerDone();
 
-                        await webAppList.clickOnFromListRowWebElement();
+                        await webAppList.clickOnFromListRowWebElement(0, 6000);
                         throw new Error('The list should be empty, this is a bug');
                     } catch (error) {
                         if (error instanceof Error && error.message == 'The list should be empty, this is a bug') {
@@ -179,61 +190,92 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                     );
                     await webAppDialog.selectDialogBoxByText('Save');
 
-                    await driver.switchTo(addonPage.AddonContainerIframe);
-                    expect(await addonPage.isEditorTabVisible('GeneralInfo', 45000)).to.be.true;
-                    //Wait for all I freames to load after the main Iframe finished before switching between freames.
-                    driver.sleep(1000);
+                    //Make sure the page finish to load after creating new ATD
+                    await addonPage.isSpinnerDone();
 
+                    await driver.switchTo(addonPage.AddonContainerIframe);
+
+                    //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+                    expect(await addonPage.isEditorHiddenTabExist('WorkflowV2', 45000)).to.be.true;
+                    expect(await addonPage.isEditorTabVisible('GeneralInfo')).to.be.true;
                     await driver.switchToDefaultContent();
+                    await addonPage.isAdoonFullyLoaded();
                     await addonPage.selectTabByText('Workflows');
+                    await driver.switchTo(addonPage.AddonContainerIframe);
+                    expect(await addonPage.isEditorTabVisible('WorkflowV2')).to.be.true;
                 }
             }
 
-            await driver.switchTo(addonPage.AddonContainerIframe);
-            expect(await addonPage.isEditorTabVisible('WorkflowV2', 45000)).to.be.true;
-            throw new Error('4Fun');
+            expect(await driver.findElement(addonPage.AddonContainerATDEditorWorkflowFlowchartIndicator));
 
-            debugger;
-            //StartOrder
-            const webAppHomePage = new WebAppHomePage(driver);
-            await webAppHomePage.click(webAppHomePage.Main);
+            //Cleanup
+            await driver.switchToDefaultContent();
 
-            //Get to Items
-            const webAppList = new WebAppList(driver);
-            await webAppList.clickOnFromListRowWebElement();
-            await webAppTopBar.click(webAppTopBar.DoneBtn);
-            await webAppList.click(webAppList.CardListElements);
+            //Rename the ATD and Remove it with UI Delete to Reproduce the bug from version 1.0.8
+            const tempATDExternalID = `UI Workflow Test ATD ${uuidv4()}`;
 
-            //Validating new order
-            await webAppDialog.selectDialogBoxBeforeNewOrder();
-
-            //Sorting items by price
-            await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
-            await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
-
-            //This sleep is mandaroy while the list is re-sorting after the sorting click
-            driver.sleep(3000);
-            const cartItems = await driver.findElements(webAppList.CartListElements);
-            let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
-            let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
-
-            //Verify that matrix is sorted as expected
-            if (topPrice < secondPrice) {
-                await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
-
-                //This sleep is mandaroy while the list is re-sorting after the sorting click
-                driver.sleep(3000);
-                const cartItems = await driver.findElements(webAppList.CartListElements);
-                topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
-                secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
-            }
-
-            addContext(this, {
-                title: `The two top items after the sort`,
-                value: [topPrice, secondPrice],
+            const atdToRemove = await generalService.getAllTypes({
+                where: `Name='UI Workflow Test ATD'`,
+                include_deleted: true,
+                page_size: -1,
             });
 
-            expect(topPrice).to.be.above(secondPrice);
+            await importExportATDService.postTransactionsATD({
+                ExternalID: tempATDExternalID,
+                InternalID: atdToRemove[0].InternalID,
+                UUID: atdToRemove[0].UUID,
+                Hidden: false,
+                Description: 'UI Workflow Test ATD Description',
+            });
+
+            const webAppList = new WebAppList(driver);
+
+            //Wait after POST new ATD from the API before getting it in the UI
+            driver.sleep(4000);
+
+            await driver.click(webAppSettingsBar.ObjectEditorTransactions);
+            await driver.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
+
+            //Make sure ATD finish to load after search
+            await addonPage.isSpinnerDone();
+
+            await webAppList.clickOnFromListRowWebElement();
+
+            await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
+
+            //Make sure all loading is done after Delete
+            await addonPage.isSpinnerDone();
+
+            let isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
+
+            expect(isPupUP).to.equal('Are you sure you want to proceed?');
+
+            await webAppDialog.selectDialogBox('Continue');
+
+            //Make sure all loading is done after Continue
+            await addonPage.isSpinnerDone();
+
+            isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
+
+            expect(isPupUP).to.equal('Task Delete completed successfully.');
+
+            await webAppDialog.selectDialogBox('Close');
+
+            try {
+                //Wait after refresh for the ATD list to load before searching for new list
+                await addonPage.isSpinnerDone();
+                await driver.sendKeys(webAppTopBar.EditorSearchField, 'UI Workflow Test ATD' + Key.ENTER);
+
+                //Make sure ATD finish to load after search
+                await addonPage.isSpinnerDone();
+
+                await webAppList.clickOnFromListRowWebElement(0, 6000);
+                throw new Error('The list should be empty, this is a bug');
+            } catch (error) {
+                if (error instanceof Error && error.message == 'The list should be empty, this is a bug') {
+                    throw error;
+                }
+            }
         });
     });
 }
