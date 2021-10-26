@@ -132,6 +132,8 @@ export async function OrdersTest(email: string, password: string, client: Client
             //Adding most expensive items to cart
             for (let i = 0; i < 3; i++) {
                 await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteCartMatrixByPrice[i][1] + Key.ENTER);
+                //Make sure ATD finish to load after search
+                await webAppList.isSpinnerDone();
                 await webAppList.sendKysToInputListRowWebElement(0, 1);
                 const base64Image = await driver.saveScreenshots();
                 addContext(this, {
@@ -373,6 +375,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                             webAppTopBar.SearchFieldInput,
                             sorteCartMatrixByPrice[i][1] + Key.ENTER,
                         );
+                        //Make sure ATD finish to load after search
+                        await webAppList.isSpinnerDone();
                         await webAppList.sendKysToInputListRowWebElement(0, 1);
                     }
 
