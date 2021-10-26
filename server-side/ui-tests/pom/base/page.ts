@@ -1,8 +1,14 @@
-import { Locator } from 'selenium-webdriver';
 import { Browser } from '../../utilities/browser';
+import { Locator, By, WebElement } from 'selenium-webdriver';
 
 export abstract class Page {
     private url: string;
+    public constructor(protected browser: Browser, url: string) {
+        this.url = url;
+    }
+
+    public PepperiHiddenLoadingSpinner: Locator = By.css('#loadingSpinnerModal[hidden]');
+    public HtmlBody: Locator = By.css('html body');
 
     protected setUrl(url: string) {
         this.url = url;
@@ -24,7 +30,19 @@ export abstract class Page {
         return await this.browser.untilIsVisible(selector, waitUntil);
     }
 
-    public constructor(protected browser: Browser, url: string) {
-        this.url = url;
+    public async isSpinnerDone(): Promise<boolean> {
+        const isHidden = [false, false];
+        do {
+            const hiddenEl_1 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
+            if (hiddenEl_1 instanceof WebElement) {
+                isHidden[0] = true;
+            }
+            this.browser.sleep(200);
+            const hiddenEl_2 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
+            if (hiddenEl_2 instanceof WebElement) {
+                isHidden[1] = true;
+            }
+        } while (!isHidden[0] || !isHidden[1]);
+        return true;
     }
 }

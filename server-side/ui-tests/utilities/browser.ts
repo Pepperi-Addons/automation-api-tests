@@ -35,23 +35,8 @@ export class Browser {
     }
 
     public async switchTo(iframeLocator: Locator): Promise<void> {
-        let iframe = await this.findElement(iframeLocator);
-        console.log(iframe);
-        await this.driver
-            .switchTo()
-            .frame(iframe)
-            .then(
-                (res) => res,
-                async (error) => {
-                    console.log(`Iframe Error: ${error}, Try again to get the Iframe`);
-                    debugger;
-                    this.sleep(4000);
-                    iframe = await this.findElement(iframeLocator);
-                    console.log(iframe);
-                    await this.driver.switchTo().frame(iframe);
-                },
-            );
-        return;
+        const iframe = await this.findElement(iframeLocator);
+        return await this.driver.switchTo().frame(iframe);
     }
 
     public async switchToDefaultContent(): Promise<void> {
@@ -107,13 +92,13 @@ export class Browser {
         return;
     }
 
-    public async findElement(selector: Locator, waitUntil = 15000): Promise<WebElement> {
-        return await this.findElements(selector, waitUntil).then((webElement) =>
+    public async findElement(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement> {
+        return await this.findElements(selector, waitUntil, isVisible).then((webElement) =>
             webElement ? webElement[0] : webElement,
         );
     }
 
-    public async findElements(selector: Locator, waitUntil = 15000): Promise<WebElement[]> {
+    public async findElements(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
         let isElVisible = false;
         const elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
@@ -122,7 +107,7 @@ export class Browser {
                 console.log(error.message);
             },
         );
-        if (elArr && elArr[0]) {
+        if (isVisible && elArr && elArr[0]) {
             isElVisible = await this.driver.wait(until.elementIsVisible(elArr[0]), waitUntil).then(
                 async (res) => {
                     return await res.isDisplayed();
@@ -135,6 +120,8 @@ export class Browser {
                     }
                 },
             );
+        } else if (!isVisible) {
+            isElVisible = true;
         } else {
             isElVisible = false;
         }
@@ -190,7 +177,7 @@ export class Browser {
         const logsObj = await this.driver.manage().logs().get('browser');
         for (const key in logsObj) {
             if (logsObj[key].level.name != 'WARNING') {
-                const logLevelName = logsObj[key].level.name;
+                const logLevelName = logsObj[key].level.name == 'SEVERE' ? 'ERROR' : logsObj[key].level.name;
                 const logMessage = logsObj[key].message;
                 logsArr.push(`${logLevelName}: ${logMessage}`);
             }
