@@ -11,7 +11,7 @@ export async function LoginTest(email: string, password: string) {
     let driver: Browser;
 
     describe('First UI Tests Suit', async function () {
-        this.retries(3);
+        this.retries(0);
 
         beforeEach(async function () {
             driver = new Browser('chrome');
