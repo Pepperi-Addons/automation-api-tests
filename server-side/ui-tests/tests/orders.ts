@@ -27,7 +27,7 @@ export async function OrdersTest(email: string, password: string, client: Client
     let driver: Browser;
 
     describe('Orders UI Tests Suit (New Browser per test (it) scenarios)', async function () {
-        this.retries(0);
+        this.retries(1);
 
         beforeEach(async function () {
             driver = new Browser('chrome');
@@ -235,7 +235,7 @@ export async function OrdersTest(email: string, password: string, client: Client
         let transactionId;
         let transactionUUID;
 
-        this.retries(0);
+        this.retries(1);
 
         before(async function () {
             driver = new Browser('chrome');
