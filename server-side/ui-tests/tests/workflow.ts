@@ -26,7 +26,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
     let driver: Browser;
 
     describe('Workflow UI Tests Suit', async function () {
-        this.retries(0);
+        this.retries(1);
 
         before(async function () {
             driver = new Browser('chrome');
