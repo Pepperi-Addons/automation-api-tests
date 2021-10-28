@@ -162,10 +162,9 @@ export class Browser {
 
     public async clearCookies(url?: string): Promise<void> {
         if (url) {
-            const currentUrl = await this.driver.getCurrentUrl();
             await this.navigate(url);
             await this.driver.manage().deleteAllCookies();
-            await this.navigate(currentUrl);
+            await this.navigate(url);
         } else {
             await this.driver.manage().deleteAllCookies();
         }
