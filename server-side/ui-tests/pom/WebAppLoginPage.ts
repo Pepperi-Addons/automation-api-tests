@@ -14,13 +14,13 @@ export class WebAppLoginPage extends Page {
     public LoginBtn: Locator = By.css('#loginBtn');
 
     public async signInAs(email: string, password: string) {
-        await this.browser.clearCookies();
         try {
             await this.browser.sendKeys(this.Email, email);
         } catch (error) {
             console.log(`Login page not loaded, attempting again before failing the test, Error was: ${error}`);
-            await this.navigate();
-            this.browser.sleep(6000);
+            const thisURL = await this.browser.getCurrentUrl();
+            await this.browser.clearCookies((thisURL.split('com/')[0] + 'com/').replace('app', 'idp'));
+            this.browser.sleep(4004);
             await this.browser.sendKeys(this.Email, email);
         }
         await this.browser.click(this.Next);

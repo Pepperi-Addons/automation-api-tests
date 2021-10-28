@@ -17,6 +17,7 @@ export class AddonPage extends Page {
     public AddonContainerTabsContent: Locator = By.css('#addNewOrderTypesCont');
     public AddonContainerIframe: Locator = By.css('iframe#myFrame');
     public AddonContainerHiddenTabs: Locator = By.css('.ui-tabs-hide');
+    public AddonContainerFooterDisplay: Locator = By.css('#FotterCont[style="display: block;"]');
 
     ///Object Types Editor Locators
     public AddonContainerATDEditorWorkflowFlowchartIndicator: Locator = By.css('span[name="flowchart"].disabled');
@@ -45,6 +46,7 @@ export class AddonPage extends Page {
     }
 
     public async isAdoonFullyLoaded(): Promise<boolean> {
+        await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 45000);
         let bodySize = 0;
         do {
             let htmlBody = await this.browser.findElement(this.HtmlBody);
@@ -55,8 +57,6 @@ export class AddonPage extends Page {
                 bodySize = -1;
             }
         } while (bodySize != -1);
-        //TODO: This should be removed and replaced with a real "stop" condition, that will be decided later
-        this.browser.sleep(8000);
         return true;
     }
 }

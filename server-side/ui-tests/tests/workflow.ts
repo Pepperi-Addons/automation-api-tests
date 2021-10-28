@@ -41,7 +41,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
                 //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                driver.sleep(6000);
+                driver.sleep(6006);
                 const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
@@ -90,11 +90,12 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
                 await driver.switchTo(addonPage.AddonContainerIframe);
 
+                await addonPage.isAdoonFullyLoaded();
+
                 //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
                 expect(await addonPage.isEditorHiddenTabExist('WorkflowV2', 45000)).to.be.true;
                 expect(await addonPage.isEditorTabVisible('GeneralInfo')).to.be.true;
                 await driver.switchToDefaultContent();
-                await addonPage.isAdoonFullyLoaded();
                 await addonPage.selectTabByText('Workflows');
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 expect(await addonPage.isEditorTabVisible('WorkflowV2')).to.be.true;
@@ -195,11 +196,12 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
                     await driver.switchTo(addonPage.AddonContainerIframe);
 
+                    await addonPage.isAdoonFullyLoaded();
+
                     //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
                     expect(await addonPage.isEditorHiddenTabExist('WorkflowV2', 45000)).to.be.true;
                     expect(await addonPage.isEditorTabVisible('GeneralInfo')).to.be.true;
                     await driver.switchToDefaultContent();
-                    await addonPage.isAdoonFullyLoaded();
                     await addonPage.selectTabByText('Workflows');
                     await driver.switchTo(addonPage.AddonContainerIframe);
                     expect(await addonPage.isEditorTabVisible('WorkflowV2')).to.be.true;
