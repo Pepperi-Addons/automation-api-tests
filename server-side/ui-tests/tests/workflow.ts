@@ -65,7 +65,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             }
         });
 
-        it('Basic Workflow Scenario', async function () {
+        it('Workflow Scenario: Update Inventory', async function () {
             //LogIn
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.navigate();
