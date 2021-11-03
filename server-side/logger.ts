@@ -51,6 +51,29 @@ export async function update_pns_test(client: Client, request: Request): Promise
     return insertPNSLog(client, request, 'Update');
 }
 
+export async function sync_pns_test(client: Client, request: Request): Promise<any> {
+    const generalService = new GeneralService(client);
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+    const adalService = new ADALService(generalService.papiClient);
+    const schemaName = 'PNS Sync Test';
+    let logUUID = uuidv4().replace(/-/g, '_');
+    await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+        Key: `Log_${schemaName.replace(/ /g, '_')}_${generalService.getServer()}_${logUUID}`,
+        Body: request.body,
+        Path: request.path,
+        Description: 'This schema update created synchronically',
+    });
+    generalService.sleep(40000);
+    logUUID = uuidv4().replace(/-/g, '_');
+    await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
+        Key: `Log_${schemaName.replace(/ /g, '_')}_${generalService.getServer()}_${logUUID}`,
+        Body: request.body,
+        Path: request.path,
+        Description: 'This schema update created after 40 seconds of sleep',
+    });
+    return true;
+}
+
 async function insertPNSLog(client: Client, request: Request, type: string) {
     const generalService = new GeneralService(client);
     const schemaName = 'PNS Test';
