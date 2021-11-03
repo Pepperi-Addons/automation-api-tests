@@ -303,10 +303,6 @@ export default class GeneralService {
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
-            //This was added at 03/10/2021 by Oren - Until it will be decided what to do with PNS tests
-            if (addonName == 'Pepperi Notification Service') {
-                searchString = `AND Version Like '${'1.0.110'}%'`;
-            }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',

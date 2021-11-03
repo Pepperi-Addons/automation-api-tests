@@ -37,6 +37,7 @@ export class WebAppTopBar extends Page {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
                         await res[i].click();
+                        break;
                     }
                 }
             },

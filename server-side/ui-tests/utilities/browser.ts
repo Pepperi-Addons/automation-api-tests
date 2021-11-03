@@ -23,7 +23,9 @@ export class Browser {
 
         this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
         this.driver.manage().window().maximize();
-        this.driver.manage().setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
+        this.driver
+            .manage()
+            .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT * 4, script: this.TIMEOUT * 4 });
     }
 
     public async getCurrentUrl(): Promise<string> {
@@ -35,7 +37,7 @@ export class Browser {
     }
 
     public async switchTo(iframeLocator: Locator): Promise<void> {
-        const iframe = await this.findElement(iframeLocator);
+        const iframe = await this.findElement(iframeLocator, 45000);
         return await this.driver.switchTo().frame(iframe);
     }
 
@@ -99,7 +101,7 @@ export class Browser {
     }
 
     public async findElements(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement[]> {
-        await this.driver.manage().setTimeouts({ implicit: waitUntil, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
+        await this.driver.manage().setTimeouts({ implicit: waitUntil });
         let isElVisible = false;
         const elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
             (webElement) => webElement,
@@ -125,9 +127,7 @@ export class Browser {
         } else {
             isElVisible = false;
         }
-        await this.driver
-            .manage()
-            .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT, script: this.TIMEOUT });
+        await this.driver.manage().setTimeouts({ implicit: this.TIMEOUT });
         if (elArr === undefined) {
             throw new Error(
                 `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is: ${elArr}`,
