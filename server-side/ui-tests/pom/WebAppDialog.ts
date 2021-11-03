@@ -22,6 +22,12 @@ export class WebAppDialog extends Page {
 
     public DialogXpath: Locator = By.xpath('.//pep-dialog');
 
+    //Iframe Dialogs
+    public IframeDialog: Locator = By.css('.warning-dialog');
+    public IframeDialogMessage: Locator = By.css('.warning-dialog #msgModalTextContent');
+    public IframeDialogCancelBtn: Locator = By.css('.warning-dialog #msgModalLeftBtn');
+    public IframeDialogApproveBtn: Locator = By.css('.warning-dialog #msgModalRightBtn');
+
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
         //Click to dismiss if dialog box found
         await this.browser.findElements(this.ButtonArr, 3000).then(
@@ -29,6 +35,7 @@ export class WebAppDialog extends Page {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
                         await res[i].click();
+                        break;
                     }
                 }
             },
@@ -46,6 +53,7 @@ export class WebAppDialog extends Page {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
                         await res[i].click();
+                        break;
                     }
                 }
             },
