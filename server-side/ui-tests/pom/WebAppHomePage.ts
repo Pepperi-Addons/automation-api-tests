@@ -16,7 +16,8 @@ export class WebAppHomePage extends Page {
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
             if ((await element.getText()) == btnTxt) {
-                element.click();
+                await element.click();
+                break;
             }
         }
     }

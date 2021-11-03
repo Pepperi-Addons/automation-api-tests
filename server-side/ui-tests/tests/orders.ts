@@ -155,11 +155,11 @@ export async function OrdersTest(email: string, password: string, client: Client
             } catch (error) {
                 const base64Image = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `This bug happen some time, don't stop the test here, but add this as image(DI-OREN123)`,
+                    title: `This bug happen some time, don't stop the test here, but add this as link`,
                     value: 'https://pepperi.atlassian.net/browse/DI-17083',
                 });
                 addContext(this, {
-                    title: `This bug happen some time, don't stop the test here, but add this as image(DI-OREN123)`,
+                    title: `This bug happen some time, don't stop the test here, but add this as image`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
 
@@ -393,11 +393,11 @@ export async function OrdersTest(email: string, password: string, client: Client
                     } catch (error) {
                         const base64Image = await driver.saveScreenshots();
                         addContext(this, {
-                            title: `This bug happen some time, don't stop the test here, but add this as image(DI-OREN123)`,
+                            title: `This bug happen some time, don't stop the test here, but add this as link`,
                             value: 'https://pepperi.atlassian.net/browse/DI-17083',
                         });
                         addContext(this, {
-                            title: `This bug happen some time, don't stop the test here, but add this as image(DI-OREN123)`,
+                            title: `This bug happen some time, don't stop the test here, but add this as image`,
                             value: 'data:image/png;base64,' + base64Image,
                         });
 
