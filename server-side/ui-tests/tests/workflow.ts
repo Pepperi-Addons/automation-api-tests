@@ -321,10 +321,15 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             });
             expect(updatedInventory.InStockQuantity).to.equal(100);
 
+            //Resync - Going to Accounts and back to Home Page
+            console.log('Wait Before Loading Accounts');
+            await driver.sleep(2002);
             await webAppHomePage.clickOnBtn('Accounts');
             await webAppHomePage.isSpinnerDone();
             await webAppList.validateListRowElements();
             await driver.click(webAppHeader.Home);
+            console.log('Wait On Home Page Before Starting New Transaction');
+            await driver.sleep(5005);
             await webAppHomePage.isSpinnerDone();
 
             //StartOrder
@@ -440,7 +445,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             });
 
             //Wait after POST new ATD from the API before getting it in the UI
-            console.log('ATD Created by using the API');
+            console.log('ATD Updated by using the API');
             driver.sleep(4000);
 
             await driver.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
