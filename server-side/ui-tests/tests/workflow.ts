@@ -321,7 +321,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
             await webAppHomePage.clickOnBtn('Accounts');
             await webAppHomePage.isSpinnerDone();
-
+            await webAppList.validateListRowElements();
             await driver.click(webAppHeader.Home);
             await webAppHomePage.isSpinnerDone();
 
@@ -335,6 +335,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             //wait one sec before cliking on catalog, to prevent click on other screen
             driver.sleep(1000);
             await webAppHomePage.isSpinnerDone();
+
             await webAppList.click(webAppList.CardListElements);
 
             //Validating new order
@@ -348,6 +349,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
             //Adding items to cart
             await webAppList.sendKeys(webAppTopBar.SearchFieldInput, testDataItemExternalID + Key.ENTER);
+
             //Make sure ATD finish to load after search
             await webAppList.isSpinnerDone();
             await webAppList.sendKysToInputListRowWebElement(0, testDataItemQuantityToBuy);
@@ -396,11 +398,6 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                 //Remove this dialog box and continue the test
                 await webAppDialog.selectDialogBox('Close');
                 driver.sleep(400);
-                const base64Image2 = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Closed the dialog box`,
-                    value: 'data:image/png;base64,' + base64Image2,
-                });
             }
 
             //Remove the new ATD
