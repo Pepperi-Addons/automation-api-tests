@@ -335,6 +335,13 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             //wait one sec before cliking on catalog, to prevent click on other screen
             driver.sleep(1000);
             await webAppHomePage.isSpinnerDone();
+
+            const base64Image0 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Before selecting catalog`,
+                value: 'data:image/png;base64,' + base64Image0,
+            });
+
             await webAppList.click(webAppList.CardListElements);
 
             const base64Image1 = await driver.saveScreenshots();
@@ -342,6 +349,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                 title: `Before closing dialog box`,
                 value: 'data:image/png;base64,' + base64Image1,
             });
+
             //Validating new order
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
