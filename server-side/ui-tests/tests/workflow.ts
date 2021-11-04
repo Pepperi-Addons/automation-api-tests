@@ -348,6 +348,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
             //Adding items to cart
             await webAppList.sendKeys(webAppTopBar.SearchFieldInput, testDataItemExternalID + Key.ENTER);
+            
             //Make sure ATD finish to load after search
             await webAppList.isSpinnerDone();
             await webAppList.sendKysToInputListRowWebElement(0, testDataItemQuantityToBuy);

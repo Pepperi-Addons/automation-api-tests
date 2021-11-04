@@ -39,17 +39,17 @@ const varPass = process.env.npm_config_var_pass as string;
 
     await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
 
-    //Reset the needed UI Controls for the UI tests.
-    await replaceUIControls(generalService);
+    // //Reset the needed UI Controls for the UI tests.
+    // await replaceUIControls(generalService);
 
-    //Verify all items exist or replace them
-    await replaceItems(generalService);
+    // //Verify all items exist or replace them
+    // await replaceItems(generalService);
 
-    await upgradeDependenciesTests(generalService, varPass);
+    // await upgradeDependenciesTests(generalService, varPass);
 
-    await LoginTest(email, pass);
+    // await LoginTest(email, pass);
 
-    await OrdersTest(email, pass, client);
+    // await OrdersTest(email, pass, client);
 
     await WorkflowTest(email, pass, client);
 
