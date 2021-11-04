@@ -320,8 +320,23 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             expect(updatedInventory.InStockQuantity).to.equal(100);
 
             await webAppHomePage.clickOnBtn('Accounts');
+            const base64Image90 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Accounts`,
+                value: 'data:image/png;base64,' + base64Image90,
+            });
             await webAppHomePage.isSpinnerDone();
-
+            const base64Image91 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Spinner`,
+                value: 'data:image/png;base64,' + base64Image91,
+            });
+            await webAppList.validateListRowElements();
+            const base64Image92 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After List Row Validation`,
+                value: 'data:image/png;base64,' + base64Image92,
+            });
             await driver.click(webAppHeader.Home);
             await webAppHomePage.isSpinnerDone();
 
