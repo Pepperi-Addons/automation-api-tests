@@ -337,18 +337,43 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             await webAppHomePage.isSpinnerDone();
             await webAppList.click(webAppList.CardListElements);
 
+            const base64Image1 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Before closing dialog box`,
+                value: 'data:image/png;base64,' + base64Image1,
+            });
             //Validating new order
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
+            const base64Image2 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Before Sleep 3000`,
+                value: 'data:image/png;base64,' + base64Image2,
+            });
             //This sleep is mandaroy while the list is loading
             driver.sleep(3000);
 
+            const base64Image3 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Sleep 3000`,
+                value: 'data:image/png;base64,' + base64Image3,
+            });
             //Validate nothing is loading before starting to add items to cart
             await webAppList.isSpinnerDone();
 
+            const base64Image4 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Spinner`,
+                value: 'data:image/png;base64,' + base64Image4,
+            });
+
             //Adding items to cart
             await webAppList.sendKeys(webAppTopBar.SearchFieldInput, testDataItemExternalID + Key.ENTER);
-            
+            const base64Image5 = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Search`,
+                value: 'data:image/png;base64,' + base64Image5,
+            });
             //Make sure ATD finish to load after search
             await webAppList.isSpinnerDone();
             await webAppList.sendKysToInputListRowWebElement(0, testDataItemQuantityToBuy);
