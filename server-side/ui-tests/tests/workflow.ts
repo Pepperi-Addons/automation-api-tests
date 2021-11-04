@@ -320,23 +320,8 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             expect(updatedInventory.InStockQuantity).to.equal(100);
 
             await webAppHomePage.clickOnBtn('Accounts');
-            const base64Image90 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `After Accounts`,
-                value: 'data:image/png;base64,' + base64Image90,
-            });
             await webAppHomePage.isSpinnerDone();
-            const base64Image91 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `After Spinner`,
-                value: 'data:image/png;base64,' + base64Image91,
-            });
             await webAppList.validateListRowElements();
-            const base64Image92 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `After List Row Validation`,
-                value: 'data:image/png;base64,' + base64Image92,
-            });
             await driver.click(webAppHeader.Home);
             await webAppHomePage.isSpinnerDone();
 
@@ -351,52 +336,20 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             driver.sleep(1000);
             await webAppHomePage.isSpinnerDone();
 
-            const base64Image0 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Before selecting catalog`,
-                value: 'data:image/png;base64,' + base64Image0,
-            });
-
             await webAppList.click(webAppList.CardListElements);
-
-            const base64Image1 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Before closing dialog box`,
-                value: 'data:image/png;base64,' + base64Image1,
-            });
 
             //Validating new order
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
-            const base64Image2 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Before Sleep 3000`,
-                value: 'data:image/png;base64,' + base64Image2,
-            });
             //This sleep is mandaroy while the list is loading
             driver.sleep(3000);
 
-            const base64Image3 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `After Sleep 3000`,
-                value: 'data:image/png;base64,' + base64Image3,
-            });
             //Validate nothing is loading before starting to add items to cart
             await webAppList.isSpinnerDone();
 
-            const base64Image4 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `After Spinner`,
-                value: 'data:image/png;base64,' + base64Image4,
-            });
-
             //Adding items to cart
             await webAppList.sendKeys(webAppTopBar.SearchFieldInput, testDataItemExternalID + Key.ENTER);
-            const base64Image5 = await driver.saveScreenshots();
-            addContext(this, {
-                title: `After Search`,
-                value: 'data:image/png;base64,' + base64Image5,
-            });
+
             //Make sure ATD finish to load after search
             await webAppList.isSpinnerDone();
             await webAppList.sendKysToInputListRowWebElement(0, testDataItemQuantityToBuy);
@@ -445,11 +398,6 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                 //Remove this dialog box and continue the test
                 await webAppDialog.selectDialogBox('Close');
                 driver.sleep(400);
-                const base64Image2 = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Closed the dialog box`,
-                    value: 'data:image/png;base64,' + base64Image2,
-                });
             }
 
             //Remove the new ATD

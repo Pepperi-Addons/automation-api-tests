@@ -28,6 +28,7 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
+const testsArr = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
@@ -39,19 +40,22 @@ const varPass = process.env.npm_config_var_pass as string;
 
     await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
 
-    // //Reset the needed UI Controls for the UI tests.
-    // await replaceUIControls(generalService);
+    if (testsArr.includes('Reset')) {
+        //Reset the needed UI Controls for the UI tests.
+        await replaceUIControls(generalService);
 
-    // //Verify all items exist or replace them
-    // await replaceItems(generalService);
+        //Verify all items exist or replace them
+        await replaceItems(generalService);
 
-    // await upgradeDependenciesTests(generalService, varPass);
-
-    // await LoginTest(email, pass);
-
-    // await OrdersTest(email, pass, client);
-
-    await WorkflowTest(email, pass, client);
+        await upgradeDependenciesTests(generalService, varPass);
+    }
+    if (testsArr.includes('Sanity')) {
+        await LoginTest(email, pass);
+        await OrdersTest(email, pass, client);
+    }
+    if (testsArr.includes('Workflow')) {
+        await WorkflowTest(email, pass, client);
+    }
 
     run();
 })();
