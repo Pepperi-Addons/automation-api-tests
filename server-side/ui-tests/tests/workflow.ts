@@ -48,6 +48,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
                 //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                console.log('Test Failed');
                 driver.sleep(6006);
                 const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
@@ -154,6 +155,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
                     });
 
                     //Wait after POST new ATD from the API before getting it in the UI
+                    console.log('ATD Updated by using the API');
                     driver.sleep(4000);
 
                     await driver.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
@@ -319,10 +321,15 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             });
             expect(updatedInventory.InStockQuantity).to.equal(100);
 
+            //Resync - Going to Accounts and back to Home Page
+            console.log('Wait Before Loading Accounts');
+            await driver.sleep(2002);
             await webAppHomePage.clickOnBtn('Accounts');
             await webAppHomePage.isSpinnerDone();
             await webAppList.validateListRowElements();
             await driver.click(webAppHeader.Home);
+            console.log('Wait On Home Page Before Starting New Transaction');
+            await driver.sleep(5005);
             await webAppHomePage.isSpinnerDone();
 
             //StartOrder
@@ -333,6 +340,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             await webAppTopBar.click(webAppTopBar.DoneBtn);
 
             //wait one sec before cliking on catalog, to prevent click on other screen
+            console.log('Change to Catalog Cards List');
             driver.sleep(1000);
             await webAppHomePage.isSpinnerDone();
 
@@ -342,6 +350,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             await webAppDialog.selectDialogBoxBeforeNewOrder();
 
             //This sleep is mandaroy while the list is loading
+            console.log('Loading List');
             driver.sleep(3000);
 
             //Validate nothing is loading before starting to add items to cart
@@ -371,6 +380,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             do {
                 inventoryAfter = await inventoryService.getInventoryByItemExternalID(testDataItemExternalID);
                 if (inventoryAfter[0].InStockQuantity == 100) {
+                    console.log('Tested Item Quantity Is At Start Condition (100)');
                     generalService.sleep(2002);
                 }
                 loopCounter--;
@@ -397,7 +407,6 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
                 //Remove this dialog box and continue the test
                 await webAppDialog.selectDialogBox('Close');
-                driver.sleep(400);
             }
 
             //Remove the new ATD
@@ -436,6 +445,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             });
 
             //Wait after POST new ATD from the API before getting it in the UI
+            console.log('ATD Updated by using the API');
             driver.sleep(4000);
 
             await driver.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);

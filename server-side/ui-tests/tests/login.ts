@@ -22,7 +22,8 @@ export async function LoginTest(email: string, password: string) {
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
                 //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                driver.sleep(6000);
+                console.log('Test Failed');
+                driver.sleep(6006);
                 const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',

@@ -37,6 +37,7 @@ export abstract class Page {
             if (hiddenEl_1 instanceof WebElement) {
                 isHidden[0] = true;
             }
+            console.log('Verify Spinner Status');
             this.browser.sleep(200);
             const hiddenEl_2 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
             if (hiddenEl_2 instanceof WebElement) {

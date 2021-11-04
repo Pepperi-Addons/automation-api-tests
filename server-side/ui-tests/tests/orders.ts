@@ -38,7 +38,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
                 //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                driver.sleep(6000);
+                console.log('Test Failed');
+                driver.sleep(6006);
                 const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
@@ -75,6 +76,7 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppTopBar.click(webAppTopBar.DoneBtn);
 
             //wait one sec before cliking on catalog, to prevent click on other screen
+            console.log('Change to Catalog Cards List');
             driver.sleep(1000);
             await webAppList.click(webAppList.CardListElements);
 
@@ -87,6 +89,7 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
             //This sleep is mandaroy while the list is re-sorting after the sorting click
+            console.log('Sorting List');
             driver.sleep(3000);
             const cartItems = await driver.findElements(webAppList.CartListElements);
             let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
@@ -97,6 +100,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                 await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
                 //This sleep is mandaroy while the list is re-sorting after the sorting click
+                console.log('Sorting List');
                 driver.sleep(3000);
                 const cartItems = await driver.findElements(webAppList.CartListElements);
                 topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
@@ -140,6 +144,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                     title: `Image of order item number: ${i}`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
+                console.log('Ordering Items');
                 driver.sleep(500);
             }
 
@@ -165,12 +170,6 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                 //Remove this dialog box and continue the test
                 await webAppDialog.selectDialogBox('Close');
-                driver.sleep(400);
-                const base64Image2 = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Closed the dialog box`,
-                    value: 'data:image/png;base64,' + base64Image2,
-                });
             }
 
             //Validating transaction created via the API
@@ -181,6 +180,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                     order_by: 'ModificationDateTime DESC',
                 });
                 if (lastTransaction[0].Status != 2) {
+                    console.log(`Transaction StatusName Was: ${lastTransaction[0].StatusName}`);
                     generalService.sleep(2000);
                 }
                 loopCounter--;
@@ -250,7 +250,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                 const base64Image = await driver.saveScreenshots();
                 const url = await driver.getCurrentUrl();
                 //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                driver.sleep(6000);
+                console.log('Test Failed');
+                driver.sleep(6006);
                 const consoleLogs = await driver.getConsoleLogs();
                 addContext(this, {
                     title: 'URL',
@@ -328,6 +329,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                     await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
                     //This sleep is mandaroy while the list is re-sorting after the sorting click
+                    console.log('Sorting List');
                     driver.sleep(3000);
                     const cartItems = await driver.findElements(webAppList.CartListElements);
                     let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
@@ -338,6 +340,7 @@ export async function OrdersTest(email: string, password: string, client: Client
                         await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
                         //This sleep is mandaroy while the list is re-sorting after the sorting click
+                        console.log('Sorting List');
                         driver.sleep(3000);
                         const cartItems = await driver.findElements(webAppList.CartListElements);
                         topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
@@ -403,12 +406,6 @@ export async function OrdersTest(email: string, password: string, client: Client
 
                         //Remove this dialog box and continue the test
                         await webAppDialog.selectDialogBox('Close');
-                        driver.sleep(400);
-                        const base64Image2 = await driver.saveScreenshots();
-                        addContext(this, {
-                            title: `Closed the dialog box`,
-                            value: 'data:image/png;base64,' + base64Image2,
-                        });
                     }
 
                     //Validating transaction created via the API
