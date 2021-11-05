@@ -39,7 +39,7 @@ export abstract class Page {
             if (hiddenEl_1 instanceof WebElement) {
                 isHidden[0] = true;
             }
-            this.browser.sleep(1000 + loadingCounter);
+            this.browser.sleep(200 + loadingCounter);
             const hiddenEl_2 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
             if (hiddenEl_2 instanceof WebElement) {
                 isHidden[1] = true;
