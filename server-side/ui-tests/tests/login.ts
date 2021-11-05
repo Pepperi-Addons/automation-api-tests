@@ -1,11 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import chai, { expect } from 'chai';
-import promised from 'chai-as-promised';
-import { WebAppLoginPage, WebAppHeader } from '../pom/index';
+import { WebAppLoginPage } from '../pom/index';
 import addContext from 'mochawesome/addContext';
-
-chai.use(promised);
 
 export async function LoginTest(email: string, password: string) {
     let driver: Browser;
@@ -43,10 +39,7 @@ export async function LoginTest(email: string, password: string) {
 
         it('Login', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.navigate();
-            await webAppLoginPage.signInAs(email, password);
-            const webAppHeader = new WebAppHeader(driver);
-            await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+            await webAppLoginPage.login(email, password);
         });
     });
 }

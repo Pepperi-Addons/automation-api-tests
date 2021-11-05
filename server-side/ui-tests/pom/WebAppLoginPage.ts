@@ -2,6 +2,11 @@ import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
 import { By, Locator } from 'selenium-webdriver';
+import chai, { expect } from 'chai';
+import promised from 'chai-as-promised';
+import { WebAppHeader } from './index';
+
+chai.use(promised);
 
 export class WebAppLoginPage extends Page {
     constructor(browser: Browser) {
@@ -26,5 +31,12 @@ export class WebAppLoginPage extends Page {
         await this.browser.click(this.Next);
         await this.browser.sendKeys(this.Password, password);
         await this.browser.click(this.LoginBtn);
+    }
+
+    public async login(email: string, password: string) {
+        await this.navigate();
+        await this.signInAs(email, password);
+        const webAppHeader = new WebAppHeader(this.browser);
+        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
     }
 }

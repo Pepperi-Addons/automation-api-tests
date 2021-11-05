@@ -1,7 +1,18 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
-import { Locator, By, WebElement } from 'selenium-webdriver';
+import { Locator, By, WebElement, Key } from 'selenium-webdriver';
+import { WebAppHeader } from './WebAppHeader';
+import { WebAppDialog, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from './index';
+import addContext from 'mochawesome/addContext';
+import GeneralService from '../../services/general.service';
+import { ObjectsService } from '../../services/objects.service';
+import { ImportExportATDService } from '../../services/import-export-atd.service';
+import { v4 as uuidv4 } from 'uuid';
+import chai, { expect } from 'chai';
+import promised from 'chai-as-promised';
+
+chai.use(promised);
 
 export enum SelectOption {
     InCreation = 1,
@@ -130,14 +141,18 @@ export class AddonPage extends Page {
         } else {
             await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 45000);
         }
+        console.log('Validate Addon Loaded');
         let bodySize = 0;
+        let loadingCounter = 0;
         do {
             let htmlBody = await this.browser.findElement(this.HtmlBody);
             bodySize = (await htmlBody.getAttribute('innerHTML')).length;
-            this.browser.sleep(1000);
+            this.browser.sleep(1000 + loadingCounter);
             htmlBody = await this.browser.findElement(this.HtmlBody);
             if ((await htmlBody.getAttribute('innerHTML')).length == bodySize) {
                 bodySize = -1;
+            } else {
+                loadingCounter++;
             }
         } while (bodySize != -1);
         return true;
@@ -154,6 +169,235 @@ export class AddonPage extends Page {
         const selectedTab = Object.assign({}, this.AddonContainerActionsRadioBtn);
         selectedTab['value'] = `.//li[@data-type='${actionName}'] ${selectedTab['value']}`;
         await this.browser.click(selectedTab);
+        return;
+    }
+
+    /**
+     *
+     * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports
+     * @param generalService This function will use API to rename other existing ATD with same name
+     * @param name Name of the new ATD
+     * @param description Description of the new ATD
+     */
+    public async createNewATD(that, generalService: GeneralService, name: string, description: string): Promise<void> {
+        const objectsService = new ObjectsService(generalService);
+        const importExportATDService = new ImportExportATDService(generalService.papiClient);
+        const webAppHeader = new WebAppHeader(this.browser);
+
+        await this.browser.click(webAppHeader.Settings);
+
+        const webAppSettingsBar = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsBar.selectSettingsByID('Sales Activities');
+        await this.browser.click(webAppSettingsBar.ObjectEditorTransactions);
+
+        const webAppTopBar = new WebAppTopBar(this.browser);
+        await this.browser.click(webAppTopBar.EditorAddBtn);
+
+        const webAppDialog = new WebAppDialog(this.browser);
+        await this.browser.sendKeys(webAppDialog.EditorTextBoxInput, name);
+        await this.browser.sendKeys(webAppDialog.EditorTextAreaInput, description + Key.TAB);
+        await webAppDialog.selectDialogBoxByText('Save');
+
+        const webAppList = new WebAppList(this.browser);
+
+        //If not in new ATD, try to remove ATD and recreate new ATD
+        try {
+            //Make sure the page finish to load after creating new ATD
+            await this.isSpinnerDone();
+            await this.browser.switchTo(this.AddonContainerIframe);
+            await this.browser.switchToDefaultContent();
+        } catch (error) {
+            const isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+            if (isPupUP == `${name} already exists.`) {
+                const base64Image = await this.browser.saveScreenshots();
+                addContext(that, {
+                    title: `This should never happen since this bug solved in Object Types Editor Version 1.0.14`,
+                    value: 'data:image/png;base64,' + base64Image,
+                });
+
+                addContext(that, {
+                    title: `Known bug in Object Types Editor Version 1.0.8`,
+                    value: 'https://pepperi.atlassian.net/browse/DI-18699',
+                });
+                await webAppDialog.selectDialogBox('Close');
+
+                //Remove all the transactions of this ATD, or the UI will block the manual removal
+
+                const transactionsToRemove = await objectsService.getTransaction({
+                    where: `Type LIKE '%${name}%'`,
+                });
+
+                for (let index = 0; index < transactionsToRemove.length; index++) {
+                    const isTransactionDeleted = await objectsService.deleteTransaction(
+                        transactionsToRemove[index].InternalID as number,
+                    );
+                    expect(isTransactionDeleted).to.be.true;
+                }
+
+                //Rename the ATD and Remove it with UI Delete to Reproduce the bug from version 1.0.8
+                const tempATDExternalID = `${name} ${uuidv4()}`;
+
+                const atdToRemove = await generalService.getAllTypes({
+                    where: `Name='${name}'`,
+                    include_deleted: true,
+                    page_size: -1,
+                });
+
+                await importExportATDService.postTransactionsATD({
+                    ExternalID: tempATDExternalID,
+                    InternalID: atdToRemove[0].InternalID,
+                    UUID: atdToRemove[0].UUID,
+                    Hidden: false,
+                    Description: description,
+                });
+
+                //Wait after POST new ATD from the API before getting it in the UI
+                console.log('ATD Updated by using the API');
+                this.browser.sleep(4000);
+
+                await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
+
+                //Make sure ATD finish to load after search
+                await this.isSpinnerDone();
+
+                await webAppList.clickOnFromListRowWebElement();
+
+                await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
+
+                //Make sure all loading is done after Delete
+                await this.isSpinnerDone();
+
+                let isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+
+                expect(isPupUP).to.equal('Are you sure you want to proceed?');
+
+                await webAppDialog.selectDialogBox('Continue');
+
+                //Make sure all loading is done after Continue
+                await this.isSpinnerDone();
+
+                isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+
+                expect(isPupUP).to.equal('Task Delete completed successfully.');
+
+                await webAppDialog.selectDialogBox('Close');
+
+                try {
+                    //Wait after refresh for the ATD list to load before searching for new list
+                    await this.isSpinnerDone();
+                    await this.browser.sendKeys(webAppTopBar.EditorSearchField, name + Key.ENTER);
+
+                    //Make sure ATD finish to load after search
+                    await this.isSpinnerDone();
+
+                    await webAppList.clickOnFromListRowWebElement(0, 6000);
+                    throw new Error('The list should be empty, this is a bug');
+                } catch (error) {
+                    if (error instanceof Error && error.message == 'The list should be empty, this is a bug') {
+                        throw error;
+                    }
+                }
+
+                //Try again to create new ATD after removed ATD with same name
+                await this.browser.click(webAppTopBar.EditorAddBtn);
+                await this.browser.sendKeys(webAppDialog.EditorTextBoxInput, name);
+                await this.browser.sendKeys(webAppDialog.EditorTextAreaInput, description + Key.TAB);
+                await webAppDialog.selectDialogBoxByText('Save');
+
+                //Make sure the page finish to load after creating new ATD
+                await this.isSpinnerDone();
+                await this.browser.switchTo(this.AddonContainerIframe);
+                await this.browser.switchToDefaultContent();
+            }
+        }
+        return;
+    }
+
+    /**
+     *
+     * @param postAction Enum that can be used like this in a test: SelectPostAction.UpdateInventory;
+     */
+    public async editATDWorkflow(postAction: SelectPostAction) {
+        switch (postAction) {
+            case SelectPostAction.UpdateInventory:
+                const webAppDialog = new WebAppDialog(this.browser);
+
+                //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+                await this.browser.switchTo(this.AddonContainerIframe);
+                await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                expect(await this.isEditorHiddenTabExist('WorkflowV2', 45000)).to.be.true;
+                expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+                await this.browser.switchToDefaultContent();
+
+                await this.selectTabByText('Workflows');
+                await this.browser.switchTo(this.AddonContainerIframe);
+                await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                expect(await this.isEditorTabVisible('WorkflowV2')).to.be.true;
+
+                expect(await this.browser.findElement(this.AddonContainerATDEditorWorkflowFlowchartIndicator));
+
+                //Edit the Workflow
+                //Clear
+                const workflowElmentsLength = await (
+                    await this.browser.findElements(this.AddonContainerATDEditorWorkflowFlowchartEl)
+                ).length;
+
+                for (let index = workflowElmentsLength - 1; index >= 0; index--) {
+                    await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartEl, index);
+                    await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartElDeleteBtn);
+                    await this.browser.click(webAppDialog.IframeDialogApproveBtn);
+                    await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                }
+
+                //Add Steps
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartNewStepBtn);
+                await this.browser.sendKeys(this.AddonContainerATDEditorWorkflowFlowchartransitionNameBtn, 'Create');
+                await this.selectDropBoxByOption(
+                    this.AddonContainerATDEditorWorkflowFlowchartFromStatusBtn,
+                    SelectOption.New,
+                );
+                await this.selectDropBoxByOption(
+                    this.AddonContainerATDEditorWorkflowFlowchartoStatusBtn,
+                    SelectOption.InCreation,
+                );
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartSaveBtn);
+
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartNewStepBtn);
+                await this.browser.sendKeys(this.AddonContainerATDEditorWorkflowFlowchartransitionNameBtn, 'Submit');
+                await this.selectDropBoxByOption(
+                    this.AddonContainerATDEditorWorkflowFlowchartFromStatusBtn,
+                    SelectOption.InCreation,
+                );
+                await this.selectDropBoxByOption(
+                    this.AddonContainerATDEditorWorkflowFlowchartoStatusBtn,
+                    SelectOption.Submitted,
+                );
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartSaveBtn);
+
+                await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+
+                //Edit Step
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartEl, 0);
+
+                //Add Update Inventory
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartElEditBtn);
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartAddAction, 1);
+                await this.selectPostAction(SelectPostAction.UpdateInventory);
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartAddActionsSaveBtn);
+
+                //Config Update Inventory
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartUpdateInventoryOriginInventoryCB);
+                await this.browser.click(
+                    this.AddonContainerATDEditorWorkflowFlowchartUpdateInventoryDestinationAccountCB,
+                );
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartUpdateInventorySaveBtn);
+                await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartUpdateInventoryEditSaveBtn);
+
+                await this.browser.switchToDefaultContent();
+                break;
+            default:
+                throw new Error('Method not implemented.');
+        }
         return;
     }
 }
