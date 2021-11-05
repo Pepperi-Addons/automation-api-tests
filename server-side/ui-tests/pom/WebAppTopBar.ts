@@ -28,7 +28,7 @@ export class WebAppTopBar extends Page {
     public EditorAddBtn: Locator = By.css('main .content.pep-border-bottom button [name="number_plus"]');
 
     public async selectFromMenuByText(menu: Locator, buttonText: string): Promise<void> {
-        console.log("Select from menu")
+        console.log('Select from menu');
         this.browser.sleep(1001);
         await this.browser.click(menu);
         //This is mandatory wait while the buttons on the menu are loading and might change
