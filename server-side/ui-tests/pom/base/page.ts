@@ -32,17 +32,19 @@ export abstract class Page {
 
     public async isSpinnerDone(): Promise<boolean> {
         const isHidden = [false, false];
+        console.log('Verify Spinner Status');
+        let loadingCounter = 0;
         do {
             const hiddenEl_1 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
             if (hiddenEl_1 instanceof WebElement) {
                 isHidden[0] = true;
             }
-            console.log('Verify Spinner Status');
-            this.browser.sleep(200);
+            this.browser.sleep(1000 + loadingCounter);
             const hiddenEl_2 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
             if (hiddenEl_2 instanceof WebElement) {
                 isHidden[1] = true;
             }
+            loadingCounter++;
         } while (!isHidden[0] || !isHidden[1]);
         return true;
     }

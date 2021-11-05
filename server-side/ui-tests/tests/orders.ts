@@ -58,12 +58,8 @@ export async function OrdersTest(email: string, password: string, client: Client
         });
 
         it('Order The Most Expensive Three Items and validate with API', async function () {
-            //LogIn
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.navigate();
-            await webAppLoginPage.signInAs(email, password);
-            const webAppHeader = new WebAppHeader(driver);
-            await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+            await webAppLoginPage.login(email, password);
 
             //StartOrder
             const webAppHomePage = new WebAppHomePage(driver);
@@ -151,26 +147,7 @@ export async function OrdersTest(email: string, password: string, client: Client
             await webAppList.click(webAppTopBar.CartViewBtn);
             await webAppList.click(webAppTopBar.CartSumbitBtn);
 
-            //Wait 5 seconds and validate there are no dialogs opening up after placing order
-            //Exmaple on how to write test over a known bug - let the test pass but add information to the report
-            try {
-                await expect(driver.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
-                    'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
-                );
-            } catch (error) {
-                const base64Image = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `This bug happen some time, don't stop the test here, but add this as link`,
-                    value: 'https://pepperi.atlassian.net/browse/DI-17083',
-                });
-                addContext(this, {
-                    title: `This bug happen some time, don't stop the test here, but add this as image`,
-                    value: 'data:image/png;base64,' + base64Image,
-                });
-
-                //Remove this dialog box and continue the test
-                await webAppDialog.selectDialogBox('Close');
-            }
+            await webAppHomePage.isDialogOnHomePAge(this);
 
             //Validating transaction created via the API
             let lastTransaction;
@@ -221,6 +198,7 @@ export async function OrdersTest(email: string, password: string, client: Client
             );
 
             expect(PriceOfMostExpensiveItems).to.equal(totalPrice);
+            const webAppHeader = new WebAppHeader(driver);
             await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
 
             const testDataTransaction = await objectsService.deleteTransaction(Number(lastTransaction[0].InternalID));
@@ -270,10 +248,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
         it('Create WebApp Seasion', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.navigate();
-            await webAppLoginPage.signInAs(email, password);
-            const webAppHeader = new WebAppHeader(driver);
-            await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+            await webAppLoginPage.login(email, password);
         });
 
         it('Create Account And Get Catalog', async function () {
@@ -386,27 +361,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                     await webAppList.click(webAppTopBar.CartViewBtn);
                     await webAppList.click(webAppTopBar.CartSumbitBtn);
 
-                    //Wait 5 seconds and validate there are no dialogs opening up after placing order
-                    //Exmaple on how to write test over a known bug - let the test pass but add information to the report
-                    const webAppDialog = new WebAppDialog(driver);
-                    try {
-                        await expect(driver.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
-                            'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
-                        );
-                    } catch (error) {
-                        const base64Image = await driver.saveScreenshots();
-                        addContext(this, {
-                            title: `This bug happen some time, don't stop the test here, but add this as link`,
-                            value: 'https://pepperi.atlassian.net/browse/DI-17083',
-                        });
-                        addContext(this, {
-                            title: `This bug happen some time, don't stop the test here, but add this as image`,
-                            value: 'data:image/png;base64,' + base64Image,
-                        });
-
-                        //Remove this dialog box and continue the test
-                        await webAppDialog.selectDialogBox('Close');
-                    }
+                    const webAppHomePage = new WebAppHomePage(driver);
+                    await webAppHomePage.isDialogOnHomePAge(this);
 
                     //Validating transaction created via the API
                     let lastTransaction;
