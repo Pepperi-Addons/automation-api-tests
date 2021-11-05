@@ -44,11 +44,14 @@ export class WebAppList extends Page {
         let tempListItems = await this.browser.findElements(selector);
         let tempListItemsLength;
         let loopCounter = ms ? ms / 1500 : 20;
+        console.log('Validate List Loaded');
+        let loadingCounter = 0;
         do {
             tempListItemsLength = tempListItems.length;
-            this.browser.sleep(1500);
+            this.browser.sleep(1500 + loadingCounter);
             tempListItems = await this.browser.findElements(selector);
             loopCounter--;
+            loadingCounter++;
         } while (tempListItems.length > tempListItemsLength && loopCounter > 0);
         return;
     }
