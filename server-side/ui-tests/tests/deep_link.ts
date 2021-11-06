@@ -79,12 +79,12 @@ export async function DeepLink(email: string, password: string, client: Client) 
             try {
                 expect(smartSearchOptions.length).to.be.above(2);
             } catch (error) {
-                // TODO: https:// pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
+                // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
                 // New lists should be created and API might change, so for now this try and catch is a temp patch,
                 // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.
                 addContext(this, {
                     title: 'Known bug with list showing two options when there is only one',
-                    value: 'https:// pepperi.atlassian.net/browse/DI-16069',
+                    value: 'https://pepperi.atlassian.net/browse/DI-16069',
                 });
                 // throw error;
             }
@@ -193,12 +193,12 @@ export async function DeepLink(email: string, password: string, client: Client) 
         //     try {
         //         expect(smartSearchOptions.length).to.be.above(2);
         //     } catch (error) {
-        //         // TODO: https:// pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
+        //         // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
         //         // New lists should be created and API might change, so for now this try and catch is a temp patch,
         //         // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.
         //         addContext(this, {
         //             title: 'Known bug with list showing two options when there is only one',
-        //             value: 'https:// pepperi.atlassian.net/browse/DI-16069',
+        //             value: 'https://pepperi.atlassian.net/browse/DI-16069',
         //         });
         //         // throw error;
         //     }
@@ -258,7 +258,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
         // }
         // catch (Exception e)
         // {
-        // // TODO: https:// pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
+        // // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
         // // New lists should be created and API might change, so for now this try and catch is a temp patch,
         // // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.   }
 
@@ -273,7 +273,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
         // }
         // catch (Exception e)
         // {
-        // // TODO: https:// pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
+        // // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
         // // New lists should be created and API might change, so for now this try and catch is a temp patch,
         // // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.
         // }
@@ -307,7 +307,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
         // }
         // catch (Exception e)
         // {
-        // // TODO: https:// pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
+        // // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
         // // New lists should be created and API might change, so for now this try and catch is a temp patch,
         // // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.   }
         // }
