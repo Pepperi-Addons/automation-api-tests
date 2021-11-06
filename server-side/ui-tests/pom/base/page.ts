@@ -1,5 +1,6 @@
 import { Browser } from '../../utilities/browser';
 import { Locator, By, WebElement } from 'selenium-webdriver';
+import addContext from 'mochawesome/addContext';
 
 export abstract class Page {
     private url: string;
@@ -47,5 +48,33 @@ export abstract class Page {
             loadingCounter++;
         } while (!isHidden[0] || !isHidden[1]);
         return true;
+    }
+
+    /**
+     *
+     * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports
+     */
+    public async collectEndTestData(that): Promise<void> {
+        if (that.currentTest.state != 'passed') {
+            const base64Image = await this.browser.saveScreenshots();
+            const url = await this.browser.getCurrentUrl();
+            //Wait for all the logs to be printed (this usually take more then 3 seconds)
+            console.log('Test Failed');
+            this.browser.sleep(6006);
+            const consoleLogs = await this.browser.getConsoleLogs();
+            addContext(that, {
+                title: 'URL',
+                value: url,
+            });
+            addContext(that, {
+                title: `Image`,
+                value: 'data:image/png;base64,' + base64Image,
+            });
+            addContext(that, {
+                title: 'Console Logs',
+                value: consoleLogs,
+            });
+        }
+        return;
     }
 }

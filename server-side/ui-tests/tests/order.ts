@@ -8,25 +8,23 @@ import {
     WebAppHomePage,
     WebAppList,
     WebAppTopBar,
-    WebAppDialog,
     WebAppTransaction,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
-import { ObjectsService } from './../../services/objects.service';
+import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { Account, Catalog, Transaction } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
-export async function OrdersTest(email: string, password: string, client: Client) {
+export async function OrderTest(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    describe('Orders UI Tests Suit (New Browser per test (it) scenarios)', async function () {
+    describe('Order UI Tests Suit (New Browser per test (it) scenarios)', async function () {
         this.retries(1);
 
         beforeEach(async function () {
@@ -34,26 +32,8 @@ export async function OrdersTest(email: string, password: string, client: Client
         });
 
         afterEach(async function () {
-            if (this.currentTest.state != 'passed') {
-                const base64Image = await driver.saveScreenshots();
-                const url = await driver.getCurrentUrl();
-                //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                console.log('Test Failed');
-                driver.sleep(6006);
-                const consoleLogs = await driver.getConsoleLogs();
-                addContext(this, {
-                    title: 'URL',
-                    value: url,
-                });
-                addContext(this, {
-                    title: `Image`,
-                    value: 'data:image/png;base64,' + base64Image,
-                });
-                addContext(this, {
-                    title: 'Console Logs',
-                    value: consoleLogs,
-                });
-            }
+            const webAppHomePage = new WebAppHomePage(driver);
+            await webAppHomePage.collectEndTestData(this);
             await driver.quit();
         });
 
@@ -61,26 +41,17 @@ export async function OrdersTest(email: string, password: string, client: Client
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
 
-            //StartOrder
             const webAppHomePage = new WebAppHomePage(driver);
-            await webAppHomePage.click(webAppHomePage.Main);
+            await webAppHomePage.initiateSalesActivity();
 
-            //Get to Items
-            const webAppList = new WebAppList(driver);
-            await webAppList.clickOnFromListRowWebElement();
-            const webAppTopBar = new WebAppTopBar(driver);
-            await webAppTopBar.click(webAppTopBar.DoneBtn);
-
-            //wait one sec before cliking on catalog, to prevent click on other screen
-            console.log('Change to Catalog Cards List');
-            driver.sleep(1000);
-            await webAppList.click(webAppList.CardListElements);
-
-            //Validating new order
-            const webAppDialog = new WebAppDialog(driver);
-            await webAppDialog.selectDialogBoxBeforeNewOrder();
+            //Create new transaction from the UI
+            const itemsScopeURL = await driver.getCurrentUrl();
+            const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
+            const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
 
             //Sorting items by price
+            const webAppList = new WebAppList(driver);
+            const webAppTopBar = new WebAppTopBar(driver);
             await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
             await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
@@ -131,15 +102,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
             //Adding most expensive items to cart
             for (let i = 0; i < 3; i++) {
-                await webAppList.sendKeys(webAppTopBar.SearchFieldInput, sorteCartMatrixByPrice[i][1] + Key.ENTER);
-                //Make sure ATD finish to load after search
-                await webAppList.isSpinnerDone();
-                await webAppList.sendKysToInputListRowWebElement(0, 1);
-                const base64Image = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Image of order item number: ${i}`,
-                    value: 'data:image/png;base64,' + base64Image,
-                });
+                await webAppTransaction.addItemToCart(this, sorteCartMatrixByPrice[i][1], 1, true);
                 console.log('Ordering Items');
                 driver.sleep(500);
             }
@@ -206,7 +169,7 @@ export async function OrdersTest(email: string, password: string, client: Client
         });
     });
 
-    describe('Orders UI Tests Suit (One browser per suite (describe) scenarios)', async function () {
+    describe('Order UI Tests Suit (One browser per suite (describe) scenarios)', async function () {
         let accountId;
         let catalogId;
         let activityTypeId;
@@ -224,26 +187,8 @@ export async function OrdersTest(email: string, password: string, client: Client
         });
 
         afterEach(async function () {
-            if (this.currentTest.state != 'passed') {
-                const base64Image = await driver.saveScreenshots();
-                const url = await driver.getCurrentUrl();
-                //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                console.log('Test Failed');
-                driver.sleep(6006);
-                const consoleLogs = await driver.getConsoleLogs();
-                addContext(this, {
-                    title: 'URL',
-                    value: url,
-                });
-                addContext(this, {
-                    title: `Image`,
-                    value: 'data:image/png;base64,' + base64Image,
-                });
-                addContext(this, {
-                    title: 'Console Logs',
-                    value: consoleLogs,
-                });
-            }
+            const webAppHomePage = new WebAppHomePage(driver);
+            await webAppHomePage.collectEndTestData(this);
         });
 
         it('Create WebApp Seasion', async function () {
@@ -253,7 +198,7 @@ export async function OrdersTest(email: string, password: string, client: Client
 
         it('Create Account And Get Catalog', async function () {
             const newAccount: Account = await objectsService.createAccount({
-                ExternalID: 'Account for orders scenarios',
+                ExternalID: 'Account for order scenarios',
                 Discount: 0,
             });
             accountId = newAccount.InternalID;
@@ -294,8 +239,8 @@ export async function OrdersTest(email: string, password: string, client: Client
                 });
 
                 it(`Order The Most Expensive Three Items And Validate ${discount}% Discount`, async function () {
-                    const webAppLoginPage = new WebAppTransaction(driver, transactionUUID);
-                    await webAppLoginPage.navigate();
+                    const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
+                    await webAppTransaction.navigate();
 
                     //Sorting items by price
                     const webAppList = new WebAppList(driver);
@@ -349,13 +294,9 @@ export async function OrdersTest(email: string, password: string, client: Client
                         webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
                     //Adding most expensive items to cart
                     for (let i = 0; i < 3; i++) {
-                        await webAppList.sendKeys(
-                            webAppTopBar.SearchFieldInput,
-                            sorteCartMatrixByPrice[i][1] + Key.ENTER,
-                        );
-                        //Make sure ATD finish to load after search
-                        await webAppList.isSpinnerDone();
-                        await webAppList.sendKysToInputListRowWebElement(0, 1);
+                        await webAppTransaction.addItemToCart(this, sorteCartMatrixByPrice[i][1], 1);
+                        console.log('Ordering Items');
+                        driver.sleep(500);
                     }
 
                     await webAppList.click(webAppTopBar.CartViewBtn);

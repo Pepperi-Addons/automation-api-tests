@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
+import { DataVisualisationService, Chart } from '../services/data-visualisation.service';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataVisualisationService = new DataVisualisationService(generalService);
