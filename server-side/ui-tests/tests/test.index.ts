@@ -8,10 +8,11 @@ import promised from 'chai-as-promised';
 import { TestDataTest } from '../../api-tests/test-service/test_data';
 import { Client } from '@pepperi-addons/debug-server';
 import { LoginTest } from './login';
-import { OrdersTest } from './orders';
+import { OrderTest } from './order';
 import { WorkflowTest } from './workflow';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
+import { DeepLink } from './deep_link';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -49,12 +50,18 @@ const varPass = process.env.npm_config_var_pass as string;
 
         await upgradeDependenciesTests(generalService, varPass);
     }
+
     if (testsArr.includes('Sanity')) {
         await LoginTest(email, pass);
-        await OrdersTest(email, pass, client);
+        await OrderTest(email, pass, client);
     }
+
     if (testsArr.includes('Workflow')) {
         await WorkflowTest(email, pass, client);
+    }
+
+    if (testsArr.includes('DeepLink')) {
+        await DeepLink(email, pass, client);
     }
 
     run();

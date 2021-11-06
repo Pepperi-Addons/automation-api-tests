@@ -14,7 +14,7 @@ export class WebAppList extends Page {
     public RadioButtons: Locator = By.css('pep-list .table-row-fieldset .mat-radio-button');
     public Cells: Locator = By.css('pep-list .table-row-fieldset .pep-report-fields');
     public ListRowElements: Locator = By.css('pep-list .table-row-fieldset');
-    public TotalResultsText: Locator = By.css('.bold.number');
+    public TotalResultsText: Locator = By.css('.total-items .number');
 
     //Card List
     public CardListElements: Locator = By.css('pep-list .scrollable-content > div pep-form');
@@ -27,6 +27,14 @@ export class WebAppList extends Page {
     public CartListElementsInternalBtn: Locator = By.css('pep-form pep-internal-menu button');
     public CartListElementsGridLineViewInternalBtn: Locator = By.css('pep-list pep-internal-button');
     public CartListGridLineHeaderItemPrice: Locator = By.css('label#ItemPrice');
+
+    //Smart Search
+    public SmartSearchOptions: Locator = By.css('app-advanced-search label');
+    public SmartSearchCheckBoxBtnArr: Locator = By.css('.advance-search-menu li[title] input');
+    public SmartSearchCheckBoxTitleArr: Locator = By.css('.advance-search-menu li[title] label');
+    public SmartSearchCheckBoxOptions: Locator = By.css('.advance-search-menu li');
+    public SmartSearchCheckBoxDone: Locator = By.css('.advance-search-menu .done');
+    public SmartSearchCheckBoxClear: Locator = By.css('.advance-search-menu .clear');
 
     public async validateListRowElements(ms?: number): Promise<void> {
         return await this.validateElements(this.ListRowElements, ms);
@@ -143,5 +151,28 @@ export class WebAppList extends Page {
             }
         }
         return 0;
+    }
+
+    public async selectSmartSearchByTitle(titleText: string): Promise<void> {
+        const selectedTitle = Object.assign({}, this.SmartSearchOptions);
+        selectedTitle['value'] += `[title*='${titleText}']`;
+        await this.browser.click(selectedTitle);
+        return;
+    }
+
+    public async selectSmartSearchByIndex(index: number): Promise<void> {
+        await this.browser.findElements(this.SmartSearchCheckBoxOptions, 4000).then(
+            async (res) => {
+                if (res.length > index) {
+                    await res[index].click();
+                    return;
+                }
+                throw new Error(`Index of ${index} is out of range`);
+            },
+            () => {
+                console.log(`Element ${this.SmartSearchCheckBoxOptions.toString()} not found`);
+            },
+        );
+        return;
     }
 }

@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
-import { WebAppDialog, WebAppHeader, WebAppList } from './index';
+import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
@@ -17,7 +17,7 @@ export class WebAppHomePage extends Page {
     public Main: Locator = By.css('#mainButton');
     public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
 
-    public async clickOnBtn(btnTxt: string) {
+    public async clickOnBtn(btnTxt: string): Promise<void> {
         const buttonsArr = await this.browser.findElements(this.HomeScreenButtonArr);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
@@ -28,7 +28,7 @@ export class WebAppHomePage extends Page {
         }
         return;
     }
-    public async manualResync() {
+    public async manualResync(): Promise<void> {
         const webAppList = new WebAppList(this.browser);
         const webAppHeader = new WebAppHeader(this.browser);
 
@@ -49,7 +49,7 @@ export class WebAppHomePage extends Page {
      * Example on how to write test over a known bug - let the test pass but add information to the report
      * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports
      */
-    public async isDialogOnHomePAge(that) {
+    public async isDialogOnHomePAge(that): Promise<void> {
         const webAppDialog = new WebAppDialog(this.browser);
         //Wait 5 seconds and validate there are no dialogs opening up after placing order
         try {
@@ -70,6 +70,43 @@ export class WebAppHomePage extends Page {
             //Remove this dialog box and continue the test
             await webAppDialog.selectDialogBox('Close');
         }
+        return;
+    }
+
+    /**
+     * This can only be used from HomePage and when HomePage include button that lead to Transaction ATD
+     * This will nevigate to the scope_items of a new transaction, deep link "/transactions/scope_items/${newUUID}"
+     */
+    public async initiateSalesActivity(name?: string): Promise<void> {
+        //Start New Workflow
+        if (name) {
+            await this.clickOnBtn(name);
+        } else {
+            await this.click(this.Main);
+        }
+
+        //Get to Items
+        const webAppList = new WebAppList(this.browser);
+        await webAppList.clickOnFromListRowWebElement();
+        const webAppTopBar = new WebAppTopBar(this.browser);
+        await webAppTopBar.click(webAppTopBar.DoneBtn);
+
+        //wait one sec before cliking on catalog, to prevent click on other screen
+        console.log('Change to Catalog Cards List');
+        this.browser.sleep(1000);
+        await this.isSpinnerDone();
+        await webAppList.click(webAppList.CardListElements);
+
+        //Validating new order
+        const webAppDialog = new WebAppDialog(this.browser);
+        await webAppDialog.selectDialogBoxBeforeNewOrder();
+
+        //This sleep is mandaroy while the list is loading
+        console.log('Loading List');
+        this.browser.sleep(3000);
+
+        //Validate nothing is loading before starting to add items to cart
+        await webAppList.isSpinnerDone();
         return;
     }
 }
