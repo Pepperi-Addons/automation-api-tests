@@ -15,6 +15,7 @@ export class WebAppTopBar extends Page {
     public SearchFieldInput: Locator = By.css('#searchInput');
     public ChangeViewButton: Locator = By.css(`.top-bar-container button [title='Change View']`);
     public PanelMenuButtons: Locator = By.css(`[role="menu"] button`);
+    public ChangeListButton: Locator = By.css(`.top-bar-container list-chooser button`);
 
     //Cart
     public CartTopMenu: Locator = By.css('[data-qa="firstMenu"]');

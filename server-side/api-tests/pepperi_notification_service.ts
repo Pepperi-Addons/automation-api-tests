@@ -1226,12 +1226,34 @@ export async function PepperiNotificationServiceTests(
                             order_by: 'CreationDateTime DESC',
                         });
                         maxLoopsCounter--;
-                    } while (schemaArr.length < 2 && maxLoopsCounter > 0);
+                    } while (
+                        schemaArr.filter(
+                            (schema) => schema.Description === 'This schema update created after 40 seconds of sleep',
+                        ).length <= 0 &&
+                        maxLoopsCounter > 0
+                    );
 
-                    expect(schemaArr[0].Description).to.equal('This schema update created after 40 seconds of sleep');
-                    expect(schemaArr[1].Description).to.equal('This schema update created synchronically');
-                    expect(schemaArr[0].Body).to.deep.equal(schemaArr[1].Body);
-                    expect(schemaArr[0].Path).to.equal(schemaArr[1].Path);
+                    const firstSyncSchema = schemaArr.pop();
+                    let secondAsyncShema = schemaArr.filter(
+                        (schema) => schema.Description === 'This schema update created after 40 seconds of sleep',
+                    );
+                    secondAsyncShema = secondAsyncShema.pop();
+                    expect(firstSyncSchema.Description).to.equal('This schema update created synchronically');
+                    expect(secondAsyncShema.Description).to.equal(
+                        'This schema update created after 40 seconds of sleep',
+                    );
+
+                    delete firstSyncSchema.Body.ModifiedFields;
+                    delete secondAsyncShema.Body.ModifiedFields;
+                    expect(firstSyncSchema.Body).to.deep.equal(secondAsyncShema.Body);
+
+                    expect(firstSyncSchema.Path).to.not.equal(secondAsyncShema.Path);
+                    expect(firstSyncSchema.Path).to.include(
+                        '/addons/api/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/logger/sync_pns_test',
+                    );
+                    expect(secondAsyncShema.Path).to.include(
+                        '/addons/api/async/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/logger/sync_pns_test',
+                    );
                 });
 
                 it(`Unsubscribe And Validate Get With Where (DI-18054)`, async () => {

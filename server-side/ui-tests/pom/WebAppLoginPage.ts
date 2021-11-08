@@ -46,7 +46,7 @@ export class WebAppLoginPage extends Page {
         await this.browser.navigate(url);
         await this.signInAs(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
-        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
         return;
     }
 }

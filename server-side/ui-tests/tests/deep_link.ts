@@ -1,17 +1,18 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom/index';
+import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { DataViewsService } from '../../services/data-views.service';
 import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
+import { SelectSmartSearchRange } from '../pom/WebAppList';
 
 export async function DeepLink(email: string, password: string, client: Client) {
     let driver: Browser;
 
     describe('Deep Link UI Tests Suit', async function () {
-        this.retries(0);
+        this.retries(1);
 
         beforeEach(async function () {
             driver = new Browser('chrome');
@@ -82,6 +83,12 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
                 // New lists should be created and API might change, so for now this try and catch is a temp patch,
                 // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.
+                const base64Image = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Image Of Bug (DI-16069)`,
+                    value: 'data:image/png;base64,' + base64Image,
+                });
+
                 addContext(this, {
                     title: 'Known bug with list showing two options when there is only one',
                     value: 'https://pepperi.atlassian.net/browse/DI-16069',
@@ -114,7 +121,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 if (
                     error instanceof Error &&
                     error.message ==
-                        'After wait time of: 90000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
                 ) {
                     const base64ImageNoIcon = await driver.saveScreenshots();
                     addContext(this, {
@@ -139,178 +146,251 @@ export async function DeepLink(email: string, password: string, client: Client) 
             expect(totalItemsBefore).to.equal(totalItemsAfter);
         });
 
-        // it('Activities With Phone SmartSearch', async function () {
-        //     const generalService = new GeneralService(client);
-        //     const dataViews = new DataViewsService(generalService.papiClient);
-        //     // const accountsSmartSearchDataView = await dataViews.getDataViews({
-        //     //     where: `Context.Name='AccountSmartSearch'`,
-        //     // });
-        //     // for (const key in accountsSmartSearchDataView[0].Fields) {
-        //     //     if (accountsSmartSearchDataView[0].Fields[key].FieldID == 'Phone') {
-        //     //         accountsSmartSearchDataView[0].Fields.splice(Number(key));
-        //     //     }
-        //     // }
-        //     // accountsSmartSearchDataView[0].Fields?.push({
-        //     //     FieldID: 'Phone',
-        //     //     Type: 'TextBox',
-        //     //     Title: 'Phone',
-        //     //     Mandatory: false,
-        //     //     ReadOnly: false,
-        //     //     Layout: {
-        //     //         Origin: {
-        //     //             X: 0,
-        //     //             Y: 0,
-        //     //         },
-        //     //         Size: {
-        //     //             Width: 1,
-        //     //             Height: 1,
-        //     //         },
-        //     //     },
-        //     //     Style: {
-        //     //         Alignment: {
-        //     //             Vertical: 'Center',
-        //     //             Horizontal: 'Stretch',
-        //     //         },
-        //     //     },
-        //     // });
-        //     // await dataViews.postDataView(accountsSmartSearchDataView[0]);
+        it('Activities With Grand Total SmartSearch', async function () {
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.login(email, password);
 
-        //     const webAppLoginPage = new WebAppLoginPage(driver);
-        //     await webAppLoginPage.login(email, password);
+            const webAppHomePage = new WebAppHomePage(driver);
+            await webAppHomePage.clickOnBtn('Activities');
 
-        //     const webAppHomePage = new WebAppHomePage(driver);
-        //     await webAppHomePage.clickOnBtn('Activities');
+            const webAppTopBar = new WebAppTopBar(driver);
+            await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeListButton, 'All Sales Transactions');
 
-        //     debugger;
+            const webAppList = new WebAppList(driver);
+            await webAppList.selectSmartSearchByTitle('Grand Total');
 
-        //     const webAppList = new WebAppList(driver);
-        //     await webAppList.selectSmartSearchByTitle('Phone');
-        //     const smartSearchChackBoxArr = await driver.findElements(webAppList.SmartSearchCheckBoxTitleArr);
-        //     const smartSearchOptions: string[] = [];
-        //     for (let index = 0; index < smartSearchChackBoxArr.length; index++) {
-        //         smartSearchOptions.push(await smartSearchChackBoxArr[index].getText());
-        //     }
-        //     try {
-        //         expect(smartSearchOptions.length).to.be.above(2);
-        //     } catch (error) {
-        //         // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
-        //         // New lists should be created and API might change, so for now this try and catch is a temp patch,
-        //         // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.
-        //         addContext(this, {
-        //             title: 'Known bug with list showing two options when there is only one',
-        //             value: 'https://pepperi.atlassian.net/browse/DI-16069',
-        //         });
-        //         // throw error;
-        //     }
+            await webAppList.selectRange(SelectSmartSearchRange.Between, 1, 100);
 
-        //     await webAppList.selectSmartSearchByIndex(0);
+            await webAppHomePage.isSpinnerDone();
 
-        //     await driver.click(webAppList.SmartSearchCheckBoxDone);
-        //     await webAppHomePage.isSpinnerDone();
+            const urlBefore = await driver.getCurrentUrl();
+            const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
 
-        //     const urlBefore = await driver.getCurrentUrl();
-        //     const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
+            const base64ImageBefore = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image Before`,
+                value: 'data:image/png;base64,' + base64ImageBefore,
+            });
 
-        //     const base64ImageBefore = await driver.saveScreenshots();
-        //     addContext(this, {
-        //         title: `Image Before`,
-        //         value: 'data:image/png;base64,' + base64ImageBefore,
-        //     });
+            await driver.close();
+            driver = new Browser('chrome');
+            const webAppLoginPageAfter = new WebAppLoginPage(driver);
+            const webAppListAfter = new WebAppList(driver);
 
-        //     await driver.close();
-        //     driver = new Browser('chrome');
-        //     const webAppLoginPageAfter = new WebAppLoginPage(driver);
-        //     const webAppListAfter = new WebAppList(driver);
+            try {
+                await webAppLoginPageAfter.loginDeepLink(urlBefore, email, password);
+            } catch (error) {
+                if (
+                    error instanceof Error &&
+                    error.message ==
+                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                ) {
+                    const base64ImageNoIcon = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Image NO Icon bug`,
+                        value: 'data:image/png;base64,' + base64ImageNoIcon,
+                    });
+                } else {
+                    throw error;
+                }
+            }
 
-        //     try {
-        //         await webAppLoginPageAfter.loginDeepLink(urlBefore, email, password);
-        //     } catch (error) {
-        //         if (error instanceof Error  && error.message == 'After wait time of: 90000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible') {
-        //             const base64ImageNoIcon = await driver.saveScreenshots();
-        //             addContext(this, {
-        //                 title: `Image NO Icon bug`,
-        //                 value: 'data:image/png;base64,' + base64ImageNoIcon,
-        //             });
-        //         } else {
-        //             throw error
-        //         }
+            const urlAfter = await driver.getCurrentUrl();
+            const totalItemsAfter = await (await driver.findElement(webAppListAfter.TotalResultsText)).getText();
 
-        //     }
+            const base64ImageAfter = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image After`,
+                value: 'data:image/png;base64,' + base64ImageAfter,
+            });
 
-        //     const urlAfter = await driver.getCurrentUrl();
-        //     const totalItemsAfter = await (await driver.findElement(webAppListAfter.TotalResultsText)).getText();
+            expect(urlBefore).to.equal(urlAfter);
+            expect(totalItemsBefore).to.equal(totalItemsAfter);
+        });
 
-        //     const base64ImageAfter = await driver.saveScreenshots();
-        //     addContext(this, {
-        //         title: `Image After`,
-        //         value: 'data:image/png;base64,' + base64ImageAfter,
-        //     });
+        it('Contacts With Mobile SmartSearch', async function () {
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.login(email, password);
 
-        //     expect(urlBefore).to.equal(urlAfter);
-        //     expect(totalItemsBefore).to.equal(totalItemsAfter);
-        // });
+            const webAppHomePage = new WebAppHomePage(driver);
+            await webAppHomePage.clickOnBtn('Contacts');
 
-        // Deep_Link_In_Activities_test
-        // FixtureTest.Webapp.Webapp_Generic_Select_List( ActivityTitlesDictionaryUUID[item.Key]);
-        // FixtureTest.Webapp.WebappOpenSmartSearchMenu( "GrandTotal");
-        // FixtureTest.Webapp.WebappSmartSearchSelectFromRangeOptions( "Between", "1", "100");
-        // isGrandTotal = true;
-        // }
-        // catch (Exception e)
-        // {
-        // // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
-        // // New lists should be created and API might change, so for now this try and catch is a temp patch,
-        // // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.   }
+            const webAppList = new WebAppList(driver);
+            await webAppList.selectSmartSearchByTitle('Mobile');
 
-        // Deep_Link_In_Contacts_test
-        // if (ContactsTitlesDictionary[item.Key].Contains("Mobile"))
-        // {
-        // try
-        // {
-        // FixtureTest.Webapp.Webapp_Generic_Select_List( ContactsTitlesDictionaryUUID[item.Key]);
-        // FixtureTest.Webapp.WebappSmartSearchSelectMulti( "Mobile", "", "", 2, IsPartialValue: true);
-        // isMobile = true;
-        // }
-        // catch (Exception e)
-        // {
-        // // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
-        // // New lists should be created and API might change, so for now this try and catch is a temp patch,
-        // // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.
-        // }
-        // }
+            await webAppList.selectSmartSearchCheckBoxByTitle('806806');
+            await driver.click(webAppList.SmartSearchCheckBoxDone);
 
-        // public void Deep_Link_In_Users_test()
-        // {
-        // Dictionary<string, string> UserTitlesDictionaryUUID;
-        // Dictionary<string, List<string>> UserTitlesDictionary;
-        // CreateListViewDictionary("User", out UserTitlesDictionaryUUID, out UserTitlesDictionary);
-        // FixtureTest.Webapp.Webapp_Sandbox_Home_Buttons( "Users");
-        // Uri UrlBefore = new Uri(Admin.WebappDriver.Url);
+            await webAppHomePage.isSpinnerDone();
 
-        // var lastKey = UserTitlesDictionary.Keys.Last();
-        // FixtureTest.Webapp.Webapp_Generic_Select_List( UserTitlesDictionaryUUID[lastKey]);
+            const urlBefore = await driver.getCurrentUrl();
+            const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
 
-        // Uri UrlAfter = new Uri(Admin.WebappDriver.Url);
-        // NUnit.Framework.Assert.IsTrue(UrlBefore != UrlAfter);
-        // DeepLinkGetRefreshCompare(PageID.GenericList);
-        // }
+            const base64ImageBefore = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image Before`,
+                value: 'data:image/png;base64,' + base64ImageBefore,
+            });
 
-        // Deep_Link_Of_Activities_From_Account_test
-        // if (ActivityTitlesDictionary[item.Key].Contains("Grand Total"))
-        // {
-        // try
-        // {
-        // FixtureTest.Webapp.Webapp_Generic_Select_List( ActivityTitlesDictionaryUUID[item.Key]);
-        // FixtureTest.Webapp.WebappOpenSmartSearchMenu( "GrandTotal");
-        // FixtureTest.Webapp.WebappSmartSearchSelectFromRangeOptions( "Between", "1", "100");
-        // isGrandTotal = true;
-        // }
-        // catch (Exception e)
-        // {
-        // // TODO: https://pepperi.atlassian.net/browse/DI-16069 - When this bug will be solved -
-        // // New lists should be created and API might change, so for now this try and catch is a temp patch,
-        // // Patch should be resolved when bug is closed and Chasky Hoffmann will will create new lists.   }
-        // }
-        // break;
+            await driver.close();
+            driver = new Browser('chrome');
+            const webAppLoginPageAfter = new WebAppLoginPage(driver);
+            const webAppListAfter = new WebAppList(driver);
+
+            try {
+                await webAppLoginPageAfter.loginDeepLink(urlBefore, email, password);
+            } catch (error) {
+                if (
+                    error instanceof Error &&
+                    error.message ==
+                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                ) {
+                    const base64ImageNoIcon = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Image NO Icon bug`,
+                        value: 'data:image/png;base64,' + base64ImageNoIcon,
+                    });
+                } else {
+                    throw error;
+                }
+            }
+
+            const urlAfter = await driver.getCurrentUrl();
+            const totalItemsAfter = await (await driver.findElement(webAppListAfter.TotalResultsText)).getText();
+
+            const base64ImageAfter = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image After`,
+                value: 'data:image/png;base64,' + base64ImageAfter,
+            });
+
+            expect(urlBefore).to.equal(urlAfter);
+            expect(totalItemsBefore).to.equal(totalItemsAfter);
+        });
+
+        it('Users With Role Name SmartSearch', async function () {
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.login(email, password);
+
+            const webAppHomePage = new WebAppHomePage(driver);
+            await webAppHomePage.clickOnBtn('Users');
+
+            const webAppList = new WebAppList(driver);
+            await webAppList.selectSmartSearchByTitle('Role Name');
+
+            await webAppList.selectSmartSearchCheckBoxByTitle('No Role');
+            await webAppList.selectSmartSearchCheckBoxByTitle('OneRole');
+            await driver.click(webAppList.SmartSearchCheckBoxDone);
+
+            await webAppHomePage.isSpinnerDone();
+
+            const urlBefore = await driver.getCurrentUrl();
+            const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
+
+            const base64ImageBefore = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image Before`,
+                value: 'data:image/png;base64,' + base64ImageBefore,
+            });
+
+            await driver.close();
+            driver = new Browser('chrome');
+            const webAppLoginPageAfter = new WebAppLoginPage(driver);
+            const webAppListAfter = new WebAppList(driver);
+
+            try {
+                await webAppLoginPageAfter.loginDeepLink(urlBefore, email, password);
+            } catch (error) {
+                if (
+                    error instanceof Error &&
+                    error.message ==
+                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                ) {
+                    const base64ImageNoIcon = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Image NO Icon bug`,
+                        value: 'data:image/png;base64,' + base64ImageNoIcon,
+                    });
+                } else {
+                    throw error;
+                }
+            }
+
+            const urlAfter = await driver.getCurrentUrl();
+            const totalItemsAfter = await (await driver.findElement(webAppListAfter.TotalResultsText)).getText();
+
+            const base64ImageAfter = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image After`,
+                value: 'data:image/png;base64,' + base64ImageAfter,
+            });
+
+            expect(urlBefore).to.equal(urlAfter);
+            expect(totalItemsBefore).to.equal(totalItemsAfter);
+        });
+
+        it('Activities With Grand Total SmartSearch From Accounts', async function () {
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.login(email, password);
+
+            const webAppHomePage = new WebAppHomePage(driver);
+            await webAppHomePage.clickOnBtn('Accounts');
+
+            const webAppList = new WebAppList(driver);
+            await webAppList.clickOnLinkFromListRowWebElement(1);
+
+            const webAppTopBar = new WebAppTopBar(driver);
+            await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeListButton, 'All Sales Transactions');
+
+            await webAppList.selectSmartSearchByTitle('Grand Total');
+
+            await webAppList.selectRange(SelectSmartSearchRange.Between, 1, 100);
+
+            await webAppHomePage.isSpinnerDone();
+
+            const urlBefore = await driver.getCurrentUrl();
+            const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
+
+            const base64ImageBefore = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image Before`,
+                value: 'data:image/png;base64,' + base64ImageBefore,
+            });
+
+            await driver.close();
+            driver = new Browser('chrome');
+            const webAppLoginPageAfter = new WebAppLoginPage(driver);
+            const webAppListAfter = new WebAppList(driver);
+
+            try {
+                await webAppLoginPageAfter.loginDeepLink(urlBefore, email, password);
+            } catch (error) {
+                if (
+                    error instanceof Error &&
+                    error.message ==
+                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                ) {
+                    const base64ImageNoIcon = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Image NO Icon bug`,
+                        value: 'data:image/png;base64,' + base64ImageNoIcon,
+                    });
+                } else {
+                    throw error;
+                }
+            }
+
+            const urlAfter = await driver.getCurrentUrl();
+            const totalItemsAfter = await (await driver.findElement(webAppListAfter.TotalResultsText)).getText();
+
+            const base64ImageAfter = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Image After`,
+                value: 'data:image/png;base64,' + base64ImageAfter,
+            });
+
+            expect(urlBefore).to.equal(urlAfter);
+            expect(totalItemsBefore).to.equal(totalItemsAfter);
+        });
     });
 }
