@@ -257,9 +257,6 @@ export class AddonPage extends Page {
 
                 await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
 
-                //Make sure ATD finish to load after search
-                await this.isSpinnerDone();
-
                 await webAppList.clickOnFromListRowWebElement();
 
                 await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
@@ -286,9 +283,6 @@ export class AddonPage extends Page {
                     //Wait after refresh for the ATD list to load before searching in list
                     await this.isSpinnerDone();
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, name + Key.ENTER);
-
-                    //Make sure ATD finish to load after search
-                    await this.isSpinnerDone();
 
                     await webAppList.clickOnFromListRowWebElement(0, 6000);
                     throw new Error('The list should be empty, this is a bug');
@@ -483,9 +477,6 @@ export class AddonPage extends Page {
         const webAppTopBar = new WebAppTopBar(this.browser);
 
         await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
-
-        //Make sure ATD finish to load after search
-        await this.isSpinnerDone();
 
         await webAppList.clickOnFromListRowWebElement();
 

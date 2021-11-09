@@ -36,7 +36,6 @@ export class WebAppHomePage extends Page {
         console.log('Wait Before Loading Accounts');
         await this.browser.sleep(2002);
         await this.clickOnBtn('Accounts');
-        await this.isSpinnerDone();
         await webAppList.validateListRowElements();
         await this.browser.click(webAppHeader.Home);
         console.log('Wait On Home Page Before Starting New Transaction');

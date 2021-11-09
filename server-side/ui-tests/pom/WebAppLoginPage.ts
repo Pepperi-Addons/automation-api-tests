@@ -18,7 +18,10 @@ export class WebAppLoginPage extends Page {
     public Next: Locator = By.css('#nextBtn');
     public LoginBtn: Locator = By.css('#loginBtn');
 
-    public async signInAs(email: string, password: string): Promise<void> {
+    /**
+     * This function should be used after nevigation to LoginPage was validate
+     */
+    public async signIn(email: string, password: string): Promise<void> {
         try {
             await this.browser.sendKeys(this.Email, email);
         } catch (error) {
@@ -29,14 +32,20 @@ export class WebAppLoginPage extends Page {
             await this.browser.sendKeys(this.Email, email);
         }
         await this.browser.click(this.Next);
+
+        console.log('Wait Password Page After Email Page');
+        await this.browser.sleep(500);
         await this.browser.sendKeys(this.Password, password);
         await this.browser.click(this.LoginBtn);
         return;
     }
 
+    /**
+     * This function will nevigate to login page and login to home page
+     */
     public async login(email: string, password: string): Promise<void> {
         await this.navigate();
-        await this.signInAs(email, password);
+        await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
         await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
         return;
@@ -44,7 +53,7 @@ export class WebAppLoginPage extends Page {
 
     public async loginDeepLink(url: string, email: string, password: string): Promise<void> {
         await this.browser.navigate(url);
-        await this.signInAs(email, password);
+        await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
         await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
         return;

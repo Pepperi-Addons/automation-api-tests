@@ -104,12 +104,6 @@ export async function DeepLink(email: string, password: string, client: Client) 
             const urlBefore = await driver.getCurrentUrl();
             const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
 
-            const base64ImageBefore = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Image Before`,
-                value: 'data:image/png;base64,' + base64ImageBefore,
-            });
-
             await driver.close();
             driver = new Browser('chrome');
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
@@ -341,7 +335,6 @@ export async function DeepLink(email: string, password: string, client: Client) 
 
             const webAppTopBar = new WebAppTopBar(driver);
             await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeListButton, 'All Sales Transactions');
-
             await webAppList.selectSmartSearchByTitle('Grand Total');
 
             await webAppList.selectRange(SelectSmartSearchRange.Between, 1, 100);
@@ -350,12 +343,6 @@ export async function DeepLink(email: string, password: string, client: Client) 
 
             const urlBefore = await driver.getCurrentUrl();
             const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
-
-            const base64ImageBefore = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Image Before`,
-                value: 'data:image/png;base64,' + base64ImageBefore,
-            });
 
             await driver.close();
             driver = new Browser('chrome');
@@ -382,12 +369,6 @@ export async function DeepLink(email: string, password: string, client: Client) 
 
             const urlAfter = await driver.getCurrentUrl();
             const totalItemsAfter = await (await driver.findElement(webAppListAfter.TotalResultsText)).getText();
-
-            const base64ImageAfter = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Image After`,
-                value: 'data:image/png;base64,' + base64ImageAfter,
-            });
 
             expect(urlBefore).to.equal(urlAfter);
             expect(totalItemsBefore).to.equal(totalItemsAfter);

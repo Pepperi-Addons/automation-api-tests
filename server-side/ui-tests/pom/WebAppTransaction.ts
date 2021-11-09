@@ -23,8 +23,6 @@ export class WebAppTransaction extends Page {
         const webAppTopBar = new WebAppTopBar(this.browser);
         await webAppList.sendKeys(webAppTopBar.SearchFieldInput, itemExternalID + Key.ENTER);
 
-        //Make sure ATD finish to load after search
-        await webAppList.isSpinnerDone();
         await webAppList.sendKysToInputListRowWebElement(0, quantity);
 
         if (addScreenshots) {
