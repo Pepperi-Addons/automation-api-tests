@@ -136,6 +136,8 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {
+        this.retries(1);
+
         it('Validate That All The Needed Addons Installed', async function () {
             isInstalledArr.forEach((isInstalled) => {
                 expect(isInstalled).to.be.true;
@@ -178,6 +180,8 @@ async function replaceItems(generalService: GeneralService) {
         });
     } else {
         describe('Replace Items', function () {
+            this.retries(1);
+
             it('Remove Existing Items', async function () {
                 //Remove old items
                 const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
@@ -244,6 +248,8 @@ async function replaceItems(generalService: GeneralService) {
 
 async function replaceUIControls(generalService: GeneralService) {
     describe('Replace UIControls', function () {
+        this.retries(1);
+
         //Add new UIControls from local file
         const uIControlArrFromFile = fs.readFileSync('../server-side/api-tests/test-data/UIControls.json', {
             encoding: 'utf8',
