@@ -47,6 +47,7 @@ export class WebAppList extends Page {
     public SmartSearchNumberInputArr: Locator = By.css(`.advance-search-menu .smBody input[type='number']`);
 
     public async validateListRowElements(ms?: number): Promise<void> {
+        await this.isSpinnerDone();
         return await this.validateElements(this.ListRowElements, ms);
     }
 
@@ -55,6 +56,7 @@ export class WebAppList extends Page {
     }
 
     public async validateCartListRowElements(ms?: number): Promise<void> {
+        await this.isSpinnerDone();
         return await this.validateElements(this.CartListElements, ms);
     }
 
@@ -75,10 +77,12 @@ export class WebAppList extends Page {
     }
 
     public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
         return await this.click(this.ListRowElements, position, waitUntil);
     }
 
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
         return await this.click(this.LinksInListArr, position, waitUntil);
     }
 

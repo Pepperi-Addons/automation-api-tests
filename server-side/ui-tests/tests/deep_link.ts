@@ -329,7 +329,6 @@ export async function DeepLink(email: string, password: string, client: Client) 
 
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.clickOnBtn('Accounts');
-            await webAppHomePage.isSpinnerDone();
 
             const webAppList = new WebAppList(driver);
             await webAppList.clickOnLinkFromListRowWebElement(1);

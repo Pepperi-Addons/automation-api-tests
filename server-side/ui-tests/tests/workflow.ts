@@ -106,9 +106,6 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             await addonPage.isSpinnerDone();
             await driver.sendKeys(webAppTopBar.EditorSearchField, _TEST_DATA_ATD_NAME + Key.ENTER);
 
-            //Make sure ATD finish to load after search
-            await addonPage.isSpinnerDone();
-
             //Validate the list of ATD is empty after the test finished
             await expect(webAppList.clickOnFromListRowWebElement(0, 6000)).eventually.to.be.rejectedWith(
                 'After wait time of: 6000, for selector of pep-list .table-row-fieldset, The test must end, The element is: undefined',
