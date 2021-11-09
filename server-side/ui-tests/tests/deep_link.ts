@@ -12,7 +12,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
     let driver: Browser;
 
     describe('Deep Link UI Tests Suit', async function () {
-        this.retries(1);
+        this.retries(0);
 
         beforeEach(async function () {
             driver = new Browser('chrome');
@@ -346,6 +346,8 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 title: `base64ImageAccoounts`,
                 value: 'data:image/png;base64,' + base64ImageAccoounts,
             });
+
+            await webAppHomePage.isSpinnerDone();
 
             const webAppList = new WebAppList(driver);
             await webAppList.clickOnLinkFromListRowWebElement(1);
