@@ -185,10 +185,18 @@ export class Browser {
         return logsArr;
     }
 
+    /**
+     * closes the child window in focus, the parent window is still open
+     * @returns
+     */
     public async close(): Promise<void> {
         return await this.driver.close();
     }
 
+    /**
+     * close all the webdriver instances, so parent window will close
+     * @returns
+     */
     public async quit(): Promise<void> {
         return await this.driver.quit();
     }

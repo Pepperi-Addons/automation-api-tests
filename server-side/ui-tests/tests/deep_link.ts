@@ -21,7 +21,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
         afterEach(async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.collectEndTestData(this);
-            await driver.close();
+            await driver.quit();
         });
 
         it('Accounts With Phone SmartSearch', async function () {
@@ -104,7 +104,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
             const urlBefore = await driver.getCurrentUrl();
             const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
 
-            await driver.close();
+            await driver.quit();
             driver = new Browser('chrome');
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
@@ -166,7 +166,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
 
-            await driver.close();
+            await driver.quit();
             driver = new Browser('chrome');
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
@@ -226,7 +226,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
 
-            await driver.close();
+            await driver.quit();
             driver = new Browser('chrome');
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
@@ -287,7 +287,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
 
-            await driver.close();
+            await driver.quit();
             driver = new Browser('chrome');
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
@@ -350,7 +350,7 @@ export async function DeepLink(email: string, password: string, client: Client) 
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
 
-            await driver.close();
+            await driver.quit();
             driver = new Browser('chrome');
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
