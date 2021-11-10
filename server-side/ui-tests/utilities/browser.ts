@@ -12,8 +12,9 @@ export class Browser {
             this.options.addArguments('--headless');
             this.options.addArguments('--window-size=1920,1080');
         }
+        this.options.addArguments('--no-sandbox');
         this.options.addArguments('--disable-gpu');
-        this.options.addArguments(' --disable-software-rasterizer');
+        this.options.addArguments('--disable-software-rasterizer');
         this.options.excludeSwitches('enable-logging');
         this.options.setLoggingPrefs({
             browser: 'ALL',
