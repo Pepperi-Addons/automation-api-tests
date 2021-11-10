@@ -26,8 +26,7 @@ export class WebAppLoginPage extends Page {
             await this.browser.sendKeys(this.Email, email);
         } catch (error) {
             console.log(`Login page not loaded, attempting again before failing the test, Error was: ${error}`);
-            const thisURL = await this.browser.getCurrentUrl();
-            await this.browser.clearCookies((thisURL.split('com/')[0] + 'com/').replace('app', 'idp'));
+            await this.browser.clearCookies(config.baseUrl.replace('app', 'idp'));
             this.browser.sleep(4004);
             await this.browser.sendKeys(this.Email, email);
         }
