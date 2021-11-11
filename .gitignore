@@ -5,3 +5,4 @@ var_sk
 node_modules
 server-side/node_modules
 client-side/node_modules
+/publish/*.js
