@@ -32,7 +32,7 @@ export class WebAppLoginPage extends Page {
         }
         await this.browser.click(this.Next);
 
-        console.log('Wait Password Page After Email Page');
+        console.log('Wait For Password Page After Email Page');
         await this.browser.sleep(500);
         await this.browser.sendKeys(this.Password, password);
         await this.browser.click(this.LoginBtn);
