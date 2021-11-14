@@ -22,7 +22,15 @@ export class Browser {
             performance: 'ALL',
         });
 
-        this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
+        //Recover from Chrome Driver Errors on Jenkins Jobs
+        try {
+            this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
+        } catch (error) {
+            console.log(`Chrome Driver Error: ${error}`);
+            this.sleep(10000);
+            this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
+        }
+
         this.driver.manage().window().maximize();
         this.driver
             .manage()
