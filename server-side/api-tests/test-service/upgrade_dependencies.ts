@@ -49,6 +49,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             request.body.relations ? `${request.body.relations}` : '',
         ],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+        'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     };
 
     const isInstalledArr = await generalService.areAddonsInstalled(testData);

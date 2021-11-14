@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
 import { SelectSmartSearchRange } from '../pom/WebAppList';
 
-export async function DeepLink(email: string, password: string, client: Client) {
+export async function DeepLinkTest(email: string, password: string, client: Client) {
     let driver: Browser;
 
     describe('Deep Link UI Tests Suit', async function () {

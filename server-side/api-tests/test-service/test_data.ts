@@ -43,6 +43,8 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 installedAddons['ADAL'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Relations Framework')
                 installedAddons['Relations Framework'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Item Trade Promotions')
+                installedAddons['Item Trade Promotions'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -106,6 +108,10 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
             });
             it(`Relations Framework | Version: ${installedAddons['Relations Framework']}`, () => {
                 const regexMatched = installedAddons['Relations Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Item Trade Promotions | Version: ${installedAddons['Item Trade Promotions']}`, () => {
+                const regexMatched = installedAddons['Item Trade Promotions'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
         });
