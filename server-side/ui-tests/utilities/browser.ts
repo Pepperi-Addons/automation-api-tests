@@ -22,15 +22,7 @@ export class Browser {
             performance: 'ALL',
         });
 
-        //Recover from Chrome Driver Errors on Jenkins Jobs
-        try {
-            this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
-        } catch (error) {
-            console.log(`Chrome Driver Error: ${error}`);
-            this.sleep(10000);
-            this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
-        }
-
+        this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
         this.driver.manage().window().maximize();
         this.driver
             .manage()
@@ -198,6 +190,9 @@ export class Browser {
      * @returns
      */
     public async close(): Promise<void> {
+        //This line is needed, to not remove! (this wait to driver before trying to close it)
+        const windowTitle = await this.driver.getTitle();
+        console.log(`Close Window With Title: ${windowTitle}`);
         return await this.driver.close();
     }
 
@@ -206,6 +201,9 @@ export class Browser {
      * @returns
      */
     public async quit(): Promise<void> {
+        //This line is needed, to not remove! (this wait to driver before trying to close it)
+        const windowTitle = await this.driver.getTitle();
+        console.log(`Quit Window With Title: ${windowTitle}`);
         return await this.driver.quit();
     }
 }
