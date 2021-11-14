@@ -54,6 +54,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
             const webAppTopBar = new WebAppTopBar(driver);
 
             await webAppList.click(webAppTopBar.CartViewBtn);
+            await webAppList.isSpinnerDone();
 
             const base64Image = await driver.saveScreenshots();
             addContext(this, {
@@ -146,6 +147,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
             const webAppTopBar = new WebAppTopBar(driver);
 
             await webAppList.click(webAppTopBar.CartViewBtn);
+            await webAppList.isSpinnerDone();
 
             const base64Image = await driver.saveScreenshots();
             addContext(this, {
