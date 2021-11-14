@@ -12,7 +12,8 @@ import { OrderTest } from './order';
 import { WorkflowTest } from './workflow';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
-import { DeepLink } from './deep_link';
+import { DeepLinkTest } from './deep_link';
+import { PromotionTest } from './promotion';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -61,7 +62,11 @@ const varPass = process.env.npm_config_var_pass as string;
     }
 
     if (testsArr.includes('DeepLink')) {
-        await DeepLink(email, pass, client);
+        await DeepLinkTest(email, pass, client);
+    }
+
+    if (testsArr.includes('Promotion')) {
+        await PromotionTest(email, pass, client);
     }
 
     run();
@@ -130,6 +135,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+        'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, false);
