@@ -102,6 +102,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
             expect(lastTransactionLines[0].UnitPrice).to.equal(34.5);
             expect(lastTransactionLines[0].UnitPriceAfterDiscount).to.equal(34.5);
             expect(lastTransactionLines[0].UnitsQuantity).to.equal(5);
+            expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
             expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('MaFa24');
 
             expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
@@ -114,6 +115,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
             expect(lastTransactionLines[1].UnitPrice).to.equal(34.5);
             expect(lastTransactionLines[1].UnitPriceAfterDiscount).to.equal(0);
             expect(lastTransactionLines[1].UnitsQuantity).to.equal(1);
+            expect(lastTransactionLines[1].TSAPPIItemPromotionNextDiscount).to.be.null;
             expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.equal('MaFa24');
 
             addContext(this, {
@@ -195,6 +197,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
             expect(lastTransactionLines[0].UnitPrice).to.equal(33.75);
             expect(lastTransactionLines[0].UnitPriceAfterDiscount).to.equal(33.75);
             expect(lastTransactionLines[0].UnitsQuantity).to.equal(1);
+            expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
             expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('MakeUp006');
 
             expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
@@ -207,6 +210,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
             expect(lastTransactionLines[1].UnitPrice).to.equal(15.95);
             expect(lastTransactionLines[1].UnitPriceAfterDiscount).to.equal(0);
             expect(lastTransactionLines[1].UnitsQuantity).to.equal(1);
+            expect(lastTransactionLines[1].TSAPPIItemPromotionNextDiscount).to.be.null;
             expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.equal('MakeUp019');
 
             addContext(this, {

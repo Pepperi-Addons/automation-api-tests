@@ -136,6 +136,8 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
         'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+        'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+        'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, false);
