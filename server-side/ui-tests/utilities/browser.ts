@@ -204,6 +204,15 @@ export class Browser {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         const windowTitle = await this.driver.getTitle();
         console.log(`Quit Window With Title: ${windowTitle}`);
+
+        //Print Driver Info Before Quit
+        const driverInfo = await this.driver.getCapabilities();
+        const browserName = driverInfo.get('browserName');
+        const browserVersion = driverInfo.get('browserVersion');
+        const browserInfo = driverInfo.get(browserName);
+        console.log(`Browser Name: ${browserName}, Version: ${browserVersion}`);
+        console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
+
         return await this.driver.quit();
     }
 }

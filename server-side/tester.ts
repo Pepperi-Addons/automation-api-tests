@@ -94,7 +94,8 @@ export default function Tester(client?: Client, testName?: string, environment?:
                                     //Test results report might be to big for the addon, so remove some data from response
                                     let outpot = JSON.stringify(res);
                                     //Check response length to remove the code parts if needed
-                                    if (outpot.length > 200000) {
+                                    //Changed from 200000 to 100000 since KB limitation is set to 128KB (16/11/2021 by Nofar)
+                                    if (outpot.length > 100000) {
                                         outpot = outpot
                                             .replace(/\s/g, '')
                                             .replace(/,"fullFile":""/g, '')

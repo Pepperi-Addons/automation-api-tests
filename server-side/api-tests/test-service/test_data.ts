@@ -45,6 +45,10 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 installedAddons['Relations Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Item Trade Promotions')
                 installedAddons['Item Trade Promotions'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Order Trade Promotions')
+                installedAddons['Order Trade Promotions'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Package Trade Promotions')
+                installedAddons['Package Trade Promotions'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -112,6 +116,14 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
             });
             it(`Item Trade Promotions | Version: ${installedAddons['Item Trade Promotions']}`, () => {
                 const regexMatched = installedAddons['Item Trade Promotions'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Order Trade Promotions | Version: ${installedAddons['Order Trade Promotions']}`, () => {
+                const regexMatched = installedAddons['Order Trade Promotions'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Package Trade Promotions | Version: ${installedAddons['Package Trade Promotions']}`, () => {
+                const regexMatched = installedAddons['Package Trade Promotions'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
         });
