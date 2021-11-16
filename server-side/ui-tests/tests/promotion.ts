@@ -159,6 +159,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
 
             await webAppHomePage.isDialogOnHomePAge(this);
 
+            //rt
             //Validating transaction created via the API
             let lastTransaction;
             let loopCounter = 20;
