@@ -355,7 +355,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     expect(error)
                         .to.have.property('message')
                         .that.includes(
-                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                         );
                 }
                 const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
