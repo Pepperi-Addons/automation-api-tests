@@ -86,7 +86,7 @@ export async function PepperiNotificationServiceTests(
                             expect(error)
                                 .to.have.property('message')
                                 .that.includes(
-                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
                         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -354,7 +354,7 @@ export async function PepperiNotificationServiceTests(
                             expect(error)
                                 .to.have.property('message')
                                 .that.includes(
-                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
                         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -890,7 +890,7 @@ export async function PepperiNotificationServiceTests(
                             expect(error)
                                 .to.have.property('message')
                                 .that.includes(
-                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
                         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -1038,7 +1038,7 @@ export async function PepperiNotificationServiceTests(
                         expect(error)
                             .to.have.property('message')
                             .that.includes(
-                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                             );
                     }
                     expect(purgedSchema).to.equal('');
@@ -1101,7 +1101,7 @@ export async function PepperiNotificationServiceTests(
                         expect(error)
                             .to.have.property('message')
                             .that.includes(
-                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                             );
                     }
                     const newSchema = await adalService.postSchema({ Name: _SYNC_SCHEMA_NAME });
@@ -1485,7 +1485,7 @@ export async function PepperiNotificationServiceTests(
                 await expect(
                     adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName),
                 ).eventually.to.be.rejectedWith(
-                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist, for table = TypeScript Installation Schema`,
+                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist, for table = TypeScript Installation Schema`,
                 );
             });
 

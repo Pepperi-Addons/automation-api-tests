@@ -95,7 +95,7 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
         //             purgedSchema = await adalService.deleteSchema(schemaNameArr[index]);
         //         } catch (error) {
         //             expect(error).to.have.property('message').that.includes(
-        //                 `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+        //                 `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
         //             );
         //         }
         //         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });

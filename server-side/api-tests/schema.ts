@@ -415,21 +415,20 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         //debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
             if (
-                logcash.getEmptySchema.fault.faultstring.includes(
-                    'Failed due to exception: Table schema must be exist',
-                ) == true
+                logcash.getEmptySchema.fault.faultstring.includes('Failed due to exception: Table schema must exist') ==
+                true
             ) {
                 logcash.getEmptySchemaStatus = true;
             } else {
                 logcash.getEmptySchemaStatus = false;
                 logcash.getEmptySchemaError =
-                    'Get empty schema finished with wrong exeption.Will get: Table schema must be exist, but result is: ' +
+                    'Get empty schema finished with wrong exeption.Will get: Table schema must exist, but result is: ' +
                     logcash.getEmptySchema;
             }
         } else {
             logcash.getEmptySchemaStatus == false;
             logcash.getEmptySchemaError ==
-                'Get empty schema finished without exeption.Will get: Table schema must be exist, but result is: ' +
+                'Get empty schema finished without exeption.Will get: Table schema must exist, but result is: ' +
                     logcash.getEmptySchema;
         }
         await createSchemaWithoutName();

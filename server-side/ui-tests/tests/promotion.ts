@@ -35,6 +35,36 @@ export async function PromotionTest(email: string, password: string, client: Cli
             await driver.quit();
         });
 
+        //Promotion Item Test
+        //Paul Pitchell
+        //Discounts for ordering amount of items
+        //12 3
+        //20 2
+        //25 23
+        //30 * 8 Spring Loaded Frizz-Fighting Conditioner
+
+        //Great Perfumes
+        //Frag006 //Great Perfumes
+        //Discounts for ordering more then prince of items
+        //250 6
+        //500 100
+        //1000 700
+        //1300 same X 10
+
+        //Package
+        //4 - 4%
+        //6 + 21
+        //10 + 1 New Order
+
+        // Hand Cosmetics
+        //Promotion Order Test
+        //Discounts for ordering items over set price
+        //100 - 5%
+        //200 - 20
+        //300 - MaNa23
+        //Free Item
+        //Order items in 400 - You get to select one free item
+
         it('Order Five Items - Get One Free', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
