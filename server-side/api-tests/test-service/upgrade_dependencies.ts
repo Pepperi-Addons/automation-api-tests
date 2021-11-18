@@ -40,15 +40,16 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
             request.body.dataViewsApi ? `${request.body.dataViewsApi}` : '1.',
         ],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', request.body.adal ? `${request.body.adal}` : '1.'],
-        'Pepperi Notification Service': [
-            '00000000-0000-0000-0000-000000040fa9',
-            request.body.pepperiNotificationService ? `${request.body.pepperiNotificationService}` : '',
-        ],
+        'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
         'Relations Framework': [
             '5ac7d8c3-0249-4805-8ce9-af4aecd77794',
             request.body.relations ? `${request.body.relations}` : '',
         ],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+        'Pepperi Notification Service': [
+            '00000000-0000-0000-0000-000000040fa9',
+            request.body.pepperiNotificationService ? `${request.body.pepperiNotificationService}` : '',
+        ],
         'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
         'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
         'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
