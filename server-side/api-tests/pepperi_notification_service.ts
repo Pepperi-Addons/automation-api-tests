@@ -1351,7 +1351,7 @@ export async function PepperiNotificationServiceTests(
 
             it(`PNS Remove And Restore Subscription Inside Installation (DI-18555, DI-18570, DI-18389)`, async () => {
                 const testDataAddonUUID = 'd9999883-ef9a-4295-99db-2f1d3fc34af6';
-                const testDataAddonVersion = '0.0.35';
+                const testDataAddonVersion = '0.0.36';
                 const testDataAddonSchemaName = 'TypeScript Installation Schema';
 
                 //Uninstall
