@@ -134,7 +134,7 @@ function createNewMaintenanceTestDataObject(upgradeAfterDate, upgradeAfterPercen
             addInstalledAddonVersionsTestObject(
                 testDataBody,
                 testDataBody.ApiData.installedAddons[j],
-                `ver${index + 1}`,
+                `0.0.${index + 1}`,
                 new Date(testDate.getTime() - 1000 * 1 - index),
             );
         }
