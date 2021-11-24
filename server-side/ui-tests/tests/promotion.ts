@@ -43,18 +43,12 @@ export async function PromotionTest(email: string, password: string, client: Cli
         //25 23
         //30 * 8 Spring Loaded Frizz-Fighting Conditioner
 
-        //Great Perfumes
-        //Frag006 //Great Perfumes
+        //Beauty Make Up
         //Discounts for ordering more then prince of items
         //250 6
-        //500 100
-        //1000 700
+        //500 2
+        //1000 26
         //1300 same X 10
-
-        //Package
-        //4 - 4%
-        //6 + 21
-        //10 + 1 New Order
 
         // Hand Cosmetics
         //Promotion Order Test
@@ -63,7 +57,13 @@ export async function PromotionTest(email: string, password: string, client: Cli
         //200 - 20
         //300 - MaNa23
         //Free Item
-        //Order items in 400 - You get to select one free item
+        //Order items in 400 - You get to select one free item //Hair4You
+
+        //Promotion Package Test
+        //Frag006 Kiss//Great Perfumes
+        //4 - 4%
+        //6 + 21
+        //10 + 1 New Order - Frag011 Azure
 
         it('Order Five Items - Get One Free', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
