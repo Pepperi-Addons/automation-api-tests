@@ -127,7 +127,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.6'],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60.38'], //16.60
         'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5'],
         'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
@@ -269,6 +269,7 @@ async function replaceUIControls(generalService: GeneralService) {
         let catalogSelectionCard;
         let catalogForm;
         let orderViewsMenu;
+        let orderCartGrid;
 
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
@@ -334,6 +335,27 @@ async function replaceUIControls(generalService: GeneralService) {
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('OrderViewsMenu');
+                    }
+                });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartGrid') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderCartGrid = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderCartGrid'",
+                    });
+                    expect(orderCartGrid).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderCartGrid.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCartGrid');
+                        orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderCartGrid[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderCartGrid');
                     }
                 });
             }
