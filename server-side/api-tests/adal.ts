@@ -56,12 +56,12 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                 it(`Post`, async () => {
                     const schemaName = `CreateSchemaWithMandatoryFields ${new Date()}`;
                     const createSchemaResponse = await adalService.postSchema({ Name: schemaName });
-                    expect(createSchemaResponse.CreationDateTime).to.includes(new Date().toISOString().split('T')[0]);
-                    expect(createSchemaResponse.CreationDateTime).to.includes('Z');
-                    expect(createSchemaResponse.ModificationDateTime).to.includes(
+                    expect(createSchemaResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                    expect(createSchemaResponse.CreationDateTime).to.include('Z');
+                    expect(createSchemaResponse.ModificationDateTime).to.include(
                         new Date().toISOString().split('T')[0],
                     );
-                    expect(createSchemaResponse.ModificationDateTime).to.includes('Z');
+                    expect(createSchemaResponse.ModificationDateTime).to.include('Z');
                     expect(createSchemaResponse.Name).to.equal(schemaName);
                     expect(createSchemaResponse.Hidden).to.be.false;
                     expect(createSchemaResponse.Type).to.equal('meta_data');
@@ -86,12 +86,12 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                         ModificationDateTime: '2020-10-08T10:19:00.677Z',
                     });
 
-                    expect(createSchemaResponse.CreationDateTime).to.includes(new Date().toISOString().split('T')[0]);
-                    expect(createSchemaResponse.CreationDateTime).to.includes('Z');
-                    expect(createSchemaResponse.ModificationDateTime).to.includes(
+                    expect(createSchemaResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                    expect(createSchemaResponse.CreationDateTime).to.include('Z');
+                    expect(createSchemaResponse.ModificationDateTime).to.include(
                         new Date().toISOString().split('T')[0],
                     );
-                    expect(createSchemaResponse.ModificationDateTime).to.includes('Z');
+                    expect(createSchemaResponse.ModificationDateTime).to.include('Z');
                     expect(createSchemaResponse.Name).to.equal(schemaName);
                     expect(createSchemaResponse.Hidden).to.be.false;
                     expect(createSchemaResponse.Type).to.equal('data');
@@ -114,12 +114,12 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                         Key: 'testKey1',
                         Column1: ['Value1', 'Value2', 'Value3'],
                     });
-                    expect(createSchemaResponse.CreationDateTime).to.includes(new Date().toISOString().split('T')[0]);
-                    expect(createSchemaResponse.CreationDateTime).to.includes('Z');
-                    expect(createSchemaResponse.ModificationDateTime).to.includes(
+                    expect(createSchemaResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                    expect(createSchemaResponse.CreationDateTime).to.include('Z');
+                    expect(createSchemaResponse.ModificationDateTime).to.include(
                         new Date().toISOString().split('T')[0],
                     );
-                    expect(createSchemaResponse.ModificationDateTime).to.includes('Z');
+                    expect(createSchemaResponse.ModificationDateTime).to.include('Z');
                     expect(createSchemaResponse.Name).to.equal(schemaName);
                     expect(createSchemaResponse.Hidden).to.be.false;
                     expect(createSchemaResponse.Type).to.equal('meta_data');

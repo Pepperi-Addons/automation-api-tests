@@ -269,6 +269,7 @@ async function replaceUIControls(generalService: GeneralService) {
         let catalogSelectionCard;
         let catalogForm;
         let orderViewsMenu;
+        let orderCartGrid;
 
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
@@ -334,6 +335,27 @@ async function replaceUIControls(generalService: GeneralService) {
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('OrderViewsMenu');
+                    }
+                });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartGrid') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderCartGrid = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderCartGrid'",
+                    });
+                    expect(orderCartGrid).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderCartGrid.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCartGrid');
+                        orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderCartGrid[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderCartGrid');
                     }
                 });
             }
