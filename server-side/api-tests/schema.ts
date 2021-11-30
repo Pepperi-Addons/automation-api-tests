@@ -234,6 +234,12 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             it('Where clause on >=', () => {
                 assert(logcash.getDataTimeFieldVerificationSecStatus, logcash.getDataTimeFieldVerificationSecError);
             });
+            it('Where clause on KEY LIKE on meta_data', () => {
+                assert(
+                    logcash.getDataFromTableKeyWhereClauseLikeStatus,
+                    logcash.getDataFromTableKeyWhereClauseLikeError,
+                );
+            });
         });
 
         describe('ExpirationDateTime tests', () => {
@@ -845,6 +851,45 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableKeyWhereClause.Error =
                 'will get 1 object after where clause with Key value, but actual result is: ' +
                 logcash.getDataFromTableKeyWhereClause;
+        }
+        //debugger;
+        //await changeHiddenToTrue();
+        await getDataFromTableKeyWhereClauseLike();
+    }
+
+    async function getDataFromTableKeyWhereClauseLike() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableKeyWhereClauseLike = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    "?where=Key LIKE 'testKey2%25'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+
+        //debugger;
+        if (
+            logcash.getDataFromTableKeyWhereClauseLike.length == 1 &&
+            logcash.getDataFromTableKeyWhereClauseLike[0].TestInteger == 14
+        ) {
+            logcash.getDataFromTableKeyWhereClauseLikeStatus = true;
+        } else {
+            logcash.getDataFromTableKeyWhereClauseLikeStatus = false;
+
+            logcash.getDataFromTableKeyWhereClauseLikeError =
+                'will get 1 object after where clause with Key value, but actual result is ' +
+                logcash.getDataFromTableKeyWhereClauseLike.length;
         }
         //debugger;
         //await changeHiddenToTrue();
