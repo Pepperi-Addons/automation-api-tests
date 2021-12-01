@@ -3,7 +3,7 @@ import { Page } from './base/page';
 import config from '../../config';
 import { Locator, By, WebElement, Key } from 'selenium-webdriver';
 import { WebAppHeader } from './WebAppHeader';
-import { WebAppDialog, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from './index';
+import { WebAppDialog, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from './index';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
@@ -186,9 +186,9 @@ export class AddonPage extends Page {
 
         await this.browser.click(webAppHeader.Settings);
 
-        const webAppSettingsBar = new WebAppSettingsSidePanel(this.browser);
-        await webAppSettingsBar.selectSettingsByID('Sales Activities');
-        await this.browser.click(webAppSettingsBar.ObjectEditorTransactions);
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
+        await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
 
         const webAppTopBar = new WebAppTopBar(this.browser);
         await this.browser.click(webAppTopBar.EditorAddBtn);
@@ -257,9 +257,6 @@ export class AddonPage extends Page {
 
                 await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
 
-                //Make sure ATD finish to load after search
-                await this.isSpinnerDone();
-
                 await webAppList.clickOnFromListRowWebElement();
 
                 await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
@@ -283,12 +280,9 @@ export class AddonPage extends Page {
                 await webAppDialog.selectDialogBox('Close');
 
                 try {
-                    //Wait after refresh for the ATD list to load before searching for new list
+                    //Wait after refresh for the ATD list to load before searching in list
                     await this.isSpinnerDone();
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, name + Key.ENTER);
-
-                    //Make sure ATD finish to load after search
-                    await this.isSpinnerDone();
 
                     await webAppList.clickOnFromListRowWebElement(0, 6000);
                     throw new Error('The list should be empty, this is a bug');
@@ -317,7 +311,7 @@ export class AddonPage extends Page {
      *
      * @param postAction Enum that can be used like this in a test: SelectPostAction.UpdateInventory;
      */
-    public async editATDWorkflow(postAction: SelectPostAction) {
+    public async editATDWorkflow(postAction: SelectPostAction): Promise<void> {
         switch (postAction) {
             case SelectPostAction.UpdateInventory:
                 const webAppDialog = new WebAppDialog(this.browser);
@@ -346,6 +340,8 @@ export class AddonPage extends Page {
                     await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartEl, index);
                     await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartElDeleteBtn);
                     await this.browser.click(webAppDialog.IframeDialogApproveBtn);
+                    console.log('Wait after removed flowchart element');
+                    this.browser.sleep(500);
                     await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
                 }
 
@@ -398,6 +394,112 @@ export class AddonPage extends Page {
             default:
                 throw new Error('Method not implemented.');
         }
+        return;
+    }
+
+    public async editHomePageButtons(activtiyName: string): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        await this.isSpinnerDone();
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+
+        await this.browser.click(this.SettingsFrameworkEditAdmin);
+        await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
+        await this.browser.click(this.SettingsFrameworkEditorSave);
+
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.isSpinnerDone();
+        return;
+    }
+
+    /**
+     *
+     * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports
+     * @param generalService This function will use API to rename other existing ATD with same name
+     * @param description Description of the new ATD
+     * @param name Name of the ATD
+     * @param description Description of the new ATD
+     */
+    public async removeATD(generalService: GeneralService, name: string, description: string): Promise<void> {
+        const objectsService = new ObjectsService(generalService);
+        const importExportATDService = new ImportExportATDService(generalService.papiClient);
+
+        //Remove the new ATD
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Settings);
+
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
+        await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
+
+        //Remove all the transactions of this ATD, or the UI will block the manual removal
+        const transactionsToRemoveInCleanup = await objectsService.getTransaction({
+            where: `Type LIKE '%${name}%'`,
+        });
+
+        for (let index = 0; index < transactionsToRemoveInCleanup.length; index++) {
+            const isTransactionDeleted = await objectsService.deleteTransaction(
+                transactionsToRemoveInCleanup[index].InternalID as number,
+            );
+            expect(isTransactionDeleted).to.be.true;
+        }
+
+        //Rename the ATD and Remove it with UI Delete to Reproduce the bug from version 1.0.8
+        const tempATDExternalIDInCleanup = `${name} ${uuidv4()}`;
+
+        const atdToRemoveInCleanup = await generalService.getAllTypes({
+            where: `Name='${name}'`,
+            include_deleted: true,
+            page_size: -1,
+        });
+
+        await importExportATDService.postTransactionsATD({
+            ExternalID: tempATDExternalIDInCleanup,
+            InternalID: atdToRemoveInCleanup[0].InternalID,
+            UUID: atdToRemoveInCleanup[0].UUID,
+            Hidden: false,
+            Description: description,
+        });
+
+        //Wait after POST new ATD from the API before getting it in the UI
+        console.log('ATD Updated by using the API');
+        this.browser.sleep(4000);
+
+        const webAppList = new WebAppList(this.browser);
+        const webAppTopBar = new WebAppTopBar(this.browser);
+
+        await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
+
+        await webAppList.clickOnFromListRowWebElement();
+
+        await webAppTopBar.selectFromMenuByText(webAppTopBar.EditorEditBtn, 'Delete');
+
+        //Make sure all loading is done after Delete
+        await this.isSpinnerDone();
+
+        const webAppDialog = new WebAppDialog(this.browser);
+        let isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+
+        expect(isPupUP).to.equal('Are you sure you want to proceed?');
+
+        await webAppDialog.selectDialogBox('Continue');
+
+        //Make sure all loading is done after Continue
+        await this.isSpinnerDone();
+
+        isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+
+        expect(isPupUP).to.equal('Task Delete completed successfully.');
+
+        await webAppDialog.selectDialogBox('Close');
         return;
     }
 }

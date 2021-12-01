@@ -8,10 +8,12 @@ import promised from 'chai-as-promised';
 import { TestDataTest } from '../../api-tests/test-service/test_data';
 import { Client } from '@pepperi-addons/debug-server';
 import { LoginTest } from './login';
-import { OrdersTest } from './orders';
+import { OrderTest } from './order';
 import { WorkflowTest } from './workflow';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
+import { DeepLinkTest } from './deep_link';
+import { PromotionTest } from './promotion';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -49,12 +51,22 @@ const varPass = process.env.npm_config_var_pass as string;
 
         await upgradeDependenciesTests(generalService, varPass);
     }
+
     if (testsArr.includes('Sanity')) {
         await LoginTest(email, pass);
-        await OrdersTest(email, pass, client);
+        await OrderTest(email, pass, client);
     }
+
     if (testsArr.includes('Workflow')) {
         await WorkflowTest(email, pass, client);
+    }
+
+    if (testsArr.includes('DeepLink')) {
+        await DeepLinkTest(email, pass, client);
+    }
+
+    if (testsArr.includes('Promotion')) {
+        await PromotionTest(email, pass, client);
     }
 
     run();
@@ -115,20 +127,26 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.6'],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60.38'], //16.60
         'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5'],
         'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+        'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+        'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, false);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {
+        this.retries(1);
+
         it('Validate That All The Needed Addons Installed', async function () {
             isInstalledArr.forEach((isInstalled) => {
                 expect(isInstalled).to.be.true;
@@ -171,6 +189,8 @@ async function replaceItems(generalService: GeneralService) {
         });
     } else {
         describe('Replace Items', function () {
+            this.retries(1);
+
             it('Remove Existing Items', async function () {
                 //Remove old items
                 const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
@@ -237,6 +257,8 @@ async function replaceItems(generalService: GeneralService) {
 
 async function replaceUIControls(generalService: GeneralService) {
     describe('Replace UIControls', function () {
+        this.retries(1);
+
         //Add new UIControls from local file
         const uIControlArrFromFile = fs.readFileSync('../server-side/api-tests/test-data/UIControls.json', {
             encoding: 'utf8',
@@ -247,6 +269,7 @@ async function replaceUIControls(generalService: GeneralService) {
         let catalogSelectionCard;
         let catalogForm;
         let orderViewsMenu;
+        let orderCartGrid;
 
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
@@ -312,6 +335,27 @@ async function replaceUIControls(generalService: GeneralService) {
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('OrderViewsMenu');
+                    }
+                });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartGrid') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderCartGrid = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderCartGrid'",
+                    });
+                    expect(orderCartGrid).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderCartGrid.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCartGrid');
+                        orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderCartGrid[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderCartGrid');
                     }
                 });
             }

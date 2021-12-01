@@ -1,6 +1,6 @@
 import { Catalog, Subscription, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions, ResourceTypes, FilterAttributes } from '../services/general.service';
-import { NucleusFlagType, NucRecoveryService } from '../services/nuc_recovery.service';
+import { NucleusFlagType, NucRecoveryService } from '../services/nuc-recovery.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
@@ -158,7 +158,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         expect(error)
                             .to.have.property('message')
                             .that.includes(
-                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                             );
                     }
                     const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });

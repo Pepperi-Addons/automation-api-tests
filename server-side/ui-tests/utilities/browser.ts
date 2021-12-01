@@ -12,8 +12,9 @@ export class Browser {
             this.options.addArguments('--headless');
             this.options.addArguments('--window-size=1920,1080');
         }
+        this.options.addArguments('--no-sandbox');
         this.options.addArguments('--disable-gpu');
-        this.options.addArguments(' --disable-software-rasterizer');
+        this.options.addArguments('--disable-software-rasterizer');
         this.options.excludeSwitches('enable-logging');
         this.options.setLoggingPrefs({
             browser: 'ALL',
@@ -184,11 +185,34 @@ export class Browser {
         return logsArr;
     }
 
+    /**
+     * closes the child window in focus, the parent window is still open
+     * @returns
+     */
     public async close(): Promise<void> {
+        //This line is needed, to not remove! (this wait to driver before trying to close it)
+        const windowTitle = await this.driver.getTitle();
+        console.log(`Close Window With Title: ${windowTitle}`);
         return await this.driver.close();
     }
 
+    /**
+     * close all the webdriver instances, so parent window will close
+     * @returns
+     */
     public async quit(): Promise<void> {
+        //This line is needed, to not remove! (this wait to driver before trying to close it)
+        const windowTitle = await this.driver.getTitle();
+        console.log(`Quit Window With Title: ${windowTitle}`);
+
+        //Print Driver Info Before Quit
+        const driverInfo = await this.driver.getCapabilities();
+        const browserName = driverInfo.get('browserName');
+        const browserVersion = driverInfo.get('browserVersion');
+        const browserInfo = driverInfo.get(browserName);
+        console.log(`Browser Name: ${browserName}, Version: ${browserVersion}`);
+        console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
+
         return await this.driver.quit();
     }
 }
