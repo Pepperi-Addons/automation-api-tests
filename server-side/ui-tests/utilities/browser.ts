@@ -1,5 +1,5 @@
 import 'chromedriver';
-import { Builder, ThenableWebDriver, WebElement, until, Locator } from 'selenium-webdriver';
+import { Builder, ThenableWebDriver, WebElement, until, Locator, Key } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 export class Browser {
@@ -70,21 +70,29 @@ export class Browser {
         return;
     }
 
-    public async sendKeys(selector: Locator, keys: string | number, index = 0): Promise<void> {
+    public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         try {
-            await (await this.findElements(selector))[index].clear();
-            await (await this.findElements(selector))[index].sendKeys(keys);
+            await (await this.findElements(selector, waitUntil))[index].clear();
+            await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
                 } else if (
                     error.name === 'ElementClickInterceptedError' ||
                     error.name === 'TypeError' ||
-                    error.name === 'JavascriptError'
+                    error.name === 'JavascriptError' ||
+                    error.name === 'InvalidElementStateError' ||
+                    (error.name === 'Error' && error.message.includes('textarea'))
                 ) {
-                    await this.driver.executeScript(
-                        `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
-                    );
+                    try {
+                        const el = await this.driver.findElements(selector);
+                        await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
+                        await el[index].sendKeys(keys);
+                    } catch (error) {
+                        await this.driver.executeScript(
+                            `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                        );
+                    }
                 } else {
                     throw error;
                 }
@@ -180,6 +188,53 @@ export class Browser {
                 const logLevelName = logsObj[key].level.name == 'SEVERE' ? 'ERROR' : logsObj[key].level.name;
                 const logMessage = logsObj[key].message;
                 logsArr.push(`${logLevelName}: ${logMessage}`);
+            }
+        }
+        return logsArr;
+    }
+
+    public async getPerformanceLogs(): Promise<any[]> {
+        const logsArr: any[] = [];
+        const logsObj = await this.driver.manage().logs().get('performance');
+        for (let index = 0; index < logsObj.length; index++) {
+            if (logsObj[index].message.includes(`"method":"Network.requestWillBeSent"`)) {
+                const tempPerformanceObj = JSON.parse(logsObj[index].message);
+                delete tempPerformanceObj.webview;
+                delete tempPerformanceObj.message.params.frameId;
+                delete tempPerformanceObj.message.params.hasUserGesture;
+                delete tempPerformanceObj.message.params.initiator;
+                delete tempPerformanceObj.message.params.loaderId;
+                delete tempPerformanceObj.message.params.requestId;
+                delete tempPerformanceObj.message.params.clientSecurityState;
+                delete tempPerformanceObj.message.params.connectTiming;
+                delete tempPerformanceObj.message.params.request.headers;
+                delete tempPerformanceObj.message.params.request.hasPostData;
+                delete tempPerformanceObj.message.params.request.initialPriority;
+                delete tempPerformanceObj.message.params.request.isSameSite;
+                delete tempPerformanceObj.message.params.request.mixedContentType;
+                delete tempPerformanceObj.message.params.request.postDataEntries;
+                delete tempPerformanceObj.message.params.request.referrerPolicy;
+
+                logsArr.push(tempPerformanceObj);
+            } else if (logsObj[index].message.includes(`"method":"Network.responseReceived"`)) {
+                const tempPerformanceObj = JSON.parse(logsObj[index].message);
+                delete tempPerformanceObj.webview;
+                delete tempPerformanceObj.message.params.frameId;
+                delete tempPerformanceObj.message.params.hasUserGesture;
+                delete tempPerformanceObj.message.params.initiator;
+                delete tempPerformanceObj.message.params.loaderId;
+                delete tempPerformanceObj.message.params.requestId;
+                delete tempPerformanceObj.message.params.response.timing;
+                delete tempPerformanceObj.message.params.response.headers;
+                delete tempPerformanceObj.message.params.response.connectionId;
+                delete tempPerformanceObj.message.params.response.encodedDataLength;
+                delete tempPerformanceObj.message.params.response.mimeType;
+                delete tempPerformanceObj.message.params.response.protocol;
+                delete tempPerformanceObj.message.params.response.remoteIPAddress;
+                delete tempPerformanceObj.message.params.response.remotePort;
+                delete tempPerformanceObj.message.params.response.responseTime;
+                delete tempPerformanceObj.message.params.response.securityState;
+                logsArr.push(tempPerformanceObj);
             }
         }
         return logsArr;

@@ -501,8 +501,9 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     title: `Cart With Promotions`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
+
                 //Promo Steps: [8, 9*, 11, 16, 17*, 33, 34*, 44*, 45]; //The marked with "*" are the set promotion steps
-                const promotionsArr = [/*8, 9, 11, 16, 17, 33, 34, 44,*/ 45];
+                const promotionsArr = [8, 9, 11, 16, 17, 33, 34, 44, 45];
                 const dataFromCartObj = {};
                 for (let index = 0; index < promotionsArr.length; index++) {
                     await webAppTransaction.changeItemInCart(this, promotionsArr[index], true);
