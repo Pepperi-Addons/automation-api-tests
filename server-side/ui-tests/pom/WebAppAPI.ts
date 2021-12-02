@@ -50,6 +50,7 @@ export class WebAppAPI extends Page {
     /**
      * From this response the correct UI of the cart is created in the WebApp
      * @param accessToken
+     * @param catalogUUID
      * @returns
      */
     public async getCartItemSearch(accessToken: string, catalogUUID: string) {
@@ -73,6 +74,35 @@ export class WebAppAPI extends Page {
                         SearchText: '',
                         SmartSearch: [],
                     }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        PepperiSessionToken: accessToken,
+                    },
+                },
+            );
+            maxLoopsCounter--;
+        } while (searchResponse.Ok == null && maxLoopsCounter > 0);
+        return searchResponse.Body;
+    }
+
+    /**
+     * From this response the correct UI of the cart is created in the WebApp
+     * @param accessToken
+     * @param catalogUUID
+     * @returns
+     */
+    public async getCart(accessToken: string, catalogUUID: string) {
+        const generalService = new GeneralService(this._CLIENT);
+        let searchResponse;
+        let maxLoopsCounter = 90;
+        do {
+            generalService.sleep(2000);
+            searchResponse = await generalService.fetchStatus(
+                `https://webapi${this._IS_STAGE ? '.sandbox.' : '.'}pepperi.com/${
+                    this.webAPIVersionVersion
+                }/webapi/Service1.svc/v1/Cart/Transaction/${catalogUUID}`,
+                {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         PepperiSessionToken: accessToken,

@@ -57,6 +57,27 @@ export enum AddonLoadCondition {
     Content,
 }
 
+interface Field {
+    CalculatedRuleEngine?: {
+        JSFormula: string;
+    };
+    FieldID?: string;
+    Label: string;
+    Description?: string;
+    UIType?: {
+        ID: number;
+        Name: string;
+    };
+    Type?: string;
+    Format?: string;
+    CalculatedOn?: {
+        ID?: number;
+        Name?: string;
+    };
+    Temporary?: boolean;
+    [key: string]: any;
+}
+
 export class AddonPage extends Page {
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}`);
@@ -106,6 +127,16 @@ export class AddonPage extends Page {
     public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryEditSaveBtn: Locator = By.css(
         '#workflowV2 [name="editStack"] .save',
     );
+
+    //Editor Fields
+    public AddonContainerATDEditorFieldsAddCustomArr: Locator = By.css('.allButtons.grnbtn.roundCorner.dc-add');
+    public AddonContainerATDEditorTransactionFieldArr: Locator = By.css('[name="0"]');
+    public AddonContainerATDEditorTransactionLineFieldArr: Locator = By.css('[name="1"]');
+    public AddonContainerATDEditorEditFieldArr: Locator = By.xpath('..//span[contains(@class, "editPenIcon")]');
+    public AddonContainerATDEditorTransactionLineFieldEditFormula: Locator = By.css('[name="edit"]');
+    public AddonContainerATDEditorTransactionLineFieldFormula: Locator = By.css('#formula textarea');
+    public AddonContainerATDEditorTransactionLineFieldFormulaEditorSave: Locator = By.css('#footer .save');
+    public AddonContainerATDEditorTransactionLineFieldSave: Locator = By.css('.footerSection [name="save"]');
 
     //Settings Framework Locators
     public SettingsFrameworkEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
@@ -328,6 +359,7 @@ export class AddonPage extends Page {
                 await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
                 expect(await this.isEditorTabVisible('WorkflowV2')).to.be.true;
 
+                //Validate Editor Page Loaded
                 expect(await this.browser.findElement(this.AddonContainerATDEditorWorkflowFlowchartIndicator));
 
                 //Edit the Workflow
@@ -394,6 +426,55 @@ export class AddonPage extends Page {
             default:
                 throw new Error('Method not implemented.');
         }
+        return;
+    }
+
+    /**
+     *
+     * @param fieldType The name of the fields group
+     * @param fieldObj Type that contain the field Label and Js formula if needed
+     * @returns
+     */
+    public async editATDField(fieldType: string, fieldObj: Field): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Fields');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
+
+        //Validate Editor Page Loaded
+        expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
+
+        const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionFieldArr);
+        for (let index = 0; index < buttonsArr.length; index++) {
+            const element = buttonsArr[index];
+            if ((await element.getText()).includes(fieldType)) {
+                await element.click();
+                break;
+            }
+        }
+
+        const selectedBtn = Object.assign({}, this.AddonContainerATDEditorEditFieldArr);
+        selectedBtn['value'] = `//td[@title='${fieldObj.Label}']/${selectedBtn['value']}`;
+        await this.browser.click(selectedBtn);
+
+        await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldEditFormula);
+        await this.browser.sendKeys(
+            this.AddonContainerATDEditorTransactionLineFieldFormula,
+            fieldObj.CalculatedRuleEngine?.JSFormula as string,
+            0,
+            6000,
+        );
+
+        await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
+        await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
+
         return;
     }
 
