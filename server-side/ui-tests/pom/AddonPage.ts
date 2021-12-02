@@ -142,6 +142,9 @@ export class AddonPage extends Page {
     public SettingsFrameworkEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
     public SettingsFrameworkEditorSearch: Locator = By.css('#txtSearchBankFields');
     public SettingsFrameworkEditorSave: Locator = By.css('.save');
+    public SettingsFrameworkEditorTrashBtn: Locator = By.xpath(
+        `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
+    );
 
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
@@ -478,7 +481,7 @@ export class AddonPage extends Page {
         return;
     }
 
-    public async editHomePageButtons(activtiyName: string): Promise<void> {
+    public async addAdminHomePageButtons(activtiyName: string): Promise<void> {
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
@@ -490,6 +493,44 @@ export class AddonPage extends Page {
         await this.browser.click(this.SettingsFrameworkEditAdmin);
         await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
         await this.browser.click(this.SettingsFrameworkEditorSave);
+
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.isSpinnerDone();
+        return;
+    }
+
+    public async removeAdminHomePageButtons(activtiyName: string): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        await this.isSpinnerDone();
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+
+        await this.browser.click(this.SettingsFrameworkEditAdmin);
+
+        const buttonsLocator = Object.assign({}, this.SettingsFrameworkEditorTrashBtn);
+        buttonsLocator['value'] = buttonsLocator['value'].replace('ATD_PLACE_HOLDER', activtiyName);
+
+        let isRemovable;
+        try {
+            isRemovable = await this.browser.untilIsVisible(buttonsLocator);
+        } catch (error) {
+            console.log('No Button To Remove, Test Continue');
+        }
+        if (isRemovable) {
+            const buttonsToRemove = await this.browser.findElements(buttonsLocator);
+            for (let i = 0; i < buttonsToRemove.length; i++) {
+                await this.browser.click(buttonsLocator);
+            }
+            await this.browser.click(this.SettingsFrameworkEditorSave);
+        }
 
         //Go To HomePage
         await this.browser.switchToDefaultContent();
