@@ -73,6 +73,8 @@ export class Browser {
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].clear();
+            console.log('Wait after clear, beofre send keys');
+            this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
         } catch (error) {
             if (error instanceof Error) {

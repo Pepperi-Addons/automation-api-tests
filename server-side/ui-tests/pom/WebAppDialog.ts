@@ -30,7 +30,7 @@ export class WebAppDialog extends Page {
 
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
         //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 3000).then(
+        await this.browser.findElements(this.ButtonArr, 5000).then(
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
@@ -69,5 +69,17 @@ export class WebAppDialog extends Page {
         selectedBtn['value'] += ` //span[contains(., '${btnText}')]`;
         await this.browser.click(selectedBtn);
         return;
+    }
+
+    public async getDialogBoxText(): Promise<string> {
+        return await this.browser.findElement(this.Content, 4000).then(
+            async (res) => {
+                return await res.getText();
+            },
+            () => {
+                console.log(`Element ${this.ButtonArr.toString()} not found`);
+                return `Element ${this.ButtonArr.toString()} not found`;
+            },
+        );
     }
 }
