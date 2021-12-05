@@ -966,7 +966,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[0].UnitPriceAfterDiscount).to.equal(40.25);
                 expect(lastTransactionLines[0].UnitsQuantity).to.equal(11);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.contain('MaNa23');
+                expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.include('MaNa23');
                 expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionReason).to.be.null;
@@ -977,7 +977,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[1].UnitsQuantity).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionNextDiscount).to.be.null;
                 expect(lastTransactionLines[1].TSAPPIOrderPromotionPromotionCode).to.be.null;
-                expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.equal('PPI_OrderPromotion');
+                expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.include('PPI_OrderPromotion');
                 expect(lastTransactionLines[2].TotalUnitsPriceBeforeDiscount).to.equal(45.25);
                 expect(lastTransactionLines[2].TotalUnitsPriceAfterDiscount).to.equal(45.25);
                 expect(lastTransactionLines[2].TSAPPIItemPromotionReason).to.be.null;
@@ -987,7 +987,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[2].UnitPriceAfterDiscount).to.equal(45.25);
                 expect(lastTransactionLines[2].UnitsQuantity).to.equal(1);
                 expect(lastTransactionLines[2].TSAPPIItemPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[2].TSAPPIOrderPromotionPromotionCode).to.contain('PPI_OrderPromotion');
+                expect(lastTransactionLines[2].TSAPPIOrderPromotionPromotionCode).to.include('PPI_OrderPromotion');
                 expect(lastTransactionLines[2].Item?.Data?.ExternalID).to.equal('Hair002');
 
                 const webAppHeader = new WebAppHeader(driver);
