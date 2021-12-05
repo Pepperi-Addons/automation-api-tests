@@ -391,12 +391,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                         expect(dataFromCartObj[index][18][1]).to.equal('8');
                         expect(dataFromCartObj[index][19][1]).to.equal('$0.00');
                         expect(dataFromCartObj[index][20][1]).to.equal('$0.00');
-                        try {
-                            expect(dataFromCartObj[index][21][1]).to.equal('');
-                        } catch (error) {
-                            console.log('Talk about this with Eyal, this should be empty I think');
-                            // debugger;
-                        }
+                        expect(dataFromCartObj[index][21][1]).to.equal('');
                         expect(dataFromCartObj[index][22][1]).to.have.lengthOf.above(1);
                         expect(dataFromCartObj[index][23][1]).to.equal('Discounts for ordering amount of items');
                         expect(dataFromCartObj[index][24][1]).to.include('"MinTotal":"30"');
