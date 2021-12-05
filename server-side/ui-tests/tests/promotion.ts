@@ -88,11 +88,16 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     title: `Last transaction lines from API`,
                     value: lastTransactionLines,
                 });
+
+                expect(lastTransaction[0].SubTotal).to.equal(172.5);
                 expect(lastTransaction[0].GrandTotal).to.equal(172.5);
+                expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(172.5);
+                expect(lastTransaction[0].ItemsCount).to.equal(2);
                 expect(lastTransaction[0].QuantitiesTotal).to.equal(6);
                 expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(172.5);
+                expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                 expect(lastTransactionLines[0].TotalUnitsPriceBeforeDiscount).to.equal(172.5);
+                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(172.5);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionPromotionCode).to.equal('5kitPP');
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReason).to.equal(
                     'When buying 5 kits, get another kit for free',
@@ -106,8 +111,8 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[0].UnitsQuantity).to.equal(5);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
                 expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('MaFa24');
-                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(34.5);
+                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionPromotionCode).to.equal('5kitPP');
                 expect(lastTransactionLines[1].TSAPPIItemPromotionReason).to.equal(
                     'When buying 5 kits, get another kit for free',
@@ -129,6 +134,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 );
                 expect(testDataTransaction).to.be.true;
             });
+
             it('Order One Item - Get Anohther Item Free', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
@@ -179,11 +185,16 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     title: `Last transaction lines from API`,
                     value: lastTransactionLines,
                 });
+
+                expect(lastTransaction[0].SubTotal).to.equal(33.75);
                 expect(lastTransaction[0].GrandTotal).to.equal(33.75);
+                expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(33.75);
+                expect(lastTransaction[0].ItemsCount).to.equal(2);
                 expect(lastTransaction[0].QuantitiesTotal).to.equal(2);
                 expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(33.75);
+                expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                 expect(lastTransactionLines[0].TotalUnitsPriceBeforeDiscount).to.equal(33.75);
+                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(33.75);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionPromotionCode).to.equal('1Plus1PP');
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReason).to.equal(
                     'Get Eyeliner for free when you buy Skin Perfector',
@@ -197,8 +208,8 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[0].UnitsQuantity).to.equal(1);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
                 expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('MakeUp006');
-                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(15.95);
+                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionPromotionCode).to.equal('1Plus1PP');
                 expect(lastTransactionLines[1].TSAPPIItemPromotionReason).to.equal(
                     'Get Eyeliner for free when you buy Skin Perfector',
@@ -427,11 +438,15 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     value: lastTransactionLines,
                 });
 
+                expect(lastTransaction[0].SubTotal).to.equal(1361.45);
                 expect(lastTransaction[0].GrandTotal).to.equal(1145.45);
+                expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(1145.45);
+                expect(lastTransaction[0].ItemsCount).to.equal(2);
                 expect(lastTransaction[0].QuantitiesTotal).to.equal(39);
                 expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(1145.45);
+                expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                 expect(lastTransactionLines[0].TotalUnitsPriceBeforeDiscount).to.equal(1145.45);
+                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(1145.45);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReason).to.equal(
                     'Discounts for ordering amount of items',
                 );
@@ -443,8 +458,8 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
                 expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('Shampoo Three');
 
-                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(216);
+                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionPromotionCode).to.equal(
                     lastTransactionLines[0].TSAPPIItemPromotionPromotionCode,
                 );
@@ -678,11 +693,16 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     title: `Last transaction lines from API`,
                     value: lastTransactionLines,
                 });
+
+                expect(lastTransaction[0].SubTotal).to.equal(1636.25);
                 expect(lastTransaction[0].GrandTotal).to.equal(1338.75);
+                expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(1338.75);
+                expect(lastTransaction[0].ItemsCount).to.equal(2);
                 expect(lastTransaction[0].QuantitiesTotal).to.equal(55);
                 expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(1338.75);
+                expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                 expect(lastTransactionLines[0].TotalUnitsPriceBeforeDiscount).to.equal(1338.75);
+                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(1338.75);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReason).to.equal(
                     'Discounts for ordering more then prince of items',
                 );
@@ -696,8 +716,8 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
                 expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('MakeUp002');
 
-                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(297.5);
+                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionPromotionCode).to.equal(
                     lastTransactionLines[0].TSAPPIItemPromotionPromotionCode,
                 );
@@ -922,9 +942,13 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     value: lastTransactionLines,
                 });
 
-                expect(lastTransaction[0].GrandTotal).to.equal(442.75);
+                expect(lastTransaction[0].SubTotal).to.equal(488);
+                expect(lastTransaction[0].GrandTotal).to.equal(488);
+                expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(488);
+                expect(lastTransaction[0].ItemsCount).to.equal(3);
                 expect(lastTransaction[0].QuantitiesTotal).to.equal(12);
                 expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
+                expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.true;
                 expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseItemExternalID).to.include(
                     'PPI_OrderPromotion',
                 );
@@ -933,8 +957,8 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     'Discounts for ordering items over set price',
                 );
                 expect(lastTransaction[0].TSAPPIOrderPromotionReasonReference).to.include('"MinTotal":"400"');
-                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(442.75);
                 expect(lastTransactionLines[0].TotalUnitsPriceBeforeDiscount).to.equal(442.75);
+                expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(442.75);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReason).to.be.null;
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReasonReference).to.equal('{"AppliedRules":[]}');
                 expect(lastTransactionLines[0].UnitDiscountPercentage).to.equal(0);
@@ -942,21 +966,29 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[0].UnitPriceAfterDiscount).to.equal(40.25);
                 expect(lastTransactionLines[0].UnitsQuantity).to.equal(11);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionNextDiscount).to.be.null;
-                expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.equal('MaNa23');
-                //Order items in 400 - You get to select one free item //Hair4You
-                //Coconut Oil GelHair002
-                // expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(442.75);
-                // expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(442.75);
-                // expect(lastTransactionLines[1].TSAPPIItemPromotionReason).to.be.null;
-                // expect(lastTransactionLines[1].TSAPPIItemPromotionReasonReference).to.equal(
-                //     '{"AppliedRules":[]}',
-                // );
-                // expect(lastTransactionLines[1].UnitDiscountPercentage).to.equal(0);
-                // expect(lastTransactionLines[1].UnitPrice).to.equal(40.25);
-                // expect(lastTransactionLines[1].UnitPriceAfterDiscount).to.equal(40.25);
-                // expect(lastTransactionLines[1].UnitsQuantity).to.equal(11);
-                // expect(lastTransactionLines[1].TSAPPIItemPromotionNextDiscount).to.be.null;
-                // expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.equal('MaNa23');
+                expect(lastTransactionLines[0].Item?.Data?.ExternalID).to.contain('MaNa23');
+                expect(lastTransactionLines[1].TotalUnitsPriceBeforeDiscount).to.equal(0);
+                expect(lastTransactionLines[1].TotalUnitsPriceAfterDiscount).to.equal(0);
+                expect(lastTransactionLines[1].TSAPPIItemPromotionReason).to.be.null;
+                expect(lastTransactionLines[1].TSAPPIItemPromotionReasonReference).to.be.null;
+                expect(lastTransactionLines[1].UnitDiscountPercentage).to.equal(0);
+                expect(lastTransactionLines[1].UnitPrice).to.equal(0);
+                expect(lastTransactionLines[1].UnitPriceAfterDiscount).to.equal(0);
+                expect(lastTransactionLines[1].UnitsQuantity).to.equal(1);
+                expect(lastTransactionLines[1].TSAPPIItemPromotionNextDiscount).to.be.null;
+                expect(lastTransactionLines[1].TSAPPIOrderPromotionPromotionCode).to.be.null;
+                expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.equal('PPI_OrderPromotion');
+                expect(lastTransactionLines[2].TotalUnitsPriceBeforeDiscount).to.equal(45.25);
+                expect(lastTransactionLines[2].TotalUnitsPriceAfterDiscount).to.equal(45.25);
+                expect(lastTransactionLines[2].TSAPPIItemPromotionReason).to.be.null;
+                expect(lastTransactionLines[2].TSAPPIItemPromotionReasonReference).to.be.null;
+                expect(lastTransactionLines[2].UnitDiscountPercentage).to.equal(0);
+                expect(lastTransactionLines[2].UnitPrice).to.equal(45.25);
+                expect(lastTransactionLines[2].UnitPriceAfterDiscount).to.equal(45.25);
+                expect(lastTransactionLines[2].UnitsQuantity).to.equal(1);
+                expect(lastTransactionLines[2].TSAPPIItemPromotionNextDiscount).to.be.null;
+                expect(lastTransactionLines[2].TSAPPIOrderPromotionPromotionCode).to.contain('PPI_OrderPromotion');
+                expect(lastTransactionLines[2].Item?.Data?.ExternalID).to.equal('Hair002');
 
                 const webAppHeader = new WebAppHeader(driver);
                 await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
@@ -1211,6 +1243,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                         expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(123.84);
                         expect(lastTransaction[0].ItemsCount).to.equal(2);
                         expect(lastTransaction[0].QuantitiesTotal).to.equal(5);
+                        expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
                         expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                         expect(lastTransactionLines[0].TSAPPIPackagePromotionIsPackage).to.be.true;
                         expect(lastTransactionLines[0].TSAPPIPackagePromotionShowPackageItem).to.be.true;
@@ -1235,6 +1268,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                         expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(172.5052);
                         expect(lastTransaction[0].ItemsCount).to.equal(2);
                         expect(lastTransaction[0].QuantitiesTotal).to.equal(7);
+                        expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
                         expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                         expect(lastTransactionLines[0].TSAPPIPackagePromotionIsPackage).to.be.true;
                         expect(lastTransactionLines[0].TSAPPIPackagePromotionShowPackageItem).to.be.true;
@@ -1256,8 +1290,10 @@ export async function PromotionTest(email: string, password: string, client: Cli
                     if (promotionsArr[index] == 10) {
                         expect(lastTransaction[0].SubTotal).to.equal(354.75);
                         expect(lastTransaction[0].GrandTotal).to.equal(322.5);
+                        expect(lastTransaction[0].SubTotalAfterItemsDiscount).to.equal(322.5);
                         expect(lastTransaction[0].ItemsCount).to.equal(3);
                         expect(lastTransaction[0].QuantitiesTotal).to.equal(12);
+                        expect(lastTransaction[0].TSAPPIOrderPromotionNextDiscount).to.be.null;
                         expect(lastTransaction[0].TSAPPIOrderPromotionAdditionalPhaseShouldStart).to.be.false;
                         expect(lastTransactionLines[0].TSAPPIPackagePromotionIsPackage).to.be.true;
                         expect(lastTransactionLines[0].TSAPPIPackagePromotionShowPackageItem).to.be.true;
