@@ -974,7 +974,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 expect(lastTransactionLines[1].UnitDiscountPercentage).to.equal(0);
                 expect(lastTransactionLines[1].UnitPrice).to.equal(0);
                 expect(lastTransactionLines[1].UnitPriceAfterDiscount).to.equal(0);
-                expect(lastTransactionLines[1].UnitsQuantity).to.equal(1);
+                expect(lastTransactionLines[1].UnitsQuantity).to.equal(0);
                 expect(lastTransactionLines[1].TSAPPIItemPromotionNextDiscount).to.be.null;
                 expect(lastTransactionLines[1].TSAPPIOrderPromotionPromotionCode).to.be.null;
                 expect(lastTransactionLines[1].Item?.Data?.ExternalID).to.equal('PPI_OrderPromotion');
