@@ -8,7 +8,7 @@ export class WebAppTopBar extends Page {
         super(browser, `${config.baseUrl}`);
     }
 
-    public Header: Locator = By.css('.modal.in .headerTitle.pep-border-bottom');
+    public Header: Locator = By.css('[data-qa="firstMenu"]');
     public CloseBtn: Locator = By.css('.modal.in .headerTitle.pep-border-bottom button');
     public DoneBtn: Locator = By.css('[data-qa="doneButton"]');
     public CancelBtn: Locator = By.css('.modal.in .headerTitle.pep-border-bottom button');
@@ -21,7 +21,9 @@ export class WebAppTopBar extends Page {
     public CartTopMenu: Locator = By.css('[data-qa="firstMenu"]');
     public CartViewBtn: Locator = By.css('[data-qa="cartButton"]');
     public CartSumbitBtn: Locator = By.css('[data-qa="Submit"]');
+    public CartDoneBtn: Locator = By.css('[data-qa="Done"]');
     public CartContinueOrderingBtn: Locator = By.css('[data-qa="continueOrderingButton"]');
+    public CartOrderTotal: Locator = By.css('list-totals-view .list-totals-view .value');
 
     //Editor
     public EditorEditBtn: Locator = By.css('main .content.pep-border-bottom [pepmenublur]');
