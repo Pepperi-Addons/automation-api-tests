@@ -75,6 +75,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 } while (lastTransaction[0].Status != 2 && loopCounter > 0);
                 const lastTransactionLines = await objectsService.getTransactionLines({
                     where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+                    order_by: 'CreationDateTime',
                 });
                 addContext(this, {
                     title: `Last transaction lines total price from API`,
@@ -172,6 +173,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
                 } while (lastTransaction[0].Status != 2 && loopCounter > 0);
                 const lastTransactionLines = await objectsService.getTransactionLines({
                     where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+                    order_by: 'CreationDateTime',
                 });
                 addContext(this, {
                     title: `Last transaction lines total price from API`,
@@ -418,6 +420,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
 
                 const lastTransactionLines = await objectsService.getTransactionLines({
                     where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+                    order_by: 'CreationDateTime',
                 });
 
                 addContext(this, {
@@ -674,6 +677,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
 
                 const lastTransactionLines = await objectsService.getTransactionLines({
                     where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+                    order_by: 'CreationDateTime',
                 });
 
                 addContext(this, {
@@ -922,6 +926,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
 
                 const lastTransactionLines = await objectsService.getTransactionLines({
                     where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+                    order_by: 'CreationDateTime',
                 });
 
                 addContext(this, {
@@ -1217,6 +1222,7 @@ export async function PromotionTest(email: string, password: string, client: Cli
 
                     const lastTransactionLines = await objectsService.getTransactionLines({
                         where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+                        order_by: 'CreationDateTime',
                     });
 
                     addContext(this, {
