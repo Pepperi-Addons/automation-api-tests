@@ -55,10 +55,10 @@ export async function CreateDistributorTest(
 
             console.log(distributorEmail, distributorPassword);
 
-            debugger;
+            // debugger;
             const newDistributor = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    `/var/distributors/create?firstName=${distributorFirstName}&lastName=${distributorLastName}&email=${distributorEmail}&company=${distributorCompany}&password=Qa789789}`,
+                    `/var/distributors/create?firstName=${distributorFirstName}&lastName=${distributorLastName}&email=${distributorEmail}&company=${distributorCompany}&password=${distributorPassword}`,
                 {
                     method: `POST`,
                     headers: {
@@ -66,6 +66,7 @@ export async function CreateDistributorTest(
                     },
                 },
             );
+            console.log(newDistributor.Status, newDistributor.Body.Text, newDistributor.Body.fault.faultstring);
             debugger;
 
             const webAppLoginPage = new WebAppLoginPage(driver);
