@@ -1,6 +1,4 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
-import fetch from 'node-fetch';
-import jwt_decode from 'jwt-decode';
 import fs from 'fs';
 import { describe, it, run } from 'mocha';
 import chai, { expect } from 'chai';
@@ -15,7 +13,6 @@ import {
     SecurityPolicyTest,
     CreateDistributorTest,
 } from './index';
-import { Client } from '@pepperi-addons/debug-server';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
 
@@ -40,7 +37,18 @@ const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
 
 (async function () {
-    const client = await initiateTester();
+    const tempGeneralService = new GeneralService({
+        AddonUUID: '',
+        AddonSecretKey: '',
+        BaseURL: '',
+        OAuthAccessToken: '',
+        AssetsBaseUrl: '',
+        Retry: function () {
+            return;
+        },
+    });
+
+    const client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
 
@@ -83,55 +91,6 @@ const varPass = process.env.npm_config_var_pass as string;
 
     run();
 })();
-
-async function initiateTester(): Promise<Client> {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('username', email);
-    urlencoded.append('password', pass);
-    urlencoded.append('scope', 'pepperi.apint pepperi.wacd offline_access');
-    urlencoded.append('grant_type', 'password');
-    urlencoded.append('client_id', 'ios.com.wrnty.peppery');
-
-    const getToken = await fetch(
-        `https://idp${process.env.npm_config_server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`,
-        { method: 'POST', body: urlencoded },
-    )
-        .then((res) => res.text())
-        .then((res) => (res ? JSON.parse(res) : ''));
-
-    return createClient(getToken.access_token);
-}
-
-function createClient(authorization) {
-    if (!authorization) {
-        throw new Error('unauthorized');
-    }
-    const token = authorization.replace('Bearer ', '') || '';
-    const parsedToken = jwt_decode(token);
-    const [sk, AddonUUID] = getSecret();
-    return {
-        AddonUUID: AddonUUID,
-        AddonSecretKey: sk,
-        BaseURL: parsedToken['pepperi.baseurl'],
-        OAuthAccessToken: token,
-        AssetsBaseUrl: 'http://localhost:4400/publish/assets',
-        Retry: function () {
-            return;
-        },
-    };
-}
-
-function getSecret() {
-    const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))['AddonUUID'];
-    let sk;
-    try {
-        sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
-    } catch (error) {
-        console.log(`SK Not found: ${error}`);
-        sk = '00000000-0000-0000-0000-000000000000';
-    }
-    return [addonUUID, sk];
-}
 
 async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const testData = {
