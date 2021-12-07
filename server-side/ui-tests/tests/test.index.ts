@@ -6,15 +6,18 @@ import { describe, it, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { TestDataTest } from '../../api-tests/test-service/test_data';
+import {
+    LoginTest,
+    OrderTest,
+    WorkflowTest,
+    DeepLinkTest,
+    PromotionTest,
+    SecurityPolicyTest,
+    CreateDistributorTest,
+} from './index';
 import { Client } from '@pepperi-addons/debug-server';
-import { LoginTest } from './login';
-import { OrderTest } from './order';
-import { WorkflowTest } from './workflow';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
-import { DeepLinkTest } from './deep_link';
-import { PromotionTest } from './promotion';
-import { SecurityPolicyTest } from './security_policy';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -74,6 +77,10 @@ const varPass = process.env.npm_config_var_pass as string;
         await SecurityPolicyTest(email, pass);
     }
 
+    if (testsArr.includes('Create')) {
+        await CreateDistributorTest(email, pass, generalService, varPass);
+    }
+
     run();
 })();
 
@@ -126,7 +133,7 @@ function getSecret() {
     return [addonUUID, sk];
 }
 
-async function upgradeDependenciesTests(generalService: GeneralService, varPass) {
+async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const testData = {
         'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
