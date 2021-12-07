@@ -14,6 +14,7 @@ import jwt_decode from 'jwt-decode';
 import fetch from 'node-fetch';
 import { performance } from 'perf_hooks';
 import { ADALService } from './adal.service';
+import fs from 'fs';
 
 declare type ClientData =
     | 'UserEmail'
@@ -65,6 +66,7 @@ export interface FilterAttributes {
 export default class GeneralService {
     papiClient: PapiClient;
     adalService: ADALService;
+    assetsBaseUrl: string;
 
     constructor(private client: Client) {
         this.papiClient = new PapiClient({
@@ -74,6 +76,7 @@ export default class GeneralService {
             addonSecretKey: client.AddonSecretKey,
         });
         this.adalService = new ADALService(this.papiClient);
+        this.assetsBaseUrl = client.AssetsBaseUrl;
     }
 
     sleep(ms) {
@@ -97,6 +100,64 @@ export default class GeneralService {
                 },
             })
             .then((res) => res.ClientObject.AddonSecretKey);
+    }
+
+    async initiateTester(email, pass): Promise<Client> {
+        const urlencoded = new URLSearchParams();
+        urlencoded.append('username', email);
+        urlencoded.append('password', pass);
+        urlencoded.append('scope', 'pepperi.apint pepperi.wacd offline_access');
+        urlencoded.append('grant_type', 'password');
+        urlencoded.append('client_id', 'ios.com.wrnty.peppery');
+
+        let server;
+        if (process.env.npm_config_server) {
+            server = process.env.npm_config_server;
+        } else {
+            server = this.papiClient['options'].baseURL.includes('staging') ? 'stage' : '';
+        }
+
+        const getToken = await fetch(`https://idp${server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`, {
+            method: 'POST',
+            body: urlencoded,
+        })
+            .then((res) => res.text())
+            .then((res) => (res ? JSON.parse(res) : ''));
+
+        return this.createClient(getToken.access_token);
+    }
+
+    createClient(authorization) {
+        if (!authorization) {
+            throw new Error('unauthorized');
+        }
+        const token = authorization.replace('Bearer ', '') || '';
+        const parsedToken = jwt_decode(token);
+        const [sk, AddonUUID] = this.getSecret();
+        return {
+            AddonUUID: AddonUUID,
+            AddonSecretKey: sk,
+            BaseURL: parsedToken['pepperi.baseurl'],
+            OAuthAccessToken: token,
+            AssetsBaseUrl: this.assetsBaseUrl ? this.assetsBaseUrl : 'http://localhost:4400/publish/assets',
+            Retry: function () {
+                return;
+            },
+        };
+    }
+
+    getSecret() {
+        const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))[
+            'AddonUUID'
+        ];
+        let sk;
+        try {
+            sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+        } catch (error) {
+            console.log(`SK Not found: ${error}`);
+            sk = '00000000-0000-0000-0000-000000000000';
+        }
+        return [addonUUID, sk];
     }
 
     CalculateUsedMemory() {
