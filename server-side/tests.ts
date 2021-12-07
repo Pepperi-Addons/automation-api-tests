@@ -46,6 +46,7 @@ import { GeneralActivitiesTests } from './api-tests/objects/general_activities';
 import { TransactionTests } from './api-tests/objects/transactions';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
+import { DistributorTests } from './api-tests/objects/distributor';
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
@@ -1041,6 +1042,29 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
+    return testResult;
+}
+
+export async function distributor(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Distributor';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([DistributorTests(service, request, testerFunctions)]).then(() =>
+        testerFunctions.run(),
+    );
+    service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 //#endregion Yoni's Tests
