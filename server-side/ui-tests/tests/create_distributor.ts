@@ -3,19 +3,7 @@ import { describe, it, beforeEach, afterEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import GeneralService from '../../services/general.service';
-import {
-    WebAppLoginPage,
-    WebAppHeader,
-    WebAppHomePage,
-    WebAppList,
-    WebAppTopBar,
-    AddonPage,
-    WebAppSettingsSidePanel,
-} from '../pom/index';
-import addContext from 'mochawesome/addContext';
-import { Key } from 'selenium-webdriver';
-import fs from 'fs';
-import path from 'path';
+import { WebAppLoginPage, WebAppHomePage } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 
 chai.use(promised);
@@ -68,6 +56,8 @@ export async function CreateDistributorTest(
             );
             console.log(newDistributor.Status, newDistributor.Body.Text, newDistributor.Body.fault.faultstring);
             debugger;
+
+            expect(newDistributor.Status).to.equal(200);
 
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
