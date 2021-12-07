@@ -20,7 +20,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
             const lorem = new LoremIpsum({});
             const distributorFirstName = lorem.generateWords(1);
             const distributorLastName = lorem.generateWords(1);
-            const distributorEmail = `${distributorFirstName}.${distributorLastName}@$pepperitest.com`;
+            const distributorEmail = `${distributorFirstName}.${distributorLastName}@pepperitest.com`;
             const distributorCompany = lorem.generateWords(3);
             const lettersGenerator = lorem.generateWords(1).substring(0, 2);
             const distributorPassword =
@@ -38,6 +38,13 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 Password: distributorPassword,
             });
             expect(newDistributor.Status).to.equal(200);
+        });
+
+        it(`Get Installed Addons`, async () => {
+            const danielClient = await generalService.initiateTester('daniel3@pepperitest.com', '******');
+            const danielService = new GeneralService(danielClient);
+            const danielAddons = await danielService.getAddons();
+            debugger;
         });
     });
 }

@@ -5,15 +5,9 @@ import {
     GeneralActivity,
     Transaction,
     Item,
-    TransactionLines,
     FindOptions,
     User,
-    UserDefinedTableMetaData,
-    UserDefinedTableRow,
-    Catalog,
     Contact,
-    BatchApiResponse,
-    ArchiveBody,
 } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
