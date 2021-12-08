@@ -88,7 +88,7 @@ const varPass = process.env.npm_config_var_pass as string;
     }
 
     if (tests.includes('Create')) {
-        await CreateDistributorTest(email, pass, generalService, varPass);
+        await CreateDistributorTest(generalService, varPass);
     }
 
     run();
