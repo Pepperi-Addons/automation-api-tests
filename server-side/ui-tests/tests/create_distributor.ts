@@ -2,11 +2,18 @@ import { Browser } from '../utilities/browser';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import GeneralService from '../../services/general.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
 import { WebAppLoginPage, WebAppHomePage } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
+import { DistributorService } from '../../services/distributor.service';
+import { TestDataTest } from '../../api-tests/test-service/test_data';
 
 chai.use(promised);
+
+export interface ClientObject {
+    Email: string;
+    Password: string;
+}
 
 export async function CreateDistributorTest(
     email: string,
@@ -17,7 +24,9 @@ export async function CreateDistributorTest(
     let driver: Browser;
 
     describe('Create Distributor Test Suit', async function () {
-        this.retries(1);
+        this.retries(0);
+        const clientArr: ClientObject[] = [];
+        const varGeneralService = Object.assign({}, generalService);
 
         beforeEach(async function () {
             driver = new Browser('chrome');
@@ -29,7 +38,16 @@ export async function CreateDistributorTest(
             await driver.quit();
         });
 
+
+        // await TestDataTest(varGeneralService, { describe, expect, it } as TesterFunctions);
+
+        it(`Start Test Server Time And Date: ${generalService.getServer()} ${generalService.getTime()} ${generalService.getDate()}`, () => {
+            expect(generalService.getDate().length == 10 && generalService.getTime().length == 8).to.be.true;
+        });
+
         it(`Login To New Distributor`, async function () {
+            const distributorService = new DistributorService(generalService, { body: { varKey: varPass } });
+
             const lorem = new LoremIpsum({});
             const distributorFirstName = lorem.generateWords(1);
             const distributorLastName = lorem.generateWords(1);
@@ -41,28 +59,28 @@ export async function CreateDistributorTest(
                 lettersGenerator[1] +
                 (Math.random() * 10000000000).toString().substring(0, 6);
 
-            console.log(distributorEmail, distributorPassword);
+            const newDistributor = await distributorService.createDistributor({
+                FirstName: distributorFirstName,
+                LastName: distributorLastName,
+                Email: distributorEmail,
+                Company: distributorCompany,
+                Password: distributorPassword,
+            });
 
-            // debugger;
-            const newDistributor = await generalService.fetchStatus(
-                generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    `/var/distributors/create?firstName=${distributorFirstName}&lastName=${distributorLastName}&email=${distributorEmail}&company=${distributorCompany}&password=${distributorPassword}`,
-                {
-                    method: `POST`,
-                    headers: {
-                        Authorization: varPass,
-                    },
-                },
-            );
+            clientArr.push({ Email: distributorEmail, Password: distributorPassword });
+
             console.log(newDistributor.Status, newDistributor.Body.Text, newDistributor.Body.fault.faultstring);
-            debugger;
 
             expect(newDistributor.Status).to.equal(200);
 
-            const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
+            const adminService = new GeneralService(adminClient);
+            const adminAddons = await adminService.getAddons();
 
-            debugger;
+            expect(adminAddons.length).to.be.above(5);
+
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.login(clientArr[0].Email, clientArr[0].Password);
         });
     });
 }
