@@ -31,7 +31,7 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-const testsArr = process.env.npm_config_tests as string;
+const tests = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
@@ -52,9 +52,11 @@ const varPass = process.env.npm_config_var_pass as string;
 
     const generalService = new GeneralService(client);
 
-    await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+    if (tests != 'Create') {
+        await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+    }
 
-    if (testsArr.includes('Reset')) {
+    if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
         await replaceUIControls(generalService);
 
@@ -64,29 +66,29 @@ const varPass = process.env.npm_config_var_pass as string;
         await upgradeDependenciesTests(generalService, varPass);
     }
 
-    if (testsArr.includes('Sanity')) {
+    if (tests.includes('Sanity')) {
         await LoginTest(email, pass);
         await OrderTest(email, pass, client);
     }
 
-    if (testsArr.includes('Workflow')) {
+    if (tests.includes('Workflow')) {
         await WorkflowTest(email, pass, client);
     }
 
-    if (testsArr.includes('DeepLink')) {
+    if (tests.includes('DeepLink')) {
         await DeepLinkTest(email, pass, client);
     }
 
-    if (testsArr.includes('Promotion')) {
+    if (tests.includes('Promotion')) {
         await PromotionTest(email, pass, client);
     }
 
-    if (testsArr.includes('Security')) {
+    if (tests.includes('Security')) {
         await SecurityPolicyTest(email, pass);
     }
 
-    if (testsArr.includes('Create')) {
-        await CreateDistributorTest(email, pass, generalService, varPass);
+    if (tests.includes('Create')) {
+        await CreateDistributorTest(generalService, varPass);
     }
 
     run();

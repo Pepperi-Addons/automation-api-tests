@@ -87,21 +87,6 @@ export default class GeneralService {
         return;
     }
 
-    getSecretKey(addonUUID: string): Promise<string> {
-        return this.papiClient
-            .post('/code_jobs/get_data_for_job_execution', {
-                JobMessageData: {
-                    UUID: '00000000-0000-0000-0000-000000000000',
-                    MessageType: 'AddonMessage',
-                    AddonData: {
-                        AddonUUID: addonUUID,
-                        AddonPath: 0,
-                    },
-                },
-            })
-            .then((res) => res.ClientObject.AddonSecretKey);
-    }
-
     async initiateTester(email, pass): Promise<Client> {
         const urlencoded = new URLSearchParams();
         urlencoded.append('username', email);
@@ -591,6 +576,21 @@ export default class GeneralService {
             'i', // makes the regex case insensitive
         );
         return !!pattern.test(s.replace(' ', '%20'));
+    }
+
+    getSecretKey(addonUUID: string): Promise<string> {
+        return this.papiClient
+            .post('/code_jobs/get_data_for_job_execution', {
+                JobMessageData: {
+                    UUID: '00000000-0000-0000-0000-000000000000',
+                    MessageType: 'AddonMessage',
+                    AddonData: {
+                        AddonUUID: addonUUID,
+                        AddonPath: 0,
+                    },
+                },
+            })
+            .then((res) => res.ClientObject.AddonSecretKey);
     }
 
     generateRandomString(len: number) {

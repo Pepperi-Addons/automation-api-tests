@@ -39,17 +39,30 @@ export class DistributorService {
     }
 
     async createDistributor(Distributor: DistributorObject) {
-        const newDistributor = await this.generalService.fetchStatus(
-            this.generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                `/var/distributors/create?firstName=${Distributor.FirstName}&lastName=${Distributor.LastName}&email=${Distributor.Email}&company=${Distributor.Company}&password=${Distributor.Password}`,
-            {
-                method: `POST`,
-                headers: {
-                    Authorization: this.request.body.varKey,
+        let newDistributor;
+        let maxLoopsCounter = 10;
+        do {
+            newDistributor = await this.generalService.fetchStatus(
+                this.generalService['client'].BaseURL.replace('papi-eu', 'papi') + `/var/distributors/create`,
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: this.request.body.varKey,
+                    },
+                    body: JSON.stringify({
+                        FirstName: Distributor.FirstName,
+                        LastName: Distributor.LastName,
+                        Email: Distributor.Email,
+                        Company: Distributor.Company,
+                        Password: Distributor.Password,
+                    }),
                 },
-            },
-        );
-        console.log(newDistributor.Status, newDistributor.Body.Text, newDistributor.Body.fault.faultstring);
+            );
+            maxLoopsCounter--;
+            console.log(newDistributor.Status, newDistributor.Body);
+        } while (newDistributor.Status != 200 && maxLoopsCounter > 0);
+
+        console.log(newDistributor.Status, newDistributor.Body?.Text, newDistributor.Body?.fault?.faultstring);
         return newDistributor;
     }
 }
