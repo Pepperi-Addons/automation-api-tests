@@ -132,7 +132,7 @@ export class AddonPage extends Page {
     public AddonContainerATDEditorFieldsAddCustomArr: Locator = By.css('.allButtons.grnbtn.roundCorner.dc-add');
     public AddonContainerATDEditorTransactionFieldArr: Locator = By.css('[name="0"]');
     public AddonContainerATDEditorTransactionLineFieldArr: Locator = By.css('[name="1"]');
-    public AddonContainerATDEditorEditFieldArr: Locator = By.xpath('..//span[contains(@class, "editPenIcon")]');
+    public AddonContainerATDEditorEditFieldArr: Locator = By.xpath(`..//span[contains(@class, 'editPenIcon')]`);
     public AddonContainerATDEditorTransactionLineFieldEditFormula: Locator = By.css('[name="edit"]');
     public AddonContainerATDEditorTransactionLineFieldFormula: Locator = By.css('#formula textarea');
     public AddonContainerATDEditorTransactionLineFieldFormulaEditorSave: Locator = By.css('#footer .save');
