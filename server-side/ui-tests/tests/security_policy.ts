@@ -34,7 +34,7 @@ export async function SecurityPolicyTest(email: string, password: string) {
             await driver.quit();
         });
 
-        function testDatagetFromFileAtPath(pathOfFileToReadFrom): string {
+        function testDataGetFromFileAtPath(pathOfFileToReadFrom): string {
             const file = fs.readFileSync(path.resolve(__dirname, pathOfFileToReadFrom));
             return file.toString();
         }
@@ -76,7 +76,7 @@ export async function SecurityPolicyTest(email: string, password: string) {
             }`,
             print: `console.log(UUID);`,
             promotionCode: `config.APINames["API_Discount_BreakBy_Price"] = "TSATotalPriceBefore";`,
-            promotionFullScript: testDatagetFromFileAtPath(
+            promotionFullScript: testDataGetFromFileAtPath(
                 '../../api-tests/test-data/promotionScriptForSecurityPolicyTests.js',
             ),
         };

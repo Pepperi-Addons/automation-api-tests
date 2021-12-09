@@ -57,9 +57,15 @@ export class Browser {
                     error.name === 'TypeError' ||
                     error.name === 'JavascriptError'
                 ) {
-                    await this.driver.executeScript(
-                        `document.querySelectorAll("${selector['value']}")[${index}].click();`,
-                    );
+                    if (selector['using'] == 'xpath') {
+                        await this.driver.executeScript(
+                            `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
+                        );
+                    } else {
+                        await this.driver.executeScript(
+                            `document.querySelectorAll("${selector['value']}")[${index}].click();`,
+                        );
+                    }
                 } else {
                     throw error;
                 }
@@ -270,6 +276,11 @@ export class Browser {
         console.log(`Browser Name: ${browserName}, Version: ${browserVersion}`);
         console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
 
-        return await this.driver.quit();
+        try {
+            await this.driver.quit();
+        } catch (error) {
+            console.log(`Browser Error: ${error}`);
+        }
+        return;
     }
 }
