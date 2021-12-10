@@ -146,6 +146,11 @@ export class AddonPage extends Page {
         `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
     );
 
+    //Branded App Locators
+    public BrandedAppChangeCompanyLogo: Locator = By.id(
+        'btnChangeCompLogo',
+    );
+
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
         selectedTab['value'] += ` [contains(., '${tabText}')]`;

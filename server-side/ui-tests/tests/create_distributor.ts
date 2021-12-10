@@ -3,9 +3,10 @@ import { describe, it, beforeEach, afterEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import GeneralService from '../../services/general.service';
-import { WebAppLoginPage, WebAppHomePage } from '../pom/index';
+import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppSettingsSidePanel, AddonPage } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 import { DistributorService } from '../../services/distributor.service';
+import { AddonLoadCondition } from '../pom/AddonPage';
 
 chai.use(promised);
 
@@ -64,6 +65,8 @@ export async function CreateDistributorTest(generalService: GeneralService, varP
                 expect(newDistributor.Body.Status.ID).to.equal(1);
                 expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
 
+                clientArr.push({Email:distributorEmail, Password:distributorPassword});
+
                 const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
                 const adminService = new GeneralService(adminClient);
                 const adminAddons = await adminService.getAddons();
@@ -75,6 +78,26 @@ export async function CreateDistributorTest(generalService: GeneralService, varP
                 await webAppLoginPage.signIn(clientArr[0].Email, clientArr[0].Password);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await expect(webAppHomePage.untilIsVisible(webAppHomePage.Main, 90000)).eventually.to.be.true;
+
+                //Change image
+                const webAppHeader = new WebAppHeader(driver);
+
+                await driver.click(webAppHeader.Settings);
+        
+                const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
+                await webAppSettingsSidePanel.selectSettingsByID('Branded App');
+                await driver.click(webAppSettingsSidePanel.BrandedAppBranding);
+
+                const addonPage = new AddonPage(driver);
+
+                debugger;
+
+
+                await driver.switchTo(addonPage.AddonContainerIframe);
+                await addonPage.isAddonFullyLoaded(AddonLoadCondition.Footer);
+
+                await driver.click(addonPage.BrandedAppChangeCompanyLogo);
+                debugger;
             });
         });
     });
