@@ -67,8 +67,6 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     lettersGenerator[1] +
                     (Math.random() * 10000000000).toString().substring(0, 6);
 
-                console.log({ Email: distributorEmail, Password: distributorPassword });
-
                 clientArr.push({ Email: distributorEmail, Password: distributorPassword });
 
                 const newDistributor = await distributorService.createDistributor({
@@ -112,8 +110,6 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             });
 
             it(`Prepare New Distributor To Reset`, async function () {
-                // clientArr.push({ Email: 'duis5917.laborum@pepperitest.com', Password: 'La520630' });
-
                 const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
                 const adminService = new GeneralService(adminClient);
 
