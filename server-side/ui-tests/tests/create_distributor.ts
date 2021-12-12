@@ -39,7 +39,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
         });
 
         describe('Initiation Steps', async function () {
-            this.retries(0);
+            this.retries(1);
 
             beforeEach(async function () {
                 driver = new Browser('chrome');
@@ -99,7 +99,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
         });
 
         describe('Scenarios', async function () {
-            this.retries(0);
+            this.retries(1);
 
             beforeEach(async function () {
                 driver = new Browser('chrome');
