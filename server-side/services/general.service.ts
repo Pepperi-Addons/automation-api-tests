@@ -15,6 +15,7 @@ import fetch from 'node-fetch';
 import { performance } from 'perf_hooks';
 import { ADALService } from './adal.service';
 import fs from 'fs';
+import { execFileSync } from 'child_process';
 
 declare type ClientData =
     | 'UserEmail'
@@ -599,6 +600,11 @@ export default class GeneralService {
             rdmString += Math.random().toString(36).substr(2);
         }
         return rdmString.substr(0, len);
+    }
+
+    async executeScriptFromTestData(scriptName: string): Promise<void> {
+        await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
+        return;
     }
 }
 

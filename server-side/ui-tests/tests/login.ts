@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
 import { WebAppLoginPage } from '../pom/index';
 
-export async function LoginTest(email: string, password: string) {
+export async function LoginTests(email: string, password: string) {
     let driver: Browser;
 
     describe('Basic UI Tests Suit', async function () {

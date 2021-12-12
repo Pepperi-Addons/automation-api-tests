@@ -19,7 +19,7 @@ import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
-export async function WorkflowTest(email: string, password: string, client: Client) {
+export async function WorkflowTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const inventoryService = new InventoryService(generalService.papiClient);
 

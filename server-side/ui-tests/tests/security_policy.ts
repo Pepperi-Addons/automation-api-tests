@@ -18,7 +18,7 @@ import path from 'path';
 
 chai.use(promised);
 
-export async function SecurityPolicyTest(email: string, password: string) {
+export async function SecurityPolicyTests(email: string, password: string) {
     let driver: Browser;
 
     describe('Security Policy Test Suit', async function () {

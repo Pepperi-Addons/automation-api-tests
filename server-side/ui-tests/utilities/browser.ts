@@ -46,6 +46,10 @@ export class Browser {
         return await this.driver.switchTo().defaultContent();
     }
 
+    public async switchToActiveElement(): Promise<WebElement> {
+        return await this.driver.switchTo().activeElement();
+    }
+
     public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();

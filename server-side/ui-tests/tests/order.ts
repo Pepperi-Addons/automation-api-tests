@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 chai.use(promised);
 
-export async function OrderTest(email: string, password: string, client: Client) {
+export async function OrderTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
