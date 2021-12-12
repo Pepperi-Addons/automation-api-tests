@@ -19,7 +19,7 @@ import { Client } from '@pepperi-addons/debug-server';
 
 chai.use(promised);
 
-export async function PromotionTest(email: string, password: string, client: Client) {
+export async function PromotionTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;

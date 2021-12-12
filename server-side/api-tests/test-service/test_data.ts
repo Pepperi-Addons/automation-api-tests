@@ -20,7 +20,7 @@ const installedAddons = {
 };
 
 // Get the Tests Data
-export async function TestDataTest(generalService: GeneralService, tester: TesterFunctions) {
+export async function TestDataTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService;
     const describe = tester.describe;
     const expect = tester.expect;
@@ -47,9 +47,9 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 installedAddons['Data Views API'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'ADAL')
                 installedAddons['ADAL'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'ADAL')
-                installedAddons['Automated Jobs'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Automated Jobs')
+                installedAddons['Automated Jobs'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Relations Framework')
                 installedAddons['Relations Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Object Types Editor')
                 installedAddons['Object Types Editor'] = installedAddonsArr[index].Version;

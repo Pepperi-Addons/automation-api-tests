@@ -3,7 +3,7 @@ import tester from './tester';
 import GeneralService, { TesterFunctions } from './services/general.service';
 
 //#region Service Tests
-import { TestDataTest } from './api-tests/test-service/test_data';
+import { TestDataTests } from './api-tests/test-service/test_data';
 import { UpgradeDependenciesTests } from './api-tests/test-service/upgrade_dependencies';
 //#endregion Service Tests
 
@@ -11,7 +11,7 @@ import { UpgradeDependenciesTests } from './api-tests/test-service/upgrade_depen
 import { FileStorageTests } from './api-tests/objects/file_storage';
 import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } from './api-tests/objects/data_views';
 import { FieldsTests } from './api-tests/objects/fields';
-import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
+import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from './api-tests/sync';
 //#endregion All Tests
 
 //#region Old Framwork Tests
@@ -100,7 +100,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
         testName = '';
         return testResult;
     } else {
-        return TestDataTest(service, testerFunctions);
+        return TestDataTests(service, testerFunctions);
     }
 }
 
@@ -341,7 +341,7 @@ export async function sync_big_data(client: Client, testerFunctions: TesterFunct
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SyncWithBigData(service, testerFunctions),
+        SyncWithBigDataTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
@@ -366,7 +366,7 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SyncClean(service, testerFunctions),
+        SyncCleanTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
