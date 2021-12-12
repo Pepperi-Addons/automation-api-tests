@@ -30,6 +30,9 @@ export class WebAppTopBar extends Page {
     public EditorSearchField: Locator = By.css('main .content.pep-border-bottom pep-search input');
     public EditorAddBtn: Locator = By.css('main .content.pep-border-bottom button [name="number_plus"]');
 
+    //Catalog
+    public CatalogSelectHeader: Locator = By.xpath("//div[contains(text(), 'Select Catalog')]");
+
     public async selectFromMenuByText(menu: Locator, buttonText: string): Promise<void> {
         console.log('Select from menu');
         this.browser.sleep(1001);

@@ -138,6 +138,14 @@ export class AddonPage extends Page {
     public AddonContainerATDEditorTransactionLineFieldFormulaEditorSave: Locator = By.css('#footer .save');
     public AddonContainerATDEditorTransactionLineFieldSave: Locator = By.css('.footerSection [name="save"]');
 
+    //Editor Views
+    public AddonContainerATDEditorViewsAddCustom: Locator = By.css('.add-view.allButtons.grnbtn.roundCorner'); //No avilable in Stage - BO Config
+    public AddonContainerATDEditorViewsOrderCenterViews: Locator = By.xpath(
+        '//div[@id="formContTemplate"]//h3[contains(., "Order Center Views")]',
+    );
+    public AddonContainerATDEditorTransactionViewsArr: Locator = By.css('#formContTemplate .ui-accordion-header');
+    public AddonContainerATDEditorAddViewBtn: Locator = By.xpath(`//div[contains(text(),"VIEW_PLACE_HOLDER")]`);
+
     //Settings Framework Locators
     public SettingsFrameworkEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
     public SettingsFrameworkEditorSearch: Locator = By.css('#txtSearchBankFields');
@@ -147,9 +155,8 @@ export class AddonPage extends Page {
     );
 
     //Branded App Locators
-    public BrandedAppChangeCompanyLogo: Locator = By.id(
-        'btnChangeCompLogo',
-    );
+    public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
+    public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
 
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
@@ -483,6 +490,46 @@ export class AddonPage extends Page {
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
 
+        return;
+    }
+
+    /**
+     *
+     * @param viewName The name of the view group
+     * @param viewType The name of the view
+     * @returns
+     */
+    public async editATDView(viewType: string, viewName: string): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Views');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorTabVisible('Layouts')).to.be.true;
+
+        //Validate Editor Page Loaded
+        expect(await this.browser.findElement(this.AddonContainerATDEditorViewsOrderCenterViews));
+
+        const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionViewsArr);
+        for (let index = 0; index < buttonsArr.length; index++) {
+            const element = buttonsArr[index];
+            if ((await element.getText()).includes(viewType)) {
+                await element.click();
+                break;
+            }
+        }
+
+        const selectedBtn = Object.assign({}, this.AddonContainerATDEditorAddViewBtn);
+        selectedBtn['value'] = `${selectedBtn['value'].replace(
+            'VIEW_PLACE_HOLDER',
+            viewName,
+        )}/..//div[contains(@class, "plusIcon")]`;
+        await this.browser.click(selectedBtn);
         return;
     }
 

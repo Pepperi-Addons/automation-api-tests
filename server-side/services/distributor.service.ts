@@ -40,10 +40,10 @@ export class DistributorService {
 
     async createDistributor(Distributor: DistributorObject) {
         let newDistributor;
-        let maxLoopsCounter = 10;
+        let maxLoopsCounter = 16;
         do {
             newDistributor = await this.generalService.fetchStatus(
-                this.generalService['client'].BaseURL.replace('papi-eu', 'papi') + `/var/distributors/create`,
+                this.generalService['client'].BaseURL + `/var/distributors/create`,
                 {
                     method: `POST`,
                     headers: {

@@ -3,15 +3,15 @@ import fs from 'fs';
 import { describe, it, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { TestDataTest } from '../../api-tests/test-service/test_data';
+import { TestDataTests } from '../../api-tests/test-service/test_data';
 import {
-    LoginTest,
-    OrderTest,
-    WorkflowTest,
-    DeepLinkTest,
-    PromotionTest,
-    SecurityPolicyTest,
-    CreateDistributorTest,
+    LoginTests,
+    OrderTests,
+    WorkflowTests,
+    DeepLinkTests,
+    PromotionTests,
+    SecurityPolicyTests,
+    CreateDistributorTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
@@ -35,6 +35,7 @@ const tests = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
+const varPassEU = process.env.npm_config_var_pass_eu as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -53,48 +54,52 @@ const varPass = process.env.npm_config_var_pass as string;
     const generalService = new GeneralService(client);
 
     if (tests != 'Create') {
-        await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
-        await replaceUIControls(generalService);
+        await replaceUIControlsTests(generalService);
 
         //Verify all items exist or replace them
-        await replaceItems(generalService);
+        await replaceItemsTests(generalService);
 
         await upgradeDependenciesTests(generalService, varPass);
     }
 
     if (tests.includes('Sanity')) {
-        await LoginTest(email, pass);
-        await OrderTest(email, pass, client);
+        await LoginTests(email, pass);
+        await OrderTests(email, pass, client);
     }
 
     if (tests.includes('Workflow')) {
-        await WorkflowTest(email, pass, client);
+        await WorkflowTests(email, pass, client);
     }
 
     if (tests.includes('DeepLink')) {
-        await DeepLinkTest(email, pass, client);
+        await DeepLinkTests(email, pass, client);
     }
 
     if (tests.includes('Promotion')) {
-        await PromotionTest(email, pass, client);
+        await PromotionTests(email, pass, client);
     }
 
     if (tests.includes('Security')) {
-        await SecurityPolicyTest(email, pass);
+        await SecurityPolicyTests(email, pass);
     }
 
     if (tests.includes('Create')) {
-        await CreateDistributorTest(generalService, varPass);
+        let password = varPass;
+        if (email.includes('_EU')) {
+            password = varPassEU;
+        }
+        await CreateDistributorTests(generalService, password);
     }
 
     run();
 })();
 
-async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
+export async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const testData = {
         'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
@@ -151,7 +156,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass:
     });
 }
 
-async function replaceItems(generalService: GeneralService) {
+export async function replaceItemsTests(generalService: GeneralService) {
     const objectsService = new ObjectsService(generalService);
     const getAllItems = await objectsService.getItems();
     if (getAllItems.length > 5) {
@@ -221,14 +226,14 @@ async function replaceItems(generalService: GeneralService) {
                     expect(postItemsResponse.InternalID).to.be.above(0);
                 }
 
-                //Create json object from the sorted objects
+                // Create json object from the sorted objects
                 // fs.writeFileSync('sorted_items.json', JSON.stringify(filteredArray), 'utf8');
             });
         });
     }
 }
 
-async function replaceUIControls(generalService: GeneralService) {
+export async function replaceUIControlsTests(generalService: GeneralService) {
     describe('Replace UIControls', function () {
         this.retries(1);
 

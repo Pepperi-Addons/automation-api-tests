@@ -86,15 +86,38 @@ export class WebAppHomePage extends Page {
 
         //Get to Items
         const webAppList = new WebAppList(this.browser);
-        await webAppList.clickOnFromListRowWebElement();
-        const webAppTopBar = new WebAppTopBar(this.browser);
-        await webAppTopBar.click(webAppTopBar.DoneBtn);
+        try {
+            await webAppList.clickOnFromListRowWebElement(); //Accounts
+            const webAppTopBar = new WebAppTopBar(this.browser);
+            await webAppTopBar.click(webAppTopBar.DoneBtn);
+        } catch (error) {
+            if (error instanceof Error) {
+                if (
+                    !error.message.includes(
+                        'pep-list .table-row-fieldset, The test must end, The element is: undefined',
+                    )
+                ) {
+                    throw error;
+                }
+            }
+        }
 
-        //wait one sec before cliking on catalog, to prevent click on other screen
-        console.log('Change to Catalog Cards List');
-        this.browser.sleep(1000);
-        await this.isSpinnerDone();
-        await webAppList.click(webAppList.CardListElements);
+        try {
+            //wait one sec before cliking on catalog, to prevent click on other screen
+            console.log('Change to Catalog Cards List');
+            this.browser.sleep(1000);
+            await this.isSpinnerDone();
+            const webAppTopBar = new WebAppTopBar(this.browser);
+            if (await this.browser.untilIsVisible(webAppTopBar.CatalogSelectHeader)) {
+                await webAppList.click(webAppList.CardListElements);
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                if (!error.message.includes('The test must end, The element is: undefined')) {
+                    throw error;
+                }
+            }
+        }
 
         //Validating new order
         const webAppDialog = new WebAppDialog(this.browser);

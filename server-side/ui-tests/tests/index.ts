@@ -1,9 +1,17 @@
-import { LoginTest } from './login';
-import { OrderTest } from './order';
-import { WorkflowTest } from './workflow';
-import { DeepLinkTest } from './deep_link';
-import { PromotionTest } from './promotion';
-import { SecurityPolicyTest } from './security_policy';
-import { CreateDistributorTest } from './create_distributor';
+import { LoginTests } from './login';
+import { OrderTests } from './order';
+import { WorkflowTests } from './workflow';
+import { DeepLinkTests } from './deep_link';
+import { PromotionTests } from './promotion';
+import { SecurityPolicyTests } from './security_policy';
+import { CreateDistributorTests } from './create_distributor';
 
-export { LoginTest, OrderTest, WorkflowTest, DeepLinkTest, PromotionTest, SecurityPolicyTest, CreateDistributorTest };
+export {
+    LoginTests,
+    OrderTests,
+    WorkflowTests,
+    DeepLinkTests,
+    PromotionTests,
+    SecurityPolicyTests,
+    CreateDistributorTests,
+};
