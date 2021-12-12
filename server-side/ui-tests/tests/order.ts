@@ -209,6 +209,7 @@ export async function OrderTests(email: string, password: string, client: Client
             const transactionArr: Transaction[] = await objectsService.getTransaction({
                 where: `Type LIKE '%Sales Order%'`,
                 page_size: 1,
+                include_deleted: true,
             });
             activityTypeId = transactionArr[0].ActivityTypeID as number;
         });
