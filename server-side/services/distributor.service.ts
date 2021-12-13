@@ -71,7 +71,7 @@ export class DistributorService {
             }
             if (newDistributor.Status == 504) {
                 console.log(
-                    "Mandatory sleep of 7 minutes after timout - before calling 'var/distributors/create' again",
+                    "Mandatory sleep of 7 minutes after timeout - before calling 'var/distributors/create' again",
                 );
                 this.generalService.sleep(1000 * 60 * 7);
             }
