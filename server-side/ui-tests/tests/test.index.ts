@@ -89,11 +89,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
 
     if (tests.includes('Create')) {
-        let password = varPass;
-        if (email.includes('_EU')) {
-            password = varPassEU;
-        }
-        await CreateDistributorTests(generalService, password);
+        await CreateDistributorTests(generalService, varPass, varPassEU);
     }
 
     run();
@@ -213,15 +209,20 @@ export async function replaceItemsTests(generalService: GeneralService) {
                             delete filteredArray[j][key].Data.UUID;
                         }
                     }
+                    //In cases when post item randomally fails, retry 4 times before failing the test
                     let postItemsResponse;
-                    try {
-                        postItemsResponse = await objectsService.postItem(filteredArray[j]);
-                    } catch (error) {
-                        console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
-                        //In cases when post item randomally fails, wait and try again before failing the test
-                        generalService.sleep(4000);
-                        postItemsResponse = await objectsService.postItem(filteredArray[j]);
-                    }
+                    let maxLoopsCounter = 4;
+                    let isItemPosted = false;
+                    do {
+                        try {
+                            postItemsResponse = await objectsService.postItem(filteredArray[j]);
+                            isItemPosted = true;
+                        } catch (error) {
+                            console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
+                            generalService.sleep(6000 * (5 - maxLoopsCounter));
+                        }
+                        maxLoopsCounter--;
+                    } while (!isItemPosted && maxLoopsCounter > 0);
                     expect(postItemsResponse.Hidden).to.be.false;
                     expect(postItemsResponse.InternalID).to.be.above(0);
                 }

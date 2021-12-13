@@ -60,6 +60,9 @@ export class DistributorService {
             );
             maxLoopsCounter--;
             console.log(newDistributor.Status, newDistributor.Body);
+            if (newDistributor.Status == 504) {
+                this.generalService.sleep(1000 * 60 * 6);
+            }
         } while (newDistributor.Status != 200 && maxLoopsCounter > 0);
 
         console.log(newDistributor.Status, newDistributor.Body?.Text, newDistributor.Body?.fault?.faultstring);
