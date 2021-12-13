@@ -42,7 +42,7 @@ export class DistributorService {
         let newDistributor;
         let maxLoopsCounter = 16;
         do {
-            console.log("NOTICE: 'var/distributors/create' API call started - Expected 7 minutes wait time");
+            console.log("NOTICE: 'var/distributors/create' API call started - Expected 8 minutes wait time");
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
                 {
@@ -71,9 +71,9 @@ export class DistributorService {
             }
             if (newDistributor.Status == 504) {
                 console.log(
-                    "Mandatory sleep of 5 minutes after timout - before calling 'var/distributors/create' again",
+                    "Mandatory sleep of 7 minutes after timeout - before calling 'var/distributors/create' again",
                 );
-                this.generalService.sleep(1000 * 60 * 6);
+                this.generalService.sleep(1000 * 60 * 7);
             }
         } while (newDistributor.Status != 200 && maxLoopsCounter > 0);
         return newDistributor;
