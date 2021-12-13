@@ -211,7 +211,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                     }
                     //In cases when post item randomally fails, retry 4 times before failing the test
                     let postItemsResponse;
-                    let maxLoopsCounter = 4;
+                    let maxLoopsCounter = 5;
                     let isItemPosted = false;
                     do {
                         try {
@@ -219,7 +219,12 @@ export async function replaceItemsTests(generalService: GeneralService) {
                             isItemPosted = true;
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
-                            generalService.sleep(6000 * (5 - maxLoopsCounter));
+                            console.log(
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
+                                    maxLoopsCounter - 1
+                                } more times`,
+                            );
+                            generalService.sleep(6000 * (6 - maxLoopsCounter));
                         }
                         maxLoopsCounter--;
                     } while (!isItemPosted && maxLoopsCounter > 0);
