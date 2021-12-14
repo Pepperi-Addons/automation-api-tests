@@ -27,7 +27,7 @@ export interface ClientObject {
     Password: string;
 }
 
-export async function CreateDistributorTests(generalService: GeneralService, varPass: string) {
+export async function CreateDistributorTests(generalService: GeneralService, varPass: string, varPassEU?: string) {
     let driver: Browser;
 
     describe('Create Distributor Test Suit', async function () {
@@ -52,7 +52,11 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             });
 
             it(`Login To New Distributor`, async function () {
-                const distributorService = new DistributorService(generalService, { body: { varKey: varPass } });
+                let password = varPass;
+                if (varPassEU) {
+                    password = varPassEU;
+                }
+                const distributorService = new DistributorService(generalService, { body: { varKey: password } });
 
                 const lorem = new LoremIpsum({});
                 const distributorFirstName = lorem.generateWords(1);
@@ -83,8 +87,10 @@ export async function CreateDistributorTests(generalService: GeneralService, var
 
                 const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
                 const adminService = new GeneralService(adminClient);
+                const systemAddons = await adminService.fetchStatus('/addons?page_size=-1&where=Type LIKE 1');
                 const adminAddons = await adminService.getInstalledAddons();
 
+                expect(systemAddons.Body.length).to.be.above(10);
                 expect(adminAddons.length).to.be.above(10);
 
                 const webAppLoginPage = new WebAppLoginPage(driver);
