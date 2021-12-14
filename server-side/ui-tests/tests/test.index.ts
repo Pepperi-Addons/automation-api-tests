@@ -115,7 +115,7 @@ export async function upgradeDependenciesTests(generalService: GeneralService, v
         'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {

@@ -33,7 +33,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         'Training Template': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Data Visualisation
 
     describe('Data Visualisation Tests Suites', () => {

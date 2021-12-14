@@ -88,7 +88,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
                 const adminService = new GeneralService(adminClient);
                 const systemAddons = await adminService.fetchStatus('/addons?page_size=-1&where=Type LIKE 1');
-                const adminAddons = await adminService.getAddons();
+                const adminAddons = await adminService.getInstalledAddons();
 
                 expect(systemAddons.Body.length).to.be.above(10);
                 expect(adminAddons.length).to.be.above(10);

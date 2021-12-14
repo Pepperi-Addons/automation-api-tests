@@ -196,8 +196,12 @@ export default class GeneralService {
         return jwt_decode(this.client.OAuthAccessToken)[UserDataObject[data]];
     }
 
-    getAddons(options?: FindOptions): Promise<InstalledAddon[]> {
+    getInstalledAddons(options?: FindOptions): Promise<InstalledAddon[]> {
         return this.papiClient.addons.installedAddons.find(options);
+    }
+
+    getSystemAddons() {
+        return this.papiClient.addons.find({ where: 'Type=1', page_size: -1 });
     }
 
     getAddonsByUUID(UUID: string): Promise<InstalledAddon> {
@@ -303,7 +307,7 @@ export default class GeneralService {
 
     async areAddonsInstalled(testData: { [any: string]: string[] }): Promise<boolean[]> {
         const isInstalledArr: boolean[] = [];
-        const installedAddonsArr = await this.getAddons({ page_size: -1 });
+        const installedAddonsArr = await this.getInstalledAddons({ page_size: -1 });
         let installResponse;
         for (const addonUUID in testData) {
             let isInstalled = false;
@@ -335,7 +339,7 @@ export default class GeneralService {
         return isInstalledArr;
     }
 
-    async chnageVersion(
+    async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
         isPhased: boolean,

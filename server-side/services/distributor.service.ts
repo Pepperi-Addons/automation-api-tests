@@ -1,14 +1,4 @@
-import {
-    PapiClient,
-    Account,
-    ApiFieldObject,
-    GeneralActivity,
-    Transaction,
-    Item,
-    FindOptions,
-    User,
-    Contact,
-} from '@pepperi-addons/papi-sdk';
+import { PapiClient, Item, FindOptions } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface DistributorObject {

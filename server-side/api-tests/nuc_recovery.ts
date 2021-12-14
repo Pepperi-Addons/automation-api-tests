@@ -36,7 +36,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
