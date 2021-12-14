@@ -71,6 +71,7 @@ import { NucRecoveryTests, NucRecoverySDKTests, NucRecoveryWACDTests } from './a
 import { DataIndexTests } from './api-tests/data_index';
 import { CPINodeTests } from './api-tests/cpi_node';
 import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
+import { VarSystemAddonsTests } from './api-tests/var_system_addons';
 
 let testName = '';
 let testEnvironment = '';
@@ -438,6 +439,24 @@ export async function var_api(client: Client, request: Request, testerFunctions:
         await test_data(client, testerFunctions),
         VarTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function var_system_addons(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Var System Addons';
+    service.PrintMemoryUseToLog('Start', testName);
+    const { describe, expect, it, run } = tester(client, testName, 'Production/Stage');
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([VarSystemAddonsTests(service, request, testerFunctions)]).then(() =>
+        testerFunctions.run(),
+    );
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
