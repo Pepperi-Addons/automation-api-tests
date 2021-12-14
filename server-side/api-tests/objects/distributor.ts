@@ -24,8 +24,9 @@ export async function DistributorTests(generalService: GeneralService, request, 
             const lorem = new LoremIpsum({});
             const distributorFirstName = lorem.generateWords(1);
             const distributorLastName = lorem.generateWords(1);
-            const distributorEmail = `${distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
-                }.${distributorLastName}@pepperitest.com`;
+            const distributorEmail = `${
+                distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
+            }.${distributorLastName}@pepperitest.com`;
             const distributorCompany = lorem.generateWords(3);
             const lettersGenerator = lorem.generateWords(1).substring(0, 2);
             const distributorPassword =
@@ -33,7 +34,6 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 lettersGenerator[1] +
                 (Math.random() * 10000000000).toString().substring(0, 6);
 
-            console.log(distributorEmail, distributorPassword);
             clientArr.push({ Email: distributorEmail, Password: distributorPassword });
 
             const newDistributor = await distributorService.createDistributor({
@@ -49,7 +49,6 @@ export async function DistributorTests(generalService: GeneralService, request, 
         });
 
         it(`Get Installed Addons`, async () => {
-            // clientArr.push({ Email: 'aute6667.occaecat@pepperitest.com', Password: 'An801443' });
             const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
             const adminService = new GeneralService(adminClient);
             const adminAddons = await adminService.getInstalledAddons();
@@ -61,20 +60,26 @@ export async function DistributorTests(generalService: GeneralService, request, 
             expect(newDistributorUsers.length).to.be.above(0);
             expect(systemAddons.length).to.be.above(10);
             expect(installedAddons.length).to.be.above(10);
-            const systemAddonTestData = new Array();
+            const systemAddonTestData = [{}];
             for (let index = 0; index < systemAddons.length; index++) {
                 const phasedVersion = JSON.parse(systemAddons[index].SystemData);
-                systemAddonTestData.push({ Name: systemAddons[index].Name, Version: phasedVersion['CurrentPhasedVersion'] })
+                systemAddonTestData.push({
+                    Name: systemAddons[index].Name,
+                    Version: phasedVersion['CurrentPhasedVersion'],
+                });
             }
-            const installedAddonTestData = new Array();
+            const installedAddonTestData = [{}];
             for (let index = 0; index < installedAddons.length; index++) {
-                installedAddonTestData.push({ Name: installedAddons[index].Addon.Name, Version: installedAddons[index].Version })
+                installedAddonTestData.push({
+                    Name: installedAddons[index].Addon.Name,
+                    Version: installedAddons[index].Version,
+                });
             }
 
             let sortedSystemAddonTestData = systemAddonTestData.sort(compareByName);
             let sortedInstalledAddonTestData = installedAddonTestData.sort(compareByName);
 
-               for (let j = 0; j < sortedSystemAddonTestData.length; j++) {
+            for (let j = 0; j < sortedSystemAddonTestData.length; j++) {
                 for (let i = 0; i < sortedInstalledAddonTestData.length; i++) {
                     if (sortedSystemAddonTestData[j]['Name'] == sortedInstalledAddonTestData[i]['Name']) {
                         sortedSystemAddonTestData = sortedSystemAddonTestData.splice(j, 1);
@@ -82,24 +87,24 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         j--;
                         i--;
                     }
-
                 }
             }
 
             debugger;
 
             // try {
-                expect(installedAddonTestData.sort(compareByName)).to.deep.include(systemAddonTestData.sort(compareByName))
+            expect(installedAddonTestData.sort(compareByName)).to.deep.include(systemAddonTestData.sort(compareByName));
             // } catch (error) {
             //     debugger;
             // }
             try {
-                expect(installedAddonTestData.sort(compareByName)).to.deep.include(systemAddonTestData.sort(compareByName))
+                expect(installedAddonTestData.sort(compareByName)).to.deep.include(
+                    systemAddonTestData.sort(compareByName),
+                );
             } catch (error) {
                 debugger;
             }
-        })
-        
+        });
     });
 }
 

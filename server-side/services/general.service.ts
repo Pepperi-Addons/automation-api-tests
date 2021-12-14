@@ -201,9 +201,8 @@ export default class GeneralService {
     }
 
     getSystemAddons() {
-        return this.papiClient.addons.find({where: 'Type=1', page_size: -1});
+        return this.papiClient.addons.find({ where: 'Type=1', page_size: -1 });
     }
-
 
     getAddonsByUUID(UUID: string): Promise<InstalledAddon> {
         return this.papiClient.addons.installedAddons.addonUUID(UUID).get();

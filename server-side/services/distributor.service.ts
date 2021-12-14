@@ -1,5 +1,4 @@
 import { PapiClient, Item, FindOptions } from '@pepperi-addons/papi-sdk';
-import { sys } from 'typescript';
 import GeneralService from './general.service';
 
 export interface DistributorObject {
