@@ -29,7 +29,7 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
     );
 
     let outerLoopSize, innerLoopSize;
-    if (productionSystemAddons.Body > StageSystemAddons.Body) {
+    if (productionSystemAddons.Body.length > StageSystemAddons.Body.length) {
         outerLoopSize = productionSystemAddons.Body.length;
         innerLoopSize = StageSystemAddons.Body.length;
     } else {

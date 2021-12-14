@@ -11,6 +11,7 @@ export interface ClientObject {
 export interface AddonVersionTestData {
     Name?: string;
     Version?: string;
+    CurrentPhasedVersion?: string;
 }
 
 export async function DistributorTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -75,49 +76,88 @@ export async function DistributorTests(generalService: GeneralService, request, 
             }
             const installedAddonTestData: AddonVersionTestData[] = [];
             for (let index = 0; index < installedAddons.length; index++) {
+                const phasedVersion = JSON.parse(installedAddons[index].Addon.SystemData);
                 installedAddonTestData.push({
                     Name: installedAddons[index].Addon.Name,
                     Version: installedAddons[index].Version,
+                    CurrentPhasedVersion: phasedVersion.CurrentPhasedVersion,
                 });
             }
 
-            let sortedSystemAddonTestData = systemAddonTestData.sort(compareByName);
-            let sortedInstalledAddonTestData = installedAddonTestData.sort(compareByName);
+            const arrayOfAddonsDiff = [{}];
+            arrayOfAddonsDiff.pop();
 
-            for (let j = 0; j < sortedSystemAddonTestData.length; j++) {
-                for (let i = 0; i < sortedInstalledAddonTestData.length; i++) {
-                    if (sortedSystemAddonTestData[j]['Name'] == sortedInstalledAddonTestData[i]['Name']) {
-                        sortedSystemAddonTestData = sortedSystemAddonTestData.splice(j, 1);
-                        sortedInstalledAddonTestData = sortedInstalledAddonTestData.splice(i, 1);
-                        j--;
-                        i--;
+            let outerLoopSize, innerLoopSize;
+            if (installedAddonTestData.length > systemAddonTestData.length) {
+                outerLoopSize = installedAddonTestData.length;
+                innerLoopSize = systemAddonTestData.length;
+            } else {
+                innerLoopSize = installedAddonTestData.length;
+                outerLoopSize = systemAddonTestData.length;
+            }
+            let tempArrLength = innerLoopSize;
+            for (let j = 0; j < outerLoopSize; j++) {
+                for (let i = 0; i < innerLoopSize; i++) {
+                    if (installedAddonTestData[j].Name?.includes(systemAddonTestData[i].Name as string)) {
+                        arrayOfAddonsDiff.push({
+                            Installed: installedAddonTestData[j],
+                            System: systemAddonTestData[i],
+                        });
+                        break;
+                    }
+                    if (i == tempArrLength - 1) {
+                        arrayOfAddonsDiff.push({ Installed: installedAddonTestData[j], System: 'Addon Missing' });
+                    }
+                }
+            }
+            tempArrLength = arrayOfAddonsDiff.length;
+            for (let j = 0; j < systemAddonTestData.length; j++) {
+                for (let i = 0; i < tempArrLength; i++) {
+                    if (systemAddonTestData[j].Name?.includes(arrayOfAddonsDiff[i]['Installed'].Name)) {
+                        break;
+                    }
+                    if (i == tempArrLength - 1) {
+                        arrayOfAddonsDiff.push({ Installed: 'Addon Missing', System: systemAddonTestData[j] });
                     }
                 }
             }
 
-            debugger;
+            describe('Verify Missing Details', async () => {
+                for (let index = 0; index < arrayOfAddonsDiff.length; index++) {
+                    if (arrayOfAddonsDiff[index]['Installed'] == 'Addon Missing') {
+                        it(`System Addon Is Not Installed: ${arrayOfAddonsDiff[index]['System'].Name}`, async () => {
+                            expect.fail(`Addon.Name: ${JSON.stringify(arrayOfAddonsDiff[index]['System'].Name)}`);
+                        });
+                    }
+                    if (arrayOfAddonsDiff[index]['System'] == 'Addon Missing') {
+                        it(`Addon Is Installed That Is Not System: ${arrayOfAddonsDiff[index]['Installed'].Name}`, async () => {
+                            expect.fail(`Addon.Name: ${JSON.stringify(arrayOfAddonsDiff[index]['Installed'].Name)}`);
+                        });
+                    }
+                }
+            });
 
-            // try {
-            expect(installedAddonTestData.sort(compareByName)).to.deep.include(systemAddonTestData.sort(compareByName));
-            // } catch (error) {
-            //     debugger;
-            // }
-            try {
-                expect(installedAddonTestData.sort(compareByName)).to.deep.include(
-                    systemAddonTestData.sort(compareByName),
-                );
-            } catch (error) {
-                debugger;
-            }
+            describe('Verify Installed Details', async () => {
+                for (let j = 0; j < arrayOfAddonsDiff.length; j++) {
+                    for (let i = j + 1; i < arrayOfAddonsDiff.length; i++) {
+                        if (arrayOfAddonsDiff[j]['Installed'].Name == arrayOfAddonsDiff[i]['Installed'].Name) {
+                            it(`System Addon Is Installed Two Times ${arrayOfAddonsDiff[i]['Installed'].Name}`, async () => {
+                                expect.fail(`Addon.Name: ${JSON.stringify(arrayOfAddonsDiff[i]['Installed'].Name)}`);
+                            });
+                        }
+                    }
+                }
+            });
+
+            describe('Verify Installed Versions Is Phased', async () => {
+                for (let i = 0; i < installedAddonTestData.length; i++) {
+                    it(`System Addon: ${installedAddonTestData[i].Name} Is Installed With Phased Version ${installedAddonTestData[i].CurrentPhasedVersion}`, async () => {
+                        expect(installedAddonTestData[i].Version).to.equal(
+                            installedAddonTestData[i].CurrentPhasedVersion,
+                        );
+                    });
+                }
+            });
         });
     });
 }
-
-const compareByName = (a, b) => {
-    if (a.Name > b.Name) {
-        return 1;
-    } else if (a.Name < b.Name) {
-        return -1;
-    }
-    return 0;
-};
