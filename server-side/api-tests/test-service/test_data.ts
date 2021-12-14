@@ -26,7 +26,7 @@ export async function TestDataTests(generalService: GeneralService, tester: Test
     const expect = tester.expect;
     const it = tester.it;
 
-    const installedAddonsArr = await service.getAddons({ page_size: -1 });
+    const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
     for (let index = 0; index < installedAddonsArr.length; index++) {
         if (installedAddonsArr[index].Addon !== null) {
             if (installedAddonsArr[index].Addon.Name == 'API Testing Framework')
