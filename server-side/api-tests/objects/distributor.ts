@@ -8,6 +8,11 @@ export interface ClientObject {
     Password: string;
 }
 
+export interface AddonVersionTestData {
+    Name?: string;
+    Version?: string;
+}
+
 export async function DistributorTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const distributorService = new DistributorService(generalService, request);
     const describe = tester.describe;
@@ -60,7 +65,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
             expect(newDistributorUsers.length).to.be.above(0);
             expect(systemAddons.length).to.be.above(10);
             expect(installedAddons.length).to.be.above(10);
-            const systemAddonTestData = [{}];
+            const systemAddonTestData:AddonVersionTestData[] = [];
             for (let index = 0; index < systemAddons.length; index++) {
                 const phasedVersion = JSON.parse(systemAddons[index].SystemData);
                 systemAddonTestData.push({
@@ -68,7 +73,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     Version: phasedVersion['CurrentPhasedVersion'],
                 });
             }
-            const installedAddonTestData = [{}];
+            const installedAddonTestData:AddonVersionTestData[] = [];
             for (let index = 0; index < installedAddons.length; index++) {
                 installedAddonTestData.push({
                     Name: installedAddons[index].Addon.Name,
