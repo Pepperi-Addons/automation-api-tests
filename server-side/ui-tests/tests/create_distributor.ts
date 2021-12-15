@@ -132,7 +132,10 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     expect(isInstalled).to.be.true;
                 });
 
-                await TestDataTests(adminService, { describe, expect, it } as TesterFunctions);
+                await TestDataTests(adminService, { describe, expect, it } as TesterFunctions, {
+                    IsAllAddons: true,
+                    IsUUID: true,
+                });
 
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.navigate();
@@ -221,7 +224,10 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     const adminService = new GeneralService(adminClient);
 
                     //Add test data of the new distributor just for testing
-                    await TestDataTests(adminService, { describe, expect, it } as TesterFunctions);
+                    await TestDataTests(adminService, { describe, expect, it } as TesterFunctions, {
+                        IsAllAddons: true,
+                        IsUUID: true,
+                    });
 
                     await LoginTests(clientArr[0].Email, clientArr[0].Password);
 
