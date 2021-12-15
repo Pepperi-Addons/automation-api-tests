@@ -15,7 +15,11 @@ export interface AddonVersionTestData {
 }
 
 export async function DistributorTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const distributorService = new DistributorService(generalService, request);
+    let password = request.body.varKey;
+    if (request.body.varKeyEU) {
+        password = request.body.varKeyEU;
+    }
+    const distributorService = new DistributorService(generalService, { body: { varKey: password } });
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -87,17 +91,8 @@ export async function DistributorTests(generalService: GeneralService, request, 
             const arrayOfAddonsDiff = [{}];
             arrayOfAddonsDiff.pop();
 
-            let outerLoopSize, innerLoopSize;
-            if (installedAddonTestData.length > systemAddonTestData.length) {
-                outerLoopSize = installedAddonTestData.length;
-                innerLoopSize = systemAddonTestData.length;
-            } else {
-                innerLoopSize = installedAddonTestData.length;
-                outerLoopSize = systemAddonTestData.length;
-            }
-            let tempArrLength = innerLoopSize;
-            for (let j = 0; j < outerLoopSize; j++) {
-                for (let i = 0; i < innerLoopSize; i++) {
+            for (let j = 0; j < installedAddonTestData.length; j++) {
+                for (let i = 0; i < systemAddonTestData.length; i++) {
                     if (installedAddonTestData[j].Name?.includes(systemAddonTestData[i].Name as string)) {
                         arrayOfAddonsDiff.push({
                             Installed: installedAddonTestData[j],
@@ -105,12 +100,12 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         });
                         break;
                     }
-                    if (i == tempArrLength - 1) {
+                    if (i == systemAddonTestData.length - 1) {
                         arrayOfAddonsDiff.push({ Installed: installedAddonTestData[j], System: 'Addon Missing' });
                     }
                 }
             }
-            tempArrLength = arrayOfAddonsDiff.length;
+            const tempArrLength = arrayOfAddonsDiff.length;
             for (let j = 0; j < systemAddonTestData.length; j++) {
                 for (let i = 0; i < tempArrLength; i++) {
                     if (systemAddonTestData[j].Name?.includes(arrayOfAddonsDiff[i]['Installed'].Name)) {
