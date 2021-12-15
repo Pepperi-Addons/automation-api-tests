@@ -2,6 +2,7 @@ import GeneralService, { TesterFunctions } from '../../services/general.service'
 import { ObjectsService } from '../../services/objects.service';
 import { DistributorService } from '../../services/distributor.service';
 import { LoremIpsum } from 'lorem-ipsum';
+import { TestDataTests } from '../test-service/test_data';
 
 export interface ClientObject {
     Email: string;
@@ -56,6 +57,15 @@ export async function DistributorTests(generalService: GeneralService, request, 
             expect(newDistributor.Status).to.equal(200);
             expect(newDistributor.Body.Status.ID).to.equal(1);
             expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
+        });
+
+        it(`Get Test Data`, async () => {
+            const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
+            const adminService = new GeneralService(adminClient);
+            await TestDataTests(adminService, { describe, expect, it } as TesterFunctions, {
+                IsAllAddons: false,
+                IsUUID: true,
+            });
         });
 
         it(`Get Installed Addons`, async () => {
