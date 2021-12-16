@@ -482,7 +482,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     async function executeSyncOldTest(testName, testDataBody) {
         let url;
         const installedCPIVersion = await generalService
-            .getAddons({
+            .getInstalledAddons({
                 where: "AddonUUID='00000000-0000-0000-0000-000000abcdef'",
             })
             .then((installationArr) => installationArr[0].Addon.SystemData.split('"')[3]);

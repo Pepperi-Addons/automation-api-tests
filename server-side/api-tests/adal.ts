@@ -14,7 +14,7 @@ export async function ADALTests(generalService: GeneralService, request, tester:
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
 
     describe('ADAL Tests Suites', () => {

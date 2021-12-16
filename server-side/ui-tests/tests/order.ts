@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 chai.use(promised);
 
-export async function OrderTest(email: string, password: string, client: Client) {
+export async function OrderTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
@@ -198,8 +198,13 @@ export async function OrderTest(email: string, password: string, client: Client)
 
         it('Create Account And Get Catalog', async function () {
             const newAccount: Account = await objectsService.createAccount({
+                Name: 'Account for order scenarios',
                 ExternalID: 'Account for order scenarios',
                 Discount: 0,
+                Phone: '1-800-644-9146',
+                Mobile: '073-266-7667',
+                City: 'Raanana',
+                Street: 'HaHaroshet St 14',
             });
             accountId = newAccount.InternalID;
 
@@ -209,6 +214,7 @@ export async function OrderTest(email: string, password: string, client: Client)
             const transactionArr: Transaction[] = await objectsService.getTransaction({
                 where: `Type LIKE '%Sales Order%'`,
                 page_size: 1,
+                include_deleted: true,
             });
             activityTypeId = transactionArr[0].ActivityTypeID as number;
         });

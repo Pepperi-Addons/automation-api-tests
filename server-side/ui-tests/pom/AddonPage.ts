@@ -132,16 +132,31 @@ export class AddonPage extends Page {
     public AddonContainerATDEditorFieldsAddCustomArr: Locator = By.css('.allButtons.grnbtn.roundCorner.dc-add');
     public AddonContainerATDEditorTransactionFieldArr: Locator = By.css('[name="0"]');
     public AddonContainerATDEditorTransactionLineFieldArr: Locator = By.css('[name="1"]');
-    public AddonContainerATDEditorEditFieldArr: Locator = By.xpath('..//span[contains(@class, "editPenIcon")]');
+    public AddonContainerATDEditorEditFieldArr: Locator = By.xpath(`..//span[contains(@class, 'editPenIcon')]`);
     public AddonContainerATDEditorTransactionLineFieldEditFormula: Locator = By.css('[name="edit"]');
     public AddonContainerATDEditorTransactionLineFieldFormula: Locator = By.css('#formula textarea');
     public AddonContainerATDEditorTransactionLineFieldFormulaEditorSave: Locator = By.css('#footer .save');
     public AddonContainerATDEditorTransactionLineFieldSave: Locator = By.css('.footerSection [name="save"]');
 
+    //Editor Views
+    public AddonContainerATDEditorViewsAddCustom: Locator = By.css('.add-view.allButtons.grnbtn.roundCorner'); //No avilable in Stage - BO Config
+    public AddonContainerATDEditorViewsOrderCenterViews: Locator = By.xpath(
+        '//div[@id="formContTemplate"]//h3[contains(., "Order Center Views")]',
+    );
+    public AddonContainerATDEditorTransactionViewsArr: Locator = By.css('#formContTemplate .ui-accordion-header');
+    public AddonContainerATDEditorAddViewBtn: Locator = By.xpath(`//div[contains(text(),"VIEW_PLACE_HOLDER")]`);
+
     //Settings Framework Locators
     public SettingsFrameworkEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
     public SettingsFrameworkEditorSearch: Locator = By.css('#txtSearchBankFields');
     public SettingsFrameworkEditorSave: Locator = By.css('.save');
+    public SettingsFrameworkEditorTrashBtn: Locator = By.xpath(
+        `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
+    );
+
+    //Branded App Locators
+    public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
+    public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
 
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
@@ -478,7 +493,47 @@ export class AddonPage extends Page {
         return;
     }
 
-    public async editHomePageButtons(activtiyName: string): Promise<void> {
+    /**
+     *
+     * @param viewName The name of the view group
+     * @param viewType The name of the view
+     * @returns
+     */
+    public async editATDView(viewType: string, viewName: string): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Views');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorTabVisible('Layouts')).to.be.true;
+
+        //Validate Editor Page Loaded
+        expect(await this.browser.findElement(this.AddonContainerATDEditorViewsOrderCenterViews));
+
+        const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionViewsArr);
+        for (let index = 0; index < buttonsArr.length; index++) {
+            const element = buttonsArr[index];
+            if ((await element.getText()).includes(viewType)) {
+                await element.click();
+                break;
+            }
+        }
+
+        const selectedBtn = Object.assign({}, this.AddonContainerATDEditorAddViewBtn);
+        selectedBtn['value'] = `${selectedBtn['value'].replace(
+            'VIEW_PLACE_HOLDER',
+            viewName,
+        )}/..//div[contains(@class, "plusIcon")]`;
+        await this.browser.click(selectedBtn);
+        return;
+    }
+
+    public async addAdminHomePageButtons(activtiyName: string): Promise<void> {
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
@@ -490,6 +545,44 @@ export class AddonPage extends Page {
         await this.browser.click(this.SettingsFrameworkEditAdmin);
         await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
         await this.browser.click(this.SettingsFrameworkEditorSave);
+
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.isSpinnerDone();
+        return;
+    }
+
+    public async removeAdminHomePageButtons(activtiyName: string): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        await this.isSpinnerDone();
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+
+        await this.browser.click(this.SettingsFrameworkEditAdmin);
+
+        const buttonsLocator = Object.assign({}, this.SettingsFrameworkEditorTrashBtn);
+        buttonsLocator['value'] = buttonsLocator['value'].replace('ATD_PLACE_HOLDER', activtiyName);
+
+        let isRemovable;
+        try {
+            isRemovable = await this.browser.untilIsVisible(buttonsLocator);
+        } catch (error) {
+            console.log('No Button To Remove, Test Continue');
+        }
+        if (isRemovable) {
+            const buttonsToRemove = await this.browser.findElements(buttonsLocator);
+            for (let i = 0; i < buttonsToRemove.length; i++) {
+                await this.browser.click(buttonsLocator);
+            }
+            await this.browser.click(this.SettingsFrameworkEditorSave);
+        }
 
         //Go To HomePage
         await this.browser.switchToDefaultContent();

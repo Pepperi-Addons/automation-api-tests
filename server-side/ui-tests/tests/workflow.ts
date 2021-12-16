@@ -2,7 +2,15 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppLoginPage, WebAppList, WebAppTopBar, AddonPage, WebAppHomePage, WebAppTransaction } from '../pom/index';
+import {
+    WebAppLoginPage,
+    WebAppList,
+    WebAppTopBar,
+    AddonPage,
+    WebAppHomePage,
+    WebAppTransaction,
+    WebAppHeader,
+} from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { InventoryService } from '../../services/inventory.service';
@@ -11,7 +19,7 @@ import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
-export async function WorkflowTest(email: string, password: string, client: Client) {
+export async function WorkflowTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const inventoryService = new InventoryService(generalService.papiClient);
 
@@ -33,6 +41,31 @@ export async function WorkflowTest(email: string, password: string, client: Clie
             await webAppHomePage.collectEndTestData(this);
         });
 
+        it('Pre Test: Remove Workflow ATD', async function () {
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.login(email, password);
+
+            const addonPage = new AddonPage(driver);
+
+            const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
+            const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
+
+            const atdToRemove = await generalService.getAllTypes({
+                where: `Name LIKE '${_TEST_DATA_ATD_NAME}%'`,
+                include_deleted: false,
+                page_size: -1,
+            });
+
+            for (let i = 0; i < atdToRemove.length; i++) {
+                await addonPage.removeATD(generalService, atdToRemove[i].Name, _TEST_DATA_ATD_DESCRIPTION);
+            }
+
+            const webAppHeader = new WebAppHeader(driver);
+            await webAppHeader.navigate();
+            await driver.click(webAppHeader.Settings);
+            await addonPage.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME} `);
+        });
+
         it('Workflow Scenario: Update Inventory', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
@@ -46,7 +79,7 @@ export async function WorkflowTest(email: string, password: string, client: Clie
 
             await addonPage.editATDWorkflow(SelectPostAction.UpdateInventory);
 
-            await addonPage.editHomePageButtons(_TEST_DATA_ATD_NAME);
+            await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
 
             //Set the inventory to 100:
             const _TEST_DATA_ITEM_EXTERNALID = 'MakeUp012'; //This item exist in the test data that is replaced when "replaceItems" test runs

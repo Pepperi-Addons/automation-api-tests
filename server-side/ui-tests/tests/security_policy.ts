@@ -13,10 +13,12 @@ import {
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import { Key } from 'selenium-webdriver';
+import fs from 'fs';
+import path from 'path';
 
 chai.use(promised);
 
-export async function SecurityPolicyTest(email: string, password: string) {
+export async function SecurityPolicyTests(email: string, password: string) {
     let driver: Browser;
 
     describe('Security Policy Test Suit', async function () {
@@ -32,6 +34,11 @@ export async function SecurityPolicyTest(email: string, password: string) {
             await driver.quit();
         });
 
+        function testDataGetFromFileAtPath(pathOfFileToReadFrom): string {
+            const file = fs.readFileSync(path.resolve(__dirname, pathOfFileToReadFrom));
+            return file.toString();
+        }
+
         const _TEST_DATA_TYPE_ARR = {
             dir: `dir c: \*.csv / s / b > c: \dor.txt`,
             jsRegex: `if (outpot.length > 200000) {
@@ -45,11 +52,12 @@ export async function SecurityPolicyTest(email: string, password: string) {
             query: `return "SELECT TOP 100 * FROM Wrnty.Account with(nolock) WHERE AccountID=" + AccountID;`,
             cSharp: `var cities = new Dictionary<string, string>()
             { { "UK", "London, Manchester, Birmingham" }, { "USA", "Chicago, New York, Washington" }, { "India", "Mumbai, New Delhi, Pune" } };
-            Console.WriteLine(cities["UK"]);
             //prints value of UK key
-            Console.WriteLine(cities["USA"]);
+            Console.WriteLine(cities["UK"]);
             //prints value of USA key
-            //Console.WriteLine(cities["France"]); // run-time exception: Key does not exist
+            Console.WriteLine(cities["USA"]);
+            // run-time exception: Key does not exist
+            Console.WriteLine(cities["France"]);
             //use ContainsKey() to check for an unknown key
             if (cities.ContainsKey("France")) {
                 Console.WriteLine(cities["France"]);
@@ -68,6 +76,9 @@ export async function SecurityPolicyTest(email: string, password: string) {
             }`,
             print: `console.log(UUID);`,
             promotionCode: `config.APINames["API_Discount_BreakBy_Price"] = "TSATotalPriceBefore";`,
+            promotionFullScript: testDataGetFromFileAtPath(
+                '../../api-tests/test-data/promotionScriptForSecurityPolicyTests.js',
+            ),
         };
 
         for (const type in _TEST_DATA_TYPE_ARR) {

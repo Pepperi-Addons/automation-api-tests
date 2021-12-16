@@ -19,14 +19,23 @@ const installedAddons = {
     'Package Trade Promotions': '' as any,
 };
 
+export interface TestDataOptions {
+    IsUUID: boolean;
+    IsAllAddons: boolean;
+}
+
 // Get the Tests Data
-export async function TestDataTest(generalService: GeneralService, tester: TesterFunctions) {
+export async function TestDataTests(
+    generalService: GeneralService,
+    tester: TesterFunctions,
+    options: TestDataOptions = { IsAllAddons: true, IsUUID: false },
+) {
     const service = generalService;
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    const installedAddonsArr = await service.getAddons({ page_size: -1 });
+    const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
     for (let index = 0; index < installedAddonsArr.length; index++) {
         if (installedAddonsArr[index].Addon !== null) {
             if (installedAddonsArr[index].Addon.Name == 'API Testing Framework')
@@ -47,9 +56,9 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 installedAddons['Data Views API'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'ADAL')
                 installedAddons['ADAL'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'ADAL')
-                installedAddons['Automated Jobs'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Automated Jobs')
+                installedAddons['Automated Jobs'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Relations Framework')
                 installedAddons['Relations Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Object Types Editor')
                 installedAddons['Object Types Editor'] = installedAddonsArr[index].Version;
@@ -75,6 +84,14 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
             expect(service.getClientData('UserEmail')).to.contain('@');
         });
 
+        if (options.IsUUID) {
+            it(`UserUUID: ${service.getClientData('UserUUID')} DistributorUUID: ${service.getClientData(
+                'DistributorUUID',
+            )}`, () => {
+                expect(service.getClientData('DistributorUUID')).to.contain('-');
+            });
+        }
+
         it('Test Prerequisites', () => {
             expect(installedAddonsArr).to.be.an('array');
         });
@@ -82,10 +99,12 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
         describe('Installed Addons Versions', () => {
             const regex = /\D/g;
 
-            it(`API Testing Framework | Version: ${installedAddons['API Testing Framework']}`, () => {
-                const regexMatched = installedAddons['API Testing Framework'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
+            if (options.IsAllAddons) {
+                it(`API Testing Framework | Version: ${installedAddons['API Testing Framework']}`, () => {
+                    const regexMatched = installedAddons['API Testing Framework'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
+            }
             it(`Services Framework | Version: ${installedAddons['Services Framework']}`, () => {
                 const regexMatched = installedAddons['Services Framework'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
@@ -118,10 +137,12 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 const regexMatched = installedAddons['ADAL'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
-                const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
+            if (options.IsAllAddons) {
+                it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
+                    const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
+            }
             it(`Relations Framework | Version: ${installedAddons['Relations Framework']}`, () => {
                 const regexMatched = installedAddons['Relations Framework'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
@@ -134,18 +155,20 @@ export async function TestDataTest(generalService: GeneralService, tester: Teste
                 const regexMatched = installedAddons['Pepperi Notification Service'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`Item Trade Promotions | Version: ${installedAddons['Item Trade Promotions']}`, () => {
-                const regexMatched = installedAddons['Item Trade Promotions'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
-            it(`Order Trade Promotions | Version: ${installedAddons['Order Trade Promotions']}`, () => {
-                const regexMatched = installedAddons['Order Trade Promotions'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
-            it(`Package Trade Promotions | Version: ${installedAddons['Package Trade Promotions']}`, () => {
-                const regexMatched = installedAddons['Package Trade Promotions'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
+            if (options.IsAllAddons) {
+                it(`Item Trade Promotions | Version: ${installedAddons['Item Trade Promotions']}`, () => {
+                    const regexMatched = installedAddons['Item Trade Promotions'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
+                it(`Order Trade Promotions | Version: ${installedAddons['Order Trade Promotions']}`, () => {
+                    const regexMatched = installedAddons['Order Trade Promotions'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
+                it(`Package Trade Promotions | Version: ${installedAddons['Package Trade Promotions']}`, () => {
+                    const regexMatched = installedAddons['Package Trade Promotions'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
+            }
         });
     });
 }
