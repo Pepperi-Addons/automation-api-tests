@@ -7,7 +7,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
     const it = tester.it;
 
     const logcash: any = {};
-    const counter = 0;
+    // const counter = 0;
     //const keyCounter = 0;
     //const DataField = [];
     // const addonJobBody: any = {};
@@ -30,7 +30,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -558,7 +558,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
     async function add50InsertsToTableOverwriteFalse() {
         const num = 49;
         let tst = 0;
-        const tst1 = 0;
+        // const tst1 = 0;
         const object = createObjects(num); // add 49 unique inserts
         object[num] = object[num - 1]; // + 1 duplicated key
         //debugger;
@@ -603,7 +603,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
 
     async function insert501ObjectsToTableOverwriteFalse() {
         const num = 501;
-        const tst = 0;
+        // const tst = 0;
         // let tst1 = 0;
         const object = createObjects(num); // add 501 unique inserts
         // object[num] = object[num - 1];              // + 1 duplicated key
