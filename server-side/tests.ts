@@ -51,7 +51,7 @@ import { DistributorTests } from './api-tests/objects/distributor';
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
-import { DataVisualisationTests } from './api-tests/data_visualisation';
+import { ChartsManagerTests } from './api-tests/charts_manager';
 //#endregion Evgenys's Tests
 
 import {
@@ -1115,9 +1115,9 @@ export async function distributor(client: Client, request: Request, testerFuncti
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
-export async function data_visualisation(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function charts_manager(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Data_Visualisation';
+    testName = 'Charts_Manager';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
@@ -1133,7 +1133,7 @@ export async function data_visualisation(client: Client, request: Request, teste
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        DataVisualisationTests(service, request, testerFunctions),
+        ChartsManagerTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
