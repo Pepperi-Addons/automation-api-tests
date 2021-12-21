@@ -71,7 +71,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
         });
     });
 
-    //test go here//
+    //test goes here//
 }
 
 
