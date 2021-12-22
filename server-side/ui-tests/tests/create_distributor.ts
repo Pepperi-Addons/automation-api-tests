@@ -82,7 +82,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 });
 
                 expect(newDistributor.Status).to.equal(200);
-                expect(newDistributor.Body.Status.ID).to.equal(1);
+                expect(newDistributor.Body.Status.ID, JSON.stringify(newDistributor.Body.AuditInfo)).to.equal(1);
                 expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
 
                 const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
