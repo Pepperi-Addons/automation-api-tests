@@ -1046,6 +1046,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                 //Promo Steps: [3, 4*, 5, 6*, 8, 9, 10*, 11]; //The marked with "*" are the set promotion steps
                 const promotionsArr = [3, 5, 8, 9, 11];
+                let allowRetry = 1;
                 for (let index = 0; index < promotionsArr.length; index++) {
                     await webAppTransaction.addItemToCart(this, 'Frag011', promotionsArr[index], true);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
@@ -1061,21 +1062,37 @@ export async function PromotionTests(email: string, password: string, client: Cl
                         value: 'data:image/png;base64,' + base64ImageInCart,
                     });
 
-                    if (promotionsArr[index] == 3) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select an additional item');
-                    } else if (promotionsArr[index] == 5) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select an additional item or remove one item');
-                    } else if (promotionsArr[index] == 8) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select 2 more items or remove 2 items');
-                    } else if (promotionsArr[index] == 9) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select an additional item or remove 3 items');
-                    } else if (promotionsArr[index] == 11) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('You have chosen too many items. Please remove one item');
+                    try {
+                        if (promotionsArr[index] == 3) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select an additional item');
+                        } else if (promotionsArr[index] == 5) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select an additional item or remove one item');
+                        } else if (promotionsArr[index] == 8) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select 2 more items or remove 2 items');
+                        } else if (promotionsArr[index] == 9) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select an additional item or remove 3 items');
+                        } else if (promotionsArr[index] == 11) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('You have chosen too many items. Please remove one item');
+                        }
+                        allowRetry = 1;
+                    } catch (error) {
+                        if (allowRetry > 0) {
+                            allowRetry--;
+                            const base64ImageInErrorTests = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Cart With Error Promotions, Package Amount: ${promotionsArr[index]}`,
+                                value: 'data:image/png;base64,' + base64ImageInErrorTests,
+                            });
+                            console.log(`Error thrown in negative tests: ${error}`);
+                            index--;
+                            await webAppDialog.selectDialogBox('OK');
+                            continue;
+                        }
                     }
 
                     if (promotionsArr[index] != 4 || promotionsArr[index] != 6 || promotionsArr[index] != 10) {
