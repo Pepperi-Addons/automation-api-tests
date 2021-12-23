@@ -32,16 +32,16 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
         describe('Endpoints', async () => {
             it('Validate GET Users', async () => {
                 const res = await generalService.fetchStatus('/Users', { method: 'GET' });
-                expect(res.Status).to.be.a('number').equal(200),
-                    expect(res.Ok).that.is.a('boolean').and.is.true,
-                    expect(res.Error).that.is.an('object').and.is.empty,
-                    expect(res.Body.length).to.be.above(0),
-                    expect(res.Body[0].UUID).that.is.a('string').and.is.not.empty,
-                    expect(res.Body[0].ExternalID).that.is.a('string'),
-                    expect(res.Body[0].Email).that.is.a('string').and.is.not.empty,
-                    expect(res.Body[0].FirstName).that.is.a('string'),
-                    expect(res.Body[0].LastName).that.is.a('string'),
-                    expect(res.Body[0].Hidden).that.is.a('boolean').and.is.false;
+                expect(res.Status).to.be.a('number').equal(200);
+                expect(res.Ok).that.is.a('boolean').and.is.true;
+                expect(res.Error).that.is.an('object').and.is.empty;
+                expect(res.Body.length).to.be.above(0);
+                expect(res.Body[0].UUID).that.is.a('string').and.is.not.empty;
+                expect(res.Body[0].ExternalID).that.is.a('string');
+                expect(res.Body[0].Email).that.is.a('string').and.is.not.empty;
+                expect(res.Body[0].FirstName).that.is.a('string');
+                expect(res.Body[0].LastName).that.is.a('string');
+                expect(res.Body[0].Hidden).that.is.a('boolean').and.is.false;
             });
 
             const userExternalID = 'Automated API User ' + Math.floor(Math.random() * 1000000).toString();
@@ -69,56 +69,56 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 });
                 //debugger;
                 userInternalID = user.Body.InternalID;
-                expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200), //should return 201 on creation - DI-18052
-                    expect(user.Body).to.have.property('InternalID').that.is.a('number').and.is.above(0),
-                    expect(user.Ok).that.is.a('boolean').and.is.true,
-                    expect(user.Error).that.is.an('object').and.is.empty,
-                    expect(user.Body).to.have.property('UUID').that.is.a('string').and.is.not.empty,
-                    expect(user.Body).to.have.property('ExternalID').that.is.a('string').and.is.equal(userExternalID),
-                    expect(user.Body).to.have.property('FirstName').that.is.a('string').and.is.not.empty,
-                    expect(user.Body).to.have.property('LastName').that.is.a('string').and.is.not.empty,
-                    expect(user.Body).to.have.property('Mobile').that.is.a('string').and.is.not.empty,
-                    expect(user.Body).to.have.property('Email').that.is.a('string').and.is.not.empty,
-                    expect(user.Body).to.have.property('Hidden').that.is.a('boolean').and.is.false,
-                    expect(user.Body).to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.false,
-                    expect(user.Body)
-                        .to.have.property('CreationDateTime')
-                        .that.contains(new Date().toISOString().split('T')[0]),
-                    expect(user.Body).to.have.property('CreationDateTime').that.contains('Z'),
-                    expect(user.Body)
-                        .to.have.property('ModificationDateTime')
-                        .that.contains(new Date().toISOString().split('T')[0]),
-                    expect(user.Body).to.have.property('ModificationDateTime').that.contains('Z'),
-                    expect(user.Body).to.have.property('Phone').that.is.a('string').and.is.not.empty,
-                    expect(user.Body).to.have.property('Profile').that.is.an('object').and.is.not.empty,
-                    expect(user.Body.Profile).to.deep.equal({
-                        Data: {
-                            InternalID: user.Body.Profile.Data.InternalID,
-                            Name: 'Rep',
-                        },
-                        URI: '/profiles/' + user.Body.Profile.Data.InternalID,
-                    }),
-                    expect(user.Body, 'Role').to.have.property('Role');
+                expect(user.Status, 'Should return 201 ,DI-18052').to.be.a('number').equal(200); //should return 201 on creation - DI-18052
+                expect(user.Body).to.have.property('InternalID').that.is.a('number').and.is.above(0);
+                expect(user.Ok).that.is.a('boolean').and.is.true;
+                expect(user.Error).that.is.an('object').and.is.empty;
+                expect(user.Body).to.have.property('UUID').that.is.a('string').and.is.not.empty;
+                expect(user.Body).to.have.property('ExternalID').that.is.a('string').and.is.equal(userExternalID);
+                expect(user.Body).to.have.property('FirstName').that.is.a('string').and.is.not.empty;
+                expect(user.Body).to.have.property('LastName').that.is.a('string').and.is.not.empty;
+                expect(user.Body).to.have.property('Mobile').that.is.a('string').and.is.not.empty;
+                expect(user.Body).to.have.property('Email').that.is.a('string').and.is.not.empty;
+                expect(user.Body).to.have.property('Hidden').that.is.a('boolean').and.is.false;
+                expect(user.Body).to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.false;
+                expect(user.Body)
+                    .to.have.property('CreationDateTime')
+                    .that.contains(new Date().toISOString().split('T')[0]);
+                expect(user.Body).to.have.property('CreationDateTime').that.contains('Z');
+                expect(user.Body)
+                    .to.have.property('ModificationDateTime')
+                    .that.contains(new Date().toISOString().split('T')[0]);
+                expect(user.Body).to.have.property('ModificationDateTime').that.contains('Z');
+                expect(user.Body).to.have.property('Phone').that.is.a('string').and.is.not.empty;
+                expect(user.Body).to.have.property('Profile').that.is.an('object').and.is.not.empty;
+                expect(user.Body.Profile).to.deep.equal({
+                    Data: {
+                        InternalID: user.Body.Profile.Data.InternalID,
+                        Name: 'Rep',
+                    },
+                    URI: '/profiles/' + user.Body.Profile.Data.InternalID,
+                });
+                expect(user.Body, 'Role').to.have.property('Role');
             });
 
             it('Validate update user', async () => {
-                (userBody.FirstName = Math.random().toString(36).substring(7)),
-                    (userBody.LastName = Math.floor(Date.now() / 1000).toString()),
-                    (userBody.Mobile = Math.floor(Math.random() * 1000000).toString()),
-                    (userBody.Phone = Math.floor(Math.random() * 1000000).toString());
+                userBody.FirstName = Math.random().toString(36).substring(7);
+                userBody.LastName = Math.floor(Date.now() / 1000).toString();
+                userBody.Mobile = Math.floor(Math.random() * 1000000).toString();
+                userBody.Phone = Math.floor(Math.random() * 1000000).toString();
 
                 const user = await generalService.fetchStatus('/Users?where=ExternalID=' + userBody.ExternalID, {
                     method: 'POST',
                     body: JSON.stringify(userBody),
                 });
 
-                expect(user.Status).to.be.a('number').equal(200),
-                    expect(user.Ok).that.is.a('boolean').and.is.true,
-                    expect(user.Error).that.is.an('object').and.is.empty,
-                    expect(user.Body).to.have.property('FirstName').to.be.a('string').and.equals(userBody.FirstName),
-                    expect(user.Body).to.have.property('LastName').to.be.a('string').and.equals(userBody.LastName),
-                    expect(user.Body).to.have.property('Mobile').to.be.a('string').and.equals(userBody.Mobile),
-                    expect(user.Body).to.have.property('Phone').to.be.a('string').and.equals(userBody.Phone);
+                expect(user.Status).to.be.a('number').equal(200);
+                expect(user.Ok).that.is.a('boolean').and.is.true;
+                expect(user.Error).that.is.an('object').and.is.empty;
+                expect(user.Body).to.have.property('FirstName').to.be.a('string').and.equals(userBody.FirstName);
+                expect(user.Body).to.have.property('LastName').to.be.a('string').and.equals(userBody.LastName);
+                expect(user.Body).to.have.property('Mobile').to.be.a('string').and.equals(userBody.Mobile);
+                expect(user.Body).to.have.property('Phone').to.be.a('string').and.equals(userBody.Phone);
             });
         });
 
@@ -157,9 +157,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(accountObj),
                 });
 
-                expect(account.Ok).that.is.a('boolean').and.is.true,
-                    expect(account.Error).that.is.an('object').and.is.empty,
-                    expect(account.Status).to.be.a('number').equal(201);
+                expect(account.Ok).that.is.a('boolean').and.is.true;
+                expect(account.Error).that.is.an('object').and.is.empty;
+                expect(account.Status).to.be.a('number').equal(201);
 
                 //update Account
                 accountObj.Prop1 = 'Prop 11';
@@ -171,9 +171,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(accountObj),
                 });
-                expect(updatedAccount.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedAccount.Error).that.is.an('object').and.is.empty,
-                    expect(updatedAccount.Status).to.be.a('number').equal(200);
+                expect(updatedAccount.Ok).that.is.a('boolean').and.is.true;
+                expect(updatedAccount.Error).that.is.an('object').and.is.empty;
+                expect(updatedAccount.Status).to.be.a('number').equal(200);
 
                 //create contacts
                 const contactExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
@@ -195,9 +195,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(contactObj),
                 });
-                expect(contact.Ok).that.is.a('boolean').and.is.true,
-                    expect(contact.Error).that.is.an('object').and.is.empty,
-                    expect(contact.Status).to.be.a('number').equal(201);
+                expect(contact.Ok).that.is.a('boolean').and.is.true;
+                expect(contact.Error).that.is.an('object').and.is.empty;
+                expect(contact.Status).to.be.a('number').equal(201);
 
                 //update contact
                 contactObj.Phone = '123-45678-1337';
@@ -207,9 +207,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(contactObj),
                 });
-                expect(updatedContact.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedContact.Error).that.is.an('object').and.is.empty,
-                    expect(updatedContact.Status).to.be.a('number').equal(200);
+                expect(updatedContact.Ok).that.is.a('boolean').and.is.true;
+                expect(updatedContact.Error).that.is.an('object').and.is.empty;
+                expect(updatedContact.Status).to.be.a('number').equal(200);
 
                 //create activities
                 const activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
@@ -229,9 +229,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(activityObj),
                 });
-                expect(activity.Ok).that.is.a('boolean').and.is.true,
-                    expect(activity.Error).that.is.an('object').and.is.empty,
-                    expect(activity.Status).to.be.a('number').equal(201);
+                expect(activity.Ok).that.is.a('boolean').and.is.true;
+                expect(activity.Error).that.is.an('object').and.is.empty;
+                expect(activity.Status).to.be.a('number').equal(201);
 
                 //update activities
                 activityObj.Status = 2;
@@ -240,9 +240,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(activityObj),
                 });
-                expect(updatedActivity.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedActivity.Error).that.is.an('object').and.is.empty,
-                    expect(updatedActivity.Status).to.be.a('number').equal(200);
+                expect(updatedActivity.Ok).that.is.a('boolean').and.is.true;
+                expect(updatedActivity.Error).that.is.an('object').and.is.empty;
+                expect(updatedActivity.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const transactionExternalID =
@@ -267,9 +267,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(transactionObj),
                 });
-                expect(transaction.Ok).that.is.a('boolean').and.is.true,
-                    expect(transaction.Error).that.is.an('object').and.is.empty,
-                    expect(transaction.Status).to.be.a('number').equal(201);
+                expect(transaction.Ok).that.is.a('boolean').and.is.true;
+                expect(transaction.Error).that.is.an('object').and.is.empty;
+                expect(transaction.Status).to.be.a('number').equal(201);
 
                 //update Transaction
                 transactionObj.Status = 2;
@@ -277,9 +277,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(transactionObj),
                 });
-                expect(updatedTransaction.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedTransaction.Error).that.is.an('object').and.is.empty,
-                    expect(updatedTransaction.Status).to.be.a('number').equal(200);
+                expect(updatedTransaction.Ok).that.is.a('boolean').and.is.true;
+                expect(updatedTransaction.Error).that.is.an('object').and.is.empty;
+                expect(updatedTransaction.Status).to.be.a('number').equal(200);
 
                 //create Items
                 const itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -303,9 +303,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(itemObj),
                 });
-                expect(item.Ok).that.is.a('boolean').and.is.true,
-                    expect(item.Error).that.is.an('object').and.is.empty,
-                    expect(item.Status).to.be.a('number').equal(201);
+                expect(item.Ok).that.is.a('boolean').and.is.true;
+                expect(item.Error).that.is.an('object').and.is.empty;
+                expect(item.Status).to.be.a('number').equal(201);
 
                 //update items
                 itemObj.Price = 2.0;
@@ -317,9 +317,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(itemObj),
                 });
-                expect(updatedItem.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedItem.Error).that.is.an('object').and.is.empty,
-                    expect(updatedItem.Status).to.be.a('number').equal(200);
+                expect(updatedItem.Ok).that.is.a('boolean').and.is.true;
+                expect(updatedItem.Error).that.is.an('object').and.is.empty;
+                expect(updatedItem.Status).to.be.a('number').equal(200);
 
                 //create inventory
                 const inventoryObj = {
@@ -338,9 +338,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(inventoryObj),
                 });
-                expect(inventory.Ok).that.is.a('boolean').and.is.true,
-                    expect(inventory.Error).that.is.an('object').and.is.empty,
-                    expect(inventory.Status).to.be.a('number').equal(201);
+                expect(inventory.Ok).that.is.a('boolean').and.is.true;
+                expect(inventory.Error).that.is.an('object').and.is.empty;
+                expect(inventory.Status).to.be.a('number').equal(201);
 
                 //update inventory
                 inventoryObj.InStockQuantity = 4;
@@ -349,9 +349,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(inventoryObj),
                 });
-                expect(updateInventory.Ok).that.is.a('boolean').and.is.true,
-                    expect(updateInventory.Error).that.is.an('object').and.is.empty,
-                    expect(updateInventory.Status).to.be.a('number').equal(200);
+                expect(updateInventory.Ok).that.is.a('boolean').and.is.true;
+                expect(updateInventory.Error).that.is.an('object').and.is.empty;
+                expect(updateInventory.Status).to.be.a('number').equal(200);
 
                 //create Lines
                 const lineObj = {
@@ -365,9 +365,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(lineObj),
                 });
-                expect(line.Ok).that.is.a('boolean').and.is.true,
-                    expect(line.Error).that.is.an('object').and.is.empty,
-                    expect(line.Status).to.be.a('number').equal(201);
+                expect(line.Ok).that.is.a('boolean').and.is.true;
+                expect(line.Error).that.is.an('object').and.is.empty;
+                expect(line.Status).to.be.a('number').equal(201);
 
                 //update lines
                 lineObj.UnitsQuantity = 3;
@@ -376,9 +376,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(lineObj),
                 });
-                expect(upcatedLine.Ok).that.is.a('boolean').and.is.true,
-                    expect(upcatedLine.Error).that.is.an('object').and.is.empty,
-                    expect(upcatedLine.Status).to.be.a('number').equal(200);
+                expect(upcatedLine.Ok).that.is.a('boolean').and.is.true;
+                expect(upcatedLine.Error).that.is.an('object').and.is.empty;
+                expect(upcatedLine.Status).to.be.a('number').equal(200);
 
                 //create Account-Users
                 const relationObj = {
@@ -403,9 +403,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(relationObj),
                 });
-                expect(relation.Ok).that.is.a('boolean').and.is.true,
-                    expect(relation.Error).that.is.an('object').and.is.empty,
-                    expect(relation.Status).to.be.a('number').equal(201);
+                expect(relation.Ok).that.is.a('boolean').and.is.true;
+                expect(relation.Error).that.is.an('object').and.is.empty;
+                expect(relation.Status).to.be.a('number').equal(201);
 
                 //update Account-Users
                 relationObj.Hidden = true;
@@ -414,59 +414,59 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(relationObj),
                 });
-                expect(updatedRelation.Ok).that.is.a('boolean').and.is.true,
-                    expect(updatedRelation.Error).that.is.an('object').and.is.empty,
-                    expect(updatedRelation.Status).to.be.a('number').equal(200);
+                expect(updatedRelation.Ok).that.is.a('boolean').and.is.true;
+                expect(updatedRelation.Error).that.is.an('object').and.is.empty;
+                expect(updatedRelation.Status).to.be.a('number').equal(200);
 
                 //deletion for all objects
                 //lines
                 const deletedLine = await generalService.fetchStatus('/transaction_lines/' + line.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedLine.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedLine.Error).that.is.an('object').and.is.empty,
-                    expect(deletedLine.Status).to.be.a('number').equal(200);
+                expect(deletedLine.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedLine.Error).that.is.an('object').and.is.empty;
+                expect(deletedLine.Status).to.be.a('number').equal(200);
 
                 //Transactions
                 const deletedTransaction = await generalService.fetchStatus(
                     '/transactions/' + transaction.Body.InternalID,
                     { method: 'DELETE' },
                 );
-                expect(deletedTransaction.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedTransaction.Error).that.is.an('object').and.is.empty,
-                    expect(deletedTransaction.Status).to.be.a('number').equal(200);
+                expect(deletedTransaction.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedTransaction.Error).that.is.an('object').and.is.empty;
+                expect(deletedTransaction.Status).to.be.a('number').equal(200);
 
                 //Item
                 const deletedItem = await generalService.fetchStatus('/items/' + item.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedItem.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedItem.Error).that.is.an('object').and.is.empty,
-                    expect(deletedItem.Status).to.be.a('number').equal(200);
+                expect(deletedItem.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedItem.Error).that.is.an('object').and.is.empty;
+                expect(deletedItem.Status).to.be.a('number').equal(200);
 
                 //Activities
                 const deletedActivity = await generalService.fetchStatus('/activities/' + activity.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedActivity.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedActivity.Error).that.is.an('object').and.is.empty,
-                    expect(deletedActivity.Status).to.be.a('number').equal(200);
+                expect(deletedActivity.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedActivity.Error).that.is.an('object').and.is.empty;
+                expect(deletedActivity.Status).to.be.a('number').equal(200);
 
                 //Contacts
                 const deletedContact = await generalService.fetchStatus('/contacts/' + contact.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedContact.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedContact.Error).that.is.an('object').and.is.empty,
-                    expect(deletedContact.Status).to.be.a('number').equal(200);
+                expect(deletedContact.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedContact.Error).that.is.an('object').and.is.empty;
+                expect(deletedContact.Status).to.be.a('number').equal(200);
 
                 //Accounts
                 const deletedAccount = await generalService.fetchStatus('/accounts/' + account.Body.InternalID, {
                     method: 'DELETE',
                 });
-                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedAccount.Error).that.is.an('object').and.is.empty,
-                    expect(deletedAccount.Status).to.be.a('number').equal(200);
+                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedAccount.Error).that.is.an('object').and.is.empty;
+                expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
 
             it('Validating negative tests responses for objects creation', async () => {
@@ -503,11 +503,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(accountObj),
                 });
 
-                expect(account.Ok).that.is.a('boolean').and.is.false,
-                    expect(account.Error).that.is.an('object').and.is.empty,
-                    expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(account.Status).to.be.a('number').equal(400);
+                expect(account.Ok).that.is.a('boolean').and.is.false;
+                expect(account.Error).that.is.an('object').and.is.empty;
+                expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(account.Status).to.be.a('number').equal(400);
 
                 accountObj.ExternalID = 'Automated API Acc' + Math.floor(Math.random() * 1000000).toString();
 
@@ -516,12 +516,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(accountObj),
                 });
 
-                expect(account.Ok).that.is.a('boolean').and.is.false,
-                    expect(account.Error).that.is.an('object').and.is.empty,
-                    expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(account.Body.fault.faultstring).that.is.a('string').and.contains('"Name"'),
-                    expect(account.Status).to.be.a('number').equal(400);
+                expect(account.Ok).that.is.a('boolean').and.is.false;
+                expect(account.Error).that.is.an('object').and.is.empty;
+                expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(account.Body.fault.faultstring).that.is.a('string').and.contains('"Name"');
+                expect(account.Status).to.be.a('number').equal(400);
 
                 accountObj.Name = 'Automated API Acc' + Math.floor(Math.random() * 1000000).toString();
                 accountObj.ExternalID = '';
@@ -531,12 +531,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(accountObj),
                 });
 
-                expect(account.Ok).that.is.a('boolean').and.is.false,
-                    expect(account.Error).that.is.an('object').and.is.empty,
-                    expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(account.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
-                    expect(account.Status).to.be.a('number').equal(400);
+                expect(account.Ok).that.is.a('boolean').and.is.false;
+                expect(account.Error).that.is.an('object').and.is.empty;
+                expect(account.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(account.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(account.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"');
+                expect(account.Status).to.be.a('number').equal(400);
 
                 accountObj.ExternalID = accountObj.Name;
                 ///valid account data
@@ -565,12 +565,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(contactObj),
                 });
                 //debugger;
-                expect(contact.Ok).that.is.a('boolean').and.is.false,
-                    expect(contact.Error).that.is.an('object').and.is.empty,
-                    expect(contact.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(contact.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(contact.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
-                    expect(contact.Status).to.be.a('number').equal(400);
+                expect(contact.Ok).that.is.a('boolean').and.is.false;
+                expect(contact.Error).that.is.an('object').and.is.empty;
+                expect(contact.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(contact.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(contact.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"');
+                expect(contact.Status).to.be.a('number').equal(400);
 
                 const userEmail =
                     'Email' +
@@ -587,12 +587,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 });
                 //debugger;
 
-                expect(contact.Ok).that.is.a('boolean').and.is.false,
-                    expect(contact.Error).that.is.an('object').and.is.empty,
-                    expect(contact.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(contact.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(contact.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
-                    expect(contact.Status).to.be.a('number').equal(400);
+                expect(contact.Ok).that.is.a('boolean').and.is.false;
+                expect(contact.Error).that.is.an('object').and.is.empty;
+                expect(contact.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(contact.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(contact.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"');
+                expect(contact.Status).to.be.a('number').equal(400);
 
                 contactObj.Account.Data.InternalID = null;
 
@@ -604,9 +604,9 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(contactObj),
                 });
 
-                expect(contact.Ok).that.is.a('boolean').and.is.true,
-                    expect(contact.Error).that.is.an('object').and.is.empty, // currently possible to insert contact without account - approved by ido - will be fixed by accountBuyer
-                    expect(contact.Status).to.be.a('number').equal(201);
+                expect(contact.Ok).that.is.a('boolean').and.is.true;
+                expect(contact.Error).that.is.an('object').and.is.empty; // currently possible to insert contact without account - approved by ido - will be fixed by accountBuyer
+                expect(contact.Status).to.be.a('number').equal(201);
 
                 //create activities with broken data
                 //no ExID
@@ -628,12 +628,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(activityObj),
                 });
 
-                expect(activity.Ok).that.is.a('boolean').and.is.false,
-                    expect(activity.Error).that.is.an('object').and.is.empty,
-                    expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
-                    expect(activity.Status).to.be.a('number').equal(400);
+                expect(activity.Ok).that.is.a('boolean').and.is.false;
+                expect(activity.Error).that.is.an('object').and.is.empty;
+                expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"');
+                expect(activity.Status).to.be.a('number').equal(400);
                 //no account
                 activityExternalID = 'Automated API Activity ' + Math.floor(Math.random() * 1000000).toString();
                 activityObj.ExternalID = activityExternalID;
@@ -644,12 +644,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(activityObj),
                 });
 
-                expect(activity.Ok).that.is.a('boolean').and.is.false,
-                    expect(activity.Error).that.is.an('object').and.is.empty,
-                    expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"AccountInternalID"'),
-                    expect(activity.Status).to.be.a('number').equal(400);
+                expect(activity.Ok).that.is.a('boolean').and.is.false;
+                expect(activity.Error).that.is.an('object').and.is.empty;
+                expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"AccountInternalID"');
+                expect(activity.Status).to.be.a('number').equal(400);
                 // no ATD
                 activityObj.Account.Data.InternalID = account.Body.InternalID;
                 activityObj.ActivityTypeID = null as any;
@@ -660,11 +660,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 });
 
                 //currently returns 500 and wrong message - DI-18105 - once fixed should return the below
-                // expect(activity.Ok).that.is.a('boolean').and.is.false,
-                // expect(activity.Error).that.is.an('object').and.is.empty,
-                // expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                // expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                // expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"ActivityTypeID"'),
+                // expect(activity.Ok).that.is.a('boolean').and.is.false;
+                // expect(activity.Error).that.is.an('object').and.is.empty;
+                // expect(activity.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                // expect(activity.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                // expect(activity.Body.fault.faultstring).that.is.a('string').and.contains('"ActivityTypeID"');
                 // expect(activity.Status).to.be.a('number').equal(400);
 
                 //Transactions - no ExID
@@ -691,12 +691,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(transactionObj),
                 });
 
-                expect(transaction.Ok).that.is.a('boolean').and.is.false,
-                    expect(transaction.Error).that.is.an('object').and.is.empty,
-                    expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
-                    expect(transaction.Status).to.be.a('number').equal(400);
+                expect(transaction.Ok).that.is.a('boolean').and.is.false;
+                expect(transaction.Error).that.is.an('object').and.is.empty;
+                expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"');
+                expect(transaction.Status).to.be.a('number').equal(400);
                 //no account
                 transactionExternalID = 'Automated API Transaction' + Math.floor(Math.random() * 1000000).toString();
                 transactionObj.ExternalID = transactionExternalID;
@@ -707,12 +707,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(transactionObj),
                 });
 
-                expect(transaction.Ok).that.is.a('boolean').and.is.false,
-                    expect(transaction.Error).that.is.an('object').and.is.empty,
-                    expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"AccountInternalID"'),
-                    expect(transaction.Status).to.be.a('number').equal(400);
+                expect(transaction.Ok).that.is.a('boolean').and.is.false;
+                expect(transaction.Error).that.is.an('object').and.is.empty;
+                expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"AccountInternalID"');
+                expect(transaction.Status).to.be.a('number').equal(400);
 
                 //no ATD
                 transactionObj.Account.Data.InternalID = account.Body.InternalID;
@@ -724,11 +724,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 });
 
                 //currently returns 500 and wrong message - DI-18114 - once fixed should return the below
-                // expect(transaction.Ok).that.is.a('boolean').and.is.false,
-                // expect(transaction.Error).that.is.an('object').and.is.empty,
-                // expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                // expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                // expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"'),
+                // expect(transaction.Ok).that.is.a('boolean').and.is.false;
+                // expect(transaction.Error).that.is.an('object').and.is.empty;
+                // expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                // expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                // expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('"ExternalID"');
                 // expect(transaction.Status).to.be.a('number').equal(400);
 
                 //no catalog
@@ -740,12 +740,12 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     body: JSON.stringify(transactionObj),
                 });
 
-                expect(transaction.Ok).that.is.a('boolean').and.is.false,
-                    expect(transaction.Error).that.is.an('object').and.is.empty,
-                    expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                    expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('Catalog is mandatory'),
-                    expect(transaction.Status).to.be.a('number').equal(400);
+                expect(transaction.Ok).that.is.a('boolean').and.is.false;
+                expect(transaction.Error).that.is.an('object').and.is.empty;
+                expect(transaction.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(transaction.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                expect(transaction.Body.fault.faultstring).that.is.a('string').and.contains('Catalog is mandatory');
+                expect(transaction.Status).to.be.a('number').equal(400);
 
                 //Setting up a correct transaction for lines tests
 
@@ -795,11 +795,11 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                 });
 
                 //currently returns 500 and wrong message - DI-18117 - once fixed should return the below
-                // expect(line.Ok).that.is.a('boolean').and.is.false,
-                // expect(line.Error).that.is.an('object').and.is.empty,
-                // expect(line.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                // expect(line.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData'),
-                // expect(line.Body.fault.faultstring).that.is.a('string').and.contains('"InternalID"'),
+                // expect(line.Ok).that.is.a('boolean').and.is.false;
+                // expect(line.Error).that.is.an('object').and.is.empty;
+                // expect(line.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                // expect(line.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidData');
+                // expect(line.Body.fault.faultstring).that.is.a('string').and.contains('"InternalID"');
                 // expect(line.Status).to.be.a('number').equal(400);
 
                 //no itemExID
@@ -810,21 +810,21 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     method: 'POST',
                     body: JSON.stringify(lineObj),
                 });
-                expect(line.Ok).that.is.a('boolean').and.is.false,
-                    expect(line.Error).that.is.an('object').and.is.empty,
-                    expect(line.Body.fault.detail).that.is.an('object').and.is.not.empty,
-                    expect(line.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidParameter'),
-                    expect(line.Body.fault.faultstring).that.is.a('string').and.contains('Sub type is not valid.'),
-                    expect(line.Status).to.be.a('number').equal(400);
+                expect(line.Ok).that.is.a('boolean').and.is.false;
+                expect(line.Error).that.is.an('object').and.is.empty;
+                expect(line.Body.fault.detail).that.is.an('object').and.is.not.empty;
+                expect(line.Body.fault.detail.errorcode).that.is.a('string').and.contains('InvalidParameter');
+                expect(line.Body.fault.faultstring).that.is.a('string').and.contains('Sub type is not valid.');
+                expect(line.Status).to.be.a('number').equal(400);
 
                 //item deletion after test is done
                 const deletedItem = await generalService.fetchStatus('/items/' + item.Body.InternalID, {
                     method: 'DELETE',
                 });
 
-                expect(deletedItem.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedItem.Error).that.is.an('object').and.is.empty,
-                    expect(deletedItem.Status).to.be.a('number').equal(200);
+                expect(deletedItem.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedItem.Error).that.is.an('object').and.is.empty;
+                expect(deletedItem.Status).to.be.a('number').equal(200);
 
                 //Transaction deletion after test is done
                 const deletedTransaction = await generalService.fetchStatus(
@@ -832,26 +832,26 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                     { method: 'DELETE' },
                 );
 
-                expect(deletedTransaction.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedTransaction.Error).that.is.an('object').and.is.empty,
-                    expect(deletedTransaction.Status).to.be.a('number').equal(200);
+                expect(deletedTransaction.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedTransaction.Error).that.is.an('object').and.is.empty;
+                expect(deletedTransaction.Status).to.be.a('number').equal(200);
 
                 const deletedContact = await generalService.fetchStatus('/contacts/' + contact.Body.InternalID, {
                     method: 'DELETE',
                 });
 
-                expect(deletedContact.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedContact.Error).that.is.an('object').and.is.empty,
-                    expect(deletedContact.Status).to.be.a('number').equal(200);
+                expect(deletedContact.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedContact.Error).that.is.an('object').and.is.empty;
+                expect(deletedContact.Status).to.be.a('number').equal(200);
 
                 //Accounts
                 const deletedAccount = await generalService.fetchStatus('/accounts/' + account.Body.InternalID, {
                     method: 'DELETE',
                 });
 
-                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true,
-                    expect(deletedAccount.Error).that.is.an('object').and.is.empty,
-                    expect(deletedAccount.Status).to.be.a('number').equal(200);
+                expect(deletedAccount.Ok).that.is.a('boolean').and.is.true;
+                expect(deletedAccount.Error).that.is.an('object').and.is.empty;
+                expect(deletedAccount.Status).to.be.a('number').equal(200);
             });
         });
 
@@ -893,14 +893,14 @@ export async function CPINodeTests(generalService: GeneralService, tester: Teste
                         order_by: 'CreationDateTime',
                     });
 
-                    expect(Dor).to.be.an('array').with.lengthOf(100),
-                        expect(Dor[0]).to.have.property('ExternalID').to.contain('R'),
-                        Dor.forEach((obj) => {
-                            const LngDesc = obj.LongDescription;
+                    expect(Dor).to.be.an('array').with.lengthOf(100);
+                    expect(Dor[0]).to.have.property('ExternalID').to.contain('R');
+                    Dor.forEach((obj) => {
+                        const LngDesc = obj.LongDescription;
 
-                            expect(obj).to.be.an('object').to.have.property('LongDescription').not.to.be.null,
-                                expect(LngDesc).to.be.a('string');
-                        });
+                        expect(obj).to.be.an('object').to.have.property('LongDescription').not.to.be.null,
+                            expect(LngDesc).to.be.a('string');
+                    });
                 });
             });
 

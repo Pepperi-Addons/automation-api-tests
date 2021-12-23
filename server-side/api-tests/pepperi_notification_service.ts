@@ -322,15 +322,15 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
             });
 
@@ -1280,15 +1280,15 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
             });
         });

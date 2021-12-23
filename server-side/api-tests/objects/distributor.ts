@@ -194,16 +194,16 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     expect(createdUser, 'InternalID')
                         .to.have.property('InternalID')
                         .that.is.a('number')
-                        .and.is.above(0),
-                        expect(createdUser, 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty,
-                        expect(createdUser, 'ExternalID')
-                            .to.have.property('ExternalID')
-                            .that.is.a('string')
-                            .and.equals(userExternalID);
+                        .and.is.above(0);
+                    expect(createdUser, 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty;
+                    expect(createdUser, 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID);
                     const createdUserPass = await adminDistributorService.resetUserPassword(createdUser.InternalID);
                     clientArr.push({ Email: createdUserPass.Email, Password: createdUserPass.Password });
-                    expect(await adminObjectsService.deleteUser('InternalID', createdUser.InternalID)).to.be.true,
-                        expect(await adminObjectsService.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
+                    expect(await adminObjectsService.deleteUser('InternalID', createdUser.InternalID)).to.be.true;
+                    expect(await adminObjectsService.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
                 });
 
                 it('Create account for buyers', async () => {
@@ -241,31 +241,29 @@ export async function DistributorTests(generalService: GeneralService, request, 
                             ],
                         ],
                     });
-                    expect(bulkCreateContact.JobID).to.be.a('number'),
-                        expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
+                    expect(bulkCreateContact.JobID).to.be.a('number');
+                    expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
                 });
 
                 it('Verify bulk jobinfo', async () => {
                     bulkJobInfo = await adminObjectsService.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
-                    expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID),
-                        expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(
-                            new Date().toISOString().split('T')[0],
-                        ),
-                        expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                        expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                            new Date().toISOString().split('T')[0],
-                        ),
-                        expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                        expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                        expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                        expect(bulkJobInfo.Records, 'Records').to.equal(2),
-                        expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2),
-                        expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                        expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-                        expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                        expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                        expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                        expect(bulkJobInfo.Error, 'Error').to.equal('');
+                    expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID);
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    );
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+                    expect(bulkJobInfo.Records, 'Records').to.equal(2);
+                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2);
+                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
                 });
 
                 it('Verify bulk created contacts', async () => {
@@ -289,8 +287,8 @@ export async function DistributorTests(generalService: GeneralService, request, 
                             "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
                     );
                     connectAsBuyerContacts.map((contact) => {
-                        expect(contact).to.not.have.property('SecurityGroupUUID'),
-                            expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
+                        expect(contact).to.not.have.property('SecurityGroupUUID');
+                        expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
                     });
 
                     contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
@@ -298,16 +296,14 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         UUIDs: contactUUIDArray,
                         SelectAll: false,
                     });
-                    expect(connectAsBuyer).to.be.an('array').with.lengthOf(2),
-                        connectAsBuyer.map((buyer) => {
-                            expect(buyer, 'Connect as buyer name').to.have.property('name').that.is.not.empty,
-                                expect(buyer, 'Connect as buyer email').to.have.property('email').that.is.not.empty,
-                                expect(buyer, 'Connect as buyer message')
-                                    .to.have.property('message')
-                                    .that.is.a('string').and.is.empty,
-                                expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not
-                                    .empty;
-                        });
+                    expect(connectAsBuyer).to.be.an('array').with.lengthOf(2);
+                    connectAsBuyer.map((buyer) => {
+                        expect(buyer, 'Connect as buyer name').to.have.property('name').that.is.not.empty;
+                        expect(buyer, 'Connect as buyer email').to.have.property('email').that.is.not.empty;
+                        expect(buyer, 'Connect as buyer message').to.have.property('message').that.is.a('string').and.is
+                            .empty;
+                        expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not.empty;
+                    });
 
                     const connectedContacts = await adminObjectsService.getBulk(
                         'contacts',
@@ -316,9 +312,8 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     connectedContacts.map((contact) => {
                         expect(contact, 'Buyer security group UUID')
                             .to.have.property('SecurityGroupUUID')
-                            .that.is.a('string').and.is.not.empty,
-                            expect(contact, 'Buyer IsBuyer').to.have.property('IsBuyer').that.is.a('boolean').and.is
-                                .true;
+                            .that.is.a('string').and.is.not.empty;
+                        expect(contact, 'Buyer IsBuyer').to.have.property('IsBuyer').that.is.a('boolean').and.is.true;
                     });
 
                     clientArr.push({ Email: connectAsBuyer[0].email, Password: connectAsBuyer[0].password });
@@ -327,8 +322,8 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         'contacts',
                         "?where=Email='" + connectAsBuyer[1].email + "'",
                     );
-                    expect(await adminObjectsService.deleteContact(buyerToDelete[0].InternalID)).to.be.true,
-                        expect(await adminObjectsService.deleteContact(buyerToDelete[0].InternalID)).to.be.false;
+                    expect(await adminObjectsService.deleteContact(buyerToDelete[0].InternalID)).to.be.true;
+                    expect(await adminObjectsService.deleteContact(buyerToDelete[0].InternalID)).to.be.false;
                 });
 
                 it('Get distributor and support admin user', async () => {

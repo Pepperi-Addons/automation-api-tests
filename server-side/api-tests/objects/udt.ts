@@ -61,7 +61,7 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
         });
 
         it('Update UDT meta data', async () => {
-            (updatedUDT = await service.postUDTMetaData({
+            updatedUDT = await service.postUDTMetaData({
                 TableID: UDTRandom,
                 MainKeyType: {
                     ID: 0,
@@ -75,30 +75,30 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
                     Dormant: true,
                     Volatile: false,
                 },
-            })),
-                expect(updatedUDT).to.deep.include({
-                    TableID: UDTRandom,
-                    MainKeyType: {
-                        ID: 0,
-                        Name: 'Any',
-                    },
-                    SecondaryKeyType: {
-                        ID: 0,
-                        Name: 'Any',
-                    },
-                    MemoryMode: {
-                        Dormant: true,
-                        Volatile: false,
-                    },
-                }),
-                expect(updatedUDT).to.have.property('CreationDateTime').that.contains('Z'),
-                expect(updatedUDT)
-                    .to.have.property('ModificationDateTime')
-                    .that.contains(new Date().toISOString().split('T')[0]),
-                expect(updatedUDT).to.have.property('ModificationDateTime').that.contains('Z'),
-                expect(updatedUDT).to.have.property('Hidden').that.is.false,
-                expect(updatedUDT['MemoryMode']).to.have.property('Dormant').that.is.true,
-                expect(updatedUDT['MemoryMode']).to.have.property('Volatile').that.is.false;
+            });
+            expect(updatedUDT).to.deep.include({
+                TableID: UDTRandom,
+                MainKeyType: {
+                    ID: 0,
+                    Name: 'Any',
+                },
+                SecondaryKeyType: {
+                    ID: 0,
+                    Name: 'Any',
+                },
+                MemoryMode: {
+                    Dormant: true,
+                    Volatile: false,
+                },
+            });
+            expect(updatedUDT).to.have.property('CreationDateTime').that.contains('Z');
+            expect(updatedUDT)
+                .to.have.property('ModificationDateTime')
+                .that.contains(new Date().toISOString().split('T')[0]);
+            expect(updatedUDT).to.have.property('ModificationDateTime').that.contains('Z');
+            expect(updatedUDT).to.have.property('Hidden').that.is.false;
+            expect(updatedUDT['MemoryMode']).to.have.property('Dormant').that.is.true;
+            expect(updatedUDT['MemoryMode']).to.have.property('Volatile').that.is.false;
         });
 
         it('Bulk update UDT', async () => {
@@ -112,69 +112,67 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
                     [UDTRandom, 'Test 5', '', 'Value 5'],
                 ],
             });
-            expect(bulkUpdateUDT.JobID).to.be.a('number'),
-                expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
+            expect(bulkUpdateUDT.JobID).to.be.a('number');
+            expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
         });
 
         it('Verify bulk jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk UDT update', async () => {
             const bulkUpdatedUDT = await service.getUDT({ where: "MapDataExternalID='" + UDTRandom + "'" });
-            expect(bulkUpdatedUDT).to.be.an('array').with.lengthOf(5),
-                expect(bulkUpdatedUDT[0])
-                    .to.have.property('CreationDateTime')
-                    .that.contains(new Date().toISOString().split('T')[0]),
-                expect(bulkUpdatedUDT[0]).to.have.property('CreationDateTime').that.contain('Z'),
-                expect(bulkUpdatedUDT[0])
-                    .to.have.property('ModificationDateTime')
-                    .that.contains(new Date().toISOString().split('T')[0]),
-                expect(bulkUpdatedUDT[0]).to.have.property('ModificationDateTime').that.contains('Z'),
-                expect(bulkUpdatedUDT[0]).to.have.property('MainKey').that.contains('Test'),
-                expect(bulkUpdatedUDT[0]).to.have.property('SecondaryKey').that.equals(null),
-                expect(bulkUpdatedUDT[0]).to.have.property('MapDataExternalID').that.equals(UDTRandom),
-                expect(bulkUpdatedUDT[0]).to.have.property('Values').that.is.an('array').with.lengthOf(1),
-                expect(bulkUpdatedUDT[0].Values[0]).to.contain('Value');
+            expect(bulkUpdatedUDT).to.be.an('array').with.lengthOf(5);
+            expect(bulkUpdatedUDT[0])
+                .to.have.property('CreationDateTime')
+                .that.contains(new Date().toISOString().split('T')[0]);
+            expect(bulkUpdatedUDT[0]).to.have.property('CreationDateTime').that.contain('Z');
+            expect(bulkUpdatedUDT[0])
+                .to.have.property('ModificationDateTime')
+                .that.contains(new Date().toISOString().split('T')[0]);
+            expect(bulkUpdatedUDT[0]).to.have.property('ModificationDateTime').that.contains('Z');
+            expect(bulkUpdatedUDT[0]).to.have.property('MainKey').that.contains('Test');
+            expect(bulkUpdatedUDT[0]).to.have.property('SecondaryKey').that.equals(null);
+            expect(bulkUpdatedUDT[0]).to.have.property('MapDataExternalID').that.equals(UDTRandom);
+            expect(bulkUpdatedUDT[0]).to.have.property('Values').that.is.an('array').with.lengthOf(1);
+            expect(bulkUpdatedUDT[0].Values[0]).to.contain('Value');
         });
 
         it('POST UDT row', async () => {
-            (updatedUDTRowPOST = await service.postUDT({
+            updatedUDTRowPOST = await service.postUDT({
                 MapDataExternalID: UDTRandom,
                 MainKey: 'API Test row',
                 SecondaryKey: '',
                 Values: ['Api Test value'],
-            })),
-                expect(updatedUDTRowPOST).to.deep.include({
-                    MapDataExternalID: UDTRandom,
-                    MainKey: 'API Test row',
-                    SecondaryKey: null,
-                    Values: ['Api Test value'],
-                }),
-                expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z'),
-                expect(updatedUDTRowPOST)
-                    .to.have.property('ModificationDateTime')
-                    .that.contains(new Date().toISOString().split('T')[0]),
-                expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z'),
-                expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false,
-                expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+            });
+            expect(updatedUDTRowPOST).to.deep.include({
+                MapDataExternalID: UDTRandom,
+                MainKey: 'API Test row',
+                SecondaryKey: null,
+                Values: ['Api Test value'],
+            });
+            expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+            expect(updatedUDTRowPOST)
+                .to.have.property('ModificationDateTime')
+                .that.contains(new Date().toISOString().split('T')[0]);
+            expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+            expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+            expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
         });
 
         it('Verify POST UDT row', async () => {
@@ -190,19 +188,19 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
         //         MainKey: 'API Test row UPDATE',
         //         SecondaryKey: '',
         //         Values: ['Api Test value UPDATE'],
-        //     })),
+        //     }));
         //         expect(updatedUDTRowUPDATE).to.deep.include({
         //             MapDataExternalID: UDTRandom,
         //             MainKey: 'API Test row UPDATE',
         //             SecondaryKey: null,
         //             Values: ['Api Test value UPDATE'],
-        //         }),
-        //         expect(updatedUDTRowUPDATE).to.have.property('CreationDateTime').that.contains('Z'),
+        //         });
+        //         expect(updatedUDTRowUPDATE).to.have.property('CreationDateTime').that.contains('Z');
         //         expect(updatedUDTRowUPDATE)
         //             .to.have.property('ModificationDateTime')
-        //             .that.contains(new Date().toISOString().split('T')[0]),
-        //         expect(updatedUDTRowUPDATE).to.have.property('ModificationDateTime').that.contains('Z'),
-        //         expect(updatedUDTRowUPDATE).to.have.property('Hidden').that.is.false,
+        //             .that.contains(new Date().toISOString().split('T')[0]);
+        //         expect(updatedUDTRowUPDATE).to.have.property('ModificationDateTime').that.contains('Z');
+        //         expect(updatedUDTRowUPDATE).to.have.property('Hidden').that.is.false;
         //         expect(updatedUDTRowUPDATE)
         //             .to.have.property('InternalID')
         //             .that.equals(updatedUDTRowPOST.InternalID);
@@ -211,18 +209,18 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
         //Removed 07/05/2021 by oren - this test can't pass on production or EU
         // it('Verify UPDATE UDT row', async () => {
         //     updatedUDTRow = await service.getUDT({ where: "MapDataExternalID='" + UDTRandom + "'" });
-        //     expect(updatedUDTRow).to.be.an('array').with.lengthOf(6),
+        //     expect(updatedUDTRow).to.be.an('array').with.lengthOf(6);
         //         (updatedUDTRow = await service.getUDT({ where: 'InternalID=' + updatedUDTRowPOST.InternalID }));
-        //     expect(updatedUDTRow).to.be.an('array').with.lengthOf(1),
-        //         expect(updatedUDTRow[0]).to.have.property('CreationDateTime').that.contains('Z'),
+        //     expect(updatedUDTRow).to.be.an('array').with.lengthOf(1);
+        //         expect(updatedUDTRow[0]).to.have.property('CreationDateTime').that.contains('Z');
         //         expect(updatedUDTRow[0])
         //             .to.have.property('ModificationDateTime')
-        //             .that.contains(new Date().toISOString().split('T')[0]),
-        //         expect(updatedUDTRow[0]).to.have.property('ModificationDateTime').that.contains('Z'),
-        //         expect(updatedUDTRow[0]).to.have.property('Hidden').that.is.false,
-        //         expect(updatedUDTRow[0]).to.have.property('InternalID').that.equals(updatedUDTRowPOST.InternalID),
-        //         expect(updatedUDTRow[0]).to.have.property('Values').that.is.an('array').with.lengthOf(1),
-        //         expect(updatedUDTRow[0].Values[0]).to.contain('Api Test value UPDATE'),
+        //             .that.contains(new Date().toISOString().split('T')[0]);
+        //         expect(updatedUDTRow[0]).to.have.property('ModificationDateTime').that.contains('Z');
+        //         expect(updatedUDTRow[0]).to.have.property('Hidden').that.is.false;
+        //         expect(updatedUDTRow[0]).to.have.property('InternalID').that.equals(updatedUDTRowPOST.InternalID);
+        //         expect(updatedUDTRow[0]).to.have.property('Values').that.is.an('array').with.lengthOf(1);
+        //         expect(updatedUDTRow[0].Values[0]).to.contain('Api Test value UPDATE');
         //         expect(updatedUDTRow[0]).to.have.property('MainKey').that.equals('API Test row UPDATE');
         // });
 
@@ -263,16 +261,16 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
                     Values: ['Api Test value 4'],
                 },
             ]);
-            expect(batchUDTresponse).to.be.an('array').with.lengthOf(4),
-                batchUDTresponse.map((row) => {
-                    expect(row).to.have.property('InternalID').that.is.above(0),
-                        expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
-                        expect(row).to.have.property('Status').that.equals('Insert'),
-                        expect(row).to.have.property('Message').that.equals('Row inserted.'),
-                        expect(row)
-                            .to.have.property('URI')
-                            .that.equals('/user_defined_tables/' + row.InternalID);
-                });
+            expect(batchUDTresponse).to.be.an('array').with.lengthOf(4);
+            batchUDTresponse.map((row) => {
+                expect(row).to.have.property('InternalID').that.is.above(0);
+                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+                expect(row).to.have.property('Status').that.equals('Insert');
+                expect(row).to.have.property('Message').that.equals('Row inserted.');
+                expect(row)
+                    .to.have.property('URI')
+                    .that.equals('/user_defined_tables/' + row.InternalID);
+            });
         });
 
         it('BATCH UDT statuses', async () => {
@@ -302,45 +300,37 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
                     Values: ['Api Test value 4'],
                 },
             ]);
-            expect(batchUDTresponse).to.be.an('array').with.lengthOf(4),
-                expect(batchUDTresponse[0]).have.property('InternalID').that.is.above(0),
-                expect(batchUDTresponse[0])
-                    .to.have.property('UUID')
-                    .that.equals('00000000-0000-0000-0000-000000000000'),
-                expect(batchUDTresponse[0]).to.have.property('Status').that.equals('Ignore'),
-                expect(batchUDTresponse[0])
-                    .to.have.property('Message')
-                    .that.equals('No changes in this row. The row is being ignored.'),
-                expect(batchUDTresponse[0])
-                    .to.have.property('URI')
-                    .that.equals('/user_defined_tables/' + batchUDTresponse[0].InternalID),
-                expect(batchUDTresponse[1]).have.property('InternalID').that.is.above(0),
-                expect(batchUDTresponse[1])
-                    .to.have.property('UUID')
-                    .that.equals('00000000-0000-0000-0000-000000000000'),
-                expect(batchUDTresponse[1]).to.have.property('Status').that.equals('Update'),
-                expect(batchUDTresponse[1]).to.have.property('Message').that.equals('Row updated.'),
-                expect(batchUDTresponse[1])
-                    .to.have.property('URI')
-                    .that.equals('/user_defined_tables/' + batchUDTresponse[1].InternalID),
-                expect(batchUDTresponse[2]).have.property('InternalID').that.is.above(0),
-                expect(batchUDTresponse[2])
-                    .to.have.property('UUID')
-                    .that.equals('00000000-0000-0000-0000-000000000000'),
-                expect(batchUDTresponse[2]).to.have.property('Status').that.equals('Insert'),
-                expect(batchUDTresponse[2]).to.have.property('Message').that.equals('Row inserted.'),
-                expect(batchUDTresponse[2])
-                    .to.have.property('URI')
-                    .that.equals('/user_defined_tables/' + batchUDTresponse[2].InternalID),
-                expect(batchUDTresponse[3]).have.property('InternalID').that.equals(0),
-                expect(batchUDTresponse[3])
-                    .to.have.property('UUID')
-                    .that.equals('00000000-0000-0000-0000-000000000000'),
-                expect(batchUDTresponse[3]).to.have.property('Status').that.equals('Error'),
-                expect(batchUDTresponse[3])
-                    .to.have.property('Message')
-                    .that.equals('@MapDataExternalID does not exist.value: This is need to get error status'),
-                expect(batchUDTresponse[3]).to.have.property('URI').that.equals('');
+            expect(batchUDTresponse).to.be.an('array').with.lengthOf(4);
+            expect(batchUDTresponse[0]).have.property('InternalID').that.is.above(0);
+            expect(batchUDTresponse[0]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+            expect(batchUDTresponse[0]).to.have.property('Status').that.equals('Ignore');
+            expect(batchUDTresponse[0])
+                .to.have.property('Message')
+                .that.equals('No changes in this row. The row is being ignored.');
+            expect(batchUDTresponse[0])
+                .to.have.property('URI')
+                .that.equals('/user_defined_tables/' + batchUDTresponse[0].InternalID);
+            expect(batchUDTresponse[1]).have.property('InternalID').that.is.above(0);
+            expect(batchUDTresponse[1]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+            expect(batchUDTresponse[1]).to.have.property('Status').that.equals('Update');
+            expect(batchUDTresponse[1]).to.have.property('Message').that.equals('Row updated.');
+            expect(batchUDTresponse[1])
+                .to.have.property('URI')
+                .that.equals('/user_defined_tables/' + batchUDTresponse[1].InternalID);
+            expect(batchUDTresponse[2]).have.property('InternalID').that.is.above(0);
+            expect(batchUDTresponse[2]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+            expect(batchUDTresponse[2]).to.have.property('Status').that.equals('Insert');
+            expect(batchUDTresponse[2]).to.have.property('Message').that.equals('Row inserted.');
+            expect(batchUDTresponse[2])
+                .to.have.property('URI')
+                .that.equals('/user_defined_tables/' + batchUDTresponse[2].InternalID);
+            expect(batchUDTresponse[3]).have.property('InternalID').that.equals(0);
+            expect(batchUDTresponse[3]).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+            expect(batchUDTresponse[3]).to.have.property('Status').that.equals('Error');
+            expect(batchUDTresponse[3])
+                .to.have.property('Message')
+                .that.equals('@MapDataExternalID does not exist.value: This is need to get error status');
+            expect(batchUDTresponse[3]).to.have.property('URI').that.equals('');
         });
 
         it('Delete UDT meta data', async () => {
