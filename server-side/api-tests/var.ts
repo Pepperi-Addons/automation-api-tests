@@ -3648,6 +3648,26 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             ),
         );
 
+        //Addon Jobs Tests
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/0.0.4.js'));
+        versionTestDataBody = {
+            AddonUUID: createApiResponse.Body.UUID,
+            Version: '0.0.4',
+            Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[3] }],
+        };
+        createVersionApiResponseArr.push(
+            await generalService.fetchStatus(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(versionTestDataBody),
+                },
+            ),
+        );
+
         addTestResultUnderHeadline(
             testName,
             'Verstion 0.0.1 Creatred',
@@ -3670,6 +3690,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             createVersionApiResponseArr[2].Body.Version == '0.0.3'
                 ? true
                 : 'The 0.0.3 Creation failed with response of: ' + createVersionApiResponseArr[2],
+        );
+
+        addTestResultUnderHeadline(
+            testName,
+            'Verstion 0.0.4 Creatred',
+            createVersionApiResponseArr[3].Body.Version == '0.0.4'
+                ? true
+                : 'The 0.0.4 Creation failed with response of: ' + createVersionApiResponseArr[3],
         );
 
         //This can be use to easily extract the token to the console
