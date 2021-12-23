@@ -56,7 +56,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 Password: distributorPassword,
             });
             expect(newDistributor.Status).to.equal(200);
-            expect(newDistributor.Body.Status.ID).to.equal(1);
+            expect(newDistributor.Body.Status.ID, JSON.stringify(newDistributor.Body.AuditInfo)).to.equal(1);
             expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
         });
 
