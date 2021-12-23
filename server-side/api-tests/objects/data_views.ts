@@ -1592,7 +1592,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                                 Type: 'Card',
                                 Title: testDataViewTitle,
                                 Context: {
-                                    Name: `Oren ${testDataViewTitle}`, //(#Negative).replace(/ /gi, '_'),
+                                    Name: `Oren ${testDataViewTitle}`, //(#Negative).replace(/ /gi, '_');
                                     ScreenSize: 'Landscape',
                                     Profile: {
                                         Name: userTypeIDArr[1],
@@ -1837,7 +1837,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
                                 Context: {
-                                    Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_'),
+                                    Name: undefined as any, //(#Negative)`Oren ${testDataViewTitle}`.replace(/ /gi, '_');
                                     ScreenSize: 'Landscape',
                                     Profile: {
                                         Name: userTypeIDArr[1],
