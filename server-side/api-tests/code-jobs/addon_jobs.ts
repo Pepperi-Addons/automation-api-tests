@@ -372,7 +372,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                     ' \n';
             }
         }
-        await createNewCodeJobWithValue();
+        await getListOfCallJobsLast();
     }
 
     // async function createNewCodeJobWithValue() {
@@ -617,7 +617,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                 'the list lenght wil be ' + listLength + ' but actual lenght is ' + cashCallJobsList.length;
         }
         // the test outpuut will be on the end of all test cases , with werification on listLength counter on tests with CodeJob creation
-        await executeCOdeJobUsingDraft();
+        await auditLogverification();
     }
 
     //#region Execute code Job using draft code
@@ -1432,7 +1432,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         } else {
             logcash.getDistributorBudgetTest = false;
             logcash.getDistributorBudgetTestErrorMsg = 'Get distributor budget function failed ';
-            await updateDistributorBudget();
+            await updateDistributorBudgetSecond();
         }
     }
 
@@ -1465,7 +1465,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             logcash.insertNewCodJobToBudgetTestErrorMsg =
                 'Post to CodeJobe with Draft failed.THe Budget test case not tested and will be tested again';
             //updateDistributorBudget();
-            await createNewCJToExecuteWithPapi();
+            //await createNewCJToExecuteWithPapi();
         }
     }
 
@@ -1540,7 +1540,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                 '  actuall value is: ' +
                 CallbackCash.ExecutionBudgetThird.Body.UsedBudget;
         }
-        await updateDistributorBudget();
+        await updateDistributorBudgetSecond();
     }
     //#endregion
 
@@ -1646,7 +1646,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             logcash.LogToLastBudgetTestError =
                 'The single execution log is empty or returned error code: ' + codeJobUUIDforBudget;
         }
-        await createNewCJToExecuteWithPapi();
+        //await createNewCJToExecuteWithPapi();
     }
     //#endregion
 
