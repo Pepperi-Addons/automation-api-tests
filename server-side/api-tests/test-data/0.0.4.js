@@ -1,5 +1,83 @@
-//UpdateCodeJob-- 'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};'
-//updateDrafrCodeWithoutResult --   'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(130000);\r\n\treturn multiply(8,8);\r\n};'
-//createNewCJToBudgetTest -- 'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(5000);\r\n\treturn multiply(8,8);\r\n};'
-//retry -- createNewCodeJobRetryTest --    'exports.main = async (Client) => {\r\nvar response = {};\r\nClient.addLogEntry("Info","Start throw new error");\r\nthrow new Error(\'nofartest\');\r\nreturn (response);\r\n};'
+exports.UpdateCodeJob = async (Client) => {
+    let response;
+    Client.addLogEntry('Info', 'multiplyResult');
+    response = {
+        success: 'true',
+        errorMessage: '',
+        resultObject: {},
+    };
+    function multiply(a = 2, b = 3) {
+        const res = {
+            multiplyResult: a * b,
+        };
+        Client.addLogEntry('Info', 'Start Funcion multiply =' + res);
+        response.resultObject = res;
+        response.errorMessage = 'test msg';
+        response.success = true;
+        return response;
+    }
+    return multiply(2, 3);
+};
 
+exports.updateDrafrCodeWithoutResult = async (Client) => {
+    let response;
+    Client.addLogEntry('Info', 'multiplyResult');
+    response = {
+        success: 'true',
+        errorMessage: '',
+        resultObject: {},
+    };
+    function multiply(a = 2, b = 3) {
+        const res = {
+            multiplyResult: a * b,
+        };
+        Client.addLogEntry('Info', 'Start Funcion multiply =' + res);
+        response.resultObject = res;
+        response.errorMessage = 'test msg';
+        response.success = true;
+        return response;
+    }
+    function sleep(ms) {
+        const start = new Date().getTime(),
+            expire = start + ms;
+        while (new Date().getTime() < expire) {}
+        return;
+    }
+    sleep(130000);
+    return multiply(8, 8);
+};
+
+exports.createNewCJToBudgetTest = async (Client) => {
+    let response;
+    Client.addLogEntry('Info', 'multiplyResult');
+    response = {
+        success: 'true',
+        errorMessage: '',
+        resultObject: {},
+    };
+    function multiply(a = 2, b = 3) {
+        const res = {
+            multiplyResult: a * b,
+        };
+        Client.addLogEntry('Info', 'Start Funcion multiply =' + res);
+        response.resultObject = res;
+        response.errorMessage = 'test msg';
+        response.success = true;
+        return response;
+    }
+    function sleep(ms) {
+        const start = new Date().getTime(),
+            expire = start + ms;
+        while (new Date().getTime() < expire) {}
+        return;
+    }
+    sleep(5000);
+    return multiply(8, 8);
+};
+
+exports.createNewCodeJobRetryTest = async (Client) => {
+    const response = {};
+    Client.addLogEntry('Info', 'Start throw new error');
+    throw new Error('Nofar Test');
+    return response;
+};
