@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data_visualisation.service';
+import { DataVisualisationService, Chart } from '../services/data-visualisation.service';
 
 export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataVisualisationService = new DataVisualisationService(generalService);
@@ -33,7 +33,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         'Training Template': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Data Visualisation
 
     describe('Data Visualisation Tests Suites', () => {
@@ -263,7 +263,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     },
                 );
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.includes(
+                expect(chartResponse.Body.fault.faultstring).to.include(
                     '/V1.0/file_storage failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Invalid URL","detail":{"errorcode":"InvalidData"}}}',
                 );
             });

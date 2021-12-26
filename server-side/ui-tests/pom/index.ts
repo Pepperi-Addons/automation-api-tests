@@ -8,6 +8,7 @@ import { WebAppActivity } from './WebAppActivity';
 import { WebAppTransaction } from './WebAppTransaction';
 import { WebAppSettingsSidePanel } from './WebAppSettingsSidePanel';
 import { AddonPage } from './AddonPage';
+import { WebAppAPI } from './WebAppAPI';
 
 export {
     WebAppLoginPage,
@@ -20,4 +21,5 @@ export {
     WebAppTransaction,
     WebAppSettingsSidePanel,
     AddonPage,
+    WebAppAPI,
 };

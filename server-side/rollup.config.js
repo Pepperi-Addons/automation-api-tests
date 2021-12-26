@@ -9,7 +9,7 @@ export default config.Endpoints.map(endpoint => {
         input: endpoint,
         output: [
          {
-          dir: '../publish/api',
+          dir: '../publish',
           format: 'cjs'
          }
         ],

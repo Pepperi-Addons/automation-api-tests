@@ -349,7 +349,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     expect(error)
                         .to.have.property('message')
                         .that.includes(
-                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                         );
                 }
                 const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -1000,29 +1000,27 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     [bulkAccountExternalID + ' 5', 'Bulk Account 5'],
                 ],
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify bulk jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk created accounts', async () => {
@@ -1054,34 +1052,32 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
 
         it('Verify bulk update jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk accounts update', async () => {
             bulkUpdateAccounts = await service.getAccounts({
                 where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
             });
-            expect(bulkUpdateAccounts[0].Name).to.include('Update'),
-                expect(bulkUpdateAccounts[1].Name).to.include('Update'),
-                expect(bulkUpdateAccounts[2].Name).to.include('Update'),
-                expect(bulkUpdateAccounts[3].Name).to.include('Update'),
-                expect(bulkUpdateAccounts[4].Name).to.include('Update');
+            expect(bulkUpdateAccounts[0].Name).to.include('Update');
+            expect(bulkUpdateAccounts[1].Name).to.include('Update');
+            expect(bulkUpdateAccounts[2].Name).to.include('Update');
+            expect(bulkUpdateAccounts[3].Name).to.include('Update');
+            expect(bulkUpdateAccounts[4].Name).to.include('Update');
         });
 
         it('Bulk mixed file update accounts', async () => {
@@ -1099,42 +1095,40 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                     [bulkAccountExternalID + ' 2', 'Bulk Account 2 Update'],
                 ],
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify bulk update jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(9),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(2),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(3),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(2),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(9);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(2);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(3);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(2);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed file accounts update', async () => {
             bulkUpdateAccounts = await service.getAccounts({
                 where: "ExternalID LIKE '%" + bulkAccountExternalID + "%'",
             });
-            expect(bulkUpdateAccounts[0].Name).to.include('Update'),
-                expect(bulkUpdateAccounts[1].Name).to.include('Update'),
-                expect(bulkUpdateAccounts[2].Name).to.include('Bulk Account 3'),
-                expect(bulkUpdateAccounts[3].Name).to.include('Bulk Account 4'),
-                expect(bulkUpdateAccounts[4].Name).to.include('Bulk Account 5'),
-                expect(bulkUpdateAccounts[5].Name).to.include('Bulk Account 6'),
-                expect(bulkUpdateAccounts[6].Name).to.include('Bulk Account 7');
+            expect(bulkUpdateAccounts[0].Name).to.include('Update');
+            expect(bulkUpdateAccounts[1].Name).to.include('Update');
+            expect(bulkUpdateAccounts[2].Name).to.include('Bulk Account 3');
+            expect(bulkUpdateAccounts[3].Name).to.include('Bulk Account 4');
+            expect(bulkUpdateAccounts[4].Name).to.include('Bulk Account 5');
+            expect(bulkUpdateAccounts[5].Name).to.include('Bulk Account 6');
+            expect(bulkUpdateAccounts[6].Name).to.include('Bulk Account 7');
         });
 
         it('Delete bulk accounts', async () => {
@@ -1191,12 +1185,12 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         //         ZipCode: '12345'
         //         },
         //     ]);
-        //     expect(batchAcccountResponse).to.be.an('array').with.lengthOf(4),
+        //     expect(batchAcccountResponse).to.be.an('array').with.lengthOf(4);
         //     batchAcccountResponse.map((row) => {
-        //             expect(row).to.have.property('InternalID').that.is.above(0),
-        //                 expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000'),
-        //                 expect(row).to.have.property('Status').that.equals('Insert'),
-        //                 expect(row).to.have.property('Message').that.equals('Row inserted.'),
+        //             expect(row).to.have.property('InternalID').that.is.above(0);
+        //                 expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //                 expect(row).to.have.property('Status').that.equals('Insert');
+        //                 expect(row).to.have.property('Message').that.equals('Row inserted.');
         //                 expect(row)
         //                     .to.have.property('URI')
         //                     .that.equals('/user_defined_tables/' + row.InternalID);
@@ -1230,44 +1224,44 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         //             Values: ['Api Test value 4'],
         //         },
         //     ]);
-        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(4),
-        //         expect(batchUDTresponse[0]).have.property('InternalID').that.is.above(0),
+        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(4);
+        //         expect(batchUDTresponse[0]).have.property('InternalID').that.is.above(0);
         //         expect(batchUDTresponse[0])
         //             .to.have.property('UUID')
-        //             .that.equals('00000000-0000-0000-0000-000000000000'),
-        //         expect(batchUDTresponse[0]).to.have.property('Status').that.equals('Ignore'),
+        //             .that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(batchUDTresponse[0]).to.have.property('Status').that.equals('Ignore');
         //         expect(batchUDTresponse[0])
         //             .to.have.property('Message')
-        //             .that.equals('No changes in this row. The row is being ignored.'),
+        //             .that.equals('No changes in this row. The row is being ignored.');
         //         expect(batchUDTresponse[0])
         //             .to.have.property('URI')
-        //             .that.equals('/user_defined_tables/' + batchUDTresponse[0].InternalID),
-        //         expect(batchUDTresponse[1]).have.property('InternalID').that.is.above(0),
+        //             .that.equals('/user_defined_tables/' + batchUDTresponse[0].InternalID);
+        //         expect(batchUDTresponse[1]).have.property('InternalID').that.is.above(0);
         //         expect(batchUDTresponse[1])
         //             .to.have.property('UUID')
-        //             .that.equals('00000000-0000-0000-0000-000000000000'),
-        //         expect(batchUDTresponse[1]).to.have.property('Status').that.equals('Update'),
-        //         expect(batchUDTresponse[1]).to.have.property('Message').that.equals('Row updated.'),
+        //             .that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(batchUDTresponse[1]).to.have.property('Status').that.equals('Update');
+        //         expect(batchUDTresponse[1]).to.have.property('Message').that.equals('Row updated.');
         //         expect(batchUDTresponse[1])
         //             .to.have.property('URI')
-        //             .that.equals('/user_defined_tables/' + batchUDTresponse[1].InternalID),
-        //         expect(batchUDTresponse[2]).have.property('InternalID').that.is.above(0),
+        //             .that.equals('/user_defined_tables/' + batchUDTresponse[1].InternalID);
+        //         expect(batchUDTresponse[2]).have.property('InternalID').that.is.above(0);
         //         expect(batchUDTresponse[2])
         //             .to.have.property('UUID')
-        //             .that.equals('00000000-0000-0000-0000-000000000000'),
-        //         expect(batchUDTresponse[2]).to.have.property('Status').that.equals('Insert'),
-        //         expect(batchUDTresponse[2]).to.have.property('Message').that.equals('Row inserted.'),
+        //             .that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(batchUDTresponse[2]).to.have.property('Status').that.equals('Insert');
+        //         expect(batchUDTresponse[2]).to.have.property('Message').that.equals('Row inserted.');
         //         expect(batchUDTresponse[2])
         //             .to.have.property('URI')
-        //             .that.equals('/user_defined_tables/' + batchUDTresponse[2].InternalID),
-        //         expect(batchUDTresponse[3]).have.property('InternalID').that.equals(0),
+        //             .that.equals('/user_defined_tables/' + batchUDTresponse[2].InternalID);
+        //         expect(batchUDTresponse[3]).have.property('InternalID').that.equals(0);
         //         expect(batchUDTresponse[3])
         //             .to.have.property('UUID')
-        //             .that.equals('00000000-0000-0000-0000-000000000000'),
-        //         expect(batchUDTresponse[3]).to.have.property('Status').that.equals('Error'),
+        //             .that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(batchUDTresponse[3]).to.have.property('Status').that.equals('Error');
         //         expect(batchUDTresponse[3])
         //             .to.have.property('Message')
-        //             .that.equals('@MapDataExternalID does not exist.value: This is need to get error status'),
+        //             .that.equals('@MapDataExternalID does not exist.value: This is need to get error status');
         //         expect(batchUDTresponse[3]).to.have.property('URI').that.equals('');
         // });
 

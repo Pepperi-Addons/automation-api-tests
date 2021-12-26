@@ -30,7 +30,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
@@ -234,6 +234,12 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             it('Where clause on >=', () => {
                 assert(logcash.getDataTimeFieldVerificationSecStatus, logcash.getDataTimeFieldVerificationSecError);
             });
+            it('Where clause on KEY LIKE on meta_data', () => {
+                assert(
+                    logcash.getDataFromTableKeyWhereClauseLikeStatus,
+                    logcash.getDataFromTableKeyWhereClauseLikeError,
+                );
+            });
         });
 
         describe('ExpirationDateTime tests', () => {
@@ -415,21 +421,20 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         //debugger;
         if (logcash.getEmptySchema.fault.faultstring != undefined) {
             if (
-                logcash.getEmptySchema.fault.faultstring.includes(
-                    'Failed due to exception: Table schema must be exist',
-                ) == true
+                logcash.getEmptySchema.fault.faultstring.includes('Failed due to exception: Table schema must exist') ==
+                true
             ) {
                 logcash.getEmptySchemaStatus = true;
             } else {
                 logcash.getEmptySchemaStatus = false;
                 logcash.getEmptySchemaError =
-                    'Get empty schema finished with wrong exeption.Will get: Table schema must be exist, but result is: ' +
+                    'Get empty schema finished with wrong exeption.Will get: Table schema must exist, but result is: ' +
                     logcash.getEmptySchema;
             }
         } else {
             logcash.getEmptySchemaStatus == false;
             logcash.getEmptySchemaError ==
-                'Get empty schema finished without exeption.Will get: Table schema must be exist, but result is: ' +
+                'Get empty schema finished without exeption.Will get: Table schema must exist, but result is: ' +
                     logcash.getEmptySchema;
         }
         await createSchemaWithoutName();
@@ -846,6 +851,45 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromTableKeyWhereClause.Error =
                 'will get 1 object after where clause with Key value, but actual result is: ' +
                 logcash.getDataFromTableKeyWhereClause;
+        }
+        //debugger;
+        //await changeHiddenToTrue();
+        await getDataFromTableKeyWhereClauseLike();
+    }
+
+    async function getDataFromTableKeyWhereClauseLike() {
+        //logcash.getDataFromTableTwoKeystatus = true;
+        logcash.getDataFromTableKeyWhereClauseLike = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName.Name +
+                    "?where=Key LIKE 'testKey2%25'",
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+
+        //debugger;
+        if (
+            logcash.getDataFromTableKeyWhereClauseLike.length == 1 &&
+            logcash.getDataFromTableKeyWhereClauseLike[0].TestInteger == 14
+        ) {
+            logcash.getDataFromTableKeyWhereClauseLikeStatus = true;
+        } else {
+            logcash.getDataFromTableKeyWhereClauseLikeStatus = false;
+
+            logcash.getDataFromTableKeyWhereClauseLikeError =
+                'will get 1 object after where clause with Key value, but actual result is ' +
+                logcash.getDataFromTableKeyWhereClauseLike.length;
         }
         //debugger;
         //await changeHiddenToTrue();

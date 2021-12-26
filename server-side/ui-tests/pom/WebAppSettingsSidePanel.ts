@@ -17,6 +17,16 @@ export class WebAppSettingsSidePanel extends Page {
     );
     public ObjectEditorActivities: Locator = By.id('settings/04de9428-8658-4bf7-8171-b59f6327bbf1/activities/types');
 
+    //Settings Framework Locators
+    public SettingsFrameworkHomeButtons: Locator = By.id(
+        'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_webapp_homebuttons',
+    );
+
+    //Branded App Locators
+    public BrandedAppBranding: Locator = By.id(
+        'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_branding',
+    );
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         const selectedSettings = Object.assign({}, this.SettingsBarContainer);
         selectedSettings['value'] += `//*[@id="${settingsButtonID}"]/../../..`;

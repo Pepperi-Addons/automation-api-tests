@@ -3,7 +3,7 @@ import tester from './tester';
 import GeneralService, { TesterFunctions } from './services/general.service';
 
 //#region Service Tests
-import { TestDataTest } from './api-tests/test-service/test_data';
+import { TestDataTests } from './api-tests/test-service/test_data';
 import { UpgradeDependenciesTests } from './api-tests/test-service/upgrade_dependencies';
 //#endregion Service Tests
 
@@ -11,7 +11,7 @@ import { UpgradeDependenciesTests } from './api-tests/test-service/upgrade_depen
 import { FileStorageTests } from './api-tests/objects/file_storage';
 import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } from './api-tests/objects/data_views';
 import { FieldsTests } from './api-tests/objects/fields';
-import { SyncLongTests, SyncTests, SyncWithBigData, SyncClean } from './api-tests/sync';
+import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from './api-tests/sync';
 //#endregion All Tests
 
 //#region Old Framwork Tests
@@ -27,6 +27,7 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './api-tests/schema';
+import { BatchUpsertTests } from './api-tests/batch_upsert';
 import { SchedulerTests } from './api-tests/code-jobs/scheduler';
 import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
 import { InstallTests } from './api-tests/code-jobs/install';
@@ -46,6 +47,7 @@ import { GeneralActivitiesTests } from './api-tests/objects/general_activities';
 import { TransactionTests } from './api-tests/objects/transactions';
 import { ElasticSearchTests } from './api-tests/elastic_search';
 import { OpenCatalogTests } from './api-tests/open_catalog';
+import { DistributorTests } from './api-tests/objects/distributor';
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
@@ -68,8 +70,10 @@ import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
 import { NucRecoveryTests, NucRecoverySDKTests, NucRecoveryWACDTests } from './api-tests/nuc_recovery';
 import { DataIndexTests } from './api-tests/data_index';
+import { MaintenanceJobTests } from './api-tests/maintenance_job';
 import { CPINodeTests } from './api-tests/cpi_node';
 import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
+import { VarSystemAddonsTests } from './api-tests/var_system_addons';
 
 let testName = '';
 let testEnvironment = '';
@@ -99,7 +103,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
         testName = '';
         return testResult;
     } else {
-        return TestDataTest(service, testerFunctions);
+        return TestDataTests(service, testerFunctions);
     }
 }
 
@@ -340,7 +344,7 @@ export async function sync_big_data(client: Client, testerFunctions: TesterFunct
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SyncWithBigData(service, testerFunctions),
+        SyncWithBigDataTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
@@ -365,7 +369,7 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SyncClean(service, testerFunctions),
+        SyncCleanTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
@@ -437,6 +441,24 @@ export async function var_api(client: Client, request: Request, testerFunctions:
         await test_data(client, testerFunctions),
         VarTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function var_system_addons(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Var System Addons';
+    service.PrintMemoryUseToLog('Start', testName);
+    const { describe, expect, it, run } = tester(client, testName, 'Production/Stage');
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([VarSystemAddonsTests(service, request, testerFunctions)]).then(() =>
+        testerFunctions.run(),
+    );
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -618,6 +640,31 @@ export async function schema(client: Client, request: Request, testerFunctions: 
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         DBSchemaTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function batch_upsert(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Batch_Upsert';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        BatchUpsertTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1041,6 +1088,29 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
+    return testResult;
+}
+
+export async function distributor(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Distributor';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([DistributorTests(service, request, testerFunctions)]).then(() =>
+        testerFunctions.run(),
+    );
+    service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
 //#endregion Yoni's Tests
@@ -1485,6 +1555,30 @@ export async function data_index(client: Client, request: Request, testerFunctio
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         DataIndexTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function maintenance_job(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Maintenance_Job';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        MaintenanceJobTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

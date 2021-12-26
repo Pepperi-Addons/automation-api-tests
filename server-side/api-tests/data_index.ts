@@ -181,7 +181,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         'Pepperi Elastic Search': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Data Index
 
     // var date = new Date();
@@ -262,9 +262,9 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(auditLogResponse.Status?.ID).to.be.equal(1);
 
                 const postFieldsResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);
-                expect(postFieldsResponse.CreationDateTime).to.includes('Z');
-                expect(postFieldsResponse.ModificationDateTime).to.includes(new Date().toISOString().split('T')[0]);
-                expect(postFieldsResponse.ModificationDateTime).to.includes('Z');
+                expect(postFieldsResponse.CreationDateTime).to.include('Z');
+                expect(postFieldsResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(postFieldsResponse.ModificationDateTime).to.include('Z');
                 //expect(postFieldsResponse.FullPublish).to.be.false;
                 expect(postFieldsResponse.Hidden).to.be.false;
                 expect(postFieldsResponse.Key).to.be.equal('meta_data');

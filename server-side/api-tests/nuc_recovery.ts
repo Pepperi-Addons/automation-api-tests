@@ -1,6 +1,6 @@
 import { Catalog, Subscription, Item } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions, ResourceTypes, FilterAttributes } from '../services/general.service';
-import { NucleusFlagType, NucRecoveryService } from '../services/nuc_recovery.service';
+import { NucleusFlagType, NucRecoveryService } from '../services/nuc-recovery.service';
 import { ObjectsService } from '../services/objects.service';
 import { ADALService } from '../services/adal.service';
 import { PepperiNotificationServiceService } from '../services/pepperi-notification-service.service';
@@ -36,7 +36,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
@@ -158,7 +158,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
                         expect(error)
                             .to.have.property('message')
                             .that.includes(
-                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                             );
                     }
                     const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -1117,15 +1117,15 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
             describe('Delete', () => {
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
 
                 it('Delete transaction lines', async () => {

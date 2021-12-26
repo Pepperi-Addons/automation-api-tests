@@ -356,7 +356,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     expect(error)
                         .to.have.property('message')
                         .that.includes(
-                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must be exist`,
+                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                         );
                 }
                 const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
@@ -790,11 +790,11 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         // });
 
         it('Delete activity', async () => {
-            expect(await service.deleteActivity(createdActivity.InternalID)).to.be.true,
-                expect(await service.deleteActivity(createdActivity.InternalID)).to.be.false,
-                expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(0);
+            expect(await service.deleteActivity(createdActivity.InternalID)).to.be.true;
+            expect(await service.deleteActivity(createdActivity.InternalID)).to.be.false;
+            expect(await service.getActivity({ where: `InternalID=${createdActivity.InternalID}` }))
+                .to.be.an('array')
+                .with.lengthOf(0);
         });
 
         it('Validate PNS after Delete', async () => {
@@ -870,29 +870,27 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     [bulkActivityExternalID + ' 5', activityAccount.ExternalID, '1'],
                 ],
             });
-            expect(bulkCreateActivity.JobID).to.be.a('number'),
-                expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
+            expect(bulkCreateActivity.JobID).to.be.a('number');
+            expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
         });
 
         it('Verify bulk jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk created activities', async () => {
@@ -914,29 +912,27 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     [bulkActivityExternalID + ' 5', activityAccount.ExternalID, '2'],
                 ],
             });
-            expect(bulkCreateActivity.JobID).to.be.a('number'),
-                expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
+            expect(bulkCreateActivity.JobID).to.be.a('number');
+            expect(bulkCreateActivity.URI).to.include('/bulk/jobinfo/' + bulkCreateActivity.JobID);
         });
 
         it('Verify bulk update jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk activities update', async () => {
@@ -944,11 +940,11 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 'activities',
                 "?where=ExternalID LIKE '%" + bulkActivityExternalID + "%'",
             );
-            expect(bulkUpdateActivities[0].Status).to.equal(2),
-                expect(bulkUpdateActivities[1].Status).to.equal(2),
-                expect(bulkUpdateActivities[2].Status).to.equal(2),
-                expect(bulkUpdateActivities[3].Status).to.equal(2),
-                expect(bulkUpdateActivities[4].Status).to.equal(2);
+            expect(bulkUpdateActivities[0].Status).to.equal(2);
+            expect(bulkUpdateActivities[1].Status).to.equal(2);
+            expect(bulkUpdateActivities[2].Status).to.equal(2);
+            expect(bulkUpdateActivities[3].Status).to.equal(2);
+            expect(bulkUpdateActivities[4].Status).to.equal(2);
         });
 
         it('Delete bulk activities', async () => {
@@ -970,12 +966,12 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
 
         it('Delete activity test account and TSAs', async () => {
             expect(activityTSAs.length == (await service.deleteBulkTSA('activities', TSAarr, atds[0].TypeID)).length).to
-                .be.true,
-                expect(await service.deleteAccount(activityAccount.InternalID)).to.be.true,
-                expect(await service.deleteAccount(activityAccount.InternalID)).to.be.false,
-                expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(0);
+                .be.true;
+            expect(await service.deleteAccount(activityAccount.InternalID)).to.be.true;
+            expect(await service.deleteAccount(activityAccount.InternalID)).to.be.false;
+            expect(await service.getAccounts({ where: `InternalID=${activityAccount.InternalID}` }))
+                .to.be.an('array')
+                .with.lengthOf(0);
         });
     });
 }

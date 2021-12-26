@@ -1,16 +1,11 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import chai, { expect } from 'chai';
-import promised from 'chai-as-promised';
-import { WebAppLoginPage, WebAppHeader } from '../pom/index';
-import addContext from 'mochawesome/addContext';
+import { WebAppLoginPage } from '../pom/index';
 
-chai.use(promised);
-
-export async function LoginTest(email: string, password: string) {
+export async function LoginTests(email: string, password: string) {
     let driver: Browser;
 
-    describe('First UI Tests Suit', async function () {
+    describe('Basic UI Tests Suit', async function () {
         this.retries(1);
 
         beforeEach(async function () {
@@ -18,34 +13,14 @@ export async function LoginTest(email: string, password: string) {
         });
 
         afterEach(async function () {
-            if (this.currentTest.state != 'passed') {
-                const base64Image = await driver.saveScreenshots();
-                const url = await driver.getCurrentUrl();
-                //Wait for all the logs to be printed (this usually take more then 3 seconds)
-                driver.sleep(6000);
-                const consoleLogs = await driver.getConsoleLogs();
-                addContext(this, {
-                    title: 'URL',
-                    value: url,
-                });
-                addContext(this, {
-                    title: `Image`,
-                    value: 'data:image/png;base64,' + base64Image,
-                });
-                addContext(this, {
-                    title: 'Console Logs',
-                    value: consoleLogs,
-                });
-            }
-            await driver.close();
+            const webAppLoginPage = new WebAppLoginPage(driver);
+            await webAppLoginPage.collectEndTestData(this);
+            await driver.quit();
         });
 
         it('Login', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.navigate();
-            await webAppLoginPage.signInAs(email, password);
-            const webAppHeader = new WebAppHeader(driver);
-            await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+            await webAppLoginPage.login(email, password);
         });
     });
 }

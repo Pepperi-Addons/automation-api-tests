@@ -1,15 +1,18 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
-import fetch from 'node-fetch';
-import jwt_decode from 'jwt-decode';
 import fs from 'fs';
 import { describe, it, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { TestDataTest } from '../../api-tests/test-service/test_data';
-import { Client } from '@pepperi-addons/debug-server';
-import { LoginTest } from './login';
-import { OrdersTest } from './orders';
-import { WorkflowTest } from './workflow';
+import { TestDataTests } from '../../api-tests/test-service/test_data';
+import {
+    LoginTests,
+    OrderTests,
+    WorkflowTests,
+    DeepLinkTests,
+    PromotionTests,
+    SecurityPolicyTests,
+    CreateDistributorTests,
+} from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
 
@@ -28,103 +31,96 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
+const tests = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
+const varPassEU = process.env.npm_config_var_pass_eu as string;
 
 (async function () {
-    const client = await initiateTester();
+    const tempGeneralService = new GeneralService({
+        AddonUUID: '',
+        AddonSecretKey: '',
+        BaseURL: '',
+        OAuthAccessToken: '',
+        AssetsBaseUrl: '',
+        Retry: function () {
+            return;
+        },
+    });
+
+    const client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
 
-    await TestDataTest(generalService, { describe, expect, it } as TesterFunctions);
+    if (tests != 'Create') {
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
 
-    //Reset the needed UI Controls for the UI tests.
-    await replaceUIControls(generalService);
+    if (tests.includes('Reset')) {
+        //Reset the needed UI Controls for the UI tests.
+        await replaceUIControlsTests(generalService);
 
-    //Verify all items exist or replace them
-    await replaceItems(generalService);
+        //Verify all items exist or replace them
+        await replaceItemsTests(generalService);
 
-    await upgradeDependenciesTests(generalService, varPass);
+        await upgradeDependenciesTests(generalService, varPass);
+    }
 
-    await LoginTest(email, pass);
+    if (tests.includes('Sanity')) {
+        await LoginTests(email, pass);
+        await OrderTests(email, pass, client);
+    }
 
-    await OrdersTest(email, pass, client);
+    if (tests.includes('Workflow')) {
+        await WorkflowTests(email, pass, client);
+    }
 
-    await WorkflowTest(email, pass, client);
+    if (tests.includes('DeepLink')) {
+        await DeepLinkTests(email, pass, client);
+    }
+
+    if (tests.includes('Promotion')) {
+        await PromotionTests(email, pass, client);
+    }
+
+    if (tests.includes('Security')) {
+        await SecurityPolicyTests(email, pass);
+    }
+
+    if (tests.includes('Create')) {
+        await CreateDistributorTests(generalService, varPass, varPassEU);
+    }
 
     run();
 })();
 
-async function initiateTester(): Promise<Client> {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('username', email);
-    urlencoded.append('password', pass);
-    urlencoded.append('scope', 'pepperi.apint pepperi.wacd offline_access');
-    urlencoded.append('grant_type', 'password');
-    urlencoded.append('client_id', 'ios.com.wrnty.peppery');
-
-    const getToken = await fetch(
-        `https://idp${process.env.npm_config_server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`,
-        { method: 'POST', body: urlencoded },
-    )
-        .then((res) => res.text())
-        .then((res) => (res ? JSON.parse(res) : ''));
-
-    return createClient(getToken.access_token);
-}
-
-function createClient(authorization) {
-    if (!authorization) {
-        throw new Error('unauthorized');
-    }
-    const token = authorization.replace('Bearer ', '') || '';
-    const parsedToken = jwt_decode(token);
-    const [sk, AddonUUID] = getSecret();
-    return {
-        AddonUUID: AddonUUID,
-        AddonSecretKey: sk,
-        BaseURL: parsedToken['pepperi.baseurl'],
-        OAuthAccessToken: token,
-        AssetsBaseUrl: 'http://localhost:4400/publish/assets',
-        Retry: function () {
-            return;
-        },
-    };
-}
-
-function getSecret() {
-    const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))['AddonUUID'];
-    let sk;
-    try {
-        sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
-    } catch (error) {
-        console.log(`SK Not found: ${error}`);
-        sk = '00000000-0000-0000-0000-000000000000';
-    }
-    return [addonUUID, sk];
-}
-
-async function upgradeDependenciesTests(generalService: GeneralService, varPass) {
+export async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const testData = {
         'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.6'],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60'],
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.70'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60.38'], //16.60
         'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5'],
         'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-        'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+        'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
+        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+        'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+        'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.chnageVersion(varPass, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {
+        this.retries(1);
+
         it('Validate That All The Needed Addons Installed', async function () {
             isInstalledArr.forEach((isInstalled) => {
                 expect(isInstalled).to.be.true;
@@ -156,7 +152,7 @@ async function upgradeDependenciesTests(generalService: GeneralService, varPass)
     });
 }
 
-async function replaceItems(generalService: GeneralService) {
+export async function replaceItemsTests(generalService: GeneralService) {
     const objectsService = new ObjectsService(generalService);
     const getAllItems = await objectsService.getItems();
     if (getAllItems.length > 5) {
@@ -167,6 +163,8 @@ async function replaceItems(generalService: GeneralService) {
         });
     } else {
         describe('Replace Items', function () {
+            this.retries(1);
+
             it('Remove Existing Items', async function () {
                 //Remove old items
                 const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
@@ -211,28 +209,40 @@ async function replaceItems(generalService: GeneralService) {
                             delete filteredArray[j][key].Data.UUID;
                         }
                     }
+                    //In cases when post item randomally fails, retry 4 times before failing the test
                     let postItemsResponse;
-                    try {
-                        postItemsResponse = await objectsService.postItem(filteredArray[j]);
-                    } catch (error) {
-                        console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
-                        //In cases when post item randomally fails, wait and try again before failing the test
-                        generalService.sleep(4000);
-                        postItemsResponse = await objectsService.postItem(filteredArray[j]);
-                    }
+                    let maxLoopsCounter = 5;
+                    let isItemPosted = false;
+                    do {
+                        try {
+                            postItemsResponse = await objectsService.postItem(filteredArray[j]);
+                            isItemPosted = true;
+                        } catch (error) {
+                            console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
+                            console.log(
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
+                                    maxLoopsCounter - 1
+                                } more times`,
+                            );
+                            generalService.sleep(6000 * (6 - maxLoopsCounter));
+                        }
+                        maxLoopsCounter--;
+                    } while (!isItemPosted && maxLoopsCounter > 0);
                     expect(postItemsResponse.Hidden).to.be.false;
                     expect(postItemsResponse.InternalID).to.be.above(0);
                 }
 
-                //Create json object from the sorted objects
+                // Create json object from the sorted objects
                 // fs.writeFileSync('sorted_items.json', JSON.stringify(filteredArray), 'utf8');
             });
         });
     }
 }
 
-async function replaceUIControls(generalService: GeneralService) {
+export async function replaceUIControlsTests(generalService: GeneralService) {
     describe('Replace UIControls', function () {
+        this.retries(1);
+
         //Add new UIControls from local file
         const uIControlArrFromFile = fs.readFileSync('../server-side/api-tests/test-data/UIControls.json', {
             encoding: 'utf8',
@@ -243,6 +253,9 @@ async function replaceUIControls(generalService: GeneralService) {
         let catalogSelectionCard;
         let catalogForm;
         let orderViewsMenu;
+        let orderCartGrid;
+        let orderBanner;
+        let orderCartOpenedFooter;
 
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
@@ -308,6 +321,71 @@ async function replaceUIControls(generalService: GeneralService) {
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('OrderViewsMenu');
+                    }
+                });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartGrid') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderCartGrid = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderCartGrid'",
+                    });
+                    expect(orderCartGrid).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderCartGrid.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCartGrid');
+                        orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderCartGrid[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderCartGrid');
+                    }
+                });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderBanner') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderBanner = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderBanner'",
+                    });
+                    expect(orderBanner).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderBanner.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderBanner[i]['Type']}, ${orderBanner[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderBanner[i].UIControlData.split('OrderBanner');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderBanner');
+                        orderBanner[i].UIControlData = `${uiControlFromAPI[0]}OrderBanner${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderBanner[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderBanner');
+                    }
+                });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartOpenedFooter') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderCartOpenedFooter = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderCartOpenedFooter'",
+                    });
+                    expect(orderCartOpenedFooter).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderCartOpenedFooter.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderCartOpenedFooter[i]['Type']}, ${orderCartOpenedFooter[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderCartOpenedFooter[i].UIControlData.split('OrderCartOpenedFooter');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCartOpenedFooter');
+                        orderCartOpenedFooter[
+                            i
+                        ].UIControlData = `${uiControlFromAPI[0]}OrderCartOpenedFooter${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderCartOpenedFooter[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderCartOpenedFooter');
                     }
                 });
             }

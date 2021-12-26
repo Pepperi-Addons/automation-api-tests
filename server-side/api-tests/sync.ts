@@ -25,7 +25,7 @@ let _agentExternalID;
 let _catalogExternalID;
 
 // All Sync Tests
-export async function SyncClean(generalService: GeneralService, tester: TesterFunctions) {
+export async function SyncCleanTests(generalService: GeneralService, tester: TesterFunctions) {
     isBase = false;
     isSkipMechanisem = false;
     isSkipMechanisemHundredGets = false;
@@ -37,7 +37,7 @@ export async function SyncClean(generalService: GeneralService, tester: TesterFu
     await ExecuteSyncTests(generalService, tester);
 }
 
-export async function SyncWithBigData(generalService: GeneralService, tester: TesterFunctions) {
+export async function SyncWithBigDataTests(generalService: GeneralService, tester: TesterFunctions) {
     isBase = false;
     isSkipMechanisem = false;
     isSkipMechanisemHundredGets = false;

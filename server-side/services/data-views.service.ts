@@ -7,15 +7,15 @@ export class DataViewsService {
         return this.papiClient.metaData.dataViews.get(id);
     }
 
-    getDataViews(options?: FindOptions) {
+    getDataViews(options?: FindOptions): Promise<DataView[]> {
         return this.papiClient.metaData.dataViews.find(options);
     }
 
-    getAllDataViews(options?: FindOptions) {
+    getAllDataViews(options?: FindOptions): Promise<DataView[]> {
         return this.papiClient.metaData.dataViews.iter(options).toArray();
     }
 
-    postDataView(dataView: DataView) {
+    postDataView(dataView: DataView): Promise<DataView> {
         return this.papiClient.metaData.dataViews.upsert(dataView);
     }
 
