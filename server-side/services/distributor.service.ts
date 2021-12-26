@@ -9,12 +9,17 @@ export interface DistributorObject {
     Password: string;
 }
 
+export interface DistributorTrialObject {
+    UUID: string;
+    TrialExpirationDateTime: string;
+}
+
 export class DistributorService {
     papiClient: PapiClient;
     generalService: GeneralService;
     request: any;
 
-    constructor(public service: GeneralService, request) {
+    constructor(public service: GeneralService, request = {}) {
         this.papiClient = service.papiClient;
         this.generalService = service;
         this.request = request;
@@ -26,6 +31,10 @@ export class DistributorService {
 
     postItem(item: Item): Promise<Item> {
         return this.papiClient.items.upsert(item);
+    }
+
+    resetUserPassword(UserID) {
+        return this.papiClient.post('/Users/' + UserID + '/reset_password');
     }
 
     async createDistributor(Distributor: DistributorObject) {
@@ -67,5 +76,30 @@ export class DistributorService {
             }
         } while (newDistributor.Status != 200 && maxLoopsCounter > 0);
         return newDistributor;
+    }
+
+    async setTrialExpirationDate(distributorTrialObject: DistributorTrialObject) {
+        const trialExpirationDate = await this.generalService.fetchStatus(
+            this.generalService['client'].BaseURL + `/var/distributors`,
+            {
+                method: `POST`,
+                headers: {
+                    Authorization: this.request.body.varKey,
+                },
+                body: JSON.stringify({
+                    UUID: distributorTrialObject.UUID,
+                    TrialExpirationDateTime: distributorTrialObject.TrialExpirationDateTime,
+                }),
+            },
+        );
+        console.log({ CreateStatus: trialExpirationDate.Status, CreateBody: trialExpirationDate.Body });
+        return trialExpirationDate;
+    }
+
+    async runExpirationProtocol() {
+        const expirationResponse = await this.papiClient.post(
+            `/addons/api/async/00000000-0000-0000-0000-000000000a91/expiration/manual_test_expired_distributors`,
+        );
+        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI);
     }
 }

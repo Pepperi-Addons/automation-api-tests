@@ -228,6 +228,10 @@ export default class GeneralService {
         return this.papiClient.types.find(options);
     }
 
+    getDistributor() {
+        return this.papiClient.get('/distributor');
+    }
+
     async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
         let auditLogResponse;
         do {
@@ -244,10 +248,10 @@ export default class GeneralService {
                 console.log('Audit Log was not found, waiting...');
                 loopsAmount--;
             }
-            //This case will only retray the get call again as many times as the "loopsAmount"
+            //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2') {
                 this.sleep(2000);
-                console.log('IN_Prog: Status ID is 2, Retray ' + loopsAmount + ' Times.');
+                console.log('IN_Prog: Status ID is 2, Retry ' + loopsAmount + ' Times.');
                 loopsAmount--;
             }
         } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);

@@ -58,6 +58,9 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     title: `Cart With Promotions`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
+
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
                 //Validating transaction created via the API
@@ -156,6 +159,9 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     title: `Cart With Promotions`,
                     value: 'data:image/png;base64,' + base64Image,
                 });
+
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
                 //Validating transaction created via the API
@@ -401,6 +407,8 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     }
                 }
 
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
 
@@ -483,7 +491,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                 expect(testDataTransaction).to.be.true;
             });
 
-            it('Items - Discounts For Ordering More Then Prince Of Items', async function () {
+            it('Items - Discounts For Ordering More Then Price Of Items', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
 
@@ -535,7 +543,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             },
                         ),
                     );
-                    expect(dataFromCartObj[index][12][1]).to.equal('Discounts for ordering more then prince of items');
+                    expect(dataFromCartObj[index][12][1]).to.equal('Discounts for ordering more then price of items');
                     expect(dataFromCartObj[index][dataFromCartObj[index].length - 7][1]).to.equal('false');
                     expect(dataFromCartObj[index][dataFromCartObj[index].length - 6][1]).to.equal('');
                     expect(dataFromCartObj[index][dataFromCartObj[index].length - 5][1]).to.equal(
@@ -578,7 +586,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             .and.include(' more to get $2 off');
                         expect(dataFromCartObj[index][9][1]).to.have.lengthOf.above(1);
                         expect(dataFromCartObj[index][10][1]).to.equal(
-                            'Discounts for ordering more then prince of items',
+                            'Discounts for ordering more then price of items',
                         );
                         expect(dataFromCartObj[index][11][1]).to.include('"MinTotal":"250"');
                     } else if (promotionsArr[index] < 34) {
@@ -598,7 +606,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             .and.include(' more to get $26 off');
                         expect(dataFromCartObj[index][9][1]).to.have.lengthOf.above(1);
                         expect(dataFromCartObj[index][10][1]).to.equal(
-                            'Discounts for ordering more then prince of items',
+                            'Discounts for ordering more then price of items',
                         );
                         expect(dataFromCartObj[index][11][1]).to.include('"MinTotal":"500"');
                     } else if (promotionsArr[index] < 44) {
@@ -618,7 +626,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             .and.include(' more to get 10 additional items');
                         expect(dataFromCartObj[index][9][1]).to.have.lengthOf.above(1);
                         expect(dataFromCartObj[index][10][1]).to.equal(
-                            'Discounts for ordering more then prince of items',
+                            'Discounts for ordering more then price of items',
                         );
                         expect(dataFromCartObj[index][11][1]).to.include('"MinTotal":"1000"');
                     } else {
@@ -637,7 +645,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                         expect(dataFromCartObj[index][8][1]).to.include('');
                         expect(dataFromCartObj[index][9][1]).to.have.lengthOf.above(1);
                         expect(dataFromCartObj[index][10][1]).to.equal(
-                            'Discounts for ordering more then prince of items',
+                            'Discounts for ordering more then price of items',
                         );
                         expect(dataFromCartObj[index][11][1]).to.include('"MinTotal":"1300"');
                         expect(dataFromCartObj[index][13][1]).to.equal('MakeUp002');
@@ -651,13 +659,15 @@ export async function PromotionTests(email: string, password: string, client: Cl
                         expect(dataFromCartObj[index][21][1]).to.equal('');
                         expect(dataFromCartObj[index][22][1]).to.have.lengthOf.above(1);
                         expect(dataFromCartObj[index][23][1]).to.equal(
-                            'Discounts for ordering more then prince of items',
+                            'Discounts for ordering more then price of items',
                         );
                         expect(dataFromCartObj[index][24][1]).to.include('"MinTotal":"1300"');
                         expect(dataFromCartObj[index][25][1]).to.equal('');
                     }
                 }
 
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
 
@@ -703,7 +713,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                 expect(lastTransactionLines[0].TotalUnitsPriceBeforeDiscount).to.equal(1338.75);
                 expect(lastTransactionLines[0].TotalUnitsPriceAfterDiscount).to.equal(1338.75);
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReason).to.equal(
-                    'Discounts for ordering more then prince of items',
+                    'Discounts for ordering more then price of items',
                 );
                 expect(lastTransactionLines[0].TSAPPIItemPromotionReasonReference).to.include(
                     '"MinTotal":"1300","CurrentValue":1338.75}]}',
@@ -721,7 +731,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     lastTransactionLines[0].TSAPPIItemPromotionPromotionCode,
                 );
                 expect(lastTransactionLines[1].TSAPPIItemPromotionReason).to.equal(
-                    'Discounts for ordering more then prince of items',
+                    'Discounts for ordering more then price of items',
                 );
                 expect(lastTransactionLines[1].TSAPPIItemPromotionReasonReference).to.include(
                     '"MinTotal":"1300","CurrentValue":1338.75}]}',
@@ -891,6 +901,8 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     }
                 }
 
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
 
@@ -906,6 +918,9 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     title: `Cart Of Promotion ATD`,
                     value: 'data:image/png;base64,' + base64ImageSecondTransaction,
                 });
+
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartDoneBtn);
 
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -1023,6 +1038,8 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                 const webAppTopBar = new WebAppTopBar(driver);
 
+                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartDoneBtn);
 
                 const webAppDialog = new WebAppDialog(driver);
@@ -1046,8 +1063,12 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                 //Promo Steps: [3, 4*, 5, 6*, 8, 9, 10*, 11]; //The marked with "*" are the set promotion steps
                 const promotionsArr = [3, 5, 8, 9, 11];
+                let allowRetry = 1;
                 for (let index = 0; index < promotionsArr.length; index++) {
                     await webAppTransaction.addItemToCart(this, 'Frag011', promotionsArr[index], true);
+
+                    console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                    generalService.sleep(500);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
 
                     console.log('Wait for item list to update after done was clicked');
@@ -1061,21 +1082,37 @@ export async function PromotionTests(email: string, password: string, client: Cl
                         value: 'data:image/png;base64,' + base64ImageInCart,
                     });
 
-                    if (promotionsArr[index] == 3) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select an additional item');
-                    } else if (promotionsArr[index] == 5) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select an additional item or remove one item');
-                    } else if (promotionsArr[index] == 8) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select 2 more items or remove 2 items');
-                    } else if (promotionsArr[index] == 9) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('Please select an additional item or remove 3 items');
-                    } else if (promotionsArr[index] == 11) {
-                        const dialogBoxMessage = await webAppDialog.getDialogBoxText();
-                        expect(dialogBoxMessage).to.equal('You have chosen too many items. Please remove one item');
+                    try {
+                        if (promotionsArr[index] == 3) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select an additional item');
+                        } else if (promotionsArr[index] == 5) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select an additional item or remove one item');
+                        } else if (promotionsArr[index] == 8) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select 2 more items or remove 2 items');
+                        } else if (promotionsArr[index] == 9) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('Please select an additional item or remove 3 items');
+                        } else if (promotionsArr[index] == 11) {
+                            const dialogBoxMessage = await webAppDialog.getDialogBoxText();
+                            expect(dialogBoxMessage).to.equal('You have chosen too many items. Please remove one item');
+                        }
+                        allowRetry = 1;
+                    } catch (error) {
+                        if (allowRetry > 0) {
+                            allowRetry--;
+                            const base64ImageInErrorTests = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Cart With Error Promotions, Package Amount: ${promotionsArr[index]}`,
+                                value: 'data:image/png;base64,' + base64ImageInErrorTests,
+                            });
+                            console.log(`Error thrown in negative tests: ${error}`);
+                            index--;
+                            await webAppDialog.selectDialogBox('OK');
+                            continue;
+                        }
                     }
 
                     if (promotionsArr[index] != 4 || promotionsArr[index] != 6 || promotionsArr[index] != 10) {
@@ -1142,6 +1179,8 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                     const webAppTopBar = new WebAppTopBar(driver);
 
+                    console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                    generalService.sleep(500);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
 
                     const webAppDialog = new WebAppDialog(driver);
@@ -1158,6 +1197,9 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     await webAppList.isSpinnerDone();
 
                     await webAppTransaction.addItemToCart(this, 'Frag011', promotionsArr[index], true);
+
+                    console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                    generalService.sleep(500);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
 
                     console.log('Wait for item list to update after done was clicked');
@@ -1176,6 +1218,8 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             value: 'data:image/png;base64,' + base64ImageInCart,
                         });
 
+                        console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                        generalService.sleep(500);
                         await webAppList.click(webAppTopBar.CartSumbitBtn);
                     } else if (promotionsArr[index] == 10) {
                         await webAppTransaction.addItemToCart(this, 'Frag011', 1, true);
@@ -1187,6 +1231,9 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             title: `Cart Of Promotion ATD`,
                             value: 'data:image/png;base64,' + base64ImageSecondTransaction,
                         });
+
+                        console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                        generalService.sleep(500);
                         await webAppList.click(webAppTopBar.CartDoneBtn);
                         await webAppList.click(webAppTopBar.CartViewBtn);
 
@@ -1198,6 +1245,8 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             value: 'data:image/png;base64,' + base64ImageInCart,
                         });
 
+                        console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                        generalService.sleep(500);
                         await webAppList.click(webAppTopBar.CartSumbitBtn);
                     }
                     await webAppHomePage.isDialogOnHomePAge(this);

@@ -1117,15 +1117,15 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
             describe('Delete', () => {
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
 
                 it('Delete transaction lines', async () => {

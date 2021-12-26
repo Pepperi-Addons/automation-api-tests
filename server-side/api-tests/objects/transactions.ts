@@ -950,42 +950,42 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 UnitDiscountPercentage: 100.0,
                 UnitPrice: 5.0,
                 UnitPriceAfterDiscount: 0.0,
-            }),
-                expect(JSON.stringify(updatedTransactionLines.Item)).equals(
-                    JSON.stringify({
-                        Data: {
-                            InternalID: items[0].InternalID,
-                            UUID: items[0].UUID,
-                            ExternalID: items[0].ExternalID,
-                        },
-                        URI: '/items/' + items[0].InternalID,
-                    }),
-                ),
-                expect(JSON.stringify(updatedTransactionLines.Transaction)).equals(
-                    JSON.stringify({
-                        Data: {
-                            InternalID: createdTransaction.InternalID,
-                            UUID: createdTransaction.UUID,
-                            ExternalID: createdTransaction.ExternalID,
-                        },
-                        URI: '/transactions/' + createdTransaction.InternalID,
-                    }),
-                ),
-                expect(updatedTransactionLines.InternalID).to.equal(createdTransactionLines.InternalID),
-                expect(updatedTransactionLines.UUID).to.include(createdTransactionLines.UUID),
-                expect(updatedTransactionLines.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(updatedTransactionLines.CreationDateTime).to.contain('Z'),
-                expect(updatedTransactionLines.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(updatedTransactionLines.ModificationDateTime).to.contain('Z'),
-                expect(updatedTransactionLines.Archive).to.be.false,
-                expect(updatedTransactionLines.Hidden).to.be.false,
-                expect(
-                    await service.getTransactionLines({
-                        where: `TransactionInternalID=${createdTransaction.InternalID}`,
-                    }),
-                )
-                    .to.be.an('array')
-                    .with.lengthOf(1);
+            });
+            expect(JSON.stringify(updatedTransactionLines.Item)).equals(
+                JSON.stringify({
+                    Data: {
+                        InternalID: items[0].InternalID,
+                        UUID: items[0].UUID,
+                        ExternalID: items[0].ExternalID,
+                    },
+                    URI: '/items/' + items[0].InternalID,
+                }),
+            );
+            expect(JSON.stringify(updatedTransactionLines.Transaction)).equals(
+                JSON.stringify({
+                    Data: {
+                        InternalID: createdTransaction.InternalID,
+                        UUID: createdTransaction.UUID,
+                        ExternalID: createdTransaction.ExternalID,
+                    },
+                    URI: '/transactions/' + createdTransaction.InternalID,
+                }),
+            );
+            expect(updatedTransactionLines.InternalID).to.equal(createdTransactionLines.InternalID);
+            expect(updatedTransactionLines.UUID).to.include(createdTransactionLines.UUID);
+            expect(updatedTransactionLines.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+            expect(updatedTransactionLines.CreationDateTime).to.contain('Z');
+            expect(updatedTransactionLines.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+            expect(updatedTransactionLines.ModificationDateTime).to.contain('Z');
+            expect(updatedTransactionLines.Archive).to.be.false;
+            expect(updatedTransactionLines.Hidden).to.be.false;
+            expect(
+                await service.getTransactionLines({
+                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                }),
+            )
+                .to.be.an('array')
+                .with.lengthOf(1);
         });
 
         it('Validate PNS after Update', async () => {
@@ -1151,24 +1151,24 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Delete transaction lines', async () => {
-            expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true,
-                expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false,
-                expect(
-                    await service.getTransactionLines({
-                        where: `TransactionInternalID=${createdTransaction.InternalID}`,
-                    }),
-                )
-                    .to.be.an('array')
-                    .with.lengthOf(1),
-                expect(await service.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.true,
-                expect(await service.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.false,
-                expect(
-                    await service.getTransactionLines({
-                        where: `TransactionInternalID=${createdTransaction.InternalID}`,
-                    }),
-                )
-                    .to.be.an('array')
-                    .with.lengthOf(0);
+            expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true;
+            expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false;
+            expect(
+                await service.getTransactionLines({
+                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                }),
+            )
+                .to.be.an('array')
+                .with.lengthOf(1);
+            expect(await service.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.true;
+            expect(await service.deleteTransactionLine(addedTransactionLines.InternalID)).to.be.false;
+            expect(
+                await service.getTransactionLines({
+                    where: `TransactionInternalID=${createdTransaction.InternalID}`,
+                }),
+            )
+                .to.be.an('array')
+                .with.lengthOf(0);
         });
 
         it('Validate PNS after Delete', async () => {
@@ -1211,21 +1211,21 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         //     return Promise.all([
         //         expect(await service.getTransactionLines({ where: `InternalID=${createdTransactionLines.InternalID}`, include_deleted: true }))
         //             .to.be.an('array')
-        //             .with.lengthOf(1),
-        //     ]),
+        //             .with.lengthOf(1);
+        //     ]);
         //         updatedTransactionLines = await service.createTransactionLine({
         //             TransactionInternalID: createdTransaction.InternalID,
         //             LineNumber: 1,
         //             ItemExternalID: items[0].ExternalID,
         //             UnitsQuantity: 10.0
-        //         }),
-        //         expect(updatedTransactionLines).to.have.property('Hidden').that.is.a('boolean').and.is.false,
-        //         expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true,
-        //         expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false,
+        //         });
+        //         expect(updatedTransactionLines).to.have.property('Hidden').that.is.a('boolean').and.is.false;
+        //         expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.true;
+        //         expect(await service.deleteTransactionLine(createdTransactionLines.InternalID)).to.be.false;
         //         expect(
         //             await service.getTransactionLines({
         //                 where: `TransactionInternalID=${createdTransaction.InternalID}`,
-        //             }),
+        //             });
         //         )
         //             .to.be.an('array')
         //             .with.lengthOf(0)
@@ -1288,33 +1288,33 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 TSAParagraphAPI: 'Paragraph Text\r\nMuch\r\nParagraph\r\nSo\r\nUpdate',
                 TSAPhoneNumberAPI: '972555432512',
                 TSASingleLineAPI: 'Random updated text',
-            }),
-                expect(updatedTransaction.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg'),
-                // expect(updatedTransaction.TSAImageAPI.URL).to.include('cdn'),
-                expect(updatedTransaction.TSASignatureAPI.URL).to.include('f8764769ecfa41a197dce41c1468aa55.png'),
-                // expect(updatedTransaction.TSASignatureAPI.URL).to.include('cdn'),
-                expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('dummy.pdf'),
-                // expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('cdn'),
-                expect(JSON.stringify(updatedTransaction.Account)).equals(
-                    JSON.stringify({
-                        Data: {
-                            InternalID: transactionAccount.InternalID,
-                            UUID: transactionAccount.UUID,
-                            ExternalID: transactionAccount.ExternalID,
-                        },
-                        URI: '/accounts/' + transactionAccount.InternalID,
-                    }),
-                ),
-                expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID),
-                expect(updatedTransaction.UUID).to.include(createdTransaction.UUID),
-                expect(updatedTransaction.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(updatedTransaction.CreationDateTime).to.contain('Z'),
-                expect(updatedTransaction.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]),
-                expect(updatedTransaction.ModificationDateTime).to.contain('Z'),
-                expect(updatedTransaction.Archive).to.be.false,
-                expect(updatedTransaction.Hidden).to.be.false,
-                expect(updatedTransaction.StatusName).to.include('Submitted'),
-                expect(updatedTransaction.Agent).to.be.null,
+            });
+            expect(updatedTransaction.TSAImageAPI.URL).to.include('image-human-brain_99433-298.jpg');
+            // expect(updatedTransaction.TSAImageAPI.URL).to.include('cdn');
+            expect(updatedTransaction.TSASignatureAPI.URL).to.include('f8764769ecfa41a197dce41c1468aa55.png');
+            // expect(updatedTransaction.TSASignatureAPI.URL).to.include('cdn');
+            expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('dummy.pdf');
+            // expect(updatedTransaction.TSAAttachmentAPI.URL).to.include('cdn');
+            expect(JSON.stringify(updatedTransaction.Account)).equals(
+                JSON.stringify({
+                    Data: {
+                        InternalID: transactionAccount.InternalID,
+                        UUID: transactionAccount.UUID,
+                        ExternalID: transactionAccount.ExternalID,
+                    },
+                    URI: '/accounts/' + transactionAccount.InternalID,
+                }),
+            );
+            expect(updatedTransaction.InternalID).to.equal(createdTransaction.InternalID);
+            expect(updatedTransaction.UUID).to.include(createdTransaction.UUID);
+            expect(updatedTransaction.CreationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+            expect(updatedTransaction.CreationDateTime).to.contain('Z');
+            expect(updatedTransaction.ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+            expect(updatedTransaction.ModificationDateTime).to.contain('Z');
+            expect(updatedTransaction.Archive).to.be.false;
+            expect(updatedTransaction.Hidden).to.be.false;
+            expect(updatedTransaction.StatusName).to.include('Submitted');
+            expect(updatedTransaction.Agent).to.be.null,
                 expect(updatedTransaction.ContactPerson).to.be.null,
                 expect(updatedTransaction.Creator).to.be.null;
         });
@@ -1497,8 +1497,8 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         it('Archive transaction and reload nuc', async () => {
             const ArchiveJob = await service.archiveTransaction({ transactions: [updatedTransaction.InternalID] });
             const ArchiveResult = await service.waitForArchiveJobStatus(ArchiveJob.URI, 30000);
-            expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded'),
-                expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
+            expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded');
+            expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
             await service.reloadNuc();
             await expect(service.getTransactionByID(updatedTransaction.InternalID)).eventually.to.be.rejectedWith(
                 'failed with status: 404 - Not Found error: {"fault":{"faultstring":"Object ID does not exist.","detail":{"errorcode":"InvalidParameter"',
@@ -1520,19 +1520,19 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 TSANumberAPI: 70,
                 TSASingleLineAPI: 'Random text nuc test',
             });
-            expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID),
-                expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID),
-                expect(UpdatedTransactionNotOnNuc).to.have.property('Archive').that.is.a('boolean').and.is.false,
-                expect(await service.getTransaction({ where: `InternalID=${updatedTransaction.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(1);
+            expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID);
+            expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID);
+            expect(UpdatedTransactionNotOnNuc).to.have.property('Archive').that.is.a('boolean').and.is.false;
+            expect(await service.getTransaction({ where: `InternalID=${updatedTransaction.InternalID}` }))
+                .to.be.an('array')
+                .with.lengthOf(1);
         });
 
         it('Archive transaction and reload nuc', async () => {
             const ArchiveJob = await service.archiveTransaction({ transactions: [updatedTransaction.InternalID] });
             const ArchiveResult = await service.waitForArchiveJobStatus(ArchiveJob.URI, 30000);
-            expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded'),
-                expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
+            expect(ArchiveResult).to.have.property('Status').that.equals('Succeeded');
+            expect(ArchiveResult).to.have.property('RecordsCount').that.equals(3);
             await service.reloadNuc();
             await expect(service.getTransactionByID(updatedTransaction.InternalID)).eventually.to.be.rejectedWith(
                 'failed with status: 404 - Not Found error: {"fault":{"faultstring":"Object ID does not exist.","detail":{"errorcode":"InvalidParameter"',
@@ -1554,20 +1554,20 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 TSANumberAPI: 75,
                 TSASingleLineAPI: 'Random text nuc test 2',
             });
-            expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID),
-                expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID),
-                expect(UpdatedTransactionNotOnNuc).to.have.property('Archive').that.is.a('boolean').and.is.false,
-                expect(await service.getTransaction({ where: `InternalID=${updatedTransaction.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(1);
+            expect(UpdatedTransactionNotOnNuc.InternalID).to.equal(updatedTransaction.InternalID);
+            expect(UpdatedTransactionNotOnNuc.ExternalID).to.equal(updatedTransaction.ExternalID);
+            expect(UpdatedTransactionNotOnNuc).to.have.property('Archive').that.is.a('boolean').and.is.false;
+            expect(await service.getTransaction({ where: `InternalID=${updatedTransaction.InternalID}` }))
+                .to.be.an('array')
+                .with.lengthOf(1);
         });
 
         it('Delete transaction', async () => {
-            expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(0);
+            expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+            expect(await service.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+            expect(await service.getTransaction({ where: `InternalID=${createdTransaction.InternalID}` }))
+                .to.be.an('array')
+                .with.lengthOf(0);
         });
 
         it('Validate PNS after Delete', async () => {
@@ -1669,29 +1669,27 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     ],
                 ],
             });
-            expect(bulkCreateTransaction.JobID).to.be.a('number'),
-                expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID);
+            expect(bulkCreateTransaction.JobID).to.be.a('number');
+            expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID);
         });
 
         it('Verify bulk jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk created transaction headers', async () => {
@@ -1743,29 +1741,27 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     ],
                 ],
             });
-            expect(bulkCreateTransaction.JobID).to.be.a('number'),
-                expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID);
+            expect(bulkCreateTransaction.JobID).to.be.a('number');
+            expect(bulkCreateTransaction.URI).to.include('/bulk/jobinfo/' + bulkCreateTransaction.JobID);
         });
 
         it('Verify bulk update jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk transaction headers update', async () => {
@@ -1773,11 +1769,11 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 'transactions',
                 "?where=ExternalID LIKE '%" + bulkTransactionExternalID + "%'",
             );
-            expect(bulkUpdateTransactions[0].Status).to.equal(2),
-                expect(bulkUpdateTransactions[1].Status).to.equal(2),
-                expect(bulkUpdateTransactions[2].Status).to.equal(2),
-                expect(bulkUpdateTransactions[3].Status).to.equal(2),
-                expect(bulkUpdateTransactions[4].Status).to.equal(2);
+            expect(bulkUpdateTransactions[0].Status).to.equal(2);
+            expect(bulkUpdateTransactions[1].Status).to.equal(2);
+            expect(bulkUpdateTransactions[2].Status).to.equal(2);
+            expect(bulkUpdateTransactions[3].Status).to.equal(2);
+            expect(bulkUpdateTransactions[4].Status).to.equal(2);
         });
 
         it('Bulk create transaction lines', async () => {
@@ -1791,29 +1787,27 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     [bulkTransactionExternalID + ' 1', items[4].ExternalID, '5'],
                 ],
             });
-            expect(bulkCreateTransactionLines.JobID).to.be.a('number'),
-                expect(bulkCreateTransactionLines.URI).to.include('/bulk/jobinfo/' + bulkCreateTransactionLines.JobID);
+            expect(bulkCreateTransactionLines.JobID).to.be.a('number');
+            expect(bulkCreateTransactionLines.URI).to.include('/bulk/jobinfo/' + bulkCreateTransactionLines.JobID);
         });
 
         it('Verify bulk jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(5);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk created transaction lines', async () => {
@@ -1840,29 +1834,27 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     [bulkTransactionExternalID + ' 1', items[4].ExternalID, '6'],
                 ],
             });
-            expect(bulkCreateTransactionLines.JobID).to.be.a('number'),
-                expect(bulkCreateTransactionLines.URI).to.include('/bulk/jobinfo/' + bulkCreateTransactionLines.JobID);
+            expect(bulkCreateTransactionLines.JobID).to.be.a('number');
+            expect(bulkCreateTransactionLines.URI).to.include('/bulk/jobinfo/' + bulkCreateTransactionLines.JobID);
         });
 
         it('Verify bulk update jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
-            expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(5),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(5);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk transaction lines update', async () => {
@@ -1870,11 +1862,11 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 'transaction_lines',
                 '?where=TransactionInternalID=' + bulkUpdateTransactions[0].InternalID,
             );
-            expect(bulkUpdateTransactionsLines[0].UnitsQuantity).to.equal(2),
-                expect(bulkUpdateTransactionsLines[1].UnitsQuantity).to.equal(3),
-                expect(bulkUpdateTransactionsLines[2].UnitsQuantity).to.equal(4),
-                expect(bulkUpdateTransactionsLines[3].UnitsQuantity).to.equal(5),
-                expect(bulkUpdateTransactionsLines[4].UnitsQuantity).to.equal(6);
+            expect(bulkUpdateTransactionsLines[0].UnitsQuantity).to.equal(2);
+            expect(bulkUpdateTransactionsLines[1].UnitsQuantity).to.equal(3);
+            expect(bulkUpdateTransactionsLines[2].UnitsQuantity).to.equal(4);
+            expect(bulkUpdateTransactionsLines[3].UnitsQuantity).to.equal(5);
+            expect(bulkUpdateTransactionsLines[4].UnitsQuantity).to.equal(6);
         });
 
         it('Delete bulk transaction lines', async () => {
@@ -1924,17 +1916,16 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         it('Delete transaction test account and TSAs', async () => {
             expect(
                 transactionTSAs.length == (await service.deleteBulkTSA('transactions', TSAarr, atds[0].TypeID)).length,
-            ).to.be.true,
-                expect(
-                    transactionLinesTSAs.length ==
-                        (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID))
-                            .length,
-                ).to.be.true,
-                expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.true,
-                expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.false,
-                expect(await service.getAccounts({ where: `InternalID=${transactionAccount.InternalID}` }))
-                    .to.be.an('array')
-                    .with.lengthOf(0);
+            ).to.be.true;
+            expect(
+                transactionLinesTSAs.length ==
+                    (await service.deleteBulkTSA('transaction_lines', transactionLineTSAarr, atds[0].TypeID)).length,
+            ).to.be.true;
+            expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.true;
+            expect(await service.deleteAccount(transactionAccount.InternalID)).to.be.false;
+            expect(await service.getAccounts({ where: `InternalID=${transactionAccount.InternalID}` }))
+                .to.be.an('array')
+                .with.lengthOf(0);
         });
     });
 }
