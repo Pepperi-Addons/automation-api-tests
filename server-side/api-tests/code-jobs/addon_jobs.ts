@@ -52,6 +52,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     let updateValuesToDraftExecute: any = {};
     let updateValuesWithoutDraft: any = {};
     let UpdateDraftCodeWithoutResult: any = {};
+    
+    
 
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -80,83 +82,83 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         it('Get Single CodeJob After Update: Name', () => {
             assert(logcash.statusd, logcash.errorMessaged);
         });
-        it('Create CodeJob with Values: Finished', () => {
-            assert(logcash.statuse, 'CodeJob creation with inserted values failed');
-        });
-        it('Create CodeJob With Parameters: Finished', () => {
-            assert(logcash.statusf, logcash.errorMessagef);
-        });
+        // it('Create CodeJob with Values: Finished', () => {
+        //     assert(logcash.statuse, 'CodeJob creation with inserted values failed');
+        // });
+        // it('Create CodeJob With Parameters: Finished', () => {
+        //     assert(logcash.statusf, logcash.errorMessagef);
+        // });
     });
-    describe('Publish Code Job With/Without Draft Code', () => {
-        it('Insert New Code Job With Draft Code: Finished', () => {
-            assert(logcash.statusPublishinsert, 'Insert new Code Job failed');
-        });
-        it('Publish Code Job With Draft Code: Finished', () => {
-            assert(logcash.statusAfterFirstPublish, logcash.errorMessageAfterFirstPublish);
-        });
-        it('Publish Code Job Without Draft Code: Finished', () => {
-            assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
-        });
-    });
+    // describe('Publish Code Job With/Without Draft Code', () => {
+        // it('Insert New Code Job With Draft Code: Finished', () => {
+        //     assert(logcash.statusPublishinsert, 'Insert new Code Job failed');
+        // });
+        // it('Publish Code Job With Draft Code: Finished', () => {
+        //     assert(logcash.statusAfterFirstPublish, logcash.errorMessageAfterFirstPublish);
+        // });
+    //     it('Publish Code Job Without Draft Code: Finished', () => {
+    //         assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
+    //     });
+    // });
     describe('Get List Of CodeJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
         it('Get List Of CodeJobse (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
             const statusA = cashCallJobsList.status;
             assert(statusA, cashCallJobsList.message);
         });
     });
-    describe('Execute Job Using Draft Code + single execution log and Code job execution logs verification', () => {
-        it('Execute job (one time) using DraftCode field: Finished', () => {
-            assert(logcash.executeDraftCodeJobeOnce1, logcash.ErrorFromExecute);
-        });
-        it('Get Single Execution Log: Finished', () => {
-            assert(executionLog.Status, executionLog.Error);
-        });
-    });
-    describe('Execute Job Using Published Code + Logs Verification', () => {
-        it('Create New CodeJob: Finished', () => {
-            assert(logcash.createNewCJToPublish, logcash.createNewCJToPublishErrorMsg);
-        });
-        it('Publish Created CodeJob: Finished', () => {
-            assert(CallbackCash.StatusPublished, CallbackCash.ErrorAfterPublish);
-        });
-        it('Udate Draft Code: Finished', () => {
-            assert(logcash.UpdatedDraftCode, logcash.UpdatedDraftCode);
-        });
-        it('Execute CodeJob (Execution Code Will Run): Finished', () => {
-            assert(logcash.executeWithDiff, logcash.executeWithDiffError);
-        });
-        it('Get CodeJob Execiotions Logs To Verify Log Format And Execution Result: Finished', () => {
-            assert(logcash.ResponseExecutedLogs, logcash.ResponseExecutedLogsErrorMsg);
-        });
+    // describe('Execute Job Using Draft Code + single execution log and Code job execution logs verification', () => {
+        // it('Execute job (one time) using DraftCode field: Finished', () => {
+        //     assert(logcash.executeDraftCodeJobeOnce1, logcash.ErrorFromExecute);
+        // });
+    //     it('Get Single Execution Log: Finished', () => {
+    //         assert(executionLog.Status, executionLog.Error);
+    //     });
+    // });
+    // describe('Execute Job Using Published Code + Logs Verification', () => {
+        // it('Create New CodeJob: Finished', () => {
+        //     assert(logcash.createNewCJToPublish, logcash.createNewCJToPublishErrorMsg);
+        // });
+        // it('Publish Created CodeJob: Finished', () => {
+        //     assert(CallbackCash.StatusPublished, CallbackCash.ErrorAfterPublish);
+        // });
+        // it('Udate Draft Code: Finished', () => {
+        //     assert(logcash.UpdatedDraftCode, logcash.UpdatedDraftCode);
+        // });
+        // it('Execute CodeJob (Execution Code Will Run): Finished', () => {
+        //     assert(logcash.executeWithDiff, logcash.executeWithDiffError);
+        // });
+        // it('Get CodeJob Execiotions Logs To Verify Log Format And Execution Result: Finished', () => {
+        //     assert(logcash.ResponseExecutedLogs, logcash.ResponseExecutedLogsErrorMsg);
+        // });
 
-        it('The Verification Between Executed Code And Draft Code After Publish (Will Be Same): Finished', () => {
-            assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
-        });
-    });
-    describe('Restore Executed CodeJob', () => {
-        it('Restore Executed CodeJob Negative Test - Restore With Wrong CodeJobUUID: Finished', () => {
-            assert(
-                CallbackCash.restoreNegativeWithWrongCodeJobUUIDStatus,
-                CallbackCash.restoreNegativeWithWrongCodeJobUUIDErrorMsg,
-            );
-        });
-        it('Restore Executed CodeJob Negative Test - AuditLogUUID Not Found (Wrong): Finished', () => {
-            assert(
-                CallbackCash.restoreNegativeAuditLogNotFoundStatus,
-                CallbackCash.restoreNegativeAuditLogNotFoundErrorMsg,
-            );
-        });
-        it('Restore Executed CodeJob Negative Test - AuditLogUUID From Wrong Status (Insert Instead Of Publish): Finished', () => {
-            assert(
-                CallbackCash.restoreNegativeAuditLogNotPublishStatus,
-                CallbackCash.restoreNegativeAuditLogNotPublishErrorMsg,
-            );
-        });
+    //     it('The Verification Between Executed Code And Draft Code After Publish (Will Be Same): Finished', () => {
+    //         assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
+    //     });
+    // });
+    // describe('Restore Executed CodeJob', () => {
+        // it('Restore Executed CodeJob Negative Test - Restore With Wrong CodeJobUUID: Finished', () => {
+        //     assert(
+        //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDStatus,
+        //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDErrorMsg,
+        //     );
+        // });
+        // it('Restore Executed CodeJob Negative Test - AuditLogUUID Not Found (Wrong): Finished', () => {
+        //     assert(
+        //         CallbackCash.restoreNegativeAuditLogNotFoundStatus,
+        //         CallbackCash.restoreNegativeAuditLogNotFoundErrorMsg,
+        //     );
+        // });
+        // it('Restore Executed CodeJob Negative Test - AuditLogUUID From Wrong Status (Insert Instead Of Publish): Finished', () => {
+        //     assert(
+        //         CallbackCash.restoreNegativeAuditLogNotPublishStatus,
+        //         CallbackCash.restoreNegativeAuditLogNotPublishErrorMsg,
+        //     );
+        // });
 
-        it('Restore Executed CodeJob: Finished', () => {
-            assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
-        });
-    });
+        // it('Restore Executed CodeJob: Finished', () => {
+        //     assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
+        // });
+    // });
     describe('CodeJob Audit Log Verification', () => {
         it('CodeJob Audit Log Verification On Status: Insert, Publish, Update, Rollback: Finished', () => {
             assert(CallbackCash.auditLogStatus, CallbackCash.auditLogErrMsg);
@@ -184,18 +186,18 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         });
     });
     describe('Distributor Execution Budget = 0', () => {
-        it('Execute Draft Code With No Distributor Budget: Finished', () => {
-            assert(logcash.LogToEmptyBudgetTest, logcash.LogToEmptyBudgetTestError);
-        });
+        // it('Execute Draft Code With No Distributor Budget: Finished', () => {
+        //     assert(logcash.LogToEmptyBudgetTest, logcash.LogToEmptyBudgetTestError);
+        // });
         it('Execute Draft Code After Budget Updated To 2 min: Finished', () => {
             assert(logcash.LogToLastBudgetTest, logcash.LogToLastBudgetTestError);
         });
     });
-    describe('Call To PAPI From Executed Draft Code', () => {
-        it('Single log Execution Verification (with Result From Draft Code): Finished', () => {
-            assert(logcash.ResponseExecutedLogsPapiTest, logcash.ResponseExecutedLogsPapiTestErrorMsg);
-        });
-    });
+    // describe('Call To PAPI From Executed Draft Code', () => {
+    //     it('Single log Execution Verification (with Result From Draft Code): Finished', () => {
+    //         assert(logcash.ResponseExecutedLogsPapiTest, logcash.ResponseExecutedLogsPapiTestErrorMsg);
+    //     });
+    // });
     //#endregion
 
     async function installAddonToDist() {
@@ -225,7 +227,14 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     //                          Create new CodeJob
     //////////////////////////////////////////////////////////////////////////////////
     async function createNewCodeJobByName() {
-        JobName = { CodeJobName: 'First Olegs test' }; //create post body with one param: name
+        // JobName = { CodeJobName: 'First Olegs test' }; //create post body with one param: name
+        JobName = {
+            CodeJobName: 'First Olegs test',
+            Type: 'AddonJob',
+            AddonPath: jsFileName, // Only for AddonJob
+            AddonUUID: addonUUID, // Only for AddonJob
+            //FunctionName: functionNamePapiTransaction,
+        };
         CallbackCash.ResponseCallback = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
             body: JobName,
