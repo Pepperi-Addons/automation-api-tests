@@ -70,11 +70,11 @@ export class DistributorService {
             }
             if (newDistributor.Status == 504) {
                 console.log(
-                    "Mandatory sleep of 7 minutes after timeout - before calling 'var/distributors/create' again",
+                    'Mandatory sleep of 7 minutes after timeout - before continue as if the distributors create',
                 );
                 this.generalService.sleep(1000 * 60 * 7);
             }
-        } while (newDistributor.Status != 200 && maxLoopsCounter > 0);
+        } while ((newDistributor.Status != 200 || newDistributor.Status != 504) && maxLoopsCounter > 0);
         return newDistributor;
     }
 
