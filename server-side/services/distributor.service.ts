@@ -74,7 +74,7 @@ export class DistributorService {
                 );
                 this.generalService.sleep(1000 * 60 * 7);
             }
-        } while ((newDistributor.Status != 200 || newDistributor.Status != 504) && maxLoopsCounter > 0);
+        } while ((newDistributor.Status == 500 || newDistributor.Status == 400) && maxLoopsCounter > 0);
         return newDistributor;
     }
 
