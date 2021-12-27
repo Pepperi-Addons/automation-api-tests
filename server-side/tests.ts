@@ -746,8 +746,6 @@ export async function addon_jobs(client: Client, testerFunctions: TesterFunction
     return testResult;
 }
 
-
-
 export async function install(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Install';

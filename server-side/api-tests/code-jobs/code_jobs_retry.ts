@@ -30,8 +30,6 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
     //await createNewCodeJobRetryTest();
     await installAddonToDist();
 
-    
-
     describe('Retry Mechanism Verification ', () => {
         it('Failure With One Try. The Retry Mechanism Stoped: Finished', () => {
             assert(executionLog.StatusWithoutRetry, executionLog.ErrorStatusWithoutRetry);
@@ -51,7 +49,6 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
         );
         await createNewCodeJobRetryTest();
     }
-
 
     async function createNewCodeJobRetryTest() {
         insertBodyRetryTest = {
@@ -93,12 +90,12 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function executeDraftCodeWithoutRetry() {
         CallbackCash.executeDraftCodeWithoutRetry = await generalService.fetchStatus(
-            '/code_jobs/async/' + CallbackCash.ResponseRetryTest.Body.UUID + '/execute',//'/execute_draft'
+            '/code_jobs/async/' + CallbackCash.ResponseRetryTest.Body.UUID + '/execute', //'/execute_draft'
             { method: 'POST' },
         ); // changed to .Body.UUID from .Body.CodeJobUUID
 
         if (
-            CallbackCash.executeDraftCodeWithoutRetry.Status == 200 &&  // status changed to Status
+            CallbackCash.executeDraftCodeWithoutRetry.Status == 200 && // status changed to Status
             CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID != '' &&
             CallbackCash.executeDraftCodeWithoutRetry.Body.URI != ''
         ) {
@@ -121,7 +118,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
         if (
             logDataNoRetry.Status == 200 &&
             logDataNoRetry.Body.UUID == CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID &&
-            logDataNoRetry.Body.Event.Type == 'addon_job_execution'//'code_job_execution'
+            logDataNoRetry.Body.Event.Type == 'addon_job_execution' //'code_job_execution'
         ) {
             if (logDataNoRetry.Body.Status.ID == 0) {
                 executionLog.StatusWithoutRetry = true;
@@ -164,7 +161,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
 
     async function executeDraftCodeWithRetry() {
         CallbackCash.executeDraftCodeWithRetry = await generalService.fetchStatus(
-            '/code_jobs/async/' + CallbackCash.ResponseRetryTest.Body.UUID + '/execute',//'/execute_draft'
+            '/code_jobs/async/' + CallbackCash.ResponseRetryTest.Body.UUID + '/execute', //'/execute_draft'
             { method: 'POST' },
         );
         if (
@@ -191,7 +188,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
         if (
             logDataWithRetry.Status == 200 &&
             logDataWithRetry.Body.UUID == CallbackCash.executeDraftCodeWithRetry.Body.ExecutionUUID &&
-            logDataWithRetry.Body.Event.Type == 'addon_job_execution'//'code_job_execution'
+            logDataWithRetry.Body.Event.Type == 'addon_job_execution' //'code_job_execution'
         ) {
             if (logDataWithRetry.Body.Status.ID == 4) {
                 executionLog.StatusExecutonLogWithRetry = true;
@@ -228,7 +225,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
         if (
             logDataWithRetry2.Status == 200 &&
             logDataWithRetry2.Body.UUID == CallbackCash.executeDraftCodeWithRetry.Body.ExecutionUUID &&
-            logDataWithRetry2.Body.Event.Type == 'addon_job_execution'//'code_job_execution'
+            logDataWithRetry2.Body.Event.Type == 'addon_job_execution' //'code_job_execution'
         ) {
             if (logDataWithRetry2.Body.Status.ID == 0) {
                 executionLog.StatusExecutonLogWithRetry2 = true;

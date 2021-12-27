@@ -23,7 +23,6 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     const logTimeRetryNum = 19;
     let cashCallJobsList: any = {};
     let listLength;
-    const executionLog: any = {};
     const cacheLog: any = {};
     const CallbackCash: any = {};
     let JobName: any = {};
@@ -50,22 +49,9 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         NumberOfTries: 1,
     };
     let updateValues: any = {};
-    const updateValuesLast: any = {};
     let CodJobeBodyBudgetTest: any = {};
     let codeJobUUIDforBudget: any = {};
-    const CodJobeBodyWithPapiCall: any = {};
-    const multiplayerResult: any = {};
-    const UpdateDraftCode: any = {};
-    const CodeJobUUID1: any = {};
-    const NewCJToPublish: any = {};
-    const logData: any = {};
-    const updateValuesToDraftExecute: any = {};
-    const updateValuesWithoutDraft: any = {};
     let UpdateDraftCodeWithoutResult: any = {};
-
-
-
-
 
     //#region AllTests log and return object
 
@@ -211,14 +197,14 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         await getListOfCallJobs();
     }
 
-        //#region Upgrade Pepperitest (Jenkins Special Addon)
-        // const testData = {
-        //     'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version]
-        // };
-        // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-        // //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
-        // const chnageVersionResponseArr = await generalService.changeVersion(testData);
-        // //#endregion Upgrade Pepperitest (Jenkins Special Addon)
+    //#region Upgrade Pepperitest (Jenkins Special Addon)
+    // const testData = {
+    //     'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version]
+    // };
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
+    // const chnageVersionResponseArr = await generalService.changeVersion(testData);
+    // //#endregion Upgrade Pepperitest (Jenkins Special Addon)
 
     async function getListOfCallJobs() {
         cashCallJobsList = await service.codeJobs
@@ -291,7 +277,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                 }
                 //added new param verification 18-05-20 two else if functions
                 else if (param == 'Type') {
-                    returnedObject.Body[param] == 'AddonJob';//  'UserCodeJob'
+                    returnedObject.Body[param] == 'AddonJob'; //  'UserCodeJob'
                 } else if (param == 'FunctionName') {
                     returnedObject.Body[param] == functionNameUpdateCodeJob; // 'main'
                 } else if (param == 'AddonPath') {
@@ -331,7 +317,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             FailureAlertEmailTo: ['oleg.y@pepperi.com'],
             FailureAlertEmailSubject: 'test updating',
             ExecutedCode: '',
-            //Type: 'AddonJob', 
+            //Type: 'AddonJob',
             CodeJobIsHidden: false,
             CreationDateTime: '',
             ModificationDateTime: '',
@@ -387,7 +373,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             // } else if (param == 'FunctionName') {
             //     returnedObject.Body[param] == 'main';
             else if (param == 'Type') {
-                returnedObject.Body[param] == 'AddonJob';//  'UserCodeJob'
+                returnedObject.Body[param] == 'AddonJob'; //  'UserCodeJob'
             } else if (param == 'FunctionName') {
                 returnedObject.Body[param] == functionNameUpdateCodeJob; // 'main'
             } else if (param == 'AddonPath') {
@@ -1372,7 +1358,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     async function executeWithDraftWithoutResult() {
         // execute Draft code without result() , to get timeout
         CallbackCash.WithDraftWithoutResult = await generalService.fetchStatus(
-            `/code_jobs/async/${CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID}/execute`,//  /execute_draft`
+            `/code_jobs/async/${CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID}/execute`, //  /execute_draft`
             { method: 'POST' },
         );
         if (
@@ -1429,7 +1415,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                         (CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'Failure' ||
                             CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InRetry') &&
                         CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.JobMessageData.CodeJobUUID ==
-                        CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
+                            CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
                     ) {
                         logcash.ResponseExecutedTimeoutTest = true;
                         logTimeCount = 0;
@@ -1521,7 +1507,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     async function executeWithDraftBudgetTest() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestFirst = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute`,  //   /execute_draft`
+            `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
             { method: 'POST' },
         );
         generalService.sleep(20000);
@@ -1557,7 +1543,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     async function executeWithDraftBudgetTestSecond() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestSecond = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute`,  //   /execute_draft`
+            `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
             { method: 'POST' },
         );
         generalService.sleep(10000);
@@ -1672,7 +1658,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     async function executeWithDraftWithBudget() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.executeWithDraftWithBudget = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute`,  //   /execute_draft`
+            `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
             { method: 'POST' },
         );
 
