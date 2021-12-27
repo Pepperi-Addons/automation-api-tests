@@ -15,7 +15,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     // let functionName = 'ido';
     const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
     const functionNameUpdateCodeJob = 'UpdateCodeJob';
-    const version = '0.0.4';
+    const version = '0.0.3';
     const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
@@ -190,21 +190,19 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //#endregion
 
     async function installAddonToDist() {
-        CallbackCash.installAddonToDist = await generalService.fetchStatus(
-            '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
-            { method: 'POST' },
-        );
+        // CallbackCash.installAddonToDist = await generalService.fetchStatus(
+        //     '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
+        //     { method: 'POST' },
+        // );
+        //#region Upgrade Pepperitest (Jenkins Special Addon)
+        const testData = {
+            'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
+        };
+        CallbackCash.installAddonToDist = await generalService.changeToAnyAvailableVersion(testData);
+        //#endregion Upgrade Pepperitest (Jenkins Special Addon)
+        debugger;
         await getListOfCallJobs();
     }
-
-    //#region Upgrade Pepperitest (Jenkins Special Addon)
-    // const testData = {
-    //     'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version]
-    // };
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    // //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
-    // const chnageVersionResponseArr = await generalService.changeVersion(testData);
-    // //#endregion Upgrade Pepperitest (Jenkins Special Addon)
 
     async function getListOfCallJobs() {
         cashCallJobsList = await service.codeJobs
