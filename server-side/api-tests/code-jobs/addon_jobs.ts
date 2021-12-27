@@ -1,12 +1,22 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
-export async function CodeJobsTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function AddonJobsTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const assert = tester.assert;
     const it = tester.it;
 
     service['options'].addonUUID = '';
+
+    const addonUUID = generalService['client'].BaseURL.includes('staging')
+        ? '48d20f0b-369a-4b34-b48a-ffe245088513'
+        : '78696fc6-a04f-4f82-aadf-8f823776473f';
+    const jsFileName = 'test.js';
+    // let functionName = 'ido';
+    const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
+    const functionNameUpdateCodeJob = 'UpdateCodeJob';
+    const version = '0.0.4';
+    const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
     let logTimeCount = 0;
@@ -36,33 +46,26 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         CodeJobIsHidden: false,
         CreationDateTime: '',
         ModificationDateTime: '',
-        ExecutionMemoryLevel: 1,
+        ExecutionMemoryLevel: 4,
         NumberOfTries: 1,
     };
     let updateValues: any = {};
-    let updateValuesLast: any = {};
+    const updateValuesLast: any = {};
     let CodJobeBodyBudgetTest: any = {};
     let codeJobUUIDforBudget: any = {};
-    let CodJobeBodyWithPapiCall: any = {};
-    let multiplayerResult: any = {};
-    let UpdateDraftCode: any = {};
-    let CodeJobUUID1: any = {};
-    let NewCJToPublish: any = {};
-    let logData: any = {};
-    let updateValuesToDraftExecute: any = {};
-    let updateValuesWithoutDraft: any = {};
+    const CodJobeBodyWithPapiCall: any = {};
+    const multiplayerResult: any = {};
+    const UpdateDraftCode: any = {};
+    const CodeJobUUID1: any = {};
+    const NewCJToPublish: any = {};
+    const logData: any = {};
+    const updateValuesToDraftExecute: any = {};
+    const updateValuesWithoutDraft: any = {};
     let UpdateDraftCodeWithoutResult: any = {};
-    
-    
 
-    const addonUUID = generalService['client'].BaseURL.includes('staging')
-        ? '48d20f0b-369a-4b34-b48a-ffe245088513'
-        : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const jsFileName = 'test.js';
-    // let functionName = 'ido';
-    const functionNameWithBody = 'oleg';
-    const functionNamePapiTransaction = 'getTransactions';
-    const version = '0.0.4';
+
+
+
 
     //#region AllTests log and return object
 
@@ -90,12 +93,12 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         // });
     });
     // describe('Publish Code Job With/Without Draft Code', () => {
-        // it('Insert New Code Job With Draft Code: Finished', () => {
-        //     assert(logcash.statusPublishinsert, 'Insert new Code Job failed');
-        // });
-        // it('Publish Code Job With Draft Code: Finished', () => {
-        //     assert(logcash.statusAfterFirstPublish, logcash.errorMessageAfterFirstPublish);
-        // });
+    // it('Insert New Code Job With Draft Code: Finished', () => {
+    //     assert(logcash.statusPublishinsert, 'Insert new Code Job failed');
+    // });
+    // it('Publish Code Job With Draft Code: Finished', () => {
+    //     assert(logcash.statusAfterFirstPublish, logcash.errorMessageAfterFirstPublish);
+    // });
     //     it('Publish Code Job Without Draft Code: Finished', () => {
     //         assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
     //     });
@@ -107,57 +110,57 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         });
     });
     // describe('Execute Job Using Draft Code + single execution log and Code job execution logs verification', () => {
-        // it('Execute job (one time) using DraftCode field: Finished', () => {
-        //     assert(logcash.executeDraftCodeJobeOnce1, logcash.ErrorFromExecute);
-        // });
+    // it('Execute job (one time) using DraftCode field: Finished', () => {
+    //     assert(logcash.executeDraftCodeJobeOnce1, logcash.ErrorFromExecute);
+    // });
     //     it('Get Single Execution Log: Finished', () => {
     //         assert(executionLog.Status, executionLog.Error);
     //     });
     // });
     // describe('Execute Job Using Published Code + Logs Verification', () => {
-        // it('Create New CodeJob: Finished', () => {
-        //     assert(logcash.createNewCJToPublish, logcash.createNewCJToPublishErrorMsg);
-        // });
-        // it('Publish Created CodeJob: Finished', () => {
-        //     assert(CallbackCash.StatusPublished, CallbackCash.ErrorAfterPublish);
-        // });
-        // it('Udate Draft Code: Finished', () => {
-        //     assert(logcash.UpdatedDraftCode, logcash.UpdatedDraftCode);
-        // });
-        // it('Execute CodeJob (Execution Code Will Run): Finished', () => {
-        //     assert(logcash.executeWithDiff, logcash.executeWithDiffError);
-        // });
-        // it('Get CodeJob Execiotions Logs To Verify Log Format And Execution Result: Finished', () => {
-        //     assert(logcash.ResponseExecutedLogs, logcash.ResponseExecutedLogsErrorMsg);
-        // });
+    // it('Create New CodeJob: Finished', () => {
+    //     assert(logcash.createNewCJToPublish, logcash.createNewCJToPublishErrorMsg);
+    // });
+    // it('Publish Created CodeJob: Finished', () => {
+    //     assert(CallbackCash.StatusPublished, CallbackCash.ErrorAfterPublish);
+    // });
+    // it('Udate Draft Code: Finished', () => {
+    //     assert(logcash.UpdatedDraftCode, logcash.UpdatedDraftCode);
+    // });
+    // it('Execute CodeJob (Execution Code Will Run): Finished', () => {
+    //     assert(logcash.executeWithDiff, logcash.executeWithDiffError);
+    // });
+    // it('Get CodeJob Execiotions Logs To Verify Log Format And Execution Result: Finished', () => {
+    //     assert(logcash.ResponseExecutedLogs, logcash.ResponseExecutedLogsErrorMsg);
+    // });
 
     //     it('The Verification Between Executed Code And Draft Code After Publish (Will Be Same): Finished', () => {
     //         assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
     //     });
     // });
     // describe('Restore Executed CodeJob', () => {
-        // it('Restore Executed CodeJob Negative Test - Restore With Wrong CodeJobUUID: Finished', () => {
-        //     assert(
-        //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDStatus,
-        //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDErrorMsg,
-        //     );
-        // });
-        // it('Restore Executed CodeJob Negative Test - AuditLogUUID Not Found (Wrong): Finished', () => {
-        //     assert(
-        //         CallbackCash.restoreNegativeAuditLogNotFoundStatus,
-        //         CallbackCash.restoreNegativeAuditLogNotFoundErrorMsg,
-        //     );
-        // });
-        // it('Restore Executed CodeJob Negative Test - AuditLogUUID From Wrong Status (Insert Instead Of Publish): Finished', () => {
-        //     assert(
-        //         CallbackCash.restoreNegativeAuditLogNotPublishStatus,
-        //         CallbackCash.restoreNegativeAuditLogNotPublishErrorMsg,
-        //     );
-        // });
+    // it('Restore Executed CodeJob Negative Test - Restore With Wrong CodeJobUUID: Finished', () => {
+    //     assert(
+    //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDStatus,
+    //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDErrorMsg,
+    //     );
+    // });
+    // it('Restore Executed CodeJob Negative Test - AuditLogUUID Not Found (Wrong): Finished', () => {
+    //     assert(
+    //         CallbackCash.restoreNegativeAuditLogNotFoundStatus,
+    //         CallbackCash.restoreNegativeAuditLogNotFoundErrorMsg,
+    //     );
+    // });
+    // it('Restore Executed CodeJob Negative Test - AuditLogUUID From Wrong Status (Insert Instead Of Publish): Finished', () => {
+    //     assert(
+    //         CallbackCash.restoreNegativeAuditLogNotPublishStatus,
+    //         CallbackCash.restoreNegativeAuditLogNotPublishErrorMsg,
+    //     );
+    // });
 
-        // it('Restore Executed CodeJob: Finished', () => {
-        //     assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
-        // });
+    // it('Restore Executed CodeJob: Finished', () => {
+    //     assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
+    // });
     // });
     describe('CodeJob Audit Log Verification', () => {
         it('CodeJob Audit Log Verification On Status: Insert, Publish, Update, Rollback: Finished', () => {
@@ -208,6 +211,15 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         await getListOfCallJobs();
     }
 
+        //#region Upgrade Pepperitest (Jenkins Special Addon)
+        // const testData = {
+        //     'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version]
+        // };
+        // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+        // //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
+        // const chnageVersionResponseArr = await generalService.changeVersion(testData);
+        // //#endregion Upgrade Pepperitest (Jenkins Special Addon)
+
     async function getListOfCallJobs() {
         cashCallJobsList = await service.codeJobs
             .iter({
@@ -219,7 +231,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         listLength = cashCallJobsList.length;
         //Oren 1/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
         //await createNewCodeJobByName();
-        await getEmailStatus();
+        //await getEmailStatus();
+        await createNewCodeJobByName();
     }
 
     //#region Upsert code jobs
@@ -233,6 +246,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             Type: 'AddonJob',
             AddonPath: jsFileName, // Only for AddonJob
             AddonUUID: addonUUID, // Only for AddonJob
+            FunctionName: functionNameUpdateCodeJob,
             //FunctionName: functionNamePapiTransaction,
         };
         CallbackCash.ResponseCallback = await generalService.fetchStatus('/code_jobs', {
@@ -277,9 +291,13 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                 }
                 //added new param verification 18-05-20 two else if functions
                 else if (param == 'Type') {
-                    returnedObject.Body[param] == 'UserCodeJob';
+                    returnedObject.Body[param] == 'AddonJob';//  'UserCodeJob'
                 } else if (param == 'FunctionName') {
-                    returnedObject.Body[param] == 'main';
+                    returnedObject.Body[param] == functionNameUpdateCodeJob; // 'main'
+                } else if (param == 'AddonPath') {
+                    returnedObject.Body[param] == jsFileName;
+                } else if (param == 'AddonUUID') {
+                    returnedObject.Body[param] == addonUUID;
                 } else {
                     logcash.statusb = false;
                     logcash.errorMessageb =
@@ -313,13 +331,15 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             FailureAlertEmailTo: ['oleg.y@pepperi.com'],
             FailureAlertEmailSubject: 'test updating',
             ExecutedCode: '',
-            DraftCode:
-                'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',
+            //Type: 'AddonJob', 
             CodeJobIsHidden: false,
             CreationDateTime: '',
             ModificationDateTime: '',
-            ExecutionMemoryLevel: 2,
+            ExecutionMemoryLevel: 4,
             NumberOfTries: 1,
+            AddonPath: jsFileName,
+            AddonUUID: addonUUID,
+            FunctionName: functionNameUpdateCodeJob,
         };
 
         CallbackCash.ResponseCallbackAfterUpdate = await generalService.fetchStatus('/code_jobs', {
@@ -362,10 +382,18 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                 returnedObject.Body[param] == null;
             }
             //added new param verification 18-05-20 two else if functions
+            // else if (param == 'Type') {
+            //     returnedObject.Body[param] == 'AddonJob';//  'UserCodeJob'
+            // } else if (param == 'FunctionName') {
+            //     returnedObject.Body[param] == 'main';
             else if (param == 'Type') {
-                returnedObject.Body[param] == 'UserCodeJob';
+                returnedObject.Body[param] == 'AddonJob';//  'UserCodeJob'
             } else if (param == 'FunctionName') {
-                returnedObject.Body[param] == 'main';
+                returnedObject.Body[param] == functionNameUpdateCodeJob; // 'main'
+            } else if (param == 'AddonPath') {
+                returnedObject.Body[param] == jsFileName;
+            } else if (param == 'AddonUUID') {
+                returnedObject.Body[param] == addonUUID;
             } else {
                 logcash.statusd = false;
                 logcash.errorMessaged =
@@ -1099,7 +1127,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         if (CallbackCash.auditLogResponse.length == 5) {
             CallbackCash.auditLogResponse.forEach((element) => {
                 for (const key in element) {
-                    //debugger;
+                    debugger;
                     if (key == 'UUID') {
                         if (element[key] == '') {
                             CallbackCash.auditLogErrMsg += '\n The Log UUID returned empty';
@@ -1221,7 +1249,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                                     if (
                                         element1[key1] == 'CodeJobName' ||
                                         element1[key1] == 'Description' ||
-                                        element1[key1] == 'DraftCode' ||
+                                        //element1[key1] == 'DraftCode' ||
                                         element1[key1] == 'ExecutionMemoryLevel'
                                     ) {
                                     } else {
@@ -1261,6 +1289,10 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             UUID: '',
             CodeJobName: '',
             Description: 'Will failed on madatory field',
+            Type: 'AddonJob',
+            AddonPath: jsFileName, // Only for AddonJob
+            AddonUUID: addonUUID, // Only for AddonJob
+            FunctionName: functionNameUpdateCodeJob,
         };
         CallbackCash.insertWithoutName = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
@@ -1283,8 +1315,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                 'Get wrong exeption or not get exeption on insert new CodeJob without mandatory field CodeJob name';
         }
         //Oren 3/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
-        //await getEmailStatus();
-        await getLogsToExecutedTimeoutTest();
+        await getEmailStatus();
+        //await getLogsToExecutedTimeoutTest();
     }
     //#endregion
 
@@ -1307,10 +1339,14 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             UUID: '',
             CodeJobName: 'timeout test CodeJob - ',
             Description: 'DraftCode with Utilities.sleep 130000 ms before returResult',
+            Type: 'AddonJob',
             FailureAlertEmailTo: ['oleg.y@pepperi.com'],
-            DraftCode:
-                'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(130000);\r\n\treturn multiply(8,8);\r\n};',
-            ExecutionMemoryLevel: 1,
+            // DraftCode:
+            //     'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(130000);\r\n\treturn multiply(8,8);\r\n};',
+            AddonPath: jsFileName, // Only for AddonJob
+            AddonUUID: addonUUID, // Only for AddonJob
+            FunctionName: functionNameUpdateDrafrCodeWithoutResult,
+            ExecutionMemoryLevel: 4,
         };
 
         CallbackCash.UpdatedDraftCodeWithoutResult = await generalService.fetchStatus('/code_jobs', {
@@ -1336,7 +1372,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftWithoutResult() {
         // execute Draft code without result() , to get timeout
         CallbackCash.WithDraftWithoutResult = await generalService.fetchStatus(
-            `/code_jobs/async/${CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID}/execute_draft`,
+            `/code_jobs/async/${CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID}/execute`,//  /execute_draft`
             { method: 'POST' },
         );
         if (
@@ -1357,8 +1393,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         logTimeCount = 0;
 
         //Oren 2/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
-        //await getLogsToExecutedTimeoutTest();
-        await createNewCodeJobByName();
+        await getLogsToExecutedTimeoutTest();
+        //await createNewCodeJobByName();
     }
 
     async function getLogsToExecutedTimeoutTest() {
@@ -1393,7 +1429,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
                         (CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'Failure' ||
                             CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InRetry') &&
                         CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.JobMessageData.CodeJobUUID ==
-                            CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
+                        CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
                     ) {
                         logcash.ResponseExecutedTimeoutTest = true;
                         logTimeCount = 0;
@@ -1450,9 +1486,13 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         CodJobeBodyBudgetTest = {
             UUID: '',
             CodeJobName: 'New CodeJob to budget test',
-            DraftCode:
-                'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(5000);\r\n\treturn multiply(8,8);\r\n};',
-            ExecutionMemoryLevel: 1,
+            Type: 'AddonJob',
+            // DraftCode:
+            //     'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(5000);\r\n\treturn multiply(8,8);\r\n};',
+            AddonPath: jsFileName, // Only for AddonJob
+            AddonUUID: addonUUID, // Only for AddonJob
+            FunctionName: functionNameCreateNewCJToBudgetTest,
+            ExecutionMemoryLevel: 4,
         };
 
         CallbackCash.insertNewCodJobToBudgetTest = await generalService.fetchStatus('/code_jobs', {
@@ -1473,7 +1513,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             logcash.insertNewCodJobToBudgetTest = false;
             logcash.insertNewCodJobToBudgetTestErrorMsg =
                 'Post to CodeJobe with Draft failed.THe Budget test case not tested and will be tested again';
-            //updateDistributorBudget();
+            await updateDistributorBudgetSecond();
             //await createNewCJToExecuteWithPapi();
         }
     }
@@ -1481,7 +1521,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftBudgetTest() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestFirst = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            `/code_jobs/async/${codeJobUUIDforBudget}/execute`,  //   /execute_draft`
             { method: 'POST' },
         );
         generalService.sleep(20000);
@@ -1517,7 +1557,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftBudgetTestSecond() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.WithDraftToBudgetTestSecond = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            `/code_jobs/async/${codeJobUUIDforBudget}/execute`,  //   /execute_draft`
             { method: 'POST' },
         );
         generalService.sleep(10000);
@@ -1632,7 +1672,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     async function executeWithDraftWithBudget() {
         // execute Draft code with small TimeOut 5000
         CallbackCash.executeWithDraftWithBudget = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute_draft`,
+            `/code_jobs/async/${codeJobUUIDforBudget}/execute`,  //   /execute_draft`
             { method: 'POST' },
         );
 
