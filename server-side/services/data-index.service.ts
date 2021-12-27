@@ -44,38 +44,38 @@ export class DataIndexService {
 
     cleanDataIndex() {
         return this.generalService.papiClient.post(
-            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/delete_index',
+            '/addons/api/async/00000000-0000-0000-0000-000da1a14de8/data_index_ui_api/delete_index',
         );
     }
 
     exportDataToDataIndex(data) {
         return this.generalService.papiClient.post(
-            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/save_ui_data',
+            '/addons/api/async/00000000-0000-0000-0000-000da1a14de8/data_index_ui_api/save_ui_data',
             data,
         );
     }
 
     rebuildAllActivities() {
         return this.generalService.papiClient.post(
-            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/all_activities_rebuild',
+            '/addons/api/async/00000000-0000-0000-0000-000da1a14de8/data_index/all_activities_rebuild',
         );
     }
 
     pollAllActivities() {
         return this.generalService.papiClient.post(
-            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/all_activities_polling',
+            '/addons/api/async/00000000-0000-0000-0000-000da1a14de8/data_index/all_activities_polling',
         );
     }
 
     rebuildTransactionLines() {
         return this.generalService.papiClient.post(
-            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/transaction_lines_rebuild',
+            '/addons/api/async/00000000-0000-0000-0000-000da1a14de8/data_index/transaction_lines_rebuild',
         );
     }
 
     pollTransactionLines() {
         return this.generalService.papiClient.post(
-            '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/transaction_lines_polling',
+            '/addons/api/async/00000000-0000-0000-0000-000da1a14de8/data_index/transaction_lines_polling',
         );
     }
 }

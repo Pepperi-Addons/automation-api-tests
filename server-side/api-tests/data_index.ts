@@ -177,7 +177,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //#region Upgrade Data Index
     const testData = {
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        'Data Index': ['00000000-0000-0000-0000-000da1a14de8', ''],
         'Pepperi Elastic Search': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
