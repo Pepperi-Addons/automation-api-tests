@@ -11,6 +11,7 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    //#endregion Downgrade Services Framework To Working version
 
     describe('Maintenance Job Tests Suites', () => {
         describe('Prerequisites Addon for Maintenance Tests', () => {
@@ -52,6 +53,15 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
                     '/addons/api/00000000-0000-0000-0000-000000000a91/installation/maintenanceJob',
                 );
                 expect(maintenanceJobResponse.success).to.be.true;
+
+                //TODO: Remove this region - This was add 25/12/2021 since the job need to be called only on the
+                //TODO: Maintenance Window, and this need to be developed.
+                //#region Restore Services Framework To Latest version
+                const tempTestData = {
+                    'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+                };
+                await generalService.changeVersion(request.body.varKey, tempTestData, false);
+                //#endregion Restore Services Framework To Latest version
 
                 //Validate Services Framework is on Phased version
                 const installedPAPIVersion = await generalService.getAddonsByUUID(
