@@ -53,12 +53,27 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
                 );
                 expect(maintenanceJobResponse.success).to.be.true;
 
+                //Validate Services Framework is on Phased version
+                const installedPAPIVersion = await generalService.getAddonsByUUID(
+                    '00000000-0000-0000-0000-000000000a91',
+                );
+                const testData = {
+                    'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+                };
+                const chnageVersionResponseArr = await generalService.changeVersion(
+                    request.body.varKey,
+                    testData,
+                    false,
+                );
+                expect(installedPAPIVersion.Version, 'Services Framework is not on Phased Version').to.equal(
+                    chnageVersionResponseArr['Services Framework'][2],
+                );
+
                 //Wait and validate that Maintenance Job works again on phased version
                 generalService.sleep(5000);
                 const maintenanceJobResponseAfter = await generalService.papiClient.post(
                     '/addons/api/00000000-0000-0000-0000-000000000a91/installation/maintenanceJob',
                 );
-                debugger;
                 expect(maintenanceJobResponseAfter.success).to.be.true;
             });
         });
