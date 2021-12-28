@@ -416,7 +416,8 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
                                 Column3: 'updated-value',
                             },
                         ],
-                        Overwrite: true,
+                        //Overwrite: true,
+                        OverwriteObject: true,
                     }),
                 },
             )
@@ -486,7 +487,8 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
 
                     body: JSON.stringify({
                         Objects: object,
-                        Overwrite: true,
+                        //Overwrite: true,
+                        OverwriteObject: true,
                     }),
                 },
             )
@@ -530,7 +532,8 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
 
                     body: JSON.stringify({
                         Objects: object,
-                        Overwrite: true,
+                        //Overwrite: true,
+                        OverwriteObject: true,
                     }),
                 },
             )
@@ -575,7 +578,8 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
 
                     body: JSON.stringify({
                         Objects: object,
-                        Overwrite: false,
+                        //Overwrite: false,
+                        OverwriteObject: false,
                     }),
                 },
             )
@@ -660,7 +664,8 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
                     body: JSON.stringify({
                         Objects: object,
                         //'Overwrite': true
-                        PageSize: 110,
+                        //PageSize: 110,
+                        MaxPageSize: 110,
                     }),
                 },
             )

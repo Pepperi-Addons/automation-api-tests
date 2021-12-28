@@ -424,6 +424,64 @@ export default class GeneralService {
         return testData;
     }
 
+    async changeToAnyAvailableVersion(testData: { [any: string]: string[] }): Promise<{ [any: string]: string[] }> {
+        for (const addonName in testData) {
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
+            let changeType = 'Upgrade';
+            const searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            const fetchResponse = await this.fetchStatus(
+                `${this.client.BaseURL}/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                },
+            );
+            let LatestVersion;
+            if (fetchResponse.Status == 200) {
+                try {
+                    LatestVersion = fetchResponse.Body[0].Version;
+                } catch (error) {
+                    throw new Error(
+                        `Get latest addon version failed: ${version}, Status: ${
+                            LatestVersion.Status
+                        }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
+                    );
+                }
+            } else {
+                throw new Error(
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchResponse.Status
+                    }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
+                );
+            }
+            testData[addonName].push(LatestVersion);
+
+            let upgradeResponse = await this.papiClient.addons.installedAddons
+                .addonUUID(`${addonUUID}`)
+                .upgrade(LatestVersion);
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+            if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
+                if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                    testData[addonName].push(changeType);
+                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                } else {
+                    changeType = 'Downgrade';
+                    upgradeResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .downgrade(LatestVersion);
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+                    testData[addonName].push(changeType);
+                    testData[addonName].push(String(auditLogResponse.Status?.Name));
+                }
+            } else {
+                testData[addonName].push(changeType);
+                testData[addonName].push(String(auditLogResponse.Status?.Name));
+            }
+        }
+        return testData;
+    }
+
     fetchStatus(uri: string, requestInit?: FetchRequestInit): Promise<FetchStatusResponse> {
         const start = performance.now();
         let responseStr: string;
