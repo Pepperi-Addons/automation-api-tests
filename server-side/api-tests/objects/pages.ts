@@ -1,88 +1,79 @@
-import { Page, PageBlock, PageLayout } from '@pepperi-addons/papi-sdk';
-import GeneralService, { TesterFunctions, FilterAttributes } from '../../services/general.service';
-import { ObjectsService } from '../../services/objects.service';
+import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { PagesService } from '../../services/pages.service';
+import { v4 as newUuid } from 'uuid';
 
 export async function SampleTest(generalService: GeneralService, tester: TesterFunctions) {
-    const service = new ObjectsService(generalService);
-    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-    describe("Pages API Tests Suite", () =>{
-        let testPageBlock : PageBlock = {
-            Relation: {
-                RelationName: "PageBlock",
-				Type: "NgComponent",
-				Name: "Page Block Tester",
-				AddonUUID: "5046a9e4-ffa4-41bc-8b62-db1c2cf3e455",
-				SubType: "NG12",
-				AddonRelativeURL: "block_tester",
-				ModuleName: "BlockTesterModule",
-				ComponentName: "BlockTesterComponent"
-            },
-            Key: "SomeKey"
-        }
+    const pagesService = new PagesService(generalService);
+    const pageBlockRelation = await pagesService.getBlockRelation('Page Block Tester');
+    describe('Pages API Tests Suite', () => {
+        const testPageBlock: PageBlock = {
+            Relation: pageBlockRelation,
+            Key: newUuid(),
+        };
 
-        let testPage : Page = {
-            Name: "Pages Api Test with block",
-            Blocks: [
-                testPageBlock
-            ],
+        const testPage: Page = {
+            Name: 'Pages Api Test with block',
+            Blocks: [testPageBlock],
             Layout: {
                 Sections: [
                     {
-                        "Key": "LayoutSectionKey",
-                        "Columns": [
-                            {
-                                "Block": {
-                                    "BlockKey": "SomeKey"
-                                }
-                            }
-                        ],
-                        "Hide": []
-                    }
-                ]
-            }
-            // Layout: {
-            //     Sections: []
-            // },
-        }
+                        Key: newUuid(),
+                        Columns: [{}],
+                        Hide: [],
+                    },
+                ],
+            },
+        };
+        testPage.Layout.Sections[0] = pagesService.addBlockToSection(testPageBlock, testPage.Layout.Sections[0]);
+
         it('Create new page', async () => {
-            const resultPage : Page = await service.papiClient.pages.upsert(testPage);
-            const properties = ["Name", "Blocks", "Layout"];
+            const resultPage: Page = await pagesService.createOrUpdatePage(testPage);
             testPage.Key = resultPage.Key;
-            ComparePages(testPage, resultPage, properties);
-            // testPage["Key"] = resultPage["Key"];
-            // expect(resultPage).to.equal(testPage);
-            debugger;    
+            DeepCompareObjects(testPage, resultPage, ['length']);
         });
-        
-        it("Delete created page", async () => {
+
+        it('Delete created page', async () => {
             testPage.Hidden = true;
-            const resultPage = await service.papiClient.pages.upsert(testPage);
+            const resultPage = await pagesService.deletePage(testPage);
             expect(resultPage.Hidden).to.equal(true);
         });
 
-        function ComparePages(expected : Page, actual : Page, properties : Array<string>){
-            properties.forEach((prop) =>{
-                console.log(`Expected ${prop}: ${expected[prop]}`);
-                console.log(`Actual ${prop}: ${actual[prop]}`);
+        function DeepCompareObjects(
+            expected: any,
+            actual: any,
+            excludedProperties?: Array<string>,
+            parentProp?: string,
+        ) {
+            // AssertAndLog(expected, actual);
+            if (typeof expected === 'object') {
+                const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
+                    excludedProperties ? !excludedProperties.includes(prop) : prop,
+                );
 
-                expect(actual[prop], `The objects don't match: \nExpected: ${JSON.stringify(expected)}\nActual: ${JSON.stringify(actual)}`).to.deep.equal(expected[prop]);
-            });
+                properties.forEach((prop) => {
+                    parentProp = parentProp ? parentProp + '.' + prop : prop;
+                    if (typeof expected[prop] === 'object') {
+                        DeepCompareObjects(expected[prop], actual[prop], excludedProperties, parentProp);
+                    } else {
+                        AssertAndLog(expected[prop], actual[prop], parentProp);
+                    }
+                });
+            } else {
+                AssertAndLog(expected, actual);
+            }
         }
-        // it('Compare Page properties', async (expected : Page, actual : Page, properties : Array<string>) =>{
-        //     properties.forEach((prop) =>{
-        //         expect(actual[prop]).to.equal(expected[prop]);
-        //     });
-        // });
     });
-    // const page = await service.papiClient.pages.find({ page_size: 1 });
-    // const pageBlocks = page[0].Blocks;
-    // const pageLayout = page[0].Layout;
-    // console.log(pageBlocks);
-    // console.log(pageLayout);
-    // console.log(page);
-    // console.log(page[0]);
-}
 
+    function AssertAndLog(expected: any, actual: any, parentProp = '') {
+        console.log(`Expected ${parentProp}: ${typeof expected === 'object' ? JSON.stringify(expected) : expected}`);
+        console.log(`Actual ${parentProp}: ${typeof actual === 'object' ? JSON.stringify(actual) : actual}`);
+        expect(
+            actual,
+            `The objects don't match: \nExpected: ${JSON.stringify(expected)}\nActual: ${JSON.stringify(actual)}`,
+        ).to.equal(expected);
+    }
+}
