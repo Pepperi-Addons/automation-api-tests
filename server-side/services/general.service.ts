@@ -684,9 +684,9 @@ export default class GeneralService {
 }
 
 export interface TesterFunctions {
-    describe: any;
-    expect: any;
-    assert?: any;
+    describe: { (name: string, fn: () => any): any };
+    expect: Chai.ExpectStatic;
+    assert?: Chai.AssertStatic | any;
     it: any;
     run: any;
     setNewTestHeadline?: any;
