@@ -14,6 +14,10 @@ import { FieldsTests } from './api-tests/objects/fields';
 import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from './api-tests/sync';
 //#endregion All Tests
 
+//#region Pages API test
+import { SampleTest } from './api-tests/objects/pages';
+//#endregion Pages API test
+
 //#region Old Framwork Tests
 import {
     BaseAddonsTests,
@@ -378,6 +382,29 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     return testResult;
 }
 //#endregion All Tests
+export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Pages_Api';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SampleTest(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
 
 //#region Old Framwork Tests
 export async function audit_logs(client: Client, testerFunctions: TesterFunctions) {
