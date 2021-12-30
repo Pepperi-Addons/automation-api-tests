@@ -2140,12 +2140,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                 TransactionsATDArr = [
                     //Production - S3
                     {
-                        InternalID: 369084,
-                        Description: 'Exported from Sandbox (DI-DI-18750) in 27.12.2021',
+                        InternalID: 369260,
+                        Description: 'Exported from Sandbox (DI-18750) in 27.12.2021',
                         FileName: 'Test Email ATD_1_1_214.json',
                         MimeType: 'application/json',
-                        Title: 'Test Email ATD - 1.1.214',
-                        URL: 'https://cdn.pepperi.com/30013466/CustomizationFile/861f908c-201f-4ffb-822e-2ae2ed267512/Test Email ATD_1_1_214.json',
+                        Title: 'Test Email ATD - 1.1.214 (DI-18750)',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/7e104198-7bee-4fa5-989a-0957402c2442/Test Email ATD_1_1_214.json',
                     },
                 ];
             }

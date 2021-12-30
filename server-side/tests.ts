@@ -1449,7 +1449,6 @@ export async function import_export_atd_bug_reproduction(
 ) {
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Bug_Reproduction';
-    ImportExportATDTransactionsOverridBugReproductionTests;
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
         ? 'Sandbox'
