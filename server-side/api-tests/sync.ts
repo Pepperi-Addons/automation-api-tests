@@ -244,8 +244,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
-                        return Promise.all[
-                            (await expect(
+                        return [
+                            (expect(
                                 await syncPostGetValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
@@ -260,7 +260,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 ),
                             )
                                 .to.have.property('TestResult')
-                                .that.contain('Pass' as TestResult))
+                                .that.contain('Pass' as TestResult)),
                         ];
                     } else {
                         return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
@@ -300,8 +300,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
-                        return Promise.all[
-                            (await expect(
+                        return [
+                            (expect(
                                 await syncPostGetValidation(
                                     syncDataMembersValidationPut.apiGetResponse,
                                     syncDataMembersValidationPut.testBody,
@@ -316,7 +316,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 ),
                             )
                                 .to.have.property('TestResult')
-                                .that.contain('Pass' as TestResult))
+                                .that.contain('Pass' as TestResult)),
                         ];
                     } else {
                         return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
@@ -417,8 +417,8 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         const syncDataMembersValidationPut: TestObject = await syncDataMembersValidation(testBody);
 
                         if (syncDataMembersValidationPut.TestResult == ('Pass' as TestResult)) {
-                            return Promise.all[
-                                (await expect(
+                            return [
+                                (expect(
                                     await syncPostGetValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
@@ -426,14 +426,14 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 )
                                     .to.have.property('TestResult')
                                     .that.contain('Pass' as TestResult),
-                                await expect(
+                                expect(
                                     await orderCreationValidation(
                                         syncDataMembersValidationPut.apiGetResponse,
                                         syncDataMembersValidationPut.testBody,
                                     ),
                                 )
                                     .to.have.property('TestResult')
-                                    .that.contain('Pass' as TestResult))
+                                    .that.contain('Pass' as TestResult)),
                             ];
                         } else {
                             return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
