@@ -34,6 +34,7 @@ import { DBSchemaTests } from './api-tests/schema';
 import { BatchUpsertTests } from './api-tests/batch_upsert';
 import { SchedulerTests } from './api-tests/code-jobs/scheduler';
 import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
+import { AddonJobsTests } from './api-tests/code-jobs/addon_jobs';
 import { InstallTests } from './api-tests/code-jobs/install';
 import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
 import { CodeJobsAddonTests } from './api-tests/code-jobs/code_jobs_addon';
@@ -69,6 +70,7 @@ import {
     ImportExportATDTransactionsOverrideWinzerTestsTwo,
     ImportExportATDTransactionsOverrideWinzerTestsThree,
     ImportExportATDLocalTests,
+    ImportExportATDTransactionsOverridBugReproductionTests,
 } from './api-tests/import_export_atd';
 import { ADALTests } from './api-tests/adal';
 import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
@@ -742,6 +744,31 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Jobs';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonJobsTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1437,6 +1464,35 @@ export async function import_export_atd_local(client: Client, request: Request, 
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDLocalTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function import_export_atd_bug_reproduction(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Import_Export_ATD_Bug_Reproduction';
+    ImportExportATDTransactionsOverridBugReproductionTests;
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ImportExportATDTransactionsOverridBugReproductionTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
