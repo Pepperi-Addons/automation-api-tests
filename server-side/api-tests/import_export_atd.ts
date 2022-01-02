@@ -3268,6 +3268,17 @@ function RemoveUntestedMembers(testedObject) {
                     delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
                         .HTML_FILE_ID;
                 }
+                if (
+                    testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailSubjectFileID
+                ) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailSubjectFileID;
+                }
+                if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue.EmailBodyID) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailBodyID;
+                }
             }
         }
     }
