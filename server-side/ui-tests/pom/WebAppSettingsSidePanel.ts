@@ -8,7 +8,11 @@ export class WebAppSettingsSidePanel extends Page {
         super(browser, `${config.baseUrl}`);
     }
 
-    public SettingsBarContainer: Locator = By.xpath('.//*[@class="settings-bar-container"]//*[@role="button"]');
+    //TODO: Replace SettingsBarContainer for:
+    //WebApp Platform | Version: 16.60.38 = settings-bar-container
+    //WebApp Platform | Version: 16.65.30/16.65.34 = pep-side-bar-container
+    //public SettingsBarContainer: Locator = By.xpath('.//*[@class="settings-bar-container"]//*[@role="button"]');
+    public SettingsBarContainer: Locator = By.xpath('.//*[@class="pep-side-bar-container"]//*[@role="button"]');
 
     //Object Types Editor Locators
     public ObjectEditorAccounts: Locator = By.id('settings/04de9428-8658-4bf7-8171-b59f6327bbf1/accounts/types');

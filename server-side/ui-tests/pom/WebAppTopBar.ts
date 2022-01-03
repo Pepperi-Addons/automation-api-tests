@@ -31,7 +31,11 @@ export class WebAppTopBar extends Page {
     public EditorAddBtn: Locator = By.css('main .content.pep-border-bottom button [name="number_plus"]');
 
     //Catalog
-    public CatalogSelectHeader: Locator = By.xpath("//div[contains(text(), 'Select Catalog')]");
+    //TODO: Replace SettingsBarContainer for:
+    //WebApp Platform | Version: 16.60.38 = div
+    //WebApp Platform | Version: 16.65.30/16.65.34 = sapn
+    // public CatalogSelectHeader: Locator = By.xpath("//div[contains(text(), 'Select Catalog')]");
+    public CatalogSelectHeader: Locator = By.xpath("//sapn[contains(text(), 'Select Catalog')]");
 
     public async selectFromMenuByText(menu: Locator, buttonText: string): Promise<void> {
         console.log('Select from menu');
