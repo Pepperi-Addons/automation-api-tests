@@ -339,16 +339,22 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 });
             });
 
-            describe('Set distributor to trial with less than 6 months and verify users+buyers', async () => {
+            describe('Set distributor to expire and verify users+buyers', async () => {
                 let supportAdminClient;
                 let supportAdminService;
-                //   let supportAdminObjectsService;
+                let supportAdminObjectsService;
                 let supportAdminDistributorService;
-                it(`Initiate support admin client`, async () => {
+                let usersBeforeExpiration;
+                let buyersBeforeExpiration;
+                it(`Initiate support admin client + get users & buyers before expiration`, async () => {
                     supportAdminClient = await generalService.initiateTester(clientArr[4].Email, clientArr[4].Password);
                     supportAdminService = new GeneralService(supportAdminClient);
-                    //        supportAdminObjectsService = new ObjectsService(supportAdminService);
+                    supportAdminObjectsService = new ObjectsService(supportAdminService);
                     supportAdminDistributorService = new DistributorService(supportAdminService);
+                    usersBeforeExpiration = await supportAdminObjectsService.getUsers({include_deleted: true});
+                    buyersBeforeExpiration = await supportAdminObjectsService.getContactsSDK({include_deleted: true});
+                    expect(usersBeforeExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(buyersBeforeExpiration).to.be.an('array').with.lengthOf(2);
                 });
 
                 it(`Set trial expiration to less than 6 months`, async () => {
@@ -363,6 +369,65 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     );
                     const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
                     expect(expirationResponse.Status.Name).to.equal('Success');
+                });
+
+                it(`Get users + buyers with support admin and verify all deleted`, async () => {
+                    const usersAfterExpiration = await supportAdminObjectsService.getUsers({include_deleted: true});
+                    const buyersAfterExpiration = await supportAdminObjectsService.getContactsSDK({include_deleted: true});
+                    expect(usersAfterExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(buyersAfterExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(usersAfterExpiration[0].Hidden).to.be.true;
+                    expect(usersAfterExpiration[1].Hidden).to.be.true;
+                    expect(buyersAfterExpiration[0].Hidden).to.be.true;
+                    expect(buyersAfterExpiration[1].Hidden).to.be.true;
+                });
+
+                it(`Set trial expiration to be valid`, async () => {
+                    const datePlusZero = new Date();
+                    const validExpirationDate = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * +14);
+                    const distributorResponse = await distributorService.setTrialExpirationDate({
+                        UUID: distributor['UUID'],
+                        TrialExpirationDateTime: validExpirationDate.toISOString().split('.')[0],
+                    });
+                    expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
+                        validExpirationDate.toISOString().split('.')[0],
+                    );
+                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    expect(expirationResponse.Status.Name).to.equal('Success');
+                });
+
+                it(`Get users + buyers with support admin and verify correct users were unhidden`, async () => {
+                    const usersAfterValid = await supportAdminObjectsService.getUsers({include_deleted: true});
+                    const buyersAfterValid = await supportAdminObjectsService.getContactsSDK({include_deleted: true});
+                    expect(usersAfterValid).to.be.an('array').with.lengthOf(2);
+                    expect(buyersAfterValid).to.be.an('array').with.lengthOf(2);
+                    expect(usersAfterValid).to.equal(usersBeforeExpiration);
+                    expect(buyersAfterValid).to.equal(buyersBeforeExpiration);
+                });
+
+                it(`Set trial expiration to more than 6 months`, async () => {
+                    const datePlusZero = new Date();
+                    const minusEightMonths = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * -240);
+                    const distributorResponse = await distributorService.setTrialExpirationDate({
+                        UUID: distributor['UUID'],
+                        TrialExpirationDateTime: minusEightMonths.toISOString().split('.')[0],
+                    });
+                    expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
+                        minusEightMonths.toISOString().split('.')[0],
+                    );
+                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    expect(expirationResponse.Status.Name).to.equal('Success');
+                });
+
+                it(`Get users + buyers with support admin and verify all deleted`, async () => {
+                    const usersAfterExpiration = await supportAdminObjectsService.getUsers({include_deleted: true});
+                    const buyersAfterExpiration = await supportAdminObjectsService.getContactsSDK({include_deleted: true});
+                    expect(usersAfterExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(buyersAfterExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(usersAfterExpiration[0].Hidden).to.be.true;
+                    expect(usersAfterExpiration[1].Hidden).to.be.true;
+                    expect(buyersAfterExpiration[0].Hidden).to.be.true;
+                    expect(buyersAfterExpiration[1].Hidden).to.be.true;
                 });
             });
         });

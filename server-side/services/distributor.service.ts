@@ -25,14 +25,6 @@ export class DistributorService {
         this.request = request;
     }
 
-    getItems(options?: FindOptions): Promise<Item[]> {
-        return this.papiClient.items.find(options);
-    }
-
-    postItem(item: Item): Promise<Item> {
-        return this.papiClient.items.upsert(item);
-    }
-
     resetUserPassword(UserID) {
         return this.papiClient.post('/Users/' + UserID + '/reset_password');
     }
