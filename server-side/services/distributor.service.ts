@@ -32,14 +32,18 @@ export class DistributorService {
     async createDistributor(Distributor: DistributorObject) {
         let newDistributor;
         let maxLoopsCounter = 16;
-        console.log("NOTICE: 'var/distributors/create' API call started - Expected 8 minutes wait time");
+        console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");
+        let password = this.request.body.varKey;
+        if (this.request.body.varKeyEU) {
+            password = this.request.body.varKeyEU;
+        }
         do {
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: this.request.body.varKey,
+                        Authorization: password,
                     },
                     body: JSON.stringify({
                         FirstName: Distributor.FirstName,
@@ -48,6 +52,7 @@ export class DistributorService {
                         Company: Distributor.Company,
                         Password: Distributor.Password,
                     }),
+                    timeout: 1000 * 60 * 9, //Limit this api call to 9 minutes
                 },
             );
             maxLoopsCounter--;
@@ -60,13 +65,45 @@ export class DistributorService {
                     CreateError: newDistributor.Body?.fault?.faultstring,
                 });
             }
-            if (newDistributor.Status == 504) {
-                console.log(
-                    'Mandatory sleep of 7 minutes after timeout - before continue as if the distributors create',
-                );
-                this.generalService.sleep(1000 * 60 * 7);
+            //TODO: Remove this when bugs will be solved (DI-19114/19116/19117/19118)
+            let isKnown = false;
+            if (newDistributor.Body?.Type == 'request-timeout') {
+                console.log('Bug exist for this response: (DI-19118)');
+                console.log('VAR - Create Distributor - The API call never return');
+                throw new Error(`Known Bug: VAR - Create Distributor - The API call never return (DI-19118)`);
             }
-        } while ((newDistributor.Status == 500 || newDistributor.Status == 400) && maxLoopsCounter > 0);
+            if (newDistributor.Status == 500) {
+                if (
+                    newDistributor.Body?.fault?.faultstring == 'Object reference not set to an instance of an object.'
+                ) {
+                    console.log('Bug exist for this response: (DI-19114)');
+                    this.generalService.sleep(1000 * 60 * 1);
+                    isKnown = true;
+                }
+                if (
+                    newDistributor.Body?.includes(
+                        'The requested URL was rejected. Please consult with your administrator.',
+                    )
+                ) {
+                    console.log('Bug exist for this response: (DI-19116)');
+                    this.generalService.sleep(1000 * 60 * 1);
+                    isKnown = true;
+                }
+                if (
+                    newDistributor.Body?.fault?.faultstring ==
+                    'Timeout error - trying to free sql cache and update statistics in order to workaround the issue.'
+                ) {
+                    console.log('Bug exist for this response: (DI-19117)');
+                    this.generalService.sleep(1000 * 60 * 1);
+                    isKnown = true;
+                }
+                if (isKnown) {
+                    throw new Error(
+                        `Status: ${newDistributor.Status}, Message: ${newDistributor.Body?.fault?.faultstring}`,
+                    );
+                }
+            }
+        } while (newDistributor.Status == 500 && maxLoopsCounter > 0);
         return newDistributor;
     }
 

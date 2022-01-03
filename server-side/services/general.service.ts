@@ -133,15 +133,24 @@ export default class GeneralService {
     }
 
     getSecret() {
-        const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))[
-            'AddonUUID'
-        ];
+        let addonUUID;
+        if (this.client.AddonUUID.length > 0) {
+            addonUUID = this.client.AddonUUID;
+        } else {
+            addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))[
+                'AddonUUID'
+            ];
+        }
         let sk;
-        try {
-            sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
-        } catch (error) {
-            console.log(`SK Not found: ${error}`);
-            sk = '00000000-0000-0000-0000-000000000000';
+        if (this.client.AddonSecretKey && this.client.AddonSecretKey.length > 0) {
+            sk = this.client.AddonSecretKey;
+        } else {
+            try {
+                sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+            } catch (error) {
+                console.log(`SK Not found: ${error}`);
+                sk = '00000000-0000-0000-0000-000000000000';
+            }
         }
         return [addonUUID, sk];
     }
@@ -675,9 +684,9 @@ export default class GeneralService {
 }
 
 export interface TesterFunctions {
-    describe: any;
-    expect: any;
-    assert?: any;
+    describe: { (name: string, fn: () => any): any };
+    expect: Chai.ExpectStatic;
+    assert?: Chai.AssertStatic | any;
     it: any;
     run: any;
     setNewTestHeadline?: any;

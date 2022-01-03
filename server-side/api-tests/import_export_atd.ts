@@ -18,6 +18,7 @@ let isTransactionsTestsOverrideWinzerFirst = false;
 let isTransactionsTestsOverrideWinzerSecond = false;
 let isTransactionsTestsOverrideWinzerTheird = false;
 let isLocalFilesComparison = false;
+let isTransactionsTestsBugReproduce = false;
 
 // All Import Export ATD Tests
 export async function ImportExportATDActivitiesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -31,6 +32,7 @@ export async function ImportExportATDActivitiesTests(generalService: GeneralServ
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -49,6 +51,7 @@ export async function ImportExportATDTransactionsTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -67,6 +70,7 @@ export async function ImportExportATDActivitiesBoxTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -85,6 +89,7 @@ export async function ImportExportATDTransactionsBoxTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -103,6 +108,7 @@ export async function ImportExportATDActivitiesOverrideTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -121,6 +127,7 @@ export async function ImportExportATDTransactionsOverrideTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -139,6 +146,7 @@ export async function ImportExportATDTransactionsOverrideWinzerTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -157,6 +165,7 @@ export async function ImportExportATDTransactionsOverrideWinzerTestsTwo(
     isTransactionsTestsOverrideWinzerSecond = true;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -175,6 +184,26 @@ export async function ImportExportATDTransactionsOverrideWinzerTestsThree(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = true;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDTransactionsOverridBugReproductionTests(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = true;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -189,6 +218,7 @@ export async function ImportExportATDLocalTests(generalService: GeneralService, 
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = true;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -273,7 +303,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         !isLocalFilesComparison &&
         !isTransactionsTestsOverrideWinzerFirst &&
         !isTransactionsTestsOverrideWinzerSecond &&
-        !isTransactionsTestsOverrideWinzerTheird
+        !isTransactionsTestsOverrideWinzerTheird &&
+        !isTransactionsTestsBugReproduce
     ) {
         testDataPostUDT = await importExportATDService.postUDT({
             TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
@@ -1911,7 +1942,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             !isLocalFilesComparison &&
             !isTransactionsTestsOverrideWinzerFirst &&
             !isTransactionsTestsOverrideWinzerSecond &&
-            !isTransactionsTestsOverrideWinzerTheird
+            !isTransactionsTestsOverrideWinzerTheird &&
+            !isTransactionsTestsBugReproduce
         ) {
             describe('Test Clean up', () => {
                 it('Make sure an ATD removed in the end of the tests', async () => {
@@ -1930,7 +1962,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             isTransactionsTestsOverrideBase ||
             isTransactionsTestsOverrideWinzerFirst ||
             isTransactionsTestsOverrideWinzerSecond ||
-            isTransactionsTestsOverrideWinzerTheird
+            isTransactionsTestsOverrideWinzerTheird ||
+            isTransactionsTestsBugReproduce
         ) {
             let TransactionsATDArr;
             if (isTransactionsTestsOverrideBase) {
@@ -2100,6 +2133,19 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         MimeType: 'application/json',
                         Title: 'Sales Order DEV V3',
                         URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/bfd1b6c1-62a1-4b5f-958f-bbc95991a087/Sales_Order_DEV_V3_1_1_176.json',
+                    },
+                ];
+            }
+            if (isTransactionsTestsBugReproduce) {
+                TransactionsATDArr = [
+                    //Production - S3
+                    {
+                        InternalID: 369260,
+                        Description: 'Exported from Sandbox (DI-18750) in 27.12.2021',
+                        FileName: 'Test Email ATD_1_1_214.json',
+                        MimeType: 'application/json',
+                        Title: 'Test Email ATD - 1.1.214 (DI-18750)',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/7e104198-7bee-4fa5-989a-0957402c2442/Test Email ATD_1_1_214.json',
                     },
                 ];
             }
@@ -3221,6 +3267,17 @@ function RemoveUntestedMembers(testedObject) {
                 if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue.HTML_FILE_ID) {
                     delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
                         .HTML_FILE_ID;
+                }
+                if (
+                    testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailSubjectFileID
+                ) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailSubjectFileID;
+                }
+                if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue.EmailBodyID) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailBodyID;
                 }
             }
         }

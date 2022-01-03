@@ -15,20 +15,20 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     // let functionName = 'ido';
     const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
     const functionNameUpdateCodeJob = 'UpdateCodeJob';
-    const version = '0.0.3';
+    const version = '0.0.4';
     const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
-    let logTimeCount = 0;
-    const logTimeRetryNum = 19;
+    //let logTimeCount = 0;
+    //const logTimeRetryNum = 19;
     let cashCallJobsList: any = {};
     let listLength;
     const cacheLog: any = {};
     const CallbackCash: any = {};
     let JobName: any = {};
     let parsedData;
-    let UserUUID;
-    let UserID;
+    //let UserUUID;
+    //let UserID;
     let CodeJobUUID = '';
     const defaultValues = {
         UUID: CodeJobUUID,
@@ -190,17 +190,16 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //#endregion
 
     async function installAddonToDist() {
-        // CallbackCash.installAddonToDist = await generalService.fetchStatus(
-        //     '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
-        //     { method: 'POST' },
-        // );
+        await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
+            method: 'POST',
+        });
         //#region Upgrade Pepperitest (Jenkins Special Addon)
         const testData = {
             'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         };
         CallbackCash.installAddonToDist = await generalService.changeToAnyAvailableVersion(testData);
         //#endregion Upgrade Pepperitest (Jenkins Special Addon)
-        debugger;
+        //debugger;
         await getListOfCallJobs();
     }
 
@@ -638,7 +637,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                 'the list lenght wil be ' + listLength + ' but actual lenght is ' + cashCallJobsList.length;
         }
         // the test outpuut will be on the end of all test cases , with werification on listLength counter on tests with CodeJob creation
-        await auditLogverification();
+        await mandatotyFieldInsertVerification();
     }
 
     //#region Execute code Job using draft code
@@ -1090,181 +1089,181 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //#endregion
 
     //#region Audit log test
-    async function auditLogverification() {
-        cacheLog.ParsedUserUUID = await generalService.getUsers();
-        for (let i = 0; i < cacheLog.ParsedUserUUID.length; i++) {
-            if (cacheLog.ParsedUserUUID[i].Email == generalService.getClientData('UserEmail')) {
-                // general.API.userName will be changed to jwt
-                cacheLog.UserUUID = cacheLog.ParsedUserUUID[i].UUID;
-                cacheLog.UserID = cacheLog.ParsedUserUUID[i].InternalID;
-                UserUUID = cacheLog.UserUUID;
-                UserID = cacheLog.UserID;
-                break;
-            } else {
-                cacheLog.Exeption = 'UserUUID not found';
-            }
-        }
-        CallbackCash.auditLogResponse = await service.auditLogs.find({
-            where: `AuditInfo.ObjectUUID='${CodeJobUUID}'`,
-        });
-        CallbackCash.auditLogStatus = true;
-        if (CallbackCash.auditLogResponse.length == 5) {
-            CallbackCash.auditLogResponse.forEach((element) => {
-                for (const key in element) {
-                    debugger;
-                    if (key == 'UUID') {
-                        if (element[key] == '') {
-                            CallbackCash.auditLogErrMsg += '\n The Log UUID returned empty';
-                        }
-                    } else if (key == 'DistributorUUID') {
-                        if (element[key] != CallbackCash.ResponseExecutedLogs.DistributorUUID) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The DistributorUUID will be ' +
-                                CallbackCash.ResponseExecutedLogs.DistributorUUID +
-                                ' and not: ' +
-                                element[key];
-                        }
-                    } else if (key == 'CreationDateTime') {
-                        if (element[key].split('T')[0] != new Date().toISOString().split('T')[0]) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The CreationDateTime will be ' +
-                                new Date().toISOString().split('T')[0] +
-                                ' and not: ' +
-                                element[key].split('T')[0];
-                        }
-                    } else if (key == 'ModificationDateTime') {
-                        if (element[key].split('T')[0] != new Date().toISOString().split('T')[0]) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The ModificationDateTime will be ' +
-                                new Date().toISOString().split('T')[0] +
-                                ' and not: ' +
-                                element[key].split('T')[0];
-                        }
-                    } else if (key == 'auditLogUUID') {
-                        if (element[key] == '') {
-                            CallbackCash.auditLogErrMsg += '\n The auditLogUUID will be not empty';
-                        }
-                    } else if (key == 'SourceAuditLog') {
-                        if (element[key] != null) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The SourceAuditLog will be null ' + ' and not: ' + element[key];
-                        }
-                    } else if (key == 'AuditType') {
-                        if (element[key] != 'data') {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The AuditType will be data ' + ' and not: ' + element[key];
-                        }
-                    } else if (key == 'Event') {
-                        if (element[key].Type != 'scheduler') {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The Event Type will be scheduler ' + ' and not: ' + element[key];
-                        }
+    // async function auditLogverification() {
+    //     cacheLog.ParsedUserUUID = await generalService.getUsers();
+    //     for (let i = 0; i < cacheLog.ParsedUserUUID.length; i++) {
+    //         if (cacheLog.ParsedUserUUID[i].Email == generalService.getClientData('UserEmail')) {
+    //             // general.API.userName will be changed to jwt
+    //             cacheLog.UserUUID = cacheLog.ParsedUserUUID[i].UUID;
+    //             cacheLog.UserID = cacheLog.ParsedUserUUID[i].InternalID;
+    //             UserUUID = cacheLog.UserUUID;
+    //             UserID = cacheLog.UserID;
+    //             break;
+    //         } else {
+    //             cacheLog.Exeption = 'UserUUID not found';
+    //         }
+    //     }
+    //     CallbackCash.auditLogResponse = await service.auditLogs.find({
+    //         where: `AuditInfo.ObjectUUID='${CodeJobUUID}'`,
+    //     });
+    //     CallbackCash.auditLogStatus = true;
+    //     if (CallbackCash.auditLogResponse.length == 2) {
+    //         CallbackCash.auditLogResponse.forEach((element) => {
+    //             for (const key in element) {
+    //                 debugger;
+    //                 if (key == 'UUID') {
+    //                     if (element[key] == '') {
+    //                         CallbackCash.auditLogErrMsg += '\n The Log UUID returned empty';
+    //                     }
+    //                 } else if (key == 'DistributorUUID') {
+    //                     if (element[key] != CallbackCash.ResponseExecutedLogs.DistributorUUID) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The DistributorUUID will be ' +
+    //                             CallbackCash.ResponseExecutedLogs.DistributorUUID +
+    //                             ' and not: ' +
+    //                             element[key];
+    //                     }
+    //                 } else if (key == 'CreationDateTime') {
+    //                     if (element[key].split('T')[0] != new Date().toISOString().split('T')[0]) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The CreationDateTime will be ' +
+    //                             new Date().toISOString().split('T')[0] +
+    //                             ' and not: ' +
+    //                             element[key].split('T')[0];
+    //                     }
+    //                 } else if (key == 'ModificationDateTime') {
+    //                     if (element[key].split('T')[0] != new Date().toISOString().split('T')[0]) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The ModificationDateTime will be ' +
+    //                             new Date().toISOString().split('T')[0] +
+    //                             ' and not: ' +
+    //                             element[key].split('T')[0];
+    //                     }
+    //                 } else if (key == 'auditLogUUID') {
+    //                     if (element[key] == '') {
+    //                         CallbackCash.auditLogErrMsg += '\n The auditLogUUID will be not empty';
+    //                     }
+    //                 } else if (key == 'SourceAuditLog') {
+    //                     if (element[key] != null) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The SourceAuditLog will be null ' + ' and not: ' + element[key];
+    //                     }
+    //                 } else if (key == 'AuditType') {
+    //                     if (element[key] != 'data') {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The AuditType will be data ' + ' and not: ' + element[key];
+    //                     }
+    //                 } else if (key == 'Event') {
+    //                     if (element[key].Type != 'scheduler') {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The Event Type will be scheduler ' + ' and not: ' + element[key];
+    //                     }
 
-                        if (element[key].User.InternalID != UserID) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The UserID will be ' + UserID + ' and not: ' + element[key].User.InternalID;
-                        }
+    //                     if (element[key].User.InternalID != UserID) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The UserID will be ' + UserID + ' and not: ' + element[key].User.InternalID;
+    //                     }
 
-                        if (element[key].User.UserUUID != UserUUID) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The UserID will be ' + UserUUID + ' and not: ' + element[key].User.UserUUID;
-                        }
+    //                     if (element[key].User.UserUUID != UserUUID) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The UserID will be ' + UserUUID + ' and not: ' + element[key].User.UserUUID;
+    //                     }
 
-                        if (element[key].User.Email != generalService.getClientData('UserEmail')) {
-                            //general.API will be changed
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The Email will be ' +
-                                generalService.getClientData('UserEmail') +
-                                ' and not: ' +
-                                element[key].User.Email;
-                        }
-                    } else if (key == 'Status') {
-                        if (element[key].Name != 'Success') {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The StatusName will be success' + ' and not: ' + element[key].Name;
-                        }
+    //                     if (element[key].User.Email != generalService.getClientData('UserEmail')) {
+    //                         //general.API will be changed
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The Email will be ' +
+    //                             generalService.getClientData('UserEmail') +
+    //                             ' and not: ' +
+    //                             element[key].User.Email;
+    //                     }
+    //                 } else if (key == 'Status') {
+    //                     if (element[key].Name != 'Success') {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The StatusName will be success' + ' and not: ' + element[key].Name;
+    //                     }
 
-                        if (element[key].ID != 0) {
-                            CallbackCash.auditLogErrMsg += '\n The StatusID will be 0' + ' and not: ' + element[key].ID;
-                        }
-                    } else if (key == 'AuditInfo') {
-                        if (element[key].ObjectUUID != CodeJobUUID) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The ObjectUUID will be' + CodeJobUUID + ' and not: ' + element[key].ObjectUUID;
-                        }
+    //                     if (element[key].ID != 0) {
+    //                         CallbackCash.auditLogErrMsg += '\n The StatusID will be 0' + ' and not: ' + element[key].ID;
+    //                     }
+    //                 } else if (key == 'AuditInfo') {
+    //                     if (element[key].ObjectUUID != CodeJobUUID) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The ObjectUUID will be' + CodeJobUUID + ' and not: ' + element[key].ObjectUUID;
+    //                     }
 
-                        if (element[key].DataResource != 'codejobs') {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The DateResource will be codejobs ' + ' and not: ' + element[key].DataResource;
-                        }
+    //                     if (element[key].DataResource != 'codejobs') {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The DateResource will be codejobs ' + ' and not: ' + element[key].DataResource;
+    //                     }
 
-                        if (element[key].NucleusModified != false) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The NucleusModified will be false ' + ' and not: ' + element[key].NucleusModified;
-                        }
+    //                     if (element[key].NucleusModified != false) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The NucleusModified will be false ' + ' and not: ' + element[key].NucleusModified;
+    //                     }
 
-                        if (element[key].Function == 'Insert' && element[key].RevisedFields.length != 0) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The RevisedFields lenght on function Insert will be 0' +
-                                ' and not: ' +
-                                element[key].RevisedFields.length;
-                        }
-                        if (element[key].Function == 'Update' && element[key].RevisedFields.length != 4) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The RevisedFields lenght on function Update will be 4' +
-                                ' and not: ' +
-                                element[key].RevisedFields.length;
-                        }
-                        if (element[key].Function == 'Publish' && element[key].RevisedFields.length != 1) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The RevisedFields lenght on function Update will be 1' +
-                                ' and not: ' +
-                                element[key].RevisedFields.length;
-                        }
-                        if (element[key].Function == 'RollBack' && element[key].RevisedFields.length != 1) {
-                            CallbackCash.auditLogErrMsg +=
-                                '\n The RevisedFields lenght on function Update will be 1' +
-                                ' and not: ' +
-                                element[key].RevisedFields.length;
-                        }
-                        if (element[key].Function == 'Update') {
-                            element[key].RevisedFields.forEach((element1) => {
-                                for (const key1 in element1) {
-                                    if (
-                                        element1[key1] == 'CodeJobName' ||
-                                        element1[key1] == 'Description' ||
-                                        //element1[key1] == 'DraftCode' ||
-                                        element1[key1] == 'ExecutionMemoryLevel'
-                                    ) {
-                                    } else {
-                                        CallbackCash.auditLogErrMsg +=
-                                            '\n The RevisedFields FieldID will be CodeJobName or Description or DraftCode or ExecutionMemoryLevel and not: ' +
-                                            element1[key1];
-                                    }
-                                    if (element1[key1] != '' || element1[key1] != null) {
-                                    } else {
-                                        CallbackCash.auditLogErrMsg +=
-                                            '\n The RevisedFields FieldID will be not empty or null and not: ' +
-                                            element1[key1];
-                                    }
-                                }
-                            });
-                        }
-                    } else {
-                        CallbackCash.auditLogErrMsg += 'Error from audit Log . ';
-                    }
-                }
-            });
-        } else {
-            CallbackCash.auditLogStatus = false;
-            CallbackCash.auditLogErrMsg =
-                'Get CodeJob Audit log failed. CodeJobUUID is: ' +
-                CodeJobUUID +
-                '\nAuditLog error message is: ' +
-                CallbackCash.auditLogResponse;
-        }
-        await mandatotyFieldInsertVerification();
-    }
+    //                     if (element[key].Function == 'Insert' && element[key].RevisedFields.length != 0) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The RevisedFields lenght on function Insert will be 0' +
+    //                             ' and not: ' +
+    //                             element[key].RevisedFields.length;
+    //                     }
+    //                     if (element[key].Function == 'Update' && element[key].RevisedFields.length != 4) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The RevisedFields lenght on function Update will be 4' +
+    //                             ' and not: ' +
+    //                             element[key].RevisedFields.length;
+    //                     }
+    //                     if (element[key].Function == 'Publish' && element[key].RevisedFields.length != 1) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The RevisedFields lenght on function Update will be 1' +
+    //                             ' and not: ' +
+    //                             element[key].RevisedFields.length;
+    //                     }
+    //                     if (element[key].Function == 'RollBack' && element[key].RevisedFields.length != 1) {
+    //                         CallbackCash.auditLogErrMsg +=
+    //                             '\n The RevisedFields lenght on function Update will be 1' +
+    //                             ' and not: ' +
+    //                             element[key].RevisedFields.length;
+    //                     }
+    //                     if (element[key].Function == 'Update') {
+    //                         element[key].RevisedFields.forEach((element1) => {
+    //                             for (const key1 in element1) {
+    //                                 if (
+    //                                     element1[key1] == 'CodeJobName' ||
+    //                                     element1[key1] == 'Description' ||
+    //                                     //element1[key1] == 'DraftCode' ||
+    //                                     element1[key1] == 'ExecutionMemoryLevel'
+    //                                 ) {
+    //                                 } else {
+    //                                     CallbackCash.auditLogErrMsg +=
+    //                                         '\n The RevisedFields FieldID will be CodeJobName or Description or DraftCode or ExecutionMemoryLevel and not: ' +
+    //                                         element1[key1];
+    //                                 }
+    //                                 if (element1[key1] != '' || element1[key1] != null) {
+    //                                 } else {
+    //                                     CallbackCash.auditLogErrMsg +=
+    //                                         '\n The RevisedFields FieldID will be not empty or null and not: ' +
+    //                                         element1[key1];
+    //                                 }
+    //                             }
+    //                         });
+    //                     }
+    //                 } else {
+    //                     CallbackCash.auditLogErrMsg += 'Error from audit Log . ';
+    //                 }
+    //             }
+    //         });
+    //     } else {
+    //         CallbackCash.auditLogStatus = false;
+    //         CallbackCash.auditLogErrMsg =
+    //             'Get CodeJob Audit log failed. CodeJobUUID is: ' +
+    //             CodeJobUUID +
+    //             '\nAuditLog error message is: ' +
+    //             CallbackCash.auditLogResponse;
+    //     }
+    //     await mandatotyFieldInsertVerification();
+    // }
     //#endregion
 
     //#region Mandatory fields
@@ -1304,7 +1303,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     }
     //#endregion
 
-    //#region TimeOut verification
+    // #region TimeOut verification
     async function getEmailStatus() {
         CallbackCash.GetEmails = await generalService.fetchStatus(
             '/actions_queue?include_count=true&order_by=CreationDate DESC',
@@ -1374,76 +1373,75 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                 CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID;
         }
         generalService.sleep(130000); // weit to get log with timeout exeption
-        logTimeCount = 0;
+        //logTimeCount = 0;
 
-        //Oren 2/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
-        await getLogsToExecutedTimeoutTest();
-        //await createNewCodeJobByName();
+        //await getLogsToExecutedTimeoutTest();
+        await getDistributorExecutionBudget();
     }
 
-    async function getLogsToExecutedTimeoutTest() {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        //!!!!!!! Should be updated after bug https://pepperi.atlassian.net/browse/DI-16024 fixing .
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        CallbackCash.ResponseExecutedTimeoutTest = await service.auditLogs
-            .uuid(CallbackCash.WithDraftWithoutResult.Body.ExecutionUUID)
-            .get();
-        //debugger;
-        if (logTimeCount > logTimeRetryNum) {
-            logcash.ResponseExecutedTimeoutTest = false;
-            logcash.ResponseExecutedTimeoutTestErrorMsg = 'The execution log not created after 540000 ms wheiting ';
-            logTimeCount = 0;
-            await getDistributorExecutionBudget();
-        } else {
-            try {
-                // addet try and catch
-                // if (CallbackCash.ResponseExecutedTimeoutTest.length < 1){
-                if (
-                    CallbackCash.ResponseExecutedTimeoutTest == null ||
-                    CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InProgress'
-                ) {
-                    generalService.sleep(20000);
-                    logTimeCount = logTimeCount + 1;
-                    await getLogsToExecutedTimeoutTest();
-                } else {
-                    //var tmp = JSON.parse(CallbackCash.ResponseExecutedLogsCronTest[0].ResultObject);
-                    if (
-                        CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.ErrorMessage.includes('timed out') == true &&
-                        //&& CallbackCash.ResponseExecutedTimeoutTest.length == 1
-                        (CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'Failure' ||
-                            CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InRetry') &&
-                        CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.JobMessageData.CodeJobUUID ==
-                            CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
-                    ) {
-                        logcash.ResponseExecutedTimeoutTest = true;
-                        logTimeCount = 0;
-                        // describe("TimeOut from executed draft code ", ()=> {
-                        //    it("Test case TimeOut from executed draft code: Finished", ()=> {
-                        //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
-                        //     });
-                        // });
-                        await getDistributorExecutionBudget();
-                        //throw "Elastic created without error message"
-                    } else {
-                        logcash.ResponseExecutedTimeoutTest = false;
-                        logcash.ResponseExecutedTimeoutTestErrorMsg =
-                            'Executed logs API failed. Log is empty (row 1221 for QA automation)';
-                        logTimeCount = 0; //added
-                        // describe("TimeOut from executed draft code ", ()=> {
-                        //    it("Test case TimeOut from executed draft code: Finished", ()=> {
-                        //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
-                        //     });
-                        // });
-                        await getDistributorExecutionBudget();
-                    }
-                }
-            } catch (error) {
-                logcash.ResponseExecutedTimeoutTest = false;
-                logcash.ResponseExecutedTimeoutTestErrorMsg = error + 'Executed logs API failed on catch ';
-                logTimeCount = 0;
-            }
-        }
-    }
+    // async function getLogsToExecutedTimeoutTest() {
+    //     //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //     //!!!!!!! Should be updated after bug https://pepperi.atlassian.net/browse/DI-16024 fixing .
+    //     //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //     CallbackCash.ResponseExecutedTimeoutTest = await service.auditLogs
+    //         .uuid(CallbackCash.WithDraftWithoutResult.Body.ExecutionUUID)
+    //         .get();
+    //     //debugger;
+    //     if (logTimeCount > logTimeRetryNum) {
+    //         logcash.ResponseExecutedTimeoutTest = false;
+    //         logcash.ResponseExecutedTimeoutTestErrorMsg = 'The execution log not created after 540000 ms wheiting ';
+    //         logTimeCount = 0;
+    //         await getDistributorExecutionBudget();
+    //     } else {
+    //         try {
+    //             // addet try and catch
+    //             // if (CallbackCash.ResponseExecutedTimeoutTest.length < 1){
+    //             if (
+    //                 CallbackCash.ResponseExecutedTimeoutTest == null ||
+    //                 CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InProgress'
+    //             ) {
+    //                 generalService.sleep(20000);
+    //                 logTimeCount = logTimeCount + 1;
+    //                 await getLogsToExecutedTimeoutTest();
+    //             } else {
+    //                 //var tmp = JSON.parse(CallbackCash.ResponseExecutedLogsCronTest[0].ResultObject);
+    //                 if (
+    //                     CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.ErrorMessage.includes('timed out') == true &&
+    //                     //&& CallbackCash.ResponseExecutedTimeoutTest.length == 1
+    //                     (CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'Failure' ||
+    //                         CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InRetry') &&
+    //                     CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.JobMessageData.CodeJobUUID ==
+    //                         CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
+    //                 ) {
+    //                     logcash.ResponseExecutedTimeoutTest = true;
+    //                     logTimeCount = 0;
+    //                     // describe("TimeOut from executed draft code ", ()=> {
+    //                     //    it("Test case TimeOut from executed draft code: Finished", ()=> {
+    //                     //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
+    //                     //     });
+    //                     // });
+    //                     await getDistributorExecutionBudget();
+    //                     //throw "Elastic created without error message"
+    //                 } else {
+    //                     logcash.ResponseExecutedTimeoutTest = false;
+    //                     logcash.ResponseExecutedTimeoutTestErrorMsg =
+    //                         'Executed logs API failed. Log is empty (row 1221 for QA automation)';
+    //                     logTimeCount = 0; //added
+    //                     // describe("TimeOut from executed draft code ", ()=> {
+    //                     //    it("Test case TimeOut from executed draft code: Finished", ()=> {
+    //                     //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
+    //                     //     });
+    //                     // });
+    //                     await getDistributorExecutionBudget();
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             logcash.ResponseExecutedTimeoutTest = false;
+    //             logcash.ResponseExecutedTimeoutTestErrorMsg = error + 'Executed logs API failed on catch ';
+    //             logTimeCount = 0;
+    //         }
+    //     }
+    // }
     //#endregion
 
     //#region Distributor Execution

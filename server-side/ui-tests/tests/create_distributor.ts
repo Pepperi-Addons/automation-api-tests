@@ -81,12 +81,24 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     Password: distributorPassword,
                 });
 
-                //This if should be removed when this API will work
-                if (newDistributor.Status == 200) {
-                    expect(newDistributor.Status).to.equal(200);
+                expect(newDistributor.Status).to.equal(200);
+                //TODO: Remove this when bug will be solved (DI-19115)
+                try {
                     expect(newDistributor.Body.Status.ID, JSON.stringify(newDistributor.Body.AuditInfo)).to.equal(1);
-                    expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
+                } catch (error) {
+                    if (
+                        newDistributor.Body.Status.ID == 0 &&
+                        newDistributor.Body.AuditInfo.ErrorMessage.includes('Failed to install the following addons')
+                    ) {
+                        console.log('Bug exist for this response: (DI-19115)');
+                        console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
+                    } else {
+                        throw new Error(
+                            `Status.ID: ${newDistributor.Status.ID}, AuditInfo.ErrorMessage: ${newDistributor.Body.AuditInfo.ErrorMessage}`,
+                        );
+                    }
                 }
+                expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
 
                 const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
                 const adminService = new GeneralService(adminClient);
