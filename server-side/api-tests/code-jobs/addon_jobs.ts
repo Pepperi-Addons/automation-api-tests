@@ -19,16 +19,16 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
-    let logTimeCount = 0;
-    const logTimeRetryNum = 19;
+    //let logTimeCount = 0;
+    //const logTimeRetryNum = 19;
     let cashCallJobsList: any = {};
     let listLength;
     const cacheLog: any = {};
     const CallbackCash: any = {};
     let JobName: any = {};
     let parsedData;
-    let UserUUID;
-    let UserID;
+    //let UserUUID;
+    //let UserID;
     let CodeJobUUID = '';
     const defaultValues = {
         UUID: CodeJobUUID,
@@ -190,10 +190,9 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //#endregion
 
     async function installAddonToDist() {
-        await generalService.fetchStatus(
-            '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
-            { method: 'POST' },
-        );
+        await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
+            method: 'POST',
+        });
         //#region Upgrade Pepperitest (Jenkins Special Addon)
         const testData = {
             'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
@@ -1304,7 +1303,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     }
     //#endregion
 
-   // #region TimeOut verification
+    // #region TimeOut verification
     async function getEmailStatus() {
         CallbackCash.GetEmails = await generalService.fetchStatus(
             '/actions_queue?include_count=true&order_by=CreationDate DESC',
@@ -1376,7 +1375,6 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         generalService.sleep(130000); // weit to get log with timeout exeption
         logTimeCount = 0;
 
-        
         //await getLogsToExecutedTimeoutTest();
         await getDistributorExecutionBudget();
     }

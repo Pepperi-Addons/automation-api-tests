@@ -59,10 +59,9 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
     //     await createNewAddonJob();
     // }
     async function installAddonToDist() {
-        await generalService.fetchStatus(
-            '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
-            { method: 'POST' },
-        );
+        await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
+            method: 'POST',
+        });
         //#region Upgrade Pepperitest (Jenkins Special Addon)
         const testData = {
             'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
