@@ -35,7 +35,7 @@ export class WebAppTopBar extends Page {
     //WebApp Platform | Version: 16.60.38 = div
     //WebApp Platform | Version: 16.65.30/16.65.34 = sapn
     // public CatalogSelectHeader: Locator = By.xpath("//div[contains(text(), 'Select Catalog')]");
-    public CatalogSelectHeader: Locator = By.xpath("//sapn[contains(text(), 'Select Catalog')]");
+    public CatalogSelectHeader: Locator = By.xpath("//span[contains(text(), 'Select Catalog')]");
 
     public async selectFromMenuByText(menu: Locator, buttonText: string): Promise<void> {
         console.log('Select from menu');
