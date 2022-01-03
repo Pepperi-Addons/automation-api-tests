@@ -1373,7 +1373,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                 CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID;
         }
         generalService.sleep(130000); // weit to get log with timeout exeption
-        logTimeCount = 0;
+        //logTimeCount = 0;
 
         //await getLogsToExecutedTimeoutTest();
         await getDistributorExecutionBudget();
