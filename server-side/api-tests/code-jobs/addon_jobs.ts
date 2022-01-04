@@ -16,14 +16,14 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
     const functionNameUpdateCodeJob = 'UpdateCodeJob';
     const version = '0.0.4';
-    const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
+    // const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
     let logTimeCount = 0;
     const logTimeRetryNum = 19;
     let cashCallJobsList: any = {};
     let listLength;
-    const cacheLog: any = {};
+    // const cacheLog: any = {};
     const CallbackCash: any = {};
     let JobName: any = {};
     let parsedData;
@@ -49,8 +49,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         NumberOfTries: 1,
     };
     let updateValues: any = {};
-    let CodJobeBodyBudgetTest: any = {};
-    let codeJobUUIDforBudget: any = {};
+    // const CodJobeBodyBudgetTest: any = {};
+    // const codeJobUUIDforBudget: any = {};
     let UpdateDraftCodeWithoutResult: any = {};
 
     //#region AllTests log and return object
@@ -1391,7 +1391,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             logcash.ResponseExecutedTimeoutTest = false;
             logcash.ResponseExecutedTimeoutTestErrorMsg = 'The execution log not created after 540000 ms wheiting ';
             logTimeCount = 0;
-           // await getDistributorExecutionBudget();
+            // await getDistributorExecutionBudget();
         } else {
             try {
                 // addet try and catch

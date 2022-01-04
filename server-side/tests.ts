@@ -33,7 +33,7 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 import { DBSchemaTests } from './api-tests/schema';
 import { BatchUpsertTests } from './api-tests/batch_upsert';
 import { SchedulerTests } from './api-tests/code-jobs/scheduler';
-import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';//
+import { CodeJobsTests } from './api-tests/code-jobs/code_jobs'; //
 import { TimeOutAddonJobsTests } from './api-tests/code-jobs/timeout_addon_jobs';
 import { AddonJobsTests } from './api-tests/code-jobs/addon_jobs';
 import { InstallTests } from './api-tests/code-jobs/install';
