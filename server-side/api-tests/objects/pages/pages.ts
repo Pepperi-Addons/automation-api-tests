@@ -1,4 +1,4 @@
-import { Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
+import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../../../services/general.service';
 import { PagesService } from '../../../services/pages.service';
 import { v4 as newUuid } from 'uuid';
@@ -15,7 +15,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             Key: newUuid(),
         };
         const currentDate = new Date().toLocaleDateString();
-        const expected : Page = {
+        const expected: Page = {
             Name: `${currentDate} - PagesApiTest`,
             Blocks: [testPageBlock],
             Layout: {
@@ -29,21 +29,18 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             },
         };
 
-        let resultPage : Page;
+        let resultPage: Page;
 
         it('Create new page', async () => {
             resultPage = await pagesService.createOrUpdatePage(expected);
             expected.Key = resultPage.Key;
             DeepCompareObjects(expected, resultPage);
         });
-        
 
         expected.Layout.Sections[0] = pagesService.addBlockToSection(testPageBlock, expected.Layout.Sections[0]);
 
-        
-
-        it('Change section data', async () =>{
-            expected.Layout.Sections[0].Name = "Test Section";
+        it('Change section data', async () => {
+            expected.Layout.Sections[0].Name = 'Test Section';
             const resultPage: Page = await pagesService.createOrUpdatePage(expected);
             DeepCompareObjects(expected, resultPage);
         });
@@ -60,10 +57,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             excludedProperties: Array<string> = ['length'],
             parentProp?: string,
         ) {
-
             if (typeof expected === 'object') {
                 const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
-                    excludedProperties && excludedProperties.length>0 ? !excludedProperties.includes(prop) : prop,
+                    excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
                 );
 
                 properties.forEach((prop) => {
