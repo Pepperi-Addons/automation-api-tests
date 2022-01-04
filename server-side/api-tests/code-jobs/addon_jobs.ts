@@ -19,8 +19,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
-    //let logTimeCount = 0;
-    //const logTimeRetryNum = 19;
+    let logTimeCount = 0;
+    const logTimeRetryNum = 19;
     let cashCallJobsList: any = {};
     let listLength;
     const cacheLog: any = {};
@@ -1348,7 +1348,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             logcash.UpdatedDraftCodeWithoutResult =
                 'Post to CodeJobe with Draft failed. Error message: ' +
                 JSON.stringify(CallbackCash.UpdatedDraftCodeWithoutResult.Body.fault.faultstring);
-            await getDistributorExecutionBudget();
+            //await getDistributorExecutionBudget();
         }
     }
 
@@ -1375,204 +1375,204 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         generalService.sleep(130000); // weit to get log with timeout exeption
         //logTimeCount = 0;
 
-        //await getLogsToExecutedTimeoutTest();
-        await getDistributorExecutionBudget();
+        await getLogsToExecutedTimeoutTest();
+        //await getDistributorExecutionBudget();
     }
 
-    // async function getLogsToExecutedTimeoutTest() {
-    //     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    //     //!!!!!!! Should be updated after bug https://pepperi.atlassian.net/browse/DI-16024 fixing .
-    //     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    //     CallbackCash.ResponseExecutedTimeoutTest = await service.auditLogs
-    //         .uuid(CallbackCash.WithDraftWithoutResult.Body.ExecutionUUID)
-    //         .get();
-    //     //debugger;
-    //     if (logTimeCount > logTimeRetryNum) {
-    //         logcash.ResponseExecutedTimeoutTest = false;
-    //         logcash.ResponseExecutedTimeoutTestErrorMsg = 'The execution log not created after 540000 ms wheiting ';
-    //         logTimeCount = 0;
-    //         await getDistributorExecutionBudget();
-    //     } else {
-    //         try {
-    //             // addet try and catch
-    //             // if (CallbackCash.ResponseExecutedTimeoutTest.length < 1){
-    //             if (
-    //                 CallbackCash.ResponseExecutedTimeoutTest == null ||
-    //                 CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InProgress'
-    //             ) {
-    //                 generalService.sleep(20000);
-    //                 logTimeCount = logTimeCount + 1;
-    //                 await getLogsToExecutedTimeoutTest();
-    //             } else {
-    //                 //var tmp = JSON.parse(CallbackCash.ResponseExecutedLogsCronTest[0].ResultObject);
-    //                 if (
-    //                     CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.ErrorMessage.includes('timed out') == true &&
-    //                     //&& CallbackCash.ResponseExecutedTimeoutTest.length == 1
-    //                     (CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'Failure' ||
-    //                         CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InRetry') &&
-    //                     CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.JobMessageData.CodeJobUUID ==
-    //                         CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
-    //                 ) {
-    //                     logcash.ResponseExecutedTimeoutTest = true;
-    //                     logTimeCount = 0;
-    //                     // describe("TimeOut from executed draft code ", ()=> {
-    //                     //    it("Test case TimeOut from executed draft code: Finished", ()=> {
-    //                     //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
-    //                     //     });
-    //                     // });
-    //                     await getDistributorExecutionBudget();
-    //                     //throw "Elastic created without error message"
-    //                 } else {
-    //                     logcash.ResponseExecutedTimeoutTest = false;
-    //                     logcash.ResponseExecutedTimeoutTestErrorMsg =
-    //                         'Executed logs API failed. Log is empty (row 1221 for QA automation)';
-    //                     logTimeCount = 0; //added
-    //                     // describe("TimeOut from executed draft code ", ()=> {
-    //                     //    it("Test case TimeOut from executed draft code: Finished", ()=> {
-    //                     //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
-    //                     //     });
-    //                     // });
-    //                     await getDistributorExecutionBudget();
-    //                 }
-    //             }
-    //         } catch (error) {
-    //             logcash.ResponseExecutedTimeoutTest = false;
-    //             logcash.ResponseExecutedTimeoutTestErrorMsg = error + 'Executed logs API failed on catch ';
-    //             logTimeCount = 0;
-    //         }
-    //     }
-    // }
+    async function getLogsToExecutedTimeoutTest() {
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        //!!!!!!! Should be updated after bug https://pepperi.atlassian.net/browse/DI-16024 fixing .
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        CallbackCash.ResponseExecutedTimeoutTest = await service.auditLogs
+            .uuid(CallbackCash.WithDraftWithoutResult.Body.ExecutionUUID)
+            .get();
+        //debugger;
+        if (logTimeCount > logTimeRetryNum) {
+            logcash.ResponseExecutedTimeoutTest = false;
+            logcash.ResponseExecutedTimeoutTestErrorMsg = 'The execution log not created after 540000 ms wheiting ';
+            logTimeCount = 0;
+           // await getDistributorExecutionBudget();
+        } else {
+            try {
+                // addet try and catch
+                // if (CallbackCash.ResponseExecutedTimeoutTest.length < 1){
+                if (
+                    CallbackCash.ResponseExecutedTimeoutTest == null ||
+                    CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InProgress'
+                ) {
+                    generalService.sleep(20000);
+                    logTimeCount = logTimeCount + 1;
+                    await getLogsToExecutedTimeoutTest();
+                } else {
+                    //var tmp = JSON.parse(CallbackCash.ResponseExecutedLogsCronTest[0].ResultObject);
+                    if (
+                        CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.ErrorMessage.includes('timed out') == true &&
+                        //&& CallbackCash.ResponseExecutedTimeoutTest.length == 1
+                        (CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'Failure' ||
+                            CallbackCash.ResponseExecutedTimeoutTest.Status.Name == 'InRetry') &&
+                        CallbackCash.ResponseExecutedTimeoutTest.AuditInfo.JobMessageData.CodeJobUUID ==
+                            CallbackCash.UpdatedDraftCodeWithoutResult.Body.UUID
+                    ) {
+                        logcash.ResponseExecutedTimeoutTest = true;
+                        logTimeCount = 0;
+                        // describe("TimeOut from executed draft code ", ()=> {
+                        //    it("Test case TimeOut from executed draft code: Finished", ()=> {
+                        //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
+                        //     });
+                        // });
+                        //await getDistributorExecutionBudget();
+                        //throw "Elastic created without error message"
+                    } else {
+                        logcash.ResponseExecutedTimeoutTest = false;
+                        logcash.ResponseExecutedTimeoutTestErrorMsg =
+                            'Executed logs API failed. Log is empty (row 1221 for QA automation)';
+                        logTimeCount = 0; //added
+                        // describe("TimeOut from executed draft code ", ()=> {
+                        //    it("Test case TimeOut from executed draft code: Finished", ()=> {
+                        //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
+                        //     });
+                        // });
+                        //await getDistributorExecutionBudget();
+                    }
+                }
+            } catch (error) {
+                logcash.ResponseExecutedTimeoutTest = false;
+                logcash.ResponseExecutedTimeoutTestErrorMsg = error + 'Executed logs API failed on catch ';
+                logTimeCount = 0;
+            }
+        }
+    }
     //#endregion
 
     //#region Distributor Execution
-    async function getDistributorExecutionBudget() {
-        CallbackCash.ExecutionBudget = await generalService.fetchStatus('/code_jobs/execution_budget', {
-            method: 'GET',
-        });
+    // async function getDistributorExecutionBudget() {
+    //     CallbackCash.ExecutionBudget = await generalService.fetchStatus('/code_jobs/execution_budget', {
+    //         method: 'GET',
+    //     });
 
-        //debugger;
-        logcash.getDistributorBudgetTest = true;
-        if (CallbackCash.ExecutionBudget.Status == 200) {
-            cacheLog.FreeBudget = CallbackCash.ExecutionBudget.Body.FreeBudget;
-            cacheLog.UsedBudget = CallbackCash.ExecutionBudget.Body.UsedBudget;
-            await createNewCJToBudgetTest();
-        } else {
-            logcash.getDistributorBudgetTest = false;
-            logcash.getDistributorBudgetTestErrorMsg = 'Get distributor budget function failed ';
-            await updateDistributorBudgetSecond();
-        }
-    }
+    //     //debugger;
+    //     logcash.getDistributorBudgetTest = true;
+    //     if (CallbackCash.ExecutionBudget.Status == 200) {
+    //         cacheLog.FreeBudget = CallbackCash.ExecutionBudget.Body.FreeBudget;
+    //         cacheLog.UsedBudget = CallbackCash.ExecutionBudget.Body.UsedBudget;
+    //         await createNewCJToBudgetTest();
+    //     } else {
+    //         logcash.getDistributorBudgetTest = false;
+    //         logcash.getDistributorBudgetTestErrorMsg = 'Get distributor budget function failed ';
+    //         await updateDistributorBudgetSecond();
+    //     }
+    // }
 
-    async function createNewCJToBudgetTest() {
-        // cerate new code
-        CodJobeBodyBudgetTest = {
-            UUID: '',
-            CodeJobName: 'New CodeJob to budget test',
-            Type: 'AddonJob',
-            // DraftCode:
-            //     'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(5000);\r\n\treturn multiply(8,8);\r\n};',
-            AddonPath: jsFileName, // Only for AddonJob
-            AddonUUID: addonUUID, // Only for AddonJob
-            FunctionName: functionNameCreateNewCJToBudgetTest,
-            ExecutionMemoryLevel: 4,
-        };
+    // async function createNewCJToBudgetTest() {
+    //     // cerate new code
+    //     CodJobeBodyBudgetTest = {
+    //         UUID: '',
+    //         CodeJobName: 'New CodeJob to budget test',
+    //         Type: 'AddonJob',
+    //         // DraftCode:
+    //         //     'exports.main=async(Client)=>{\r\n var response;\r\n Client.addLogEntry("Info", "multiplyResult");\r\n response={success:"true",errorMessage:"",resultObject:{}};\r\n   function multiply(a=2,b=3){\r\n\t\tvar res = {\'multiplyResult\':a*b};\r\n\t\tClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\n\t\tresponse.resultObject=res;\r\n\t\tresponse.errorMessage="test msg";\r\n\t\tresponse.success=true;\r\n\t\treturn(response);\r\n\t}\r\n\tfunction sleep(ms){\r\nvar start=new Date().getTime(),expire=start+ms;\r\nwhile (new Date().getTime()<expire){}\r\nreturn;\r\n}\r\nsleep(5000);\r\n\treturn multiply(8,8);\r\n};',
+    //         AddonPath: jsFileName, // Only for AddonJob
+    //         AddonUUID: addonUUID, // Only for AddonJob
+    //         FunctionName: functionNameCreateNewCJToBudgetTest,
+    //         ExecutionMemoryLevel: 4,
+    //     };
 
-        CallbackCash.insertNewCodJobToBudgetTest = await generalService.fetchStatus('/code_jobs', {
-            method: 'POST',
-            body: JSON.stringify(CodJobeBodyBudgetTest),
-        });
-        logcash.insertNewCodJobToBudgetTest = true;
+    //     CallbackCash.insertNewCodJobToBudgetTest = await generalService.fetchStatus('/code_jobs', {
+    //         method: 'POST',
+    //         body: JSON.stringify(CodJobeBodyBudgetTest),
+    //     });
+    //     logcash.insertNewCodJobToBudgetTest = true;
 
-        if (
-            CallbackCash.insertNewCodJobToBudgetTest.Status == 200 &&
-            CallbackCash.insertNewCodJobToBudgetTest.Body.UUID != ''
-        ) {
-            //CallbackCash.insertNewCodJobToBudgetTest.Body.Success changet to CallbackCash.insertNewCodJobToBudgetTest.success and CallbackCash.insertNewCodJobToBudgetTest.Body.CodeJobUUID  changed to .UUID
-            listLength += 1;
-            codeJobUUIDforBudget = CallbackCash.insertNewCodJobToBudgetTest.Body.UUID; //changed to .UUID
-            await executeWithDraftBudgetTest();
-        } else {
-            logcash.insertNewCodJobToBudgetTest = false;
-            logcash.insertNewCodJobToBudgetTestErrorMsg =
-                'Post to CodeJobe with Draft failed.THe Budget test case not tested and will be tested again';
-            await updateDistributorBudgetSecond();
-            //await createNewCJToExecuteWithPapi();
-        }
-    }
+    //     if (
+    //         CallbackCash.insertNewCodJobToBudgetTest.Status == 200 &&
+    //         CallbackCash.insertNewCodJobToBudgetTest.Body.UUID != ''
+    //     ) {
+    //         //CallbackCash.insertNewCodJobToBudgetTest.Body.Success changet to CallbackCash.insertNewCodJobToBudgetTest.success and CallbackCash.insertNewCodJobToBudgetTest.Body.CodeJobUUID  changed to .UUID
+    //         listLength += 1;
+    //         codeJobUUIDforBudget = CallbackCash.insertNewCodJobToBudgetTest.Body.UUID; //changed to .UUID
+    //         await executeWithDraftBudgetTest();
+    //     } else {
+    //         logcash.insertNewCodJobToBudgetTest = false;
+    //         logcash.insertNewCodJobToBudgetTestErrorMsg =
+    //             'Post to CodeJobe with Draft failed.THe Budget test case not tested and will be tested again';
+    //         await updateDistributorBudgetSecond();
+    //         //await createNewCJToExecuteWithPapi();
+    //     }
+    // }
 
-    async function executeWithDraftBudgetTest() {
-        // execute Draft code with small TimeOut 5000
-        CallbackCash.WithDraftToBudgetTestFirst = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
-            { method: 'POST' },
-        );
-        generalService.sleep(20000);
-        await getDistributorExecutionBudgetSecond();
-    }
+    // async function executeWithDraftBudgetTest() {
+    //     // execute Draft code with small TimeOut 5000
+    //     CallbackCash.WithDraftToBudgetTestFirst = await generalService.fetchStatus(
+    //         `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
+    //         { method: 'POST' },
+    //     );
+    //     generalService.sleep(20000);
+    //     await getDistributorExecutionBudgetSecond();
+    // }
 
-    async function getDistributorExecutionBudgetSecond() {
-        CallbackCash.ExecutionBudget = await generalService.fetchStatus('/code_jobs/execution_budget', {
-            method: 'GET',
-        });
+    // async function getDistributorExecutionBudgetSecond() {
+    //     CallbackCash.ExecutionBudget = await generalService.fetchStatus('/code_jobs/execution_budget', {
+    //         method: 'GET',
+    //     });
 
-        //debugger;
-        if (
-            CallbackCash.ExecutionBudget.Status == 200 &&
-            CallbackCash.ExecutionBudget.Body.FreeBudget < cacheLog.FreeBudget &&
-            CallbackCash.ExecutionBudget.Body.UsedBudget > cacheLog.UsedBudget
-        ) {
-        } else {
-            logcash.getDistributorBudgetTest = false;
-            logcash.getDistributorBudgetTestErrorMsg =
-                'Get distributor budget second function failed or one of parameters not updated. \nFreeBudget will be smaller to: ' +
-                cacheLog.FreeBudget +
-                'but actuall is: ' +
-                CallbackCash.ExecutionBudget.Body.FreeBudget +
-                '\nAnd Used budget will be biggest to: ' +
-                cacheLog.UsedBudget +
-                '  actuall value is: ' +
-                CallbackCash.ExecutionBudget.Body.UsedBudget;
-        }
-        await executeWithDraftBudgetTestSecond();
-    }
+    //     //debugger;
+    //     if (
+    //         CallbackCash.ExecutionBudget.Status == 200 &&
+    //         CallbackCash.ExecutionBudget.Body.FreeBudget < cacheLog.FreeBudget &&
+    //         CallbackCash.ExecutionBudget.Body.UsedBudget > cacheLog.UsedBudget
+    //     ) {
+    //     } else {
+    //         logcash.getDistributorBudgetTest = false;
+    //         logcash.getDistributorBudgetTestErrorMsg =
+    //             'Get distributor budget second function failed or one of parameters not updated. \nFreeBudget will be smaller to: ' +
+    //             cacheLog.FreeBudget +
+    //             'but actuall is: ' +
+    //             CallbackCash.ExecutionBudget.Body.FreeBudget +
+    //             '\nAnd Used budget will be biggest to: ' +
+    //             cacheLog.UsedBudget +
+    //             '  actuall value is: ' +
+    //             CallbackCash.ExecutionBudget.Body.UsedBudget;
+    //     }
+    //     await executeWithDraftBudgetTestSecond();
+    // }
 
-    async function executeWithDraftBudgetTestSecond() {
-        // execute Draft code with small TimeOut 5000
-        CallbackCash.WithDraftToBudgetTestSecond = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
-            { method: 'POST' },
-        );
-        generalService.sleep(10000);
-        await getDistributorExecutionBudgetThird();
-    }
+    // async function executeWithDraftBudgetTestSecond() {
+    //     // execute Draft code with small TimeOut 5000
+    //     CallbackCash.WithDraftToBudgetTestSecond = await generalService.fetchStatus(
+    //         `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
+    //         { method: 'POST' },
+    //     );
+    //     generalService.sleep(10000);
+    //     await getDistributorExecutionBudgetThird();
+    // }
 
-    async function getDistributorExecutionBudgetThird() {
-        CallbackCash.ExecutionBudgetThird = await generalService.fetchStatus('/code_jobs/execution_budget', {
-            method: 'GET',
-        });
+    // async function getDistributorExecutionBudgetThird() {
+    //     CallbackCash.ExecutionBudgetThird = await generalService.fetchStatus('/code_jobs/execution_budget', {
+    //         method: 'GET',
+    //     });
 
-        //debugger;
-        if (
-            CallbackCash.ExecutionBudgetThird.Status == 200 &&
-            CallbackCash.ExecutionBudgetThird.Body.FreeBudget < cacheLog.FreeBudget &&
-            CallbackCash.ExecutionBudgetThird.Body.UsedBudget > cacheLog.UsedBudget
-        ) {
-            logcash.getDistributorBudgetTestThird = true;
-            //executeWithDraftBudgetTestSecond();
-        } else {
-            logcash.getDistributorBudgetTestThird = false;
-            logcash.getDistributorBudgetTestThirdErrorMsg =
-                'Get distributor budget third function failed or one of parameters not updated. \nFreeBudget will be smaller to: ' +
-                cacheLog.FreeBudget +
-                'but actuall is: ' +
-                CallbackCash.ExecutionBudgetThird.Body.FreeBudget +
-                '\nAnd Used budget will be biggest to: ' +
-                cacheLog.UsedBudget +
-                '  actuall value is: ' +
-                CallbackCash.ExecutionBudgetThird.Body.UsedBudget;
-        }
-        await updateDistributorBudgetSecond();
-    }
+    //     //debugger;
+    //     if (
+    //         CallbackCash.ExecutionBudgetThird.Status == 200 &&
+    //         CallbackCash.ExecutionBudgetThird.Body.FreeBudget < cacheLog.FreeBudget &&
+    //         CallbackCash.ExecutionBudgetThird.Body.UsedBudget > cacheLog.UsedBudget
+    //     ) {
+    //         logcash.getDistributorBudgetTestThird = true;
+    //         //executeWithDraftBudgetTestSecond();
+    //     } else {
+    //         logcash.getDistributorBudgetTestThird = false;
+    //         logcash.getDistributorBudgetTestThirdErrorMsg =
+    //             'Get distributor budget third function failed or one of parameters not updated. \nFreeBudget will be smaller to: ' +
+    //             cacheLog.FreeBudget +
+    //             'but actuall is: ' +
+    //             CallbackCash.ExecutionBudgetThird.Body.FreeBudget +
+    //             '\nAnd Used budget will be biggest to: ' +
+    //             cacheLog.UsedBudget +
+    //             '  actuall value is: ' +
+    //             CallbackCash.ExecutionBudgetThird.Body.UsedBudget;
+    //     }
+    //     await updateDistributorBudgetSecond();
+    // }
     //#endregion
 
     //#region Distributor Execution Budget
@@ -1622,63 +1622,63 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //     await updateDistributorBudgetSecond();
     // }
 
-    async function updateDistributorBudgetSecond() {
-        // API to update distributor budget (in $)
-        const updateBudget = {
-            Budget: 2.0,
-        };
-        CallbackCash.UpdateBudget = await generalService.fetchStatus('/code_jobs/execution_budget/budget', {
-            method: 'POST',
-            body: JSON.stringify(updateBudget),
-        });
+    // async function updateDistributorBudgetSecond() {
+    //     // API to update distributor budget (in $)
+    //     const updateBudget = {
+    //         Budget: 2.0,
+    //     };
+    //     CallbackCash.UpdateBudget = await generalService.fetchStatus('/code_jobs/execution_budget/budget', {
+    //         method: 'POST',
+    //         body: JSON.stringify(updateBudget),
+    //     });
 
-        generalService.sleep(3000);
-        await getDistributorExecutionBudgetLast();
-    }
+    //     generalService.sleep(3000);
+    //     await getDistributorExecutionBudgetLast();
+    // }
 
-    async function getDistributorExecutionBudgetLast() {
-        CallbackCash.ExecutionBudgetLast = await generalService.fetchStatus('/code_jobs/execution_budget', {
-            method: 'GET',
-        });
+    // async function getDistributorExecutionBudgetLast() {
+    //     CallbackCash.ExecutionBudgetLast = await generalService.fetchStatus('/code_jobs/execution_budget', {
+    //         method: 'GET',
+    //     });
 
-        //debugger;
-        //logcash.ExecutionBudgetLast = true;
-        if (CallbackCash.ExecutionBudgetLast.Status == 200) {
-            logcash.ExecutionBudgetLast = true;
-        } else {
-            logcash.ExecutionBudgetLast = false;
-        }
-        await executeWithDraftWithBudget();
-    }
+    //     //debugger;
+    //     //logcash.ExecutionBudgetLast = true;
+    //     if (CallbackCash.ExecutionBudgetLast.Status == 200) {
+    //         logcash.ExecutionBudgetLast = true;
+    //     } else {
+    //         logcash.ExecutionBudgetLast = false;
+    //     }
+    //     await executeWithDraftWithBudget();
+    // }
 
-    async function executeWithDraftWithBudget() {
-        // execute Draft code with small TimeOut 5000
-        CallbackCash.executeWithDraftWithBudget = await generalService.fetchStatus(
-            `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
-            { method: 'POST' },
-        );
+    // async function executeWithDraftWithBudget() {
+    //     // execute Draft code with small TimeOut 5000
+    //     CallbackCash.executeWithDraftWithBudget = await generalService.fetchStatus(
+    //         `/code_jobs/async/${codeJobUUIDforBudget}/execute`, //   /execute_draft`
+    //         { method: 'POST' },
+    //     );
 
-        generalService.sleep(30000);
-        await getSingleExecutionLogToLastBudgetTest();
-    }
+    //     generalService.sleep(30000);
+    //     await getSingleExecutionLogToLastBudgetTest();
+    // }
 
-    async function getSingleExecutionLogToLastBudgetTest() {
-        CallbackCash.ResponseSingleExecutionLogToLastBudgetTest = await service.auditLogs
-            .uuid(CallbackCash.executeWithDraftWithBudget.Body.ExecutionUUID)
-            .get();
-        //debugger;
-        if (
-            CallbackCash.ResponseSingleExecutionLogToLastBudgetTest.Status.Name == 'Success'
-            //&& CallbackCash.ResponseSingleExecutionLogToLastBudgetTest.AuditInfo.AuditComment == ""
-        ) {
-            logcash.LogToLastBudgetTest = true;
-        } else {
-            logcash.LogToLastBudgetTest = false;
-            logcash.LogToLastBudgetTestError =
-                'The single execution log is empty or returned error code: ' + codeJobUUIDforBudget;
-        }
-        //await createNewCJToExecuteWithPapi();
-    }
+    // async function getSingleExecutionLogToLastBudgetTest() {
+    //     CallbackCash.ResponseSingleExecutionLogToLastBudgetTest = await service.auditLogs
+    //         .uuid(CallbackCash.executeWithDraftWithBudget.Body.ExecutionUUID)
+    //         .get();
+    //     //debugger;
+    //     if (
+    //         CallbackCash.ResponseSingleExecutionLogToLastBudgetTest.Status.Name == 'Success'
+    //         //&& CallbackCash.ResponseSingleExecutionLogToLastBudgetTest.AuditInfo.AuditComment == ""
+    //     ) {
+    //         logcash.LogToLastBudgetTest = true;
+    //     } else {
+    //         logcash.LogToLastBudgetTest = false;
+    //         logcash.LogToLastBudgetTestError =
+    //             'The single execution log is empty or returned error code: ' + codeJobUUIDforBudget;
+    //     }
+    //     //await createNewCJToExecuteWithPapi();
+    // }
     //#endregion
 
     //#region execute with call to PAPI
