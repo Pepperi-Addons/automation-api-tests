@@ -40,10 +40,10 @@ exports.updateDrafrCodeWithoutResult = async (Client) => {
     function sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
-    sleep(1000*60*11);
+    sleep(1000 * 60 * 11);
     return multiply(8, 8);
 };
 
@@ -68,7 +68,7 @@ exports.createNewCJToBudgetTest = async (Client) => {
     function sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
     sleep(5000);
@@ -80,4 +80,33 @@ exports.createNewCodeJobRetryTest = async (Client) => {
     Client.addLogEntry('Info', 'Start throw new error');
     throw new Error('Nofar Test');
     return response;
+};
+
+
+exports.PositiveTest = async (Client) => {
+    var response;
+    Client.addLogEntry('Info', 'Start Code Test');
+    response = {
+        success: true,
+        errorMessage: '',
+        resultObject: new Object()
+    };
+    function multiply(a, b) {
+        var res = {
+            'multiplyResult': a * b
+        };
+        Client.addLogEntry('Info', 'Start Funcion multiply =  JSON.stringify(res)');
+        response.resultObject = res;
+        response.errorMessage = 'test msg';
+        response.success = true;
+        return (response);
+    }
+    return multiply(4,
+        2);
+};
+
+exports.NegativeTest = async (Client) => {
+    Client.addLogEntry('Info', 'Start throw new error');
+    throw new Error('orenTest');
+    return;
 };

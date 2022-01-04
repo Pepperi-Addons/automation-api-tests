@@ -3668,6 +3668,26 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             ),
         );
 
+        //Addon Jobs Tests
+        fileAsSBase64Arr.push(await testDatagetBase64FileFromFileAtPath('./test-data/0.0.5.js'));
+        versionTestDataBody = {
+            AddonUUID: createApiResponse.Body.UUID,
+            Version: '0.0.5',
+            Files: [{ FileName: 'test.js', URL: '', Base64Content: fileAsSBase64Arr[4] }],
+        };
+        createVersionApiResponseArr.push(
+            await generalService.fetchStatus(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: request.body.varKey,
+                    },
+                    body: JSON.stringify(versionTestDataBody),
+                },
+            ),
+        );
+
         addTestResultUnderHeadline(
             testName,
             'Verstion 0.0.1 Creatred',
@@ -3678,7 +3698,7 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         addTestResultUnderHeadline(
             testName,
-            'Verstion 0.0.1 Creatred',
+            'Verstion 0.0.2 Creatred',
             createVersionApiResponseArr[1].Body.Version == '0.0.2'
                 ? true
                 : 'The 0.0.2 Creation failed with response of: ' + createVersionApiResponseArr[1],
@@ -3698,6 +3718,14 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             createVersionApiResponseArr[3].Body.Version == '0.0.4'
                 ? true
                 : 'The 0.0.4 Creation failed with response of: ' + createVersionApiResponseArr[3],
+        );
+
+        addTestResultUnderHeadline(
+            testName,
+            'Verstion 0.0.5 Creatred',
+            createVersionApiResponseArr[4].Body.Version == '0.0.5'
+                ? true
+                : 'The 0.0.5 Creation failed with response of: ' + createVersionApiResponseArr[4],
         );
 
         //This can be use to easily extract the token to the console

@@ -15,7 +15,7 @@ import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from '
 //#endregion All Tests
 
 //#region Pages API test
-import { SampleTest } from './api-tests/objects/pages';
+import { PagesTestSuite } from './api-tests/objects/pages/pages';
 //#endregion Pages API test
 
 //#region Old Framwork Tests
@@ -401,7 +401,7 @@ export async function pages_api(client: Client, testerFunctions: TesterFunctions
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SampleTest(service, testerFunctions),
+        PagesTestSuite(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
