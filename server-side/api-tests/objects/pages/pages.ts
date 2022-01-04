@@ -1,9 +1,9 @@
-import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
-import GeneralService, { TesterFunctions } from '../../services/general.service';
-import { PagesService } from '../../services/pages.service';
+import { Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
+import GeneralService, { TesterFunctions } from '../../../services/general.service';
+import { PagesService } from '../../../services/pages.service';
 import { v4 as newUuid } from 'uuid';
 
-export async function SampleTest(generalService: GeneralService, tester: TesterFunctions) {
+export async function PagesTestSuite(generalService: GeneralService, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -14,9 +14,9 @@ export async function SampleTest(generalService: GeneralService, tester: TesterF
             Relation: pageBlockRelation,
             Key: newUuid(),
         };
-
-        const testPage: Page = {
-            Name: 'Pages Api Test with block',
+        const currentDate = new Date().toLocaleDateString();
+        const expected : Page = {
+            Name: `${currentDate} - PagesApiTest`,
             Blocks: [testPageBlock],
             Layout: {
                 Sections: [
@@ -28,30 +28,42 @@ export async function SampleTest(generalService: GeneralService, tester: TesterF
                 ],
             },
         };
-        testPage.Layout.Sections[0] = pagesService.addBlockToSection(testPageBlock, testPage.Layout.Sections[0]);
+
+        let resultPage : Page;
 
         it('Create new page', async () => {
-            const resultPage: Page = await pagesService.createOrUpdatePage(testPage);
-            testPage.Key = resultPage.Key;
-            DeepCompareObjects(testPage, resultPage, ['length']);
+            resultPage = await pagesService.createOrUpdatePage(expected);
+            expected.Key = resultPage.Key;
+            DeepCompareObjects(expected, resultPage);
+        });
+        
+
+        expected.Layout.Sections[0] = pagesService.addBlockToSection(testPageBlock, expected.Layout.Sections[0]);
+
+        
+
+        it('Change section data', async () =>{
+            expected.Layout.Sections[0].Name = "Test Section";
+            const resultPage: Page = await pagesService.createOrUpdatePage(expected);
+            DeepCompareObjects(expected, resultPage);
         });
 
         it('Delete created page', async () => {
-            testPage.Hidden = true;
-            const resultPage = await pagesService.deletePage(testPage);
+            expected.Hidden = true;
+            const resultPage = await pagesService.deletePage(expected);
             expect(resultPage.Hidden).to.equal(true);
         });
 
         function DeepCompareObjects(
             expected: any,
             actual: any,
-            excludedProperties?: Array<string>,
+            excludedProperties: Array<string> = ['length'],
             parentProp?: string,
         ) {
-            // AssertAndLog(expected, actual);
+
             if (typeof expected === 'object') {
                 const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
-                    excludedProperties ? !excludedProperties.includes(prop) : prop,
+                    excludedProperties && excludedProperties.length>0 ? !excludedProperties.includes(prop) : prop,
                 );
 
                 properties.forEach((prop) => {
