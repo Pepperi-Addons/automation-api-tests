@@ -30,15 +30,15 @@ export class PagesService {
             throw new Error(`Unexpected PageBlock name: ${fullRelation.Name}`);
         }
         const blockRelation: NgComponentRelation = {
-            RelationName: fullRelation.RelationName,
-            Type: fullRelation.Type,
+            // RelationName: fullRelation.RelationName,
+            // Type: fullRelation.Type,
             AddonUUID: fullRelation.AddonUUID,
             SubType: fullRelation.SubType,
             Name: fullRelation.Name,
             AddonRelativeURL: fullRelation.AddonRelativeURL,
             ModuleName: fullRelation.ModuleName,
             ComponentName: fullRelation.ComponentName,
-        };
+        } as any;
         return blockRelation;
     }
 
@@ -58,16 +58,51 @@ export class PagesService {
 
     async deletePage(page: Page): Promise<Page> {
         page.Hidden = true;
-        return this.createOrUpdatePage(page);
+        return await this.createOrUpdatePage(page);
     }
 
     async createOrUpdatePage(page: Page): Promise<Page> {
-        return this.generalService.papiClient.pages.upsert(page);
+        return await this.generalService.papiClient.pages.upsert(page);
     }
     async getPage(pageUuid: string): Promise<Page> {
-        return this.generalService.papiClient.pages.uuid(pageUuid).get();
+        return await this.generalService.papiClient.pages.uuid(pageUuid).get();
     }
     async getPages(findOptions?: FindOptions): Promise<Array<Page>> {
-        return this.generalService.papiClient.pages.find(findOptions);
+        return await this.generalService.papiClient.pages.find(findOptions);
+    }
+
+    assertAndLog(expected: any, actual: any, expect: Chai.ExpectStatic, parentProp = ''): void {
+        console.log(`Expected ${parentProp}: ${typeof expected === 'object' ? JSON.stringify(expected) : expected}`);
+        console.log(`Actual ${parentProp}: ${typeof actual === 'object' ? JSON.stringify(actual) : actual}`);
+        expect(
+            actual,
+            `The objects don't match: \nExpected: ${JSON.stringify(expected)}\nActual: ${JSON.stringify(actual)}`,
+        ).to.equal(expected);
+    }
+
+    comparePages(
+        expected: any,
+        actual: any,
+        expect: Chai.ExpectStatic,
+        excludedProperties: Array<string> = ['length'],
+        parentProp?: string,
+    ) {
+        if (typeof expected === 'object') {
+            const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
+                excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
+            );
+
+            properties.forEach((prop) => {
+                
+                if (typeof expected[prop] === 'object') {
+					parentProp = parentProp ? parentProp + '.' + prop : prop;
+                    this.comparePages(expected[prop], actual[prop], expect, excludedProperties, parentProp);
+                } else {
+                    this.assertAndLog(expected[prop], actual[prop], expect, parentProp ?? prop);
+                }
+            });
+        } else {
+            this.assertAndLog(expected, actual, expect);
+        }
     }
 }
