@@ -13,11 +13,7 @@ export class WebAppTopBar extends Page {
     public DoneBtn: Locator = By.css('[data-qa="doneButton"]');
     public CancelBtn: Locator = By.css('.modal.in .headerTitle.pep-border-bottom button');
     public SearchFieldInput: Locator = By.css('#searchInput');
-    //TODO: Replace ChangeViewButton for:
-    //WebApp Platform | Version: 16.60.38 = top-bar-container
-    //WebApp Platform | Version: 16.65.30/16.65.34 = pep-side-bar-container
-    // public ChangeViewButton: Locator = By.css(`.top-bar-container button [title='Change View']`);
-    public ChangeViewButton: Locator = By.css(`.pep-side-bar-container button [title='Change View']`);
+    public ChangeViewButton: Locator = By.css(`.top-bar-container button [title='Change View']`);
     public PanelMenuButtons: Locator = By.css(`[role="menu"] button`);
     //TODO: Replace ChangeListButton for:
     //WebApp Platform | Version: 16.60.38 = top-bar-container
