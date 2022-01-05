@@ -38,7 +38,7 @@ exports.updateDrafrCodeWithoutResult = async (Client) => {
     function sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
     sleep(130000);
@@ -65,7 +65,7 @@ exports.createNewCJToBudgetTest = async (Client) => {
     function sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
     sleep(5000);
