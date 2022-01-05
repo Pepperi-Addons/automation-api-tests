@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { WebAppLoginPage } from '../pom/index';
+import { AddonPage, WebAppHeader, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -17,27 +17,16 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
+    //#region Upgrade cpi-node & UOM
+    const testData = {
+        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'uom': ['1238582e-9b32-4d21-9567-4e17379f41bb', '']
+    };
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    //#endregion Upgrade cpi-node & UOM
+
     describe('Basic UI Tests Suit', async function () {
-        this.retries(1);
-
-        beforeEach(async function () {
-            driver = new Browser('chrome');
-        });
-
-        afterEach(async function () {
-            const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.collectEndTestData(this);
-            await driver.quit();
-        });
-
-        //#region Upgrade cpi-node & UOM
-        const testData = {
-            ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        };
-        const isInstalledArr = await generalService.areAddonsInstalled(testData);
-        const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-        //#endregion Upgrade cpi-node & UOM
-
         describe('UOM Tests Suites', () => {
             describe('Prerequisites Addon for UOM Tests', () => {
                 //Test Data
@@ -75,24 +64,146 @@ export async function UomTests(email: string, password: string, varPass: string,
                     });
                 }
             });
-            it('Post items', async function () {
-                const itemToPush: Item = {
-                    "ExternalID": "7",
-                    "MainCategoryID": "NOT uom item",
-                    "Name": "uom testing item 1",
-                    "Price": 1.0
-                };
-                objectsService.postItem(itemToPush);
+
+            describe('Data Preparation Using Endpoints', () => {
+
+                it('Post items for uom', async function () {
+                    const itemsToPost = createItemsList();
+                    const postItemsResponse: Item[] = [];
+                    for (let i = 0; i < itemsToPost.length; i++) {
+                        postItemsResponse.push(await objectsService.postItem(itemsToPost[i]));
+                    }
+
+                    for (let i = 0; i < postItemsResponse.length; i++) {
+                        expect(postItemsResponse[i].ExternalID).to.equal(itemsToPost[i].ExternalID);
+                        expect(postItemsResponse[i].MainCategoryID).to.equal(itemsToPost[i].MainCategoryID);
+                        expect(postItemsResponse[i].Name).to.equal(itemsToPost[i].Name);
+                        expect(postItemsResponse[i].Price).to.equal(itemsToPost[i].Price);
+                    }
+                });
+
+                it('Post items: UOM fields', async function () {
+                    const uomItemsToPost: UomItem[] = createUomItemsList();
+                    const postUomItemsResponse: any[] = [];
+                    for (let i = 0; i < uomItemsToPost.length; i++) {
+                        postUomItemsResponse.push(
+                            await generalService.fetchStatus
+                                (
+                                    `/addons/api/1238582e-9b32-4d21-9567-4e17379f41bb/api/uoms`,
+                                    {
+                                        method: 'POST',
+                                        body: JSON.stringify(uomItemsToPost[i]),
+                                    }
+                                )
+                        );
+                    }
+                    for (let i = 0; i < postUomItemsResponse.length; i++) {
+                        expect(postUomItemsResponse[i].Status).to.equal(200);
+                        expect(postUomItemsResponse[i].Body.Key).to.equal(uomItemsToPost[i].Key);
+                        expect(postUomItemsResponse[i].Body.Multiplier).to.equal(uomItemsToPost[i].Multiplier);
+                        expect(postUomItemsResponse[i].Body.Title).to.equal(uomItemsToPost[i].Title);
+                    }
+                });
+
+                describe('UI Tests', () => {
+                    this.retries(1);
+
+                    beforeEach(async function () {
+                        driver = new Browser('chrome');
+                    });
+
+                    afterEach(async function () {
+                        const webAppLoginPage = new WebAppLoginPage(driver);
+                        await webAppLoginPage.collectEndTestData(this);
+                        await driver.quit();
+                    });
+
+                    it('Set Up', async function () {
+                        const webAppLoginPage = new WebAppLoginPage(driver);
+                        await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        //1. validating all items are added to the main catalog
+                        const addonPage = new AddonPage(driver);
+                        addonPage.selectCatalogItemsByCategory("dfsf");
+                    });
+                    // it('', async function () {
+
+                    // });
+                });
+
+                describe('Test Data Cleansing', () => {
+                    it('Reset Existing Items', async function () {
+                        //Remove all items
+                        const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+                        for (let i = 0; i < itemsArr.length; i++) {
+                            const deleted = await generalService.papiClient.items.delete(itemsArr[i].InternalID as number);
+                            expect(deleted).to.be.true;
+                        }
+                    });
+                });
             });
-            
-            it('Login', async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
-            });
+
         });
 
 
     });
+}
+
+function createItemsList() {
+    const itemList: Item[] = [];
+    for (let i = 0; i < 5; i++) {
+        const item: Item =
+        {
+            "ExternalID": `123${i}`,
+            "MainCategoryID": i === 0 ? "NOT uom item" : "uom item",
+            "Name": `${i === 0 ? 'non uom item' : 'uom item'}`,
+            "Price": i === 0 ? 0.5 : 1
+        };
+        itemList.push(item);
+    }
+    return itemList;
+}
+
+function createUomItemsList() {
+    const itemList: UomItem[] = [];
+    for (let i = 0; i < 5; i++) {
+        itemList.push(resolveUomItem(i));
+    }
+    return itemList;
+}
+
+function resolveUomItem(i: number): UomItem {
+    switch (i) {
+        case 0: return {
+            "Key": "SIN",
+            "Title": "Single",
+            "Multiplier": "1"
+        }
+        case 1: return {
+            "Key": "CS",
+            "Title": "Case",
+            "Multiplier": "24"
+        }
+        case 2: return {
+            "Key": "DOU",
+            "Title": "double",
+            "Multiplier": "2"
+        }
+        case 3: return {
+            "Key": "Bx",
+            "Title": "Box",
+            "Multiplier": "13"
+        }
+        case 4: return {
+            "Key": "PK",
+            "Title": "Pack",
+            "Multiplier": "6"
+        }
+        default: return {//dummy return for ts
+            "Key": "PK",
+            "Title": "Pack",
+            "Multiplier": "6"
+        }
+    }
 }
 //TODO: first phase
 //1.uom + cpi node are installed
@@ -100,3 +211,11 @@ export async function UomTests(email: string, password: string, varPass: string,
 //3.UOM types creation using API
 //4.ATD creation -> field seteup (allowed values + item config)
 //5.ATD attachment to homescreen
+
+interface UomItem {
+    Key: string,
+    Title: string,
+    Multiplier: string
+}
+
+

@@ -31,7 +31,13 @@ export class WebAppSettingsSidePanel extends Page {
         'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_branding',
     );
 
+    //Branded App Locators
+    public CatalogsSection: Locator = By.id(
+        'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=catalogs_manage',
+    );
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
+        debugger;
         const selectedSettings = Object.assign({}, this.SettingsBarContainer);
         selectedSettings['value'] += `//*[@id="${settingsButtonID}"]/../../..`;
         await this.browser.click(selectedSettings);

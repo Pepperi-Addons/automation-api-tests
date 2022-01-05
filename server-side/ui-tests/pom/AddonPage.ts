@@ -154,6 +154,9 @@ export class AddonPage extends Page {
         `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
     );
 
+    //catalog section locators
+    public EditCatalogBtn: Locator = By.css('.editPenIcon fl editPenIconDisable');
+
     //Branded App Locators
     public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
     public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
@@ -675,5 +678,38 @@ export class AddonPage extends Page {
 
         await webAppDialog.selectDialogBox('Close');
         return;
+    }
+
+    /**
+     * 
+     * @param activtiyName 
+     * @returns 
+     */
+    public async selectCatalogItemsByCategory(itemKey: string): Promise<void> {
+        debugger;
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Settings);
+        debugger;
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        debugger;
+        await webAppSettingsSidePanel.selectSettingsByID('Catalogs');
+        await this.browser.click(webAppSettingsSidePanel.CatalogsSection);
+
+        await this.isSpinnerDone();
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+
+        await this.browser.click(this.EditCatalogBtn);
+        debugger;
+
+
+        // //Go To HomePage
+        // await this.browser.switchToDefaultContent();
+        // const webAppHeader = new WebAppHeader(this.browser);
+        // await this.browser.click(webAppHeader.Home);
+
+        // const webAppHomePage = new WebAppHomePage(this.browser);
+        // await webAppHomePage.isSpinnerDone();
+        // return;
     }
 }
