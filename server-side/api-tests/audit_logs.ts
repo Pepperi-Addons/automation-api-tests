@@ -232,8 +232,8 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         } catch (error) {
             executeDraftCodeApiResponse = error;
         }
-        //asyne is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
 
+        //async is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
         console.log({ executeDraftCodeApiResponse: executeDraftCodeApiResponse });
 
         if (async) {

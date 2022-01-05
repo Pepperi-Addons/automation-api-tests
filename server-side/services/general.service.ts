@@ -338,9 +338,22 @@ export default class GeneralService {
                         .addonUUID(`${testData[addonUUID][0]}`)
                         .install('0.0.235');
                 } else {
-                    installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${testData[addonUUID][0]}`)
-                        .install();
+                    if (testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/)) {
+                        const version = testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/);
+                        if (version?.length && typeof version[0] === 'string') {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .install(version[0]);
+                        } else {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .install();
+                        }
+                    } else {
+                        installResponse = await this.papiClient.addons.installedAddons
+                            .addonUUID(`${testData[addonUUID][0]}`)
+                            .install();
+                    }
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
