@@ -12,13 +12,15 @@ import {
     PromotionTests,
     SecurityPolicyTests,
     CreateDistributorTests,
+    UomTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
+import { Client } from '@pepperi-addons/debug-server/dist';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
- * npm run ui-show-report --server=stage --chrome_headless=false --user_email=<> --user_pass=<> --var_pass='<>'
+ * npm run ui-show-report --server=stage/prod --chrome_headless=false --user_email='<>' --user_pass='<>' --var_pass='<>' --tests='<>'
  *
  * There are two scripts that should be used with the default seetings:
  * 1. ui-cli-report - This script for executing the script in Jenkins.
@@ -49,7 +51,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         },
     });
 
-    const client = await tempGeneralService.initiateTester(email, pass);
+    const client: Client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
 
@@ -90,6 +92,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Create')) {
         await CreateDistributorTests(generalService, varPass, varPassEU);
+    }
+
+    if (tests.includes('Uom')) {
+        await UomTests(email, pass, varPass, client);
     }
 
     run();
