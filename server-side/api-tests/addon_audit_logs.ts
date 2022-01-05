@@ -1,8 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-declare type SyncStatus = 'New' | 'SyncStart' | 'Skipped' | 'Done';
-declare type ServerTypes = 'sandbox' | 'eu' | 'prod';
-
 interface TestResults {
     Name: string;
     Results: any[];

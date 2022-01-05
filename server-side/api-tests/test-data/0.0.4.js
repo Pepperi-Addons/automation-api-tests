@@ -1,8 +1,7 @@
 exports.UpdateCodeJob = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -20,10 +19,9 @@ exports.UpdateCodeJob = async (Client) => {
 };
 
 exports.updateDrafrCodeWithoutResult = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -48,10 +46,9 @@ exports.updateDrafrCodeWithoutResult = async (Client) => {
 };
 
 exports.createNewCJToBudgetTest = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
