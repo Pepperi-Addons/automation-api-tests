@@ -84,6 +84,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 };
                 objectsService.postItem(itemToPush);
             });
+            
             it('Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
