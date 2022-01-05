@@ -686,19 +686,15 @@ export class AddonPage extends Page {
      * @returns 
      */
     public async selectCatalogItemsByCategory(itemKey: string): Promise<void> {
-        debugger;
         const webAppHeader = new WebAppHeader(this.browser);
         await this.browser.click(webAppHeader.Settings);
-        debugger;
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        debugger;
         await webAppSettingsSidePanel.selectSettingsByID('Catalogs');
         await this.browser.click(webAppSettingsSidePanel.CatalogsSection);
-
         await this.isSpinnerDone();
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Content);
-
+        debugger;
         await this.browser.click(this.EditCatalogBtn);
         debugger;
 

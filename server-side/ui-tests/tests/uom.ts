@@ -123,7 +123,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         //1. validating all items are added to the main catalog
                         const addonPage = new AddonPage(driver);
-                        addonPage.selectCatalogItemsByCategory("dfsf");
+                        await addonPage.selectCatalogItemsByCategory("dfsf");
                     });
                     // it('', async function () {
 
