@@ -1,7 +1,6 @@
 import { Page } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../../../services/general.service';
 import { PagesService } from '../../../services/pages.service';
-// import { v4 as newUuid } from 'uuid';
 import { PageBlocksTestSuite } from './page_blocks';
 
 export async function PagesTestSuite(generalService: GeneralService, tester: TesterFunctions) {
