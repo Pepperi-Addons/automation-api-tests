@@ -15,18 +15,16 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             Name: `${new Date().toLocaleDateString()} - PagesApiTest`,
             Blocks: [],
             Layout: {
-                Sections: [
-                ],
+                Sections: [],
             },
         };
 
-        
         it('Create new page', async () => {
             const resultPage = await pagesService.createOrUpdatePage(expected);
             expected.Key = resultPage.Key;
             pagesService.comparePages(expected, resultPage, expect);
         });
-        
+
         it('Page Blocks Test Suite', async () => await PageBlocksTestSuite(pagesService, tester, expected));
         // it('Page blocks', async () => await PageBlocksTestSuite(pagesService, tester, expected
         //     // {
