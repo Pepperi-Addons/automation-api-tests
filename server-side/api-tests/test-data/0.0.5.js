@@ -90,7 +90,7 @@ exports.PositiveTest = async (Client) => {
         const res = {
             multiplyResult: a * b,
         };
-        Client.addLogEntry('Info', 'Start Funcion multiply =  JSON.stringify(res)');
+        Client.addLogEntry('Info', 'Start Funcion multiply = JSON.stringify(res)');
         response.resultObject = res;
         response.errorMessage = 'test msg';
         response.success = true;
