@@ -17,7 +17,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
     const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
     //#endregion Upgrade ADAL
 
-    describe('addon relation Tests Suites', () => {
+    describe('Addon Relation Tests Suites', () => {
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
@@ -51,7 +51,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
             }
         });
         describe(`Compare data from base and last versions`, () => {
-            it(`negative : AddonUUID not equale to OwnerID`, async () => {
+            it(`Negative: AddonUUID not equale to OwnerID`, async () => {
                 //const secretKey = await relationService.getSecretKey()
                 // console.log(usageMonitorService.papiClient['options'].addonUUID,usageMonitorService.papiClient['options'].addonSecretKey )
                 // usageMonitorService.papiClient['options'].addonUUID = {}

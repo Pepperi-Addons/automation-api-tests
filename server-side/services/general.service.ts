@@ -667,6 +667,11 @@ export default class GeneralService {
         return !!pattern.test(s.replace(' ', '%20'));
     }
 
+    /**
+     * The addon must be installed for this function to work
+     * @param addonUUID
+     * @returns
+     */
     getSecretKey(addonUUID: string): Promise<string> {
         return this.papiClient
             .post('/code_jobs/get_data_for_job_execution', {

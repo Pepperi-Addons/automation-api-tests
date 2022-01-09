@@ -82,6 +82,7 @@ import { MaintenanceJobTests } from './api-tests/maintenance_job';
 import { CPINodeTests } from './api-tests/cpi_node';
 import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './api-tests/var_system_addons';
+import { AddonDataImportExportTests } from './api-tests/addon_data_import_export';
 
 let testName = '';
 let testEnvironment = '';
@@ -1780,6 +1781,30 @@ export async function code_jobs_clean(client: Client, testerFunctions: TesterFun
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsCleanTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
