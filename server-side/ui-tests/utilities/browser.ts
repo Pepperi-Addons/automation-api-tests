@@ -177,7 +177,7 @@ export class Browser {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
 

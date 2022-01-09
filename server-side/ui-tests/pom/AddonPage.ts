@@ -154,8 +154,36 @@ export class AddonPage extends Page {
         `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
     );
 
-    //catalog section locators
-    public EditCatalogBtn: Locator = By.css('.editPenIcon fl editPenIconDisable');
+    //catalog Section Locators
+    public EditCatalogBtn: Locator = By.css('.editPenIcon');
+    public ItemsTitleBtn: Locator = By.xpath("//li[@title='Items']");
+    public CategoryExpender: Locator = By.xpath("//span[@class='dynatree-expander']");
+    public CategoryListItem: Locator = By.xpath("//ul//li[@class='dynatree-lastsib']//ul//li//span//a[text()='|textToFill|']/preceding-sibling::span[@class='dynatree-checkbox']");
+    public CategoryListItemCheckBox: Locator = By.xpath("//ul//li[@class='dynatree-lastsib']//ul//li//span//a[text()='|textToFill|']/..");
+    public CategoryListOKBtn: Locator = By.xpath("//div[contains(text(),'OK')]");
+
+    //Uom Addon Locators
+    public uomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
+    public uomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
+    public uomInstallBtn: Locator = By.css("[data-qa='install']");
+
+
+    //custom field adding page
+    public fieldAddingTitle: Locator = By.xpath("//h3[text()='Add Custom Field']");
+    public calculatedFieldCheckBox: Locator = By.xpath("//input[@value='CalculatedField']");
+    public textInputElements: Locator = By.xpath("//input[@type='text' and @class='field textbox long roundCorner']");
+    public editFieldScriptBtn: Locator = By.xpath("//a[@name='edit']");
+
+    //script adding page
+    public scriptEditingTitle: Locator = By.xpath("//span[@class='fl section_label ng-binding']");
+    public AvailibaleFieldsBtn: Locator = By.xpath("//button[@class='fr md-primary md-fab md-mini default-color md-button md-ink-ripple']");
+    public ItemMainCategoryParamSpan: Locator = By.xpath("//span[text()='ItemMainCategory']/../..");
+
+    //adding custom data to script page
+    public ItemFieldsSection: Locator = By.xpath("(//div[@class='dc-header' and text()='Item Fields'])[2]");
+    public MainCategoryCheckBox: Locator = By.xpath("(//td[@title='Item Main Category Code'])[2]/preceding-sibling::td");
+    public SaveParamBtn: Locator = By.xpath("//div[text()='Save' and @tabindex=0]");
+    //=>
 
     //Branded App Locators
     public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
@@ -453,7 +481,7 @@ export class AddonPage extends Page {
      * @param fieldObj Type that contain the field Label and Js formula if needed
      * @returns
      */
-    public async editATDField(fieldType: string, fieldObj: Field): Promise<void> {
+    public async editATDField(fieldType: string, fieldObj: Field, isTransLine: boolean = false): Promise<void> {
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -469,18 +497,17 @@ export class AddonPage extends Page {
         //Validate Editor Page Loaded
         expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
 
-        const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionFieldArr);
+        const locator: Locator = isTransLine ? this.AddonContainerATDEditorTransactionFieldArr : this.AddonContainerATDEditorTransactionLineFieldArr;
+        const buttonsArr = await this.browser.findElements(locator);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
             if ((await element.getText()).includes(fieldType)) {
-                await element.click();
+                await this.browser.click(locator, index);
                 break;
             }
         }
-
         const selectedBtn = Object.assign({}, this.AddonContainerATDEditorEditFieldArr);
         selectedBtn['value'] = `//td[@title='${fieldObj.Label}']/${selectedBtn['value']}`;
-        await this.browser.click(selectedBtn);
 
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldEditFormula);
         await this.browser.sendKeys(
@@ -492,6 +519,70 @@ export class AddonPage extends Page {
 
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
+
+        return;
+    }
+
+    /**
+     *
+     * @param fieldType The name of the fields group
+     * @param fieldObj Type that contain the field Label and Js formula if needed
+     * @returns
+     */
+    public async addATDField(fieldObj: Field, isTransLine: boolean = false): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Fields');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
+
+        //Validate Editor Page Loaded
+        expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
+        if (isTransLine) {
+            await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
+        } else {
+            await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 0);
+        }
+        expect(await this.browser.untilIsVisible(this.fieldAddingTitle, 15000)).to.be.true;
+        await this.browser.click(this.calculatedFieldCheckBox);
+        await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 0);
+        // await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 1);//didnt sucseed 
+        await this.browser.click(this.editFieldScriptBtn);
+        expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 15000)).to.be.true;
+        await this.browser.click(this.AvailibaleFieldsBtn);
+        expect(await this.browser.untilIsVisible(this.ItemFieldsSection, 15000)).to.be.true;
+        await this.browser.click(this.ItemFieldsSection);
+        await this.browser.click(this.MainCategoryCheckBox);
+        await this.browser.click(this.SaveParamBtn);
+        expect(await this.browser.untilIsVisible(this.ItemMainCategoryParamSpan, 15000)).to.be.true;
+        //dosent work -- have to find other way to add code to the script of a calculated field - worst case scenario can copy the one from c# e2e
+        debugger;
+        await this.browser.sendKeys(
+            this.AddonContainerATDEditorTransactionLineFieldFormula,
+            fieldObj.CalculatedRuleEngine?.JSFormula as string,
+            0,
+            6000,
+        );
+        debugger;
+        // const selectedBtn = Object.assign({}, this.AddonContainerATDEditorEditFieldArr);
+        // selectedBtn['value'] = `//td[@title='${fieldObj.Label}']/${selectedBtn['value']}`;
+
+        // await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldEditFormula);
+        // await this.browser.sendKeys(
+        //     this.AddonContainerATDEditorTransactionLineFieldFormula,
+        //     fieldObj.CalculatedRuleEngine?.JSFormula as string,
+        //     0,
+        //     6000,
+        // );
+
+        // await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
+        // await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
 
         return;
     }
@@ -685,7 +776,7 @@ export class AddonPage extends Page {
      * @param activtiyName 
      * @returns 
      */
-    public async selectCatalogItemsByCategory(itemKey: string): Promise<void> {
+    public async selectCatalogItemsByCategory(itemKeyUomItems: string, itemKeyNonUomItems?: string): Promise<void> {
         const webAppHeader = new WebAppHeader(this.browser);
         await this.browser.click(webAppHeader.Settings);
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
@@ -694,18 +785,65 @@ export class AddonPage extends Page {
         await this.isSpinnerDone();
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Content);
-        debugger;
         await this.browser.click(this.EditCatalogBtn);
+        await this.browser.click(this.ItemsTitleBtn);
+        await this.browser.click(this.CategoryExpender);
+        let itemCheckBox: string = this.CategoryListItemCheckBox.valueOf()["value"].replace("|textToFill|", itemKeyUomItems);
+        let itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
+        let checkBoxClassAtt = await itemCheckBoxElement.getAttribute("class");
+        if (!checkBoxClassAtt.includes("selected")) {
+            const xpathQueryForList: string = this.CategoryListItem.valueOf()["value"].replace("|textToFill|", itemKeyUomItems);
+            const locatorForCategoryList: Locator = By.xpath(xpathQueryForList);
+            await this.browser.click(locatorForCategoryList);
+        }
+        if (itemKeyNonUomItems) {
+            itemCheckBox = this.CategoryListItemCheckBox.valueOf()["value"].replace("|textToFill|", itemKeyNonUomItems);
+            itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
+            checkBoxClassAtt = await itemCheckBoxElement.getAttribute("class");
+            if (!checkBoxClassAtt.includes("selected")) {
+                const xpathQueryForList: string = this.CategoryListItem.valueOf()["value"].replace("|textToFill|", itemKeyNonUomItems);
+                const locatorForCategoryList: Locator = By.xpath(xpathQueryForList);
+                await this.browser.click(locatorForCategoryList);
+            }
+        }
+        await this.browser.click(this.CategoryListOKBtn);
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        await this.browser.click(webAppHeader.Home);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.isSpinnerDone();
+        return;
+    }
+
+    /**
+     *
+     * @returns
+     */
+    public async editATDUom(): Promise<void> {
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+        await this.selectTabByText('Uom');
+        //=>validate uom is loaded both if installed and if not
+        expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
+        //testing whether already installed - after loading anyway
+        if (await (await this.browser.findElement(this.uomInstallBtn)).isDisplayed()) {
+            await this.browser.click(this.uomInstallBtn);
+            const webAppDialog = new WebAppDialog(this.browser);
+            let isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+            expect(isPupUP).to.equal('Are you sure you want to apply the module on the transaction?');
+            await webAppDialog.selectDialogBox('ok');
+            await this.isSpinnerDone();
+        }
+        expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
+        await this.selectTabByText('General');
+        await this.addATDField({
+            Label: 'AllowedUomFieldsForTest',//name
+            CalculatedRuleEngine: { JSFormula: "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;" }//code value
+        }, true);
         debugger;
-
-
-        // //Go To HomePage
-        // await this.browser.switchToDefaultContent();
-        // const webAppHeader = new WebAppHeader(this.browser);
-        // await this.browser.click(webAppHeader.Home);
-
-        // const webAppHomePage = new WebAppHomePage(this.browser);
-        // await webAppHomePage.isSpinnerDone();
-        // return;
+        return;
     }
 }

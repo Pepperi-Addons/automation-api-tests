@@ -123,7 +123,13 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         //1. validating all items are added to the main catalog
                         const addonPage = new AddonPage(driver);
-                        await addonPage.selectCatalogItemsByCategory("dfsf");
+                        await addonPage.selectCatalogItemsByCategory("uom item", "NOT uom item");
+                        //2. goto ATD editor - create new ATD UOM_{random-hashstring}
+                        const _TEST_DATA_ATD_NAME = `UOM_${Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 15)}`;
+                        const _TEST_DATA_ATD_DESCRIPTION = "ATD for uom automation testing";
+                        await addonPage.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
+                        await addonPage.editATDUom();
+                        debugger;
                     });
                     // it('', async function () {
 

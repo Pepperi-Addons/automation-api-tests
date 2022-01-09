@@ -37,7 +37,6 @@ export class WebAppSettingsSidePanel extends Page {
     );
 
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
-        debugger;
         const selectedSettings = Object.assign({}, this.SettingsBarContainer);
         selectedSettings['value'] += `//*[@id="${settingsButtonID}"]/../../..`;
         await this.browser.click(selectedSettings);
