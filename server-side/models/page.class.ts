@@ -19,7 +19,7 @@ export class PageClass {
         return JSON.parse(JSON.stringify(page));
     }
 
-    addBlock(pageBlock: PageBlock): void {
+    addNewBlock(pageBlock: PageBlock): void {
         if (!this._page?.Blocks) {
             throw new Error("The page's 'Blocks' property is undefined/not initialzied");
         }
@@ -27,14 +27,9 @@ export class PageClass {
     }
     overwriteBlockByKey(blockKey: string, pageBlock: PageBlock): void {
         this.removeBlockByKey(blockKey);
-        this.addBlock(pageBlock);
+        this.addNewBlock(pageBlock);
     }
-    addExistingBlockToSection(
-        blockKey: string,
-        sectionKey: string,
-        column = 0,
-        hide?: Array<DataViewScreenSize>,
-    ): void {
+    addBlockToSection(blockKey: string, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>): void {
         const pageSectionBlock: PageSectionBlock = {
             BlockKey: blockKey,
             Hide: hide ?? [],
@@ -43,9 +38,9 @@ export class PageClass {
         this._page.Layout.Sections[sectionIndex].Columns[column].Block = pageSectionBlock;
     }
 
-    addBlockToSection(pageBlock: PageBlock, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>) {
-        this.addBlock(pageBlock);
-        this.addExistingBlockToSection(pageBlock.Key, sectionKey, column, hide);
+    addNewBlockToSection(pageBlock: PageBlock, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>) {
+        this.addNewBlock(pageBlock);
+        this.addBlockToSection(pageBlock.Key, sectionKey, column, hide);
     }
 
     removeBlockByIndex(index: number) {

@@ -1,15 +1,11 @@
-import {
-    FindOptions,
-    NgComponentRelation,
-    Page
-} from '@pepperi-addons/papi-sdk';
+import { FindOptions, NgComponentRelation, Page } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export class PagesService {
     /**
      *
      */
-    mandatoryRelationFields = ["AddonUUID", "SubType", "Name", "AddonRelativeURL", "ModuleName", "ComponentName"];
+    mandatoryRelationFields = ['AddonUUID', 'SubType', 'Name', 'AddonRelativeURL', 'ModuleName', 'ComponentName'];
     constructor(private generalService: GeneralService) {}
 
     private validatePageExists(page: Page) {
@@ -28,59 +24,69 @@ export class PagesService {
             throw new Error(`Unexpected PageBlock name: ${fullRelation.Name}`);
         }
         //Only the mandatory fields as specified by API design.
-        const blockRelation : any = {};
+        const blockRelation: any = {};
         this.mandatoryRelationFields.forEach((field) => {
-            blockRelation[field] = fullRelation[field]
+            blockRelation[field] = fullRelation[field];
         });
         return blockRelation;
     }
 
     async deletePage(page: Page): Promise<Page> {
         page.Hidden = true;
-        return await this.createOrUpdatePage(page);
+        return this.createOrUpdatePage(page);
     }
     async createOrUpdatePage(page: Page): Promise<Page> {
-        return await this.generalService.papiClient.pages.upsert(page);
+        return this.generalService.papiClient.pages.upsert(page);
     }
     async getPage(pageUuid: string): Promise<Page> {
-        return await this.generalService.papiClient.pages.uuid(pageUuid).get();
+        return this.generalService.papiClient.pages.uuid(pageUuid).get();
     }
     async getPages(findOptions?: FindOptions): Promise<Array<Page>> {
-        return await this.generalService.papiClient.pages.find(findOptions);
+        return this.generalService.papiClient.pages.find(findOptions);
     }
 
-    assertAndLog(expected: any, actual: any, expect: Chai.ExpectStatic, parentProp = ''): void {
+    assertAndLog(expected: any, actual: any, expect: Chai.ExpectStatic): void {
         expect(
             actual,
             `The objects don't match: \nExpected: ${JSON.stringify(expected)}\nActual: ${JSON.stringify(actual)}`,
         ).to.equal(expected);
     }
 
-    comparePages(
-        expected: any,
-        actual: any,
+    objectWithoutTargetProp<Type>(baseObject: Type, properties: string[], targetProp: string): Type {
+        const apiObject: Type = {} as any;
+        properties
+            .filter((prop) => prop != targetProp && prop !== 'length')
+            .forEach((prop) => {
+                apiObject[prop] = baseObject[prop];
+            });
+        return apiObject;
+    }
+
+    //Deep comparison of objects by value of all properties existing on 'expected' parameter
+    deepCompareObjects<Type>(
+        expected: Type,
+        actual: Type,
         expect: Chai.ExpectStatic,
         excludedProperties: Array<string> = ['length'],
         parentProp?: string,
     ) {
-        // if (typeof expected === 'object') {
-        //     const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
-        //         excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
-        //     );
-
-        //     properties.forEach((prop) => {
-        //         if (typeof expected[prop] === 'object') {
-        //             parentProp = parentProp ? parentProp + '.' + prop : prop;
-        //             this.comparePages(expected[prop], actual[prop], expect, excludedProperties, parentProp);
-        //         } else {
-        //             this.assertAndLog(expected[prop], actual[prop], expect, parentProp ?? prop);
-        //         }
-        //     });
-        // } else {
-        //     this.assertAndLog(expected, actual, expect);
-        // }
         try {
-            this.compare(expected, actual, expect, excludedProperties, parentProp);
+            if (typeof expected === 'object') {
+                const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
+                    excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
+                );
+
+                properties.forEach((prop) => {
+                    if (typeof expected[prop] === 'object') {
+                        parentProp = parentProp ? parentProp + '.' + prop : prop;
+                        this.deepCompareObjects(expected[prop], actual[prop], expect, excludedProperties, parentProp);
+                    } else {
+                        this.assertAndLog(expected[prop], actual[prop], expect);
+                    }
+                });
+            } else {
+                this.assertAndLog(expected, actual, expect);
+            }
         } catch (error) {
             console.log(
                 `Expected ${parentProp}: ${typeof expected === 'object' ? JSON.stringify(expected) : expected}`,
@@ -90,28 +96,28 @@ export class PagesService {
         }
     }
 
-    private compare(
-        expected: any,
-        actual: any,
-        expect: Chai.ExpectStatic,
-        excludedProperties: Array<string> = ['length'],
-        parentProp?: string,
-    ) {
-        if (typeof expected === 'object') {
-            const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
-                excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
-            );
+    // private compare<Type>(
+    //     expected: Type,
+    //     actual: Type,
+    //     expect: Chai.ExpectStatic,
+    //     excludedProperties: Array<string> = ['length'],
+    //     parentProp?: string,
+    // ) {
+    //     if (typeof expected === 'object') {
+    //         const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
+    //             excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
+    //         );
 
-            properties.forEach((prop) => {
-                if (typeof expected[prop] === 'object') {
-                    parentProp = parentProp ? parentProp + '.' + prop : prop;
-                    this.comparePages(expected[prop], actual[prop], expect, excludedProperties, parentProp);
-                } else {
-                    this.assertAndLog(expected[prop], actual[prop], expect, parentProp ?? prop);
-                }
-            });
-        } else {
-            this.assertAndLog(expected, actual, expect);
-        }
-    }
+    //         properties.forEach((prop) => {
+    //             if (typeof expected[prop] === 'object') {
+    //                 parentProp = parentProp ? parentProp + '.' + prop : prop;
+    //                 this.deepCompareObjects(expected[prop], actual[prop], expect, excludedProperties, parentProp);
+    //             } else {
+    //                 this.assertAndLog(expected[prop], actual[prop], expect, parentProp ?? prop);
+    //             }
+    //         });
+    //     } else {
+    //         this.assertAndLog(expected, actual, expect);
+    //     }
+    // }
 }
