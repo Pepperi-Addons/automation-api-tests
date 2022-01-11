@@ -116,7 +116,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
             logcash.executeDraftCodeWithoutRetry = true;
         } else {
             logcash.executeDraftCodeWithoutRetry = false;
-            logcash.ErrorFromexecuteDraftCodeWithoutRetry = 'Post to execute CodeJobe with draft code failed';
+            logcash.ErrorFromexecuteDraftCodeWithoutRetry = 'Post to execute CodeJob with draft code failed';
         }
 
         generalService.sleep(20000);
@@ -146,7 +146,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
                 logDataNoRetry.Body.Status.ID +
                 'returned ExecutionUUID  is' +
                 CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID +
-                ' and CodeJobeUUID is  ' +
+                ' and CodeJobUUID is  ' +
                 CallbackCash.ResponseRetryTest.Body.UUID;
         }
 
@@ -186,7 +186,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
             logcash.executeDraftCodeWithRetry = true;
         } else {
             logcash.executeDraftCodeWithRetry = false;
-            logcash.ErrorFromexecuteDraftCodeWithRetry = 'Post to execute CodeJobe with draft code failed';
+            logcash.ErrorFromexecuteDraftCodeWithRetry = 'Post to execute CodeJob with draft code failed';
         }
 
         generalService.sleep(20000);
@@ -213,7 +213,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
                     logDataWithRetry.Body.Status.ID +
                     '\nreturned ExecutionUUID  is: ' +
                     CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID +
-                    ' and CodeJobeUUID is  ' +
+                    ' and CodeJobUUID is  ' +
                     CallbackCash.ResponseRetryTest.Body.UUID;
             }
         } else {
@@ -223,7 +223,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
                 logDataWithRetry.Body.Status.ID +
                 'returned ExecutionUUID  is' +
                 CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID +
-                ' and CodeJobeUUID is  ' +
+                ' and CodeJobUUID is  ' +
                 CallbackCash.ResponseRetryTest.Body.UUID;
         }
         generalService.sleep(320000);
@@ -248,7 +248,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
                 executionLog.ErrorExecutonLogWithRetry2 =
                     'Audit log Status returned wrong (status will be retry (0 - failure)), but returned: ' +
                     CallbackCash.executeDraftCodeWithRetry.Body.ExecutionUUID +
-                    ' and CodeJobeUUID is  ' +
+                    ' and CodeJobUUID is  ' +
                     CallbackCash.ResponseRetryTest.Body.UUID;
             }
         } else {
@@ -258,7 +258,7 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
                 logDataWithRetry2.Body.Status.ID +
                 '\nreturned ExecutionUUID  is: ' +
                 CallbackCash.executeDraftCodeWithRetry.Body.ExecutionUUID +
-                ' and CodeJobeUUID is  ' +
+                ' and CodeJobUUID is  ' +
                 CallbackCash.ResponseRetryTest.Body.UUID;
         }
     }

@@ -158,7 +158,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         //         await generalService.papiClient
         //             .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
         //             .then((res) => {
-        //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft', res);
+        //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft', res);
         //             })
         //             .catch((err) => {
         //                 if (
@@ -166,11 +166,11 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         //                         'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
         //                     )
         //                 ) {
-        //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJobe with draft');
+        //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft');
         //                 } else {
         //                     addTestResultUnderHeadline(
         //                         codeJobNegativeTest,
-        //                         'Post execute CodeJobe with draft',
+        //                         'Post execute CodeJob with draft',
         //                         err.message,
         //                     );
         //                 }
@@ -206,10 +206,10 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         const updateValuesToDraftExecute = draftExecuteableCode;
         const UpdateApiResponse = await generalService.papiClient.post('/code_jobs', updateValuesToDraftExecute);
         if (UpdateApiResponse.UUID.length < 36) {
-            addTestResultUnderHeadline(testName, 'Post CodeJobe with Draft', UpdateApiResponse);
+            addTestResultUnderHeadline(testName, 'Post CodeJob with Draft', UpdateApiResponse);
         } else {
             codeJobUUID = UpdateApiResponse.UUID;
-            addTestResultUnderHeadline(testName, 'Post CodeJobe with Draft');
+            addTestResultUnderHeadline(testName, 'Post CodeJob with Draft');
         }
         return codeJobUUID;
     }
@@ -232,21 +232,21 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         } catch (error) {
             executeDraftCodeApiResponse = error;
         }
-        //asyne is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
 
+        //async is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
         console.log({ executeDraftCodeApiResponse: executeDraftCodeApiResponse });
 
         if (async) {
             if (executeDraftCodeApiResponse.ExecutionUUID.length > 36 || executeDraftCodeApiResponse.URI.length > 48) {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft', executeDraftCodeApiResponse);
+                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft', executeDraftCodeApiResponse);
             } else {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft');
+                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft');
             }
         } else {
             if (executeDraftCodeApiResponse.success === undefined) {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft', executeDraftCodeApiResponse);
+                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft', executeDraftCodeApiResponse);
             } else {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJobe with draft');
+                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft');
             }
         }
 

@@ -15,7 +15,7 @@ import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from '
 //#endregion All Tests
 
 //#region Pages API test
-import { SampleTest } from './api-tests/objects/pages';
+import { PagesTestSuite } from './api-tests/objects/pages/pages';
 //#endregion Pages API test
 
 //#region Old Framwork Tests
@@ -27,6 +27,8 @@ import {
 } from './api-tests/addons';
 import { VarTests, CreateTestDataAddon } from './api-tests/var';
 import { AuditLogsTests } from './api-tests/audit_logs';
+import { AddonAuditLogsTests } from './api-tests/addon_audit_logs';
+import { AddonAsyncExecutionTests } from './api-tests/addon_async_execution';
 //#endregion Old Framwork Tests
 
 //#region Oleg's Framwork Tests
@@ -80,6 +82,7 @@ import { MaintenanceJobTests } from './api-tests/maintenance_job';
 import { CPINodeTests } from './api-tests/cpi_node';
 import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './api-tests/var_system_addons';
+import { AddonDataImportExportTests } from './api-tests/addon_data_import_export';
 
 let testName = '';
 let testEnvironment = '';
@@ -400,7 +403,7 @@ export async function pages_api(client: Client, testerFunctions: TesterFunctions
     };
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        SampleTest(service, testerFunctions),
+        PagesTestSuite(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -441,6 +444,74 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
     } else {
         return AuditLogsTests(service, testerFunctions);
     }
+}
+
+export async function addon_audit_logs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (testName != 'Addon_Audit_Logs' && testName != 'Sanity') {
+        testName = 'Addon_Audit_Logs';
+        service.PrintMemoryUseToLog('Start', testName);
+        testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+            client,
+            testName,
+            testEnvironment,
+        );
+        testerFunctions = {
+            describe,
+            expect,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            AddonAuditLogsTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        service.PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return AddonAuditLogsTests(service, testerFunctions);
+    }
+}
+
+export async function addon_async_execution(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Async_Execution';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
+        client,
+        testName,
+        testEnvironment,
+    );
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+        setNewTestHeadline,
+        addTestResultUnderHeadline,
+        printTestResults,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonAsyncExecutionTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    testName = '';
+    return testResult;
 }
 
 export async function var_api(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1710,6 +1781,30 @@ export async function code_jobs_clean(client: Client, testerFunctions: TesterFun
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsCleanTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
