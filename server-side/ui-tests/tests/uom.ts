@@ -125,10 +125,13 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const addonPage = new AddonPage(driver);
                         await addonPage.selectCatalogItemsByCategory("uom item", "NOT uom item");
                         //2. goto ATD editor - create new ATD UOM_{random-hashstring}
-                        const _TEST_DATA_ATD_NAME = `UOM_${Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 15)}`;
+                        const _TEST_DATA_ATD_NAME = `UOM_${generateRandString(15)}`;
                         const _TEST_DATA_ATD_DESCRIPTION = "ATD for uom automation testing";
                         await addonPage.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
-                        await addonPage.editATDUom();
+                        //3. goto new ATD and configure everything needed for the test - 2 calculaed fields 
+                        //3.1. goto UOM tab and configure Allowed UOMs Field as AllowedUomFieldsForTest and UOM Configuration Field as ItemConfig
+                        await addonPage.configUomATD();
+                        
                         debugger;
                     });
                     // it('', async function () {
@@ -225,3 +228,11 @@ interface UomItem {
 }
 
 
+function generateRandString(length: number): string {
+    let result = ' ';
+    for (let i = 0; i < length; i++) {
+        result +=
+            String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    }
+    return result;
+}
