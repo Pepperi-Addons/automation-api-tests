@@ -90,7 +90,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                 describe('Upsert', () => {
                     it('Upsert Data View (Card) Valid Response', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -346,11 +346,11 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                 describe('Get', () => {
                     it('Get All Data Views Valid Response (DI-16800)', async () => {
-                        return expect(service.getDataViews()).eventually.to.be.an('array').with.length.above(0);
+                        await expect(service.getDataViews()).eventually.to.be.an('array').with.length.above(0);
                     });
 
                     it('Get No Data Views Valid Response', async () => {
-                        return expect(
+                        await expect(
                             service.getDataViews({
                                 where: `InternalID = '00'`,
                             }),
@@ -641,7 +641,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                     });
 
                     it('Post An Array To Addon Endpoint (DI-16894)', async () => {
-                        return expect(service.postDataViewBatch([])).eventually.to.be.an('array').with.lengthOf(0);
+                        await expect(service.postDataViewBatch([])).eventually.to.be.an('array').with.lengthOf(0);
                     });
                 }
 
@@ -851,7 +851,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                     describe('Upsert Data View (Menu) Form Empty Object To Data View ', () => {
                         it('Upsert Data View to be rejected with missing Type', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                 } as any),
@@ -860,7 +860,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -872,7 +872,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.Name', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -885,7 +885,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.ScreenSize', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -900,7 +900,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.Profile', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -916,7 +916,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.Profile.Name or Context.Profile.InternalID', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -933,7 +933,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.Object', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -953,7 +953,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.Object.Resource', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -974,7 +974,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View to be rejected with missing Context.Object.Name or Context.Object.InternalID', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -997,7 +997,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert existing Data View Without Changes', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Menu',
@@ -1022,7 +1022,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                     describe('Upsert Data View (Details) Form Missing Data Members To Data View ', () => {
                         it('Upsert Data View To Be Fulfilled', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Details',
@@ -1045,7 +1045,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         it('Upsert Data View To Be Fulfilled', async () => {
                             const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                            return expect(
+                            await expect(
                                 service.postDataView({
                                     Title: testDataViewTitle,
                                     Type: 'Details',
@@ -1587,7 +1587,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                 if (testConfigObj.isBase) {
                     it('Insert New Data View (Card) With Wrong Context.Name', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -1609,7 +1609,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Card) Without Context.Profile', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -1631,7 +1631,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Card) Without Context.Name', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -1653,7 +1653,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Card) Without Context.ScreenSize', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -1675,7 +1675,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Card) Without Type', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: undefined as any, //'Card',
                                 Title: testDataViewTitle,
@@ -1697,7 +1697,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                 if (testConfigObj.isNegativeScenarios) {
                     it('Insert New Data View (Configuration) Without Context.Object (DI-16781)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1717,7 +1717,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) Without Context.Object.Name (DI-16796)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1740,7 +1740,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) With Wrong Context.Object.Name (DI-16872)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1764,7 +1764,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) With Wrong Context.Name (DI-16747)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1788,7 +1788,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert new data view (Configuration) With Object (Unexpected) For WebAppMainBar', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1812,7 +1812,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) Without Context.Profile', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1832,7 +1832,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) Without Context.Name', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1852,7 +1852,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) Without Context.ScreenSize', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1872,7 +1872,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Insert New Data View (Configuration) Without Type', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: undefined as any, //'Card',
                                 Title: testDataViewTitle,
@@ -1911,7 +1911,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                         const postDataViewResponseObj: DataView = await service.postDataView(testDataView);
 
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 InternalID: postDataViewResponseObj.InternalID,
                                 Type: 'Form',
@@ -1934,7 +1934,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Configuration) With Wrong Context.Object (DI-16872)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Configuration',
                                 Title: testDataViewTitle,
@@ -1959,7 +1959,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Validate Improvment To OrderCartSmartSearch (DI-17565)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Menu',
                                 Title: testDataViewTitle,
@@ -2033,7 +2033,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Details) Valid Response For Landscape (DI-16818)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -2055,7 +2055,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Details) Valid Response For Tablet', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -2077,7 +2077,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Details) Valid Response For Phablet (DI-16818)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Card',
                                 Title: testDataViewTitle,
@@ -2099,7 +2099,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Grid) With Wrong Type For Context.Name (DI-16809)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 InternalID: 4886426,
                                 Type: 'Grid',
@@ -2126,7 +2126,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Grid) With Wrong InternalID', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 InternalID: 488642612,
                                 Type: 'Menu',
@@ -2151,7 +2151,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Menu) Witout Fields.Title', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Menu',
                                 Title: testDataViewTitle,
@@ -2182,7 +2182,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Menu) Witout Fields.FieldID', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Menu',
                                 Title: testDataViewTitle,
@@ -2213,7 +2213,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it('Upsert Data View (Map) Without Fields[0].Style.Alignment.Vertical (DI-16852)', async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Map',
                                 Title: testDataViewTitle,
@@ -2269,7 +2269,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it("Upsert Data View (Grid) With One 'Fields' And Two 'Columns' (DI-16861)", async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Grid',
                                 Title: testDataViewTitle,
@@ -2329,7 +2329,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it("Upsert Data View (Grid) With Two 'Fields' And One 'Columns' (DI-16861)", async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Grid',
                                 Title: testDataViewTitle,
@@ -2409,7 +2409,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
 
                     it("Upsert Data View (Large) with wrong 'Context.Name' (DI-16874)", async () => {
                         const testDataViewTitle: string = 'Test ' + Math.floor(Math.random() * 1000000).toString();
-                        return expect(
+                        await expect(
                             service.postDataView({
                                 Type: 'Large',
                                 Title: testDataViewTitle,
@@ -2472,7 +2472,7 @@ export async function DataViewsTests(generalService: GeneralService, tester: Tes
                         };
 
                         //Get the current (after the update) data view
-                        return expect(service.postDataView(updatedDataViewObject)).eventually.to.be.rejectedWith(
+                        await expect(service.postDataView(updatedDataViewObject)).eventually.to.be.rejectedWith(
                             "Failed due to exception: DataView Type can't be changed from Form to Card",
                         );
                     });
