@@ -169,7 +169,7 @@ export class AddonPage extends Page {
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
 
-    //view page
+    //views page
     public RepViewEditIcon: Locator = By.xpath("//span[@title='Rep']/following-sibling::span[contains(@class,'editPenIcon')]");
 
 
@@ -179,6 +179,7 @@ export class AddonPage extends Page {
     public textInputElements: Locator = By.xpath("//input[@type='text' and @class='field textbox long roundCorner']");
     public editFieldScriptBtn: Locator = By.xpath("//a[@name='edit']");
     public saveFieldBtn: Locator = By.xpath("//div[@name='save']");
+    public FeildTypeButton: Locator = By.xpath("//h3[@title='|textToFill|']//..");
 
     //script adding page
     public scriptEditingTitle: Locator = By.xpath("//span[@class='fl section_label ng-binding']");
@@ -250,13 +251,16 @@ export class AddonPage extends Page {
     }
 
     public async selectDropBoxByString(locator: Locator, option: string, index?: number): Promise<void> {
+        await this.sleep(3000);
         if (index !== undefined) {
             await this.browser.click(locator, index);
         }
         else {
             await this.browser.click(locator);
         }
+        await this.sleep(9000);
         await this.browser.click(By.xpath(`//span[@class='mat-option-text' and text()='${option}']`));
+        await this.sleep(9000);
         return;
     }
 
@@ -547,7 +551,7 @@ export class AddonPage extends Page {
      * @param fieldObj Type that contain the field Label and Js formula if needed
      * @returns
      */
-    public async addATDCalculatedField(fieldObj: Field, isTransLine: boolean = false, scriptParam?: string): Promise<void> {
+    public async addATDCalculatedField(fieldObj: Field, isTransLine: boolean = false, scriptParam?: string, fieldType?: string): Promise<void> {
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -569,6 +573,10 @@ export class AddonPage extends Page {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 0);
         }
         expect(await this.browser.untilIsVisible(this.fieldAddingTitle, 15000)).to.be.true;
+        if (fieldType) {
+            const xpathQueryForFieldTypeBtn: string = this.FeildTypeButton.valueOf()["value"].replace("|textToFill|", fieldType);
+            await this.browser.click(By.xpath(xpathQueryForFieldTypeBtn));
+        }
         await this.browser.click(this.calculatedFieldCheckBox);
         await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 0);
         await this.browser.click(this.editFieldScriptBtn);
@@ -830,7 +838,7 @@ export class AddonPage extends Page {
 
     public async configUomFieldsAndMediumView(): Promise<void> {
         await this.configureUomDataFields();
-        this.editATDView("Order Center Views", "Medium Thumbnails View","editPenIcon");
+        await this.editATDView("Order Center Views", "Medium Thumbnails View", "editPenIcon");
         debugger;
     }
 
@@ -900,7 +908,7 @@ export class AddonPage extends Page {
                 JSFormula:
                     `return 48;`
             }
-        }, true);
+        }, true, undefined, "Number");
         await this.configUomFieldsAndMediumView();
         return;
     }
