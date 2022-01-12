@@ -11,7 +11,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
     const expect = tester.expect;
     const it = tester.it;
 
-    //#region Prerequisites for Audit Logs Tests
+    //#region Prerequisites for Addon Async Execution Tests
     //TestData
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -27,8 +27,8 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
     //#endregion Upgrade Pepperitest (Jenkins Special Addon)
 
     //Print Test Results
-    describe('Addon Audit Logs Tests Suites', async () => {
-        describe('Prerequisites Addon for Addon Audit Logs Tests', () => {
+    describe('Addon Addon Async Execution Tests Suites', async () => {
+        describe('Prerequisites Addon for Addon Async Execution Tests', () => {
             //Test Data
             it('Validate That All The Needed Addons Installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
@@ -60,7 +60,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             }
         });
 
-        describe('Audit Logs Positive Async CodeJob Test', async () => {
+        describe('Async Execution Audit Logs Positive Async CodeJob Test', async () => {
             let executeTestResults;
             let testAuditUUID;
             let testAuditURI;
@@ -83,9 +83,9 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                 expect(testExist, JSON.stringify(executeTestResults)).to.be.true;
             });
 
-            it(`Audit Logs of Code Job - Interval Timer`, async () => {
+            it(`Audit Logs of Async Execution - Interval Timer`, async () => {
                 for (let i = 0; i < executeTestResults.length; i++) {
-                    if (executeTestResults[i].Name == 'Audit Logs of Code Job - Interval Timer') {
+                    if (executeTestResults[i].Name == 'Audit Logs of Async Execution - Interval Timer') {
                         expect.fail(`Test end without timout, Results: ${JSON.stringify(executeTestResults)}`);
                     }
                 }
@@ -127,16 +127,16 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             });
 
             it(`Validae Audit Log And Adal Pass`, async () => {
-                expect(auditLogBody.Status.Name).to.equal('Failure');
-                expect(adalLogBody.Status).to.equal('Failure');
+                expect(auditLogBody.Status.Name).to.equal('Success');
+                expect(adalLogBody.Status).to.equal('Success');
             });
 
             it(`Validae Audit Log And Adal Result Object`, async () => {
                 expect(auditLogBody.AuditInfo.ResultObject).to.equal(
-                    '{"success":"Exception","errorMessage":"Failed due to exception: Failed to download file from s3","resultObject":null}',
+                    '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
                 );
                 expect(adalLogBody.ResultObject).to.equal(
-                    '{"success":"Exception","errorMessage":"Failed due to exception: Failed to download file from s3","resultObject":null}',
+                    '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
                 );
             });
         });
@@ -164,9 +164,9 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                 expect(testExist, JSON.stringify(executeTestResults)).to.be.true;
             });
 
-            it(`Audit Logs of Code Job - Interval Timer`, async () => {
+            it(`Audit Logs of Async Execution - Interval Timer`, async () => {
                 for (let i = 0; i < executeTestResults.length; i++) {
-                    if (executeTestResults[i].Name == 'Audit Logs of Code Job - Interval Timer') {
+                    if (executeTestResults[i].Name == 'Audit Logs of Async Execution - Interval Timer') {
                         expect.fail(`Test end without timout, Results: ${JSON.stringify(executeTestResults)}`);
                     }
                 }
@@ -214,10 +214,10 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
 
             it(`Validae Audit Log And Adal Result Object`, async () => {
                 expect(auditLogBody.AuditInfo.ResultObject).to.equal(
-                    '{"success":"Exception","errorMessage":"Failed due to exception: Failed to download file from s3","resultObject":null}',
+                    '{"success":"Exception","errorMessage":"Failed due to exception: orenTest","resultObject":null}',
                 );
                 expect(adalLogBody.ResultObject).to.equal(
-                    '{"success":"Exception","errorMessage":"Failed due to exception: Failed to download file from s3","resultObject":null}',
+                    '{"success":"Exception","errorMessage":"Failed due to exception: orenTest","resultObject":null}',
                 );
             });
         });
@@ -253,7 +253,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                             clearInterval(getResultObjectInterval);
                             await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
                             executeResultData.push({
-                                Name: 'Audit Logs of Code Job - Interval Timer',
+                                Name: 'Audit Logs of Async Execution - Interval Timer',
                                 Results: [false],
                             });
                             return resolve(executeResultData);
@@ -269,7 +269,10 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                             console.log({ getAuditLogApiResponse: apiResponse });
 
                             await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
-                            executeResultData.push({ Name: 'Audit Logs of Code Job - Error', Results: [apiResponse] });
+                            executeResultData.push({
+                                Name: 'Audit Logs of Async Execution - Error',
+                                Results: [apiResponse],
+                            });
 
                             return resolve(executeResultData);
                         }
@@ -318,22 +321,23 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
         function isExecuteAddonJobCodeJobValidResponse(codeJobAPIResponse, testDataBody) {
             let tempObj = {} as any;
             if (codeJobAPIResponse[0] === undefined) {
-                tempObj = codeJobAPIResponse.result;
+                if (codeJobAPIResponse.result) {
+                    tempObj = codeJobAPIResponse.result;
+                } else {
+                    tempObj = codeJobAPIResponse;
+                }
             } else {
                 tempObj = codeJobAPIResponse[0];
             }
             //Check UUID
             try {
                 if (
+                    tempObj.DistributorUUID != tempObj.AuditInfo.JobMessageData.DistributorUUID ||
                     tempObj.DistributorUUID == tempObj.UUID ||
                     tempObj.DistributorUUID == tempObj.Event.User.UUID ||
-                    tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                    tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.UserUUID ||
                     tempObj.UUID == tempObj.Event.User.UUID ||
-                    tempObj.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                    tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                    tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] == tempObj.DistributorUUID ||
-                    tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] ==
-                        tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                    tempObj.Event.User.UUID != tempObj.AuditInfo.JobMessageData.UserUUID ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
                 ) {
                     return 'Error in UUID in Code Job API Response';
@@ -366,8 +370,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                     tempObj.Event.User.Email != generalService.getClientData('UserEmail') ||
                     tempObj.Event.User.InternalID != generalService.getClientData('UserID') ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID') ||
-                    tempObj.AuditInfo.JobMessageData.CodeJobName != testDataBody.CodeJobName ||
-                    tempObj.AuditInfo.JobMessageData.CodeJobDescription != testDataBody.Description
+                    tempObj.AuditInfo.JobMessageData.FunctionName != testDataBody
                 ) {
                     return 'The Type or Event contain wrong data';
                 }
@@ -383,10 +386,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                 if (tempObj.AuditInfo.ErrorMessage != undefined) {
                     //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("ERROR")
                     //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("Error") //Changed in 26/07 investigated with nofar
-                    if (
-                        tempObj.AuditInfo.ErrorMessage.includes('Failed') ^
-                        testDataBody.FunctionName.includes('Negative')
-                    ) {
+                    if (tempObj.AuditInfo.ErrorMessage.includes('Failed') ^ testDataBody.includes('Negative')) {
                         return 'Error in execution result';
                     }
                 }

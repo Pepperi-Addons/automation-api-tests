@@ -59,20 +59,20 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
         //#region Endpoints
         describe('Endpoints', () => {
             describe('Get', () => {
-                it('Get Transaction With The Type Sales Order', () => {
-                    return expect(transactionsTypeArr).to.have.property('Sales Order');
+                it('Get Transaction With The Type Sales Order', async () => {
+                    await expect(transactionsTypeArr).to.have.property('Sales Order');
                 });
 
                 it('Get Sales Order Fields', async () => {
                     const transactionTypes = await generalService.getTypes('transactions');
                     const salesOrderTypeID = transactionTypes[0].TypeID;
-                    return expect(service.getFields('transactions', salesOrderTypeID))
+                    await expect(service.getFields('transactions', salesOrderTypeID))
                         .eventually.to.be.an('array')
                         .with.length.above(5);
                 });
 
                 it('Get An Activity TypeID', () => {
-                    return expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').and.is.above(0);
+                    expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').and.is.above(0);
                 });
             });
 
@@ -603,7 +603,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         } 12345 (For-Negative)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
-                            return expect(
+                            await expect(
                                 service.upsertField(resourceType, {
                                     FieldID: fieldID,
                                     Label: '123',
@@ -822,8 +822,8 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
         });
 
         describe('TSA DataBase Changes', () => {
-            it('Created only 7 testing TSA in the RUD Existing Tests', () => {
-                return expect(
+            it('Created only 7 testing TSA in the RUD Existing Tests', async () => {
+                await expect(
                     service.papiClient.get(
                         //Version 1 of Fields tests
                         // `/type_safe_attribute?where=Name LIKE 'TSATest %' AND Name NOT LIKE 'TSATest 1234' AND ActivityTypeDefinitionID LIKE '${
@@ -842,7 +842,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
         describe('Test Clean up', () => {
             it('Make sure the 7 Fields from the CRUD tests removed in the end of the tests (DI-17371)', async () => {
-                return expect(TestCleanUp(service)).eventually.to.equal(7);
+                await expect(TestCleanUp(service)).eventually.to.equal(7);
             });
         });
 
