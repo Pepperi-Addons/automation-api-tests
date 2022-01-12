@@ -260,7 +260,7 @@ export default class GeneralService {
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2') {
                 this.sleep(2000);
-                console.log('IN_Prog: Status ID is 2, Retry ' + loopsAmount + ' Times.');
+                console.log('In_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.');
                 loopsAmount--;
             }
         } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
