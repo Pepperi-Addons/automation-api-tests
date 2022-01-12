@@ -128,10 +128,10 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const _TEST_DATA_ATD_NAME = `UOM_${generateRandString(15)}`;
                         const _TEST_DATA_ATD_DESCRIPTION = "ATD for uom automation testing";
                         await addonPage.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
-                        //3. goto new ATD and configure everything needed for the test - 2 calculaed fields 
-                        //3.1. goto UOM tab and configure Allowed UOMs Field as AllowedUomFieldsForTest and UOM Configuration Field as ItemConfig
+                        //3. goto new ATD and configure everything needed for the test - 2 calculated fields 
+                        //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest and UOM Configuration Field as ItemConfig
                         await addonPage.configUomATD();
-                        
+
                         debugger;
                     });
                     // it('', async function () {

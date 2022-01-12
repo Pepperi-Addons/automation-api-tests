@@ -250,7 +250,6 @@ export class AddonPage extends Page {
     }
 
     public async selectDropBoxByString(locator: Locator, option: string, index?: number): Promise<void> {
-        debugger;
         if (index !== undefined) {
             await this.browser.click(locator, index);
         }
@@ -607,7 +606,7 @@ export class AddonPage extends Page {
      * @param viewType The name of the view
      * @returns
      */
-    public async editATDView(viewType: string, viewName: string): Promise<void> {
+    public async editATDView(viewType: string, viewName: string, addingViewLocator: string = "plusIcon"): Promise<void> {
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -636,7 +635,7 @@ export class AddonPage extends Page {
         selectedBtn['value'] = `${selectedBtn['value'].replace(
             'VIEW_PLACE_HOLDER',
             viewName,
-        )}/..//div[contains(@class, "plusIcon")]`;
+        )}/..//div[contains(@class, "${addingViewLocator}")]`;
         await this.browser.click(selectedBtn);
         return;
     }
@@ -830,12 +829,18 @@ export class AddonPage extends Page {
     }
 
     public async configUomFieldsAndMediumView(): Promise<void> {
+        await this.configureUomDataFields();
+        this.editATDView("Order Center Views", "Medium Thumbnails View","editPenIcon");
+        debugger;
+    }
+
+    public async configureUomDataFields(): Promise<void> {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('Uom');
         expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
         await this.selectDropBoxByString(this.UomDropDownFields, "AllowedUomFieldsForTest", 0);
         await this.selectDropBoxByString(this.UomDropDownFields, "ItemConfig", 1);
-        debugger;
+        await this.selectDropBoxByString(this.UomDropDownFields, "ConstInventory", 2);
         await this.browser.click(this.UomSaveBtn);
         const webAppDialog = new WebAppDialog(this.browser);
         let isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
@@ -844,25 +849,6 @@ export class AddonPage extends Page {
         await this.isSpinnerDone();
         expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
         await this.selectTabByText('General');
-        await this.editATDView("Order Center Views", "Medium Thumbnails View");
-        await this.browser.click(this.RepViewEditIcon);
-    }
-
-    public async configureView(): Promise<void> {
-        await this.browser.switchToDefaultContent();
-        await this.selectTabByText('Uom');
-        expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
-        await this.selectDropBoxByString(this.UomDropDownFields, "AllowedUomFieldsForTest", 0);
-        await this.selectDropBoxByString(this.UomDropDownFields, "ItemConfig", 1);
-        debugger;
-        await this.browser.click(this.UomSaveBtn);
-        const webAppDialog = new WebAppDialog(this.browser);
-        let isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
-        expect(isPupUP).to.equal('Configuration Saved successfully');
-        await webAppDialog.selectDialogBox('Close');
-        await this.isSpinnerDone();
-        expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
-        await this.selectTabByText('Views');
     }
 
     /**
@@ -908,11 +894,12 @@ export class AddonPage extends Page {
         }, true);
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        await this.addATDCalculatedField({
+        await this.addATDCalculatedField({//create this as a NUMBER field!
             Label: 'ConstInventory',
             CalculatedRuleEngine: {
                 JSFormula:
-                    `return 48;` }
+                    `return 48;`
+            }
         }, true);
         await this.configUomFieldsAndMediumView();
         return;
