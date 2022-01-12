@@ -1,25 +1,25 @@
-import { AddonDataScheme, PapiClient, AddonData, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 
-export class DMXService {
+/**
+ * 'Overwrite' is false by default.
+ */
+export interface ImportObjects {
+    Objects: [
+        {
+            [key: string]: any;
+        },
+    ];
+    Overwrite?: boolean;
+}
+
+export class DIMXService {
     constructor(public papiClient: PapiClient) {}
-
-    postSchema(addonDataScheme: AddonDataScheme) {
-        return this.papiClient.addons.data.schemes.post(addonDataScheme);
-    }
-
-    getDataFromSchema(addonUUID: string, tableName: string, options?: FindOptions) {
-        return this.papiClient.addons.data.uuid(addonUUID).table(tableName).find(options);
-    }
-
-    postDataToSchema(addonUUID: string, tableName: string, addonData: AddonData) {
-        return this.papiClient.addons.data.uuid(addonUUID).table(tableName).upsert(addonData);
-    }
-
-    deleteSchema(tableName: string) {
-        return this.papiClient.post(`/addons/data/schemes/${tableName}/purge`);
-    }
 
     dataExport(addonUUID: string, tableName: string) {
         return this.papiClient.post(`/addons/data/export/file/${addonUUID}/${tableName}`);
+    }
+
+    dataImport(addonUUID: string, tableName: string, data: ImportObjects) {
+        return this.papiClient.post(`/addons/data/import/${addonUUID}/${tableName}`, data);
     }
 }

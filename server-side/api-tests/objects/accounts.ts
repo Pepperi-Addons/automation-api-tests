@@ -1273,8 +1273,10 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
             });
             return Promise.all([
                 await expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.true,
-                expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.false,
-                expect(service.deleteAccount((account.InternalID as number) + 123456789)).eventually.to.be.rejectedWith(
+                await expect(service.deleteAccount(account.InternalID as number)).eventually.to.be.false,
+                await expect(
+                    service.deleteAccount((account.InternalID as number) + 123456789),
+                ).eventually.to.be.rejectedWith(
                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"The @InternalID:${
                         (account.InternalID as number) + 123456789
                     } you are trying to update does not exist. Please load it and then try again."`,
