@@ -76,11 +76,7 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
                 const testData = {
                     'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
                 };
-                const chnageVersionResponseArr = await generalService.changeVersion(
-                    request.body.varKey,
-                    testData,
-                    false,
-                );
+                const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
                 expect(installedPAPIVersion.Version, 'Services Framework is not on Phased Version').to.equal(
                     chnageVersionResponseArr['Services Framework'][2],
                 );
