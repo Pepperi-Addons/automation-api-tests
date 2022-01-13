@@ -945,6 +945,8 @@ export class AddonPage extends Page {
             );
           return JSON.stringify(res);` }
         }, true);
+        await this.browser.switchToDefaultContent();
+        await this.selectTabByText('General');
         await this.addATDCalculatedField({
             Label: 'UomValues',
             CalculatedRuleEngine: {
@@ -954,7 +956,7 @@ export class AddonPage extends Page {
         }, true);
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        await this.addATDCalculatedField({//create this as a NUMBER field!
+        await this.addATDCalculatedField({
             Label: 'ConstInventory',
             CalculatedRuleEngine: {
                 JSFormula:
