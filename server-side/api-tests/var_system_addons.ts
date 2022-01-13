@@ -23,7 +23,7 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
         {
             method: `GET`,
             headers: {
-                Authorization: `Basic ${Buffer.from(request.body.varKeStage).toString('base64')}`,
+                Authorization: `Basic ${Buffer.from(request.body.varKeyStage).toString('base64')}`,
             },
         },
     );
