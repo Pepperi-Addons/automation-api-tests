@@ -13,8 +13,14 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
     const testData = {
         'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', ''],
     };
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
 
     describe('Addon Relation Tests Suites', () => {
@@ -67,7 +73,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
                 const tempTestData = {
                     'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', testBaseVersion],
                 };
-                await generalService.changeVersion(request.body.varKey, tempTestData, false);
+                await generalService.changeVersion(varKey, tempTestData, false);
                 const baseVersion = await usageMonitorService.get();
                 //debugger;
                 delete baseVersion.ExpirationDateTime;

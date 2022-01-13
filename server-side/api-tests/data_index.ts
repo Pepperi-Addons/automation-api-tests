@@ -180,8 +180,14 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
         'Pepperi Elastic Search': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Index
 
     // var date = new Date();
