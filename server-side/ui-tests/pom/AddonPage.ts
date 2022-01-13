@@ -864,6 +864,7 @@ export class AddonPage extends Page {
         await this.setFieldToUIControl("AOQM_QUANTITY1");
         await this.setFieldToUIControl("AOQM_UOM2");
         await this.setFieldToUIControl("AOQM_QUANTITY2");
+        await this.setFieldToUIControl("UomValues");
         await this.setFieldToUIControl("ConstInventory");
         await this.setFieldToUIControl("Transaction Total Sum");
         await this.setFieldToUIControl("ItemConfig");
