@@ -858,16 +858,16 @@ export class AddonPage extends Page {
         await this.browser.sleep(4000);
         await this.browser.click(By.xpath("//span[contains(@class,'editPenIcon')]"));
         await this.deleteAllFieldFromUIControl();
-        await this.setTextInFieldSearch("Item External ID");
-        await this.setTextInFieldSearch("Item Price");
-        await this.setTextInFieldSearch("AOQM_UOM1");
-        await this.setTextInFieldSearch("AOQM_QUANTITY1");
-        await this.setTextInFieldSearch("AOQM_UOM2");
-        await this.setTextInFieldSearch("AOQM_QUANTITY2");
-        await this.setTextInFieldSearch("ConstInventory");
-        await this.setTextInFieldSearch("Transaction Total Sum");
-        await this.setTextInFieldSearch("ItemConfig");
-        await this.setTextInFieldSearch("Item ID");
+        await this.setFieldToUIControl("Item External ID");
+        await this.setFieldToUIControl("Item Price");
+        await this.setFieldToUIControl("AOQM_UOM1");
+        await this.setFieldToUIControl("AOQM_QUANTITY1");
+        await this.setFieldToUIControl("AOQM_UOM2");
+        await this.setFieldToUIControl("AOQM_QUANTITY2");
+        await this.setFieldToUIControl("ConstInventory");
+        await this.setFieldToUIControl("Transaction Total Sum");
+        await this.setFieldToUIControl("ItemConfig");
+        await this.setFieldToUIControl("Item ID");
         await this.browser.click(this.SaveUIControlBtn);
         //TODO strech the UI fileds as needed
 
@@ -882,7 +882,7 @@ export class AddonPage extends Page {
             numberOfRemovals++;
         }
     }
-    private async setTextInFieldSearch(nameToSearch: string): Promise<void> {
+    private async setFieldToUIControl(nameToSearch: string): Promise<void> {
         await this.browser.sendKeys(By.xpath("//input[@id='txtSearchBankFields']"), nameToSearch + Key.ENTER);
         this.browser.sleep(1500);
     }
