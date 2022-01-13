@@ -30,7 +30,7 @@
     "ng-dynamic-component": "~4.0.0",
     "ngx-cron-editor": "^0.4.0",
     "ngx-monaco-editor": "^8.1.0",
-    "node-forge": "^0.10.0",
+    "node-forge": "^1.0.0",
     "node-sass": "^5.0.0",
     "rollup": "^1.16.4",
     "rollup-plugin-app-utils": "^1.0.5",

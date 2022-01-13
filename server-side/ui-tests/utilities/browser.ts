@@ -281,7 +281,9 @@ export class Browser {
         console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
 
         try {
-            await this.driver.quit();
+            await this.driver.quit().catch((error) => {
+                console.log(`Browser Quit Error In Catch: ${error}`);
+            });
         } catch (error) {
             console.log(`Browser Error: ${error}`);
         }
