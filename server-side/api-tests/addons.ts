@@ -5565,7 +5565,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             {
                 method: `GET`,
                 headers: {
-                    Authorization: `${varKey}`,
+                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                 },
             },
         );
