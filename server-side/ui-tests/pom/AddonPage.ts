@@ -171,7 +171,8 @@ export class AddonPage extends Page {
 
     //views page
     public RepViewEditIcon: Locator = By.xpath("//span[@title='Rep']/following-sibling::span[contains(@class,'editPenIcon')]");
-
+    //UI control page
+    public SaveUIControlBtn: Locator = By.xpath("//div[contains(@class,'save') and text()='Save']");
 
     //custom field adding page
     public fieldAddingTitle: Locator = By.xpath("//h3[text()='Add Custom Field']");
@@ -191,7 +192,6 @@ export class AddonPage extends Page {
     public ItemFieldsSection: Locator = By.xpath("(//div[@class='dc-header' and text()='Item Fields'])[2]");
     public ScriptParamCheckBox: Locator = By.xpath("(//td[@title='|textToFill|'])[2]/preceding-sibling::td");
     public SaveParamBtn: Locator = By.xpath("//div[text()='Save' and @tabindex=0]");
-    //=>
 
     //Branded App Locators
     public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
@@ -251,16 +251,16 @@ export class AddonPage extends Page {
     }
 
     public async selectDropBoxByString(locator: Locator, option: string, index?: number): Promise<void> {
-        await this.sleep(3000);
+        await this.browser.sleep(3000);
         if (index !== undefined) {
             await this.browser.click(locator, index);
         }
         else {
             await this.browser.click(locator);
         }
-        await this.sleep(9000);
+        await this.browser.sleep(9000);
         await this.browser.click(By.xpath(`//span[@class='mat-option-text' and text()='${option}']`));
-        await this.sleep(9000);
+        await this.browser.sleep(9000);
         return;
     }
 
@@ -565,7 +565,7 @@ export class AddonPage extends Page {
         expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
 
         //Validate Editor Page Loaded
-        await this.sleep(9000);//has to be changed - just an experiment
+        await this.browser.sleep(9000);//has to be changed - just an experiment
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 45000)).to.be.true;
         if (isTransLine) {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
@@ -580,7 +580,7 @@ export class AddonPage extends Page {
         await this.browser.click(this.calculatedFieldCheckBox);
         await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 0);
         await this.browser.click(this.editFieldScriptBtn);
-        await this.sleep(9000);//has to be changed - just an experiment
+        await this.browser.sleep(9000);//has to be changed - just an experiment
         expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 15000)).to.be.true;
 
         if (scriptParam) {
@@ -668,6 +668,22 @@ export class AddonPage extends Page {
 
         const webAppHomePage = new WebAppHomePage(this.browser);
         await webAppHomePage.isSpinnerDone();
+        return;
+    }
+
+    public async returnToHomePage() {
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.isSpinnerDone();
+        return;
+    }
+
+    public async openSettings() {
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Settings);
         return;
     }
 
@@ -839,7 +855,36 @@ export class AddonPage extends Page {
     public async configUomFieldsAndMediumView(): Promise<void> {
         await this.configureUomDataFields();
         await this.editATDView("Order Center Views", "Medium Thumbnails View", "editPenIcon");
-        debugger;
+        await this.browser.sleep(4000);
+        await this.browser.click(By.xpath("//span[contains(@class,'editPenIcon')]"));
+        await this.deleteAllFieldFromUIControl();
+        await this.setTextInFieldSearch("Item External ID");
+        await this.setTextInFieldSearch("Item Price");
+        await this.setTextInFieldSearch("AOQM_UOM1");
+        await this.setTextInFieldSearch("AOQM_QUANTITY1");
+        await this.setTextInFieldSearch("AOQM_UOM2");
+        await this.setTextInFieldSearch("AOQM_QUANTITY2");
+        await this.setTextInFieldSearch("ConstInventory");
+        await this.setTextInFieldSearch("Transaction Total Sum");
+        await this.setTextInFieldSearch("ItemConfig");
+        await this.setTextInFieldSearch("Item ID");
+        await this.browser.click(this.SaveUIControlBtn);
+        //TODO strech the UI fileds as needed
+
+    }
+
+    private async deleteAllFieldFromUIControl(): Promise<void> {
+        const deleteBtnsList = await this.browser.findElements(By.xpath("//span[contains(@class,'lb-close trashCanIcon')]"));
+        let numberOfRemovals = 0;
+        while (deleteBtnsList.length > numberOfRemovals) {
+            await this.browser.click(By.xpath("//span[contains(@class,'lb-close trashCanIcon')]"));
+            await this.browser.sleep(1000);
+            numberOfRemovals++;
+        }
+    }
+    private async setTextInFieldSearch(nameToSearch: string): Promise<void> {
+        await this.browser.sendKeys(By.xpath("//input[@id='txtSearchBankFields']"), nameToSearch + Key.ENTER);
+        this.browser.sleep(1500);
     }
 
     public async configureUomDataFields(): Promise<void> {
@@ -900,6 +945,13 @@ export class AddonPage extends Page {
             );
           return JSON.stringify(res);` }
         }, true);
+        await this.addATDCalculatedField({
+            Label: 'UomValues',
+            CalculatedRuleEngine: {
+                JSFormula:
+                    `return JSON.stringify(["Bx","SIN", "DOU", "TR", "QU","PK","CS"]);`
+            }
+        }, true);
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         await this.addATDCalculatedField({//create this as a NUMBER field!
@@ -912,8 +964,5 @@ export class AddonPage extends Page {
         await this.configUomFieldsAndMediumView();
         return;
     }
-
-    private sleep = (milliseconds) => {
-        return new Promise(resolve => setTimeout(resolve, milliseconds))
-    }
 }
+//

@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPage, WebAppHeader, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom/index';
+import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -16,6 +16,9 @@ export async function UomTests(email: string, password: string, varPass: string,
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
+
+    const _TEST_DATA_ATD_NAME = `UOM_${generateRandString(15)}`;
+    const _TEST_DATA_ATD_DESCRIPTION = "ATD for uom automation testing";
 
     //#region Upgrade cpi-node & UOM
     const testData = {
@@ -125,21 +128,32 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const addonPage = new AddonPage(driver);
                         await addonPage.selectCatalogItemsByCategory("uom item", "NOT uom item");
                         //2. goto ATD editor - create new ATD UOM_{random-hashstring}
-                        const _TEST_DATA_ATD_NAME = `UOM_${generateRandString(15)}`;
-                        const _TEST_DATA_ATD_DESCRIPTION = "ATD for uom automation testing";
                         await addonPage.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
-                        //3. goto new ATD and configure everything needed for the test - 2 calculated fields 
-                        //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest and UOM Configuration Field as ItemConfig
+                        //3. goto new ATD and configure everything needed for the test - 3 calculated fields 
+                        //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
+                        //3.2. add fields to UI control of ATD
                         await addonPage.configUomATD();
-
+                        await addonPage.returnToHomePage();
+                        await addonPage.openSettings();
+                        //4. add the ATD to home screen
+                        await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        const webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.manualResync();
                         debugger;
                     });
                     // it('', async function () {
 
                     // });
+                    it('Delete test ATDs', async function () {
+                        const webAppLoginPage = new WebAppLoginPage(driver);
+                        await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        const addonPage = new AddonPage(driver);
+                        await addonPage.openSettings();
+                        await addonPage.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
+                    });
                 });
-
-                describe('Test Data Cleansing', () => {
+                describe('Test Data Cleansing using API', () => {
                     it('Reset Existing Items', async function () {
                         //Remove all items
                         const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
