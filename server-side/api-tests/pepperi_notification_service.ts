@@ -29,8 +29,14 @@ export async function PepperiNotificationServiceTests(
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
@@ -407,7 +413,7 @@ export async function PepperiNotificationServiceTests(
                         {
                             method: `POST`,
                             headers: {
-                                Authorization: request.body.varKey,
+                                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                             },
                             body: JSON.stringify(testAddon),
                         },
@@ -426,7 +432,7 @@ export async function PepperiNotificationServiceTests(
                                 {
                                     method: `POST`,
                                     headers: {
-                                        Authorization: request.body.varKey,
+                                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                                     },
                                     body: JSON.stringify(versiontestAddon),
                                 },
@@ -826,7 +832,7 @@ export async function PepperiNotificationServiceTests(
                             {
                                 method: `DELETE`,
                                 headers: {
-                                    Authorization: request.body.varKey,
+                                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                                 },
                             },
                         );
@@ -846,7 +852,7 @@ export async function PepperiNotificationServiceTests(
                         {
                             method: `DELETE`,
                             headers: {
-                                Authorization: request.body.varKey,
+                                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                             },
                         },
                     );

@@ -221,6 +221,13 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     const addTestResultUnderHeadline = tester.addTestResultUnderHeadline;
     const printTestResults = tester.printTestResults;
 
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
+
     console.log('Initiate Addons Tests | ' + generalService.getTime());
 
     //Fixed by Shir in 25/11/2020 - now this test can run on all servers - if the version name start with Pepperitest Test
@@ -825,7 +832,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -867,7 +874,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -924,7 +931,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -943,7 +950,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -984,7 +991,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -1000,7 +1007,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1015,7 +1022,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1072,7 +1079,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -1091,7 +1098,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -1132,7 +1139,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -1148,7 +1155,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1207,7 +1214,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -1226,7 +1233,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -1324,7 +1331,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -1339,7 +1346,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1400,7 +1407,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -1418,7 +1425,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -1517,7 +1524,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -1532,7 +1539,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1591,7 +1598,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -1610,7 +1617,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -1640,7 +1647,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1734,7 +1741,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -1749,7 +1756,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -1808,7 +1815,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -1827,7 +1834,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -1937,7 +1944,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -1952,7 +1959,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -2011,7 +2018,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -2030,7 +2037,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -2141,7 +2148,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -2156,7 +2163,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -2215,7 +2222,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -2233,7 +2240,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -2343,7 +2350,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -2358,7 +2365,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -2417,7 +2424,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -2436,7 +2443,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -2548,7 +2555,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -2563,7 +2570,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -2622,7 +2629,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -2642,7 +2649,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -2674,7 +2681,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(tempNewAddonVersionBody),
                 },
@@ -2744,7 +2751,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -2759,7 +2766,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -2819,7 +2826,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -2843,7 +2850,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -2875,7 +2882,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(tempNewAddonVersionBody),
                 },
@@ -2954,7 +2961,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -2969,7 +2976,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -3029,7 +3036,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -3047,7 +3054,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -3157,7 +3164,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -3172,7 +3179,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -3230,7 +3237,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -3249,7 +3256,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -3279,7 +3286,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -3373,7 +3380,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -3388,7 +3395,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -3447,7 +3454,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -3466,7 +3473,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -3576,7 +3583,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -3591,7 +3598,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -3650,7 +3657,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -3669,7 +3676,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -3781,7 +3788,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -3796,7 +3803,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -3855,7 +3862,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -3873,7 +3880,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -3983,7 +3990,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -3998,7 +4005,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -4057,7 +4064,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -4075,7 +4082,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -4185,7 +4192,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -4200,7 +4207,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -4259,7 +4266,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -4277,7 +4284,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -4372,7 +4379,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -4387,7 +4394,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -4440,7 +4447,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -4459,7 +4466,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -4529,7 +4536,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -4585,7 +4592,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -4600,7 +4607,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -4654,7 +4661,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -4672,7 +4679,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -4745,7 +4752,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -4760,7 +4767,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -4854,7 +4861,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -4872,7 +4879,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -4997,7 +5004,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -5012,7 +5019,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -5067,7 +5074,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -5085,7 +5092,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -5216,7 +5223,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -5231,7 +5238,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -5285,7 +5292,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -5347,7 +5354,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -5477,7 +5484,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -5492,7 +5499,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -5558,7 +5565,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             {
                 method: `GET`,
                 headers: {
-                    Authorization: `${request.body.varKey}`,
+                    Authorization: `${varKey}`,
                 },
             },
         );
@@ -5576,7 +5583,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -5661,7 +5668,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -5831,7 +5838,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -5846,7 +5853,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -5907,7 +5914,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -5968,7 +5975,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -6132,7 +6139,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -6147,7 +6154,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -6210,7 +6217,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                     body: JSON.stringify(testDataBody),
                 },
@@ -6271,7 +6278,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
                         method: `POST`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                         body: JSON.stringify(versionTestDataBody),
                     })
@@ -6435,7 +6442,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     {
                         method: `DELETE`,
                         headers: {
-                            Authorization: request.body.varKey,
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                         },
                     },
                 );
@@ -6450,7 +6457,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 {
                     method: `DELETE`,
                     headers: {
-                        Authorization: request.body.varKey,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -8585,7 +8592,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             const callToLocal = await generalService.fetchStatus('http://localhost:4400/maintenance/maintenance', {
                 method: `POST`,
                 headers: {
-                    Authorization: request.body.varKey,
+                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                 },
                 body: JSON.stringify(testDataObject),
             });
@@ -8624,7 +8631,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //     {
         //         method: `DELETE`,
         //         headers: {
-        //             Authorization: request.body.varKey,
+        //             Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
         //         },
         //     },
         // );
@@ -8634,7 +8641,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //     {
         //         method: `DELETE`,
         //         headers: {
-        //             Authorization: request.body.varKey,
+        //             Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
         //         },
         //     },
         // );
@@ -8644,7 +8651,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //     {
         //         method: `DELETE`,
         //         headers: {
-        //             Authorization: request.body.varKey,
+        //             Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
         //         },
         //     },
         // );
@@ -8699,7 +8706,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                         {
                             method: `DELETE`,
                             headers: {
-                                Authorization: request.body.varKey,
+                                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                             },
                         },
                     );
@@ -8745,7 +8752,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //     {
         //         method: `DELETE`,
         //         headers: {
-        //             Authorization: request.body.varKey,
+        //             Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
         //         },
         //     },
         // );
