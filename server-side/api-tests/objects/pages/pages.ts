@@ -196,33 +196,6 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 await expect(pagesService.createOrUpdatePage(tempPage)).to.eventually.be.rejected;
                 // await pagesService.deletePage(testPage);
             });
-            it('Add PageSection to PageLayout as Value (not as Array)', async function () {
-                const testPage: Page = {
-                    Name: `${newUuid()} - PagesApiTest`,
-                    Blocks: [basePageBlock],
-                    Layout: {
-                        Sections: {
-                            baseSection,
-                        },
-                    },
-                } as any;
-                await expect(pagesService.createOrUpdatePage(testPage)).to.eventually.be.rejected;
-            });
-            it('Add PageBlock to BlockSection as Value (not as Array)', async function () {
-                const testPage: Page = {
-                    Name: `${newUuid()} - PagesApiTest`,
-                    Blocks: [basePageBlock],
-                    Layout: {
-                        Sections: [
-                            {
-                                Key: newUuid(),
-                                Columns: { Key: basePageBlock.Key },
-                            },
-                        ],
-                    },
-                } as any;
-                await expect(pagesService.createOrUpdatePage(testPage)).to.eventually.be.rejected;
-            });
 
             it('Add Block to Section', async function () {
                 const testPage = new PageClass(basePage);
@@ -288,17 +261,6 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
             });
 
-            it('Add Hide Not As Array', async function () {
-                const testPage = new PageClass(basePage);
-                const testSection: PageSection = {
-                    Key: newUuid(),
-                    Columns: [{}],
-                    Hide: 'Landscape',
-                } as any;
-                testPage.addSection(testSection);
-                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
-            });
-
             it('Add Duplicate Block Key to Section', async function () {
                 const testPage = new PageClass(basePage);
                 const testSection: PageSection = {
@@ -354,7 +316,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 for (const page of pagesArray.filter((x) => x?.Key)) {
                     let actual: void | Page | undefined;
                     try {
-                        actual = postResults.filter((x) => x).find((x) => x?.Key === page.Key);
+                        actual = postResults.filter((x) => x).find((x) => x && x?.Key === page.Key);
                         pagesService.deepCompareObjects(page, actual, expect);
                     } catch (error) {
                         console.log(`Expected: ${JSON.stringify(page)}`);
