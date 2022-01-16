@@ -14,10 +14,10 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
         'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', ''],
     };
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
