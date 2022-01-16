@@ -169,6 +169,19 @@ export class AddonPage extends Page {
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
 
+    //UOM ATD Locators
+    public readonly everyItemXpathPrefix: string = "//span[@title='|textToFill|']/../../../../../../..";
+    public upperPlusButtonQty: Locator = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_plus']`);
+    public upperMinusButtonQty: Locator = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_minus']`);
+    public upperQty: Locator = By.xpath(`${this.everyItemXpathPrefix}//input[@name='TSAAOQMQuantity1']`);
+    public lowerPlusButtonQty: Locator = By.xpath(`(${this.everyItemXpathPrefix}//pep-icon[@name='number_plus'])[2]`);
+    public lowerMinusButtonQty: Locator = By.xpath(`(${this.everyItemXpathPrefix}//pep-icon[@name='number_minus'])[2]`);
+    public lowerQty: Locator = By.xpath(`${this.everyItemXpathPrefix}//input[@name='TSAAOQMQuantity2']`);
+    public lowestQty: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@class='ellipsis']`);
+    public itemGrandTotal: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@id='TransactionGrandTotal']`);
+    public pageGrandTotal: Locator = By.xpath("//span[@class='value']");
+    public blankSpaceOnScreenToClick: Locator = By.xpath("//div[contains(@class,'total-items-container')]");
+
     //views page
     public RepViewEditIcon: Locator = By.xpath("//span[@title='Rep']/following-sibling::span[contains(@class,'editPenIcon')]");
     //UI control page
@@ -894,6 +907,9 @@ export class AddonPage extends Page {
         await this.selectDropBoxByString(this.UomDropDownFields, "AllowedUomFieldsForTest", 0);
         await this.selectDropBoxByString(this.UomDropDownFields, "ItemConfig", 1);
         await this.selectDropBoxByString(this.UomDropDownFields, "ConstInventory", 2);
+        await this.selectDropBoxByString(this.UomDropDownFields, "Fix Quantity", 3);
+        await this.selectDropBoxByString(this.UomDropDownFields, "Fix Quantity", 4);
+        await this.selectDropBoxByString(this.UomDropDownFields, "Fix Quantity", 5);
         await this.browser.click(this.UomSaveBtn);
         const webAppDialog = new WebAppDialog(this.browser);
         let isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
@@ -934,17 +950,18 @@ export class AddonPage extends Page {
         }, true, "ItemMainCategory");
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        await this.addATDCalculatedField({
-            Label: 'ItemConfig',
-            CalculatedRuleEngine: {
-                JSFormula:
-                    `const res = [];
-            res.push(
-              {"UOMKey": "SIN", "Factor": 1, "Min": 1, "Case": 1, "Decimal": 4, "Negative":true},
-              {"UOMKey": "Bx", "Factor": 5, "Min": 3, "Case": 4, "Decimal": 9, "Negative":false}
-            );
-          return JSON.stringify(res);` }
-        }, true);
+        //first testing phase will be performed w/o this feature - second whill test this only
+        // await this.addATDCalculatedField({
+        //     Label: 'ItemConfig',
+        //     CalculatedRuleEngine: {
+        //         JSFormula:
+        //             `const res = [];
+        //     res.push(
+        //       {"UOMKey": "SIN", "Factor": 1, "Min": 1, "Case": 1, "Decimal": 4, "Negative":true},
+        //       {"UOMKey": "Bx", "Factor": 5, "Min": 3, "Case": 4, "Decimal": 9, "Negative":false}
+        //     );
+        //   return JSON.stringify(res);` }
+        // }, true);
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         await this.addATDCalculatedField({
@@ -966,5 +983,122 @@ export class AddonPage extends Page {
         await this.configUomFieldsAndMediumView();
         return;
     }
+
+    public async testUomAtdUI(): Promise<void> {
+        //1. regular item testing 
+        //1.1 add 48 items of regular qty - see 48 items are shown + price
+        let upperPlusBtn: string = this.upperPlusButtonQty.valueOf()["value"].slice().replace("|textToFill|", "1230");
+        let upperMinusBtn: string = this.upperMinusButtonQty.valueOf()["value"].slice().replace("|textToFill|", "1230");
+        let upperQty: string = this.upperQty.valueOf()["value"].slice().replace("|textToFill|", "1230");
+        let lowestQty: string = this.lowestQty.valueOf()["value"].slice().replace("|textToFill|", "1230");
+        let itemTotalPrice: string = this.itemGrandTotal.valueOf()["value"].slice().replace("|textToFill|", "1230");
+        for (let i = 1; i < 49; i++) {
+            await this.browser.click(By.xpath(upperPlusBtn));
+            await this.browser.sleep(1100);
+            expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal(i.toString());
+            expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal(i.toString());
+            expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((i * 0.5).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((i * 0.5).toString()).toFixed(2)}`);
+        }
+        //1.2. try to add one more - nothing should change 
+        await this.browser.click(By.xpath(upperPlusBtn));
+        this.browser.sleep(1100);
+        expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("48");
+        expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
+        expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$24.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$24.00");
+
+        //1.3. lower qty to 35 - see price + amount changed everywhere
+        for (let i = 1; i < 14; i++) {
+            await this.browser.click(By.xpath(upperMinusBtn));
+            this.browser.sleep(1100);
+            expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal((48 - i).toString());
+            expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((48 - i).toString());
+            expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat(((48 - i) * 0.5).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat(((48 - i) * 0.5).toString()).toFixed(2)}`);
+        }
+
+        //1.4. zero the amount of regular item - see everythins change correctly 
+        await this.browser.click(By.xpath(upperQty));
+        await this.browser.sendKeys(By.xpath(upperQty), "0");
+        await this.browser.click(this.blankSpaceOnScreenToClick);
+        await this.browser.sleep(1100);
+        expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("0");
+        expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("0");
+        expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$0.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$0.00");
+
+        //2. UOM item testing
+        //2.1. Box & Single
+        upperPlusBtn = this.upperPlusButtonQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        upperMinusBtn = this.upperMinusButtonQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        upperQty = this.upperQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        let lowerPlusBtn = this.lowerPlusButtonQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        let lowerMinusBtn = this.lowerMinusButtonQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        let lowerQty = this.lowerQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        lowestQty = this.lowestQty.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        itemTotalPrice = this.itemGrandTotal.valueOf()["value"].slice().replace("|textToFill|", "1231");
+
+        //2.1.1. fill the order with boxes - the rest in singel items
+        for (let i = 1; i < 4; i++) {
+            await this.browser.click(By.xpath(upperPlusBtn));
+            await this.browser.sleep(1100);
+            expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal(i.toString());
+            expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((i * 13).toString());
+            expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((i * 13).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((i * 13).toString()).toFixed(2)}`);
+        }
+        //nothing changes as qty bigger than inventory
+        await this.browser.click(By.xpath(upperPlusBtn));
+        await this.browser.sleep(1100);
+        expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("3");
+        expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("39");
+        expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$39.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$39.00");
+        //filling the rest with single elements
+        for (let i = 1; i < 10; i++) {
+            await this.browser.click(By.xpath(lowerPlusBtn));
+            await this.browser.sleep(1100);
+            expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal(i.toString());
+            expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((39 + i).toString());
+            expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((39 + i).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((39 + i).toString()).toFixed(2)}`);
+        }
+        //nothing changes as qty bigger than inventory
+        await this.browser.click(By.xpath(lowerPlusBtn));
+        await this.browser.sleep(1100);
+        expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("9");
+        expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
+        expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$48.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$48.00");
+        //lowering box by 1 and adding 13 singles 
+        await this.browser.click(By.xpath(upperMinusBtn));
+        expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("2");
+        expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("35");
+        expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$35.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$35.00");
+        for (let i = 1; i < 14; i++) {
+            await this.browser.click(By.xpath(lowerPlusBtn));
+            await this.browser.sleep(1100);
+            expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal(i.toString());
+            expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((35 + i).toString());
+            expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((35 + i).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((35 + i).toString()).toFixed(2)}`);
+        }
+        //nothing changes as qty bigger than inventory
+        await this.browser.click(By.xpath(lowerPlusBtn));
+        await this.browser.sleep(1100);
+        expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("9");
+        expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
+        expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$48.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$48.00");
+    }
+
+
 }
-//
+//TODO: UI test phase
+//* validate amount in UI upper and field data & price - every one by itself and all togather
+//2.box & single -- maybe finished this
+//3.double & signle
+//4. pack & double
+//5. case & box 

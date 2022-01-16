@@ -145,7 +145,6 @@ export class WebAppHomePage extends Page {
 
 
     public async initiateUOMActivity(ATDname: string, accountName: string, viewType: string = 'Medium'): Promise<void> {
-        debugger;
         await this.browser.click(By.xpath(`//button[@title='${ATDname}']`));
         await this.browser.sleep(1500);
         await this.browser.untilIsVisible(By.xpath("//span[@class='dialog-title ng-star-inserted' and text()=' Select Account  ']"), 1500);
@@ -175,5 +174,8 @@ export class WebAppHomePage extends Page {
         //validate there are 5 items on screen
         const allItemPresented: WebElement[] = await this.browser.findElements(By.xpath("//fieldset"));
         expect(allItemPresented.length).to.equal(5);
+        //validate 4 are UOM items
+        const allUOMItemPresented: WebElement[] = await this.browser.findElements(By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']"));
+        expect(allUOMItemPresented.length).to.equal(4);
     }
 }
