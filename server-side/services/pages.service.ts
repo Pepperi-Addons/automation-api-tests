@@ -1,4 +1,4 @@
-import { FindOptions, NgComponentRelation, Page } from '@pepperi-addons/papi-sdk';
+import { FindOptions, NgComponentRelation, Page} from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export class PagesService {
@@ -89,9 +89,15 @@ export class PagesService {
             }
         } catch (error) {
             console.log(
-                `Expected ${parentProp}: ${typeof expected === 'object' ? JSON.stringify(expected) : expected}`,
+                `Expected ${parentProp ? parentProp : ''}: ${
+                    typeof expected === 'object' ? JSON.stringify(expected) : expected
+                }`,
             );
-            console.log(`Actual ${parentProp}: ${typeof actual === 'object' ? JSON.stringify(actual) : actual}`);
+            console.log(
+                `Actual ${parentProp ? parentProp : ''}: ${
+                    typeof actual === 'object' ? JSON.stringify(actual) : actual
+                }`,
+            );
             throw error;
         }
     }

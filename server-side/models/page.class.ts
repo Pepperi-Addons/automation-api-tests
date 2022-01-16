@@ -15,7 +15,7 @@ export class PageClass {
         this._page = this.shallowCopyPage(_page);
     }
 
-    private shallowCopyPage(page: Page) {
+    private shallowCopyPage(page: Page): Page {
         return JSON.parse(JSON.stringify(page));
     }
 
