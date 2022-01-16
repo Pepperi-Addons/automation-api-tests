@@ -932,7 +932,7 @@ export class AddonPage extends Page {
         await this.addATDCalculatedField({
             Label: 'AllowedUomFieldsForTest',//name
             CalculatedRuleEngine: { JSFormula: "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;" }//code value
-        }, true, "ItemMainCategoryCode");
+        }, true, "ItemMainCategory");
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         await this.addATDCalculatedField({
