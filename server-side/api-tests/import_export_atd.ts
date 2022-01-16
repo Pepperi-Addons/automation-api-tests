@@ -248,9 +248,15 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     };
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false); // false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false); // false);
     //#endregion Upgrade ImportExportATD and Data Views API
 
     //Clean the ATD and UDT from failed tests before starting a new test

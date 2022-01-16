@@ -55,8 +55,14 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
 
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, true);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, true);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', () => {

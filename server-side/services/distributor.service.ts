@@ -17,12 +17,11 @@ export interface DistributorTrialObject {
 export class DistributorService {
     papiClient: PapiClient;
     generalService: GeneralService;
-    request: any;
-
-    constructor(public service: GeneralService, request = {}) {
+    varKey: string;
+    constructor(public service: GeneralService, password?) {
         this.papiClient = service.papiClient;
         this.generalService = service;
-        this.request = request;
+        this.varKey = password;
     }
 
     getItems(options?: FindOptions): Promise<Item[]> {
@@ -41,17 +40,13 @@ export class DistributorService {
         let newDistributor;
         let maxLoopsCounter = 16;
         console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");
-        let password = this.request.body.varKey;
-        if (this.request.body.varKeyEU) {
-            password = this.request.body.varKeyEU;
-        }
         do {
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: password,
+                        Authorization: `Basic ${Buffer.from(this.varKey).toString('base64')}`,
                     },
                     body: JSON.stringify({
                         FirstName: Distributor.FirstName,
@@ -121,7 +116,7 @@ export class DistributorService {
             {
                 method: `POST`,
                 headers: {
-                    Authorization: this.request.body.varKey,
+                    Authorization: `Basic ${Buffer.from(this.varKey).toString('base64')}`,
                 },
                 body: JSON.stringify({
                     UUID: distributorTrialObject.UUID,

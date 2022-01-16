@@ -29,8 +29,14 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
     };
+    let varKey;
+    if (request.body.varKeyPro) {
+        varKey = request.body.varKeyPro;
+    } else {
+        varKey = request.body.varKeyStage;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);

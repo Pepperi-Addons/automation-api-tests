@@ -4,11 +4,7 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
  * 'Overwrite' is false by default.
  */
 export interface ImportObjects {
-    Objects: [
-        {
-            [key: string]: any;
-        },
-    ];
+    Objects: { [key: string]: any }[];
     Overwrite?: boolean;
 }
 
