@@ -41,9 +41,9 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     };
     let updateValues: any = {};
     let updateValuesLast: any = {};
-    let CodJobeBodyBudgetTest: any = {};
+    let CodJobBodyBudgetTest: any = {};
     let codeJobUUIDforBudget: any = {};
-    let CodJobeBodyWithPapiCall: any = {};
+    let CodJobBodyWithPapiCall: any = {};
     let multiplayerResult: any = {};
     let UpdateDraftCode: any = {};
     let CodeJobUUID1: any = {};
@@ -97,7 +97,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     });
     describe('Execute Job Using Draft Code + single execution log and Code job execution logs verification', () => {
         it('Execute job (one time) using DraftCode field: Finished', () => {
-            assert(logcash.executeDraftCodeJobeOnce1, logcash.ErrorFromExecute);
+            assert(logcash.executeDraftCodeJobOnce1, logcash.ErrorFromExecute);
         });
         it('Get Single Execution Log: Finished', () => {
             assert(executionLog.Status, executionLog.Error);
@@ -639,35 +639,35 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             listLength += 1;
         } else {
             logcash.executeCOdeJobUsingDraft = false;
-            logcash.ErrorMsg = 'Post to CodeJobe with Draft failed.';
+            logcash.ErrorMsg = 'Post to CodeJob with Draft failed.';
         }
-        await executeDraftCodeJobeOnce();
+        await executeDraftCodeJobOnce();
     }
 
-    async function executeDraftCodeJobeOnce() {
-        CallbackCash.executeDraftCodeJobeOnce1 = await generalService.fetchStatus(
+    async function executeDraftCodeJobOnce() {
+        CallbackCash.executeDraftCodeJobOnce1 = await generalService.fetchStatus(
             `/code_jobs/async/${CallbackCash.executeCOdeJobUsingDraft.Body.UUID}/execute_draft`,
             { method: 'POST', body: updateValuesToDraftExecute },
         );
 
         if (
-            CallbackCash.executeDraftCodeJobeOnce1.Status == 200 &&
-            CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID != '' &&
-            CallbackCash.executeDraftCodeJobeOnce1.Body.URI != ''
+            CallbackCash.executeDraftCodeJobOnce1.Status == 200 &&
+            CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID != '' &&
+            CallbackCash.executeDraftCodeJobOnce1.Body.URI != ''
         ) {
-            logcash.executeDraftCodeJobeOnce1 = true;
+            logcash.executeDraftCodeJobOnce1 = true;
         } else {
-            logcash.executeDraftCodeJobeOnce1 = false;
-            logcash.ErrorFromExecute = 'Post to execute CodeJobe with draft code failed';
+            logcash.executeDraftCodeJobOnce1 = false;
+            logcash.ErrorFromExecute = 'Post to execute CodeJob with draft code failed';
         }
         generalService.sleep(20000);
         await getSingleExecutonLog();
     }
 
     async function getSingleExecutonLog() {
-        logData = await service.auditLogs.uuid(CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID).get();
+        logData = await service.auditLogs.uuid(CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID).get();
         if (
-            logData.UUID == CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID &&
+            logData.UUID == CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID &&
             logData.Event.Type == 'code_job_execution'
         ) {
             cacheLog.ExecutionResult = logData.AuditInfo.ResultObject
@@ -695,8 +695,8 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             executionLog.Error =
                 'One of parameters in single execution log is wrong or log is empty: \n' +
                 'returned ExecutionUUID is' +
-                CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID +
-                ' and CodeJobeUUID is ' +
+                CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID +
+                ' and CodeJobUUID is ' +
                 CodeJobUUID +
                 '\nAudit log exeption: ' +
                 logData;
@@ -740,7 +740,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             //publishNewCJToPublish();
         } else {
             logcash.createNewCJToPublish = false;
-            logcash.createNewCJToPublishErrorMsg = 'Post to CodeJobe with Draft failed.';
+            logcash.createNewCJToPublishErrorMsg = 'Post to CodeJob with Draft failed.';
         }
         await publishNewCJToPublish();
     }
@@ -806,7 +806,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
             listLength += 1;
         } else {
             logcash.UpdatedDraftCode = false;
-            logcash.UpdatedDraftCode = 'Post to CodeJobe with Draft failed. CodeJobUUID is: ' + CodeJobUUID;
+            logcash.UpdatedDraftCode = 'Post to CodeJob with Draft failed. CodeJobUUID is: ' + CodeJobUUID;
         }
         await executeWithDiffBetweenDraftAndExecution();
     }
@@ -826,7 +826,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         } else {
             logcash.executeWithDiff = false;
             logcash.executeWithDiffError =
-                'Post to execute CodeJobe with execute code failed. ExecutionUUID is: ' +
+                'Post to execute CodeJob with execute code failed. ExecutionUUID is: ' +
                 CallbackCash.executeWithDiff.Body.ExecutionUUID;
         }
 
@@ -1301,7 +1301,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         } else {
             logcash.UpdatedDraftCodeWithoutResult = false;
             logcash.UpdatedDraftCodeWithoutResult =
-                'Post to CodeJobe with Draft failed. Error message: ' +
+                'Post to CodeJob with Draft failed. Error message: ' +
                 JSON.stringify(CallbackCash.UpdatedDraftCodeWithoutResult.Body.fault.faultstring);
             await getDistributorExecutionBudget();
         }
@@ -1421,7 +1421,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
     async function createNewCJToBudgetTest() {
         // cerate new code
-        CodJobeBodyBudgetTest = {
+        CodJobBodyBudgetTest = {
             UUID: '',
             CodeJobName: 'New CodeJob to budget test',
             DraftCode:
@@ -1431,7 +1431,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
 
         CallbackCash.insertNewCodJobToBudgetTest = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
-            body: JSON.stringify(CodJobeBodyBudgetTest),
+            body: JSON.stringify(CodJobBodyBudgetTest),
         });
         logcash.insertNewCodJobToBudgetTest = true;
 
@@ -1446,7 +1446,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         } else {
             logcash.insertNewCodJobToBudgetTest = false;
             logcash.insertNewCodJobToBudgetTestErrorMsg =
-                'Post to CodeJobe with Draft failed.THe Budget test case not tested and will be tested again';
+                'Post to CodeJob with Draft failed.THe Budget test case not tested and will be tested again';
             //updateDistributorBudget();
             await createNewCJToExecuteWithPapi();
         }
@@ -1636,7 +1636,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
     //#region execute with call to PAPI
     async function createNewCJToExecuteWithPapi() {
         // cerate new code about Cron test case
-        CodJobeBodyWithPapiCall = {
+        CodJobBodyWithPapiCall = {
             UUID: '',
             CodeJobName: 'New CodeJob with PAPI in draft ',
             Description: 'PAPI call from draft/execute',
@@ -1656,23 +1656,23 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         };
         CallbackCash.insertNewCJtoPapiCall = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
-            body: CodJobeBodyWithPapiCall,
+            body: CodJobBodyWithPapiCall,
         });
         logcash.insertNewCJtoPapiCall = true;
 
         if (CallbackCash.insertNewCJtoPapiCall.Status == 200) {
             listLength += 1;
             //CodeJobUUIDCron = CallbackCash.insertNewCJtoPapiCall.Body.UUID;
-            await executeDraftCodeJobePapiTest();
+            await executeDraftCodeJobPapiTest();
         } else {
             logcash.insertNewCJtoCronVerification = false;
             logcash.insertNewCJtoCronVerificationErrorMsg =
-                'Post to CodeJobe with Draft failed.Error message: ' +
+                'Post to CodeJob with Draft failed.Error message: ' +
                 JSON.stringify(CallbackCash.insertNewCJtoPapiCall.Body.fault.faultstring);
         }
     }
 
-    async function executeDraftCodeJobePapiTest() {
+    async function executeDraftCodeJobPapiTest() {
         CallbackCash.executeDraftCodeTestPapi = await generalService.fetchStatus(
             `/code_jobs/async/${CallbackCash.insertNewCJtoPapiCall.Body.UUID}/execute_draft`,
             { method: 'POST' },
@@ -1686,7 +1686,7 @@ export async function CodeJobsTests(generalService: GeneralService, tester: Test
         } else {
             logcash.executeDraftCodeTestPapi = false;
             logcash.executeDraftCodeTestPapiError =
-                'Post to execute CodeJobe with draft code failed. CodeJobUUID is: ' +
+                'Post to execute CodeJob with draft code failed. CodeJobUUID is: ' +
                 CallbackCash.insertNewCJtoPapiCall.Body.UUID;
         }
         generalService.sleep(20000);

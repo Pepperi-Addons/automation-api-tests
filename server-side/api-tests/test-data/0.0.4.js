@@ -1,8 +1,7 @@
 exports.UpdateCodeJob = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -20,10 +19,9 @@ exports.UpdateCodeJob = async (Client) => {
 };
 
 exports.updateDrafrCodeWithoutResult = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -40,7 +38,7 @@ exports.updateDrafrCodeWithoutResult = async (Client) => {
     function sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
     sleep(130000);
@@ -48,10 +46,9 @@ exports.updateDrafrCodeWithoutResult = async (Client) => {
 };
 
 exports.createNewCJToBudgetTest = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -68,7 +65,7 @@ exports.createNewCJToBudgetTest = async (Client) => {
     function sleep(ms) {
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        while (new Date().getTime() < expire) { }
         return;
     }
     sleep(5000);

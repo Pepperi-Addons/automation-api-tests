@@ -6,81 +6,29 @@ interface TestResults {
 }
 
 // All Fields Tests
-export async function AddonAuditLogsTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function AddonAsyncExecutionTests(generalService: GeneralService, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
-    //#region Prerequisites for Audit Logs Tests
+    //#region Prerequisites for Addon Async Execution Tests
     //TestData
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const jsFileName = 'test.js';
-    const functionNamePositiveTest = 'PositiveTest';
-    const version = '0.0.5';
-    const functionNameNegativeTest = 'NegativeTest';
-
-    const testDataAddonJobToExecuteInPositiveTest = {
-        UUID: '',
-        CodeJobName: 'New CodeJob with addon code for Audit Logs Positive Test',
-        Description: 'Execute Job Using Addon Code',
-        //This can be used to test the Scheduler addon (1/3)
-        // "CodeJobName": "004" + "  Published no Sceduled Positive",
-        // "Description": "Published no Sceduled",
-        Type: 'AddonJob',
-        AddonPath: jsFileName,
-        AddonUUID: addonUUID,
-        FunctionName: functionNamePositiveTest,
-        Owner: '',
-        CronExpression: '0/20 * 1/1 * *', //Every 20   minutes
-        NextRunTime: null,
-        IsScheduled: false,
-        FailureAlertEmailTo: ['qa@pepperi.com'],
-        FailureAlertEmailSubject: 'Execution section',
-        ExecutedCode: '',
-        CodeJobIsHidden: false,
-        CreationDateTime: '',
-        ModificationDateTime: '',
-        ExecutionMemoryLevel: 4,
-        NumberOfTries: 1,
-    };
-
-    const testDataAddonJobToExecuteInNegativeTest = {
-        UUID: '',
-        CodeJobName: 'New CodeJob with addon code for Audit Logs Negative Test',
-        Description: 'Fail to Execute Job Using Addon Code',
-        //This can be used to test the Scheduler addon (2/3)
-        // "CodeJobName": "004" + " Published no Sceduled Negative",
-        // "Description": "Published no Sceduled",
-        Type: 'AddonJob',
-        AddonPath: jsFileName,
-        AddonUUID: addonUUID,
-        FunctionName: functionNameNegativeTest,
-        Owner: '',
-        CronExpression: '0/20 * 1/1 * *', //Every 20 minutes
-        NextRunTime: null,
-        IsScheduled: false,
-        FailureAlertEmailTo: ['qa@pepperi.com'],
-        FailureAlertEmailSubject: 'Execution section',
-        ExecutedCode: '',
-        CreationDateTime: '',
-        ModificationDateTime: '',
-        ExecutionMemoryLevel: 4,
-        NumberOfTries: 1,
-    };
 
     //#region Upgrade Pepperitest (Jenkins Special Addon)
     const testData = {
-        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
+        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
+        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeToAnyAvailableVersion(testData);
     //#endregion Upgrade Pepperitest (Jenkins Special Addon)
 
     //Print Test Results
-    describe('Addon Audit Logs Tests Suites', async () => {
-        describe('Prerequisites Addon for Addon Audit Logs Tests', () => {
+    describe('Addon Addon Async Execution Tests Suites', async () => {
+        describe('Prerequisites Addon for Addon Async Execution Tests', () => {
             //Test Data
             it('Validate That All The Needed Addons Installed', async () => {
                 isInstalledArr.forEach((isInstalled) => {
@@ -112,25 +60,22 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
             }
         });
 
-        describe('Audit Logs Positive Async CodeJob Test', async () => {
-            let positiveAsyncCodeJobUUID;
+        describe('Async Execution Audit Logs Positive Async CodeJob Test', async () => {
             let executeTestResults;
+            let testAuditUUID;
+            let testAuditURI;
+            let auditLogBody;
+            let adalLogBody;
 
-            it(`Post CodeJob with AddonJob`, async () => {
-                const updateApiResponse = await createCodeJobUsingAddonJobTest(testDataAddonJobToExecuteInPositiveTest);
-                positiveAsyncCodeJobUUID = updateApiResponse.UUID;
-                expect(positiveAsyncCodeJobUUID.length).to.equal(36);
-            });
+            it(`Execute CodeJob with AddonJob`, async () => {
+                executeTestResults = await executeAddonJobCodeJobTest(addonUUID, 'PositiveTest');
 
-            it(`Post execute CodeJob with AddonJob`, async () => {
-                executeTestResults = await executeAddonJobCodeJobTest(
-                    positiveAsyncCodeJobUUID,
-                    testDataAddonJobToExecuteInPositiveTest,
-                );
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Post execute CodeJob with AddonJob') {
                         testExist = true;
+                        testAuditUUID = executeTestResults[i].Results[0].ExecutionUUID;
+                        testAuditURI = executeTestResults[i].Results[0].URI;
                         expect(executeTestResults[i].Results[0].ExecutionUUID.length).to.equal(36);
                         expect(executeTestResults[i].Results[0].URI.length).to.equal(48);
                     }
@@ -138,15 +83,15 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                 expect(testExist, JSON.stringify(executeTestResults)).to.be.true;
             });
 
-            it(`Audit Logs of Code Job - Interval Timer`, async () => {
+            it(`Audit Logs of Async Execution - Interval Timer`, async () => {
                 for (let i = 0; i < executeTestResults.length; i++) {
-                    if (executeTestResults[i].Name == 'Audit Logs of Code Job - Interval Timer') {
+                    if (executeTestResults[i].Name == 'Audit Logs of Async Execution - Interval Timer') {
                         expect.fail(`Test end without timout, Results: ${JSON.stringify(executeTestResults)}`);
                     }
                 }
             });
 
-            it(`Execute AddonJob Code Job Valid Response`, async () => {
+            it(`Execute AddonJob Code Job Valid Response (DI-19153)`, async () => {
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Execute AddonJob Code Job Valid Response') {
@@ -170,27 +115,48 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                 }
                 expect(testExist, JSON.stringify(executeTestResults)).to.be.true;
             });
+
+            it(`Get Audit Log And Adal Data`, async () => {
+                auditLogBody = await generalService.papiClient.get(testAuditURI);
+                adalLogBody = await generalService.papiClient.addons.data
+                    .uuid(testData.AsyncAddon[0])
+                    .table('actions')
+                    .key(testAuditUUID)
+                    .get();
+                expect(auditLogBody.UUID == adalLogBody.Key);
+            });
+
+            it(`Validae Audit Log And Adal Pass`, async () => {
+                expect(auditLogBody.Status.Name).to.equal('Success');
+                expect(adalLogBody.Status).to.equal('Success');
+            });
+
+            it(`Validae Audit Log And Adal Result Object`, async () => {
+                expect(auditLogBody.AuditInfo.ResultObject).to.equal(
+                    '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
+                );
+                expect(adalLogBody.ResultObject).to.equal(
+                    '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
+                );
+            });
         });
 
         describe('Audit Logs Negative Async CodeJob Test', async () => {
-            let positiveAsyncCodeJobUUID;
             let executeTestResults;
-
-            it(`Post CodeJob with AddonJob`, async () => {
-                const updateApiResponse = await createCodeJobUsingAddonJobTest(testDataAddonJobToExecuteInNegativeTest);
-                positiveAsyncCodeJobUUID = updateApiResponse.UUID;
-                expect(positiveAsyncCodeJobUUID.length).to.equal(36);
-            });
+            let testAuditUUID;
+            let testAuditURI;
+            let auditLogBody;
+            let adalLogBody;
 
             it(`Post execute CodeJob with AddonJob`, async () => {
-                executeTestResults = await executeAddonJobCodeJobTest(
-                    positiveAsyncCodeJobUUID,
-                    testDataAddonJobToExecuteInNegativeTest,
-                );
+                executeTestResults = await executeAddonJobCodeJobTest(addonUUID, 'NegativeTest');
+
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Post execute CodeJob with AddonJob') {
                         testExist = true;
+                        testAuditUUID = executeTestResults[i].Results[0].ExecutionUUID;
+                        testAuditURI = executeTestResults[i].Results[0].URI;
                         expect(executeTestResults[i].Results[0].ExecutionUUID.length).to.equal(36);
                         expect(executeTestResults[i].Results[0].URI.length).to.equal(48);
                     }
@@ -198,15 +164,15 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                 expect(testExist, JSON.stringify(executeTestResults)).to.be.true;
             });
 
-            it(`Audit Logs of Code Job - Interval Timer`, async () => {
+            it(`Audit Logs of Async Execution - Interval Timer`, async () => {
                 for (let i = 0; i < executeTestResults.length; i++) {
-                    if (executeTestResults[i].Name == 'Audit Logs of Code Job - Interval Timer') {
+                    if (executeTestResults[i].Name == 'Audit Logs of Async Execution - Interval Timer') {
                         expect.fail(`Test end without timout, Results: ${JSON.stringify(executeTestResults)}`);
                     }
                 }
             });
 
-            it(`Execute AddonJob Code Job Valid Response`, async () => {
+            it(`Execute AddonJob Code Job Valid Response (DI-19153)`, async () => {
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Execute AddonJob Code Job Valid Response') {
@@ -230,30 +196,41 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                 }
                 expect(testExist, JSON.stringify(executeTestResults)).to.be.true;
             });
+
+            it(`Get Audit Log And Adal Data`, async () => {
+                auditLogBody = await generalService.papiClient.get(testAuditURI);
+                adalLogBody = await generalService.papiClient.addons.data
+                    .uuid(testData.AsyncAddon[0])
+                    .table('actions')
+                    .key(testAuditUUID)
+                    .get();
+                expect(auditLogBody.UUID == adalLogBody.Key);
+            });
+
+            it(`Validae Audit Log And Adal Pass`, async () => {
+                expect(auditLogBody.Status.Name).to.equal('Failure');
+                expect(adalLogBody.Status).to.equal('Failure');
+            });
+
+            it(`Validae Audit Log And Adal Result Object`, async () => {
+                expect(auditLogBody.AuditInfo.ResultObject).to.equal(
+                    '{"success":"Exception","errorMessage":"Failed due to exception: orenTest","resultObject":null}',
+                );
+                expect(adalLogBody.ResultObject).to.equal(
+                    '{"success":"Exception","errorMessage":"Failed due to exception: orenTest","resultObject":null}',
+                );
+            });
         });
 
         //Test
-        async function createCodeJobUsingAddonJobTest(AddonJobExecuteableCode) {
-            const updateValuesToAddonJobExecute = {
-                Description: AddonJobExecuteableCode.Description,
-                CodeJobName: AddonJobExecuteableCode.CodeJobName,
-                Type: AddonJobExecuteableCode.Type,
-                AddonPath: AddonJobExecuteableCode.AddonPath,
-                AddonUUID: AddonJobExecuteableCode.AddonUUID,
-                FunctionName: AddonJobExecuteableCode.FunctionName,
-            };
-            return await generalService.papiClient.post('/code_jobs', updateValuesToAddonJobExecute);
-        }
-
-        //Test
-        async function executeAddonJobCodeJobTest(codeJobUUID, testDataBody) {
+        async function executeAddonJobCodeJobTest(codeJobUUID, executeFunction) {
             const executeResultData: TestResults[] = [];
             //This can be used to test the Scheduler addon (3/3)
             //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
             let executeAddonJobCodeApiResponse;
             try {
                 executeAddonJobCodeApiResponse = await generalService.papiClient.post(
-                    '/code_jobs/async/' + codeJobUUID + '/execute',
+                    `/addons/api/async/${codeJobUUID}/test/${executeFunction}`,
                 );
             } catch (error) {
                 executeAddonJobCodeApiResponse = error;
@@ -276,13 +253,13 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                             clearInterval(getResultObjectInterval);
                             await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
                             executeResultData.push({
-                                Name: 'Audit Logs of Code Job - Interval Timer',
+                                Name: 'Audit Logs of Async Execution - Interval Timer',
                                 Results: [false],
                             });
                             return resolve(executeResultData);
                         }
-                        const getAuditLogURI =
-                            "/audit_logs?Where=AuditInfo.JobMessageData.CodeJobUUID='" + codeJobUUID + "'";
+                        const getAuditLogURI = executeAddonJobCodeApiResponse.URI;
+
                         let apiResponse;
                         try {
                             apiResponse = await generalService.papiClient.get(getAuditLogURI);
@@ -292,7 +269,10 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                             console.log({ getAuditLogApiResponse: apiResponse });
 
                             await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
-                            executeResultData.push({ Name: 'Audit Logs of Code Job - Error', Results: [apiResponse] });
+                            executeResultData.push({
+                                Name: 'Audit Logs of Async Execution - Error',
+                                Results: [apiResponse],
+                            });
 
                             return resolve(executeResultData);
                         }
@@ -306,9 +286,10 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
 
                             const codeJobResultObject = isExecuteAddonJobCodeJobValidResponse(
                                 apiResponse,
-                                testDataBody,
+                                executeFunction,
                             );
                             console.log('CodeJobResultObject return result: ' + codeJobResultObject);
+
                             executeResultData.push({
                                 Name: 'Execute AddonJob Code Job Valid Response',
                                 Results: [codeJobResultObject],
@@ -340,22 +321,23 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
         function isExecuteAddonJobCodeJobValidResponse(codeJobAPIResponse, testDataBody) {
             let tempObj = {} as any;
             if (codeJobAPIResponse[0] === undefined) {
-                tempObj = codeJobAPIResponse.result;
+                if (codeJobAPIResponse.result) {
+                    tempObj = codeJobAPIResponse.result;
+                } else {
+                    tempObj = codeJobAPIResponse;
+                }
             } else {
                 tempObj = codeJobAPIResponse[0];
             }
             //Check UUID
             try {
                 if (
+                    tempObj.DistributorUUID != tempObj.AuditInfo.JobMessageData.DistributorUUID ||
                     tempObj.DistributorUUID == tempObj.UUID ||
                     tempObj.DistributorUUID == tempObj.Event.User.UUID ||
-                    tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                    tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.UserUUID ||
                     tempObj.UUID == tempObj.Event.User.UUID ||
-                    tempObj.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                    tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                    tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] == tempObj.DistributorUUID ||
-                    tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] ==
-                        tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                    tempObj.Event.User.UUID != tempObj.AuditInfo.JobMessageData.UserUUID ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
                 ) {
                     return 'Error in UUID in Code Job API Response';
@@ -388,8 +370,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                     tempObj.Event.User.Email != generalService.getClientData('UserEmail') ||
                     tempObj.Event.User.InternalID != generalService.getClientData('UserID') ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID') ||
-                    tempObj.AuditInfo.JobMessageData.CodeJobName != testDataBody.CodeJobName ||
-                    tempObj.AuditInfo.JobMessageData.CodeJobDescription != testDataBody.Description
+                    tempObj.AuditInfo.JobMessageData.FunctionName != testDataBody
                 ) {
                     return 'The Type or Event contain wrong data';
                 }
@@ -405,10 +386,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                 if (tempObj.AuditInfo.ErrorMessage != undefined) {
                     //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("ERROR")
                     //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("Error") //Changed in 26/07 investigated with nofar
-                    if (
-                        tempObj.AuditInfo.ErrorMessage.includes('Failed') ^
-                        testDataBody.FunctionName.includes('Negative')
-                    ) {
+                    if (tempObj.AuditInfo.ErrorMessage.includes('Failed') ^ testDataBody.includes('Negative')) {
                         return 'Error in execution result';
                     }
                 }
