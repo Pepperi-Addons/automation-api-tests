@@ -1,9 +1,9 @@
 // import GeneralService, { TesterFunctions } from '../../../services/general.service';
 import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
-import { TesterFunctions } from '../../../services/general.service';
-import { PagesService } from '../../../services/pages.service';
+import { TesterFunctions } from '../../services/general.service';
+import { PagesService } from '../../services/pages.service';
 import { v4 as newUuid } from 'uuid';
-import { PageClass } from '../../../models/page.class';
+import { PageClass } from '../../models/page.class';
 
 export async function PageBlocksTestSuite(
     pagesService: PagesService,

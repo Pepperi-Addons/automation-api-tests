@@ -1,8 +1,8 @@
 import { Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
-import GeneralService, { TesterFunctions } from '../../../services/general.service';
-import { PagesService } from '../../../services/pages.service';
+import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { PagesService } from '../../services/pages.service';
 import { v4 as newUuid } from 'uuid';
-import { PageClass } from '../../../models/page.class';
+import { PageClass } from '../../models/page.class';
 
 export async function PagesTestSuite(generalService: GeneralService, tester: TesterFunctions) {
     const describe = tester.describe;
