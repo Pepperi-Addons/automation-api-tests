@@ -1,4 +1,4 @@
-import { FindOptions, NgComponentRelation, Page} from '@pepperi-addons/papi-sdk';
+import { FindOptions, NgComponentRelation, Page } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export class PagesService {
