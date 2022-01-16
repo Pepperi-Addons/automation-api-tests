@@ -67,10 +67,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
     const printTestResults = tester.printTestResults;
 
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
 
     console.log('Initiate Var API Tests | ' + generalService.getTime());

@@ -30,10 +30,10 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
     };
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);

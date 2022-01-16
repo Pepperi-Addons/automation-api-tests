@@ -249,10 +249,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     };
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.

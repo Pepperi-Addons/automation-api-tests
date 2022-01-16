@@ -9,16 +9,16 @@ export async function ADALTests(generalService: GeneralService, request, tester:
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
 
-    debugger;
     //#region Upgrade ADAL
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
+
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);

@@ -10,10 +10,10 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.470'],
     };
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
