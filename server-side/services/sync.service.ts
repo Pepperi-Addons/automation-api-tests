@@ -23,7 +23,6 @@ export class SyncService {
     SyncData(uuid: string) {
         return this.papiClient.application.sync.data(uuid);
     }
-
     //Part 2 of 2 for Maor
     //This part is needed to test Maor new sync endpoints in EU
     // jobInfo(uuid: string) {
