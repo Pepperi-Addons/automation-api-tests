@@ -135,10 +135,10 @@ export async function ElasticSearchTests(generalService: GeneralService, request
         'Pepperi Elastic Search': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
-    if (request.body.varKeyPro) {
-        varKey = request.body.varKeyPro;
-    } else {
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);

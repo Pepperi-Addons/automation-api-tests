@@ -56,7 +56,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 if (varPassEU) {
                     password = varPassEU;
                 }
-                const distributorService = new DistributorService(generalService, { body: { varKey: password } });
+                const distributorService = new DistributorService(generalService, password);
 
                 const lorem = new LoremIpsum({});
                 const distributorFirstName = lorem.generateWords(1);
