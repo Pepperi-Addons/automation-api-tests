@@ -121,7 +121,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await driver.quit();
                     });
 
-                    it('Set Up', async function () {
+                    it('Set Up UOM ATD', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         //1. validating all items are added to the main catalog
@@ -139,18 +139,24 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                         const webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        debugger;
+                        await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
-                    // it('', async function () {
-                    //==>UI test goes here 
-                    // });
-                    it('Delete test ATDs', async function () {
+                    it('UI Test UOM ATD', async function () {
+                        const webAppLoginPage = new WebAppLoginPage(driver);
+                        await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        const webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.manualResync();
+                        await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, "uom");
+                        debugger;
+
+                    });
+                    it('Delete test ATD from dist + home screen using UI', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         const addonPage = new AddonPage(driver);
                         await addonPage.openSettings();
                         await addonPage.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                        await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
+                        await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);//maybe should be done using API
                     });
                 });
                 describe('Test Data Cleansing using API', () => {
@@ -228,12 +234,13 @@ function resolveUomItem(i: number): UomItem {
         }
     }
 }
-//TODO: first phase
-//1.uom + cpi node are installed
-//2.item creation using API
-//3.UOM types creation using API
-//4.ATD creation -> field seteup (allowed values + item config)
-//5.ATD attachment to homescreen
+//TODO: UI test phase
+//* validate amount in UI upper and field data & price - every one by itself and all togather
+//1.regular item testing
+//2.box & single
+//3.double & signle
+//4. pack & double
+//5. case & box 
 
 interface UomItem {
     Key: string,

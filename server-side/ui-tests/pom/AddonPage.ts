@@ -258,9 +258,9 @@ export class AddonPage extends Page {
         else {
             await this.browser.click(locator);
         }
-        await this.browser.sleep(9000);
+        await this.browser.sleep(3000);
         await this.browser.click(By.xpath(`//span[@class='mat-option-text' and text()='${option}']`));
-        await this.browser.sleep(9000);
+        await this.browser.sleep(3000);
         return;
     }
 
@@ -565,7 +565,7 @@ export class AddonPage extends Page {
         expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
 
         //Validate Editor Page Loaded
-        await this.browser.sleep(9000);//has to be changed - just an experiment
+        await this.browser.sleep(4500);
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 45000)).to.be.true;
         if (isTransLine) {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
@@ -580,7 +580,7 @@ export class AddonPage extends Page {
         await this.browser.click(this.calculatedFieldCheckBox);
         await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 0);
         await this.browser.click(this.editFieldScriptBtn);
-        await this.browser.sleep(9000);//has to be changed - just an experiment
+        await this.browser.sleep(4500);
         expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 15000)).to.be.true;
 
         if (scriptParam) {
@@ -869,9 +869,8 @@ export class AddonPage extends Page {
         await this.setFieldToUIControl("Transaction Total Sum");
         await this.setFieldToUIControl("ItemConfig");
         await this.setFieldToUIControl("Item ID");
+        await this.setFieldToUIControl("Unit Quantity");
         await this.browser.click(this.SaveUIControlBtn);
-        //TODO strech the UI fileds as needed
-
     }
 
     private async deleteAllFieldFromUIControl(): Promise<void> {
@@ -931,7 +930,7 @@ export class AddonPage extends Page {
         await this.selectTabByText('General');
         await this.addATDCalculatedField({
             Label: 'AllowedUomFieldsForTest',//name
-            CalculatedRuleEngine: { JSFormula: "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;" }//code value
+            CalculatedRuleEngine: { JSFormula: "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;" }
         }, true, "ItemMainCategory");
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
