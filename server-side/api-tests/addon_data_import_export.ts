@@ -18,9 +18,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const secretKey = await generalService.getSecretKey(addonUUID);
     const version = '0.0.5';
     const schemaName = 'DIMX Test';
+    const importJSONFileName = 'import3.json';
     const addonFileName = 'dimx11.js';
     const addonExportFunctionName = 'RemoveObject';
-    const addonImportFunctionName = 'RemoveColumn1';
+    // const addonImportFunctionName = 'RemoveColumn1';
 
     //#region Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
     const testData = {
@@ -157,7 +158,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         RelationName: 'ImportDataSource', // mandatory
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Import',
-                        AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
+                        // AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
+                        AddonRelativeURL: '', // mandatory on create
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -170,7 +172,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     RelationName: 'ImportDataSource', // mandatory
                     Type: 'AddonAPI', // mandatory on create
                     Description: 'DIMX Import',
-                    AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
+                    // AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
+                    AddonRelativeURL: '', // mandatory on create
                 };
                 const relationResponse = await relationService.getRelationWithName(
                     {
@@ -267,40 +270,43 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 ]);
             });
 
+            it(`Post File in JSON Format`, async () => {
+                const adoonVersionResponse = await generalService.papiClient.addons.versions.find({
+                    where: `AddonUUID='${addonUUID}' AND Version='${version}'`,
+                });
+                expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
+                expect(adoonVersionResponse[0].Version).to.equal(version);
+
+                //js instead of json since build process ignore json in intention
+                const file = fs.readFileSync(path.resolve(__dirname, './test-data/import.js'), { encoding: 'utf8' });
+                const fileJSContent = file.split(`"use strict";\r\n`)[1].split(';\r\n//# sourceMappingURL')[0];
+                const base64File = Buffer.from(fileJSContent).toString('base64');
+
+                const versionTestDataBody = {
+                    AddonUUID: addonUUID,
+                    UUID: adoonVersionResponse[0].UUID,
+                    Version: version,
+                    Files: [{ FileName: importJSONFileName, URL: '', Base64Content: base64File }],
+                };
+
+                const updateVersionResponse = await generalService.fetchStatus(
+                    generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                    {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    },
+                );
+                expect(updateVersionResponse.Status).to.equal(200);
+            });
+
             it(`Import With Relation`, async () => {
                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                    Objects: [
-                        {
-                            Description: `DIMX Test ${1}`,
-                            Column1: ['Value1', 'Value2', 'Value3'],
-                            Key: `testKeyDIMX${1}`,
-                            object: {
-                                Object: { Value1: 1, Value2: 2, Value3: 3 },
-                                String: `DIMX Test ${1}`,
-                                Array: ['Value1', 'Value2', 'Value3'],
-                            },
-                        },
-                        {
-                            Description: `DIMX Test ${2}`,
-                            Column1: ['Value1', 'Value2', 'Value3'],
-                            Key: `testKeyDIMX${2}`,
-                            object: {
-                                Object: { Value1: 1, Value2: 2, Value3: 3 },
-                                String: `DIMX Test ${2}`,
-                                Array: ['Value1', 'Value2', 'Value3'],
-                            },
-                        },
-                        {
-                            Description: `DIMX Test ${3}`,
-                            Column1: ['Value1', 'Value2', 'Value3'],
-                            Key: `testKeyDIMX${3}`,
-                            object: {
-                                Object: { Value1: 1, Value2: 2, Value3: 3 },
-                                String: `DIMX Test ${3}`,
-                                Array: ['Value1', 'Value2', 'Value3'],
-                            },
-                        },
-                    ],
+                    URI: `https://cdn.staging.pepperi.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
+                    Overwrite: false,
+                    Delimiter: '.',
                 });
                 dimxExport = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI);
                 expect(dimxExport.Status?.ID, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.equal(1);
@@ -314,26 +320,14 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     JSON.parse(dimxExport.AuditInfo.ResultObject),
                 );
                 console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject) });
-                expect(relationResponse.Body, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.deep.equal([
-                    {
-                        Description: 'DIMX Test 1',
-                        Column1: ['Value1', 'Value2', 'Value3'],
-                        Name: 'DIMX Test',
-                        Key: 'testKeyDIMX1',
-                    },
-                    {
-                        Description: 'DIMX Test 2',
-                        Column1: ['Value1', 'Value2', 'Value3'],
-                        Name: 'DIMX Test',
-                        Key: 'testKeyDIMX2',
-                    },
-                    {
-                        Description: 'DIMX Test 3',
-                        Column1: ['Value1', 'Value2', 'Value3'],
-                        Name: 'DIMX Test',
-                        Key: 'testKeyDIMX3',
-                    },
-                ]);
+
+                const file = fs.readFileSync(path.resolve(__dirname, './test-data/import.js'), { encoding: 'utf8' });
+                const fileJSContent = file.split(`"use strict";\r\n`)[1].split(';\r\n//# sourceMappingURL')[0];
+                const base64File = Buffer.from(fileJSContent).toString('base64');
+                debugger;
+                expect(relationResponse.Body, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.deep.equal(
+                    base64File,
+                );
             });
         });
     });
