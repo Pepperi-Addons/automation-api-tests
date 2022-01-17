@@ -1259,6 +1259,3 @@ export class AddonPage extends Page {
 
 
 }
-//TODO: UI test phase
-//* validate amount in UI upper and field data & price - every one by itself and all togather
-//5. case & box 
