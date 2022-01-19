@@ -284,8 +284,10 @@ export class Browser {
             await this.driver
                 .quit()
                 .then(
-                    (res) => {
-                        console.log(`Browser Quit Response: ${res}`);
+                    async (res) => {
+                        console.log(`Browser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`);
+                        await new Promise((resolve) => setTimeout(resolve, 2000));
+                        console.log('Waited 2 seconds for browser closing process will be done');
                     },
                     (error) => {
                         console.log(`Browser Quit Error In Response: ${error}`);
