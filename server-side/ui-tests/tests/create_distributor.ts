@@ -88,15 +88,23 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 try {
                     expect(newDistributor.Body.Status.ID, JSON.stringify(newDistributor.Body.AuditInfo)).to.equal(1);
                 } catch (error) {
-                    if (
-                        newDistributor.Body.Status.ID == 0 &&
-                        newDistributor.Body.AuditInfo.ErrorMessage.includes('Failed to install the following addons')
-                    ) {
-                        console.log('Bug exist for this response: (DI-19115)');
-                        console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
+                    if (typeof newDistributor.Body.AuditInfo.ErrorMessage === 'string') {
+                        if (
+                            newDistributor.Body.Status.ID == 0 &&
+                            newDistributor.Body.AuditInfo.ErrorMessage.includes(
+                                'Failed to install the following addons',
+                            )
+                        ) {
+                            console.log('Bug exist for this response: (DI-19115)');
+                            console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
+                        } else {
+                            throw new Error(
+                                `Status.ID: ${newDistributor.Status.ID}, AuditInfo.ErrorMessage: ${newDistributor.Body.AuditInfo.ErrorMessage}`,
+                            );
+                        }
                     } else {
                         throw new Error(
-                            `Status.ID: ${newDistributor.Status.ID}, AuditInfo.ErrorMessage: ${newDistributor.Body.AuditInfo.ErrorMessage}`,
+                            `Error Without Error Message: Status.ID: ${newDistributor.Status.ID}, Response Body: ${newDistributor.Body}`,
                         );
                     }
                 }
