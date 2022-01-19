@@ -169,6 +169,7 @@ export class AddonPage extends Page {
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
 
+
     //UOM ATD Locators
     public readonly everyItemXpathPrefix: string = "//span[@title='|textToFill|']/../../../../../../..";
     public upperUOMType: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@title='AOQM_UOM1']`);
@@ -183,6 +184,15 @@ export class AddonPage extends Page {
     public itemGrandTotal: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@id='TransactionGrandTotal']`);
     public pageGrandTotal: Locator = By.xpath("//span[@class='value']");
     public blankSpaceOnScreenToClick: Locator = By.xpath("//div[contains(@class,'total-items-container')]");
+    public SubmitToCart: Locator = By.css("[data-qa=cartButton]");
+
+    //cart page --->>> may have to be moved
+    public WholeOrderPrice: Locator = By.xpath("//span[@id='GrandTotal']");
+    public ItemQtyBtItemCode: Locator = By.xpath("//span[@title='|textToFill|']/../../../../..//fieldset//pep-quantity-selector//input");
+    public TotalUnitPrice: Locator = By.xpath("//span[@title='|textToFill|']/../../../../..//fieldset//span[@id='TotalUnitsPriceAfterDiscount']");
+    public OrderDeatilsMenu: Locator = By.css("[data-qa='firstMenu']");
+    public SubmitOrderCartBtn: Locator = By.css("[data-qa='Submit']");
+
 
     //views page
     public RepViewEditIcon: Locator = By.xpath("//span[@title='Rep']/following-sibling::span[contains(@class,'editPenIcon')]");
@@ -952,7 +962,7 @@ export class AddonPage extends Page {
         }, true, "ItemMainCategory");
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        //first testing phase will be performed w/o this feature - second whill test this only
+        //**first testing phase will be performed w/o this feature - second whill test this only**
         // await this.addATDCalculatedField({
         //     Label: 'ItemConfig',
         //     CalculatedRuleEngine: {
@@ -997,6 +1007,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 49; i++) {
             await this.browser.click(By.xpath(upperPlusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal(i.toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal(i.toString());
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((i * 0.5).toString()).toFixed(2)}`);
@@ -1005,6 +1016,7 @@ export class AddonPage extends Page {
         //1.2. try to add one more - nothing should change 
         await this.browser.click(By.xpath(upperPlusBtn));
         this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("48");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$24.00");
@@ -1014,6 +1026,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 14; i++) {
             await this.browser.click(By.xpath(upperMinusBtn));
             this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal((48 - i).toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((48 - i).toString());
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat(((48 - i) * 0.5).toString()).toFixed(2)}`);
@@ -1025,6 +1038,7 @@ export class AddonPage extends Page {
         await this.browser.sendKeys(By.xpath(upperQty), "0");
         await this.browser.click(this.blankSpaceOnScreenToClick);
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("0");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("0");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$0.00");
@@ -1045,6 +1059,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 4; i++) {
             await this.browser.click(By.xpath(upperPlusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal(i.toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((i * 13).toString());
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((i * 13).toString()).toFixed(2)}`);
@@ -1053,6 +1068,7 @@ export class AddonPage extends Page {
         //nothing changes as qty bigger than inventory
         await this.browser.click(By.xpath(upperPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("3");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("39");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$39.00");
@@ -1061,6 +1077,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 10; i++) {
             await this.browser.click(By.xpath(lowerPlusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("3");
             expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal(i.toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((39 + i).toString());
@@ -1070,6 +1087,7 @@ export class AddonPage extends Page {
         //nothing changes as qty bigger than inventory
         await this.browser.click(By.xpath(lowerPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("9");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$48.00");
@@ -1077,6 +1095,7 @@ export class AddonPage extends Page {
         //lowering box by 1 and adding 13 singles 
         await this.browser.click(By.xpath(upperMinusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("2");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("35");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$35.00");
@@ -1084,6 +1103,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 14; i++) {
             await this.browser.click(By.xpath(lowerPlusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal((9 + i).toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((35 + i).toString());
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((35 + i).toString()).toFixed(2)}`);
@@ -1092,6 +1112,7 @@ export class AddonPage extends Page {
         //nothing changes as qty bigger than inventory
         await this.browser.click(By.xpath(lowerPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("2");
         expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("22");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
@@ -1112,7 +1133,6 @@ export class AddonPage extends Page {
         let lowerUOM = this.lowerUOMType.valueOf()["value"].slice().replace("|textToFill|", "1232");
 
         //set uom types to double in the upper field and single in lower
-        debugger;
         await this.selectDropBoxByString(By.xpath(upperUOM), "double");
         await this.browser.sleep(1500);
         await this.selectDropBoxByString(By.xpath(lowerUOM), "Single");
@@ -1122,6 +1142,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 25; i++) {
             await this.browser.click(By.xpath(upperPlusBtn));
             await this.browser.sleep(1200);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal(i.toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((i * 2).toString());
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((48 + (i * 2)).toString()).toFixed(2)}`);
@@ -1130,6 +1151,7 @@ export class AddonPage extends Page {
         //nothing changes as qty bigger than inventory
         await this.browser.click(By.xpath(upperPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("24");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$96.00");
@@ -1138,6 +1160,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 13; i++) {
             await this.browser.click(By.xpath(upperMinusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal((24 - i).toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((48 - (i * 2)).toString());
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((96 - (i * 2)).toString()).toFixed(2)}`);
@@ -1147,6 +1170,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 25; i++) {
             await this.browser.click(By.xpath(lowerPlusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("12");
             expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal(i.toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((24 + i).toString());
@@ -1156,6 +1180,7 @@ export class AddonPage extends Page {
         //nothing changes as qty bigger than inventory
         await this.browser.click(By.xpath(upperPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("12");
         expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("24");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
@@ -1164,6 +1189,7 @@ export class AddonPage extends Page {
         //nothing changes as qty bigger than inventory
         await this.browser.click(By.xpath(lowerPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("12");
         expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("24");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
@@ -1184,7 +1210,6 @@ export class AddonPage extends Page {
         lowerUOM = this.lowerUOMType.valueOf()["value"].slice().replace("|textToFill|", "1233");
 
         //set uom types to double in the upper field and single in lower
-        debugger;
         await this.selectDropBoxByString(By.xpath(upperUOM), "Pack");
         await this.browser.sleep(1500);
         await this.selectDropBoxByString(By.xpath(lowerUOM), "double");
@@ -1195,6 +1220,7 @@ export class AddonPage extends Page {
         await this.browser.sendKeys(By.xpath(upperQty), "20");
         await this.browser.click(this.blankSpaceOnScreenToClick);
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("8");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$144.00");
@@ -1203,6 +1229,7 @@ export class AddonPage extends Page {
         for (let i = 1; i < 4; i++) {
             await this.browser.click(By.xpath(upperMinusBtn));
             await this.browser.sleep(1100);
+            await this.isSpinnerDone();
             expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal((8 - i).toString());
             expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal((48 - (i * 6)).toString());//
             expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal(`$${parseFloat((144 - (i * 6)).toString()).toFixed(2)}`);
@@ -1212,6 +1239,7 @@ export class AddonPage extends Page {
         await this.browser.sendKeys(By.xpath(lowerQty), "20");
         await this.browser.click(this.blankSpaceOnScreenToClick);
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("5");
         expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("9");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("48");
@@ -1231,7 +1259,6 @@ export class AddonPage extends Page {
         upperUOM = this.upperUOMType.valueOf()["value"].slice().replace("|textToFill|", "1234");
         lowerUOM = this.lowerUOMType.valueOf()["value"].slice().replace("|textToFill|", "1234");
         //set uom types to double in the upper field and single in lower
-        debugger;
         await this.selectDropBoxByString(By.xpath(upperUOM), "Case");
         await this.browser.sleep(1500);
         await this.selectDropBoxByString(By.xpath(lowerUOM), "Box");
@@ -1239,6 +1266,7 @@ export class AddonPage extends Page {
 
         await this.browser.click(By.xpath(upperPlusBtn));
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("1");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("24");//
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$168.00");
@@ -1250,11 +1278,64 @@ export class AddonPage extends Page {
         await this.browser.sendKeys(By.xpath(lowerQty), "20");
         await this.browser.click(this.blankSpaceOnScreenToClick);
         await this.browser.sleep(1100);
+        await this.isSpinnerDone();
         expect(await (await this.browser.findElement(By.xpath(upperQty))).getAttribute("title")).to.equal("1");//
         expect(await (await this.browser.findElement(By.xpath(lowerQty))).getAttribute("title")).to.equal("1");
         expect(await (await this.browser.findElement(By.xpath(lowestQty))).getText()).to.equal("37");//
         expect(await (await this.browser.findElement(By.xpath(itemTotalPrice))).getText()).to.equal("$181.00");
         expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$181.00");
+        await this.browser.click(this.SubmitToCart);
+        const webAppList = new WebAppList(this.browser);
+        await webAppList.isSpinnerDone();
+        await webAppList.validateListRowElements();
+    }
+
+    public async testUOMCartUI(): Promise<string> {
+        expect(await (await this.browser.findElement(this.WholeOrderPrice)).getText()).to.equal(("$181.00").toString());
+        //element 1234
+        let qtyOf1234Element = this.ItemQtyBtItemCode.valueOf()["value"].slice().replace("|textToFill|", "1234");
+        let priceOf1234Element = this.TotalUnitPrice.valueOf()["value"].slice().replace("|textToFill|", "1234");
+        expect(await (await this.browser.findElement(By.xpath(qtyOf1234Element))).getAttribute("title")).to.equal(("37").toString());
+        expect(await (await this.browser.findElement(By.xpath(priceOf1234Element))).getAttribute("title")).to.equal(("$37.00").toString());
+        //element 1233
+        let qtyOf1233Element = this.ItemQtyBtItemCode.valueOf()["value"].slice().replace("|textToFill|", "1233");
+        let priceOf1233Element = this.TotalUnitPrice.valueOf()["value"].slice().replace("|textToFill|", "1233");
+        expect(await (await this.browser.findElement(By.xpath(qtyOf1233Element))).getAttribute("title")).to.equal(("48").toString());
+        expect(await (await this.browser.findElement(By.xpath(priceOf1233Element))).getAttribute("title")).to.equal(("$48.00").toString());
+        //element 1232
+        let qtyOf1232Element = this.ItemQtyBtItemCode.valueOf()["value"].slice().replace("|textToFill|", "1232");
+        let priceOf1232Element = this.TotalUnitPrice.valueOf()["value"].slice().replace("|textToFill|", "1232");
+        expect(await (await this.browser.findElement(By.xpath(qtyOf1232Element))).getAttribute("title")).to.equal(("48").toString());
+        expect(await (await this.browser.findElement(By.xpath(priceOf1232Element))).getAttribute("title")).to.equal(("$48.00").toString());
+        //element 1232
+        let qtyOf1231Element = this.ItemQtyBtItemCode.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        let priceOf1231Element = this.TotalUnitPrice.valueOf()["value"].slice().replace("|textToFill|", "1231");
+        expect(await (await this.browser.findElement(By.xpath(qtyOf1231Element))).getAttribute("title")).to.equal(("48").toString());
+        expect(await (await this.browser.findElement(By.xpath(priceOf1231Element))).getAttribute("title")).to.equal(("$48.00").toString());
+
+        return await this.getOrderIdFromCart();
+    }
+
+    public async getOrderIdFromCart(): Promise<string> {
+        await this.browser.click(this.OrderDeatilsMenu);
+        await this.browser.sleep(1500);
+        await this.browser.click(By.xpath("//span[text()=' Order Details ']"));
+        this.browser.sleep(1000);
+        await this.isSpinnerDone();
+        const idToReturn = await (await this.browser.findElement(By.xpath("//input[@name='WrntyID']"))).getAttribute("title");
+        await this.browser.click(By.css("[data-qa='cancelButton']"));
+        this.browser.sleep(1000);
+        const webAppList = new WebAppList(this.browser);
+        await webAppList.isSpinnerDone();
+        return idToReturn;
+    }
+
+    public async submitOrder() : Promise<void>{
+        await this.browser.sleep(1000);
+        await this.browser.click(this.SubmitOrderCartBtn);
+        await this.isSpinnerDone();
+        const homePage = new WebAppHomePage(this.browser);
+        await expect(homePage.untilIsVisible(homePage.Main, 90000)).eventually.to.be.true;
     }
 
 

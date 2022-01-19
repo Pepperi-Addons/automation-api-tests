@@ -150,7 +150,49 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, "uom");
                         const addonPage = new AddonPage(driver);
                         await addonPage.testUomAtdUI();
-                        debugger;
+                        const orderId: string = await addonPage.testUOMCartUI();
+                        await addonPage.submitOrder();
+                        const service = new ObjectsService(generalService);
+                        const orderResponse = await service.getTransactionLines({
+                            where: `TransactionInternalID=${orderId}`
+                        });
+                        expect(orderResponse).to.be.an('array').with.lengthOf(4);
+                        orderResponse.forEach(element => {
+                            switch (element.Item?.Data?.ExternalID) {
+                                case "1232":
+                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(48);
+                                    expect(element.UnitsQuantity).to.equal(48);
+                                    expect(element.TSAAOQMQuantity1).to.equal(12);
+                                    expect(element.TSAAOQMUOM1).to.equal("DOU");
+                                    expect(element.TSAAOQMQuantity2).to.equal(24);
+                                    expect(element.TSAAOQMUOM2).to.equal("SIN");
+                                    break;
+                                case "1233":
+                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(48);
+                                    expect(element.UnitsQuantity).to.equal(48);
+                                    expect(element.TSAAOQMQuantity1).to.equal(5);
+                                    expect(element.TSAAOQMUOM1).to.equal("PK");
+                                    expect(element.TSAAOQMQuantity2).to.equal(9);
+                                    expect(element.TSAAOQMUOM2).to.equal("DOU");
+                                    break;
+                                case "1234":
+                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(37);
+                                    expect(element.UnitsQuantity).to.equal(37);
+                                    expect(element.TSAAOQMQuantity1).to.equal(1);
+                                    expect(element.TSAAOQMUOM1).to.equal("CS");
+                                    expect(element.TSAAOQMQuantity2).to.equal(1);
+                                    expect(element.TSAAOQMUOM2).to.equal("Bx");
+                                    break;
+                                case "1231":
+                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(48);
+                                    expect(element.UnitsQuantity).to.equal(48);
+                                    expect(element.TSAAOQMQuantity1).to.equal(2);
+                                    expect(element.TSAAOQMUOM1).to.equal("Bx");
+                                    expect(element.TSAAOQMQuantity2).to.equal(22);
+                                    expect(element.TSAAOQMUOM2).to.equal("SIN");
+                                    break;
+                            }
+                        });
                     });
                     // it('Delete test ATD from dist + home screen using UI', async function () {
                     //     const webAppLoginPage = new WebAppLoginPage(driver);

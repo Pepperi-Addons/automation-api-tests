@@ -53,6 +53,7 @@ export class Browser {
     public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
+            console.log(`clicked ${selector.valueOf()["value"]} element`);
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -65,10 +66,12 @@ export class Browser {
                         await this.driver.executeScript(
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
+                        console.log(`clicked ${selector.valueOf()["value"]} element`);
                     } else {
                         await this.driver.executeScript(
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
+                        console.log(`clicked ${selector.valueOf()["value"]} element on ${index} index`);
                     }
                 } else {
                     throw error;
