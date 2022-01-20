@@ -1111,7 +1111,7 @@ export class AddonPage extends Page {
         upperMinusBtn = this.upperMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
         upperQty = this.upperQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
         let lowerPlusBtn = this.lowerPlusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
-        let lowerMinusBtn = this.lowerMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
+        // let lowerMinusBtn = this.lowerMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
         let lowerQty = this.lowerQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
         lowestQty = this.lowestQty.valueOf()['value'].slice().replace('|textToFill|', '1231');
         itemTotalPrice = this.itemGrandTotal.valueOf()['value'].slice().replace('|textToFill|', '1231');
@@ -1204,7 +1204,7 @@ export class AddonPage extends Page {
         upperMinusBtn = this.upperMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
         upperQty = this.upperQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
         lowerPlusBtn = this.lowerPlusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
-        lowerMinusBtn = this.lowerMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
+        // lowerMinusBtn = this.lowerMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
         lowerQty = this.lowerQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
         lowestQty = this.lowestQty.valueOf()['value'].slice().replace('|textToFill|', '1232');
         itemTotalPrice = this.itemGrandTotal.valueOf()['value'].slice().replace('|textToFill|', '1232');
@@ -1301,7 +1301,6 @@ export class AddonPage extends Page {
         upperMinusBtn = this.upperMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1233');
         upperQty = this.upperQty.valueOf()['value'].slice().replace('|textToFill|', '1233');
         lowerPlusBtn = this.lowerPlusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1233');
-        lowerMinusBtn = this.lowerMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1233');
         lowerQty = this.lowerQty.valueOf()['value'].slice().replace('|textToFill|', '1233');
         lowestQty = this.lowestQty.valueOf()['value'].slice().replace('|textToFill|', '1233');
         itemTotalPrice = this.itemGrandTotal.valueOf()['value'].slice().replace('|textToFill|', '1233');
@@ -1359,7 +1358,6 @@ export class AddonPage extends Page {
         upperMinusBtn = this.upperMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1234');
         upperQty = this.upperQty.valueOf()['value'].slice().replace('|textToFill|', '1234');
         lowerPlusBtn = this.lowerPlusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1234');
-        lowerMinusBtn = this.lowerMinusButtonQty.valueOf()['value'].slice().replace('|textToFill|', '1234');
         lowerQty = this.lowerQty.valueOf()['value'].slice().replace('|textToFill|', '1234');
         lowestQty = this.lowestQty.valueOf()['value'].slice().replace('|textToFill|', '1234');
         itemTotalPrice = this.itemGrandTotal.valueOf()['value'].slice().replace('|textToFill|', '1234');
