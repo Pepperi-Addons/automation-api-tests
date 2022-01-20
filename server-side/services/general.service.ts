@@ -94,9 +94,12 @@ export default class GeneralService {
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
     }
+
     sleepTimeout(ms) {
+        console.debug(`%cAsync Sleep: ${ms} milliseconds`, 'color: #f7df1e');
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
+
     sleep(ms) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
