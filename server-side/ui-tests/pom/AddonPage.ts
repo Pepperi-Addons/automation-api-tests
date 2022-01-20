@@ -216,7 +216,7 @@ export class AddonPage extends Page {
     public FeildTypeButton: Locator = By.xpath("//h3[@title='|textToFill|']//..");
 
     //script adding page
-    public scriptEditingTitle: Locator = By.xpath("//span[@class='fl section_label ng-binding']");
+    public scriptEditingTitle: Locator = By.xpath("//span[contains(text(),'Available Fields')]");
     public AvailibaleFieldsBtn: Locator = By.xpath(
         "//button[@class='fr md-primary md-fab md-mini default-color md-button md-ink-ripple']",
     );
@@ -606,14 +606,14 @@ export class AddonPage extends Page {
         expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
 
         //Validate Editor Page Loaded
-        await this.browser.sleep(4500);
-        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 45000)).to.be.true;
+        await this.browser.sleep(7500);
+        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
         if (isTransLine) {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
         } else {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 0);
         }
-        expect(await this.browser.untilIsVisible(this.fieldAddingTitle, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.fieldAddingTitle, 25000)).to.be.true;
         if (fieldType) {
             const xpathQueryForFieldTypeBtn: string = this.FeildTypeButton.valueOf()['value'].replace(
                 '|textToFill|',
@@ -624,8 +624,8 @@ export class AddonPage extends Page {
         await this.browser.click(this.calculatedFieldCheckBox);
         await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 0);
         await this.browser.click(this.editFieldScriptBtn);
-        await this.browser.sleep(4500);
-        expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 15000)).to.be.true;
+        await this.browser.sleep(5500);
+        expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 35000)).to.be.true;
 
         if (scriptParam) {
             await this.browser.click(this.AvailibaleFieldsBtn);
@@ -953,11 +953,23 @@ export class AddonPage extends Page {
         await this.selectTabByText('Uom');
         expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
         await this.selectDropBoxByString(this.UomDropDownFields, 'AllowedUomFieldsForTest', 0);
+        await this.isSpinnerDone();
+        await this.browser.sleep(1500);
         await this.selectDropBoxByString(this.UomDropDownFields, 'ItemConfig', 1);
+        await this.isSpinnerDone();
+        await this.browser.sleep(1500);
         await this.selectDropBoxByString(this.UomDropDownFields, 'ConstInventory', 2);
+        await this.isSpinnerDone();
+        await this.browser.sleep(1500);
         await this.selectDropBoxByString(this.UomDropDownFields, 'Fix Quantity', 3);
+        await this.isSpinnerDone();
+        await this.browser.sleep(1500);
         await this.selectDropBoxByString(this.UomDropDownFields, 'Fix Quantity', 4);
+        await this.isSpinnerDone();
+        await this.browser.sleep(1500);
         await this.selectDropBoxByString(this.UomDropDownFields, 'Fix Quantity', 5);
+        await this.isSpinnerDone();
+        await this.browser.sleep(1500);
         await this.browser.click(this.UomSaveBtn);
         const webAppDialog = new WebAppDialog(this.browser);
         const isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
@@ -1006,17 +1018,15 @@ export class AddonPage extends Page {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         //**first testing phase will be performed w/o this feature - second whill test this only**
-        // await this.addATDCalculatedField({
-        //     Label: 'ItemConfig',
-        //     CalculatedRuleEngine: {
-        //         JSFormula:
-        //             `const res = [];
-        //     res.push(
-        //       {"UOMKey": "SIN", "Factor": 1, "Min": 1, "Case": 1, "Decimal": 4, "Negative":true},
-        //       {"UOMKey": "Bx", "Factor": 5, "Min": 3, "Case": 4, "Decimal": 9, "Negative":false}
-        //     );
-        //   return JSON.stringify(res);` }
-        // }, true);
+        await this.addATDCalculatedField(
+            {
+                Label: 'ItemConfig',
+                CalculatedRuleEngine: {
+                    JSFormula: `return null;`,
+                },
+            },
+            true,
+        );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         await this.addATDCalculatedField(

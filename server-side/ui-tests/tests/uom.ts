@@ -138,6 +138,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppHomePage.manualResync();
                         await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
+
                     it('UI Test UOM ATD', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
@@ -190,6 +191,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             }
                         });
                     });
+
                     it('Delete test ATD from dist + home screen using UI', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
