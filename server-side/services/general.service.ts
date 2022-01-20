@@ -441,7 +441,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )} /var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
