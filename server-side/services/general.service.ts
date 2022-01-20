@@ -444,6 +444,7 @@ export default class GeneralService {
                     'papi-eu',
                     'papi',
                 )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+
                 {
                     method: `GET`,
                     headers: {
