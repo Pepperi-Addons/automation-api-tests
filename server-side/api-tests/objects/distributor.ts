@@ -19,10 +19,12 @@ export async function DistributorTests(generalService: GeneralService, request, 
     let password;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         password = request.body.varKeyStage;
+    } else if (generalService.papiClient['options'].baseURL.includes('papi-eu')) {
+        password = request.body.varKeyEU;
     } else {
-        //TODO: Create a way to use VAR EU after QA var EU will work
         password = request.body.varKeyPro;
     }
+    debugger;
     const distributorService = new DistributorService(generalService, password);
     const describe = tester.describe;
     const expect = tester.expect;

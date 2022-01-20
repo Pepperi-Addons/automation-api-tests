@@ -54,9 +54,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             it(`Login To New Distributor`, async function () {
                 let password = varPass;
                 if (varPassEU) {
-                    //TODO: This is a temp solution for var EU not working yet
-                    // password = varPassEU;
-                    password = `${Buffer.from(varPassEU.split(' ')[1], 'base64').toString()}`;
+                    password = varPassEU;
                 }
                 const distributorService = new DistributorService(generalService, password);
 

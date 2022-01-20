@@ -173,6 +173,11 @@ export class Browser {
         return this.driver.takeScreenshot();
     }
 
+    public sleepTimeout(ms) {
+        console.debug(`%cAsync Sleep: ${ms} milliseconds`, 'color: #f7df1e');
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     public sleep(ms: number) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
@@ -290,7 +295,7 @@ export class Browser {
                 .then(
                     async (res) => {
                         console.log(`Browser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`);
-                        await new Promise((resolve) => setTimeout(resolve, 2000));
+                        await this.sleepTimeout(2000);
                         console.log('Waited 2 seconds for browser closing process will be done');
                     },
                     (error) => {
