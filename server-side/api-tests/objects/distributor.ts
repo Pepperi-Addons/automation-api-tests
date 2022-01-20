@@ -20,7 +20,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
     if (request.body.varKeyEU) {
         password = request.body.varKeyEU;
     }
-    const distributorService = new DistributorService(generalService, { body: { varKey: password } });
+    const distributorService = new DistributorService(generalService, password);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;

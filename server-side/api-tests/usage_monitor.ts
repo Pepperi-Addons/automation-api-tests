@@ -13,11 +13,17 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
     const testData = {
         'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', ''],
     };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
 
-    describe('addon relation Tests Suites', () => {
+    describe('Addon Relation Tests Suites', () => {
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
@@ -51,7 +57,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
             }
         });
         describe(`Compare data from base and last versions`, () => {
-            it(`negative : AddonUUID not equale to OwnerID`, async () => {
+            it(`Negative: AddonUUID not equale to OwnerID`, async () => {
                 //const secretKey = await relationService.getSecretKey()
                 // console.log(usageMonitorService.papiClient['options'].addonUUID,usageMonitorService.papiClient['options'].addonSecretKey )
                 // usageMonitorService.papiClient['options'].addonUUID = {}
@@ -67,7 +73,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
                 const tempTestData = {
                     'Usage Monitor': ['00000000-0000-0000-0000-000000005A9E', testBaseVersion],
                 };
-                await generalService.changeVersion(request.body.varKey, tempTestData, false);
+                await generalService.changeVersion(varKey, tempTestData, false);
                 const baseVersion = await usageMonitorService.get();
                 //debugger;
                 delete baseVersion.ExpirationDateTime;

@@ -15,7 +15,11 @@ export class WebAppTopBar extends Page {
     public SearchFieldInput: Locator = By.css('#searchInput');
     public ChangeViewButton: Locator = By.css(`.top-bar-container button [title='Change View']`);
     public PanelMenuButtons: Locator = By.css(`[role="menu"] button`);
-    public ChangeListButton: Locator = By.css(`.top-bar-container list-chooser button`);
+    //TODO: Replace ChangeListButton for:
+    //WebApp Platform | Version: 16.60.38 = top-bar-container
+    //WebApp Platform | Version: 16.65.30/16.65.34 = pep-side-bar-container
+    // public ChangeListButton: Locator = By.css(`.top-bar-container list-chooser button`);
+    public ChangeListButton: Locator = By.css(`.pep-side-bar-container list-chooser button`);
 
     //Cart
     public CartTopMenu: Locator = By.css('[data-qa="firstMenu"]');
@@ -31,7 +35,11 @@ export class WebAppTopBar extends Page {
     public EditorAddBtn: Locator = By.css('main .content.pep-border-bottom button [name="number_plus"]');
 
     //Catalog
-    public CatalogSelectHeader: Locator = By.xpath("//div[contains(text(), 'Select Catalog')]");
+    //TODO: Replace CatalogSelectHeader for:
+    //WebApp Platform | Version: 16.60.38 = div
+    //WebApp Platform | Version: 16.65.30/16.65.34 = sapn
+    // public CatalogSelectHeader: Locator = By.xpath("//div[contains(text(), 'Select Catalog')]");
+    public CatalogSelectHeader: Locator = By.xpath("//span[contains(text(), 'Select Catalog')]");
 
     public async selectFromMenuByText(menu: Locator, buttonText: string): Promise<void> {
         console.log('Select from menu');

@@ -13,7 +13,7 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
         {
             method: `GET`,
             headers: {
-                Authorization: request.body.varKey,
+                Authorization: `Basic ${Buffer.from(request.body.varKeyPro).toString('base64')}`,
             },
         },
     );
@@ -23,7 +23,7 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
         {
             method: `GET`,
             headers: {
-                Authorization: request.body.varKey,
+                Authorization: `Basic ${Buffer.from(request.body.varKeyStage).toString('base64')}`,
             },
         },
     );
@@ -61,16 +61,12 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
     }
 
     let UsageMonitorTestData;
-    let PepperiElasticSearchTestData;
     let DataRetentionTestData;
     let ShirMaintenancetTest2TestData;
 
     for (let index = 0; index < arrayOfAddonsDiff.length; index++) {
         if (arrayOfAddonsDiff[index]['Prod'].Name == 'Usage Monitor') {
             UsageMonitorTestData = arrayOfAddonsDiff[index]['Stage'];
-            arrayOfAddonsDiff.splice(index, 1);
-        } else if (arrayOfAddonsDiff[index]['Prod'].Name == 'Pepperi Elastic Search') {
-            PepperiElasticSearchTestData = arrayOfAddonsDiff[index]['Stage'];
             arrayOfAddonsDiff.splice(index, 1);
         } else if (arrayOfAddonsDiff[index]['Prod'].Name == 'Data Retention') {
             DataRetentionTestData = arrayOfAddonsDiff[index]['Stage'];
@@ -92,10 +88,6 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
 
         it(`Expect Usage Monitor Is System in Production Only `, async () => {
             expect(UsageMonitorTestData).to.equal('Addon Missing');
-        });
-
-        it(`Expect Pepperi Elastic Search Is System in Production Only `, async () => {
-            expect(PepperiElasticSearchTestData).to.equal('Addon Missing');
         });
 
         it(`Expect Data Retention Is System in Production Only `, async () => {

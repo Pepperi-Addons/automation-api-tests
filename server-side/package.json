@@ -23,8 +23,8 @@
         "learn-p": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_All' --parallel --timeout 20000 ./learn-tests/*Test.ts",
         "learn-pb": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Base' --timeout 20000 ./learn-tests/parallelBaseTest.ts",
         "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn-tests/parallelIntervalTest.ts",
-        "jenkins-ui-test": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
-        "ui-show-report": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''"
+        "jenkins-ui-test": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
+        "ui-show-report": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
@@ -34,6 +34,7 @@
         "@types/node": "^10.17.24",
         "@types/node-fetch": "^2.5.7",
         "@types/selenium-webdriver": "^4.0.16",
+        "@types/uuid": "^8.3.3",
         "@typescript-eslint/eslint-plugin": "^3.5.0",
         "@typescript-eslint/parser": "^3.5.0",
         "chromedriver": "96.0.0",

@@ -316,7 +316,7 @@ export default class GeneralService {
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2') {
                 this.sleep(2000);
-                console.log('IN_Prog: Status ID is 2, Retry ' + loopsAmount + ' Times.');
+                console.log('In_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.');
                 loopsAmount--;
             }
         } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
@@ -394,9 +394,22 @@ export default class GeneralService {
                         .addonUUID(`${testData[addonUUID][0]} `)
                         .install('0.0.235');
                 } else {
-                    installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${testData[addonUUID][0]} `)
-                        .install();
+                    if (testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/)) {
+                        const version = testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/);
+                        if (version?.length && typeof version[0] === 'string') {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .install(version[0]);
+                        } else {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .install();
+                        }
+                    } else {
+                        installResponse = await this.papiClient.addons.installedAddons
+                            .addonUUID(`${testData[addonUUID][0]}`)
+                            .install();
+                    }
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
@@ -436,7 +449,7 @@ export default class GeneralService {
                 {
                     method: `GET`,
                     headers: {
-                        Authorization: `${varKey} `,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -706,6 +719,11 @@ export default class GeneralService {
         return !!pattern.test(s.replace(' ', '%20'));
     }
 
+    /**
+     * The addon must be installed for this function to work
+     * @param addonUUID
+     * @returns
+     */
     getSecretKey(addonUUID: string): Promise<string> {
         return this.papiClient
             .post('/code_jobs/get_data_for_job_execution', {

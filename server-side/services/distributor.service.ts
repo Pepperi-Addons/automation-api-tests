@@ -17,12 +17,11 @@ export interface DistributorTrialObject {
 export class DistributorService {
     papiClient: PapiClient;
     generalService: GeneralService;
-    request: any;
-
-    constructor(public service: GeneralService, request = {}) {
+    varKey: string;
+    constructor(public service: GeneralService, password?) {
         this.papiClient = service.papiClient;
         this.generalService = service;
-        this.request = request;
+        this.varKey = password;
     }
 
     resetUserPassword(UserID) {
@@ -33,17 +32,13 @@ export class DistributorService {
         let newDistributor;
         let maxLoopsCounter = 16;
         console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");
-        let password = this.request.body.varKey;
-        if (this.request.body.varKeyEU) {
-            password = this.request.body.varKeyEU;
-        }
         do {
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
                 {
                     method: `POST`,
                     headers: {
-                        Authorization: password,
+                        Authorization: `Basic ${Buffer.from(this.varKey).toString('base64')}`,
                     },
                     body: JSON.stringify({
                         FirstName: Distributor.FirstName,
@@ -66,11 +61,12 @@ export class DistributorService {
                 });
             }
             //TODO: Remove this when bugs will be solved (DI-19114/19116/19117/19118)
-            let isKnown = false;
+            let isNotKnown = true;
             if (newDistributor.Body?.Type == 'request-timeout') {
                 console.log('Bug exist for this response: (DI-19118)');
                 console.log('VAR - Create Distributor - The API call never return');
-                throw new Error(`Known Bug: VAR - Create Distributor - The API call never return (DI-19118)`);
+                //TODO: Un comment this throw when the bug will be solved
+                // throw new Error(`Known Bug: VAR - Create Distributor - The API call never return (DI-19118)`);
             }
             if (newDistributor.Status == 500) {
                 if (
@@ -78,16 +74,16 @@ export class DistributorService {
                 ) {
                     console.log('Bug exist for this response: (DI-19114)');
                     this.generalService.sleep(1000 * 60 * 1);
-                    isKnown = true;
+                    isNotKnown = false;
                 }
                 if (
-                    newDistributor.Body?.includes(
+                    JSON.stringify(newDistributor.Body).includes(
                         'The requested URL was rejected. Please consult with your administrator.',
                     )
                 ) {
                     console.log('Bug exist for this response: (DI-19116)');
                     this.generalService.sleep(1000 * 60 * 1);
-                    isKnown = true;
+                    isNotKnown = false;
                 }
                 if (
                     newDistributor.Body?.fault?.faultstring ==
@@ -95,9 +91,9 @@ export class DistributorService {
                 ) {
                     console.log('Bug exist for this response: (DI-19117)');
                     this.generalService.sleep(1000 * 60 * 1);
-                    isKnown = true;
+                    isNotKnown = false;
                 }
-                if (isKnown) {
+                if (isNotKnown) {
                     throw new Error(
                         `Status: ${newDistributor.Status}, Message: ${newDistributor.Body?.fault?.faultstring}`,
                     );
@@ -113,7 +109,7 @@ export class DistributorService {
             {
                 method: `POST`,
                 headers: {
-                    Authorization: this.request.body.varKey,
+                    Authorization: `Basic ${Buffer.from(this.varKey).toString('base64')}`,
                 },
                 body: JSON.stringify({
                     UUID: distributorTrialObject.UUID,
