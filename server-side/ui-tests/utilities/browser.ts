@@ -53,7 +53,9 @@ export class Browser {
     public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
-            console.log(`clicked ${selector.valueOf()['value']} element`);
+            console.log(
+                `Clicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+            );
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -66,12 +68,20 @@ export class Browser {
                         await this.driver.executeScript(
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
-                        console.log(`clicked ${selector.valueOf()['value']} element`);
+                        console.log(
+                            `Clicked with xpath selector: ${
+                                selector.valueOf()['value']
+                            }, on element with index of: ${index}`,
+                        );
                     } else {
                         await this.driver.executeScript(
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
-                        console.log(`clicked ${selector.valueOf()['value']} element on ${index} index`);
+                        console.log(
+                            `Clicked with css selector: ${
+                                selector.valueOf()['value']
+                            }, on element with index of: ${index}`,
+                        );
                     }
                 } else {
                     throw error;
@@ -89,6 +99,9 @@ export class Browser {
             console.log('Wait after clear, beofre send keys');
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
+            console.log(
+                `SentKeys with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+            );
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -103,10 +116,31 @@ export class Browser {
                         const el = await this.driver.findElements(selector);
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
-                    } catch (error) {
-                        await this.driver.executeScript(
-                            `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                        console.log(
+                            `SentKeys with actions and defult selector: ${
+                                selector.valueOf()['value']
+                            }, on element with index of: ${index}`,
                         );
+                    } catch (error) {
+                        if (selector['using'] == 'xpath') {
+                            await this.driver.executeScript(
+                                `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
+                            );
+                            console.log(
+                                `Set value with xpath selector: ${
+                                    selector.valueOf()['value']
+                                }, on element with index of: ${index}`,
+                            );
+                        } else {
+                            await this.driver.executeScript(
+                                `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                            );
+                            console.log(
+                                `Set value with css selector: ${
+                                    selector.valueOf()['value']
+                                }, on element with index of: ${index}`,
+                            );
+                        }
                     }
                 } else {
                     throw error;

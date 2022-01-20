@@ -554,8 +554,8 @@ export class AddonPage extends Page {
         expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
 
         const locator: Locator = isTransLine
-            ? this.AddonContainerATDEditorTransactionFieldArr
-            : this.AddonContainerATDEditorTransactionLineFieldArr;
+            ? this.AddonContainerATDEditorTransactionLineFieldArr
+            : this.AddonContainerATDEditorTransactionFieldArr;
         const buttonsArr = await this.browser.findElements(locator);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
@@ -566,6 +566,7 @@ export class AddonPage extends Page {
         }
         const selectedBtn = Object.assign({}, this.AddonContainerATDEditorEditFieldArr);
         selectedBtn['value'] = `//td[@title='${fieldObj.Label}']/${selectedBtn['value']}`;
+        await this.browser.click(selectedBtn);
 
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldEditFormula);
         await this.browser.sendKeys(
