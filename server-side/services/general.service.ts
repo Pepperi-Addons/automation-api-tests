@@ -427,7 +427,7 @@ export default class GeneralService {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
             let changeType = 'Upgrade';
-            let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
+            let searchString = `AND Version Like'${version}%' AND Available Like 1 AND Phased Like 1`;
             if (
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
@@ -441,7 +441,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )} /var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                )} /var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
@@ -506,7 +506,7 @@ export default class GeneralService {
             let changeType = 'Upgrade';
             const searchString = `AND Version Like '${version}%' AND Available Like 1`;
             const fetchResponse = await this.fetchStatus(
-                `${this.client.BaseURL} /addons/versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                `${this.client.BaseURL} /addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                 },
