@@ -143,11 +143,13 @@ export class WebAppHomePage extends Page {
         await this.browser.untilIsVisible(By.xpath(`//button[@title='${ATDname}']`), 5000);
     }
 
-
-    public async initiateUOMActivity(ATDname: string, accountName: string, viewType: string = 'Medium'): Promise<void> {
+    public async initiateUOMActivity(ATDname: string, accountName: string, viewType = 'Medium'): Promise<void> {
         await this.browser.click(By.xpath(`//button[@title='${ATDname}']`));
         await this.browser.sleep(1500);
-        await this.browser.untilIsVisible(By.xpath("//span[@class='dialog-title ng-star-inserted' and text()=' Select Account  ']"), 1500);
+        await this.browser.untilIsVisible(
+            By.xpath("//span[@class='dialog-title ng-star-inserted' and text()=' Select Account  ']"),
+            1500,
+        );
         await this.browser.click(By.xpath(`//span[@title='${accountName}']/../../../../mat-radio-button`));
         await this.browser.sleep(1500);
         await this.browser.click(By.css("[data-qa='doneButton']"));
@@ -157,10 +159,12 @@ export class WebAppHomePage extends Page {
         try {
             isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
         } catch (Error) {
-            console.log("no popup while opening UOM ATD");
+            console.log('no popup while opening UOM ATD');
         }
         if (isPupUP) {
-            expect(isPupUP).to.equal('You already have an open order which you have previously started. To start a new order anyway click Continue/Yes. To be directed to the open order click Cancel/No.');
+            expect(isPupUP).to.equal(
+                'You already have an open order which you have previously started. To start a new order anyway click Continue/Yes. To be directed to the open order click Cancel/No.',
+            );
             await webAppDialog.selectDialogBox('Yes');
             await this.isSpinnerDone();
         }
@@ -172,10 +176,12 @@ export class WebAppHomePage extends Page {
         await this.browser.click(By.xpath(`//span[text()='${viewType}']`));
         await this.isSpinnerDone();
         //validate there are 5 items on screen
-        const allItemPresented: WebElement[] = await this.browser.findElements(By.xpath("//fieldset"));
+        const allItemPresented: WebElement[] = await this.browser.findElements(By.xpath('//fieldset'));
         expect(allItemPresented.length).to.equal(5);
         //validate 4 are UOM items
-        const allUOMItemPresented: WebElement[] = await this.browser.findElements(By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']"));
+        const allUOMItemPresented: WebElement[] = await this.browser.findElements(
+            By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']"),
+        );
         expect(allUOMItemPresented.length).to.equal(4);
     }
 }
