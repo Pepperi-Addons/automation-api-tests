@@ -36,8 +36,9 @@ export async function DistributorTests(generalService: GeneralService, request, 
             const lorem = new LoremIpsum({});
             const distributorFirstName = lorem.generateWords(1);
             const distributorLastName = lorem.generateWords(1);
-            const distributorEmail = `${distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
-                }.${distributorLastName}@pepperitest.com`;
+            const distributorEmail = `${
+                distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
+            }.${distributorLastName}@pepperitest.com`;
             const distributorCompany = lorem.generateWords(3);
             const lettersGenerator = lorem.generateWords(1).substring(0, 2);
             const distributorPassword =
@@ -240,20 +241,20 @@ export async function DistributorTests(generalService: GeneralService, request, 
                                 contactAccount.ExternalID,
                                 'Bulk Contact 1',
                                 'BuyerEmail' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '@' +
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '.com',
                             ],
                             [
                                 bulkContactExternalID + ' 2',
                                 contactAccount.ExternalID,
                                 'Bulk Contact 2',
                                 'BuyerEmail' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '@' +
-                                Math.floor(Math.random() * 1000000).toString() +
-                                '.com',
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '@' +
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '.com',
                             ],
                         ],
                     });
@@ -299,8 +300,8 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     const connectAsBuyerContacts = await adminObjectsService.getBulk(
                         'contacts',
                         "?where=ExternalID LIKE '%" +
-                        bulkContactExternalID +
-                        "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+                            bulkContactExternalID +
+                            "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
                     );
                     connectAsBuyerContacts.map((contact) => {
                         expect(contact).to.not.have.property('SecurityGroupUUID');
@@ -364,7 +365,10 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     supportAdminObjectsService = new ObjectsService(supportAdminService);
                     supportAdminDistributorService = new DistributorService(supportAdminService);
                     usersBeforeExpiration = await supportAdminObjectsService.getUsers({ include_deleted: true });
-                    buyersBeforeExpiration = await supportAdminObjectsService.getContactsSDK({ include_deleted: true, where: 'IsBuyer=true' });
+                    buyersBeforeExpiration = await supportAdminObjectsService.getContactsSDK({
+                        include_deleted: true,
+                        where: 'IsBuyer=true',
+                    });
                     expect(usersBeforeExpiration).to.be.an('array').with.lengthOf(2);
                     expect(buyersBeforeExpiration).to.be.an('array').with.lengthOf(2);
                 });
@@ -386,7 +390,8 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 it(`Get users + buyers with support admin and verify all deleted`, async () => {
                     const usersAfterExpiration = await supportAdminObjectsService.getUsers({ include_deleted: true });
                     const buyersAfterExpiration = await supportAdminObjectsService.getContactsSDK({
-                        include_deleted: true, where: 'IsBuyer=true'
+                        include_deleted: true,
+                        where: 'IsBuyer=true',
                     });
                     expect(usersAfterExpiration).to.be.an('array').with.lengthOf(2);
                     expect(buyersAfterExpiration).to.be.an('array').with.lengthOf(2);
@@ -412,7 +417,10 @@ export async function DistributorTests(generalService: GeneralService, request, 
 
                 it(`Get users + buyers with support admin and verify correct users were unhidden`, async () => {
                     const usersAfterValid = await supportAdminObjectsService.getUsers({ include_deleted: true });
-                    const buyersAfterValid = await supportAdminObjectsService.getContactsSDK({ include_deleted: true, where: 'IsBuyer=true' });
+                    const buyersAfterValid = await supportAdminObjectsService.getContactsSDK({
+                        include_deleted: true,
+                        where: 'IsBuyer=true',
+                    });
                     expect(usersAfterValid).to.be.an('array').with.lengthOf(2);
                     expect(buyersAfterValid).to.be.an('array').with.lengthOf(2);
                     expect(usersAfterValid[0].InternalID).to.equal(usersBeforeExpiration[0].InternalID);
@@ -436,8 +444,12 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 });
 
                 it(`Verify that distributor is disabled and addons are uninstalled`, async () => {
-                    const distributor = await generalService.getVARDistributor(request.body.varKey, { where: `InternalID=${adminService.getClientData('DistributorID')}` });
-                    const distributorAddons = await generalService.getVARInstalledAddons(request.body.varKey, { where: `DistributorID=${adminService.getClientData('DistributorID')}` });
+                    const distributor = await generalService.getVARDistributor(request.body.varKey, {
+                        where: `InternalID=${adminService.getClientData('DistributorID')}`,
+                    });
+                    const distributorAddons = await generalService.getVARInstalledAddons(request.body.varKey, {
+                        where: `DistributorID=${adminService.getClientData('DistributorID')}`,
+                    });
                     expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);
                     expect(distributor.Body[0].AccountingStatus.ID).to.equal(2);
                     expect(distributor.Body[0].AccountingStatus.Name).to.equal('Disabled');

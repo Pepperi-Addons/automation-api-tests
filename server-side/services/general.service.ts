@@ -98,7 +98,7 @@ export default class GeneralService {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
             expire = start + ms;
-        while (new Date().getTime() < expire) { }
+        while (new Date().getTime() < expire) {}
         return;
     }
 
@@ -220,8 +220,8 @@ export default class GeneralService {
         return this.client.BaseURL.includes('staging')
             ? 'Sandbox'
             : this.client.BaseURL.includes('papi-eu')
-                ? 'Production-EU'
-                : 'Production';
+            ? 'Production-EU'
+            : 'Production';
     }
 
     getClientData(data: ClientData): string {
@@ -237,36 +237,25 @@ export default class GeneralService {
     }
 
     getVARInstalledAddons(varKey: string, options: QueryOptions = {}) {
-        let url = `${this.client.BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/installed_addons`;
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/addons/installed_addons`;
         url = this.addQueryAndOptions(url, options);
-        return this.fetchStatus(
-            url,
-            {
-                method: `GET`,
-                headers: {
-                    Authorization: `${varKey}`,
-                },
+        return this.fetchStatus(url, {
+            method: `GET`,
+            headers: {
+                Authorization: `${varKey}`,
             },
-        );
+        });
     }
 
     getVARDistributor(varKey: string, options: QueryOptions = {}) {
-        let url = `${this.client.BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/distributors`;
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/distributors`;
         url = this.addQueryAndOptions(url, options);
-        return this.fetchStatus(url,
-            {
-                method: `GET`,
-                headers: {
-                    Authorization: `${varKey} `,
-                },
+        return this.fetchStatus(url, {
+            method: `GET`,
+            headers: {
+                Authorization: `${varKey} `,
             },
-        );
+        });
     }
 
     getAddonsByUUID(UUID: string): Promise<InstalledAddon> {
@@ -305,8 +294,8 @@ export default class GeneralService {
                 auditLogResponse === null
                     ? auditLogResponse
                     : auditLogResponse[0] === undefined
-                        ? auditLogResponse
-                        : auditLogResponse[0];
+                    ? auditLogResponse
+                    : auditLogResponse[0];
             //This case is used when AuditLog was not created at all (This can happen and it is valid)
             if (auditLogResponse === null) {
                 this.sleep(4000);
@@ -444,8 +433,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )
-                } /var/addons / versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                )} /var/addons / versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
@@ -459,7 +447,8 @@ export default class GeneralService {
                     varLatestVersion = fetchVarResponse.Body[0].Version;
                 } catch (error) {
                     throw new Error(
-                        `Get latest addon version failed: ${version}, Status: ${varLatestVersion.Status
+                        `Get latest addon version failed: ${version}, Status: ${
+                            varLatestVersion.Status
                         }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                     );
                 }
@@ -469,7 +458,8 @@ export default class GeneralService {
                 );
             } else {
                 throw new Error(
-                    `Get latest addon version failed: ${version}, Status: ${fetchVarResponse.Status
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchVarResponse.Status
                     }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                 );
             }
@@ -519,13 +509,15 @@ export default class GeneralService {
                     LatestVersion = fetchResponse.Body[0].Version;
                 } catch (error) {
                     throw new Error(
-                        `Get latest addon version failed: ${version}, Status: ${LatestVersion.Status
+                        `Get latest addon version failed: ${version}, Status: ${
+                            LatestVersion.Status
                         }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                     );
                 }
             } else {
                 throw new Error(
-                    `Get latest addon version failed: ${version}, Status: ${fetchResponse.Status
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchResponse.Status
                     }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                 );
             }
@@ -580,7 +572,8 @@ export default class GeneralService {
                 const end = performance.now();
                 const isSucsess = response.status > 199 && response.status < 400 ? true : false;
                 console[isSucsess ? 'log' : 'debug'](
-                    `% cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${uri.startsWith('/') ? this['client'].BaseURL + uri : uri
+                    `% cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                        uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
                     `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'} `,
                 );
@@ -709,11 +702,11 @@ export default class GeneralService {
         //taken from https://tutorial.eyehunts.com/js/url-validation-regex-javascript-example-code/
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', // fragment locator
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', // fragment locator
             'i', // makes the regex case insensitive
         );
         return !!pattern.test(s.replace(' ', '%20'));
