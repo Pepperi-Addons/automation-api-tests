@@ -54,7 +54,8 @@ export class Browser {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
             console.log(
-                `Clicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                `%cClicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                'color: #00e5e5',
             );
         } catch (error) {
             if (error instanceof Error) {
@@ -69,18 +70,20 @@ export class Browser {
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
                         console.log(
-                            `Clicked with xpath selector: ${
+                            `%cClicked with xpath selector: ${
                                 selector.valueOf()['value']
                             }, on element with index of: ${index}`,
+                            'color: #00e5e5',
                         );
                     } else {
                         await this.driver.executeScript(
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
                         console.log(
-                            `Clicked with css selector: ${
+                            `%cClicked with css selector: ${
                                 selector.valueOf()['value']
                             }, on element with index of: ${index}`,
+                            'color: #00e5e5',
                         );
                     }
                 } else {
@@ -100,7 +103,8 @@ export class Browser {
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
             console.log(
-                `SentKeys with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                `%cSentKeys with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                'color: #00ffff',
             );
         } catch (error) {
             if (error instanceof Error) {
@@ -117,9 +121,10 @@ export class Browser {
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
                         console.log(
-                            `SentKeys with actions and defult selector: ${
+                            `%cSentKeys with actions and defult selector: ${
                                 selector.valueOf()['value']
                             }, on element with index of: ${index}`,
+                            'color: #00ffff',
                         );
                     } catch (error) {
                         if (selector['using'] == 'xpath') {
@@ -127,18 +132,20 @@ export class Browser {
                                 `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
                             );
                             console.log(
-                                `Set value with xpath selector: ${
+                                `%cSet value with xpath selector: ${
                                     selector.valueOf()['value']
                                 }, on element with index of: ${index}`,
+                                'color: #00ffff',
                             );
                         } else {
                             await this.driver.executeScript(
                                 `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
                             );
                             console.log(
-                                `Set value with css selector: ${
+                                `%cSet value with css selector: ${
                                     selector.valueOf()['value']
                                 }, on element with index of: ${index}`,
+                                'color: #00ffff',
                             );
                         }
                     }
@@ -301,7 +308,7 @@ export class Browser {
     public async close(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         const windowTitle = await this.driver.getTitle();
-        console.log(`Close Window With Title: ${windowTitle}`);
+        console.log(`%cClose Window With Title: ${windowTitle}`, 'color: #00e500');
         return await this.driver.close();
     }
 
@@ -313,9 +320,9 @@ export class Browser {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         try {
             const windowTitle = await this.driver.getTitle();
-            console.log(`Quit Window With Title: ${windowTitle}`);
+            console.log(`%cQuit Window With Title: ${windowTitle}`, 'color: #ffa500');
         } catch (error) {
-            console.log(`Quit Window With Title Error: ${error}`);
+            console.log(`%cQuit Window With Title Error: ${error}`, 'color: #ffa500');
         }
 
         //Print Driver Info Before Quit
@@ -323,27 +330,30 @@ export class Browser {
         const browserName = driverInfo.get('browserName');
         const browserVersion = driverInfo.get('browserVersion');
         const browserInfo = driverInfo.get(browserName);
-        console.log(`Browser Name: ${browserName}, Version: ${browserVersion}`);
-        console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
+        console.log(`%cBrowser Name: ${browserName}, Version: ${browserVersion}`, 'color: #ffa500');
+        console.log(`%cBrowser Info: ${JSON.stringify(browserInfo)}`, 'color: #ffa500');
 
         try {
             await this.driver
                 .quit()
                 .then(
                     async (res) => {
-                        console.log(`Browser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`);
+                        console.log(
+                            `%cBrowser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`,
+                            'color: #00e500',
+                        );
                         await this.sleepTimeout(2000);
-                        console.log('Waited 2 seconds for browser closing process will be done');
+                        console.log('%cWaited 2 seconds for browser closing process will be done', 'color: #00e500');
                     },
                     (error) => {
-                        console.log(`Browser Quit Error In Response: ${error}`);
+                        console.log(`%cBrowser Quit Error In Response: ${error}`, 'color: #e50000');
                     },
                 )
                 .catch((error) => {
-                    console.log(`Browser Quit Error In Catch: ${error}`);
+                    console.log(`%cBrowser Quit Error In Catch: ${error}`, 'color: #e50000');
                 });
         } catch (error) {
-            console.log(`Browser Error: ${error}`);
+            console.log(`%cBrowser Error: ${error}`, 'color: #e50000');
         }
         return;
     }

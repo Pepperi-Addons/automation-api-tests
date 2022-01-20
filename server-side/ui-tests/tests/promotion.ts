@@ -1108,7 +1108,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                                 title: `Cart With Error Promotions, Package Amount: ${promotionsArr[index]}`,
                                 value: 'data:image/png;base64,' + base64ImageInErrorTests,
                             });
-                            console.log(`Error thrown in negative tests: ${error}`);
+                            console.log(`%cError thrown in negative tests: ${error}`, 'color: #e50000');
                             index--;
                             await webAppDialog.selectDialogBox('OK');
                             continue;
