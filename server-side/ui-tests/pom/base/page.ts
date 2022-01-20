@@ -35,7 +35,7 @@ export abstract class Page {
 
     public async isSpinnerDone(): Promise<boolean> {
         const isHidden = [false, false];
-        console.log('Verify Spinner Status');
+        console.log('%cVerify Spinner Status', 'color: #800080');
         let loadingCounter = 0;
         do {
             const hiddenEl_1 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
@@ -58,7 +58,7 @@ export abstract class Page {
      */
     public async collectEndTestData(that): Promise<void> {
         if (that.currentTest.state != 'passed') {
-            console.log('Test Failed');
+            console.log('%cTest Failed', 'color: #e50000');
             const imagePath = `${__dirname.split('server-side')[0]}server-side\\api-tests\\test-data\\Error_Image.jpg`;
 
             const file = fs.readFileSync(path.resolve(imagePath));
@@ -68,19 +68,19 @@ export abstract class Page {
             try {
                 base64Image = await this.browser.saveScreenshots();
             } catch (error) {
-                console.log(`Error in collectEndTestData saveScreenshots: ${error}`);
+                console.log(`%cError in collectEndTestData saveScreenshots: ${error}`, 'color: #e50000');
             }
             try {
                 url = await this.browser.getCurrentUrl();
             } catch (error) {
-                console.log(`Error in collectEndTestData getCurrentUrl: ${error}`);
+                console.log(`%cError in collectEndTestData getCurrentUrl: ${error}`, 'color: #e50000');
             }
             try {
                 //Wait for all the logs to be printed (this usually take more then 3 seconds)
                 this.browser.sleep(6006);
                 consoleLogs = await this.browser.getConsoleLogs();
             } catch (error) {
-                console.log(`Error in collectEndTestData getConsoleLogs: ${error}`);
+                console.log(`%cError in collectEndTestData getConsoleLogs: ${error}`, 'color: #e50000');
             }
             addContext(that, {
                 title: 'URL',
