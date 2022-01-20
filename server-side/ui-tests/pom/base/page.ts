@@ -1,6 +1,8 @@
 import { Browser } from '../../utilities/browser';
 import { Locator, By, WebElement } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
+import fs from 'fs';
+import path from 'path';
 
 export abstract class Page {
     private url: string;
@@ -56,12 +58,30 @@ export abstract class Page {
      */
     public async collectEndTestData(that): Promise<void> {
         if (that.currentTest.state != 'passed') {
-            const base64Image = await this.browser.saveScreenshots();
-            const url = await this.browser.getCurrentUrl();
-            //Wait for all the logs to be printed (this usually take more then 3 seconds)
             console.log('Test Failed');
-            this.browser.sleep(6006);
-            const consoleLogs = await this.browser.getConsoleLogs();
+            const imagePath = `${__dirname.split('server-side')[0]}server-side\\api-tests\\test-data\\Error_Image.jpg`;
+
+            const file = fs.readFileSync(path.resolve(imagePath));
+            let base64Image = file.toString('base64');
+            let url = 'Error In Getting URL';
+            let consoleLogs = ['Error In Console Logs'];
+            try {
+                base64Image = await this.browser.saveScreenshots();
+            } catch (error) {
+                console.log(`Error in collectEndTestData saveScreenshots: ${error}`);
+            }
+            try {
+                url = await this.browser.getCurrentUrl();
+            } catch (error) {
+                console.log(`Error in collectEndTestData getCurrentUrl: ${error}`);
+            }
+            try {
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                this.browser.sleep(6006);
+                consoleLogs = await this.browser.getConsoleLogs();
+            } catch (error) {
+                console.log(`Error in collectEndTestData getConsoleLogs: ${error}`);
+            }
             addContext(that, {
                 title: 'URL',
                 value: url,

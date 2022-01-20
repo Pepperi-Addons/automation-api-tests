@@ -269,8 +269,12 @@ export class Browser {
      */
     public async quit(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
-        const windowTitle = await this.driver.getTitle();
-        console.log(`Quit Window With Title: ${windowTitle}`);
+        try {
+            const windowTitle = await this.driver.getTitle();
+            console.log(`Quit Window With Title: ${windowTitle}`);
+        } catch (error) {
+            console.log(`Quit Window With Title Error: ${error}`);
+        }
 
         //Print Driver Info Before Quit
         const driverInfo = await this.driver.getCapabilities();
