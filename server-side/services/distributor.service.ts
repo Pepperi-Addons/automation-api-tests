@@ -1,4 +1,4 @@
-import { PapiClient, Item, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface DistributorObject {
@@ -22,14 +22,6 @@ export class DistributorService {
         this.papiClient = service.papiClient;
         this.generalService = service;
         this.varKey = password;
-    }
-
-    getItems(options?: FindOptions): Promise<Item[]> {
-        return this.papiClient.items.find(options);
-    }
-
-    postItem(item: Item): Promise<Item> {
-        return this.papiClient.items.upsert(item);
     }
 
     resetUserPassword(UserID) {
@@ -133,6 +125,6 @@ export class DistributorService {
         const expirationResponse = await this.papiClient.post(
             `/addons/api/async/00000000-0000-0000-0000-000000000a91/expiration/manual_test_expired_distributors`,
         );
-        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI);
+        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI, 45);
     }
 }
