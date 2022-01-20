@@ -1018,12 +1018,15 @@ export class AddonPage extends Page {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         //**first testing phase will be performed w/o this feature - second whill test this only**
-        await this.addATDCalculatedField({
-            Label: 'ItemConfig',
-            CalculatedRuleEngine: {
-                JSFormula:
-                    `return null;` }
-        }, true);
+        await this.addATDCalculatedField(
+            {
+                Label: 'ItemConfig',
+                CalculatedRuleEngine: {
+                    JSFormula: `return null;`,
+                },
+            },
+            true,
+        );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
         await this.addATDCalculatedField(
