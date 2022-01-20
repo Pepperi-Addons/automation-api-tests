@@ -1,40 +1,82 @@
-import { Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
+import { NgComponentRelation, Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../../../services/general.service';
 import { PagesService } from '../../../services/pages.service';
 import { v4 as newUuid } from 'uuid';
 import { PageClass } from '../../../models/page.class';
+import { PageFactory } from '../../../models/page.factory';
 
 export async function PagesTestSuite(generalService: GeneralService, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-    const pagesService = new PagesService(generalService);
-    const pageBlockRelation = await pagesService.getBlockRelation('Page Block Tester');
-    const basePageBlock: PageBlock = {
-        Relation: pageBlockRelation,
-        Key: newUuid(),
+    // const pageBuilderName = 'sub-addon-1';
+    // const slideShowName = 'sub-addon-2';
+    //#region Upgrade Addon requirements
+    const testData = {
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
+        'sub-addon-1': ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon
+        PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
+        'sub-addon-2': ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.36'], //Slideshow Addon
     };
+
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
+    const chnageVersionResponseArr = await generalService.changeToAnyAvailableVersion(testData);
+    //#endregion Upgrade Addon requirements
+
+    const pagesService = new PagesService(generalService);
+    let basePage: Page = PageFactory.defaultPage();
+    const pageBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Page Block Tester');
+
+    const basePageBlock: PageBlock = PageFactory.defaultPageBlock(pageBlockRelation);
+
     describe('Pages API Tests Suite', function () {
         console.log(`${new Date().getTime()} - Started Describe: Pages API Tests Suite`);
-        let basePage: Page = {
-            Name: `${generalService.getDate()} - ${generalService.getTime()} - PagesApiTest`,
-            Blocks: [],
-            Layout: {
-                Sections: [],
-            },
-            Hidden: false,
-        };
 
-        it('Create new page', async function () {
-            console.log(`${new Date().getTime()} - Started test: Create new page`);
+        describe('Prerequisites Addon for Pages API Tests', () => {
+            //Test Data
+            it('Validate That All The Needed Addons Installed', async () => {
+                isInstalledArr.forEach((isInstalled) => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
 
-            const resultPage = await pagesService.createOrUpdatePage(basePage);
-            basePage.Key = resultPage.Key;
-            console.log(`${new Date().getTime()} - Ended test: Create new page`);
-            pagesService.deepCompareObjects(basePage, resultPage, expect);
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
 
-        describe('Modify Base Page Tests Suite', function () {
+        describe('Base Page Tests Suite', function () {
+            it('Create new page', async function () {
+                console.log(`${new Date().getTime()} - Started test: Create new page`);
+
+                const resultPage = await pagesService.createOrUpdatePage(basePage);
+                basePage.Key = resultPage.Key;
+                console.log(`${new Date().getTime()} - Ended test: Create new page`);
+                pagesService.deepCompareObjects(basePage, resultPage, expect);
+            });
+
             it('Modify page name', async function () {
                 console.log(`${new Date().getTime()} - Started Describe: Modify Base Page Tests Suite`);
                 console.log(`${new Date().getTime()} - Started test: Modify page name`);
@@ -43,39 +85,17 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 console.log(`${new Date().getTime()} - Ended test: Modify page name`);
                 pagesService.deepCompareObjects(basePage, resultPage, expect);
             });
-            it('Add Page with Incorrect Type', async function () {
-                const testPage: Page = {
-                    Name: `${generalService.getDate()} - ${generalService.getTime()} - PagesApiTest`,
-                    Blocks: [],
-                    Layout: {
-                        Sections: [],
-                    },
-                    Hidden: false,
-                    Type: 'BadType',
-                } as any;
-                //TODO: Add specific response error message
-                await expect(pagesService.createOrUpdatePage(testPage)).to.eventually.be.rejected;
-                await pagesService.deletePage(testPage);
-            });
 
             it('Add Page with Unknown Property', async function () {
-                const testPage: Page = {
-                    Name: `${generalService.getDate()} - ${generalService.getTime()} - PagesApiTest`,
-                    Blocks: [],
-                    Layout: {
-                        Sections: [],
-                    },
-                    Hidden: false,
-                    BadProperty: true,
-                } as any;
+                const testPage: Page = PageFactory.defaultPage();
+                testPage.BadProperty = true;
 
-                await expect(pagesService.createOrUpdatePage(testPage)).to.be.fulfilled.and.to.not.have.property(
-                    'BadProperty',
-                );
+                const result = await pagesService.createOrUpdatePage(testPage);
+                expect(result).to.not.have.property('BadProperty');
                 await pagesService.deletePage(testPage);
             });
 
-            it('Add Page without Blocks', async function () {
+            it("Add Page without 'Blocks' field", async function () {
                 const testPage: Page = {
                     Name: `${generalService.getDate()} - ${generalService.getTime()} - PagesApiTest`,
                     Layout: {
@@ -87,7 +107,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 );
             });
 
-            it('Add Page without Layout', async function () {
+            it("Add Page without 'Layout' field", async function () {
                 const testPage: Page = {
                     Name: `${generalService.getDate()} - ${generalService.getTime()} - PagesApiTest`,
                     Blocks: [],
@@ -97,7 +117,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 );
             });
 
-            it('Add Layout without Sections', async function () {
+            it("Add Layout without 'Sections' field", async function () {
                 const testPage: Page = {
                     Name: `${generalService.getDate()} - ${generalService.getTime()} - PagesApiTest`,
                     Blocks: [],
@@ -119,17 +139,6 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 basePage = testPage.page;
             });
 
-            it('Add PageBlock to Blocks as Value (not as array)', async function () {
-                const testPage: Page = {
-                    Name: `${newUuid()} - PagesApiTest`,
-                    Blocks: basePageBlock,
-                    Layout: {
-                        Sections: [],
-                    },
-                } as any;
-                await expect(pagesService.createOrUpdatePage(testPage)).to.eventually.be.rejected;
-            });
-
             it('Add PageBlock without mandatory field', async function () {
                 const blockProps = Object.getOwnPropertyNames(basePageBlock).filter((prop) => prop !== 'length');
                 for (const prop of blockProps) {
@@ -146,7 +155,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 }
             });
 
-            it('Add PageBlock without mandatory Relation fields', async function () {
+            it("Add PageBlock without mandatory 'Relation' fields", async function () {
                 const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
                 const pageClass = new PageClass(basePage);
                 const pageBlock: PageBlock = { Key: basePageBlock.Key } as any;
@@ -168,8 +177,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             it('Add duplicate Page Block key', async function () {
                 const pageClass = new PageClass(basePage);
                 pageClass.addNewBlock(basePageBlock);
-                //TODO: Add specific error message once issue is resolved (currently no validation on block keys)
-                await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejected;
+                await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                    'already exist',
+                );
             });
         });
 
@@ -191,9 +201,12 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
             it('Add Page Layout with Incorrect PageSizeType', async function () {
                 const testPage = new PageClass(basePage);
+
                 const tempPage = testPage.page;
-                tempPage.page.Layout.ColumnsGap = 'BadType' as any;
-                await expect(pagesService.createOrUpdatePage(tempPage)).to.eventually.be.rejected;
+                tempPage.Layout.ColumnsGap = 'BadType' as any;
+                await expect(pagesService.createOrUpdatePage(tempPage)).to.eventually.be.rejectedWith(
+                    `Page -> Layout -> ColumnsGap should be value from`,
+                );
                 // await pagesService.deletePage(testPage);
             });
 
@@ -225,7 +238,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 };
                 testPage.addSection(testSection);
                 testPage.addBlockToSection('NoKey', testSection.Key, 0);
-                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
+                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejectedWith(
+                    'exist in Page.Blocks',
+                );
             });
             it('Add Incorrect Section Split values', async function () {
                 const testPage = new PageClass(basePage);
@@ -235,7 +250,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     Split: '1/2 1/2 1/2',
                 } as any;
                 testPage.addSection(testSection);
-                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
+                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejectedWith(
+                    'Split should be empty or value from',
+                );
             });
             it('Add Duplicate Block Key to Section', async function () {
                 const testPage = new PageClass(basePage);
@@ -247,7 +264,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 testPage.addSection(testSection);
                 testPage.addBlockToSection(basePageBlock.Key, testSection.Key, 0);
                 testPage.addBlockToSection(basePageBlock.Key, testSection.Key, 1);
-                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
+                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejectedWith(
+                    'already exist in another section column',
+                );
             });
 
             it('Add Incorrect Hide Type', async function () {
@@ -258,34 +277,76 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     Hide: ['BadType'],
                 } as any;
                 testPage.addSection(testSection);
-                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
+                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejectedWith(
+                    'Hide should be value from',
+                );
             });
 
-            it('Add Duplicate Block Key to Section', async function () {
+            it('Block Removal On Uninstall Addon', async function () {
                 const testPage = new PageClass(basePage);
                 const testSection: PageSection = {
                     Key: newUuid(),
-                    Columns: [{}, {}],
-                    Split: '1/2 1/2',
+                    Columns: [{}],
                 };
                 testPage.addSection(testSection);
-                testPage.addBlockToSection(basePageBlock.Key, testSection.Key, 0);
-                testPage.addBlockToSection(basePageBlock.Key, testSection.Key, 1);
-                await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejected;
+
+                const slideBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Slideshow');
+                const slideShowBlock: PageBlock = PageFactory.defaultPageBlock(slideBlockRelation);
+
+                testPage.addNewBlockToSection(slideShowBlock, testSection.Key, 0);
+                const postPageResult = await pagesService.createOrUpdatePage(testPage.page);
+                pagesService.deepCompareObjects(testPage.page, postPageResult, expect);
+                const expectedPage = await pagesService.getPages({ where: `Key='${testPage.page.Key}'` });
+                pagesService.deepCompareObjects(testPage.page, expectedPage[0], expect);
+                const uninstallResult = await generalService
+                    .uninstallAddon(testData['sub-addon-2'][0])
+                    .catch((error) => {
+                        throw error;
+                    });
+                expect(uninstallResult.URI).to.not.be.undefined;
+                const auditResult = await generalService.getAuditLogResultObjectIfValid(<string>uninstallResult.URI);
+                expect(auditResult).to.have.deep.include({ Status: { ID: 1, Name: 'Success' } });
+                //To wait for PNS to be received by Page Builder to trigger blocks removal
+                let resultPages: Page[];
+                const startTime = new Date().getTime();
+                const timeOutinMs = 300000;
+                do {
+                    resultPages = await pagesService.getPages({ page_size: -1 });
+                    await generalService.sleepTimeout(5000);
+                } while (
+                    JSON.stringify(resultPages).includes(testData['sub-addon-2'][0]) &&
+                    new Date().getTime() < startTime + timeOutinMs
+                );
+
+                resultPages.map(function (page) {
+                    expect(JSON.stringify(page))
+                        .to.not.include(
+                            testData['sub-addon-2'][0],
+                            "Slideshow's addon blocks still exists in page's Blocks array after uninstalling",
+                        )
+                        .and.to.not.include(
+                            slideShowBlock.Key,
+                            "Slideshow's addon block key references were not removed from page section's 'Columns' array after uninstalling",
+                        );
+                });
             });
         });
 
         describe('Load Testing', function () {
             const pagesArray: Array<Page> = [];
-
-            it('Create 1000 pages', async function () {
+            const pagesToCreate = 500;
+            it(`Create ${pagesToCreate} pages`, async function () {
                 console.log(`${new Date().getTime()} - Started Describe: Load Testing`);
                 console.log(`${new Date().getTime()} - Started Test: Create 1000 pages`);
                 const errorCounter: Array<{ message: string; count: number }> = [];
                 const promises: Array<Promise<Page | void>> = [];
-                for (let i = 0; i < 1000; i++) {
+                let time = new Date();
+                console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+                for (let i = 0; i < 500; i++) {
+                    const uuid = newUuid(); //i.toString()+ '-'+
                     const page: Page = {
-                        Name: `${newUuid()} - Pages Load Test`,
+                        Key: uuid,
+                        Name: `${uuid} - Pages Load Test`,
                         Blocks: [],
                         Layout: {
                             Sections: [],
@@ -295,13 +356,24 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     promises[i] = pagesService.createOrUpdatePage(page).catch((error) => {
                         addToErrorCounter(errorCounter, (error as Error).message);
                     });
-                    generalService.sleep(100);
+                    await generalService.sleepTimeout(25);
                 }
+
+                time = new Date();
+                console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
 
                 const postResults = await Promise.all(promises);
 
+                time = new Date();
+                console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
                 postResults.map((postResult, index) => {
                     if (postResult && postResult?.Key) {
+                        if (!pagesArray[index].Name?.includes(<string>postResult.Key)) {
+                            addToErrorCounter(
+                                errorCounter,
+                                `${postResult.Key} is not contained in the page's name: ${pagesArray[index].Name}`,
+                            );
+                        }
                         pagesArray[index].Key = postResult.Key;
                     } else {
                         if (pagesArray[index]) {
@@ -314,11 +386,21 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 });
 
                 for (const page of pagesArray.filter((x) => x?.Key)) {
-                    let actual: void | Page | undefined;
+                    // let actual: void | Page | undefined;
+                    const actual = postResults.filter((_page) => _page && _page.Key === page.Key);
+
                     try {
-                        actual = postResults.filter((x) => x).find((x) => x && x?.Key === page.Key);
-                        pagesService.deepCompareObjects(page, actual, expect);
+                        expect(
+                            actual,
+                            `${actual.length} pages found with the assigned key: '${
+                                page.Key
+                            }'\nPOST index: ${pagesArray.findIndex((_page) => _page === page)}\nFound pages: ${actual
+                                .map((_page) => JSON.stringify(_page))
+                                .join('\n')}`,
+                        ).to.be.of.length(1);
+                        pagesService.deepCompareObjects(page, actual[0], expect);
                     } catch (error) {
+                        addToErrorCounter(errorCounter, (error as Error).message);
                         console.log(`Expected: ${JSON.stringify(page)}`);
                         console.log(`Actual: ${JSON.stringify(actual)}`);
                         throw error;
@@ -341,18 +423,30 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 console.log(`${new Date().getTime()} - Ended Test: Create 1000 pages`);
             });
 
-            it('Delete 1000 pages', async function () {
+            it(`Delete ${pagesToCreate} pages`, async function () {
                 console.log(`${new Date().getTime()} - Started Test: Delete 1000 pages`);
                 const errorCounter: Array<{ message: string; count: number }> = [];
-                const promises = pagesArray.map(async function (page) {
+
+                let time = new Date();
+                console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+                const promises: Array<Promise<Page | void>> = [];
+                for (const [index, page] of pagesArray.entries()) {
                     if (page) {
-                        return pagesService.deletePage(page).catch((error) => {
+                        await generalService.sleepTimeout(25);
+                        promises[index] = pagesService.deletePage(page).catch((error) => {
                             addToErrorCounter(errorCounter, (error as Error).message);
                         });
                     }
-                });
+                }
+
+                time = new Date();
+                console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
 
                 await Promise.all(promises);
+
+                time = new Date();
+                console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
+
                 expect(
                     errorCounter,
                     errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
@@ -361,7 +455,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const resultKeys = (await pagesService.getPages({ page_size: -1 })).map((page) => page.Key);
                 const pageKeys = pagesArray
                     .filter((x) => x?.Key)
-                    .map((page) => {
+                    .map(function (page) {
                         if (page?.Key) {
                             return page.Key;
                         }
@@ -369,9 +463,17 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
                 expect(
                     resultKeys,
-                    `Retrieved page keys: ${resultKeys}\nPage keys that were deleted: ${pageKeys}`,
+                    `Retrieved page keys: ${resultKeys.toString()}\nPage keys that were deleted: ${pageKeys}`,
                 ).to.not.have.any.members(pageKeys);
-                pagesArray.map((page) => expect(page.Key).to.not.be.oneOf(resultKeys));
+                pagesArray.map(function (page) {
+                    if (page?.Key) {
+                        return expect(
+                            page.Key,
+                            `Expected ${page.Key} to not be one of: ${resultKeys.join(', ')}`,
+                        ).to.not.be.oneOf(resultKeys);
+                    }
+                });
+
                 console.log(`${new Date().getTime()} - Ended Test: Delete 1000 pages`);
             });
         });

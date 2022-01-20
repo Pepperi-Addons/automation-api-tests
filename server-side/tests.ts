@@ -387,6 +387,13 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
 //#endregion All Tests
 export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
+    // service.papiClient = new PapiClient({
+    //     baseURL: client.BaseURL,
+    //     token: client.OAuthAccessToken,
+    //     addonUUID: client.AddonUUID.length > 10 ? client.AddonUUID : 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+    //     addonSecretKey: client.AddonSecretKey,
+    //     suppressLogging: true
+    // });
     testName = 'Pages_Api';
     service.PrintMemoryUseToLog('Start', testName);
     testEnvironment = client.BaseURL.includes('staging')
