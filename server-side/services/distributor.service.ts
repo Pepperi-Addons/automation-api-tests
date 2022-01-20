@@ -1,4 +1,4 @@
-import { PapiClient, Item, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface DistributorObject {
