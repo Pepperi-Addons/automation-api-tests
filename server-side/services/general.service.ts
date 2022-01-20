@@ -415,9 +415,11 @@ export default class GeneralService {
         }
         return isInstalledArr;
     }
+
     async uninstallAddon(addonUuid: string): Promise<AddonAPIAsyncResult> {
         return this.papiClient.addons.installedAddons.addonUUID(addonUuid).uninstall();
     }
+
     async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
@@ -441,7 +443,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )} /var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
@@ -506,7 +508,7 @@ export default class GeneralService {
             let changeType = 'Upgrade';
             const searchString = `AND Version Like '${version}%' AND Available Like 1`;
             const fetchResponse = await this.fetchStatus(
-                `${this.client.BaseURL} /addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                `${this.client.BaseURL}/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                 },
@@ -749,7 +751,7 @@ export default class GeneralService {
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
-        await execFileSync(`${__dirname.split('services')[0]} api - tests\\test - data\\${scriptName}`);
+        await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
         return;
     }
 }
