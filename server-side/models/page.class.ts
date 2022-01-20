@@ -1,4 +1,4 @@
-import { DataViewScreenSize, Page, PageBlock, PageSection, PageSectionBlock } from '@pepperi-addons/papi-sdk';
+import { DataViewScreenSize, Page, PageBlock, PageSection, PageBlockContainer } from '@pepperi-addons/papi-sdk';
 export class PageClass {
     /**
      *
@@ -30,12 +30,12 @@ export class PageClass {
         this.addNewBlock(pageBlock);
     }
     addBlockToSection(blockKey: string, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>): void {
-        const pageSectionBlock: PageSectionBlock = {
+        const pageSectionBlock: PageBlockContainer = {
             BlockKey: blockKey,
             Hide: hide ?? [],
         };
         const sectionIndex = this._page.Layout.Sections.findIndex((section: PageSection) => section.Key === sectionKey);
-        this._page.Layout.Sections[sectionIndex].Columns[column].Block = pageSectionBlock;
+        this._page.Layout.Sections[sectionIndex].Columns[column].BlockContainer = pageSectionBlock;
     }
 
     addNewBlockToSection(pageBlock: PageBlock, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>) {

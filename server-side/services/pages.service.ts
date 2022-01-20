@@ -1,6 +1,14 @@
 import { FindOptions, NgComponentRelation, Page } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
+export interface PageBlockRelation {
+    AddonUUID: string;
+    SubType: string;
+    Name: string;
+    AddonRelativeURL: string;
+    ModuleName: string;
+    ComponentName: string;
+}
 export class PagesService {
     /**
      *
@@ -14,7 +22,7 @@ export class PagesService {
         }
     }
     //Returns only the mandatory fields for PageBlock's 'Relation' property by name from the relations record
-    async getBlockRelation(blockName: string): Promise<any> {
+    async getBlockRelation(blockName: string): Promise<NgComponentRelation> {
         const apiResponse = await this.generalService.papiClient.addons.data.relations.find({
             where: `Name='${blockName}'`,
         });
@@ -36,6 +44,7 @@ export class PagesService {
         return this.createOrUpdatePage(page);
     }
     async createOrUpdatePage(page: Page): Promise<Page> {
+        // console.log(`${new Date().getTime()} - Create or Update Page`);
         return this.generalService.papiClient.pages.upsert(page);
     }
     async getPage(pageUuid: string): Promise<Page> {

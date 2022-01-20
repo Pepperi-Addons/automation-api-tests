@@ -8,6 +8,7 @@ import {
     User,
     AuditLog,
     Type,
+    AddonAPIAsyncResult,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
@@ -93,7 +94,9 @@ export default class GeneralService {
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
     }
-
+    sleepTimeout(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
     sleep(ms) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
@@ -409,7 +412,9 @@ export default class GeneralService {
         }
         return isInstalledArr;
     }
-
+    async uninstallAddon(addonUuid: string): Promise<AddonAPIAsyncResult> {
+        return this.papiClient.addons.installedAddons.addonUUID(addonUuid).uninstall();
+    }
     async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
