@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
+import { Locator, By, WebElement } from 'selenium-webdriver';
 import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
@@ -137,5 +137,51 @@ export class WebAppHomePage extends Page {
         //Validate nothing is loading before starting to add items to cart
         await webAppList.isSpinnerDone();
         return;
+    }
+
+    public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
+        await this.browser.untilIsVisible(By.xpath(`//button[@title='${ATDname}']`), 5000);
+    }
+
+    public async initiateUOMActivity(ATDname: string, accountName: string, viewType = 'Medium'): Promise<void> {
+        await this.browser.click(By.xpath(`//button[@title='${ATDname}']`));
+        await this.browser.sleep(1500);
+        await this.browser.untilIsVisible(
+            By.xpath("//span[@class='dialog-title ng-star-inserted' and text()=' Select Account  ']"),
+            1500,
+        );
+        await this.browser.click(By.xpath(`//span[@title='${accountName}']/../../../../mat-radio-button`));
+        await this.browser.sleep(1500);
+        await this.browser.click(By.css("[data-qa='doneButton']"));
+        await this.browser.sleep(3500);
+        const webAppDialog = new WebAppDialog(this.browser);
+        let isPupUP;
+        try {
+            isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
+        } catch (Error) {
+            console.log('no popup while opening UOM ATD');
+        }
+        if (isPupUP) {
+            expect(isPupUP).to.equal(
+                'You already have an open order which you have previously started. To start a new order anyway click Continue/Yes. To be directed to the open order click Cancel/No.',
+            );
+            await webAppDialog.selectDialogBox('Yes');
+            await this.isSpinnerDone();
+        }
+        //switch to medium view:
+        //1. click on btn to open drop down
+        await this.browser.click(By.xpath("//mat-icon[@title='Change View']"));
+        await this.browser.sleep(1500);
+        //2. pick wanted view
+        await this.browser.click(By.xpath(`//span[text()='${viewType}']`));
+        await this.isSpinnerDone();
+        //validate there are 5 items on screen
+        const allItemPresented: WebElement[] = await this.browser.findElements(By.xpath('//fieldset'));
+        expect(allItemPresented.length).to.equal(5);
+        //validate 4 are UOM items
+        const allUOMItemPresented: WebElement[] = await this.browser.findElements(
+            By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']"),
+        );
+        expect(allUOMItemPresented.length).to.equal(4);
     }
 }

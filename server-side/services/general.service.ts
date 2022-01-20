@@ -386,7 +386,7 @@ export default class GeneralService {
             if (!isInstalled) {
                 if (testData[addonUUID][0] == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${testData[addonUUID][0]} `)
+                        .addonUUID(`${testData[addonUUID][0]}`)
                         .install('0.0.235');
                 } else {
                     if (testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/)) {
@@ -441,7 +441,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )} /var/addons / versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                )} /var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
@@ -457,24 +457,24 @@ export default class GeneralService {
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             varLatestVersion.Status
-                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
+                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                     );
                 }
             } else if (fetchVarResponse.Status == 401) {
                 throw new Error(
-                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.Header.title} `,
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.Header.title}`,
                 );
             } else {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchVarResponse.Status
-                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
+                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                 );
             }
             testData[addonName].push(varLatestVersion);
 
             let upgradeResponse = await this.papiClient.addons.installedAddons
-                .addonUUID(`${addonUUID} `)
+                .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
@@ -485,7 +485,7 @@ export default class GeneralService {
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID} `)
+                        .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestVersion);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
@@ -519,20 +519,20 @@ export default class GeneralService {
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             LatestVersion.Status
-                        }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
+                        }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
                     );
                 }
             } else {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchResponse.Status
-                    }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
+                    }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
                 );
             }
             testData[addonName].push(LatestVersion);
 
             let upgradeResponse = await this.papiClient.addons.installedAddons
-                .addonUUID(`${addonUUID} `)
+                .addonUUID(`${addonUUID}`)
                 .upgrade(LatestVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
@@ -543,7 +543,7 @@ export default class GeneralService {
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID} `)
+                        .addonUUID(`${addonUUID}`)
                         .downgrade(LatestVersion);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
@@ -563,13 +563,13 @@ export default class GeneralService {
         let parsed: any = {};
         let errorMessage: any = {};
         let OptionalHeaders = {
-            Authorization: `Bearer ${this.papiClient['options'].token} `,
+            Authorization: `Bearer ${this.papiClient['options'].token}`,
             ...requestInit?.headers,
         };
         if (requestInit?.headers?.Authorization === null) {
             OptionalHeaders = undefined as any;
         }
-        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri} `, {
+        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
             method: `${requestInit?.method ? requestInit?.method : 'GET'}`,
             body: typeof requestInit?.body == 'string' ? requestInit.body : JSON.stringify(requestInit?.body),
             headers: OptionalHeaders,
@@ -583,7 +583,7 @@ export default class GeneralService {
                     `% cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
                         uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
-                    `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'} `,
+                    `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'}`,
                 );
 
                 try {
@@ -633,7 +633,7 @@ export default class GeneralService {
                 };
             })
             .catch((error) => {
-                console.error(`Error type: ${error.type}, ${error} `);
+                console.error(`Error type: ${error.type}, ${error}`);
                 return {
                     Ok: undefined as any,
                     Status: undefined as any,
@@ -749,7 +749,7 @@ export default class GeneralService {
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
-        await execFileSync(`${__dirname.split('services')[0]} api - tests\\test - data\\${scriptName} `);
+        await execFileSync(`${__dirname.split('services')[0]} api - tests\\test - data\\${scriptName}`);
         return;
     }
 }
@@ -796,11 +796,11 @@ function parseResponse(responseStr) {
     const bodyStrTagsArr = bodyStrTagsMatched.split(/,|<\//);
     for (let index = 1; index < headerTagsArr.length; index += 2) {
         errorMessage.Header = {};
-        errorMessage.Header[`${headerTagsArr[index]} `] = headerTagsArr[index - 1];
+        errorMessage.Header[`${headerTagsArr[index]}`] = headerTagsArr[index - 1];
     }
     for (let index = 1; index < bodyStrTagsArr.length; index += 2) {
         errorMessage.Body = {};
-        errorMessage.Body[`${bodyStrTagsArr[index]} `] = bodyStrTagsArr[index - 1];
+        errorMessage.Body[`${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
     }
     return errorMessage;
 }
