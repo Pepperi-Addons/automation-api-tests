@@ -95,12 +95,12 @@ export default class GeneralService {
         this.assetsBaseUrl = client.AssetsBaseUrl;
     }
 
-    sleepTimeout(ms) {
+    sleepTimeout(ms: number) {
         console.debug(`%cAsync Sleep: ${ms} milliseconds`, 'color: #f7df1e');
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    sleep(ms) {
+    sleep(ms: number) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
             expire = start + ms;
@@ -190,11 +190,11 @@ export default class GeneralService {
         for (const key in used) {
             memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
         }
-        console.log(`memoryUse in MB = ${JSON.stringify(memoryUsed)}`);
+        console.log(`%cmemoryUse in MB = ${JSON.stringify(memoryUsed)}`, 'color: #ff8000');
     }
 
     PrintMemoryUseToLog(state, testName) {
-        console.log(`${state} Test: ${testName}`);
+        console.log(`%c${state} Test: ${testName}`, 'color: #ff8000');
         this.CalculateUsedMemory();
     }
 
@@ -305,13 +305,13 @@ export default class GeneralService {
             //This case is used when AuditLog was not created at all (This can happen and it is valid)
             if (auditLogResponse === null) {
                 this.sleep(4000);
-                console.log('Audit Log was not found, waiting...');
+                console.log('%cAudit Log was not found, waiting...', 'color: #f7df1e');
                 loopsAmount--;
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2') {
                 this.sleep(2000);
-                console.log('In_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.');
+                console.log('%cIn_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.', 'color: #f7df1e');
                 loopsAmount--;
             }
         } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
@@ -582,12 +582,11 @@ export default class GeneralService {
                 const end = performance.now();
                 const isSucsess = response.status > 199 && response.status < 400 ? true : false;
                 console[isSucsess ? 'log' : 'debug'](
-                    `% cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
                         uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
                     `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'}`,
                 );
-
                 try {
                     if (response.headers.get('content-type')?.startsWith('image')) {
                         responseStr = await response.buffer().then((r) => r.toString('base64'));

@@ -60,7 +60,6 @@ export abstract class Page {
         if (that.currentTest.state != 'passed') {
             console.log('%cTest Failed', 'color: #e50000');
             const imagePath = `${__dirname.split('server-side')[0]}server-side\\api-tests\\test-data\\Error_Image.jpg`;
-
             const file = fs.readFileSync(path.resolve(imagePath));
             let base64Image = file.toString('base64');
             let url = 'Error In Getting URL';
@@ -94,6 +93,10 @@ export abstract class Page {
                 title: 'Console Logs',
                 value: consoleLogs,
             });
+        } else if (that.currentTest.state == 'passed') {
+            console.log('%cTest Passed', 'color: #00e500');
+        } else {
+            console.log(`%cTest Ended With State: ${that.currentTest.state}`, 'color: #f7df1e');
         }
         return;
     }

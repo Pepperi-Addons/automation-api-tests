@@ -1,11 +1,23 @@
 import 'chromedriver';
 import { Builder, ThenableWebDriver, WebElement, until, Locator, Key } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import GeneralService from '../../services/general.service';
 
 export class Browser {
     private driver: ThenableWebDriver;
     private options: chrome.Options;
     private TIMEOUT = 15000;
+    private tempGeneralService = new GeneralService({
+        AddonUUID: '',
+        AddonSecretKey: '',
+        BaseURL: '',
+        OAuthAccessToken: '',
+        AssetsBaseUrl: '',
+        Retry: function () {
+            return;
+        },
+    });
+
     public constructor(private browserName: string) {
         this.options = new chrome.Options();
         if (process.env.npm_config_chrome_headless == 'true') {
@@ -217,17 +229,12 @@ export class Browser {
         return this.driver.takeScreenshot();
     }
 
-    public sleepTimeout(ms) {
-        console.debug(`%cAsync Sleep: ${ms} milliseconds`, 'color: #f7df1e');
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    public sleepTimeout(ms: number) {
+        this.tempGeneralService.sleepTimeout(ms);
     }
 
     public sleep(ms: number) {
-        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
+        this.tempGeneralService.sleep(ms);
     }
 
     public async clearCookies(url?: string): Promise<void> {
