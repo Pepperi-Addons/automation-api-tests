@@ -16,9 +16,12 @@ export interface AddonVersionTestData {
 }
 
 export async function DistributorTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    let password = request.body.varKey;
-    if (request.body.varKeyEU) {
-        password = request.body.varKeyEU;
+    let password;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        password = request.body.varKeyStage;
+    } else {
+        //TODO: Create a way to use VAR EU after QA var EU will work
+        password = request.body.varKeyPro;
     }
     const distributorService = new DistributorService(generalService, password);
     const describe = tester.describe;
@@ -444,10 +447,10 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 });
 
                 it(`Verify that distributor is disabled and addons are uninstalled`, async () => {
-                    const distributor = await generalService.getVARDistributor(request.body.varKey, {
+                    const distributor = await generalService.getVARDistributor(password, {
                         where: `InternalID=${adminService.getClientData('DistributorID')}`,
                     });
-                    const distributorAddons = await generalService.getVARInstalledAddons(request.body.varKey, {
+                    const distributorAddons = await generalService.getVARInstalledAddons(password, {
                         where: `DistributorID=${adminService.getClientData('DistributorID')}`,
                     });
                     expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);

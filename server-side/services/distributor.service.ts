@@ -125,6 +125,6 @@ export class DistributorService {
         const expirationResponse = await this.papiClient.post(
             `/addons/api/async/00000000-0000-0000-0000-000000000a91/expiration/manual_test_expired_distributors`,
         );
-        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI);
+        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI, 45);
     }
 }

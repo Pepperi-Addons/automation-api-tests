@@ -242,7 +242,7 @@ export default class GeneralService {
         return this.fetchStatus(url, {
             method: `GET`,
             headers: {
-                Authorization: `${varKey}`,
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
             },
         });
     }
@@ -253,7 +253,7 @@ export default class GeneralService {
         return this.fetchStatus(url, {
             method: `GET`,
             headers: {
-                Authorization: `${varKey} `,
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
             },
         });
     }
