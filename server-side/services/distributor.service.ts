@@ -1,4 +1,4 @@
-import { PapiClient, Item, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface DistributorObject {
@@ -22,14 +22,6 @@ export class DistributorService {
         this.papiClient = service.papiClient;
         this.generalService = service;
         this.varKey = password;
-    }
-
-    getItems(options?: FindOptions): Promise<Item[]> {
-        return this.papiClient.items.find(options);
-    }
-
-    postItem(item: Item): Promise<Item> {
-        return this.papiClient.items.upsert(item);
     }
 
     resetUserPassword(UserID) {
@@ -69,11 +61,12 @@ export class DistributorService {
                 });
             }
             //TODO: Remove this when bugs will be solved (DI-19114/19116/19117/19118)
-            let isKnown = false;
+            let isNotKnown = true;
             if (newDistributor.Body?.Type == 'request-timeout') {
                 console.log('Bug exist for this response: (DI-19118)');
                 console.log('VAR - Create Distributor - The API call never return');
-                throw new Error(`Known Bug: VAR - Create Distributor - The API call never return (DI-19118)`);
+                //TODO: Un comment this throw when the bug will be solved
+                // throw new Error(`Known Bug: VAR - Create Distributor - The API call never return (DI-19118)`);
             }
             if (newDistributor.Status == 500) {
                 if (
@@ -81,16 +74,16 @@ export class DistributorService {
                 ) {
                     console.log('Bug exist for this response: (DI-19114)');
                     this.generalService.sleep(1000 * 60 * 1);
-                    isKnown = true;
+                    isNotKnown = false;
                 }
                 if (
-                    newDistributor.Body?.includes(
+                    JSON.stringify(newDistributor.Body).includes(
                         'The requested URL was rejected. Please consult with your administrator.',
                     )
                 ) {
                     console.log('Bug exist for this response: (DI-19116)');
                     this.generalService.sleep(1000 * 60 * 1);
-                    isKnown = true;
+                    isNotKnown = false;
                 }
                 if (
                     newDistributor.Body?.fault?.faultstring ==
@@ -98,9 +91,9 @@ export class DistributorService {
                 ) {
                     console.log('Bug exist for this response: (DI-19117)');
                     this.generalService.sleep(1000 * 60 * 1);
-                    isKnown = true;
+                    isNotKnown = false;
                 }
-                if (isKnown) {
+                if (isNotKnown) {
                     throw new Error(
                         `Status: ${newDistributor.Status}, Message: ${newDistributor.Body?.fault?.faultstring}`,
                     );
@@ -132,6 +125,6 @@ export class DistributorService {
         const expirationResponse = await this.papiClient.post(
             `/addons/api/async/00000000-0000-0000-0000-000000000a91/expiration/manual_test_expired_distributors`,
         );
-        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI);
+        return await this.generalService.getAuditLogResultObjectIfValid(expirationResponse.URI, 45);
     }
 }

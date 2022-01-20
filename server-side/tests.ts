@@ -15,7 +15,7 @@ import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from '
 //#endregion All Tests
 
 //#region Pages API test
-import { PagesTestSuite } from './api-tests/objects/pages/pages';
+import { PagesTestSuite } from './api-tests/page-objects/pages';
 //#endregion Pages API test
 
 //#region Old Framwork Tests

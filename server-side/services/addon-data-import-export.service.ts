@@ -15,7 +15,7 @@ export class DIMXService {
         return this.papiClient.post(`/addons/data/export/file/${addonUUID}/${tableName}`);
     }
 
-    dataImport(addonUUID: string, tableName: string, data: ImportObjects) {
-        return this.papiClient.post(`/addons/data/import/${addonUUID}/${tableName}`, data);
+    dataImport(addonUUID: string, tableName: string, data) {
+        return this.papiClient.post(`/addons/data/import/file/${addonUUID}/${tableName}`, data);
     }
 }
