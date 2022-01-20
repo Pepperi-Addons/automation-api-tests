@@ -176,6 +176,11 @@ export class Browser {
         return this.driver.takeScreenshot();
     }
 
+    public sleepTimeout(ms) {
+        console.debug(`%cAsync Sleep: ${ms} milliseconds`, 'color: #f7df1e');
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     public sleep(ms: number) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
         const start = new Date().getTime(),
@@ -272,8 +277,12 @@ export class Browser {
      */
     public async quit(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
-        const windowTitle = await this.driver.getTitle();
-        console.log(`Quit Window With Title: ${windowTitle}`);
+        try {
+            const windowTitle = await this.driver.getTitle();
+            console.log(`Quit Window With Title: ${windowTitle}`);
+        } catch (error) {
+            console.log(`Quit Window With Title Error: ${error}`);
+        }
 
         //Print Driver Info Before Quit
         const driverInfo = await this.driver.getCapabilities();
@@ -284,9 +293,21 @@ export class Browser {
         console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
 
         try {
-            await this.driver.quit().catch((error) => {
-                console.log(`Browser Quit Error In Catch: ${error}`);
-            });
+            await this.driver
+                .quit()
+                .then(
+                    async (res) => {
+                        console.log(`Browser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`);
+                        await this.sleepTimeout(2000);
+                        console.log('Waited 2 seconds for browser closing process will be done');
+                    },
+                    (error) => {
+                        console.log(`Browser Quit Error In Response: ${error}`);
+                    },
+                )
+                .catch((error) => {
+                    console.log(`Browser Quit Error In Catch: ${error}`);
+                });
         } catch (error) {
             console.log(`Browser Error: ${error}`);
         }
