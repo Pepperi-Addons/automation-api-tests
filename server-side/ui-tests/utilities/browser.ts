@@ -18,7 +18,11 @@ export class Browser {
         },
     });
 
-    public constructor(private browserName: string) {
+    /**
+     * Chrome driver should only be initiate by using initiateChrome
+     * @param browserName
+     */
+    private constructor(private browserName: string) {
         this.options = new chrome.Options();
         if (process.env.npm_config_chrome_headless == 'true') {
             this.options.addArguments('--headless');
@@ -40,11 +44,29 @@ export class Browser {
             .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT * 4, script: this.TIMEOUT * 4 });
     }
 
+    /**
+     * This is the correct function to use for starting new chrome browser
+     * @returns
+     */
+    public static async initiateChrome(): Promise<Browser> {
+        let chromeDriver: Browser;
+        try {
+            chromeDriver = new Browser('chrome');
+            await chromeDriver.navigate('https://www.google.com');
+        } catch (error) {
+            console.log(`%cError in initiation of Chrome: ${error}`, 'color: #e50000');
+            chromeDriver = new Browser('chrome');
+            await chromeDriver.navigate('https://www.google.com');
+        }
+        return chromeDriver;
+    }
+
     public async getCurrentUrl(): Promise<string> {
         return await this.driver.getCurrentUrl();
     }
 
     public async navigate(url: string): Promise<void> {
+        console.log(`%cNevigate To: ${url}`, 'color: #03c8ff');
         return await this.driver.navigate().to(url);
     }
 
@@ -66,7 +88,7 @@ export class Browser {
             await (await this.findElements(selector, waitUntil))[index].click();
             console.log(
                 `%cClicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
-                'color: #00e5e5',
+                'color: #00ebdf',
             );
         } catch (error) {
             if (error instanceof Error) {
@@ -84,7 +106,7 @@ export class Browser {
                             `%cClicked with xpath selector: ${
                                 selector.valueOf()['value']
                             }, on element with index of: ${index}`,
-                            'color: #00e5e5',
+                            'color: #00ebdf',
                         );
                     } else {
                         await this.driver.executeScript(
@@ -94,7 +116,7 @@ export class Browser {
                             `%cClicked with css selector: ${
                                 selector.valueOf()['value']
                             }, on element with index of: ${index}`,
-                            'color: #00e5e5',
+                            'color: #00ebdf',
                         );
                     }
                 } else {
@@ -115,7 +137,7 @@ export class Browser {
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
             console.log(
                 `%cSentKeys with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
-                'color: #00ffff',
+                'color: #00e5b0',
             );
         } catch (error) {
             if (error instanceof Error) {
@@ -135,7 +157,7 @@ export class Browser {
                             `%cSentKeys with actions and defult selector: ${
                                 selector.valueOf()['value']
                             }, on element with index of: ${index}`,
-                            'color: #00ffff',
+                            'color: #00e5b0',
                         );
                     } catch (error) {
                         if (selector['using'] == 'xpath') {
@@ -146,7 +168,7 @@ export class Browser {
                                 `%cSet value with xpath selector: ${
                                     selector.valueOf()['value']
                                 }, on element with index of: ${index}`,
-                                'color: #00ffff',
+                                'color: #00e5b0',
                             );
                         } else {
                             await this.driver.executeScript(
@@ -156,7 +178,7 @@ export class Browser {
                                 `%cSet value with css selector: ${
                                     selector.valueOf()['value']
                                 }, on element with index of: ${index}`,
-                                'color: #00ffff',
+                                'color: #00e5b0',
                             );
                         }
                     }
@@ -228,10 +250,21 @@ export class Browser {
         return this.driver.takeScreenshot();
     }
 
+    /**
+     * This is Async/Non-Blocking sleep
+     * @param ms
+     * @returns
+     */
     public sleepTimeout(ms: number) {
         this.tempGeneralService.sleepTimeout(ms);
     }
 
+    /**
+     * This is Synchronic/Blocking sleep
+     * This should be used in most cases
+     * @param ms
+     * @returns
+     */
     public sleep(ms: number) {
         this.tempGeneralService.sleep(ms);
     }

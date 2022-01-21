@@ -9,7 +9,7 @@ export async function LoginTests(email: string, password: string) {
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
