@@ -33,15 +33,7 @@ export class Browser {
             driver: 'ALL',
             performance: 'ALL',
         });
-
-        try {
-            this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
-        } catch (error) {
-            console.log(`%cError in Chrome API: ${error}`, 'color: #e50000');
-            console.log('Wait 10 seconds before trying to call the browser api again');
-            this.sleep(10000);
-            this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
-        }
+        this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
         this.driver.manage().window().maximize();
         this.driver
             .manage()
