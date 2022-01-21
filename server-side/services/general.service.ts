@@ -18,6 +18,19 @@ import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
 
+process.on('unhandledRejection', async (error) => {
+    if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
+        console.log(`%cError in Chrome API: ${error}`, 'color: #e50000');
+        console.log('Wait 10 seconds before trying to call the browser api again');
+        console.debug(`%cSleep: ${10000} milliseconds`, 'color: #f7df1e');
+        msSleep(10000);
+    } else {
+        console.log(`%cError unhandledRejection: ${error}`, 'color: #e50000');
+        console.debug(`%cSleep: ${2000} milliseconds`, 'color: #f7df1e');
+        msSleep(2000);
+    }
+});
+
 interface QueryOptions {
     select?: string[];
     group_by?: string;
@@ -102,9 +115,10 @@ export default class GeneralService {
 
     sleep(ms: number) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
+        // const start = new Date().getTime(),
+        //     expire = start + ms;
+        // while (new Date().getTime() < expire) {}
+        msSleep(ms);
         return;
     }
 
@@ -753,6 +767,10 @@ export default class GeneralService {
         await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
         return;
     }
+}
+
+function msSleep(ms: number) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
 export interface TesterFunctions {
