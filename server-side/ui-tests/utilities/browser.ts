@@ -34,7 +34,14 @@ export class Browser {
             performance: 'ALL',
         });
 
-        this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
+        try {
+            this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
+        } catch (error) {
+            console.log(`%cError in Chrome API: ${error}`, 'color: #e50000');
+            console.log('Wait 10 seconds before trying to call the browser api again');
+            this.sleep(10000);
+            this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
+        }
         this.driver.manage().window().maximize();
         this.driver
             .manage()
@@ -329,7 +336,7 @@ export class Browser {
             const windowTitle = await this.driver.getTitle();
             console.log(`%cQuit Window With Title: ${windowTitle}`, 'color: #ffa500');
         } catch (error) {
-            console.log(`%cQuit Window With Title Error: ${error}`, 'color: #ffa500');
+            console.log(`%cQuit Window With Title Error: ${error}`, 'color: #e50000');
         }
 
         //Print Driver Info Before Quit
