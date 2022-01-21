@@ -18,6 +18,9 @@ import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
 
+/**
+ * This listner will be added when scripts start from the API or from CLI
+ */
 process.on('unhandledRejection', async (error) => {
     if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
         console.log(`%cError in Chrome API: ${error}`, 'color: #e50000');
@@ -26,8 +29,8 @@ process.on('unhandledRejection', async (error) => {
         msSleep(10000);
     } else {
         console.log(`%cError unhandledRejection: ${error}`, 'color: #e50000');
-        console.debug(`%cSleep: ${2000} milliseconds`, 'color: #f7df1e');
-        msSleep(2000);
+        console.debug(`%cSleep: ${4000} milliseconds`, 'color: #f7df1e');
+        msSleep(4000);
     }
 });
 
@@ -107,17 +110,24 @@ export default class GeneralService {
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
     }
-
+    /**
+     * This is Async/Non-Blocking sleep
+     * @param ms
+     * @returns
+     */
     sleepTimeout(ms: number) {
         console.debug(`%cAsync Sleep: ${ms} milliseconds`, 'color: #f7df1e');
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
+    /**
+     * This is Synchronic/Blocking sleep
+     * This should be used in most cases
+     * @param ms
+     * @returns
+     */
     sleep(ms: number) {
         console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        // const start = new Date().getTime(),
-        //     expire = start + ms;
-        // while (new Date().getTime() < expire) {}
         msSleep(ms);
         return;
     }

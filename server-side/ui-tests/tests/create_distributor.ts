@@ -42,7 +42,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             this.retries(1);
 
             beforeEach(async function () {
-                driver = new Browser('chrome');
+                driver = await Browser.initiateChrome();
             });
 
             afterEach(async function () {
@@ -129,7 +129,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             this.retries(1);
 
             beforeEach(async function () {
-                driver = new Browser('chrome');
+                driver = await Browser.initiateChrome();
             });
 
             afterEach(async function () {

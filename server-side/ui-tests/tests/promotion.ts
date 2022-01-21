@@ -28,7 +28,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
