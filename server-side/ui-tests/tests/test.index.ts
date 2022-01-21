@@ -16,7 +16,7 @@ import {
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
-import { Client } from '@pepperi-addons/debug-server/dist';
+import { Client } from '@pepperi-addons/debug-server';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
