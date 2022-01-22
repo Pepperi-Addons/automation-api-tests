@@ -1,6 +1,6 @@
 import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import fs from 'fs';
-import { describe, it, before, after, beforeEach, afterEach, run } from 'mocha';
+import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
@@ -56,47 +56,67 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     const generalService = new GeneralService(client);
 
     let nestedGap = '';
-    before(function () {
-        generalService.PrintMemoryUseToLog('Start', tests);
-        if (this._runnable.parent.title == '') {
-            for (let i = 0; i < this._runnable.parent.suites.length; i++) {
-                const suite = this._runnable.parent.suites[i];
-                nestedGap += '\t';
-                console.log(`%c${nestedGap.slice(1)}Test Suite Start: ${suite.title}`, ConsoleColors.SystemInformation);
-            }
-        }
-    });
+    let startedTestSuiteTitle = '';
+
+    generalService.PrintMemoryUseToLog('Start', tests);
     after(function () {
-        if (this._runnable.parent.title == '') {
-            for (let i = 0; i < this._runnable.parent.suites.length; i++) {
-                const suite = this._runnable.parent.suites[i];
-                nestedGap = nestedGap.slice(1);
-                console.log(`%c${nestedGap}Test Suite End: ${suite.title}\n`, ConsoleColors.SystemInformation);
-            }
-        }
         generalService.PrintMemoryUseToLog('End', tests);
     });
+
     beforeEach(function () {
-        if (this.currentTest?.title) {
+        let isCorrectNestedGap = false;
+        do {
+            if (
+                this.currentTest.parent.suites.length > nestedGap.length &&
+                this.currentTest.parent.title != startedTestSuiteTitle
+            ) {
+                const suiteTitle = this.currentTest.parent.title;
+                nestedGap += '\t';
+                console.log(`%c${nestedGap.slice(1)}Test Suite Start: ${suiteTitle}`, ConsoleColors.SystemInformation);
+                startedTestSuiteTitle = suiteTitle;
+            } else if (
+                this.currentTest.parent.suites.length < nestedGap.length &&
+                this.currentTest.parent.title != startedTestSuiteTitle
+            ) {
+                console.log(
+                    `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                    ConsoleColors.SystemInformation,
+                );
+                nestedGap = nestedGap.slice(1);
+            } else if (
+                this.currentTest.parent.suites.length == 0 &&
+                this.currentTest.parent.title != startedTestSuiteTitle
+            ) {
+                isCorrectNestedGap = true;
+                nestedGap = '\t';
+                console.log(`%cTest Suite Start: ${this.currentTest.parent.title}`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+                startedTestSuiteTitle = this.currentTest.parent.title;
+            } else {
+                isCorrectNestedGap = true;
+                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+            }
+        } while (!isCorrectNestedGap);
+    });
+
+    afterEach(function () {
+        if (this.currentTest.state != 'passed') {
             console.log(
-                `%c${nestedGap.slice(1)}Test Start: ${this.currentTest.title}`,
-                ConsoleColors.SystemInformation,
+                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                ConsoleColors.Error,
+            );
+        } else {
+            console.log(
+                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                ConsoleColors.Success,
             );
         }
-    });
-    afterEach(function () {
-        if (this.currentTest?.title) {
-            if (this.currentTest.state != 'passed') {
-                console.log(
-                    `%c${nestedGap.slice(1)}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
-                    ConsoleColors.Error,
-                );
-            } else {
-                console.log(
-                    `%c${nestedGap.slice(1)}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
-                    ConsoleColors.Success,
-                );
-            }
+        if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
+            console.log(
+                `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                ConsoleColors.SystemInformation,
+            );
+            nestedGap = nestedGap.slice(1);
         }
     });
 
