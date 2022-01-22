@@ -241,11 +241,11 @@ export default class GeneralService {
         for (const key in used) {
             memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
         }
-        console.log(`%cmemoryUse in MB = ${JSON.stringify(memoryUsed)}`, ConsoleColors.SystemInformation);
+        console.log(`%cMemory Use in MB = ${JSON.stringify(memoryUsed)}`, ConsoleColors.SystemInformation);
     }
 
     PrintMemoryUseToLog(state, testName) {
-        console.log(`%c${state} Test: ${testName}`, ConsoleColors.SystemInformation);
+        console.log(`%c${state} ${testName} Test System Information:`, ConsoleColors.SystemInformation);
         this.CalculateUsedMemory();
     }
 

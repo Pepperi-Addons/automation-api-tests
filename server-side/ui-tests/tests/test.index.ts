@@ -1,6 +1,6 @@
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import fs from 'fs';
-import { describe, it, after, run } from 'mocha';
+import { describe, it, before, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
@@ -55,9 +55,49 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     const generalService = new GeneralService(client);
 
-    generalService.PrintMemoryUseToLog('Start', tests);
+    let nestedGap = '';
+    before(function () {
+        generalService.PrintMemoryUseToLog('Start', tests);
+        if (this._runnable.parent.title == '') {
+            for (let i = 0; i < this._runnable.parent.suites.length; i++) {
+                const suite = this._runnable.parent.suites[i];
+                nestedGap += '\t';
+                console.log(`%c${nestedGap.slice(1)}Test Suite Start: ${suite.title}`, ConsoleColors.SystemInformation);
+            }
+        }
+    });
     after(function () {
+        if (this._runnable.parent.title == '') {
+            for (let i = 0; i < this._runnable.parent.suites.length; i++) {
+                const suite = this._runnable.parent.suites[i];
+                nestedGap = nestedGap.slice(1);
+                console.log(`%c${nestedGap}Test Suite End: ${suite.title}\n`, ConsoleColors.SystemInformation);
+            }
+        }
         generalService.PrintMemoryUseToLog('End', tests);
+    });
+    beforeEach(function () {
+        if (this.currentTest?.title) {
+            console.log(
+                `%c${nestedGap.slice(1)}Test Start: ${this.currentTest.title}`,
+                ConsoleColors.SystemInformation,
+            );
+        }
+    });
+    afterEach(function () {
+        if (this.currentTest?.title) {
+            if (this.currentTest.state != 'passed') {
+                console.log(
+                    `%c${nestedGap.slice(1)}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                    ConsoleColors.Error,
+                );
+            } else {
+                console.log(
+                    `%c${nestedGap.slice(1)}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                    ConsoleColors.Success,
+                );
+            }
+        }
     });
 
     if (tests != 'Create') {
