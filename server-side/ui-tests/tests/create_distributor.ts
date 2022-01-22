@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import {
     WebAppLoginPage,
     WebAppHomePage,
@@ -93,7 +93,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                                 'Failed to install the following addons',
                             )
                         ) {
-                            console.log('Bug exist for this response: (DI-19115)');
+                            console.log('%cBug exist for this response: (DI-19115)', ConsoleColors.BugSkipped);
                             console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
                         } else {
                             throw new Error(

@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { DistributorService } from '../../services/distributor.service';
 import { LoremIpsum } from 'lorem-ipsum';
@@ -71,7 +71,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     newDistributor.Body.Status.ID == 0 &&
                     newDistributor.Body.AuditInfo.ErrorMessage.includes('Failed to install the following addons')
                 ) {
-                    console.log('Bug exist for this response: (DI-19115)');
+                    console.log('%cBug exist for this response: (DI-19115)', ConsoleColors.BugSkipped);
                     console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
                 } else {
                     throw new Error(
