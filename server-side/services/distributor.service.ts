@@ -1,5 +1,5 @@
 import { PapiClient } from '@pepperi-addons/papi-sdk';
-import GeneralService from './general.service';
+import GeneralService, { ConsoleColors } from './general.service';
 
 export interface DistributorObject {
     FirstName: string;
@@ -63,8 +63,8 @@ export class DistributorService {
             //TODO: Remove this when bugs will be solved (DI-19114/19116/19117/19118)
             let isNotKnown = true;
             if (newDistributor.Body?.Type == 'request-timeout') {
-                console.log('Bug exist for this response: (DI-19118)');
-                console.log('VAR - Create Distributor - The API call never return');
+                console.log('%cBug exist for this response: (DI-19118)', ConsoleColors.BugSkipped);
+                console.log('%cVAR - Create Distributor - The API call never return', ConsoleColors.BugSkipped);
                 //TODO: Un comment this throw when the bug will be solved
                 // throw new Error(`Known Bug: VAR - Create Distributor - The API call never return (DI-19118)`);
             }
@@ -72,7 +72,7 @@ export class DistributorService {
                 if (
                     newDistributor.Body?.fault?.faultstring == 'Object reference not set to an instance of an object.'
                 ) {
-                    console.log('Bug exist for this response: (DI-19114)');
+                    console.log('%cBug exist for this response: (DI-19114)', ConsoleColors.BugSkipped);
                     this.generalService.sleep(1000 * 60 * 1);
                     isNotKnown = false;
                 }
@@ -81,7 +81,7 @@ export class DistributorService {
                         'The requested URL was rejected. Please consult with your administrator.',
                     )
                 ) {
-                    console.log('Bug exist for this response: (DI-19116)');
+                    console.log('%cBug exist for this response: (DI-19116)', ConsoleColors.BugSkipped);
                     this.generalService.sleep(1000 * 60 * 1);
                     isNotKnown = false;
                 }
@@ -89,7 +89,7 @@ export class DistributorService {
                     newDistributor.Body?.fault?.faultstring ==
                     'Timeout error - trying to free sql cache and update statistics in order to workaround the issue.'
                 ) {
-                    console.log('Bug exist for this response: (DI-19117)');
+                    console.log('%cBug exist for this response: (DI-19117)', ConsoleColors.BugSkipped);
                     this.generalService.sleep(1000 * 60 * 1);
                     isNotKnown = false;
                 }

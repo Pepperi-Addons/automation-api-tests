@@ -13,7 +13,7 @@ import {
     WebAppDialog,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
-import GeneralService from '../../services/general.service';
+import GeneralService, { ConsoleColors } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 
@@ -1108,7 +1108,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                                 title: `Cart With Error Promotions, Package Amount: ${promotionsArr[index]}`,
                                 value: 'data:image/png;base64,' + base64ImageInErrorTests,
                             });
-                            console.log(`%cError thrown in negative tests: ${error}`, 'color: #e50000');
+                            console.log(`%cError thrown in negative tests: ${error}`, ConsoleColors.Error);
                             index--;
                             await webAppDialog.selectDialogBox('OK');
                             continue;

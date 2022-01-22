@@ -55,15 +55,16 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     const generalService = new GeneralService(client);
 
+    generalService.PrintMemoryUseToLog('Start', tests);
+    after(function () {
+        generalService.PrintMemoryUseToLog('End', tests);
+    });
+
     if (tests != 'Create') {
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Reset')) {
-        generalService.PrintMemoryUseToLog('Start', 'Reset');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Reset');
-        });
         //Reset the needed UI Controls for the UI tests.
         await replaceUIControlsTests(generalService);
 
@@ -74,59 +75,31 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
 
     if (tests.includes('Sanity')) {
-        generalService.PrintMemoryUseToLog('Start', 'Sanity');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Sanity');
-        });
         await LoginTests(email, pass);
         await OrderTests(email, pass, client);
     }
 
     if (tests.includes('Workflow')) {
-        generalService.PrintMemoryUseToLog('Start', 'Workflow');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Workflow');
-        });
         await WorkflowTests(email, pass, client);
     }
 
     if (tests.includes('DeepLink')) {
-        generalService.PrintMemoryUseToLog('Start', 'DeepLink');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'DeepLink');
-        });
         await DeepLinkTests(email, pass, client);
     }
 
     if (tests.includes('Promotion')) {
-        generalService.PrintMemoryUseToLog('Start', 'Promotion');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Promotion');
-        });
         await PromotionTests(email, pass, client);
     }
 
     if (tests.includes('Security')) {
-        generalService.PrintMemoryUseToLog('Start', 'Security');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Security');
-        });
         await SecurityPolicyTests(email, pass);
     }
 
     if (tests.includes('Create')) {
-        generalService.PrintMemoryUseToLog('Start', 'Create');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Create');
-        });
         await CreateDistributorTests(generalService, varPass, varPassEU);
     }
 
     if (tests.includes('Uom')) {
-        generalService.PrintMemoryUseToLog('Start', 'Uom');
-        after(async function () {
-            generalService.PrintMemoryUseToLog('End', 'Uom');
-        });
         await UomTests(email, pass, varPass, client);
     }
 
