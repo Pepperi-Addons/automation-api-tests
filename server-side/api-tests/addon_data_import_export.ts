@@ -155,7 +155,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     {
                         Name: 'Import With DIMX', // mandatory
                         AddonUUID: addonUUID, // mandatory
-                        RelationName: 'ImportDataSource', // mandatory
+                        RelationName: 'DataImportResource', // mandatory
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Import',
                         // AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
@@ -169,7 +169,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 const relationBody = {
                     Name: 'Import With DIMX', // mandatory
                     AddonUUID: addonUUID, // mandatory
-                    RelationName: 'ImportDataSource', // mandatory
+                    RelationName: 'DataImportResource', // mandatory
                     Type: 'AddonAPI', // mandatory on create
                     Description: 'DIMX Import',
                     // AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
