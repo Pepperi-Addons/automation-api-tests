@@ -58,15 +58,15 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     // this will run the first test that will run the second and so on..
 
     await installAddonToDist();
-    describe('Insert New Code Job', () => {
-        it('Insert New Code Job With Manadatory Parameter: Name', () => {
-            assert(logcash.statusA, 'Insert new Code Job with CodeJobName failed');
+    describe('Insert New AddonCodeJob', () => {
+        it('Insert New AddonCodeJob With Manadatory Parameter: Name', () => {
+            assert(logcash.statusA, 'Insert new AddonCodeJob with CodeJobName failed');
         });
-        it('Get Single CodeJob With Mandatory Parameter CodeJobName: Name', () => {
+        it('Get Single AddonCodeJob With Mandatory Parameter CodeJobName: Name', () => {
             assert(logcash.statusb, logcash.errorMessageb);
         });
-        it('Update CodeJob Params (From Default Values): Finished', () => {
-            assert(logcash.statusc, 'Update Code Job failed');
+        it('Update AddonCodeJob Params (From Default Values): Finished', () => {
+            assert(logcash.statusc, 'Update AddonCodeJob failed');
         });
         it('Get Single CodeJob After Update: Name', () => {
             assert(logcash.statusd, logcash.errorMessaged);
@@ -89,8 +89,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
     //     });
     // });
-    describe('Get List Of CodeJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
-        it('Get List Of CodeJobse (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
+    describe('Get List Of AddonCodeJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
+        it('Get List Of AddonCodeJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
             const statusA = cashCallJobsList.status;
             assert(statusA, cashCallJobsList.message);
         });
