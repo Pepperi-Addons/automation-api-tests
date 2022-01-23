@@ -81,8 +81,38 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
                 expect(adoonVersionResponse[0].Version).to.equal(version);
 
-                const file = fs.readFileSync(path.resolve(__dirname, './test-data/relations.js'));
-                const base64File = file.toString('base64');
+                let base64File;
+                if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
+                    const file = fs.readFileSync(path.resolve(__dirname, './test-data/relations.js'));
+                    base64File = file.toString('base64');
+                } else {
+                    //Changed to not use local files, but always the same file
+                    base64File = Buffer.from(
+                        'exports.AsIs = async (Client, Request) => {\n' +
+                            '    return Request.body;\n' +
+                            '};\n' +
+                            'exports.RemoveObject = async (Client, Request) => {\n' +
+                            '    for (let i = 0; i < Request.body.DIMXObjects.length; i++) {\n' +
+                            '        if (Request.body.DIMXObjects[i]) {\n' +
+                            '            delete Request.body.DIMXObjects[i].Object.object;\n' +
+                            '            delete Request.body.DIMXObjects[i].Object.ModificationDateTime;\n' +
+                            '            delete Request.body.DIMXObjects[i].Object.CreationDateTime;\n' +
+                            '            delete Request.body.DIMXObjects[i].Object.Hidden;\n' +
+                            '        }\n' +
+                            '    }\n' +
+                            '    return Request.body;\n' +
+                            '};\n' +
+                            'exports.RemoveColumn1 = async (Client, Request) => {\n' +
+                            '    for (let i = 0; i < Request.body.DIMXObjects.length; i++) {\n' +
+                            '        if (Request.body.DIMXObjects[i].Object.Column1) {\n' +
+                            '            delete Request.body.DIMXObjects[i].Object.Column1;\n' +
+                            '        }\n' +
+                            '   }\n' +
+                            '    return Request.body;\n' +
+                            '};\n',
+                    ).toString('base64');
+                }
+
                 const versionTestDataBody = {
                     AddonUUID: addonUUID,
                     UUID: adoonVersionResponse[0].UUID,
@@ -159,7 +189,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Import',
                         AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
-                        // AddonRelativeURL: '', // mandatory on create
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -173,7 +202,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     Type: 'AddonAPI', // mandatory on create
                     Description: 'DIMX Import',
                     AddonRelativeURL: `/${addonFileName}/${addonImportFunctionName}`, // mandatory on create
-                    // AddonRelativeURL: '', // mandatory on create
                 };
                 const relationResponse = await relationService.getRelationWithName(
                     {
@@ -280,10 +308,20 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
                 expect(adoonVersionResponse[0].Version).to.equal(version);
 
-                //js instead of json since build process ignore json in intention
-                const file = fs.readFileSync(path.resolve(__dirname, './test-data/import.js'), { encoding: 'utf8' });
-                const fileJSContent = file.split(`"use strict";\r\n`)[1].split(';\r\n//# sourceMappingURL')[0];
-                const base64File = Buffer.from(fileJSContent).toString('base64');
+                let base64File;
+                if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
+                    //js instead of json since build process ignore json in intention
+                    const file = fs.readFileSync(path.resolve(__dirname, './test-data/import.js'), {
+                        encoding: 'utf8',
+                    });
+                    const fileJSContent = file.split(`"use strict";\r\n`)[1].split(';\r\n//# sourceMappingURL')[0];
+                    base64File = Buffer.from(fileJSContent).toString('base64');
+                } else {
+                    // Changed to not use local files, but always the same content
+                    base64File = Buffer.from(
+                        '[{"Name":"DIMX Test","Description":"DIMX Test 0","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX0","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 0","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 1","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX1","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 1","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 2","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX2","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 2","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 3","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX3","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 3","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 4","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX4","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 4","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 5","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX5","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 5","Array":["Value1","Value2","Value3"]}}]',
+                    ).toString('base64');
+                }
 
                 const versionTestDataBody = {
                     AddonUUID: addonUUID,
@@ -367,14 +405,29 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
                 const newDimxExport = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI);
 
-                const file = fs.readFileSync(path.resolve(__dirname, './test-data/import.js'), { encoding: 'utf8' });
-                const fileJSContent = file.split(`"use strict";\r\n`)[1].split(';\r\n//# sourceMappingURL')[0];
-                const contentFromFileAsArr = JSON.parse(fileJSContent);
+                let contentFromFileAsArr;
+                if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
+                    //js instead of json since build process ignore json in intention
+                    const file = fs.readFileSync(path.resolve(__dirname, './test-data/import.js'), {
+                        encoding: 'utf8',
+                    });
+                    const fileJSContent = file.split(`"use strict";\r\n`)[1].split(';\r\n//# sourceMappingURL')[0];
+                    contentFromFileAsArr = JSON.parse(fileJSContent);
 
-                for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                    const object = contentFromFileAsArr[i];
-                    delete object.Column1;
-                    delete object.object;
+                    for (let i = 0; i < contentFromFileAsArr.length; i++) {
+                        const object = contentFromFileAsArr[i];
+                        delete object.Column1;
+                        delete object.object;
+                    }
+                } else {
+                    contentFromFileAsArr = [
+                        { Name: 'DIMX Test', Description: 'DIMX Test 0', Key: 'testKeyDIMX0' },
+                        { Name: 'DIMX Test', Description: 'DIMX Test 1', Key: 'testKeyDIMX1' },
+                        { Name: 'DIMX Test', Description: 'DIMX Test 2', Key: 'testKeyDIMX2' },
+                        { Name: 'DIMX Test', Description: 'DIMX Test 3', Key: 'testKeyDIMX3' },
+                        { Name: 'DIMX Test', Description: 'DIMX Test 4', Key: 'testKeyDIMX4' },
+                        { Name: 'DIMX Test', Description: 'DIMX Test 5', Key: 'testKeyDIMX5' },
+                    ];
                 }
 
                 const NewRelationResponse = await generalService.fetchStatus(
