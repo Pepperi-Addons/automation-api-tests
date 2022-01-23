@@ -794,10 +794,16 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
         it,
         run,
     };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SchedulerTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    let testResult;
+    //TODO: Remove the scheduler endpoint from Jenkins, This test was removed from Stage: "SchedulerTests", No test was added
+    if (client.BaseURL.includes('staging')) {
+        testResult = await Promise.all([await test_data(client, testerFunctions)]).then(() => testerFunctions.run());
+    } else {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            SchedulerTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -819,10 +825,19 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
         it,
         run,
     };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CodeJobsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    let testResult;
+    //TODO: Remove the code_jobs endpoint from Jenkins, This test was removed from Stage: "CodeJobsTests", This test was added for now: "AddonJobsTests"
+    if (client.BaseURL.includes('staging')) {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            AddonJobsTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    } else {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            CodeJobsTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
