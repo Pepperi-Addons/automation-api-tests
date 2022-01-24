@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../services/general.service';
 import { SyncService } from '../services/sync.service';
 import { SyncBody, Account, Transaction, GeneralActivity } from '@pepperi-addons/papi-sdk';
 
@@ -228,7 +228,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     Object.assign(testBody, _body);
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const PutAfterGetTest = await syncPutAfterGet(testBody);
-                    return expect(PutAfterGetTest).to.contain('Pass' as TestResult);
+                    await expect(PutAfterGetTest).to.contain('Pass' as TestResult);
                 });
 
                 it('Simple Sync Put Data Members Validation', async () => {
@@ -263,7 +263,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 .that.contain('Pass' as TestResult)),
                         ];
                     } else {
-                        return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                        await expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
                     }
                 });
 
@@ -274,7 +274,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
-                        return expect(
+                        await expect(
                             await syncPostGetValidation(
                                 syncDataMembersValidationGet.apiGetResponse,
                                 syncDataMembersValidationGet.testBody,
@@ -283,7 +283,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             .to.have.property('TestResult')
                             .that.contain('Pass' as TestResult);
                     }
-                    return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
+                    await expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
                 });
 
                 it('Simple Sync Put Data Members Validation (Missing AccountExternalID - NUC 9.5.89)', async () => {
@@ -319,7 +319,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 .that.contain('Pass' as TestResult)),
                         ];
                     } else {
-                        return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                        await expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
                     }
                 });
             }
@@ -335,13 +335,13 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const responseOfSyncWithError: TestObject = await syncStuckValidation(testBody);
                     if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
-                        return expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
+                        await expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
                     }
                     //Forcing resync with the same sync data that got stuck
                     testBody.LastSyncDateTime = 0;
                     const syncDataMembersValidationGet: TestObject = await syncDataMembersValidation(testBody);
                     if (syncDataMembersValidationGet.TestResult == ('Pass' as TestResult)) {
-                        return expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
+                        await expect(syncDataMembersValidationGet.TestResult).to.contain('Pass' as TestResult);
                     }
                 });
             }
@@ -362,7 +362,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
                     const responseOfSyncWithError: TestObject = await syncStuckValidation(testBody);
                     if (responseOfSyncWithError.TestResult != ('Pass' as TestResult)) {
-                        return expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
+                        await expect(responseOfSyncWithError.TestResult).to.contain('Pass' as TestResult);
                     }
                     //Forcing resync with fixed data that should work
                     testBody.LocalDataUpdates = {} as any;
@@ -379,9 +379,9 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                             syncDataMembersValidationPut.apiGetResponse,
                             syncDataMembersValidationPut.testBody,
                         );
-                        return expect(resyncWithOrderCreationValidationPut.TestResult).to.contain('Pass' as TestResult);
+                        await expect(resyncWithOrderCreationValidationPut.TestResult).to.contain('Pass' as TestResult);
                     } else {
-                        return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                        await expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
                     }
                 });
             }
@@ -436,7 +436,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                     .that.contain('Pass' as TestResult)),
                             ];
                         } else {
-                            return expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
+                            await expect(syncDataMembersValidationPut.TestResult).to.contain('Pass' as TestResult);
                         }
                     });
                 });
@@ -503,7 +503,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             if (isCleanAfterTests) {
                 describe('Exit Test', () => {
                     it('Test Clean Up', async () => {
-                        return expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
+                        await expect((await cleanUpTest()).TestResult).to.contain('Pass' as TestResult);
                     });
                 });
             }
@@ -988,7 +988,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 } | `;
                             }
                         } catch (error) {
-                            console.log(`Error for: ${[localTestValuesArr[index]]} | ${error}`);
+                            console.log(`%cError for: ${[localTestValuesArr[index]]} | ${error}`, ConsoleColors.Error);
                             errorMessage += `For Client Info Prop: ${[
                                 localTestValuesArr[index],
                             ]} Error was thrown: ${error} | `;
@@ -1039,7 +1039,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         }
                     }
                 } catch (error) {
-                    console.log(`Error for: ${prop} | ${error}`);
+                    console.log(`%cError for: ${prop} | ${error}`, ConsoleColors.Error);
                     errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
                 }
             }
@@ -1073,7 +1073,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         }
                     }
                 } catch (error) {
-                    console.log(`Error for: ${prop} | ${error}`);
+                    console.log(`%cError for: ${prop} | ${error}`, ConsoleColors.Error);
                     errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
                 }
             }

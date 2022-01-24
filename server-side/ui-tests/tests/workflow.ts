@@ -29,7 +29,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
         this.retries(1);
 
         before(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         after(async function () {

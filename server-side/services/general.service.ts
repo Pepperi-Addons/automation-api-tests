@@ -8,6 +8,7 @@ import {
     User,
     AuditLog,
     Type,
+    AddonAPIAsyncResult,
 } from '@pepperi-addons/papi-sdk';
 import { Client } from '@pepperi-addons/debug-server';
 import jwt_decode from 'jwt-decode';
@@ -16,6 +17,63 @@ import { performance } from 'perf_hooks';
 import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
+
+export const ConsoleColors = {
+    MenuHeader: 'color: #FFFF00',
+    MenuBackground: 'background-color: #000000',
+    SystemInformation: 'color: #F87217',
+    Information: 'color: #FFD801',
+    FetchStatus: 'color: #893BFF',
+    PageMessage: 'color: #6C2DC7',
+    NevigationMessage: 'color: #3BB9FF',
+    ClickedMessage: 'color: #00FFFF',
+    SentKeysMessage: 'color: #C3FDB8',
+    BugSkipped: 'color: #F535AA',
+    Error: 'color: #FF0000',
+    Success: 'color: #00FF00',
+};
+
+console.log('%cLogs Colors Information:\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.MenuHeader}`); //Black, Yellow
+console.log('%c#F87217\t\tSystem Information\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SystemInformation}`); //Pumpkin Orange
+console.log('%c#FFD801\t\tInformation\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Information}`); //Rubber Ducky Yellow
+console.log('%c#893BFF\t\tFetch Status\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.FetchStatus}`); //Aztech Purple
+console.log('%c#6C2DC7\t\tPage Message\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.PageMessage}`); //Purple Amethyst
+console.log('%c#3BB9FF\t\tNevigation Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.NevigationMessage}`); //Deep Sky Blue
+console.log('%c#00FFFF\t\tClicked Message\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.ClickedMessage}`); //Aqua
+console.log('%c#C3FDB8\t\tSentKeys Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SentKeysMessage}`); //Light Jade
+console.log('%c#F535AA\t\tBug Skipped\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.BugSkipped}`); //Neon Pink
+console.log('%c#FF0000\t\tError\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Error}`); //red
+console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Success}`); //green
+
+/**
+ * This listner will be added when scripts start from the API or from CLI
+ */
+process.on('unhandledRejection', async (error) => {
+    if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
+        console.log(`%cError in Chrome API: ${error}`, ConsoleColors.Error);
+        console.log('Wait 10 seconds before trying to call the browser api again');
+        console.debug(`%cSleep: ${10000} milliseconds`, ConsoleColors.Information);
+        msSleep(10000);
+    } else {
+        console.log(`%cError unhandledRejection: ${error}`, ConsoleColors.Error);
+        console.debug(`%cSleep: ${4000} milliseconds`, ConsoleColors.Information);
+        msSleep(4000);
+    }
+});
+
+interface QueryOptions {
+    select?: string[];
+    group_by?: string;
+    fields?: string[];
+    where?: string;
+    order_by?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
 
 declare type ClientData =
     | 'UserEmail'
@@ -79,13 +137,35 @@ export default class GeneralService {
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
     }
+    /**
+     * This is Async/Non-Blocking sleep
+     * @param ms
+     * @returns
+     */
+    sleepTimeout(ms: number) {
+        console.debug(`%cAsync Sleep: ${ms} milliseconds`, ConsoleColors.Information);
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
-    sleep(ms) {
-        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
+    /**
+     * This is Synchronic/Blocking sleep
+     * This should be used in most cases
+     * @param ms
+     * @returns
+     */
+    sleep(ms: number) {
+        console.debug(`%cSleep: ${ms} milliseconds`, ConsoleColors.Information);
+        msSleep(ms);
         return;
+    }
+
+    addQueryAndOptions(url: string, options: QueryOptions = {}) {
+        const optionsArr: string[] = [];
+        Object.keys(options).forEach((key) => {
+            optionsArr.push(key + '=' + encodeURIComponent(options[key]));
+        });
+        const query = optionsArr.join('&');
+        return query ? url + '?' + query : url;
     }
 
     async initiateTester(email, pass): Promise<Client> {
@@ -161,11 +241,11 @@ export default class GeneralService {
         for (const key in used) {
             memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
         }
-        console.log(`memoryUse in MB = ${JSON.stringify(memoryUsed)}`);
+        console.log(`%cMemory Use in MB = ${JSON.stringify(memoryUsed)}`, ConsoleColors.SystemInformation);
     }
 
     PrintMemoryUseToLog(state, testName) {
-        console.log(`${state} Test: ${testName}`);
+        console.log(`%c${state} ${testName} Test System Information:`, ConsoleColors.SystemInformation);
         this.CalculateUsedMemory();
     }
 
@@ -213,6 +293,28 @@ export default class GeneralService {
         return this.papiClient.addons.find({ where: 'Type=1', page_size: -1 });
     }
 
+    getVARInstalledAddons(varKey: string, options: QueryOptions = {}) {
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/addons/installed_addons`;
+        url = this.addQueryAndOptions(url, options);
+        return this.fetchStatus(url, {
+            method: `GET`,
+            headers: {
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+            },
+        });
+    }
+
+    getVARDistributor(varKey: string, options: QueryOptions = {}) {
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/distributors`;
+        url = this.addQueryAndOptions(url, options);
+        return this.fetchStatus(url, {
+            method: `GET`,
+            headers: {
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+            },
+        });
+    }
+
     getAddonsByUUID(UUID: string): Promise<InstalledAddon> {
         return this.papiClient.addons.installedAddons.addonUUID(UUID).get();
     }
@@ -254,13 +356,16 @@ export default class GeneralService {
             //This case is used when AuditLog was not created at all (This can happen and it is valid)
             if (auditLogResponse === null) {
                 this.sleep(4000);
-                console.log('Audit Log was not found, waiting...');
+                console.log('%cAudit Log was not found, waiting...', ConsoleColors.Information);
                 loopsAmount--;
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2') {
                 this.sleep(2000);
-                console.log('IN_Prog: Status ID is 2, Retry ' + loopsAmount + ' Times.');
+                console.log(
+                    '%cIn_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.',
+                    ConsoleColors.Information,
+                );
                 loopsAmount--;
             }
         } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
@@ -338,9 +443,22 @@ export default class GeneralService {
                         .addonUUID(`${testData[addonUUID][0]}`)
                         .install('0.0.235');
                 } else {
-                    installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${testData[addonUUID][0]}`)
-                        .install();
+                    if (testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/)) {
+                        const version = testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/);
+                        if (version?.length && typeof version[0] === 'string') {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .install(version[0]);
+                        } else {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .install();
+                        }
+                    } else {
+                        installResponse = await this.papiClient.addons.installedAddons
+                            .addonUUID(`${testData[addonUUID][0]}`)
+                            .install();
+                    }
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
@@ -352,6 +470,10 @@ export default class GeneralService {
         return isInstalledArr;
     }
 
+    async uninstallAddon(addonUuid: string): Promise<AddonAPIAsyncResult> {
+        return this.papiClient.addons.installedAddons.addonUUID(addonUuid).uninstall();
+    }
+
     async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
@@ -361,7 +483,7 @@ export default class GeneralService {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
             let changeType = 'Upgrade';
-            let searchString = `AND Version Like '${version}%' AND Available Like 1 AND Phased Like 1`;
+            let searchString = `AND Version Like'${version}%' AND Available Like 1 AND Phased Like 1`;
             if (
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
@@ -379,7 +501,7 @@ export default class GeneralService {
                 {
                     method: `GET`,
                     headers: {
-                        Authorization: `${varKey}`,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -517,9 +639,8 @@ export default class GeneralService {
                     `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
                         uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
-                    `${isSucsess ? 'color: #9370DB' : 'color: #f7df1e'}`,
+                    `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information}`,
                 );
-
                 try {
                     if (response.headers.get('content-type')?.startsWith('image')) {
                         responseStr = await response.buffer().then((r) => r.toString('base64'));
@@ -654,6 +775,11 @@ export default class GeneralService {
         return !!pattern.test(s.replace(' ', '%20'));
     }
 
+    /**
+     * The addon must be installed for this function to work
+     * @param addonUUID
+     * @returns
+     */
     getSecretKey(addonUUID: string): Promise<string> {
         return this.papiClient
             .post('/code_jobs/get_data_for_job_execution', {
@@ -681,6 +807,10 @@ export default class GeneralService {
         await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
         return;
     }
+}
+
+function msSleep(ms: number) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
 export interface TesterFunctions {

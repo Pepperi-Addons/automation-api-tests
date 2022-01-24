@@ -1,12 +1,28 @@
 import 'chromedriver';
 import { Builder, ThenableWebDriver, WebElement, until, Locator, Key } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import GeneralService, { ConsoleColors } from '../../services/general.service';
 
 export class Browser {
     private driver: ThenableWebDriver;
     private options: chrome.Options;
     private TIMEOUT = 15000;
-    public constructor(private browserName: string) {
+    private tempGeneralService = new GeneralService({
+        AddonUUID: '',
+        AddonSecretKey: '',
+        BaseURL: '',
+        OAuthAccessToken: '',
+        AssetsBaseUrl: '',
+        Retry: function () {
+            return;
+        },
+    });
+
+    /**
+     * Chrome driver should only be initiate by using initiateChrome
+     * @param browserName
+     */
+    private constructor(private browserName: string) {
         this.options = new chrome.Options();
         if (process.env.npm_config_chrome_headless == 'true') {
             this.options.addArguments('--headless');
@@ -21,12 +37,34 @@ export class Browser {
             driver: 'ALL',
             performance: 'ALL',
         });
-
-        this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
+        this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
         this.driver.manage().window().maximize();
         this.driver
             .manage()
             .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT * 4, script: this.TIMEOUT * 4 });
+    }
+
+    /**
+     * This is the correct function to use for starting new chrome browser
+     * @returns
+     */
+    public static async initiateChrome(): Promise<Browser> {
+        let chromeDriver: Browser;
+        let isNevigated = false;
+        let maxLoopsCounter = 4;
+        do {
+            chromeDriver = new Browser('chrome');
+            try {
+                await chromeDriver.navigate('https://www.google.com');
+                isNevigated = true;
+            } catch (error) {
+                isNevigated = false;
+                console.log(`%cError in initiation of Chrome: ${error}`, ConsoleColors.Error);
+                await chromeDriver.sleepTimeout(4000);
+            }
+            maxLoopsCounter--;
+        } while (!isNevigated && maxLoopsCounter > 0);
+        return chromeDriver;
     }
 
     public async getCurrentUrl(): Promise<string> {
@@ -34,6 +72,7 @@ export class Browser {
     }
 
     public async navigate(url: string): Promise<void> {
+        console.log(`%cNevigate To: ${url}`, ConsoleColors.NevigationMessage);
         return await this.driver.navigate().to(url);
     }
 
@@ -53,6 +92,10 @@ export class Browser {
     public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
+            console.log(
+                `%cClicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                ConsoleColors.ClickedMessage,
+            );
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -65,9 +108,21 @@ export class Browser {
                         await this.driver.executeScript(
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
+                        console.log(
+                            `%cClicked with xpath selector: ${
+                                selector.valueOf()['value']
+                            }, on element with index of: ${index}`,
+                            ConsoleColors.ClickedMessage,
+                        );
                     } else {
                         await this.driver.executeScript(
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
+                        );
+                        console.log(
+                            `%cClicked with css selector: ${
+                                selector.valueOf()['value']
+                            }, on element with index of: ${index}`,
+                            ConsoleColors.ClickedMessage,
                         );
                     }
                 } else {
@@ -81,11 +136,18 @@ export class Browser {
     }
 
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
+        const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {
             await (await this.findElements(selector, waitUntil))[index].clear();
             console.log('Wait after clear, beofre send keys');
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
+            console.log(
+                `%cSentKeys with defult selector: ${
+                    selector.valueOf()['value']
+                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                ConsoleColors.SentKeysMessage,
+            );
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -100,10 +162,34 @@ export class Browser {
                         const el = await this.driver.findElements(selector);
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
-                    } catch (error) {
-                        await this.driver.executeScript(
-                            `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                        console.log(
+                            `%cSentKeys with actions and defult selector: ${
+                                selector.valueOf()['value']
+                            }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                            ConsoleColors.SentKeysMessage,
                         );
+                    } catch (error) {
+                        if (selector['using'] == 'xpath') {
+                            await this.driver.executeScript(
+                                `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
+                            );
+                            console.log(
+                                `%cSet value with xpath selector: ${
+                                    selector.valueOf()['value']
+                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                ConsoleColors.SentKeysMessage,
+                            );
+                        } else {
+                            await this.driver.executeScript(
+                                `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                            );
+                            console.log(
+                                `%cSet value with css selector: ${
+                                    selector.valueOf()['value']
+                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                ConsoleColors.SentKeysMessage,
+                            );
+                        }
                     }
                 } else {
                     throw error;
@@ -173,12 +259,23 @@ export class Browser {
         return this.driver.takeScreenshot();
     }
 
+    /**
+     * This is Async/Non-Blocking sleep
+     * @param ms
+     * @returns
+     */
+    public sleepTimeout(ms: number) {
+        return this.tempGeneralService.sleepTimeout(ms);
+    }
+
+    /**
+     * This is Synchronic/Blocking sleep
+     * This should be used in most cases
+     * @param ms
+     * @returns
+     */
     public sleep(ms: number) {
-        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
+        this.tempGeneralService.sleep(ms);
     }
 
     public async clearCookies(url?: string): Promise<void> {
@@ -259,7 +356,7 @@ export class Browser {
     public async close(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         const windowTitle = await this.driver.getTitle();
-        console.log(`Close Window With Title: ${windowTitle}`);
+        console.log(`%cClose Window With Title: ${windowTitle}`, ConsoleColors.Success);
         return await this.driver.close();
     }
 
@@ -269,21 +366,45 @@ export class Browser {
      */
     public async quit(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
-        const windowTitle = await this.driver.getTitle();
-        console.log(`Quit Window With Title: ${windowTitle}`);
+        try {
+            const windowTitle = await this.driver.getTitle();
+            console.log(`%cQuit Window With Title: ${windowTitle}`, ConsoleColors.SystemInformation);
+        } catch (error) {
+            console.log(`%cQuit Window With Title Error: ${error}`, ConsoleColors.Error);
+        }
 
         //Print Driver Info Before Quit
         const driverInfo = await this.driver.getCapabilities();
         const browserName = driverInfo.get('browserName');
         const browserVersion = driverInfo.get('browserVersion');
         const browserInfo = driverInfo.get(browserName);
-        console.log(`Browser Name: ${browserName}, Version: ${browserVersion}`);
-        console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
+        console.log(`%cBrowser Name: ${browserName}, Version: ${browserVersion}`, ConsoleColors.SystemInformation);
+        console.log(`%cBrowser Info: ${JSON.stringify(browserInfo)}`, ConsoleColors.SystemInformation);
 
         try {
-            await this.driver.quit();
+            await this.driver
+                .quit()
+                .then(
+                    async (res) => {
+                        console.log(
+                            `%cBrowser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`,
+                            ConsoleColors.Success,
+                        );
+                        await this.sleepTimeout(2000);
+                        console.log(
+                            '%cWaited 2 seconds for browser closing process will be done',
+                            ConsoleColors.Success,
+                        );
+                    },
+                    (error) => {
+                        console.log(`%cBrowser Quit Error In Response: ${error}`, ConsoleColors.Error);
+                    },
+                )
+                .catch((error) => {
+                    console.log(`%cBrowser Quit Error In Catch: ${error}`, ConsoleColors.Error);
+                });
         } catch (error) {
-            console.log(`Browser Error: ${error}`);
+            console.log(`%cBrowser Error: ${error}`, ConsoleColors.Error);
         }
         return;
     }

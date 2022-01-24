@@ -58,15 +58,15 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     // this will run the first test that will run the second and so on..
 
     await installAddonToDist();
-    describe('Insert New Code Job', () => {
-        it('Insert New Code Job With Manadatory Parameter: Name', () => {
-            assert(logcash.statusA, 'Insert new Code Job with CodeJobName failed');
+    describe('Insert New AddonCodeJob', () => {
+        it('Insert New AddonCodeJob With Manadatory Parameter: Name', () => {
+            assert(logcash.statusA, 'Insert new AddonCodeJob with CodeJobName failed');
         });
-        it('Get Single CodeJob With Mandatory Parameter CodeJobName: Name', () => {
+        it('Get Single AddonCodeJob With Mandatory Parameter CodeJobName: Name', () => {
             assert(logcash.statusb, logcash.errorMessageb);
         });
-        it('Update CodeJob Params (From Default Values): Finished', () => {
-            assert(logcash.statusc, 'Update Code Job failed');
+        it('Update AddonCodeJob Params (From Default Values): Finished', () => {
+            assert(logcash.statusc, 'Update AddonCodeJob failed');
         });
         it('Get Single CodeJob After Update: Name', () => {
             assert(logcash.statusd, logcash.errorMessaged);
@@ -89,15 +89,15 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
     //     });
     // });
-    describe('Get List Of CodeJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
-        it('Get List Of CodeJobse (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
+    describe('Get List Of AddonCodeJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
+        it('Get List Of AddonCodeJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
             const statusA = cashCallJobsList.status;
             assert(statusA, cashCallJobsList.message);
         });
     });
     // describe('Execute Job Using Draft Code + single execution log and Code job execution logs verification', () => {
     // it('Execute job (one time) using DraftCode field: Finished', () => {
-    //     assert(logcash.executeDraftCodeJobeOnce1, logcash.ErrorFromExecute);
+    //     assert(logcash.executeDraftCodeJobOnce1, logcash.ErrorFromExecute);
     // });
     //     it('Get Single Execution Log: Finished', () => {
     //         assert(executionLog.Status, executionLog.Error);
@@ -676,35 +676,35 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         listLength += 1;
     //     } else {
     //         logcash.executeCOdeJobUsingDraft = false;
-    //         logcash.ErrorMsg = 'Post to CodeJobe with Draft failed.';
+    //         logcash.ErrorMsg = 'Post to CodeJob with Draft failed.';
     //     }
-    //     await executeDraftCodeJobeOnce();
+    //     await executeDraftCodeJobOnce();
     // }
 
-    // async function executeDraftCodeJobeOnce() {
-    //     CallbackCash.executeDraftCodeJobeOnce1 = await generalService.fetchStatus(
+    // async function executeDraftCodeJobOnce() {
+    //     CallbackCash.executeDraftCodeJobOnce1 = await generalService.fetchStatus(
     //         `/code_jobs/async/${CallbackCash.executeCOdeJobUsingDraft.Body.UUID}/execute_draft`,
     //         { method: 'POST', body: updateValuesToDraftExecute },
     //     );
 
     //     if (
-    //         CallbackCash.executeDraftCodeJobeOnce1.Status == 200 &&
-    //         CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID != '' &&
-    //         CallbackCash.executeDraftCodeJobeOnce1.Body.URI != ''
+    //         CallbackCash.executeDraftCodeJobOnce1.Status == 200 &&
+    //         CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID != '' &&
+    //         CallbackCash.executeDraftCodeJobOnce1.Body.URI != ''
     //     ) {
-    //         logcash.executeDraftCodeJobeOnce1 = true;
+    //         logcash.executeDraftCodeJobOnce1 = true;
     //     } else {
-    //         logcash.executeDraftCodeJobeOnce1 = false;
-    //         logcash.ErrorFromExecute = 'Post to execute CodeJobe with draft code failed';
+    //         logcash.executeDraftCodeJobOnce1 = false;
+    //         logcash.ErrorFromExecute = 'Post to execute CodeJob with draft code failed';
     //     }
     //     generalService.sleep(20000);
     //     await getSingleExecutonLog();
     // }
 
     // async function getSingleExecutonLog() {
-    //     logData = await service.auditLogs.uuid(CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID).get();
+    //     logData = await service.auditLogs.uuid(CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID).get();
     //     if (
-    //         logData.UUID == CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID &&
+    //         logData.UUID == CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID &&
     //         logData.Event.Type == 'code_job_execution'
     //     ) {
     //         cacheLog.ExecutionResult = logData.AuditInfo.ResultObject
@@ -732,8 +732,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         executionLog.Error =
     //             'One of parameters in single execution log is wrong or log is empty: \n' +
     //             'returned ExecutionUUID is' +
-    //             CallbackCash.executeDraftCodeJobeOnce1.Body.ExecutionUUID +
-    //             ' and CodeJobeUUID is ' +
+    //             CallbackCash.executeDraftCodeJobOnce1.Body.ExecutionUUID +
+    //             ' and CodeJobUUID is ' +
     //             CodeJobUUID +
     //             '\nAudit log exeption: ' +
     //             logData;
@@ -777,7 +777,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         //publishNewCJToPublish();
     //     } else {
     //         logcash.createNewCJToPublish = false;
-    //         logcash.createNewCJToPublishErrorMsg = 'Post to CodeJobe with Draft failed.';
+    //         logcash.createNewCJToPublishErrorMsg = 'Post to CodeJob with Draft failed.';
     //     }
     //     await publishNewCJToPublish();
     // }
@@ -843,7 +843,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         listLength += 1;
     //     } else {
     //         logcash.UpdatedDraftCode = false;
-    //         logcash.UpdatedDraftCode = 'Post to CodeJobe with Draft failed. CodeJobUUID is: ' + CodeJobUUID;
+    //         logcash.UpdatedDraftCode = 'Post to CodeJob with Draft failed. CodeJobUUID is: ' + CodeJobUUID;
     //     }
     //     await executeWithDiffBetweenDraftAndExecution();
     // }
@@ -863,7 +863,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //     } else {
     //         logcash.executeWithDiff = false;
     //         logcash.executeWithDiffError =
-    //             'Post to execute CodeJobe with execute code failed. ExecutionUUID is: ' +
+    //             'Post to execute CodeJob with execute code failed. ExecutionUUID is: ' +
     //             CallbackCash.executeWithDiff.Body.ExecutionUUID;
     //     }
 
@@ -1684,7 +1684,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //#region execute with call to PAPI
     // async function createNewCJToExecuteWithPapi() {
     //     // cerate new code about Cron test case
-    //     CodJobeBodyWithPapiCall = {
+    //     CodJobBodyWithPapiCall = {
     //         UUID: '',
     //         CodeJobName: 'New CodeJob with PAPI in draft ',
     //         Description: 'PAPI call from draft/execute',
@@ -1704,23 +1704,23 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //     };
     //     CallbackCash.insertNewCJtoPapiCall = await generalService.fetchStatus('/code_jobs', {
     //         method: 'POST',
-    //         body: CodJobeBodyWithPapiCall,
+    //         body: CodJobBodyWithPapiCall,
     //     });
     //     logcash.insertNewCJtoPapiCall = true;
 
     //     if (CallbackCash.insertNewCJtoPapiCall.Status == 200) {
     //         listLength += 1;
     //         //CodeJobUUIDCron = CallbackCash.insertNewCJtoPapiCall.Body.UUID;
-    //         await executeDraftCodeJobePapiTest();
+    //         await executeDraftCodeJobPapiTest();
     //     } else {
     //         logcash.insertNewCJtoCronVerification = false;
     //         logcash.insertNewCJtoCronVerificationErrorMsg =
-    //             'Post to CodeJobe with Draft failed.Error message: ' +
+    //             'Post to CodeJob with Draft failed.Error message: ' +
     //             JSON.stringify(CallbackCash.insertNewCJtoPapiCall.Body.fault.faultstring);
     //     }
     // }
 
-    // async function executeDraftCodeJobePapiTest() {
+    // async function executeDraftCodeJobPapiTest() {
     //     CallbackCash.executeDraftCodeTestPapi = await generalService.fetchStatus(
     //         `/code_jobs/async/${CallbackCash.insertNewCJtoPapiCall.Body.UUID}/execute_draft`,
     //         { method: 'POST' },
@@ -1734,7 +1734,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //     } else {
     //         logcash.executeDraftCodeTestPapi = false;
     //         logcash.executeDraftCodeTestPapiError =
-    //             'Post to execute CodeJobe with draft code failed. CodeJobUUID is: ' +
+    //             'Post to execute CodeJob with draft code failed. CodeJobUUID is: ' +
     //             CallbackCash.insertNewCJtoPapiCall.Body.UUID;
     //     }
     //     generalService.sleep(20000);

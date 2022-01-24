@@ -5,6 +5,7 @@ import { DeepLinkTests } from './deep_link';
 import { PromotionTests } from './promotion';
 import { SecurityPolicyTests } from './security_policy';
 import { CreateDistributorTests } from './create_distributor';
+import { UomTests } from './uom';
 
 export {
     LoginTests,
@@ -14,4 +15,5 @@ export {
     PromotionTests,
     SecurityPolicyTests,
     CreateDistributorTests,
+    UomTests,
 };

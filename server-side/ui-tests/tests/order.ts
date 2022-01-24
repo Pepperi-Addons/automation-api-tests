@@ -28,7 +28,7 @@ export async function OrderTests(email: string, password: string, client: Client
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
@@ -179,7 +179,7 @@ export async function OrderTests(email: string, password: string, client: Client
         this.retries(1);
 
         before(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         after(async function () {

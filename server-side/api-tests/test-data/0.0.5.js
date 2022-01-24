@@ -1,8 +1,7 @@
 exports.UpdateCodeJob = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -20,10 +19,9 @@ exports.UpdateCodeJob = async (Client) => {
 };
 
 exports.updateDrafrCodeWithoutResult = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -48,10 +46,9 @@ exports.updateDrafrCodeWithoutResult = async (Client) => {
 };
 
 exports.createNewCJToBudgetTest = async (Client) => {
-    let response;
     Client.addLogEntry('Info', 'multiplyResult');
-    response = {
-        success: 'true',
+    const response = {
+        success: true,
         errorMessage: '',
         resultObject: {},
     };
@@ -82,31 +79,27 @@ exports.createNewCodeJobRetryTest = async (Client) => {
     return response;
 };
 
-
 exports.PositiveTest = async (Client) => {
-    var response;
     Client.addLogEntry('Info', 'Start Code Test');
-    response = {
+    const response = {
         success: true,
         errorMessage: '',
-        resultObject: new Object()
+        resultObject: new Object(),
     };
     function multiply(a, b) {
-        var res = {
-            'multiplyResult': a * b
+        const res = {
+            multiplyResult: a * b,
         };
-        Client.addLogEntry('Info', 'Start Funcion multiply =  JSON.stringify(res)');
+        Client.addLogEntry('Info', 'Start Funcion multiply = JSON.stringify(res)');
         response.resultObject = res;
         response.errorMessage = 'test msg';
         response.success = true;
-        return (response);
+        return response;
     }
-    return multiply(4,
-        2);
+    return multiply(4, 2);
 };
 
 exports.NegativeTest = async (Client) => {
     Client.addLogEntry('Info', 'Start throw new error');
     throw new Error('orenTest');
-    return;
 };

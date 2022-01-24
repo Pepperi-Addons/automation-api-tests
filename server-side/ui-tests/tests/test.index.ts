@@ -1,6 +1,6 @@
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import fs from 'fs';
-import { describe, it, run } from 'mocha';
+import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
@@ -12,13 +12,15 @@ import {
     PromotionTests,
     SecurityPolicyTests,
     CreateDistributorTests,
+    UomTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
+import { Client } from '@pepperi-addons/debug-server';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
- * npm run ui-show-report --server=stage --chrome_headless=false --user_email=<> --user_pass=<> --var_pass='<>'
+ * npm run ui-show-report --server=stage/prod --chrome_headless=false --user_email='<>' --user_pass='<>' --var_pass='<>' --tests='<>'
  *
  * There are two scripts that should be used with the default seetings:
  * 1. ui-cli-report - This script for executing the script in Jenkins.
@@ -49,9 +51,74 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         },
     });
 
-    const client = await tempGeneralService.initiateTester(email, pass);
+    const client: Client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
+
+    let nestedGap = '';
+    let startedTestSuiteTitle = '';
+
+    generalService.PrintMemoryUseToLog('Start', tests);
+    after(function () {
+        generalService.PrintMemoryUseToLog('End', tests);
+    });
+
+    beforeEach(function () {
+        let isCorrectNestedGap = false;
+        do {
+            if (
+                this.currentTest.parent.suites.length > nestedGap.length &&
+                this.currentTest.parent.title != startedTestSuiteTitle
+            ) {
+                const suiteTitle = this.currentTest.parent.title;
+                nestedGap += '\t';
+                console.log(`%c${nestedGap.slice(1)}Test Suite Start: ${suiteTitle}`, ConsoleColors.SystemInformation);
+                startedTestSuiteTitle = suiteTitle;
+            } else if (
+                this.currentTest.parent.suites.length < nestedGap.length &&
+                this.currentTest.parent.title != startedTestSuiteTitle
+            ) {
+                console.log(
+                    `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                    ConsoleColors.SystemInformation,
+                );
+                nestedGap = nestedGap.slice(1);
+            } else if (
+                this.currentTest.parent.suites.length == 0 &&
+                this.currentTest.parent.title != startedTestSuiteTitle
+            ) {
+                isCorrectNestedGap = true;
+                nestedGap = '\t';
+                console.log(`%cTest Suite Start: ${this.currentTest.parent.title}`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+                startedTestSuiteTitle = this.currentTest.parent.title;
+            } else {
+                isCorrectNestedGap = true;
+                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+            }
+        } while (!isCorrectNestedGap);
+    });
+
+    afterEach(function () {
+        if (this.currentTest.state != 'passed') {
+            console.log(
+                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                ConsoleColors.Error,
+            );
+        } else {
+            console.log(
+                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                ConsoleColors.Success,
+            );
+        }
+        if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
+            console.log(
+                `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                ConsoleColors.SystemInformation,
+            );
+            nestedGap = nestedGap.slice(1);
+        }
+    });
 
     if (tests != 'Create') {
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -90,6 +157,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Create')) {
         await CreateDistributorTests(generalService, varPass, varPassEU);
+    }
+
+    if (tests.includes('Uom')) {
+        await UomTests(email, pass, varPass, client);
     }
 
     run();

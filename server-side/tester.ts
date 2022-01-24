@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import Mochawesome from 'mochawesome';
 import { Client } from '@pepperi-addons/debug-server';
+import { ConsoleColors } from './services/general.service';
 
 chai.use(promised);
 
@@ -33,6 +34,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
     });
     const root = mocha.suite;
     let context: Suite | undefined = root;
+    let nestedGap = '';
 
     return {
         describe: (name: string, fn: () => any) => {
@@ -58,18 +60,41 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     .run((failures) => {
                         console.log(failures);
                     })
-                    .on('suite', () => {
-                        // debugger;
+                    .on('suite', (data) => {
+                        if (data.title != '') {
+                            nestedGap += '\t';
+                            console.log(
+                                `%c${nestedGap.slice(1)}Test Suite Start: ${data.title}`,
+                                ConsoleColors.SystemInformation,
+                            );
+                        }
                     })
-                    .on('suite end', () => {
-                        // debugger;
+                    .on('suite end', (data) => {
+                        if (data.title != '') {
+                            nestedGap = nestedGap.slice(1);
+                            console.log(
+                                `%c${nestedGap}Test Suite End: ${data.title}\n`,
+                                ConsoleColors.SystemInformation,
+                            );
+                        }
                     })
-                    .on('test', () => {
-                        // debugger;
+                    .on('test', (data) => {
+                        console.log(
+                            `%c${nestedGap.slice(1)}Test Start: ${data.title}`,
+                            ConsoleColors.SystemInformation,
+                        );
                     })
                     .on('test end', (data) => {
                         if (data.state != 'passed') {
-                            // debugger;
+                            console.log(
+                                `%c${nestedGap.slice(1)}Test End: ${data.title}: Result: ${data.state}`,
+                                ConsoleColors.Error,
+                            );
+                        } else {
+                            console.log(
+                                `%c${nestedGap.slice(1)}Test End: ${data.title}: Result: ${data.state}`,
+                                ConsoleColors.Success,
+                            );
                         }
                     })
                     .on('end', () => {

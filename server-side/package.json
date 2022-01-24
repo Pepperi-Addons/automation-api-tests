@@ -23,8 +23,8 @@
         "learn-p": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_All' --parallel --timeout 20000 ./learn-tests/*Test.ts",
         "learn-pb": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Base' --timeout 20000 ./learn-tests/parallelBaseTest.ts",
         "learn-pi": "ts-mocha --reporter mochawesome --reporter-options reportFilename='Parallel_Interval' --timeout 20000 ./learn-tests/parallelIntervalTest.ts",
-        "jenkins-ui-test": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
-        "ui-show-report": "ts-mocha --unhandled-rejections=strict --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''"
+        "jenkins-ui-test": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''",
+        "ui-show-report": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 1200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^12.0.0",
@@ -45,20 +45,20 @@
         "prettier": "^2.0.5",
         "rollup": "^2.10.9",
         "rollup-plugin-typescript2": "^0.27.1",
-        "selenium-webdriver": "^4.1.0",
+        "selenium-webdriver": "^4.1.1",
         "ts-node": "^8.10.2",
         "typescript": "~3.8.0"
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "^0.0.32",
-        "@pepperi-addons/papi-sdk": "^1.29.1",
+        "@pepperi-addons/papi-sdk": "^1.29.2",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
         "lorem-ipsum": "^2.0.4",
         "mocha": "^7.2.0",
         "mochawesome": "^7.0.1",
-        "node-fetch": "^2.6.0",
+        "node-fetch": "^2.6.7",
         "ts-mocha": "^8.0.0"
     }
 }
