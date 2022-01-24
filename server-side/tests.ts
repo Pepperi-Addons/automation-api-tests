@@ -32,6 +32,7 @@ import { AuditLogsTests } from './api-tests/audit_logs';
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './api-tests/schema';
 import { BatchUpsertTests } from './api-tests/batch_upsert';
+import { DimxDataImportTests } from './api-tests/dimx_data_import';
 import { SchedulerTests } from './api-tests/code-jobs/scheduler';
 import { CodeJobsTests } from './api-tests/code-jobs/code_jobs'; //
 import { TimeOutAddonJobsTests } from './api-tests/code-jobs/timeout_addon_jobs';
@@ -695,6 +696,31 @@ export async function batch_upsert(client: Client, request: Request, testerFunct
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         BatchUpsertTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function dimx_data_import(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Batch_Upsert';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DimxDataImportTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
