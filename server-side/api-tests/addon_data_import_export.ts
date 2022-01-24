@@ -269,8 +269,13 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
                 dimxExport = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI);
                 expect(dimxExport.Status?.ID, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.equal(1);
+                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                    ? 'cdn.staging.pepperi'
+                    : generalService['client'].BaseURL.includes('papi-eu')
+                    ? 'eucdn.pepperi'
+                    : 'cdn.pepperi';
                 expect(dimxExport.AuditInfo.ResultObject, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.include(
-                    'https://cdn.',
+                    `https://${testResponseEnvironment}`,
                 );
             });
 
@@ -344,15 +349,23 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             });
 
             it(`Import With Relation (Not Forced)`, async () => {
+                const testEnvironment = generalService['client'].BaseURL.includes('staging')
+                    ? 'cdn.staging.pepperi'
+                    : 'cdn.pepperi';
                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                    URI: `https://cdn.staging.pepperi.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
+                    URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                     OverwriteObject: false,
                     Delimiter: '.',
                 });
                 dimxExport = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI);
                 expect(dimxExport.Status?.ID, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.equal(1);
+                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                    ? 'cdn.staging.pepperi'
+                    : generalService['client'].BaseURL.includes('papi-eu')
+                    ? 'eucdn.pepperi'
+                    : 'cdn.pepperi';
                 expect(dimxExport.AuditInfo.ResultObject, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.include(
-                    'https://cdn.',
+                    `https://${testResponseEnvironment}`,
                 );
             });
 
@@ -373,15 +386,23 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             });
 
             it(`Import With Relation (Forced)`, async () => {
+                const testEnvironment = generalService['client'].BaseURL.includes('staging')
+                    ? 'cdn.staging.pepperi'
+                    : 'cdn.pepperi';
                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                    URI: `https://cdn.staging.pepperi.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
+                    URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                     OverwriteObject: true,
                     Delimiter: '.',
                 });
                 dimxExport = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI);
                 expect(dimxExport.Status?.ID, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.equal(1);
+                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                    ? 'cdn.staging.pepperi'
+                    : generalService['client'].BaseURL.includes('papi-eu')
+                    ? 'eucdn.pepperi'
+                    : 'cdn.pepperi';
                 expect(dimxExport.AuditInfo.ResultObject, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.include(
-                    'https://cdn.',
+                    `https://${testResponseEnvironment}`,
                 );
             });
 
