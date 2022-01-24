@@ -15,7 +15,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    const _TEST_DATA_ATD_NAME = `UOM_${generateRandString(15)}`;//"UOM_ pnydpvgfklrwwtb"; 
+    const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;//"UOM_ pnydpvgfklrwwtb"; 
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
 
     //#region Upgrade cpi-node & UOM
