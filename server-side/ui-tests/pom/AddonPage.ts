@@ -665,6 +665,72 @@ export class AddonPage extends Page {
 
     /**
      *
+     * @param fieldType The name of the fields group
+     * @param fieldObj Type that contains the field Label and optional JS formula
+     * @param scriptParam Optional variable which indicates which script sys param should be added 
+     * @param fieldType what is the added script param type on 'Add Custom Field' page
+     * @returns
+     */
+    public async editATDCalculatedFieldScript(
+        fieldObj: Field,
+        scriptParam?: string,
+    ): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Fields');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        await this.browser.sleep(2000);
+        expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
+
+        //Validate Editor Page Loaded
+        await this.browser.sleep(7500);
+        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
+        await this.browser.click(By.xpath("//div[text()='Custom Transaction line-item Fields']"));
+        await this.browser.click(By.xpath("//td[@title='ItemConfig']/..//span[contains(@class,'editPenIcon')]"));
+        await this.browser.sleep(2000);
+        await this.browser.click(this.editFieldScriptBtn);
+        await this.browser.sleep(6800);
+        expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 55000)).to.be.true;
+
+        if (scriptParam) {
+            await this.browser.click(this.AvailibaleFieldsBtn);
+            expect(await this.browser.untilIsVisible(this.ItemFieldsSection, 15000)).to.be.true;
+            await this.browser.click(this.ItemFieldsSection);
+            const xpathQueryForParamCheckBox: string = this.ScriptParamCheckBox.valueOf()['value'].replace(
+                '|textToFill|',
+                scriptParam,
+            );
+            await this.browser.click(By.xpath(xpathQueryForParamCheckBox));
+            await this.browser.click(this.SaveParamBtn);
+            const xpathQueryForParamSpan: string = this.ScriptParamSpan.valueOf()['value'].replace(
+                '|textToFill|',
+                scriptParam,
+            );
+            expect(await this.browser.untilIsVisible(By.xpath(xpathQueryForParamSpan), 15000)).to.be.true;
+        }
+
+        await this.browser.click(this.FirstLineInCodeInput);
+        await this.browser.sendKeys(
+            this.CodeInputSection,
+            fieldObj.CalculatedRuleEngine?.JSFormula as string,
+            0,
+            6000,
+        );
+        await this.browser.click(this.SubmitScriptBtn);
+        await this.browser.click(this.saveFieldBtn);
+        await this.browser.sleep(10500);
+        expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
+        return;
+    }
+
+    /**
+     *
      * @param viewName The name of the view group
      * @param viewType The name of the view
      * @param addingViewLocator Optinal variable - locator for adding a view button
@@ -724,7 +790,7 @@ export class AddonPage extends Page {
 
         await this.browser.switchToDefaultContent();
         const webAppHomePage = new WebAppHomePage(this.browser);
-        webAppHomePage.returnToHomePage();
+        await webAppHomePage.returnToHomePage();
         return;
     }
 
@@ -762,7 +828,7 @@ export class AddonPage extends Page {
         }
 
         const webAppHomePage = new WebAppHomePage(this.browser);
-        webAppHomePage.returnToHomePage();
+        await webAppHomePage.returnToHomePage();
         return;
     }
 
@@ -884,7 +950,7 @@ export class AddonPage extends Page {
         }
         await this.browser.click(this.CategoryListOKBtn);
         const webAppHomePage = new WebAppHomePage(this.browser);
-        webAppHomePage.returnToHomePage();
+        await webAppHomePage.returnToHomePage();
         return;
     }
 
@@ -901,7 +967,7 @@ export class AddonPage extends Page {
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('Uom');
-        //=>validate uom is loaded both if installed and if not
+        //validate uom is loaded both if installed and if not
         expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
         //testing whether already installed - after loading anyway
         if (await (await this.browser.findElement(this.uomInstallBtn)).isDisplayed()) {
@@ -1347,11 +1413,194 @@ export class AddonPage extends Page {
         await webAppList.validateListRowElements();
     }
 
+    public async testUomAtdUIWithItemConfig(): Promise<void> {
+        //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
+        let workingUomObject = new UomUIObject("1231");
+        //set uom type to single
+        await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Single');
+        await this.browser.sleep(1500);
+        //1.1. try to add one single item
+        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+            "2",
+        );
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("6");
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$6.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$6.00");
+        //1.2 click on plus again - this time qty is bigger than minimum
+        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+            "3",
+        );
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("9");
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$9.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$9.00");
+        //1.3 zero the amount and set qty of single items to '-8'
+        await this.browser.click(workingUomObject.aoqmUom1Qty);
+        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+        await this.browser.click(this.blankSpaceOnScreenToClick);
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$0.00');
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal('$0.00');
+        for (let i = 1; i < 9; i++) {
+            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
+            await this.browser.sleep(1100);
+            await this.isSpinnerDone();
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(((-1) * i).toString());
+            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(((-3) * i).toString());
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(`$${parseFloat((i * (-3)).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((i * (-3)).toString()).toFixed(2)}`);
+        }
+        //1.4 set qty of single items as '3.5'
+        await this.browser.click(workingUomObject.aoqmUom1Qty);
+        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
+        await this.browser.click(this.blankSpaceOnScreenToClick);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('4');
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('12');
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$12.00');
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal('$12.00');
+
+        //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
+        workingUomObject = new UomUIObject("1232");
+        //set uom type to Box
+        await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
+        await this.browser.sleep(1500);
+        //2.1. try to add one box item
+        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+            "2",
+        );
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("4");
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$16.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$16.00");
+        //2.2 click on plus again - to see how many qtys of box are added
+        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+            "4",
+        );
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("8");
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$20.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$20.00");
+        //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
+        await this.browser.click(workingUomObject.aoqmUom1Qty);
+        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+        await this.browser.click(this.blankSpaceOnScreenToClick);
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$12.00');
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal('$12.00');
+        for (let i = 1; i < 4; i++) {
+            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
+            await this.browser.sleep(1100);
+            await this.isSpinnerDone();
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal("0");
+            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("0");
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$12.00");
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$12.00");
+        }
+        //2.4 set qty of single items to '3.5'
+        await this.browser.click(workingUomObject.aoqmUom1Qty);
+        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
+        await this.browser.click(this.blankSpaceOnScreenToClick);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('4');
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('8');
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal('$20.00');
+
+        //3. Double -> factor:1, min:10, case:5, negative:true, decimal:1
+        workingUomObject = new UomUIObject("1233");
+        //set uom type to double 
+        await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
+        await this.browser.sleep(1500);
+        //3.1. try to add one double item
+        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+            "10",
+        );
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("10");
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$30.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$30.00");
+        //3.2 click on plus again - to see how many qtys of double are added
+        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+        await this.browser.sleep(1100);
+        await this.isSpinnerDone();
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+            "15",
+        );
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal("15");
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal("$35.00");
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal("$35.00");
+        //3.3 zero qty of double and set it to '-8'
+        await this.browser.click(workingUomObject.aoqmUom1Qty);
+        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+        await this.browser.click(this.blankSpaceOnScreenToClick);
+        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
+        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
+        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
+        expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal('$20.00');
+        for (let i = 1; i < 9; i++) {
+            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
+            await this.browser.sleep(1100);
+            await this.isSpinnerDone();
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal((-i).toString());
+            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal((-i).toString());
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(`$${parseFloat((20 + (i * (-1))).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((20 + (i * (-1))).toString()).toFixed(2)}`);
+        }
+
+        //set lower uom type to Box
+        await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
+        await this.browser.sleep(1500);
+        //3.4. add three more boxes - untill there are 0 items
+        for (let i = 1; i < 3; i++) {
+            await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
+            await this.browser.sleep(1100);
+            await this.isSpinnerDone();
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('-8');
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal((i * 2).toString());
+            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(((-8 + (i * 4)).toString()));
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(`$${parseFloat((12 + i * 4).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((12 + i * 4).toString()).toFixed(2)}`);
+        }
+        //3.5. click minus untill there are no more boxes
+        for (let i = 1; i < 3; i++) {
+            await this.browser.click(workingUomObject.aoqmUom2MinusQtyButton);
+            await this.browser.sleep(1100);
+            await this.isSpinnerDone();
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('-8');
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal((4 - (i * 2)).toString());
+            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal((- (i * 4)).toString());
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(`$${parseFloat((20 - (i * 4)).toString()).toFixed(2)}`);
+            expect(await (await this.browser.findElement(this.pageGrandTotal)).getText()).to.equal(`$${parseFloat((20 - (i * 4)).toString()).toFixed(2)}`);
+        }
+
+        //3. UOM order test ended - submiting to cart
+        await this.browser.click(this.SubmitToCart);
+        const webAppList = new WebAppList(this.browser);
+        await webAppList.isSpinnerDone();
+        await webAppList.validateListRowElements();
+    }
+
     /**
      * checking all items in order page
      * @returns the id of the order submitted as string 
      */
-    public async testUOMCartUI(): Promise<string> {
+    public async testUOMCartUI(): Promise<string> {//TODO: this should recive a list of objects which represent the item in the cart and its qtys and test it
         expect(await (await this.browser.findElement(this.WholeOrderPrice)).getText()).to.equal('$181.00'.toString());
         //element 1234
         const qtyOf1234Element = this.ItemQtyBtItemCode.valueOf()['value'].slice().replace('|textToFill|', '1234');
@@ -1416,6 +1665,44 @@ export class AddonPage extends Page {
         const homePage = new WebAppHomePage(this.browser);
         await expect(homePage.untilIsVisible(homePage.Main, 90000)).eventually.to.be.true;
     }
+
+    public async EditItemConfigFeld(nameOfATD: string): Promise<void> {
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Settings);
+        await this.browser.sleep(1500);
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
+        await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
+        await this.isSpinnerDone();
+        await this.browser.sleep(4000);
+        await this.browser.click(By.xpath(`//span[@id='Name' and contains(text(),'${nameOfATD}')]/../../../../../preceding-sibling::mat-radio-button`));
+        await this.browser.sleep(1500);
+        await this.browser.click(By.xpath("//div[@class='menu-container ng-tns-c144-2']"));
+        await this.browser.sleep(3000);
+        await this.browser.click(By.xpath("//button[@title='Edit']"));
+        await this.browser.sleep(1500);
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+        await this.editATDCalculatedFieldScript(
+            {
+                Label: 'ItemConfig',
+                CalculatedRuleEngine: {
+                    JSFormula: `const res = [];
+
+                    res.push(
+                      {"UOMKey": "SIN", "Factor": 3, "Min": 2, "Case": 1, "Decimal": 0, "Negative":true},
+                      {"UOMKey": "Bx", "Factor": 2, "Min": 1, "Case": 2, "Decimal": 3, "Negative":false},
+                      {"UOMKey": "DOU", "Factor": 1, "Min": 10, "Case": 5, "Decimal": 1, "Negative":true}
+                    );
+                  
+                  return JSON.stringify(res);`,
+                },
+            },
+        );
+    }
 }
 
 class UomUIObject {
@@ -1437,6 +1724,7 @@ class UomUIObject {
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
+        this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);

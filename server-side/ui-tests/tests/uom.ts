@@ -15,7 +15,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;//"UOM_ pnydpvgfklrwwtb"; 
+    const _TEST_DATA_ATD_NAME = "UOM_ jzwdgqfuajxyyax";//`UOM_${generalService.generateRandomString(15)}`;//"UOM_ jzwdgqfuajxyyax"; 
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
 
     //#region Upgrade cpi-node & UOM
@@ -135,71 +135,94 @@ export async function UomTests(email: string, password: string, varPass: string,
                     });
 
                     it('Set Up UOM ATD', async function () {
-                        const webAppLoginPage = new WebAppLoginPage(driver);
-                        await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        //1. validating all items are added to the main catalog
-                        const addonPage = new AddonPage(driver);
-                        await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
-                        //2. goto ATD editor - create new ATD UOM_{random-hashstring}
-                        await addonPage.createNewATD(
-                            this,
-                            generalService,
-                            _TEST_DATA_ATD_NAME,
-                            _TEST_DATA_ATD_DESCRIPTION,
-                        );
-                        //3. goto new ATD and configure everything needed for the test - 3 calculated fields
-                        //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
-                        //3.2. add fields to UI control of ATD
-                        await addonPage.configUomATD();
-                        let webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.returnToHomePage();
-                        const webAppHeader = new WebAppHeader(driver);
-                        await webAppHeader.openSettings();
-                        //4. add the ATD to home screen
-                        await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                        webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync();
-                        await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
+                        // const webAppLoginPage = new WebAppLoginPage(driver);
+                        // await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        // //1. validating all items are added to the main catalog
+                        // const addonPage = new AddonPage(driver);
+                        // await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
+                        // //2. goto ATD editor - create new ATD UOM_{random-hashstring}
+                        // await addonPage.createNewATD(
+                        //     this,
+                        //     generalService,
+                        //     _TEST_DATA_ATD_NAME,
+                        //     _TEST_DATA_ATD_DESCRIPTION,
+                        // );
+                        // //3. goto new ATD and configure everything needed for the test - 3 calculated fields
+                        // //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
+                        // //3.2. add fields to UI control of ATD
+                        // await addonPage.configUomATD();
+                        // let webAppHomePage = new WebAppHomePage(driver);
+                        // await webAppHomePage.returnToHomePage();
+                        // const webAppHeader = new WebAppHeader(driver);
+                        // await webAppHeader.openSettings();
+                        // //4. add the ATD to home screen
+                        // await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        // webAppHomePage = new WebAppHomePage(driver);
+                        // await webAppHomePage.manualResync();
+                        // await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
 
                     it('UI Test UOM ATD', async function () {
+                        // const webAppLoginPage = new WebAppLoginPage(driver);
+                        // await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        // const webAppHomePage = new WebAppHomePage(driver);
+                        // await webAppHomePage.manualResync();
+                        // await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                        // const addonPage = new AddonPage(driver);
+                        // await addonPage.testUomAtdUI();
+                        // const orderId: string = await addonPage.testUOMCartUI();
+                        // await addonPage.submitOrder();
+                        // const service = new ObjectsService(generalService);
+                        // const orderResponse = await service.getTransactionLines({
+                        //     where: `TransactionInternalID=${orderId}`,
+                        // });
+                        // expect(orderResponse).to.be.an('array').with.lengthOf(4);
+                        // validateResponseOfOrderPerformed(orderResponse);
+                    });
+
+                    it('UI Test UOM ATD -- testing item configuration field', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        let addonPage = new AddonPage(driver);
+                        // await addonPage.EditItemConfigFeld(_TEST_DATA_ATD_NAME);
                         const webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync();
+                        // await webAppHomePage.returnToHomePage();
+                        // await webAppHomePage.manualResync();
                         await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        const addonPage = new AddonPage(driver);
-                        await addonPage.testUomAtdUI();
-                        const orderId: string = await addonPage.testUOMCartUI();
-                        await addonPage.submitOrder();
-                        const service = new ObjectsService(generalService);
-                        const orderResponse = await service.getTransactionLines({
-                            where: `TransactionInternalID=${orderId}`,
-                        });
-                        expect(orderResponse).to.be.an('array').with.lengthOf(4);
-                        validateResponseOfOrderPerformed(orderResponse);
+                        addonPage = new AddonPage(driver);
+                        await addonPage.testUomAtdUIWithItemConfig();
+                        const orderId: string = await addonPage.testUOMCartUI();//work here - TODO
+                        debugger;
+                        // await addonPage.submitOrder();
+                        // const service = new ObjectsService(generalService);
+                        // const orderResponse = await service.getTransactionLines({
+                        //     where: `TransactionInternalID=${orderId}`,
+                        // });
+                        // expect(orderResponse).to.be.an('array').with.lengthOf(4);
+                        // validateResponseOfOrderPerformed(orderResponse);
                     });
 
                     it('Delete test ATD from dist + home screen using UI', async function () {
-                        const webAppLoginPage = new WebAppLoginPage(driver);
-                        await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        const webAppHeader = new WebAppHeader(driver);
-                        await webAppHeader.openSettings();
-                        const addonPage = new AddonPage(driver);
-                        await addonPage.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                        await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
+                        // const webAppLoginPage = new WebAppLoginPage(driver);
+                        // await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        // debugger;
+                        // const webAppHeader = new WebAppHeader(driver);
+                        // await webAppHeader.openSettings();
+                        // const addonPage = new AddonPage(driver);
+                        // await addonPage.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        // await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
                     });
                 });
                 describe('Test Data Cleansing using API', () => {
                     it('Reset Existing Items', async function () {
-                        //Remove all items
-                        const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
-                        for (let i = 0; i < itemsArr.length; i++) {
-                            const deleted = await generalService.papiClient.items.delete(
-                                itemsArr[i].InternalID as number,
-                            );
-                            expect(deleted).to.be.true;
-                        }
+                        // //Remove all items
+                        // const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+                        // for (let i = 0; i < itemsArr.length; i++) {
+                        //     const deleted = await generalService.papiClient.items.delete(
+                        //         itemsArr[i].InternalID as number,
+                        //     );
+                        //     expect(deleted).to.be.true;
+                        // }
                     });
                 });
             });

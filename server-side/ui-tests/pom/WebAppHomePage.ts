@@ -190,8 +190,7 @@ export class WebAppHomePage extends Page {
         await this.browser.switchToDefaultContent();
         const webAppHeader = new WebAppHeader(this.browser);
         await this.browser.click(webAppHeader.Home);
-        const webAppHomePage = new WebAppHomePage(this.browser);
-        await webAppHomePage.isSpinnerDone();
+        await this.isSpinnerDone();
         return;
     }
 }
