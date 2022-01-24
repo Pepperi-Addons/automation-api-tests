@@ -316,10 +316,4 @@ interface UomItem {
     Multiplier: string;
 }
 
-function generateRandString(length: number): string {
-    let result = ' ';
-    for (let i = 0; i < length; i++) {
-        result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
-    }
-    return result;
-}
+
