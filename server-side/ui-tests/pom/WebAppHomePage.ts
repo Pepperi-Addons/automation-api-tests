@@ -184,4 +184,14 @@ export class WebAppHomePage extends Page {
         );
         expect(allUOMItemPresented.length).to.equal(4);
     }
+
+    public async returnToHomePage() {
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.isSpinnerDone();
+        return;
+    }
 }
