@@ -58,17 +58,17 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     // this will run the first test that will run the second and so on..
 
     await installAddonToDist();
-    describe('Insert New AddonCodeJob', () => {
-        it('Insert New AddonCodeJob With Manadatory Parameter: Name', () => {
-            assert(logcash.statusA, 'Insert new AddonCodeJob with CodeJobName failed');
+    describe('Insert New AddonJob', () => {
+        it('Insert New AddonJob With Manadatory Parameter: Name', () => {
+            assert(logcash.statusA, 'Insert new AddonJob with CodeJobName failed');
         });
-        it('Get Single AddonCodeJob With Mandatory Parameter CodeJobName: Name', () => {
+        it('Get Single AddonJob With Mandatory Parameter CodeJobName: Name', () => {
             assert(logcash.statusb, logcash.errorMessageb);
         });
-        it('Update AddonCodeJob Params (From Default Values): Finished', () => {
-            assert(logcash.statusc, 'Update AddonCodeJob failed');
+        it('Update AddonJob Params (From Default Values): Finished', () => {
+            assert(logcash.statusc, 'Update AddonJob failed');
         });
-        it('Get Single CodeJob After Update: Name', () => {
+        it('Get Single AddonJob After Update: Name', () => {
             assert(logcash.statusd, logcash.errorMessaged);
         });
         // it('Create CodeJob with Values: Finished', () => {
@@ -89,8 +89,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
     //         assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
     //     });
     // });
-    describe('Get List Of AddonCodeJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
-        it('Get List Of AddonCodeJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
+    describe('Get List Of AddonJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
+        it('Get List Of AddonJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
             const statusA = cashCallJobsList.status;
             assert(statusA, cashCallJobsList.message);
         });
