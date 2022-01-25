@@ -34,8 +34,10 @@ import { AddonAsyncExecutionTests } from './api-tests/addon_async_execution';
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './api-tests/schema';
 import { BatchUpsertTests } from './api-tests/batch_upsert';
+import { DimxDataImportTests } from './api-tests/dimx_data_import';
 import { SchedulerTests } from './api-tests/code-jobs/scheduler';
-import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
+import { CodeJobsTests } from './api-tests/code-jobs/code_jobs'; //
+import { TimeOutAddonJobsTests } from './api-tests/code-jobs/timeout_addon_jobs';
 import { AddonJobsTests } from './api-tests/code-jobs/addon_jobs';
 import { InstallTests } from './api-tests/code-jobs/install';
 import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
@@ -777,6 +779,31 @@ export async function batch_upsert(client: Client, request: Request, testerFunct
     return testResult;
 }
 
+export async function dimx_data_import(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Batch_Upsert';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DimxDataImportTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
 export async function scheduler(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Scheduler';
@@ -862,6 +889,31 @@ export async function addon_jobs(client: Client, testerFunctions: TesterFunction
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function timeout_addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'TimeOut_Addon_Jobs';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        TimeOutAddonJobsTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

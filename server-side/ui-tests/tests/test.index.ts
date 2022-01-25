@@ -17,6 +17,7 @@ import {
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server';
+import { DistributorTests } from '../../api-tests/objects/distributor';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -161,6 +162,20 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Uom')) {
         await UomTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('Distributor')) {
+        await DistributorTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
     }
 
     run();
