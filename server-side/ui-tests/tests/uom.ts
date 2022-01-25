@@ -284,7 +284,7 @@ class UomOrderExpectedValues {
 }
 function validateResponseOfOrderPerformed(orderResponse: TransactionLines[], expectedValues: UomOrderExpectedValues[]) {
     expect(orderResponse.length).to.be.equal(expectedValues.length);
-    orderResponse.sort(this.sortingFunctionForServerResponseItems);
+    orderResponse.sort(sortingFunctionForServerResponseItems);
     expectedValues.sort((a, b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0))
     for (let i = 0; i < orderResponse.length; i++) {
         expect(orderResponse[i].TotalUnitsPriceAfterDiscount).to.equal(expectedValues[i].itemTotalPrice);
