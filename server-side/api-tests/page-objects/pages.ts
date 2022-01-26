@@ -312,7 +312,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const timeOutinMs = 300000;
                 do {
                     resultPages = await pagesService.getPages({ page_size: -1 });
-                    await generalService.sleepTimeout(5000);
+                    await generalService.sleepAsync(5000);
                 } while (
                     JSON.stringify(resultPages).includes(testData['sub-addon-2'][0]) &&
                     new Date().getTime() < startTime + timeOutinMs
@@ -356,7 +356,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     promises[i] = pagesService.createOrUpdatePage(page).catch((error) => {
                         addToErrorCounter(errorCounter, (error as Error).message);
                     });
-                    await generalService.sleepTimeout(25);
+                    await generalService.sleepAsync(25);
                 }
 
                 time = new Date();
@@ -432,7 +432,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const promises: Array<Promise<Page | void>> = [];
                 for (const [index, page] of pagesArray.entries()) {
                     if (page) {
-                        await generalService.sleepTimeout(25);
+                        await generalService.sleepAsync(25);
                         promises[index] = pagesService.deletePage(page).catch((error) => {
                             addToErrorCounter(errorCounter, (error as Error).message);
                         });

@@ -265,7 +265,7 @@ export class Browser {
      * @returns
      */
     public sleepTimeout(ms: number) {
-        return this.tempGeneralService.sleepTimeout(ms);
+        return this.tempGeneralService.sleepAsync(ms);
     }
 
     /**
