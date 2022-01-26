@@ -611,7 +611,7 @@ export class AddonPage extends Page {
 
         //Validate Editor Page Loaded
         await this.browser.sleep(7500);
-        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 105000)).to.be.true;
         if (isTransLine) {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
         } else {
@@ -630,8 +630,8 @@ export class AddonPage extends Page {
         await this.browser.click(this.calculatedFieldCheckBox);
         await this.browser.sendKeys(this.textInputElements, fieldObj.Label, 0);
         await this.browser.click(this.editFieldScriptBtn);
-        await this.browser.sleep(6800);
-        expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 55000)).to.be.true;
+        await this.browser.sleep(7800);
+        expect(await this.browser.untilIsVisible(this.scriptEditingTitle, 85000)).to.be.true;
 
         if (scriptParam) {
             await this.browser.click(this.AvailibaleFieldsBtn);
@@ -1143,8 +1143,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
         await this.browser.click(this.blankSpaceOnScreenToClick);
-        await this.browser.sleep(1500);
         await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$0.00');
@@ -1339,8 +1339,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '20');
         await this.browser.click(this.blankSpaceOnScreenToClick);
-        await this.browser.sleep(1500);
         await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('8');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$144.00');
@@ -1367,8 +1367,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom2Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom2Qty, '20');
         await this.browser.click(this.blankSpaceOnScreenToClick);
-        await this.browser.sleep(1500);
         await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         //2.3.4 validating all values
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('5');
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal('9');
@@ -1397,8 +1397,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom2Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom2Qty, '20');
         await this.browser.click(this.blankSpaceOnScreenToClick);
-        await this.browser.sleep(1500);
         await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         //2.4.3 valdating all values
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('1'); //
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal('1');
@@ -1443,6 +1443,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
         await this.browser.click(this.blankSpaceOnScreenToClick);
+        await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$0.00');
@@ -1460,8 +1462,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
         await this.browser.click(this.blankSpaceOnScreenToClick);
-        await this.browser.sleep(1500);
         await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('4');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('12');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$12.00');
@@ -1496,6 +1498,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
         await this.browser.click(this.blankSpaceOnScreenToClick);
+        await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$12.00');
@@ -1513,8 +1517,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
         await this.browser.click(this.blankSpaceOnScreenToClick);
-        await this.browser.sleep(1500);
         await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('4');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('8');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
@@ -1549,6 +1553,8 @@ export class AddonPage extends Page {
         await this.browser.click(workingUomObject.aoqmUom1Qty);
         await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
         await this.browser.click(this.blankSpaceOnScreenToClick);
+        await this.isSpinnerDone();
+        await this.browser.sleep(2500);
         expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
         expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
