@@ -183,7 +183,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const webAppHeader = new WebAppHeader(driver);
                         await webAppHeader.openSettings();
                         //4. add the ATD to home screen
-                        debugger;
                         await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();

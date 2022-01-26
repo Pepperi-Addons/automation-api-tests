@@ -1038,7 +1038,7 @@ export class AddonPage extends Page {
     public async configUomFieldsAndMediumView(): Promise<void> {
         await this.configureUomDataFields('AllowedUomFieldsForTest', 'ItemConfig', 'ConstInventory', 'Fix Quantity', 'Fix Quantity', 'Fix Quantity');
         await this.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
-        await this.browser.sleep(5500);
+        await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
         await this.deleteAllFieldFromUIControl();
         await this.setFieldToUIControl('Item External ID');
