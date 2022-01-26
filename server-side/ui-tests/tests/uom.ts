@@ -19,23 +19,26 @@ export async function UomTests(email: string, password: string, varPass: string,
     const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`; //"UOM_ jzwdgqfuajxyyax";
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
 
+    //data validating lists to test the result of webapp flow with
+    //1. expected order data of first phase - not using item config
     const expectedOrderNoConfigItems: OrderPageItem[] = [new OrderPageItem("1234", "37", "$37.00"),
     new OrderPageItem("1233", "48", "$48.00"),
     new OrderPageItem("1232", "48", "$48.00"),
     new OrderPageItem("1231", "48", "$48.00")];
-
+    //2. expected order data of second phase - using item config
     const expectedOrderConfigItems: OrderPageItem[] = [
         new OrderPageItem("1233", "-8", "$-8.00"),
         new OrderPageItem("1232", "8", "$8.00"),
         new OrderPageItem("1231", "12", "$12.00")];
 
+    //3. expected response from server data of non item config order - first phase
     const expectedResultNoItemCondfig: UomOrderExpectedValues[] = [
         new UomOrderExpectedValues("1232", 48, 48, 12, "DOU", 24, "SIN"),
         new UomOrderExpectedValues("1233", 48, 48, 5, "PK", 9, "DOU"),
         new UomOrderExpectedValues("1234", 37, 37, 1, "CS", 1, "Bx"),
         new UomOrderExpectedValues("1231", 48, 48, 2, "Bx", 22, "SIN")
     ];
-
+    //4. expected response from server data of item config order - second phase
     const expectedResultItemCondfig: UomOrderExpectedValues[] = [
         new UomOrderExpectedValues("1233", -8, -8, -8, "DOU"),
         new UomOrderExpectedValues("1232", 8, 8, 4, "Bx",),
@@ -245,14 +248,14 @@ export async function UomTests(email: string, password: string, varPass: string,
                 });
                 describe('Test Data Cleansing using API', () => {
                     it('Reset Existing Items', async function () {
-                            //Remove all items
-                            const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
-                            for (let i = 0; i < itemsArr.length; i++) {
-                                const deleted = await generalService.papiClient.items.delete(
-                                    itemsArr[i].InternalID as number,
-                                );
-                                expect(deleted).to.be.true;
-                            }
+                        //Remove all items
+                        const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+                        for (let i = 0; i < itemsArr.length; i++) {
+                            const deleted = await generalService.papiClient.items.delete(
+                                itemsArr[i].InternalID as number,
+                            );
+                            expect(deleted).to.be.true;
+                        }
                     });
                 });
             });
