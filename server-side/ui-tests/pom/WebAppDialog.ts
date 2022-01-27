@@ -52,7 +52,7 @@ export class WebAppDialog extends Page {
             async (res) => {
                 for (let i = 0; i < res.length; i++) {
                     if ((await res[i].getText()).trim() == buttonText) {
-                        await res[i].click();
+                        await this.browser.click(this.ButtonArr, i);
                         break;
                     }
                 }
