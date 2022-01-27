@@ -29,38 +29,26 @@ export class WebAppDialog extends Page {
     public IframeDialogApproveBtn: Locator = By.css('.warning-dialog #msgModalRightBtn');
 
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
-        //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 5000).then(
-            async (res) => {
-                for (let i = 0; i < res.length; i++) {
-                    if ((await res[i].getText()).trim() == buttonText) {
-                        await this.browser.click(this.ButtonArr, i);
-                        break;
-                    }
-                }
-            },
-            () => {
-                console.log(`Element ${this.ButtonArr.toString()} not found`);
-            },
-        );
+        /**
+         * Click to dismiss if dialog box found
+         */
+        try {
+            await this.browser.ClickByText(this.ButtonArr, buttonText);
+        } catch (error) {
+            console.log(`Element ${this.ButtonArr.toString()} not found`);
+        }
         return;
     }
 
     public async selectDialogBox(buttonText: string): Promise<void> {
-        //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 4000).then(
-            async (res) => {
-                for (let i = 0; i < res.length; i++) {
-                    if ((await res[i].getText()).trim() == buttonText) {
-                        await this.browser.click(this.ButtonArr, i);
-                        break;
-                    }
-                }
-            },
-            () => {
-                console.log(`Element ${this.ButtonArr.toString()} not found`);
-            },
-        );
+        /**
+         * Click to dismiss if dialog box found
+         */
+        try {
+            await this.browser.ClickByText(this.ButtonArr, buttonText);
+        } catch (error) {
+            console.log(`Element ${this.ButtonArr.toString()} not found`);
+        }
         return;
     }
 

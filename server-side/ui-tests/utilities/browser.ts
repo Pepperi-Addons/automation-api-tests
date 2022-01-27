@@ -135,6 +135,17 @@ export class Browser {
         return;
     }
 
+    public async ClickByText(selector: Locator, btnTxt: string) {
+        const buttonsArr: WebElement[] = await this.findElements(selector);
+        for (let i = 0; i < buttonsArr.length; i++) {
+            if ((await buttonsArr[i].getText()) == btnTxt) {
+                await this.click(selector, i);
+                break;
+            }
+        }
+        return;
+    }
+
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {

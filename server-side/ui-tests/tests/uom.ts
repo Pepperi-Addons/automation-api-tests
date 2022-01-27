@@ -22,28 +22,31 @@ export async function UomTests(email: string, password: string, varPass: string,
 
     //data validating lists to test the result of webapp flow with
     //1. expected order data of first phase - not using item config
-    const expectedOrderNoConfigItems: OrderPageItem[] = [new OrderPageItem("1234", "37", "$37.00"),
-    new OrderPageItem("1233", "48", "$48.00"),
-    new OrderPageItem("1232", "48", "$48.00"),
-    new OrderPageItem("1231", "48", "$48.00")];
+    const expectedOrderNoConfigItems: OrderPageItem[] = [
+        new OrderPageItem('1234', '37', '$37.00'),
+        new OrderPageItem('1233', '48', '$48.00'),
+        new OrderPageItem('1232', '48', '$48.00'),
+        new OrderPageItem('1231', '48', '$48.00'),
+    ];
     //2. expected order data of second phase - using item config
     const expectedOrderConfigItems: OrderPageItem[] = [
-        new OrderPageItem("1233", "-8", "$-8.00"),
-        new OrderPageItem("1232", "8", "$8.00"),
-        new OrderPageItem("1231", "12", "$12.00")];
+        new OrderPageItem('1233', '-8', '$-8.00'),
+        new OrderPageItem('1232', '8', '$8.00'),
+        new OrderPageItem('1231', '12', '$12.00'),
+    ];
 
     //3. expected response from server data of non item config order - first phase
     const expectedResultNoItemCondfig: UomOrderExpectedValues[] = [
-        new UomOrderExpectedValues("1232", 48, 48, 12, "DOU", 24, "SIN"),
-        new UomOrderExpectedValues("1233", 48, 48, 5, "PK", 9, "DOU"),
-        new UomOrderExpectedValues("1234", 37, 37, 1, "CS", 1, "Bx"),
-        new UomOrderExpectedValues("1231", 48, 48, 2, "Bx", 22, "SIN")
+        new UomOrderExpectedValues('1232', 48, 48, 12, 'DOU', 24, 'SIN'),
+        new UomOrderExpectedValues('1233', 48, 48, 5, 'PK', 9, 'DOU'),
+        new UomOrderExpectedValues('1234', 37, 37, 1, 'CS', 1, 'Bx'),
+        new UomOrderExpectedValues('1231', 48, 48, 2, 'Bx', 22, 'SIN'),
     ];
     //4. expected response from server data of item config order - second phase
     const expectedResultItemCondfig: UomOrderExpectedValues[] = [
-        new UomOrderExpectedValues("1233", -8, -8, -8, "DOU"),
-        new UomOrderExpectedValues("1232", 8, 8, 4, "Bx",),
-        new UomOrderExpectedValues("1231", 12, 12, 4, "SIN"),
+        new UomOrderExpectedValues('1233', -8, -8, -8, 'DOU'),
+        new UomOrderExpectedValues('1232', 8, 8, 4, 'Bx'),
+        new UomOrderExpectedValues('1231', 12, 12, 4, 'SIN'),
     ];
 
     //#region Upgrade cpi-node & UOM
@@ -98,7 +101,10 @@ export async function UomTests(email: string, password: string, varPass: string,
                     const itemList: Item[] = await objectsService.getItems();
                     if (itemList.length === 5) {
                         for (let i = 0; i < itemList.length; i++) {
-                            if (itemList[i].MainCategoryID === "NOT uom item" || itemList[i].MainCategoryID === "uom item") {
+                            if (
+                                itemList[i].MainCategoryID === 'NOT uom item' ||
+                                itemList[i].MainCategoryID === 'uom item'
+                            ) {
                                 numOfGoodItems++;
                             }
                         }
@@ -226,7 +232,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const uomPage = new UomPage(driver);
                         await uomPage.testUomAtdUIWithItemConfig();
                         addonPage = new AddonPageBase(driver);
-                        await addonPage.testCartItems("$12.00", ...expectedOrderConfigItems);
+                        await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
@@ -275,40 +281,54 @@ class UomOrderExpectedValues {
     public aoqm2Qty: number | undefined;
     public aoqm2Type: string | undefined;
 
-    constructor(id: string, itemTotalPrice: number, itemTotalQty: number, aoqm1Qty?: number, aoqm1Type?: string, aoqm2Qty?: number, aoqm2Type?: string) {
+    constructor(
+        id: string,
+        itemTotalPrice: number,
+        itemTotalQty: number,
+        aoqm1Qty?: number,
+        aoqm1Type?: string,
+        aoqm2Qty?: number,
+        aoqm2Type?: string,
+    ) {
         this.id = id;
         this.itemTotalPrice = itemTotalPrice;
         this.itemTotalQty = itemTotalQty;
-        if (aoqm1Qty)
-            this.aoqm1Qty = aoqm1Qty;
-        if (aoqm1Type)
-            this.aoqm1Type = aoqm1Type;
-        if (aoqm2Qty)
-            this.aoqm2Qty = aoqm2Qty;
-        if (aoqm2Type)
-            this.aoqm2Type = aoqm2Type;
+        if (aoqm1Qty) this.aoqm1Qty = aoqm1Qty;
+        if (aoqm1Type) this.aoqm1Type = aoqm1Type;
+        if (aoqm2Qty) this.aoqm2Qty = aoqm2Qty;
+        if (aoqm2Type) this.aoqm2Type = aoqm2Type;
     }
 }
 function validateResponseOfOrderPerformed(orderResponse: TransactionLines[], expectedValues: UomOrderExpectedValues[]) {
     expect(orderResponse.length).to.be.equal(expectedValues.length);
-    orderResponse.sort(sortServerResponseItemsByID);
-    expectedValues.sort((a, b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0))
+    orderResponse.sort(compareServerResponseItemsByID);
+    expectedValues.sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
     for (let i = 0; i < orderResponse.length; i++) {
         expect(orderResponse[i].TotalUnitsPriceAfterDiscount).to.equal(expectedValues[i].itemTotalPrice);
         expect(orderResponse[i].UnitsQuantity).to.equal(expectedValues[i].itemTotalQty);
-        if (expectedValues[i].aoqm1Qty)
-            expect(orderResponse[i].TSAAOQMQuantity1).to.equal(expectedValues[i].aoqm1Qty);
-        if (expectedValues[i].aoqm1Type)
-            expect(orderResponse[i].TSAAOQMUOM1).to.equal(expectedValues[i].aoqm1Type);
-        if (expectedValues[i].aoqm2Qty)
-            expect(orderResponse[i].TSAAOQMQuantity2).to.equal(expectedValues[i].aoqm2Qty);
-        if (expectedValues[i].aoqm2Type)
-            expect(orderResponse[i].TSAAOQMUOM2).to.equal(expectedValues[i].aoqm2Type);
+        if (expectedValues[i].aoqm1Qty) expect(orderResponse[i].TSAAOQMQuantity1).to.equal(expectedValues[i].aoqm1Qty);
+        if (expectedValues[i].aoqm1Type) expect(orderResponse[i].TSAAOQMUOM1).to.equal(expectedValues[i].aoqm1Type);
+        if (expectedValues[i].aoqm2Qty) expect(orderResponse[i].TSAAOQMQuantity2).to.equal(expectedValues[i].aoqm2Qty);
+        if (expectedValues[i].aoqm2Type) expect(orderResponse[i].TSAAOQMUOM2).to.equal(expectedValues[i].aoqm2Type);
     }
 }
 
-function sortServerResponseItemsByID(a: TransactionLines, b: TransactionLines) {
-    return (a.Item!.Data!.ExternalID! > b.Item!.Data!.ExternalID!) ? 1 : (b.Item!.Data!.ExternalID! > a.Item!.Data!.ExternalID!) ? -1 : 0;
+function compareServerResponseItemsByID(transLine1: TransactionLines, transLine2: TransactionLines) {
+    if (
+        transLine1.Item &&
+        transLine1.Item.Data &&
+        transLine1.Item.Data.ExternalID &&
+        transLine2.Item &&
+        transLine2.Item.Data &&
+        transLine2.Item.Data.ExternalID
+    ) {
+        if (transLine1.Item.Data.ExternalID > transLine2.Item.Data.ExternalID) {
+            return 1;
+        } else if (transLine1.Item.Data.ExternalID < transLine2.Item.Data.ExternalID) {
+            return -1;
+        }
+    }
+    return 1; //dummy return ts is stupid
 }
 
 function createItemsListForUom() {
@@ -380,5 +400,3 @@ interface UomItem {
     Title: string;
     Multiplier: string;
 }
-
-

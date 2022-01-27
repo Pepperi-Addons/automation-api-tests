@@ -1,13 +1,10 @@
-import { By, Locator } from "selenium-webdriver";
-import { WebAppList } from ".";
+import { By, Locator } from 'selenium-webdriver';
+import { WebAppList } from '.';
 
-export class OrderPage extends WebAppList
-{
-    public pageGrandTotal: Locator = By.xpath("//span[@class='value']");//order page
-    public blankSpaceOnScreenToClick: Locator = By.xpath("//div[contains(@class,'total-items-container')]");//order page
-    public SubmitToCart: Locator = By.css('[data-qa=cartButton]');//order
-
-    
+export class OrderPage extends WebAppList {
+    public pageGrandTotal: Locator = By.xpath("//span[@class='value']"); //order page
+    public blankSpaceOnScreenToClick: Locator = By.xpath("//div[contains(@class,'total-items-container')]"); //order page
+    public SubmitToCart: Locator = By.css('[data-qa=cartButton]'); //order
 }
 
 export class OrderPageItem {
@@ -23,9 +20,11 @@ export class OrderPageItem {
 
     constructor(idOfWUomElement: string, expectedQty: string, expectedUnitPrice: string) {
         this.qty.valueOf()['value'] = this.qty.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
-        this.totalUnitPrice.valueOf()['value'] = this.totalUnitPrice.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
+        this.totalUnitPrice.valueOf()['value'] = this.totalUnitPrice
+            .valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', idOfWUomElement);
         this.expectedQty = expectedQty;
         this.expectedUnitPrice = expectedUnitPrice;
     }
-
 }
