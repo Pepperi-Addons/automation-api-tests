@@ -145,7 +145,7 @@ export class Browser {
             console.log(
                 `%cSentKeys with defult selector: ${
                     selector.valueOf()['value']
-                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                 ConsoleColors.SentKeysMessage,
             );
         } catch (error) {
@@ -165,7 +165,7 @@ export class Browser {
                         console.log(
                             `%cSentKeys with actions and defult selector: ${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                            }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                             ConsoleColors.SentKeysMessage,
                         );
                     } catch (error) {
@@ -176,7 +176,7 @@ export class Browser {
                             console.log(
                                 `%cSet value with xpath selector: ${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         } else {
@@ -186,7 +186,7 @@ export class Browser {
                             console.log(
                                 `%cSet value with css selector: ${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         }
