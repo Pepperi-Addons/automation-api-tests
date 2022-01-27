@@ -8,13 +8,13 @@ import {
     WebAppHomePage,
     WebAppHeader,
     WebAppSettingsSidePanel,
-    AddonPage,
+    AddonPageBase,
     WebAppTopBar,
     WebAppList,
 } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 import { DistributorService } from '../../services/distributor.service';
-import { AddonLoadCondition } from '../pom/AddonPage';
+import { AddonLoadCondition } from '../pom/addons/AddonPageBase';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
 import { LoginTests, OrderTests } from '.';
 import { replaceItemsTests, replaceUIControlsTests, upgradeDependenciesTests } from './test.index';
@@ -176,7 +176,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppSettingsSidePanel.selectSettingsByID('Branded App');
                 await driver.click(webAppSettingsSidePanel.BrandedAppBranding);
 
-                const addonPage = new AddonPage(driver);
+                const addonPage = new AddonPageBase(driver);
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 await addonPage.isAddonFullyLoaded(AddonLoadCondition.Content);
 

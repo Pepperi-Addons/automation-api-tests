@@ -6,7 +6,7 @@ import {
     WebAppLoginPage,
     WebAppList,
     WebAppTopBar,
-    AddonPage,
+    AddonPageBase,
     WebAppHomePage,
     WebAppTransaction,
     WebAppHeader,
@@ -14,7 +14,7 @@ import {
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { InventoryService } from '../../services/inventory.service';
-import { SelectPostAction } from '../pom/AddonPage';
+import { SelectPostAction } from '../pom/addons/AddonPageBase';
 import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
@@ -45,7 +45,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
 
-            const addonPage = new AddonPage(driver);
+            const addonPage = new AddonPageBase(driver);
 
             const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
@@ -70,7 +70,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
 
-            const addonPage = new AddonPage(driver);
+            const addonPage = new AddonPageBase(driver);
 
             const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';

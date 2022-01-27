@@ -7,7 +7,7 @@ import { WebAppDialog } from './WebAppDialog';
 import { WebAppActivity } from './WebAppActivity';
 import { WebAppTransaction } from './WebAppTransaction';
 import { WebAppSettingsSidePanel } from './WebAppSettingsSidePanel';
-import { AddonPage } from './AddonPage';
+import { AddonPageBase } from './addons/AddonPageBase';
 import { WebAppAPI } from './WebAppAPI';
 
 export {
@@ -20,6 +20,6 @@ export {
     WebAppActivity,
     WebAppTransaction,
     WebAppSettingsSidePanel,
-    AddonPage,
+    AddonPageBase,
     WebAppAPI,
 };
