@@ -186,7 +186,7 @@ export async function ADALStressTests(generalService: GeneralService, request, t
                     const updateSchemaResponseArr = await Promise.all(updateSchemaResponsePromiseArr);
 
                     const addonDataArr = updateSchemaResponseArr.map((addonData) => {
-                        const addonDataBody = addonData.Body;
+                        const addonDataBody = addonData.Body as any;
                         try {
                             expect(addonDataBody.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                             expect(addonDataBody.CreationDateTime).to.include('Z');
