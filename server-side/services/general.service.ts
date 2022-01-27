@@ -795,12 +795,12 @@ export default class GeneralService {
             .then((res) => res.ClientObject.AddonSecretKey);
     }
 
-    generateRandomString(len: number) {
-        let rdmString = '';
-        while (rdmString.length < len) {
-            rdmString += Math.random().toString(36).substr(2);
+    generateRandomString(length: number): string {
+        let result = ' ';
+        for (let i = 0; i < length; i++) {
+            result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
         }
-        return rdmString.substr(0, len);
+        return result;
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
