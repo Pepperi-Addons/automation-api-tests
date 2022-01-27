@@ -1,6 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ADALService } from '../services/adal.service';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 export async function ADALStressTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const adalService = new ADALService(generalService.papiClient);
@@ -9,7 +9,7 @@ export async function ADALStressTests(generalService: GeneralService, request, t
     const it = tester.it;
 
     const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
-    const PepperiSecretKey = await generalService.getSecretKey(PepperiOwnerID);
+    // const PepperiSecretKey = await generalService.getSecretKey(PepperiOwnerID);
 
     //#region Upgrade ADAL
     const testData = {
@@ -147,86 +147,88 @@ export async function ADALStressTests(generalService: GeneralService, request, t
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
-                it(`Insert Data To Table (Stress)`, async () => {
-                    const schemaName = `TestSchemaName`;
-                    //const createSchemaResponse =
-                    await adalService.postSchema({
-                        Name: schemaName,
-                        Type: 'cpi_meta_data',
-                    });
-                    //console.log({ createSchemaResponse: createSchemaResponse });
+                // it(`Insert Data To Table (Stress)`, async () => {
+                //     const schemaName = `TestSchemaName`;
+                //     //const createSchemaResponse =
+                //     await adalService.postSchema({
+                //         Name: schemaName,
+                //         Type: 'cpi_meta_data',
+                //     });
+                //     //console.log({ createSchemaResponse: createSchemaResponse });
 
-                    const updateSchemaResponsePromiseArr = [] as any;
-                    for (let i = 0; i < 1; i++) {
-                        updateSchemaResponsePromiseArr.push(
-                            generalService.fetchStatus(`/addons/data/${PepperiOwnerID}/${schemaName}`, {
-                                method: 'POST',
-                                headers: {
-                                    'X-Pepperi-OwnerID': PepperiOwnerID,
-                                    'X-Pepperi-SecretKey': PepperiSecretKey,
-                                },
-                                body: JSON.stringify({
-                                    Key: `testKey${i}`,
-                                    Itteration: i,
-                                    UUID: uuidv4(),
-                                    InternalID: i,
-                                }),
-                                timeout: 1000 * 20,
-                            }),
-                        );
-                        if (i % 100 == 0) {
-                            await generalService.sleepAsync(2000);
-                        } else if (i % 10 == 0) {
-                            await generalService.sleepAsync(1000);
-                        } else {
-                            await generalService.sleepAsync(100);
-                        }
-                    }
+                //     const updateSchemaResponsePromiseArr = [] as any;
+                //     for (let i = 0; i < 1; i++) {
+                //         updateSchemaResponsePromiseArr.push(
+                //             generalService.fetchStatus(`/addons/data/${PepperiOwnerID}/${schemaName}`, {
+                //                 method: 'POST',
+                //                 headers: {
+                //                     'X-Pepperi-OwnerID': PepperiOwnerID,
+                //                     'X-Pepperi-SecretKey': PepperiSecretKey,
+                //                 },
+                //                 body: JSON.stringify({
+                //                     Key: `testKey${i}`,
+                //                     Itteration: i,
+                //                     UUID: uuidv4(),
+                //                     InternalID: i,
+                //                 }),
+                //                 timeout: 1000 * 20,
+                //             }),
+                //         );
+                //         if (i % 100 == 0) {
+                //             await generalService.sleepAsync(2000);
+                //         } else if (i % 10 == 0) {
+                //             await generalService.sleepAsync(1000);
+                //         } else {
+                //             await generalService.sleepAsync(100);
+                //         }
+                //     }
 
-                    const updateSchemaResponseArr = await Promise.all(updateSchemaResponsePromiseArr);
+                //     const updateSchemaResponseArr = await Promise.all(updateSchemaResponsePromiseArr);
 
-                    const addonDataArr = updateSchemaResponseArr.map((addonData) => {
-                        const addonDataBody = addonData.Body as any;
-                        try {
-                            expect(addonDataBody.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                            expect(addonDataBody.CreationDateTime).to.include('Z');
-                            expect(addonDataBody.ModificationDateTime).to.include(
-                                new Date().toISOString().split('T')[0],
-                            );
-                            expect(addonDataBody.ModificationDateTime).to.include('Z');
-                            expect(addonDataBody.Hidden).to.be.false;
-                            expect(addonDataBody.Key).to.contain('testKey');
-                            expect(addonDataBody.Itteration).to.be.a('number');
-                            expect(addonDataBody.UUID).to.be.a('string').that.have.lengthOf(36);
-                            expect(addonDataBody.InternalID).to.be.a('number');
-                            return addonDataBody;
-                        } catch (error) {
-                            console.log('ERROR');
-                            return addonData;
-                        }
-                    });
+                //     const addonDataArr = updateSchemaResponseArr.map((addonData) => {
+                //         const addonDataBody = addonData.Body;
+                //         try {
+                //             expect(addonDataBody.CreationDateTime).to.include(
+                //                 new Date().toISOString().split('T')[0],
+                //             );
+                //             expect(addonDataBody.CreationDateTime).to.include('Z');
+                //             expect(addonDataBody.ModificationDateTime).to.include(
+                //                 new Date().toISOString().split('T')[0],
+                //             );
+                //             expect(addonDataBody.ModificationDateTime).to.include('Z');
+                //             expect(addonDataBody.Hidden).to.be.false;
+                //             expect(addonDataBody.Key).to.contain('testKey');
+                //             expect(addonDataBody.Itteration).to.be.a('number');
+                //             expect(addonDataBody.UUID).to.be.a('string').that.have.lengthOf(36);
+                //             expect(addonDataBody.InternalID).to.be.a('number');
+                //             return addonDataBody;
+                //         } catch (error) {
+                //             console.log('ERROR');
+                //             return addonData;
+                //         }
+                //     });
 
-                    console.log(addonDataArr);
+                //     console.log(addonDataArr);
 
-                    for (let j = 0; j < addonDataArr.length; j++) {
-                        for (let i = j + 1; i < addonDataArr.length; i++) {
-                            if (addonDataArr[j].UUID == undefined || addonDataArr[i].UUID == undefined) {
-                                continue;
-                            }
-                            if (
-                                addonDataArr[j].UUID == addonDataArr[i].UUID ||
-                                addonDataArr[j].Key == addonDataArr[i].Key ||
-                                addonDataArr[j].Itteration == addonDataArr[i].Itteration ||
-                                addonDataArr[j].InternalID == addonDataArr[i].InternalID
-                            ) {
-                                console.log({ j: addonDataArr[j], i: addonDataArr[i] });
-                                debugger;
-                            }
-                        }
-                    }
+                //     for (let j = 0; j < addonDataArr.length; j++) {
+                //         for (let i = j + 1; i < addonDataArr.length; i++) {
+                //             if (addonDataArr[j].UUID == undefined || addonDataArr[i].UUID == undefined) {
+                //                 continue;
+                //             }
+                //             if (
+                //                 addonDataArr[j].UUID == addonDataArr[i].UUID ||
+                //                 addonDataArr[j].Key == addonDataArr[i].Key ||
+                //                 addonDataArr[j].Itteration == addonDataArr[i].Itteration ||
+                //                 addonDataArr[j].InternalID == addonDataArr[i].InternalID
+                //             ) {
+                //                 console.log({ j: addonDataArr[j], i: addonDataArr[i] });
+                //                 debugger;
+                //             }
+                //         }
+                //     }
 
-                    console.log(addonDataArr);
-                });
+                //     console.log(addonDataArr);
+                // });
 
                 it(`Clear CPI Meta Data Schema`, async () => {
                     const schemaName = `TestSchemaName`;
