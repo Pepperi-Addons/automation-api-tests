@@ -135,6 +135,17 @@ export class Browser {
         return;
     }
 
+    public async ClickByText(selector: Locator, btnTxt: string) {
+        const buttonsArr: WebElement[] = await this.findElements(selector);
+        for (let i = 0; i < buttonsArr.length; i++) {
+            if ((await buttonsArr[i].getText()) == btnTxt) {
+                await this.click(selector, i);
+                break;
+            }
+        }
+        return;
+    }
+
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {
@@ -145,7 +156,7 @@ export class Browser {
             console.log(
                 `%cSentKeys with defult selector: ${
                     selector.valueOf()['value']
-                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                 ConsoleColors.SentKeysMessage,
             );
         } catch (error) {
@@ -165,7 +176,7 @@ export class Browser {
                         console.log(
                             `%cSentKeys with actions and defult selector: ${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                            }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                             ConsoleColors.SentKeysMessage,
                         );
                     } catch (error) {
@@ -176,7 +187,7 @@ export class Browser {
                             console.log(
                                 `%cSet value with xpath selector: ${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         } else {
@@ -186,7 +197,7 @@ export class Browser {
                             console.log(
                                 `%cSet value with css selector: ${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         }
