@@ -19,26 +19,42 @@ export class PageClass {
         return JSON.parse(JSON.stringify(page));
     }
 
+    editPageKey(key: string | undefined) {
+        this._page.Key = key;
+    }
+
     addNewBlock(pageBlock: PageBlock): void {
         if (!this._page?.Blocks) {
             throw new Error("The page's 'Blocks' property is undefined/not initialzied");
         }
         this._page.Blocks.push(pageBlock);
     }
+
     overwriteBlockByKey(blockKey: string, pageBlock: PageBlock): void {
         this.removeBlockByKey(blockKey);
         this.addNewBlock(pageBlock);
     }
-    addBlockToSection(blockKey: string, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>): void {
+
+    addBlockToSection(
+        blockKey: string,
+        sectionKey: string,
+        column?: number | undefined,
+        hide?: Array<DataViewScreenSize> | undefined,
+    ): void {
         const pageSectionBlock: PageBlockContainer = {
             BlockKey: blockKey,
-            Hide: hide ?? [],
+            Hide: hide ?? undefined,
         };
         const sectionIndex = this._page.Layout.Sections.findIndex((section: PageSection) => section.Key === sectionKey);
-        this._page.Layout.Sections[sectionIndex].Columns[column].BlockContainer = pageSectionBlock;
+        this._page.Layout.Sections[sectionIndex].Columns[column ?? 0].BlockContainer = pageSectionBlock;
     }
 
-    addNewBlockToSection(pageBlock: PageBlock, sectionKey: string, column = 0, hide?: Array<DataViewScreenSize>) {
+    addNewBlockToSection(
+        pageBlock: PageBlock,
+        sectionKey: string,
+        column?: number | undefined,
+        hide?: Array<DataViewScreenSize> | undefined,
+    ) {
         this.addNewBlock(pageBlock);
         this.addBlockToSection(pageBlock.Key, sectionKey, column, hide);
     }
@@ -50,11 +66,13 @@ export class PageClass {
             this._page.Blocks.splice(index, 1);
         }
     }
+
     private validatePageBlocksNotEmpty(): void {
         if (this._page.Blocks.length <= 0) {
             throw new Error('No PageBlocks to remove - empty Page.Blocks array');
         }
     }
+
     removeBlockByKey(blockKey: string): void {
         this.validatePageBlocksNotEmpty();
         const index = this._page.Blocks.findIndex((block) => block.Key === blockKey);
@@ -97,6 +115,7 @@ export class PageClass {
             throw new Error(`The Block Key '${sectionKey}' was not found in the page`);
         }
     }
+
     removeSection(pageSection: PageSection): void {
         this.removeBlockByKey(pageSection.Key);
     }

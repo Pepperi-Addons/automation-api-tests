@@ -131,7 +131,6 @@ export class AddonPageBase extends Page {
     public CodeInputSection: Locator = By.css('.CodeMirror  > div:nth-child(1) > textarea');
 
     public async selectTabByText(tabText: string): Promise<void> {
-        //remain
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
         selectedTab['value'] += ` [contains(., '${tabText}')]`;
         await this.browser.click(selectedTab);
@@ -139,14 +138,12 @@ export class AddonPageBase extends Page {
     }
 
     public async isEditorTabVisible(tabID: string, waitUntil = 15000): Promise<boolean> {
-        //remain
         const selectedTab = Object.assign({}, this.AddonContainerTabsContent);
         selectedTab['value'] += ` #${tabID}`;
         return await this.browser.untilIsVisible(selectedTab, waitUntil);
     }
 
     public async isEditorHiddenTabExist(tabID: string, waitUntil = 15000): Promise<boolean> {
-        //remain
         const selectedTab = Object.assign({}, this.AddonContainerHiddenTabs);
         selectedTab['value'] += `#${tabID}`;
         const hiddenEl = await this.browser.findElement(selectedTab, waitUntil, false);
@@ -157,7 +154,6 @@ export class AddonPageBase extends Page {
     }
 
     public async isAddonFullyLoaded(addonLoadCondition: AddonLoadCondition): Promise<boolean> {
-        //remain
         if (addonLoadCondition == AddonLoadCondition.Footer) {
             await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 45000);
         } else {
@@ -181,7 +177,6 @@ export class AddonPageBase extends Page {
     }
 
     public async selectDropBoxByOption(locator: Locator, option: SelectOption): Promise<void> {
-        //remain
         const selectedBox = Object.assign({}, locator);
         selectedBox['value'] += ` option[value='${option}']`;
         await this.browser.click(selectedBox);
@@ -189,7 +184,6 @@ export class AddonPageBase extends Page {
     }
 
     public async selectDropBoxByString(locator: Locator, option: string, index?: number): Promise<void> {
-        //remain
         await this.browser.sleep(3000);
         if (index !== undefined) {
             await this.browser.click(locator, index);
@@ -242,7 +236,6 @@ export class AddonPageBase extends Page {
 
     //UI view configuration functions
     public async deleteAllFieldFromUIControl(): Promise<void> {
-        //keep
         const deleteBtnsList = await this.browser.findElements(
             By.xpath("//span[contains(@class,'lb-close trashCanIcon')]"),
         );
@@ -251,6 +244,13 @@ export class AddonPageBase extends Page {
             await this.browser.sleep(1000);
         }
     }
+
+    public async setFieldsInUIControl(...nameToSearch: string[]): Promise<void> {
+        for (let i = 0; i < nameToSearch.length; i++) {
+            await this.setFieldToUIControl(nameToSearch[i]);
+        }
+    }
+
     public async setFieldToUIControl(nameToSearch: string): Promise<void> {
         await this.browser.sendKeys(By.xpath("//input[@id='txtSearchBankFields']"), nameToSearch + Key.ENTER);
         this.browser.sleep(1500);

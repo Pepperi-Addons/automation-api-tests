@@ -110,29 +110,4 @@ export class PagesService {
             throw error;
         }
     }
-
-    // private compare<Type>(
-    //     expected: Type,
-    //     actual: Type,
-    //     expect: Chai.ExpectStatic,
-    //     excludedProperties: Array<string> = ['length'],
-    //     parentProp?: string,
-    // ) {
-    //     if (typeof expected === 'object') {
-    //         const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
-    //             excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
-    //         );
-
-    //         properties.forEach((prop) => {
-    //             if (typeof expected[prop] === 'object') {
-    //                 parentProp = parentProp ? parentProp + '.' + prop : prop;
-    //                 this.deepCompareObjects(expected[prop], actual[prop], expect, excludedProperties, parentProp);
-    //             } else {
-    //                 this.assertAndLog(expected[prop], actual[prop], expect, parentProp ?? prop);
-    //             }
-    //         });
-    //     } else {
-    //         this.assertAndLog(expected, actual, expect);
-    //     }
-    // }
 }
