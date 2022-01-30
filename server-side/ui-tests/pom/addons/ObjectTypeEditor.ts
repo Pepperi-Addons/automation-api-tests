@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
 import { By, Key, Locator } from 'selenium-webdriver';
-import { AddonPageBase, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
+import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
 import GeneralService from '../../../services/general.service';
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
 import { ObjectsService } from '../../../services/objects.service';
-import { AddonLoadCondition, SelectOption, SelectPostAction } from './AddonPageBase';
+import { AddonLoadCondition, SelectOption, SelectPostAction } from './AddonPage';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Field {
@@ -29,7 +29,7 @@ interface Field {
     [key: string]: any;
 }
 
-export class ObjectTypeEditor extends AddonPageBase {
+export class ObjectTypeEditor extends AddonPage {
     //Object Types Editor Locators
     public AddonContainerATDEditorWorkflowFlowchartIndicator: Locator = By.css('span[name="flowchart"].disabled');
     public AddonContainerATDEditorWorkflowFlowchartEl: Locator = By.css('#mainFlowchart .flowchart-element');

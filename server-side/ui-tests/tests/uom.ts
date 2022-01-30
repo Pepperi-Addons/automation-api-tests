@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPageBase, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
+import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -10,7 +10,7 @@ import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
 import { OrderPageItem } from '../pom/OrderPage';
 import { Uom } from '../pom/addons/Uom';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
-import { BrandedAppEditor } from '../pom/addons/BrandedAppEditor';
+import { BrandedApp } from '../pom/addons/BrandedApp';
 
 chai.use(promised);
 
@@ -174,7 +174,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         //1. validating all items are added to the main catalog
-                        const addonPage = new AddonPageBase(driver);
+                        const addonPage = new AddonPage(driver);
                         await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
                         //2. goto ATD editor - create new ATD UOM_{random-hashstring}
                         const objectTypeEditor = new ObjectTypeEditor(driver);
@@ -194,8 +194,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const webAppHeader = new WebAppHeader(driver);
                         await webAppHeader.openSettings();
                         //4. add the ATD to home screen
-                        const brandedAppEditor = new BrandedAppEditor(driver);
-                        await brandedAppEditor.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        const brandedApp = new BrandedApp(driver);
+                        await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
                         await webAppHomePage.manualResync();
@@ -210,7 +210,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                         const uomPage = new Uom(driver);
                         await uomPage.testUomAtdUI();
-                        const addonPage = new AddonPageBase(driver);
+                        const addonPage = new AddonPage(driver);
                         await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
@@ -254,8 +254,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         const webAppHeader = new WebAppHeader(driver);
                         await webAppHeader.openSettings();
-                        const brandedAppEditor = new BrandedAppEditor(driver);
-                        await brandedAppEditor.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        const brandedApp = new BrandedApp(driver);
+                        await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                         const objectTypeEditor = new ObjectTypeEditor(driver);
                         await objectTypeEditor.removeATD(
                             generalService,

@@ -54,7 +54,7 @@ export enum AddonLoadCondition {
     Content,
 }
 
-export class AddonPageBase extends Page {
+export class AddonPage extends Page {
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }

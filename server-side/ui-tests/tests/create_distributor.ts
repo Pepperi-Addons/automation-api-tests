@@ -8,15 +8,15 @@ import {
     WebAppHomePage,
     WebAppHeader,
     WebAppSettingsSidePanel,
-    AddonPageBase,
+    AddonPage,
     WebAppTopBar,
     WebAppList,
-    BrandedAppEditor,
+    BrandedApp,
     ObjectTypeEditor,
 } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 import { DistributorService } from '../../services/distributor.service';
-import { AddonLoadCondition } from '../pom/addons/AddonPageBase';
+import { AddonLoadCondition } from '../pom/addons/AddonPage';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
 import { LoginTests, OrderTests } from '.';
 import { replaceItemsTests, replaceUIControlsTests, upgradeDependenciesTests } from './test.index';
@@ -178,16 +178,16 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppSettingsSidePanel.selectSettingsByID('Branded App');
                 await driver.click(webAppSettingsSidePanel.BrandedAppBranding);
 
-                const addonPage = new AddonPageBase(driver);
+                const addonPage = new AddonPage(driver);
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 await addonPage.isAddonFullyLoaded(AddonLoadCondition.Content);
 
                 const fileLocation = `${
                     __dirname.split('server-side')[0]
                 }server-side\\api-tests\\test-data\\Temp_Distributor.jpg`;
-                const brandedAppEditor = new BrandedAppEditor(driver);
+                const brandedApp = new BrandedApp(driver);
                 await (
-                    await driver.findElements(brandedAppEditor.BrandedAppUploadInputArr, undefined, false)
+                    await driver.findElements(brandedApp.BrandedAppUploadInputArr, undefined, false)
                 )[1].sendKeys(fileLocation);
 
                 console.log('wait for new company logo to load');
