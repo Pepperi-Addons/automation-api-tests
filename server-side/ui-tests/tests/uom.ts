@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
 import { AddonPageBase, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
@@ -97,7 +97,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
             describe('Data Preparation Using Endpoints', () => {
                 it('Post items for uom', async function () {
-                    let numOfGoodItems = 0;
+                    let numOfGoodItems: number = 0;
                     const itemList: Item[] = await objectsService.getItems();
                     if (itemList.length === 5) {
                         for (let i = 0; i < itemList.length; i++) {
@@ -112,15 +112,15 @@ export async function UomTests(email: string, password: string, varPass: string,
                     if (numOfGoodItems != 5) {
                         if (numOfGoodItems != 0) {
                             //Remove all items
-                            const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+                            const itemsArr: Item[] = await generalService.papiClient.items.find({ page_size: -1 });
                             for (let i = 0; i < itemsArr.length; i++) {
-                                const deleted = await generalService.papiClient.items.delete(
+                                const deleted: boolean = await generalService.papiClient.items.delete(
                                     itemsArr[i].InternalID as number,
                                 );
                                 expect(deleted).to.be.true;
                             }
                         }
-                        const itemsToPost = createItemsListForUom();
+                        const itemsToPost: Item[] = createItemsListForUom();
                         const postItemsResponse: Item[] = [];
                         for (let i = 0; i < itemsToPost.length; i++) {
                             postItemsResponse.push(await objectsService.postItem(itemsToPost[i]));
@@ -135,7 +135,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 });
                 it('Post items: UOM fields', async function () {
                     const uomItemsToPost: UomItem[] = createAllowedUomTypesList();
-                    const postUomItemsResponse: any[] = [];
+                    const postUomItemsResponse: FetchStatusResponse[] = [];
                     for (let i = 0; i < uomItemsToPost.length; i++) {
                         postUomItemsResponse.push(
                             await generalService.fetchStatus(
@@ -213,11 +213,11 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppHomePage.manualResync();
                         const orderId: string = await addonPage.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
                         const service = new ObjectsService(generalService);
-                        const orderResponse = await service.getTransactionLines({
+                        const orderResponse: TransactionLines[] = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
                         });
                         expect(orderResponse).to.be.an('array').with.lengthOf(4);
-                        validateResponseOfOrderPerformed(orderResponse, expectedResultNoItemCondfig);
+                        validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
                     });
 
                     it('UI Test UOM ATD -- testing item configuration field', async function () {
@@ -242,7 +242,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             where: `TransactionInternalID=${orderId}`,
                         });
                         expect(orderResponse).to.be.an('array').with.lengthOf(3);
-                        validateResponseOfOrderPerformed(orderResponse, expectedResultItemCondfig);
+                        validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
                     });
 
                     it('Delete test ATD from dist + home screen using UI', async function () {
@@ -258,9 +258,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                 describe('Test Data Cleansing using API', () => {
                     it('Reset Existing Items', async function () {
                         //Remove all items
-                        const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+                        const itemsArr: Item[] = await generalService.papiClient.items.find({ page_size: -1 });
                         for (let i = 0; i < itemsArr.length; i++) {
-                            const deleted = await generalService.papiClient.items.delete(
+                            const deleted: boolean = await generalService.papiClient.items.delete(
                                 itemsArr[i].InternalID as number,
                             );
                             expect(deleted).to.be.true;
@@ -299,9 +299,9 @@ class UomOrderExpectedValues {
         if (aoqm2Type) this.aoqm2Type = aoqm2Type;
     }
 }
-function validateResponseOfOrderPerformed(orderResponse: TransactionLines[], expectedValues: UomOrderExpectedValues[]) {
+function validateServerResponseOfOrderTransLines(orderResponse: TransactionLines[], expectedValues: UomOrderExpectedValues[]): void {
     expect(orderResponse.length).to.be.equal(expectedValues.length);
-    orderResponse.sort(compareServerResponseItemsByID);
+    orderResponse.sort(compareServerResponseTransLinesByItemsID);
     expectedValues.sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
     for (let i = 0; i < orderResponse.length; i++) {
         expect(orderResponse[i].TotalUnitsPriceAfterDiscount).to.equal(expectedValues[i].itemTotalPrice);
@@ -313,7 +313,7 @@ function validateResponseOfOrderPerformed(orderResponse: TransactionLines[], exp
     }
 }
 
-function compareServerResponseItemsByID(transLine1: TransactionLines, transLine2: TransactionLines) {
+function compareServerResponseTransLinesByItemsID(transLine1: TransactionLines, transLine2: TransactionLines): number {
     if (
         transLine1.Item &&
         transLine1.Item.Data &&
@@ -328,10 +328,10 @@ function compareServerResponseItemsByID(transLine1: TransactionLines, transLine2
             return -1;
         }
     }
-    return 1; //dummy return ts is stupid
+    return 1; //dummy return for ts
 }
 
-function createItemsListForUom() {
+function createItemsListForUom(): Item[] {
     const itemList: Item[] = [];
     for (let i = 0; i < 5; i++) {
         const item: Item = {
@@ -345,7 +345,7 @@ function createItemsListForUom() {
     return itemList;
 }
 
-function createAllowedUomTypesList() {
+function createAllowedUomTypesList(): UomItem[] {
     const itemList: UomItem[] = [];
     for (let i = 0; i < 5; i++) {
         itemList.push(resolveUomItem(i));
