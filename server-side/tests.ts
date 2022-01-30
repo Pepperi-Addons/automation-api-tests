@@ -85,6 +85,7 @@ import { CPINodeTests } from './api-tests/cpi_node';
 import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './api-tests/var_system_addons';
 import { AddonDataImportExportTests } from './api-tests/addon_data_import_export';
+import { ADALStressTests } from './api-tests/adal_stress';
 
 let testName = '';
 let testEnvironment = '';
@@ -1662,6 +1663,30 @@ export async function adal(client: Client, request: Request, testerFunctions: Te
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ADALTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function adal_stress(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'ADAL_Stress';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ADALStressTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

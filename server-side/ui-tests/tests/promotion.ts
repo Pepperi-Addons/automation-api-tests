@@ -11,6 +11,8 @@ import {
     WebAppTransaction,
     WebAppAPI,
     WebAppDialog,
+    // AddonPage,
+    // WebAppSettingsSidePanel,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import GeneralService, { ConsoleColors } from '../../services/general.service';
@@ -1377,6 +1379,37 @@ export async function PromotionTests(email: string, password: string, client: Cl
                 }
             });
         });
+
+        // describe('Bug Verification', function () {
+        //     it('Package TP Editor UI Pop-Up Container (DI-19254)', async function () {
+        //         const webAppLoginPage = new WebAppLoginPage(driver);
+        //         await webAppLoginPage.login(email, password);
+        //         const addonPage = new AddonPage(driver);
+        //         await addonPage.openSettings();
+
+        //         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        //         await webAppSettingsSidePanel.selectSettingsByID('Package TP Editor');
+        //         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        //         //Create new transaction from the UI
+        //         const itemsScopeURL = await driver.getCurrentUrl();
+        //         const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
+        //         const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
+        //         await webAppTransaction.addItemToCart(this, 'MaFa24', 5, true);
+        //         console.log('Ordering Items');
+        //         const webAppList = new WebAppList(driver);
+        //         const webAppTopBar = new WebAppTopBar(driver);
+        //         await webAppList.click(webAppTopBar.CartViewBtn);
+        //         await webAppList.isSpinnerDone();
+        //         const base64Image = await driver.saveScreenshots();
+        //         addContext(this, {
+        //             title: `Cart With Promotions`,
+        //             value: 'data:image/png;base64,' + base64Image,
+        //         });
+
+        //         expect(true).to.be.true;
+        //     });
+        // });
     });
 }
 /**
