@@ -142,7 +142,7 @@ export default class GeneralService {
      * @param ms
      * @returns
      */
-    sleepTimeout(ms: number) {
+    sleepAsync(ms: number) {
         console.debug(`%cAsync Sleep: ${ms} milliseconds`, ConsoleColors.Information);
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
