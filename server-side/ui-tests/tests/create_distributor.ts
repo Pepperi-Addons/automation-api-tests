@@ -2,19 +2,19 @@ import { Browser } from '../utilities/browser';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import {
     WebAppLoginPage,
     WebAppHomePage,
     WebAppHeader,
     WebAppSettingsSidePanel,
-    AddonPage,
+    AddonPageBase,
     WebAppTopBar,
     WebAppList,
 } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 import { DistributorService } from '../../services/distributor.service';
-import { AddonLoadCondition } from '../pom/AddonPage';
+import { AddonLoadCondition } from '../pom/addons/AddonPageBase';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
 import { LoginTests, OrderTests } from '.';
 import { replaceItemsTests, replaceUIControlsTests, upgradeDependenciesTests } from './test.index';
@@ -42,7 +42,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             this.retries(1);
 
             beforeEach(async function () {
-                driver = new Browser('chrome');
+                driver = await Browser.initiateChrome();
             });
 
             afterEach(async function () {
@@ -54,9 +54,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             it(`Login To New Distributor`, async function () {
                 let password = varPass;
                 if (varPassEU) {
-                    //TODO: This is a temp solution for var EU not working yet
-                    // password = varPassEU;
-                    password = `${Buffer.from(varPassEU.split(' ')[1], 'base64').toString()}`;
+                    password = varPassEU;
                 }
                 const distributorService = new DistributorService(generalService, password);
 
@@ -95,7 +93,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                                 'Failed to install the following addons',
                             )
                         ) {
-                            console.log('Bug exist for this response: (DI-19115)');
+                            console.log('%cBug exist for this response: (DI-19115)', ConsoleColors.BugSkipped);
                             console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
                         } else {
                             throw new Error(
@@ -131,7 +129,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             this.retries(1);
 
             beforeEach(async function () {
-                driver = new Browser('chrome');
+                driver = await Browser.initiateChrome();
             });
 
             afterEach(async function () {
@@ -178,7 +176,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppSettingsSidePanel.selectSettingsByID('Branded App');
                 await driver.click(webAppSettingsSidePanel.BrandedAppBranding);
 
-                const addonPage = new AddonPage(driver);
+                const addonPage = new AddonPageBase(driver);
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 await addonPage.isAddonFullyLoaded(AddonLoadCondition.Content);
 

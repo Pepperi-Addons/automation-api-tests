@@ -180,10 +180,10 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     'already exists',
                 );
             });
-            describe("Page Paramters Tests Suite", function(){
+            describe('Page Paramters Tests Suite', function () {
                 it("Add duplicate filter key for two 'parameter' types", async function () {
                     const pageClass = new PageClass(basePage);
-                    const paramKey = "MyKey";
+                    const paramKey = 'MyKey';
                     const testBlock = PageFactory.defaultPageBlock(pageBlockRelation);
                     testBlock.PageConfiguration = {
                         Parameters: [
@@ -206,12 +206,14 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                         ],
                     };
                     pageClass.addNewBlock(testBlock);
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(` Parameters with key ${paramKey} should be with the same Type.`);
+                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                        ` Parameters with key ${paramKey} should be with the same Type.`,
+                    );
                 });
-                it("Add Parameter with Produce and Consume as false", async function(){
+                it('Add Parameter with Produce and Consume as false', async function () {
                     const pageClass = new PageClass(basePage);
                     const testBlock = PageFactory.defaultPageBlock(pageBlockRelation);
-                    const paramKey = "ParamKey";
+                    const paramKey = 'ParamKey';
                     testBlock.PageConfiguration = {
                         Parameters: [
                             {
@@ -220,14 +222,15 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                                 Consume: false,
                                 Mandatory: false,
                                 Produce: false,
-                            }
+                            },
                         ],
                     };
                     pageClass.addNewBlock(testBlock);
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(`The parameter (with key ${paramKey}) is not allowed, at least on of the properties Produce or Consume should be true`);
+                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                        `The parameter (with key ${paramKey}) is not allowed, at least on of the properties Produce or Consume should be true`,
+                    );
                 });
             });
-           
         });
 
         const baseSection: PageSection = {
@@ -330,9 +333,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
             it('Block Removal On Uninstall Addon', async function () {
                 const page = PageFactory.defaultPage();
-                page.Name = "PagesApiTest - Remove Slideshow Test";
+                page.Name = 'PagesApiTest - Remove Slideshow Test';
                 const testPage = new PageClass(page);
-                
+
                 const testSection: PageSection = PageFactory.defaultSection();
                 testPage.addSection(testSection);
 
@@ -343,11 +346,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const postPageResult = await pagesService.createOrUpdatePage(testPage.page);
                 pagesService.deepCompareObjects(testPage.page, postPageResult, expect);
                 // testPage.editPageKey(postPageResult.Key);
-                const uninstallResult = await generalService
-                    .uninstallAddon(testData.Slideshow[0])
-                    .catch((error) => {
-                        throw error;
-                    });
+                const uninstallResult = await generalService.uninstallAddon(testData.Slideshow[0]).catch((error) => {
+                    throw error;
+                });
                 expect(uninstallResult.URI).to.not.be.undefined;
                 const auditResult = await generalService.getAuditLogResultObjectIfValid(<string>uninstallResult.URI);
                 expect(auditResult).to.have.deep.include({ Status: { ID: 1, Name: 'Success' } });
@@ -357,7 +358,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const timeOutinMs = 300000;
                 do {
                     resultPages = await pagesService.getPages({ page_size: -1 });
-                    await generalService.sleepTimeout(10000);
+                    await generalService.sleepAsync(5000);
                 } while (
                     JSON.stringify(resultPages).includes(testData.Slideshow[0]) &&
                     new Date().getTime() < startTime + timeOutinMs

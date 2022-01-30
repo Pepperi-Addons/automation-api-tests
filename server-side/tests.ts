@@ -34,8 +34,10 @@ import { AddonAsyncExecutionTests } from './api-tests/addon_async_execution';
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './api-tests/schema';
 import { BatchUpsertTests } from './api-tests/batch_upsert';
+import { DimxDataImportTests } from './api-tests/dimx_data_import';
 import { SchedulerTests } from './api-tests/code-jobs/scheduler';
-import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
+import { CodeJobsTests } from './api-tests/code-jobs/code_jobs'; //
+import { TimeOutAddonJobsTests } from './api-tests/code-jobs/timeout_addon_jobs';
 import { AddonJobsTests } from './api-tests/code-jobs/addon_jobs';
 import { InstallTests } from './api-tests/code-jobs/install';
 import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
@@ -83,6 +85,7 @@ import { CPINodeTests } from './api-tests/cpi_node';
 import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './api-tests/var_system_addons';
 import { AddonDataImportExportTests } from './api-tests/addon_data_import_export';
+import { ADALStressTests } from './api-tests/adal_stress';
 
 let testName = '';
 let testEnvironment = '';
@@ -777,6 +780,31 @@ export async function batch_upsert(client: Client, request: Request, testerFunct
     return testResult;
 }
 
+export async function dimx_data_import(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Batch_Upsert';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DimxDataImportTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
 export async function scheduler(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Scheduler';
@@ -794,10 +822,16 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
         it,
         run,
     };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SchedulerTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    let testResult;
+    //TODO: Remove the scheduler endpoint from Jenkins, This test was removed from Stage: "SchedulerTests", No test was added
+    if (client.BaseURL.includes('staging')) {
+        testResult = await Promise.all([await test_data(client, testerFunctions)]).then(() => testerFunctions.run());
+    } else {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            SchedulerTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -819,10 +853,19 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
         it,
         run,
     };
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CodeJobsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    let testResult;
+    //TODO: Remove the code_jobs endpoint from Jenkins, This test was removed from Stage: "CodeJobsTests", This test was added for now: "AddonJobsTests"
+    if (client.BaseURL.includes('staging')) {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            AddonJobsTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    } else {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            CodeJobsTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -847,6 +890,31 @@ export async function addon_jobs(client: Client, testerFunctions: TesterFunction
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function timeout_addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'TimeOut_Addon_Jobs';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        assert,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        TimeOutAddonJobsTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1595,6 +1663,30 @@ export async function adal(client: Client, request: Request, testerFunctions: Te
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ADALTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function adal_stress(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'ADAL_Stress';
+    service.PrintMemoryUseToLog('Start', testName);
+    testEnvironment = client.BaseURL.includes('staging')
+        ? 'Sandbox'
+        : client.BaseURL.includes('papi-eu')
+        ? 'Production-EU'
+        : 'Production';
+    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
+    testerFunctions = {
+        describe,
+        expect,
+        it,
+        run,
+    };
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ADALStressTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

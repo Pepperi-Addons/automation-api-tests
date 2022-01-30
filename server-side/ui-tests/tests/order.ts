@@ -28,7 +28,7 @@ export async function OrderTests(email: string, password: string, client: Client
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
@@ -38,6 +38,7 @@ export async function OrderTests(email: string, password: string, client: Client
         });
 
         it('Order The Most Expensive Three Items and validate with API', async function () {
+            debugger;
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
 
@@ -179,7 +180,7 @@ export async function OrderTests(email: string, password: string, client: Client
         this.retries(1);
 
         before(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         after(async function () {

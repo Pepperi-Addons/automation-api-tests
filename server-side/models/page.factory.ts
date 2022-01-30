@@ -52,13 +52,13 @@ export class PageFactory {
         return baseSection;
 
         function getColumnsLength(split?: SplitType | undefined) {
-            const columns : PageSectionColumn[] = [];
-            
+            const columns: PageSectionColumn[] = [];
+
             let columnNumber = 1;
-            if(split){
+            if (split) {
                 columnNumber = Math.max(split.split('/').length - 1, 1);
             }
-            for(let i=0; i<columnNumber; i++){
+            for (let i = 0; i < columnNumber; i++) {
                 columns.push({});
             }
             return columns;

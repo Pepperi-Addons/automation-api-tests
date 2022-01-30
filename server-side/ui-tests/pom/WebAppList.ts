@@ -78,12 +78,12 @@ export class WebAppList extends Page {
 
     public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
-        return await this.click(this.ListRowElements, position, waitUntil);
+        return await this.browser.click(this.ListRowElements, position, waitUntil);
     }
 
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
-        return await this.click(this.LinksInListArr, position, waitUntil);
+        return await this.browser.click(this.LinksInListArr, position, waitUntil);
     }
 
     public async selectCardWebElement(position = 0): Promise<WebElement> {

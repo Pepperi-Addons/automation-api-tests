@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../services/general.service';
 import { SyncService } from '../services/sync.service';
 import { SyncBody, Account, Transaction, GeneralActivity } from '@pepperi-addons/papi-sdk';
 
@@ -988,7 +988,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                 } | `;
                             }
                         } catch (error) {
-                            console.log(`Error for: ${[localTestValuesArr[index]]} | ${error}`);
+                            console.log(`%cError for: ${[localTestValuesArr[index]]} | ${error}`, ConsoleColors.Error);
                             errorMessage += `For Client Info Prop: ${[
                                 localTestValuesArr[index],
                             ]} Error was thrown: ${error} | `;
@@ -1039,7 +1039,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         }
                     }
                 } catch (error) {
-                    console.log(`Error for: ${prop} | ${error}`);
+                    console.log(`%cError for: ${prop} | ${error}`, ConsoleColors.Error);
                     errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
                 }
             }
@@ -1073,7 +1073,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         }
                     }
                 } catch (error) {
-                    console.log(`Error for: ${prop} | ${error}`);
+                    console.log(`%cError for: ${prop} | ${error}`, ConsoleColors.Error);
                     errorMessage += `For Client Info Prop: ${prop} Error was thrown: ${error} | `;
                 }
             }

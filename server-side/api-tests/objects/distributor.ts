@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { DistributorService } from '../../services/distributor.service';
 import { LoremIpsum } from 'lorem-ipsum';
@@ -19,8 +19,9 @@ export async function DistributorTests(generalService: GeneralService, request, 
     let password;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         password = request.body.varKeyStage;
+    } else if (generalService.papiClient['options'].baseURL.includes('papi-eu')) {
+        password = request.body.varKeyEU;
     } else {
-        //TODO: Create a way to use VAR EU after QA var EU will work
         password = request.body.varKeyPro;
     }
     const distributorService = new DistributorService(generalService, password);
@@ -69,7 +70,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     newDistributor.Body.Status.ID == 0 &&
                     newDistributor.Body.AuditInfo.ErrorMessage.includes('Failed to install the following addons')
                 ) {
-                    console.log('Bug exist for this response: (DI-19115)');
+                    console.log('%cBug exist for this response: (DI-19115)', ConsoleColors.BugSkipped);
                     console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
                 } else {
                     throw new Error(

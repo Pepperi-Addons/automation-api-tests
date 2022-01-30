@@ -8,7 +8,7 @@ import {
     WebAppHomePage,
     WebAppList,
     WebAppTopBar,
-    AddonPage,
+    AddonPageBase,
     WebAppSettingsSidePanel,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
@@ -25,7 +25,7 @@ export async function SecurityPolicyTests(email: string, password: string) {
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
@@ -86,7 +86,7 @@ export async function SecurityPolicyTests(email: string, password: string) {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
 
-                const addonPage = new AddonPage(driver);
+                const addonPage = new AddonPageBase(driver);
 
                 //Remove the new ATD
                 const webAppHeader = new WebAppHeader(driver);

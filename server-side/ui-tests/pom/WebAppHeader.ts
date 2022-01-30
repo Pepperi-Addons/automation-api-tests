@@ -13,4 +13,10 @@ export class WebAppHeader extends Page {
     public Help: Locator = By.css('[data-qa="systemSuppot"]');
     public UserBtn: Locator = By.css('[data-qa="systemAvatar"]');
     public Home: Locator = By.css('[data-qa="systemHome"]');
+
+    public async openSettings() {
+        await this.browser.click(this.Settings);
+        await this.browser.sleep(1800);
+        return;
+    }
 }

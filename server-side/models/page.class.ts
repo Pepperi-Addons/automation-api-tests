@@ -19,7 +19,7 @@ export class PageClass {
         return JSON.parse(JSON.stringify(page));
     }
 
-    editPageKey(key: string | undefined){
+    editPageKey(key: string | undefined) {
         this._page.Key = key;
     }
 
@@ -35,7 +35,12 @@ export class PageClass {
         this.addNewBlock(pageBlock);
     }
 
-    addBlockToSection(blockKey: string, sectionKey: string, column?: number | undefined, hide?: Array<DataViewScreenSize> | undefined): void {
+    addBlockToSection(
+        blockKey: string,
+        sectionKey: string,
+        column?: number | undefined,
+        hide?: Array<DataViewScreenSize> | undefined,
+    ): void {
         const pageSectionBlock: PageBlockContainer = {
             BlockKey: blockKey,
             Hide: hide ?? undefined,
@@ -44,7 +49,12 @@ export class PageClass {
         this._page.Layout.Sections[sectionIndex].Columns[column ?? 0].BlockContainer = pageSectionBlock;
     }
 
-    addNewBlockToSection(pageBlock: PageBlock, sectionKey: string, column?: number | undefined, hide?: Array<DataViewScreenSize> | undefined) {
+    addNewBlockToSection(
+        pageBlock: PageBlock,
+        sectionKey: string,
+        column?: number | undefined,
+        hide?: Array<DataViewScreenSize> | undefined,
+    ) {
         this.addNewBlock(pageBlock);
         this.addBlockToSection(pageBlock.Key, sectionKey, column, hide);
     }
