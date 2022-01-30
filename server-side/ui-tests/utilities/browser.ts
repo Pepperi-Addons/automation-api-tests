@@ -93,7 +93,7 @@ export class Browser {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
             console.log(
-                `%cClicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                `%cClicked with defult selector: '${selector.valueOf()['value']}', on element with index of: ${index}`,
                 ConsoleColors.ClickedMessage,
             );
         } catch (error) {
@@ -109,9 +109,9 @@ export class Browser {
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
                         console.log(
-                            `%cClicked with xpath selector: ${
+                            `%cClicked with xpath selector: '${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}`,
+                            }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
                     } else {
@@ -119,9 +119,9 @@ export class Browser {
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
                         console.log(
-                            `%cClicked with css selector: ${
+                            `%cClicked with css selector: '${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}`,
+                            }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
                     }
@@ -154,9 +154,9 @@ export class Browser {
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
             console.log(
-                `%cSentKeys with defult selector: ${
+                `%cSentKeys with defult selector: '${
                     selector.valueOf()['value']
-                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                 ConsoleColors.SentKeysMessage,
             );
         } catch (error) {
@@ -174,9 +174,9 @@ export class Browser {
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
                         console.log(
-                            `%cSentKeys with actions and defult selector: ${
+                            `%cSentKeys with actions and defult selector: '${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                            }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                             ConsoleColors.SentKeysMessage,
                         );
                     } catch (error) {
@@ -185,9 +185,9 @@ export class Browser {
                                 `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with xpath selector: ${
+                                `%cSet value with xpath selector: '${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         } else {
@@ -195,9 +195,9 @@ export class Browser {
                                 `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with css selector: ${
+                                `%cSet value with css selector: '${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         }
@@ -248,11 +248,11 @@ export class Browser {
         await this.driver.manage().setTimeouts({ implicit: this.TIMEOUT });
         if (elArr === undefined) {
             throw new Error(
-                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is: ${elArr}`,
+                `After wait time of: ${waitUntil}, for selector of '${selector['value']}', The test must end, The element is: ${elArr}`,
             );
         } else if (isElVisible === false) {
             throw new Error(
-                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is not visible`,
+                `After wait time of: ${waitUntil}, for selector of '${selector['value']}', The test must end, The element is not visible`,
             );
         } else {
             console.log(`element with selector: '${selector.valueOf()['value']}' is found successfully`);
@@ -264,7 +264,7 @@ export class Browser {
         if ((await this.findElement(selector, waitUntil)) === undefined) {
             return false;
         }
-        console.log(`element ${selector.valueOf()['value']} is visibale`);
+        console.log(`element '${selector.valueOf()['value']}' is visibale`);
         return true;
     }
 
@@ -369,7 +369,7 @@ export class Browser {
     public async close(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         const windowTitle = await this.driver.getTitle();
-        console.log(`%cClose Window With Title: ${windowTitle}`, ConsoleColors.Success);
+        console.log(`%cClose Window With Title: '${windowTitle}'`, ConsoleColors.Success);
         return await this.driver.close();
     }
 
@@ -381,7 +381,7 @@ export class Browser {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         try {
             const windowTitle = await this.driver.getTitle();
-            console.log(`%cQuit Window With Title: ${windowTitle}`, ConsoleColors.SystemInformation);
+            console.log(`%cQuit Window With Title: '${windowTitle}'`, ConsoleColors.SystemInformation);
         } catch (error) {
             console.log(`%cQuit Window With Title Error: ${error}`, ConsoleColors.Error);
         }

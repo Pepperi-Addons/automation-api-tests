@@ -929,7 +929,7 @@ export class AddonPageBase extends Page {
 
     public async setFieldsInUIControl(...nameToSearch: string[]): Promise<void> {
         for (let i = 0; i < nameToSearch.length; i++) {
-            this.setFieldToUIControl(nameToSearch[i]);
+            await this.setFieldToUIControl(nameToSearch[i]);
         }
     }
 

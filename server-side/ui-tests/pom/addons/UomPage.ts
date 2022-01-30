@@ -103,7 +103,7 @@ export class UomPage extends AddonPageBase {
         await this.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
         await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
-        await this.setFieldsInUIControl();
+        await this.deleteAllFieldFromUIControl();
         await this.setFieldsInUIControl(
             'Item External ID',
             'Item Price',
