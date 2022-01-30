@@ -255,7 +255,7 @@ export class Browser {
                 `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is not visible`,
             );
         } else {
-            console.log(`element with selector ${selector.valueOf()['value']} is found successfully`);
+            console.log(`element with selector: '${selector.valueOf()['value']}' is found successfully`);
         }
         return elArr;
     }
