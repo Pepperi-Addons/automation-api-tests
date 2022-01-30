@@ -103,7 +103,7 @@ export class UomPage extends AddonPageBase {
         await this.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
         await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
-        await this.setFieldsInUIControl();
+        await this.deleteAllFieldFromUIControl();
         await this.setFieldsInUIControl(
             'Item External ID',
             'Item Price',
@@ -781,43 +781,43 @@ class UomUIObject {
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1.valueOf()['value'] = this.aoqmUom1
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2.valueOf()['value'] = this.aoqmUom2
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
     }
 }

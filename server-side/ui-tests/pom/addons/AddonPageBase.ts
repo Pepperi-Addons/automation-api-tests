@@ -898,13 +898,13 @@ export class AddonPageBase extends Page {
         await this.browser.click(this.CategoryExpender);
         for (let i = 0; i < itemKesyUomItems.length; i++) {
             const itemCheckBox: string = this.CategoryListItemCheckBox.valueOf()
-                ['value'].slice()
+            ['value'].slice()
                 .replace('|textToFill|', itemKesyUomItems[i]);
             const itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
             const checkBoxClassAtt = await itemCheckBoxElement.getAttribute('class');
             if (!checkBoxClassAtt.includes('selected')) {
                 const xpathQueryForList: string = this.CategoryListItem.valueOf()
-                    ['value'].slice()
+                ['value'].slice()
                     .replace('|textToFill|', itemKesyUomItems[i]);
                 const locatorForCategoryList: Locator = By.xpath(xpathQueryForList);
                 await this.browser.click(locatorForCategoryList);
@@ -929,7 +929,7 @@ export class AddonPageBase extends Page {
 
     public async setFieldsInUIControl(...nameToSearch: string[]): Promise<void> {
         for (let i = 0; i < nameToSearch.length; i++) {
-            this.setFieldToUIControl(nameToSearch[i]);
+            await this.setFieldToUIControl(nameToSearch[i]);
         }
     }
 
