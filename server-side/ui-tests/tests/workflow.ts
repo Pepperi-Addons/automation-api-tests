@@ -6,10 +6,11 @@ import {
     WebAppLoginPage,
     WebAppList,
     WebAppTopBar,
-    AddonPageBase,
     WebAppHomePage,
     WebAppTransaction,
     WebAppHeader,
+    ObjectTypeEditor,
+    BrandedAppEditor,
 } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
@@ -45,7 +46,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
 
-            const addonPage = new AddonPageBase(driver);
+            const objectTypeEditor = new ObjectTypeEditor(driver);
 
             const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
@@ -57,29 +58,31 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             });
 
             for (let i = 0; i < atdToRemove.length; i++) {
-                await addonPage.removeATD(generalService, atdToRemove[i].Name, _TEST_DATA_ATD_DESCRIPTION);
+                await objectTypeEditor.removeATD(generalService, atdToRemove[i].Name, _TEST_DATA_ATD_DESCRIPTION);
             }
 
             const webAppHeader = new WebAppHeader(driver);
             await webAppHeader.navigate();
             await driver.click(webAppHeader.Settings);
-            await addonPage.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME} `);
+            const brandedAppEditor = new BrandedAppEditor(driver);
+            await brandedAppEditor.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME} `);
         });
 
         it('Workflow Scenario: Update Inventory', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.login(email, password);
 
-            const addonPage = new AddonPageBase(driver);
+            const objectTypeEditor = new ObjectTypeEditor(driver);
 
             const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
 
-            await addonPage.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
+            await objectTypeEditor.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
 
-            await addonPage.editATDWorkflow(SelectPostAction.UpdateInventory);
+            await objectTypeEditor.editATDWorkflow(SelectPostAction.UpdateInventory);
 
-            await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+            const brandedAppEditor = new BrandedAppEditor(driver);
+            await brandedAppEditor.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
 
             //Set the inventory to 100:
             const _TEST_DATA_ITEM_EXTERNALID = 'MakeUp012'; //This item exist in the test data that is replaced when "replaceItems" test runs
@@ -133,10 +136,10 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
             await webAppHomePage.isDialogOnHomePAge(this);
 
-            await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
+            await objectTypeEditor.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
 
             //Wait after refresh for the ATD list to load before searching in list
-            await addonPage.isSpinnerDone();
+            await objectTypeEditor.isSpinnerDone();
             await driver.sendKeys(webAppTopBar.EditorSearchField, _TEST_DATA_ATD_NAME + Key.ENTER);
 
             //Validate the list of ATD is empty after the test finished

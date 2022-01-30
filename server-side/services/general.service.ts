@@ -29,6 +29,7 @@ export const ConsoleColors = {
     NevigationMessage: 'color: #3BB9FF',
     ClickedMessage: 'color: #00FFFF',
     SentKeysMessage: 'color: #C3FDB8',
+    ElementFoundMessage: 'color: #6AFB92',
     BugSkipped: 'color: #F535AA',
     Error: 'color: #FF0000',
     Success: 'color: #00FF00',
@@ -42,6 +43,10 @@ console.log('%c#6C2DC7\t\tPage Message\t\t', `${ConsoleColors.MenuBackground}; $
 console.log('%c#3BB9FF\t\tNevigation Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.NevigationMessage}`); //Deep Sky Blue
 console.log('%c#00FFFF\t\tClicked Message\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.ClickedMessage}`); //Aqua
 console.log('%c#C3FDB8\t\tSentKeys Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SentKeysMessage}`); //Light Jade
+console.log(
+    '%c#6AFB92\t\tElement Found Message\t',
+    `${ConsoleColors.MenuBackground}; ${ConsoleColors.ElementFoundMessage}`,
+); //Dragon Green
 console.log('%c#F535AA\t\tBug Skipped\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.BugSkipped}`); //Neon Pink
 console.log('%c#FF0000\t\tError\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Error}`); //red
 console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Success}`); //green
@@ -249,7 +254,7 @@ export default class GeneralService {
             try {
                 sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
             } catch (error) {
-                console.log(`SK Not found: ${error}`);
+                console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
                 sk = '00000000-0000-0000-0000-000000000000';
             }
         }

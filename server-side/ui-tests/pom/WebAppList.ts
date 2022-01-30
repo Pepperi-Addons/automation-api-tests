@@ -2,6 +2,7 @@ import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
 import { WebElement, Locator, By } from 'selenium-webdriver';
+import { ConsoleColors } from '../../services/general.service';
 
 export enum SelectSmartSearchRange {
     '=' = 1,
@@ -195,7 +196,7 @@ export class WebAppList extends Page {
                 throw new Error(`Index of ${index} is out of range`);
             },
             () => {
-                console.log(`Element ${this.SmartSearchCheckBoxOptions.toString()} not found`);
+                console.log(`%cElement ${this.SmartSearchCheckBoxOptions.toString()} not found`, ConsoleColors.Error);
             },
         );
         return;

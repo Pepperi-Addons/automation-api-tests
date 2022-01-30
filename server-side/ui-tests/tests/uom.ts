@@ -10,7 +10,6 @@ import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
 import { OrderPageItem } from '../pom/OrderPage';
 import { Uom } from '../pom/addons/Uom';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
-import { SettingsFramework } from '../pom/addons/SettingsFramework';
 import { BrandedAppEditor } from '../pom/addons/BrandedAppEditor';
 
 chai.use(promised);
@@ -195,8 +194,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const webAppHeader = new WebAppHeader(driver);
                         await webAppHeader.openSettings();
                         //4. add the ATD to home screen
-                        const settingsFramework = new SettingsFramework(driver);
-                        await settingsFramework.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        const brandedAppEditor = new BrandedAppEditor(driver);
+                        await brandedAppEditor.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
                         await webAppHomePage.manualResync();

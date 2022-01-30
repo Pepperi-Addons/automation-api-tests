@@ -7,6 +7,7 @@ import { WebAppHomePage, WebAppList, WebAppSettingsSidePanel } from '../index';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { OrderPageItem } from '../OrderPage';
+import { ConsoleColors } from '../../../services/general.service';
 
 chai.use(promised);
 
@@ -159,7 +160,7 @@ export class AddonPageBase extends Page {
         } else {
             await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 45000);
         }
-        console.log('Validate Addon Loaded');
+        console.log('%cValidate Addon Loaded', ConsoleColors.PageMessage);
         let bodySize = 0;
         let loadingCounter = 0;
         do {

@@ -11,6 +11,8 @@ import {
     AddonPageBase,
     WebAppTopBar,
     WebAppList,
+    BrandedAppEditor,
+    ObjectTypeEditor,
 } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 import { DistributorService } from '../../services/distributor.service';
@@ -183,8 +185,9 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 const fileLocation = `${
                     __dirname.split('server-side')[0]
                 }server-side\\api-tests\\test-data\\Temp_Distributor.jpg`;
+                const brandedAppEditor = new BrandedAppEditor(driver);
                 await (
-                    await driver.findElements(addonPage.BrandedAppUploadInputArr, undefined, false)
+                    await driver.findElements(brandedAppEditor.BrandedAppUploadInputArr, undefined, false)
                 )[1].sendKeys(fileLocation);
 
                 console.log('wait for new company logo to load');
@@ -207,7 +210,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 const webAppList = new WebAppList(driver);
                 await webAppList.clickOnLinkFromListRowWebElement();
 
-                await addonPage.editATDView('Footer', 'Expanded Cart Footer View');
+                const cbjectTypeEditor = new ObjectTypeEditor(driver);
+                await cbjectTypeEditor.editATDView('Footer', 'Expanded Cart Footer View');
 
                 await driver.switchToDefaultContent();
 
@@ -223,8 +227,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 driver.sleep(1000);
 
                 await webAppList.clickOnLinkFromListRowWebElement();
-
-                await addonPage.editATDView('Transaction Details', 'Order Banner');
+                await cbjectTypeEditor.editATDView('Transaction Details', 'Order Banner');
             });
 
             describe(`Reset New Distributor`, async function () {

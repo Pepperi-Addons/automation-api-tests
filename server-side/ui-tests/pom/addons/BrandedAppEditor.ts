@@ -1,11 +1,40 @@
-import { By, Locator } from 'selenium-webdriver';
+import { By, Key, Locator } from 'selenium-webdriver';
 import { AddonPageBase, WebAppHomePage, WebAppSettingsSidePanel } from '..';
+import { ConsoleColors } from '../../../services/general.service';
 import { AddonLoadCondition } from './AddonPageBase';
 
 export class BrandedAppEditor extends AddonPageBase {
     //Branded App Locators
     public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
     public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
+
+    //Settings Framework Locators
+    public SettingsFrameworkEditorSearch: Locator = By.css('#txtSearchBankFields');
+
+    /**
+     *
+     * @param activtiyName the name of ATD should be added to home screen
+     * @returns
+     */
+    public async addAdminHomePageButtons(activtiyName: string): Promise<void> {
+        //keep for now
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        await this.isSpinnerDone();
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+
+        await this.browser.click(this.AddonContainerEditAdmin);
+        await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
+        await this.browser.click(this.AddonContainerEditorSave);
+
+        await this.browser.switchToDefaultContent();
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.returnToHomePage();
+        return;
+    }
 
     /**
      *
@@ -31,7 +60,7 @@ export class BrandedAppEditor extends AddonPageBase {
         try {
             isRemovable = await this.browser.untilIsVisible(buttonsLocator);
         } catch (error) {
-            console.log('No Button To Remove, Test Continue');
+            console.log('%cNo Button To Remove, Test Continue', ConsoleColors.PageMessage);
         }
         if (isRemovable) {
             const buttonsToRemove = await this.browser.findElements(buttonsLocator);
