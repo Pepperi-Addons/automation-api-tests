@@ -5,7 +5,7 @@ import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePa
 import GeneralService from '../../../services/general.service';
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
 import { ObjectsService } from '../../../services/objects.service';
-import { AddonLoadCondition, SelectOption, SelectPostAction } from './AddonPage';
+import { AddonLoadCondition, SelectOption, SelectPostAction } from './base/AddonPage';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Field {

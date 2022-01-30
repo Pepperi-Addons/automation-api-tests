@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { By, Locator } from 'selenium-webdriver';
 import { AddonPage, WebAppDialog, WebAppList } from '..';
 import { OrderPage } from '../OrderPage';
-import { AddonLoadCondition } from './AddonPage';
+import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 
 export class Uom extends AddonPage {

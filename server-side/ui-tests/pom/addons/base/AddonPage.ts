@@ -1,13 +1,13 @@
-import { Browser } from '../../utilities/browser';
-import { Page } from '../base/page';
-import config from '../../../config';
+import { Browser } from '../../../utilities/browser';
+import { Page } from '../../base/page';
+import config from '../../../../config';
 import { Locator, By, WebElement, Key } from 'selenium-webdriver';
-import { WebAppHeader } from '../WebAppHeader';
-import { WebAppHomePage, WebAppList, WebAppSettingsSidePanel } from '../index';
+import { WebAppHeader } from '../../WebAppHeader';
+import { WebAppHomePage, WebAppList, WebAppSettingsSidePanel } from '../../index';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { OrderPageItem } from '../OrderPage';
-import { ConsoleColors } from '../../../services/general.service';
+import { OrderPageItem } from '../../OrderPage';
+import { ConsoleColors } from '../../../../services/general.service';
 
 chai.use(promised);
 

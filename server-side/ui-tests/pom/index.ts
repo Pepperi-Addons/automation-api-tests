@@ -7,7 +7,7 @@ import { WebAppDialog } from './WebAppDialog';
 import { WebAppActivity } from './WebAppActivity';
 import { WebAppTransaction } from './WebAppTransaction';
 import { WebAppSettingsSidePanel } from './WebAppSettingsSidePanel';
-import { AddonPage } from './addons/AddonPage';
+import { AddonPage } from './addons/base/AddonPage';
 import { WebAppAPI } from './WebAppAPI';
 import { Uom } from './addons/Uom';
 import { BrandedApp } from './addons/BrandedApp';

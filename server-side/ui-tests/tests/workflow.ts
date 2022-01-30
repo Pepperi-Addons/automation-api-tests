@@ -15,7 +15,7 @@ import {
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { InventoryService } from '../../services/inventory.service';
-import { SelectPostAction } from '../pom/addons/AddonPage';
+import { SelectPostAction } from '../pom/addons/base/AddonPage';
 import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
