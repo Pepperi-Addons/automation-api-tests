@@ -17,6 +17,7 @@ import { performance } from 'perf_hooks';
 import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
+import tester from '../tester';
 
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
@@ -166,6 +167,26 @@ export default class GeneralService {
         });
         const query = optionsArr.join('&');
         return query ? url + '?' + query : url;
+    }
+
+    initiateTesterFunctions(client: Client, testName: string) {
+        const testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, assert, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } =
+            tester(client, testName, testEnvironment);
+        return {
+            describe,
+            expect,
+            assert,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
     }
 
     async initiateTester(email, pass): Promise<Client> {
