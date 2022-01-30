@@ -211,7 +211,6 @@ export class AddonPageBase extends Page {
     public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
 
     public async selectTabByText(tabText: string): Promise<void> {
-        //remain
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
         selectedTab['value'] += ` [contains(., '${tabText}')]`;
         await this.browser.click(selectedTab);
@@ -219,14 +218,12 @@ export class AddonPageBase extends Page {
     }
 
     public async isEditorTabVisible(tabID: string, waitUntil = 15000): Promise<boolean> {
-        //remain
         const selectedTab = Object.assign({}, this.AddonContainerTabsContent);
         selectedTab['value'] += ` #${tabID}`;
         return await this.browser.untilIsVisible(selectedTab, waitUntil);
     }
 
     public async isEditorHiddenTabExist(tabID: string, waitUntil = 15000): Promise<boolean> {
-        //remain
         const selectedTab = Object.assign({}, this.AddonContainerHiddenTabs);
         selectedTab['value'] += `#${tabID}`;
         const hiddenEl = await this.browser.findElement(selectedTab, waitUntil, false);
@@ -237,7 +234,6 @@ export class AddonPageBase extends Page {
     }
 
     public async isAddonFullyLoaded(addonLoadCondition: AddonLoadCondition): Promise<boolean> {
-        //remain
         if (addonLoadCondition == AddonLoadCondition.Footer) {
             await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 45000);
         } else {
@@ -261,7 +257,6 @@ export class AddonPageBase extends Page {
     }
 
     public async selectDropBoxByOption(locator: Locator, option: SelectOption): Promise<void> {
-        //remain
         const selectedBox = Object.assign({}, locator);
         selectedBox['value'] += ` option[value='${option}']`;
         await this.browser.click(selectedBox);
@@ -269,7 +264,6 @@ export class AddonPageBase extends Page {
     }
 
     public async selectDropBoxByString(locator: Locator, option: string, index?: number): Promise<void> {
-        //remain
         await this.browser.sleep(3000);
         if (index !== undefined) {
             await this.browser.click(locator, index);
@@ -283,7 +277,6 @@ export class AddonPageBase extends Page {
     }
 
     public async selectPostAction(actionName: SelectPostAction): Promise<void> {
-        //?
         const selectedTab = Object.assign({}, this.AddonContainerActionsRadioBtn);
         selectedTab['value'] = `.//li[@data-type='${actionName}'] ${selectedTab['value']}`;
         await this.browser.click(selectedTab);
@@ -298,7 +291,6 @@ export class AddonPageBase extends Page {
      * @param description Description of the new ATD
      */
     public async createNewATD(that, generalService: GeneralService, name: string, description: string): Promise<void> {
-        //remain
         const objectsService = new ObjectsService(generalService);
         const importExportATDService = new ImportExportATDService(generalService.papiClient);
         const webAppHeader = new WebAppHeader(this.browser);
@@ -431,7 +423,6 @@ export class AddonPageBase extends Page {
      * @param postAction Enum that can be used like this in a test: SelectPostAction.UpdateInventory;
      */
     public async editATDWorkflow(postAction: SelectPostAction): Promise<void> {
-        //remain
         switch (postAction) {
             case SelectPostAction.UpdateInventory:
                 const webAppDialog = new WebAppDialog(this.browser);
@@ -526,7 +517,6 @@ export class AddonPageBase extends Page {
      * @returns
      */
     public async editATDField(fieldType: string, fieldObj: Field, isTransLine = false): Promise<void> {
-        //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -580,7 +570,6 @@ export class AddonPageBase extends Page {
      * @returns
      */
     public async addATDCalculatedField(
-        //remain
         fieldObj: Field,
         isTransLine = false,
         scriptParam?: string,
@@ -653,11 +642,7 @@ export class AddonPageBase extends Page {
      * @param scriptParam Optional variable which indicates which script sys param should be added - if any
      * @returns
      */
-    public async editATDCalculatedFieldScript(
-        //remain
-        fieldObj: Field,
-        scriptParam?: string,
-    ): Promise<void> {
+    public async editATDCalculatedFieldScript(fieldObj: Field, scriptParam?: string): Promise<void> {
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -715,7 +700,6 @@ export class AddonPageBase extends Page {
      * @returns
      */
     public async editATDView(viewType: string, viewName: string, addingViewLocator = 'plusIcon'): Promise<void> {
-        //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -755,7 +739,6 @@ export class AddonPageBase extends Page {
      * @returns
      */
     public async addAdminHomePageButtons(activtiyName: string): Promise<void> {
-        //keep for now
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
@@ -780,7 +763,6 @@ export class AddonPageBase extends Page {
      * @returns
      */
     public async removeAdminHomePageButtons(activtiyName: string): Promise<void> {
-        //keep for now
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
@@ -822,7 +804,6 @@ export class AddonPageBase extends Page {
      * @param description Description of the new ATD
      */
     public async removeATD(generalService: GeneralService, name: string, description: string): Promise<void> {
-        //keep for now
         const objectsService = new ObjectsService(generalService);
         const importExportATDService = new ImportExportATDService(generalService.papiClient);
 
@@ -937,7 +918,6 @@ export class AddonPageBase extends Page {
 
     //UI view configuration functions
     public async deleteAllFieldFromUIControl(): Promise<void> {
-        //keep
         const deleteBtnsList = await this.browser.findElements(
             By.xpath("//span[contains(@class,'lb-close trashCanIcon')]"),
         );
@@ -946,6 +926,13 @@ export class AddonPageBase extends Page {
             await this.browser.sleep(1000);
         }
     }
+
+    public async setFieldsInUIControl(...nameToSearch: string[]): Promise<void> {
+        for (let i = 0; i < nameToSearch.length; i++) {
+            this.setFieldToUIControl(nameToSearch[i]);
+        }
+    }
+
     public async setFieldToUIControl(nameToSearch: string): Promise<void> {
         await this.browser.sendKeys(By.xpath("//input[@id='txtSearchBankFields']"), nameToSearch + Key.ENTER);
         this.browser.sleep(1500);

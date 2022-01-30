@@ -250,11 +250,12 @@ export class Browser {
             throw new Error(
                 `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is: ${elArr}`,
             );
-        }
-        if (isElVisible === false) {
+        } else if (isElVisible === false) {
             throw new Error(
                 `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is not visible`,
             );
+        } else {
+            console.log(`element with selector ${selector.valueOf()['value']} is found successfully`);
         }
         return elArr;
     }
@@ -263,6 +264,7 @@ export class Browser {
         if ((await this.findElement(selector, waitUntil)) === undefined) {
             return false;
         }
+        console.log(`element ${selector.valueOf()['value']} is visibale`);
         return true;
     }
 

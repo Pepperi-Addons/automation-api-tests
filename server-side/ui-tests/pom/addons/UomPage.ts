@@ -50,7 +50,7 @@ export class UomPage extends AddonPageBase {
         );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        //**first testing phase will be performed w/o this feature - second whill test this only**
+        //**first testing phase will be performed w/o this feature - second will test this only**
         await this.addATDCalculatedField(
             {
                 Label: 'ItemConfig',
@@ -103,19 +103,21 @@ export class UomPage extends AddonPageBase {
         await this.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
         await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
-        await this.deleteAllFieldFromUIControl();
-        await this.setFieldToUIControl('Item External ID');
-        await this.setFieldToUIControl('Item Price');
-        await this.setFieldToUIControl('AOQM_UOM1');
-        await this.setFieldToUIControl('AOQM_QUANTITY1');
-        await this.setFieldToUIControl('AOQM_UOM2');
-        await this.setFieldToUIControl('AOQM_QUANTITY2');
-        await this.setFieldToUIControl('UomValues');
-        await this.setFieldToUIControl('ConstInventory');
-        await this.setFieldToUIControl('Transaction Total Sum');
-        await this.setFieldToUIControl('ItemConfig');
-        await this.setFieldToUIControl('Item ID');
-        await this.setFieldToUIControl('Unit Quantity');
+        await this.setFieldsInUIControl();
+        await this.setFieldsInUIControl(
+            'Item External ID',
+            'Item Price',
+            'AOQM_UOM1',
+            'AOQM_QUANTITY1',
+            'AOQM_UOM2',
+            'AOQM_QUANTITY2',
+            'UomValues',
+            'ConstInventory',
+            'Transaction Total Sum',
+            'ItemConfig',
+            'Item ID',
+            'Unit Quantity',
+        );
         await this.browser.click(this.SaveUIControlBtn);
     }
 
@@ -130,8 +132,10 @@ export class UomPage extends AddonPageBase {
         }
         await this.browser.click(this.UomSaveBtn);
         const webAppDialog = new WebAppDialog(this.browser);
-        const isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
-        expect(isPupUP).to.equal('Configuration Saved successfully');
+        const isPopUpTextPresentedCorrectly: string = await (
+            await this.browser.findElement(webAppDialog.Content)
+        ).getText();
+        expect(isPopUpTextPresentedCorrectly).to.equal('Configuration Saved successfully');
         await webAppDialog.selectDialogBox('Close');
         await this.isSpinnerDone();
         expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
