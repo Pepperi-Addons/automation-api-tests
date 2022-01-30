@@ -642,10 +642,7 @@ export class AddonPageBase extends Page {
      * @param scriptParam Optional variable which indicates which script sys param should be added - if any
      * @returns
      */
-    public async editATDCalculatedFieldScript(
-        fieldObj: Field,
-        scriptParam?: string,
-    ): Promise<void> {
+    public async editATDCalculatedFieldScript(fieldObj: Field, scriptParam?: string): Promise<void> {
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -901,13 +898,13 @@ export class AddonPageBase extends Page {
         await this.browser.click(this.CategoryExpender);
         for (let i = 0; i < itemKesyUomItems.length; i++) {
             const itemCheckBox: string = this.CategoryListItemCheckBox.valueOf()
-            ['value'].slice()
+                ['value'].slice()
                 .replace('|textToFill|', itemKesyUomItems[i]);
             const itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
             const checkBoxClassAtt = await itemCheckBoxElement.getAttribute('class');
             if (!checkBoxClassAtt.includes('selected')) {
                 const xpathQueryForList: string = this.CategoryListItem.valueOf()
-                ['value'].slice()
+                    ['value'].slice()
                     .replace('|textToFill|', itemKesyUomItems[i]);
                 const locatorForCategoryList: Locator = By.xpath(xpathQueryForList);
                 await this.browser.click(locatorForCategoryList);

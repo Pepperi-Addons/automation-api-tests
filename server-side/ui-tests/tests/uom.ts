@@ -97,7 +97,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
             describe('Data Preparation Using Endpoints', () => {
                 it('Post items for uom', async function () {
-                    let numOfGoodItems: number = 0;
+                    let numOfGoodItems = 0;
                     const itemList: Item[] = await objectsService.getItems();
                     if (itemList.length === 5) {
                         for (let i = 0; i < itemList.length; i++) {
@@ -299,7 +299,10 @@ class UomOrderExpectedValues {
         if (aoqm2Type) this.aoqm2Type = aoqm2Type;
     }
 }
-function validateServerResponseOfOrderTransLines(orderResponse: TransactionLines[], expectedValues: UomOrderExpectedValues[]): void {
+function validateServerResponseOfOrderTransLines(
+    orderResponse: TransactionLines[],
+    expectedValues: UomOrderExpectedValues[],
+): void {
     expect(orderResponse.length).to.be.equal(expectedValues.length);
     orderResponse.sort(compareServerResponseTransLinesByItemsID);
     expectedValues.sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
