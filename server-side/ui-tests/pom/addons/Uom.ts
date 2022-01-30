@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { By, Locator } from 'selenium-webdriver';
-import { AddonPageBase, WebAppDialog, WebAppList } from '..';
+import { AddonPage, WebAppDialog, WebAppList } from '..';
 import { OrderPage } from '../OrderPage';
-import { AddonLoadCondition } from './AddonPageBase';
+import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 
-export class Uom extends AddonPageBase {
+export class Uom extends AddonPage {
     //UOM Addon Locators
     public uomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
     public uomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");

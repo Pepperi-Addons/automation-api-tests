@@ -10,12 +10,12 @@ import {
     WebAppTransaction,
     WebAppHeader,
     ObjectTypeEditor,
-    BrandedAppEditor,
+    BrandedApp,
 } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { InventoryService } from '../../services/inventory.service';
-import { SelectPostAction } from '../pom/addons/AddonPageBase';
+import { SelectPostAction } from '../pom/addons/base/AddonPage';
 import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
@@ -64,8 +64,8 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const webAppHeader = new WebAppHeader(driver);
             await webAppHeader.navigate();
             await driver.click(webAppHeader.Settings);
-            const brandedAppEditor = new BrandedAppEditor(driver);
-            await brandedAppEditor.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME} `);
+            const brandedApp = new BrandedApp(driver);
+            await brandedApp.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME} `);
         });
 
         it('Workflow Scenario: Update Inventory', async function () {
@@ -81,8 +81,8 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
             await objectTypeEditor.editATDWorkflow(SelectPostAction.UpdateInventory);
 
-            const brandedAppEditor = new BrandedAppEditor(driver);
-            await brandedAppEditor.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+            const brandedApp = new BrandedApp(driver);
+            await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
 
             //Set the inventory to 100:
             const _TEST_DATA_ITEM_EXTERNALID = 'MakeUp012'; //This item exist in the test data that is replaced when "replaceItems" test runs

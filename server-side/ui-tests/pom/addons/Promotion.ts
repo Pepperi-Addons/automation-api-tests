@@ -1,7 +1,7 @@
 import { By, Locator } from 'selenium-webdriver';
-import { AddonPageBase } from '..';
+import { AddonPage } from '..';
 
-export class Promotion extends AddonPageBase {
+export class Promotion extends AddonPage {
     //Promotion Locators
     public EditPromotionBtn: Locator = By.css('a[role="button"]');
     public PromotionDetailsBtn: Locator = By.css('[title="Promotion details"]');
