@@ -438,7 +438,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )} /var/addons / versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                )} /var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
@@ -503,7 +503,7 @@ export default class GeneralService {
             let changeType = 'Upgrade';
             const searchString = `AND Version Like '${version}%' AND Available Like 1`;
             const fetchResponse = await this.fetchStatus(
-                `${this.client.BaseURL} /addons/versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                `${this.client.BaseURL}/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                 },
@@ -531,7 +531,7 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID} `)
                 .upgrade(LatestVersion);
-            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -542,7 +542,7 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID} `)
                         .downgrade(LatestVersion);
-                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
                     testData[addonName].push(changeType);
                     testData[addonName].push(String(auditLogResponse.Status?.Name));
                 }
@@ -746,7 +746,7 @@ export default class GeneralService {
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
-        await execFileSync(`${__dirname.split('services')[0]} api - tests\\test - data\\${scriptName} `);
+        await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
         return;
     }
 }
