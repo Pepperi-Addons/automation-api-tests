@@ -3,7 +3,7 @@ import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { TestDataTests } from '../../api-tests/test-service/test_data';
+import { TestDataTests, DistributorTests } from '../../api-tests/index';
 import {
     LoginTests,
     OrderTests,
@@ -17,7 +17,6 @@ import {
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server';
-import { DistributorTests } from '../../api-tests/objects/distributor';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -196,9 +195,9 @@ export async function upgradeDependenciesTests(generalService: GeneralService, v
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', '6.2.24'],
-        'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', '6.2.15'],
-        'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', '6.2.36'],
+        'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+        'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+        'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);

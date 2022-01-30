@@ -11,8 +11,8 @@ import {
     WebAppTransaction,
     WebAppAPI,
     WebAppDialog,
-    // AddonPage,
-    // WebAppSettingsSidePanel,
+    WebAppSettingsSidePanel,
+    Promotion,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import GeneralService, { ConsoleColors } from '../../services/general.service';
@@ -1380,36 +1380,26 @@ export async function PromotionTests(email: string, password: string, client: Cl
             });
         });
 
-        // describe('Bug Verification', function () {
-        //     it('Package TP Editor UI Pop-Up Container (DI-19254)', async function () {
-        //         const webAppLoginPage = new WebAppLoginPage(driver);
-        //         await webAppLoginPage.login(email, password);
-        //         const addonPage = new AddonPage(driver);
-        //         await addonPage.openSettings();
+        describe('Bug Verification', function () {
+            it('Package TP Editor UI Pop-Up Container (DI-19254)', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.openSettings();
 
-        //         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        //         await webAppSettingsSidePanel.selectSettingsByID('Package TP Editor');
-        //         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+                const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
+                await webAppSettingsSidePanel.selectSettingsByID('Promotion Editor');
+                await driver.click(webAppSettingsSidePanel.PackageTPEditor);
 
-        //         //Create new transaction from the UI
-        //         const itemsScopeURL = await driver.getCurrentUrl();
-        //         const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
-        //         const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
-        //         await webAppTransaction.addItemToCart(this, 'MaFa24', 5, true);
-        //         console.log('Ordering Items');
-        //         const webAppList = new WebAppList(driver);
-        //         const webAppTopBar = new WebAppTopBar(driver);
-        //         await webAppList.click(webAppTopBar.CartViewBtn);
-        //         await webAppList.isSpinnerDone();
-        //         const base64Image = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Cart With Promotions`,
-        //             value: 'data:image/png;base64,' + base64Image,
-        //         });
+                const promotion = new Promotion(driver);
 
-        //         expect(true).to.be.true;
-        //     });
-        // });
+                await driver.click(promotion.EditPromotionBtn);
+                await driver.click(promotion.PromotionDetailsBtn);
+                await driver.click(promotion.PromotionEditBtn);
+                await expect(driver.untilIsVisible(promotion.PromotionEditDialogClose, 5000)).eventually.to.be
+                    .fulfilled;
+            });
+        });
     });
 }
 /**

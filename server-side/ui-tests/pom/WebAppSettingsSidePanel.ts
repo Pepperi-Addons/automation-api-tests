@@ -30,15 +30,18 @@ export class WebAppSettingsSidePanel extends Page {
     public BrandedAppBranding: Locator = By.id(
         'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_branding',
     );
-
-    //Branded App Locators
     public CatalogsSection: Locator = By.id(
         'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=catalogs_manage',
     );
 
+    //Promotion Locators
+    public ItemTPEditor: Locator = By.id('custom_plugin/b5c00007-0941-44ab-9f0e-5da2773f2f04/default_editor');
+    public OrderTPEditor: Locator = By.id('custom_plugin/375425f5-cd2f-4372-bb88-6ff878f40630/default_editor');
+    public PackageTPEditor: Locator = By.id('custom_plugin/90b11a55-b36d-48f1-88dc-6d8e06d08286/default_editor');
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         const selectedSettings = Object.assign({}, this.SettingsBarContainer);
-        selectedSettings['value'] += `//*[@id="${settingsButtonID}"]/../../..`;
+        selectedSettings['value'] += `//*[contains(@id,"${settingsButtonID}")]/../../..`;
         await this.browser.click(selectedSettings);
         return;
     }
