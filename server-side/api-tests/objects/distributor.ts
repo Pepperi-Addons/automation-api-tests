@@ -24,7 +24,6 @@ export async function DistributorTests(generalService: GeneralService, request, 
     } else {
         password = request.body.varKeyPro;
     }
-    debugger;
     const distributorService = new DistributorService(generalService, password);
     const describe = tester.describe;
     const expect = tester.expect;

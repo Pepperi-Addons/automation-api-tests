@@ -1,12 +1,16 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPage, WebAppHomePage, WebAppLoginPage } from '../pom/index';
+import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
-import { Item } from '@pepperi-addons/papi-sdk';
+import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
+import { OrderPageItem } from '../pom/OrderPage';
+import { Uom } from '../pom/addons/Uom';
+import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
+import { BrandedApp } from '../pom/addons/BrandedApp';
 
 chai.use(promised);
 
@@ -15,12 +19,41 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    const _TEST_DATA_ATD_NAME = `UOM_${generateRandString(15)}`; //
+    const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`; //"UOM_ jzwdgqfuajxyyax";
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
+
+    //data validating lists to test the result of webapp flow with
+    //1. expected order data of first phase - not using item config
+    const expectedOrderNoConfigItems: OrderPageItem[] = [
+        new OrderPageItem('1234', '37', '$37.00'),
+        new OrderPageItem('1233', '48', '$48.00'),
+        new OrderPageItem('1232', '48', '$48.00'),
+        new OrderPageItem('1231', '48', '$48.00'),
+    ];
+    //2. expected order data of second phase - using item config
+    const expectedOrderConfigItems: OrderPageItem[] = [
+        new OrderPageItem('1233', '-8', '$-8.00'),
+        new OrderPageItem('1232', '8', '$8.00'),
+        new OrderPageItem('1231', '12', '$12.00'),
+    ];
+
+    //3. expected response from server data of non item config order - first phase
+    const expectedResultNoItemCondfig: UomOrderExpectedValues[] = [
+        new UomOrderExpectedValues('1232', 48, 48, 12, 'DOU', 24, 'SIN'),
+        new UomOrderExpectedValues('1233', 48, 48, 5, 'PK', 9, 'DOU'),
+        new UomOrderExpectedValues('1234', 37, 37, 1, 'CS', 1, 'Bx'),
+        new UomOrderExpectedValues('1231', 48, 48, 2, 'Bx', 22, 'SIN'),
+    ];
+    //4. expected response from server data of item config order - second phase
+    const expectedResultItemCondfig: UomOrderExpectedValues[] = [
+        new UomOrderExpectedValues('1233', -8, -8, -8, 'DOU'),
+        new UomOrderExpectedValues('1232', 8, 8, 4, 'Bx'),
+        new UomOrderExpectedValues('1231', 12, 12, 4, 'SIN'),
+    ];
 
     //#region Upgrade cpi-node & UOM
     const testData = {
-        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because 0.3.7 which is the most progresive cannot be installed at the moment
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
@@ -66,21 +99,45 @@ export async function UomTests(email: string, password: string, varPass: string,
 
             describe('Data Preparation Using Endpoints', () => {
                 it('Post items for uom', async function () {
-                    const itemsToPost = createItemsList();
-                    const postItemsResponse: Item[] = [];
-                    for (let i = 0; i < itemsToPost.length; i++) {
-                        postItemsResponse.push(await objectsService.postItem(itemsToPost[i]));
+                    let numOfGoodItems = 0;
+                    const itemList: Item[] = await objectsService.getItems();
+                    if (itemList.length === 5) {
+                        for (let i = 0; i < itemList.length; i++) {
+                            if (
+                                itemList[i].MainCategoryID === 'NOT uom item' ||
+                                itemList[i].MainCategoryID === 'uom item'
+                            ) {
+                                numOfGoodItems++;
+                            }
+                        }
                     }
-                    for (let i = 0; i < postItemsResponse.length; i++) {
-                        expect(postItemsResponse[i].ExternalID).to.equal(itemsToPost[i].ExternalID);
-                        expect(postItemsResponse[i].MainCategoryID).to.equal(itemsToPost[i].MainCategoryID);
-                        expect(postItemsResponse[i].Name).to.equal(itemsToPost[i].Name);
-                        expect(postItemsResponse[i].Price).to.equal(itemsToPost[i].Price);
+                    if (numOfGoodItems != 5) {
+                        if (numOfGoodItems != 0) {
+                            //Remove all items
+                            const itemsArr: Item[] = await generalService.papiClient.items.find({ page_size: -1 });
+                            for (let i = 0; i < itemsArr.length; i++) {
+                                const deleted: boolean = await generalService.papiClient.items.delete(
+                                    itemsArr[i].InternalID as number,
+                                );
+                                expect(deleted).to.be.true;
+                            }
+                        }
+                        const itemsToPost: Item[] = createItemsListForUom();
+                        const postItemsResponse: Item[] = [];
+                        for (let i = 0; i < itemsToPost.length; i++) {
+                            postItemsResponse.push(await objectsService.postItem(itemsToPost[i]));
+                        }
+                        for (let i = 0; i < postItemsResponse.length; i++) {
+                            expect(postItemsResponse[i].ExternalID).to.equal(itemsToPost[i].ExternalID);
+                            expect(postItemsResponse[i].MainCategoryID).to.equal(itemsToPost[i].MainCategoryID);
+                            expect(postItemsResponse[i].Name).to.equal(itemsToPost[i].Name);
+                            expect(postItemsResponse[i].Price).to.equal(itemsToPost[i].Price);
+                        }
                     }
                 });
                 it('Post items: UOM fields', async function () {
-                    const uomItemsToPost: UomItem[] = createUomItemsList();
-                    const postUomItemsResponse: any[] = [];
+                    const uomItemsToPost: UomItem[] = createAllowedUomTypesList();
+                    const postUomItemsResponse: FetchStatusResponse[] = [];
                     for (let i = 0; i < uomItemsToPost.length; i++) {
                         postUomItemsResponse.push(
                             await generalService.fetchStatus(
@@ -120,7 +177,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const addonPage = new AddonPage(driver);
                         await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
                         //2. goto ATD editor - create new ATD UOM_{random-hashstring}
-                        await addonPage.createNewATD(
+                        const objectTypeEditor = new ObjectTypeEditor(driver);
+                        await objectTypeEditor.createNewATD(
                             this,
                             generalService,
                             _TEST_DATA_ATD_NAME,
@@ -129,12 +187,17 @@ export async function UomTests(email: string, password: string, varPass: string,
                         //3. goto new ATD and configure everything needed for the test - 3 calculated fields
                         //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                         //3.2. add fields to UI control of ATD
-                        await addonPage.configUomATD();
-                        await addonPage.returnToHomePage();
-                        await addonPage.openSettings();
+                        const uomPage = new Uom(driver);
+                        await uomPage.configUomATD();
+                        let webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.returnToHomePage();
+                        const webAppHeader = new WebAppHeader(driver);
+                        await webAppHeader.openSettings();
                         //4. add the ATD to home screen
-                        await addonPage.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                        const webAppHomePage = new WebAppHomePage(driver);
+                        const brandedApp = new BrandedApp(driver);
+                        await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.manualResync();
                         await webAppHomePage.manualResync();
                         await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
@@ -142,71 +205,72 @@ export async function UomTests(email: string, password: string, varPass: string,
                     it('UI Test UOM ATD', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        const webAppHomePage = new WebAppHomePage(driver);
+                        let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
                         await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                        const uomPage = new Uom(driver);
+                        await uomPage.testUomAtdUI();
                         const addonPage = new AddonPage(driver);
-                        await addonPage.testUomAtdUI();
-                        const orderId: string = await addonPage.testUOMCartUI();
+                        await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
                         await addonPage.submitOrder();
+                        webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.manualResync();
+                        const orderId: string = await addonPage.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
+                        const service = new ObjectsService(generalService);
+                        const orderResponse: TransactionLines[] = await service.getTransactionLines({
+                            where: `TransactionInternalID=${orderId}`,
+                        });
+                        expect(orderResponse).to.be.an('array').with.lengthOf(4);
+                        validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
+                    });
+
+                    it('UI Test UOM ATD -- testing item configuration field', async function () {
+                        const webAppLoginPage = new WebAppLoginPage(driver);
+                        await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        let objectTypeEditor = new ObjectTypeEditor(driver);
+                        await objectTypeEditor.editItemConfigFeld(_TEST_DATA_ATD_NAME);
+                        let webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.returnToHomePage();
+                        await webAppHomePage.manualResync();
+                        await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                        const uomPage = new Uom(driver);
+                        await uomPage.testUomAtdUIWithItemConfig();
+                        objectTypeEditor = new ObjectTypeEditor(driver);
+                        await objectTypeEditor.testCartItems('$12.00', ...expectedOrderConfigItems);
+                        await objectTypeEditor.submitOrder();
+                        webAppHomePage = new WebAppHomePage(driver);
+                        await webAppHomePage.manualResync();
+                        const orderId: string = await objectTypeEditor.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
                         const service = new ObjectsService(generalService);
                         const orderResponse = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
                         });
-                        expect(orderResponse).to.be.an('array').with.lengthOf(4);
-                        orderResponse.forEach((element) => {
-                            switch (element.Item?.Data?.ExternalID) {
-                                case '1232':
-                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(48);
-                                    expect(element.UnitsQuantity).to.equal(48);
-                                    expect(element.TSAAOQMQuantity1).to.equal(12);
-                                    expect(element.TSAAOQMUOM1).to.equal('DOU');
-                                    expect(element.TSAAOQMQuantity2).to.equal(24);
-                                    expect(element.TSAAOQMUOM2).to.equal('SIN');
-                                    break;
-                                case '1233':
-                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(48);
-                                    expect(element.UnitsQuantity).to.equal(48);
-                                    expect(element.TSAAOQMQuantity1).to.equal(5);
-                                    expect(element.TSAAOQMUOM1).to.equal('PK');
-                                    expect(element.TSAAOQMQuantity2).to.equal(9);
-                                    expect(element.TSAAOQMUOM2).to.equal('DOU');
-                                    break;
-                                case '1234':
-                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(37);
-                                    expect(element.UnitsQuantity).to.equal(37);
-                                    expect(element.TSAAOQMQuantity1).to.equal(1);
-                                    expect(element.TSAAOQMUOM1).to.equal('CS');
-                                    expect(element.TSAAOQMQuantity2).to.equal(1);
-                                    expect(element.TSAAOQMUOM2).to.equal('Bx');
-                                    break;
-                                case '1231':
-                                    expect(element.TotalUnitsPriceAfterDiscount).to.equal(48);
-                                    expect(element.UnitsQuantity).to.equal(48);
-                                    expect(element.TSAAOQMQuantity1).to.equal(2);
-                                    expect(element.TSAAOQMUOM1).to.equal('Bx');
-                                    expect(element.TSAAOQMQuantity2).to.equal(22);
-                                    expect(element.TSAAOQMUOM2).to.equal('SIN');
-                                    break;
-                            }
-                        });
+                        expect(orderResponse).to.be.an('array').with.lengthOf(3);
+                        validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
                     });
 
                     it('Delete test ATD from dist + home screen using UI', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        const addonPage = new AddonPage(driver);
-                        await addonPage.openSettings();
-                        await addonPage.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                        await addonPage.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION); //maybe should be done using API
+                        const webAppHeader = new WebAppHeader(driver);
+                        await webAppHeader.openSettings();
+                        const brandedApp = new BrandedApp(driver);
+                        await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        const objectTypeEditor = new ObjectTypeEditor(driver);
+                        await objectTypeEditor.removeATD(
+                            generalService,
+                            _TEST_DATA_ATD_NAME,
+                            _TEST_DATA_ATD_DESCRIPTION,
+                        );
                     });
                 });
+
                 describe('Test Data Cleansing using API', () => {
                     it('Reset Existing Items', async function () {
                         //Remove all items
-                        const itemsArr = await generalService.papiClient.items.find({ page_size: -1 });
+                        const itemsArr: Item[] = await generalService.papiClient.items.find({ page_size: -1 });
                         for (let i = 0; i < itemsArr.length; i++) {
-                            const deleted = await generalService.papiClient.items.delete(
+                            const deleted: boolean = await generalService.papiClient.items.delete(
                                 itemsArr[i].InternalID as number,
                             );
                             expect(deleted).to.be.true;
@@ -218,7 +282,69 @@ export async function UomTests(email: string, password: string, varPass: string,
     });
 }
 
-function createItemsList() {
+class UomOrderExpectedValues {
+    public id: string;
+    public itemTotalPrice: number;
+    public itemTotalQty: number;
+    public aoqm1Qty: number | undefined;
+    public aoqm1Type: string | undefined;
+    public aoqm2Qty: number | undefined;
+    public aoqm2Type: string | undefined;
+
+    constructor(
+        id: string,
+        itemTotalPrice: number,
+        itemTotalQty: number,
+        aoqm1Qty?: number,
+        aoqm1Type?: string,
+        aoqm2Qty?: number,
+        aoqm2Type?: string,
+    ) {
+        this.id = id;
+        this.itemTotalPrice = itemTotalPrice;
+        this.itemTotalQty = itemTotalQty;
+        if (aoqm1Qty) this.aoqm1Qty = aoqm1Qty;
+        if (aoqm1Type) this.aoqm1Type = aoqm1Type;
+        if (aoqm2Qty) this.aoqm2Qty = aoqm2Qty;
+        if (aoqm2Type) this.aoqm2Type = aoqm2Type;
+    }
+}
+function validateServerResponseOfOrderTransLines(
+    orderResponse: TransactionLines[],
+    expectedValues: UomOrderExpectedValues[],
+): void {
+    expect(orderResponse.length).to.be.equal(expectedValues.length);
+    orderResponse.sort(compareServerResponseTransLinesByItemsID);
+    expectedValues.sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
+    for (let i = 0; i < orderResponse.length; i++) {
+        expect(orderResponse[i].TotalUnitsPriceAfterDiscount).to.equal(expectedValues[i].itemTotalPrice);
+        expect(orderResponse[i].UnitsQuantity).to.equal(expectedValues[i].itemTotalQty);
+        if (expectedValues[i].aoqm1Qty) expect(orderResponse[i].TSAAOQMQuantity1).to.equal(expectedValues[i].aoqm1Qty);
+        if (expectedValues[i].aoqm1Type) expect(orderResponse[i].TSAAOQMUOM1).to.equal(expectedValues[i].aoqm1Type);
+        if (expectedValues[i].aoqm2Qty) expect(orderResponse[i].TSAAOQMQuantity2).to.equal(expectedValues[i].aoqm2Qty);
+        if (expectedValues[i].aoqm2Type) expect(orderResponse[i].TSAAOQMUOM2).to.equal(expectedValues[i].aoqm2Type);
+    }
+}
+
+function compareServerResponseTransLinesByItemsID(transLine1: TransactionLines, transLine2: TransactionLines): number {
+    if (
+        transLine1.Item &&
+        transLine1.Item.Data &&
+        transLine1.Item.Data.ExternalID &&
+        transLine2.Item &&
+        transLine2.Item.Data &&
+        transLine2.Item.Data.ExternalID
+    ) {
+        if (transLine1.Item.Data.ExternalID > transLine2.Item.Data.ExternalID) {
+            return 1;
+        } else if (transLine1.Item.Data.ExternalID < transLine2.Item.Data.ExternalID) {
+            return -1;
+        }
+    }
+    return 1; //dummy return for ts
+}
+
+function createItemsListForUom(): Item[] {
     const itemList: Item[] = [];
     for (let i = 0; i < 5; i++) {
         const item: Item = {
@@ -232,7 +358,7 @@ function createItemsList() {
     return itemList;
 }
 
-function createUomItemsList() {
+function createAllowedUomTypesList(): UomItem[] {
     const itemList: UomItem[] = [];
     for (let i = 0; i < 5; i++) {
         itemList.push(resolveUomItem(i));
@@ -286,12 +412,4 @@ interface UomItem {
     Key: string;
     Title: string;
     Multiplier: string;
-}
-
-function generateRandString(length: number): string {
-    let result = ' ';
-    for (let i = 0; i < length; i++) {
-        result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
-    }
-    return result;
 }

@@ -18,14 +18,7 @@ export class WebAppHomePage extends Page {
     public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
-        const buttonsArr = await this.browser.findElements(this.HomeScreenButtonArr);
-        for (let index = 0; index < buttonsArr.length; index++) {
-            const element = buttonsArr[index];
-            if ((await element.getText()) == btnTxt) {
-                await element.click();
-                break;
-            }
-        }
+        await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
         return;
     }
     public async manualResync(): Promise<void> {
@@ -53,7 +46,7 @@ export class WebAppHomePage extends Page {
         //Wait 5 seconds and validate there are no dialogs opening up after placing order
         try {
             await expect(this.browser.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
-                'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
+                `After wait time of: 5000, for selector of 'pep-dialog .dialog-title', The test must end`,
             );
         } catch (error) {
             const base64Image = await this.browser.saveScreenshots();
@@ -94,7 +87,7 @@ export class WebAppHomePage extends Page {
             if (error instanceof Error) {
                 if (
                     !error.message.includes(
-                        'pep-list .table-row-fieldset, The test must end, The element is: undefined',
+                        `'pep-list .table-row-fieldset', The test must end, The element is: undefined`,
                     )
                 ) {
                     throw error;
@@ -183,5 +176,14 @@ export class WebAppHomePage extends Page {
             By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']"),
         );
         expect(allUOMItemPresented.length).to.equal(4);
+    }
+
+    public async returnToHomePage() {
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+        await this.isSpinnerDone();
+        return;
     }
 }

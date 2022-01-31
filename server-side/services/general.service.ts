@@ -17,6 +17,7 @@ import { performance } from 'perf_hooks';
 import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
+import tester from '../tester';
 
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
@@ -28,6 +29,7 @@ export const ConsoleColors = {
     NevigationMessage: 'color: #3BB9FF',
     ClickedMessage: 'color: #00FFFF',
     SentKeysMessage: 'color: #C3FDB8',
+    ElementFoundMessage: 'color: #6AFB92',
     BugSkipped: 'color: #F535AA',
     Error: 'color: #FF0000',
     Success: 'color: #00FF00',
@@ -41,6 +43,10 @@ console.log('%c#6C2DC7\t\tPage Message\t\t', `${ConsoleColors.MenuBackground}; $
 console.log('%c#3BB9FF\t\tNevigation Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.NevigationMessage}`); //Deep Sky Blue
 console.log('%c#00FFFF\t\tClicked Message\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.ClickedMessage}`); //Aqua
 console.log('%c#C3FDB8\t\tSentKeys Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SentKeysMessage}`); //Light Jade
+console.log(
+    '%c#6AFB92\t\tElement Found Message\t',
+    `${ConsoleColors.MenuBackground}; ${ConsoleColors.ElementFoundMessage}`,
+); //Dragon Green
 console.log('%c#F535AA\t\tBug Skipped\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.BugSkipped}`); //Neon Pink
 console.log('%c#FF0000\t\tError\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Error}`); //red
 console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Success}`); //green
@@ -142,7 +148,7 @@ export default class GeneralService {
      * @param ms
      * @returns
      */
-    sleepTimeout(ms: number) {
+    sleepAsync(ms: number) {
         console.debug(`%cAsync Sleep: ${ms} milliseconds`, ConsoleColors.Information);
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
@@ -166,6 +172,26 @@ export default class GeneralService {
         });
         const query = optionsArr.join('&');
         return query ? url + '?' + query : url;
+    }
+
+    initiateTesterFunctions(client: Client, testName: string) {
+        const testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, assert, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } =
+            tester(client, testName, testEnvironment);
+        return {
+            describe,
+            expect,
+            assert,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
     }
 
     async initiateTester(email, pass): Promise<Client> {
@@ -228,7 +254,7 @@ export default class GeneralService {
             try {
                 sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
             } catch (error) {
-                console.log(`SK Not found: ${error}`);
+                console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
                 sk = '00000000-0000-0000-0000-000000000000';
             }
         }
@@ -590,7 +616,7 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(LatestVersion);
-            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -601,7 +627,7 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
                         .downgrade(LatestVersion);
-                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
                     testData[addonName].push(changeType);
                     testData[addonName].push(String(auditLogResponse.Status?.Name));
                 }
@@ -795,12 +821,12 @@ export default class GeneralService {
             .then((res) => res.ClientObject.AddonSecretKey);
     }
 
-    generateRandomString(len: number) {
-        let rdmString = '';
-        while (rdmString.length < len) {
-            rdmString += Math.random().toString(36).substr(2);
+    generateRandomString(length: number): string {
+        let result = ' ';
+        for (let i = 0; i < length; i++) {
+            result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
         }
-        return rdmString.substr(0, len);
+        return result;
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {

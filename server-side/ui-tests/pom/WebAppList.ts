@@ -2,6 +2,7 @@ import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
 import { WebElement, Locator, By } from 'selenium-webdriver';
+import { ConsoleColors } from '../../services/general.service';
 
 export enum SelectSmartSearchRange {
     '=' = 1,
@@ -78,12 +79,12 @@ export class WebAppList extends Page {
 
     public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
-        return await this.click(this.ListRowElements, position, waitUntil);
+        return await this.browser.click(this.ListRowElements, position, waitUntil);
     }
 
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
-        return await this.click(this.LinksInListArr, position, waitUntil);
+        return await this.browser.click(this.LinksInListArr, position, waitUntil);
     }
 
     public async selectCardWebElement(position = 0): Promise<WebElement> {
@@ -195,7 +196,7 @@ export class WebAppList extends Page {
                 throw new Error(`Index of ${index} is out of range`);
             },
             () => {
-                console.log(`Element ${this.SmartSearchCheckBoxOptions.toString()} not found`);
+                console.log(`%cElement ${this.SmartSearchCheckBoxOptions.toString()} not found`, ConsoleColors.Error);
             },
         );
         return;
