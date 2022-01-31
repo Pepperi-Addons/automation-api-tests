@@ -11,6 +11,7 @@ import { OrderPageItem } from '../pom/OrderPage';
 import { UomPage } from '../pom/addons/UomPage';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
+import { upgradeDependenciesTests } from './test.index';
 
 chai.use(promised);
 
@@ -56,6 +57,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because '0.3.7' which is the most progresive cannot be installed at the moment
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''],
     };
+    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM
@@ -215,7 +217,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        const orderId: string = await addonPage.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
+                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(_TEST_DATA_ATD_NAME);
                         const service = new ObjectsService(generalService);
                         const orderResponse: TransactionLines[] = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
@@ -239,7 +241,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        const orderId: string = await addonPage.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
+                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(_TEST_DATA_ATD_NAME);
                         const service = new ObjectsService(generalService);
                         const orderResponse = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,

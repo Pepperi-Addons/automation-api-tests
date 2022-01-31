@@ -272,7 +272,7 @@ export class AddonPage extends Page {
         }
     }
 
-    public async getOrderIdFromActivitys(nameOfATD: string): Promise<string> {
+    public async getLastOrderIdFromActivitiesByATDName(nameOfATD: string): Promise<string> {
         const webAppHomePage = new WebAppHomePage(this.browser);
         await webAppHomePage.clickOnBtn('Activities');
         await this.browser.sleep(1500);
