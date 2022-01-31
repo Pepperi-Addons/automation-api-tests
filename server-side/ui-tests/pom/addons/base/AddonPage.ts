@@ -75,7 +75,7 @@ export class AddonPage extends Page {
     public AddonContainerEditorTrashBtn: Locator = By.xpath(
         `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
     );
-    public matOptionDropBox: Locator = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
+    public MatOptionDropBox: Locator = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
 
     public AddonContainerEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
     public AddonContainerEditorSave: Locator = By.css('.save');
@@ -196,8 +196,7 @@ export class AddonPage extends Page {
             await this.browser.click(locator);
         }
         await this.browser.sleep(3000);
-        const matOptionWithStringInjected: string = this.matOptionDropBox
-            .valueOf()
+        const matOptionWithStringInjected: string = this.MatOptionDropBox.valueOf()
             ['value'].slice()
             .replace('|textToFill|', option);
         await this.browser.click(By.xpath(matOptionWithStringInjected));

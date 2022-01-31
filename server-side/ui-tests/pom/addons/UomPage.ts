@@ -8,14 +8,14 @@ import { ObjectTypeEditor } from './ObjectTypeEditor';
 
 export class UomPage extends AddonPage {
     //UOM Addon Locators
-    public uomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
-    public uomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
-    public uomInstallBtn: Locator = By.css("[data-qa='install']");
+    public UomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
+    public UomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
+    public UomInstallBtn: Locator = By.css("[data-qa='install']");
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
     public ItemInOrder: Locator = By.xpath('//fieldset');
     public UomTypeItemInOrder: Locator = By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']");
-    public locatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
+    public LocatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**
      *
@@ -29,10 +29,10 @@ export class UomPage extends AddonPage {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('Uom');
         //validate uom is loaded both if installed and if not
-        expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomHeader, 15000)).to.be.true;
         //testing whether already installed - after loading anyway
-        if (await (await this.browser.findElement(this.uomInstallBtn)).isDisplayed()) {
-            await this.browser.click(this.uomInstallBtn);
+        if (await (await this.browser.findElement(this.UomInstallBtn)).isDisplayed()) {
+            await this.browser.click(this.UomInstallBtn);
             const webAppDialog = new WebAppDialog(this.browser);
             // ****text not finalized yet - once will be the test is relevant****
             // const isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
@@ -40,7 +40,7 @@ export class UomPage extends AddonPage {
             await webAppDialog.selectDialogBox('ok');
             await this.isSpinnerDone();
         }
-        expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomInstalledHeader, 15000)).to.be.true;
         await this.selectTabByText('General');
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
         await objectTypeEditor.addATDCalculatedField(
@@ -164,7 +164,7 @@ export class UomPage extends AddonPage {
                   return JSON.stringify(res);`,
                 },
             },
-            this.locatorForTransLineField,
+            this.LocatorForTransLineField,
             'ItemConfig',
         );
     }
@@ -172,7 +172,7 @@ export class UomPage extends AddonPage {
     public async configureUomDataFields(...dataFieldNames: string[]): Promise<void> {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('Uom');
-        expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomHeader, 15000)).to.be.true;
         for (let i = 0; i < dataFieldNames.length; i++) {
             await this.selectDropBoxByString(this.UomDropDownFields, dataFieldNames[i], i);
             await this.isSpinnerDone();
@@ -186,7 +186,7 @@ export class UomPage extends AddonPage {
         expect(isPopUpTextPresentedCorrectly).to.equal('Configuration Saved successfully');
         await webAppDialog.selectDialogBox('Close');
         await this.isSpinnerDone();
-        expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomInstalledHeader, 15000)).to.be.true;
         await this.selectTabByText('General');
     }
 

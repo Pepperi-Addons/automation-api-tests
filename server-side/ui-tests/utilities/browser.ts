@@ -138,7 +138,7 @@ export class Browser {
     public async ClickByText(selector: Locator, btnTxt: string, waitUntil = 1500) {
         const buttonsArr: WebElement[] = await this.findElements(selector, waitUntil);
         for (let i = 0; i < buttonsArr.length; i++) {
-            const elementsText = await (await buttonsArr[i].getText()).trim();
+            const elementsText = (await buttonsArr[i].getText()).trim();
             if (elementsText.includes(btnTxt)) {
                 await this.click(selector, i, waitUntil);
                 return;
