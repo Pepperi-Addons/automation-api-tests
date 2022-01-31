@@ -1,10 +1,11 @@
 import { expect } from 'chai';
 import { By, Locator } from 'selenium-webdriver';
-import { AddonPageBase, WebAppDialog, WebAppList } from '..';
+import { AddonPage, WebAppDialog, WebAppList } from '..';
 import { OrderPage } from '../OrderPage';
-import { AddonLoadCondition } from './AddonPageBase';
+import { AddonLoadCondition } from './base/AddonPage';
+import { ObjectTypeEditor } from './ObjectTypeEditor';
 
-export class UomPage extends AddonPageBase {
+export class Uom extends AddonPage {
     //UOM Addon Locators
     public uomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
     public uomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
@@ -37,7 +38,8 @@ export class UomPage extends AddonPageBase {
         }
         expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
         await this.selectTabByText('General');
-        await this.addATDCalculatedField(
+        const objectTypeEditor = new ObjectTypeEditor(this.browser);
+        await objectTypeEditor.addATDCalculatedField(
             {
                 Label: 'AllowedUomFieldsForTest', //name
                 CalculatedRuleEngine: {
@@ -50,8 +52,8 @@ export class UomPage extends AddonPageBase {
         );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        //**first testing phase will be performed w/o this feature - second will test this only**
-        await this.addATDCalculatedField(
+        //**first testing phase will be performed w/o this feature - second whill test this only**
+        await objectTypeEditor.addATDCalculatedField(
             {
                 Label: 'ItemConfig',
                 CalculatedRuleEngine: {
@@ -62,7 +64,7 @@ export class UomPage extends AddonPageBase {
         );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        await this.addATDCalculatedField(
+        await objectTypeEditor.addATDCalculatedField(
             {
                 Label: 'UomValues',
                 CalculatedRuleEngine: {
@@ -73,7 +75,7 @@ export class UomPage extends AddonPageBase {
         );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        await this.addATDCalculatedField(
+        await objectTypeEditor.addATDCalculatedField(
             {
                 Label: 'ConstInventory',
                 CalculatedRuleEngine: {
@@ -100,7 +102,8 @@ export class UomPage extends AddonPageBase {
             'Fix Quantity',
             'Fix Quantity',
         );
-        await this.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
+        const objectTypeEditor = new ObjectTypeEditor(this.browser);
+        await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
         await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
         await this.deleteAllFieldFromUIControl();

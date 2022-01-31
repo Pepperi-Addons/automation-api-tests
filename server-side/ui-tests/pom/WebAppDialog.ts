@@ -2,6 +2,7 @@ import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
+import { ConsoleColors } from '../../services/general.service';
 
 export class WebAppDialog extends Page {
     constructor(browser: Browser) {
@@ -35,7 +36,7 @@ export class WebAppDialog extends Page {
         try {
             await this.browser.ClickByText(this.ButtonArr, buttonText);
         } catch (error) {
-            console.log(`Element ${this.ButtonArr.toString()} not found`);
+            console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
         }
         return;
     }
@@ -47,7 +48,7 @@ export class WebAppDialog extends Page {
         try {
             await this.browser.ClickByText(this.ButtonArr, buttonText);
         } catch (error) {
-            console.log(`Element ${this.ButtonArr.toString()} not found`);
+            console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
         }
         return;
     }
@@ -65,7 +66,7 @@ export class WebAppDialog extends Page {
                 return await res.getText();
             },
             () => {
-                console.log(`Element ${this.ButtonArr.toString()} not found`);
+                console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
                 return `Element ${this.ButtonArr.toString()} not found`;
             },
         );
