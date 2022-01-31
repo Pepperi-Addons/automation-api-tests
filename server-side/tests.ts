@@ -3,6 +3,7 @@ import GeneralService, { TesterFunctions } from './services/general.service';
 import {
     TestDataTests,
     UpgradeDependenciesTests,
+    LocalAddonFileCreatorTests,
     FileStorageTests,
     DataViewsTestsBase,
     DataViewsTestsPositive,
@@ -98,6 +99,19 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UpgradeDependenciesTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function upload_local_file(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Local_Addon_File_Creator_Tests';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        LocalAddonFileCreatorTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

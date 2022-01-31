@@ -1,6 +1,7 @@
 //#region Service Tests
 import { TestDataTests } from './test-service/test_data';
 import { UpgradeDependenciesTests } from './test-service/upgrade_dependencies';
+import { LocalAddonFileCreatorTests } from './test-service/local_addon_file_creator';
 //#endregion Service Tests
 
 //#region All Tests
@@ -86,6 +87,7 @@ import { ADALStressTests } from './adal_stress';
 export {
     TestDataTests,
     UpgradeDependenciesTests,
+    LocalAddonFileCreatorTests,
     FileStorageTests,
     DataViewsTestsBase,
     DataViewsTestsPositive,
