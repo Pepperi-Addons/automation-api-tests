@@ -8,8 +8,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     const it = tester.it;
     const relationService = new AddonRelationService(generalService);
     const logcash: any = {};
-    const executionLog: any = {};
-    let logDataWithRetry: any = {};
+    // const executionLog: any = {};
+    // const logDataWithRetry: any = {};
 
     // const counter = 0;
     //const keyCounter = 0;
@@ -29,7 +29,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     const token = generalService['client'].OAuthAccessToken;
     let relationTmp: any = {};
 
-    let relationBody = {
+    const relationBody = {
         Name: 'Addon relation positive1', // mandatory
         RelationName: 'DataImportResource', // mandatory
         AddonUUID: addonUUID, // mandatory
@@ -118,7 +118,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         });
         it('Get from this schema. Will get 2 objects , one will be updated and second will get error : KEY missing (overwrite is default [false])  ', async () => {
             assert(logcash.updateDataStatuseVerificationStatus, logcash.updateDataStatuseVerificationError);
-        }); 
+        });
         it('Update one of two inserted objects(overwrite is updated [true])  ', async () => {
             assert(logcash.updateDataToTableOverwriteTrueStatus, logcash.updateDataToTableOverwriteTrueError);
         });
@@ -159,8 +159,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             assert(logcash.dropIndexedShemaDataStatus, logcash.dropIndexedShemaDataError);
         });
     });
-
-            
 
     //get secret key
     async function getSecretKey() {
@@ -218,7 +216,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         await getRelation();
     }
 
-
     async function getRelation() {
         const relationResponse = await relationService.getRelationByRelationType(
             {
@@ -230,16 +227,15 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //debugger;
         if (relationResponse.length == 0 || relationResponse.length == undefined) {
             await createSchemaWithMandFieldName();
-        }
-        else {
-            relationTmp = relationResponse[0]
+        } else {
+            relationTmp = relationResponse[0];
             await setRelationHiidenTrue();
         }
     }
 
-
     async function setRelationHiidenTrue() {
-        const Response = await relationService.postRelation(
+        //const Response =
+        await relationService.postRelation(
             {
                 'X-Pepperi-OwnerID': addonUUID,
                 'X-Pepperi-SecretKey': logcash.secretKey,
@@ -269,14 +265,14 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 },
                 body: JSON.stringify({
                     Name: 'CreateSchemaWithMandatoryField ' + Date(),
-                    Type: 'data'
+                    Type: 'data',
                 }),
             })
             .then((res) => res.Body);
         //debugger;
         if (
             logcash.createSchemaWithMandFieldName.CreationDateTime.includes(new Date().toISOString().split('T')[0]) ==
-            true &&
+                true &&
             logcash.createSchemaWithMandFieldName.ModificationDateTime.includes(
                 new Date().toISOString().split('T')[0],
             ) == true &&
@@ -331,7 +327,9 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //     logcash.insertDataToTableNonRelationError = 'Insert without created relation will failed  ';
         // }
         if (
-            logcash.insertDataToTableNonRelation.fault.faultstring.includes('Failed due to exception: Relation: Permission denied. No rsults found for the query')
+            logcash.insertDataToTableNonRelation.fault.faultstring.includes(
+                'Failed due to exception: Relation: Permission denied. No rsults found for the query',
+            )
         ) {
             logcash.insertDataToTableWithOwnerIDStatus = true;
         } else {
@@ -442,7 +440,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         await insertDataToTableWithOwnerID400K();
     }
 
-
     // async function getAuditLog() {
     //     logDataWithRetry = await generalService.fetchStatus(
     //         '/audit_logs/' + logcash.insertDataToTableWithRelation.ExecutionUUID,
@@ -469,9 +466,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     //     //generalService.sleep(320000);
     //     await insertDataToTableWithOwnerID400K();
     // }
-
-
-
 
     async function insertDataToTableWithOwnerID400K() {
         logcash.insertDataToTableWithOwnerID400k = await generalService
@@ -578,7 +572,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         await updateDataStatuseVerification();
     }
 
-
     async function updateDataStatuseVerification() {
         logcash.updateDataStatuseVerification = await generalService
             .fetchStatus(
@@ -606,8 +599,11 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             )
             .then((res) => res.Body);
         //debugger;
-        if (logcash.updateDataStatuseVerification[0].Key == 'testKey2' && logcash.updateDataToTable[0].Status == 'Update' &&
-            logcash.updateDataStatuseVerification[1].Status == 'Error' && logcash.updateDataStatuseVerification[1].Details == 'Key property is missing'
+        if (
+            logcash.updateDataStatuseVerification[0].Key == 'testKey2' &&
+            logcash.updateDataToTable[0].Status == 'Update' &&
+            logcash.updateDataStatuseVerification[1].Status == 'Error' &&
+            logcash.updateDataStatuseVerification[1].Details == 'Key property is missing'
         ) {
             logcash.updateDataStatuseVerificationStatus = true;
         } else {
@@ -616,7 +612,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         }
         await getDataToTableWithOwnerID();
     }
-
 
     async function getDataToTableWithOwnerID() {
         logcash.getDataToTableWithOwnerID = await generalService
@@ -752,8 +747,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 //index != 8
             ) {
                 tst++;
-            }
-            else if (//index == 8 &&
+            } else if (
+                //index == 8 &&
                 logcash.addDataToTableOverwriteTrue[index].Status == 'Merge' &&
                 logcash.addDataToTableOverwriteTrue[index].Details == '9'
             ) {
@@ -762,11 +757,9 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         }
         if (tst == num && tst1 == 1) {
             logcash.addDataToTableOverwriteTrueStatus = true;
-        }
-        else {
+        } else {
             logcash.addDataToTableOverwriteTrueStatus = false;
-            logcash.addDataToTableOverwriteTrueError =
-                'One insert with duplicated key will be merged ';
+            logcash.addDataToTableOverwriteTrueError = 'One insert with duplicated key will be merged ';
         }
         await add50InsertsToTableOverwriteTrue();
     }
@@ -777,7 +770,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         let tst1 = 0;
         const object = createObjects(num); // add 9 unique inserts
         object[num] = object[num - 1]; // + 1 duplicated key
-        object[num + 1] = object[num - 1];// + 1 duplicated on row 51
+        object[num + 1] = object[num - 1]; // + 1 duplicated on row 51
         //debugger;
         logcash.add50InsertsToTableOverwriteTrue = await generalService
             .fetchStatus(
@@ -800,12 +793,9 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             .then((res) => res.Body);
         //debugger;
         for (let index = 0; index <= num + 1; index++) {
-            if (
-                logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Insert'
-            ) {
+            if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Insert') {
                 tst++;
-            }
-            else if (
+            } else if (
                 logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Merge' //&&
                 //logcash.add50InsertsToTableOverwriteTrue[index].Details == '9'
             ) {
@@ -814,8 +804,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         }
         if (tst == num && tst1 == 2) {
             logcash.add50InsertsToTableOverwriteTrueStatus = true;
-        }
-        else {
+        } else {
             logcash.add50InsertsToTableOverwriteTrueStatus = false;
             logcash.add50InsertsToTableOverwriteTrueError =
                 'Two inserts with duplicated key will be merged and 49 - will be inserted ';
@@ -854,25 +843,17 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             .then((res) => res.Body);
         //debugger;
         for (let index = 0; index <= num; index++) {
-            if (
-                logcash.add50InsertsToTableOverwriteFalse[index].Status == 'Ignore'
-            ) {
+            if (logcash.add50InsertsToTableOverwriteFalse[index].Status == 'Ignore') {
                 tst++;
-            }
-            else if (
-                logcash.add50InsertsToTableOverwriteFalse[index].Status == 'Merge'
-
-            ) {
+            } else if (logcash.add50InsertsToTableOverwriteFalse[index].Status == 'Merge') {
                 tst1++;
             }
         }
         if (tst == num && tst1 == 1) {
             logcash.add50InsertsToTableOverwriteFalseStatus = true;
-        }
-        else {
+        } else {
             logcash.add50InsertsToTableOverwriteFalseStatus = false;
-            logcash.add50InsertsToTableOverwriteFalseError =
-                '49 inserts will be ignore and one will be merged ';
+            logcash.add50InsertsToTableOverwriteFalseError = '49 inserts will be ignore and one will be merged ';
         }
         //debugger;
         await insert501ObjectsToTableOverwriteFalse();
@@ -1008,7 +989,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         if (
             logcash.createSchemaTypeData.CreationDateTime.includes(new Date().toISOString().split('T')[0]) == true &&
             logcash.createSchemaTypeData.ModificationDateTime.includes(new Date().toISOString().split('T')[0]) ==
-            true &&
+                true &&
             logcash.createSchemaTypeData.Name != '' &&
             logcash.createSchemaTypeData.Hidden == false &&
             //logcash.createSchemaWithMandFieldName.Type == 'data'
@@ -1068,7 +1049,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         await insertDataToTableNegative();
     }
 
-
     async function insertDataToTableNegative() {
         logcash.insertDataToTableNegative = await generalService
             .fetchStatus(baseURL + '/addons/data/import/' + addonUUID + '/' + logcash.createSchemaTypeData.Name, {
@@ -1093,13 +1073,19 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             })
             .then((res) => res.Body);
         //debugger;
-        if(logcash.insertDataToTableNegative[0].Details.includes('X-Pepperi-OwnerID is a mandatory header for a resource of type meta-data.') &&
-        logcash.insertDataToTableNegative[1].Details.includes('X-Pepperi-OwnerID is a mandatory header for a resource of type meta-data.')){
-            logcash.insertDataToTableNegativeStatus = true
-        }
-        else{
-            logcash.insertDataToTableNegativeStatus = false,
-            logcash.insertDataToTableNegativeError = 'The test will fail. Meta_data type of table will work just with OwnerID' 
+        if (
+            logcash.insertDataToTableNegative[0].Details.includes(
+                'X-Pepperi-OwnerID is a mandatory header for a resource of type meta-data.',
+            ) &&
+            logcash.insertDataToTableNegative[1].Details.includes(
+                'X-Pepperi-OwnerID is a mandatory header for a resource of type meta-data.',
+            )
+        ) {
+            logcash.insertDataToTableNegativeStatus = true;
+        } else {
+            (logcash.insertDataToTableNegativeStatus = false),
+                (logcash.insertDataToTableNegativeError =
+                    'The test will fail. Meta_data type of table will work just with OwnerID');
         }
 
         // if (
@@ -1119,8 +1105,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         }
         await createSchemaTypeIndexedData();
     }
-
-
 
     async function createSchemaTypeIndexedData() {
         logcash.createSchemaTypeIndexedData = await generalService
@@ -1143,9 +1127,9 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //debugger;
         if (
             logcash.createSchemaTypeIndexedData.CreationDateTime.includes(new Date().toISOString().split('T')[0]) ==
-            true &&
+                true &&
             logcash.createSchemaTypeIndexedData.ModificationDateTime.includes(new Date().toISOString().split('T')[0]) ==
-            true &&
+                true &&
             logcash.createSchemaTypeIndexedData.Name != '' &&
             logcash.createSchemaTypeIndexedData.Hidden == false &&
             //logcash.createSchemaWithMandFieldName.Type == 'data'
@@ -1162,26 +1146,29 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
 
     async function insertDataToTableIndexedData() {
         logcash.insertDataToTableIndexedData = await generalService
-            .fetchStatus(baseURL + '/addons/data/import/' + addonUUID + '/' + logcash.createSchemaTypeIndexedData.Name, {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': addonUUID,
-                    'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL + '/addons/data/import/' + addonUUID + '/' + logcash.createSchemaTypeIndexedData.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        Objects: [
+                            {
+                                Key: 'Key1-1',
+                                Column1: 'Value3',
+                            },
+                            {
+                                Key: 'Key2-1',
+                                Column1: 'Value3',
+                            },
+                        ],
+                    }),
                 },
-                body: JSON.stringify({
-                    Objects: [
-                        {
-                            Key: 'Key1-1',
-                            Column1: 'Value3',
-                        },
-                        {
-                            Key: 'Key2-1',
-                            Column1: 'Value3',
-                        },
-                    ],
-                }),
-            })
+            )
             .then((res) => res.Body);
         //debugger;
         if (
