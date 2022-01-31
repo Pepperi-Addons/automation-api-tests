@@ -47,7 +47,7 @@ export class WebAppHomePage extends Page {
         //Wait 5 seconds and validate there are no dialogs opening up after placing order
         try {
             await expect(this.browser.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
-                'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
+                `After wait time of: 5000, for selector of 'pep-dialog .dialog-title', The test must end`,
             );
         } catch (error) {
             const base64Image = await this.browser.saveScreenshots();
@@ -91,7 +91,7 @@ export class WebAppHomePage extends Page {
             if (error instanceof Error) {
                 if (
                     !error.message.includes(
-                        'pep-list .table-row-fieldset, The test must end, The element is: undefined',
+                        `'pep-list .table-row-fieldset', The test must end, The element is: undefined`,
                     )
                 ) {
                     throw error;

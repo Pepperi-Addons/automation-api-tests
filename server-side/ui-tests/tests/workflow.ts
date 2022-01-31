@@ -144,7 +144,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
             //Validate the list of ATD is empty after the test finished
             await expect(webAppList.clickOnFromListRowWebElement(0, 6000)).eventually.to.be.rejectedWith(
-                'After wait time of: 6000, for selector of pep-list .table-row-fieldset, The test must end, The element is: undefined',
+                `After wait time of: 6000, for selector of 'pep-list .table-row-fieldset', The test must end, The element is: undefined`,
             );
         });
     });
