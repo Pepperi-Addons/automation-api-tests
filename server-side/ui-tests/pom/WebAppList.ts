@@ -82,6 +82,11 @@ export class WebAppList extends Page {
         return await this.browser.click(this.ListRowElements, position, waitUntil);
     }
 
+    public async clickOnFromListRowWebElementByName(textOfElement: string, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.ClickByText(this.ListRowElements, textOfElement, waitUntil);
+    }
+
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
         return await this.browser.click(this.LinksInListArr, position, waitUntil);

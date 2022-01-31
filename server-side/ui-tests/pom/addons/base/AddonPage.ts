@@ -75,6 +75,7 @@ export class AddonPage extends Page {
     public AddonContainerEditorTrashBtn: Locator = By.xpath(
         `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
     );
+    public matOptionDropBox: Locator = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
 
     public AddonContainerEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
     public AddonContainerEditorSave: Locator = By.css('.save');
@@ -86,9 +87,7 @@ export class AddonPage extends Page {
     public CategoryListItem: Locator = By.xpath(
         "//ul//li[@class='dynatree-lastsib']//ul//li//span//a[text()='|textToFill|']/preceding-sibling::span[@class='dynatree-checkbox']",
     );
-    public CategoryListItemCheckBox: Locator = By.xpath(
-        "//ul//li[@class='dynatree-lastsib']//ul//li//span//a[text()='|textToFill|']/..",
-    );
+    public CategoryListItemCheckBox: Locator = By.xpath("//a[text()='|textToFill|']/..");
     public CategoryListOKBtn: Locator = By.xpath("//div[contains(text(),'OK')]");
 
     //cart page --->>> may have to be moved
@@ -109,12 +108,14 @@ export class AddonPage extends Page {
 
     //UI control page
     public SaveUIControlBtn: Locator = By.xpath("//div[contains(@class,'save') and text()='Save']");
+    public TrashIconListOfAllUIElements: Locator = By.xpath("//span[contains(@class,'lb-close trashCanIcon')]");
+    public TextSearchBox: Locator = By.xpath("//input[@id='txtSearchBankFields']");
 
     //custom field adding page
     public FieldAddingTitle: Locator = By.xpath("//h3[text()='Add Custom Field']");
     public CalculatedFieldCheckBox: Locator = By.xpath("//input[@value='CalculatedField']");
     public TextInputElements: Locator = By.xpath("//input[@type='text' and @class='field textbox long roundCorner']");
-    public EditFieldScriptBtn: Locator = By.xpath("//a[@name='edit']");
+    public EditScriptBtn: Locator = By.xpath("//a[@name='edit']");
     public SaveFieldBtn: Locator = By.xpath("//div[@name='save']");
     public FeildTypeButton: Locator = By.xpath("//h3[@title='|textToFill|']//..");
 
@@ -130,6 +131,9 @@ export class AddonPage extends Page {
     public SaveParamBtn: Locator = By.xpath("//div[text()='Save' and @tabindex=0]");
     public FirstLineInCodeInput: Locator = By.css('.CodeMirror  .CodeMirror-code > pre');
     public CodeInputSection: Locator = By.css('.CodeMirror  > div:nth-child(1) > textarea');
+
+    //activitys page --> has to be moved
+    public OrderIdTextElement: Locator = By.xpath(`//span[@id='Type' and text()='|textToFill|']/../../div//a//span`);
 
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
@@ -192,7 +196,11 @@ export class AddonPage extends Page {
             await this.browser.click(locator);
         }
         await this.browser.sleep(3000);
-        await this.browser.click(By.xpath(`//span[@class='mat-option-text' and text()='${option}']`));
+        const matOptionWithStringInjected: string = this.matOptionDropBox
+            .valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', option);
+        await this.browser.click(By.xpath(matOptionWithStringInjected));
         await this.browser.sleep(3000);
         return;
     }
@@ -222,11 +230,7 @@ export class AddonPage extends Page {
             const itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
             const checkBoxClassAtt = await itemCheckBoxElement.getAttribute('class');
             if (!checkBoxClassAtt.includes('selected')) {
-                const xpathQueryForList: string = this.CategoryListItem.valueOf()
-                    ['value'].slice()
-                    .replace('|textToFill|', itemKesyUomItems[i]);
-                const locatorForCategoryList: Locator = By.xpath(xpathQueryForList);
-                await this.browser.click(locatorForCategoryList);
+                await this.browser.click(By.xpath(itemCheckBox));
             }
         }
         await this.browser.click(this.CategoryListOKBtn);
@@ -237,24 +241,18 @@ export class AddonPage extends Page {
 
     //UI view configuration functions
     public async deleteAllFieldFromUIControl(): Promise<void> {
-        const deleteBtnsList = await this.browser.findElements(
-            By.xpath("//span[contains(@class,'lb-close trashCanIcon')]"),
-        );
+        const deleteBtnsList = await this.browser.findElements(this.TrashIconListOfAllUIElements);
         for (let i = 0; i < deleteBtnsList.length; i++) {
-            await this.browser.click(By.xpath("//span[contains(@class,'lb-close trashCanIcon')]"));
-            await this.browser.sleep(1000);
+            await this.browser.click(this.TrashIconListOfAllUIElements);
+            this.browser.sleep(1000);
         }
     }
 
     public async setFieldsInUIControl(...nameToSearch: string[]): Promise<void> {
         for (let i = 0; i < nameToSearch.length; i++) {
-            await this.setFieldToUIControl(nameToSearch[i]);
+            await this.browser.sendKeys(this.TextSearchBox, nameToSearch[i] + Key.ENTER);
+            this.browser.sleep(1500);
         }
-    }
-
-    public async setFieldToUIControl(nameToSearch: string): Promise<void> {
-        await this.browser.sendKeys(By.xpath("//input[@id='txtSearchBankFields']"), nameToSearch + Key.ENTER);
-        this.browser.sleep(1500);
     }
 
     /**
@@ -276,18 +274,16 @@ export class AddonPage extends Page {
     }
 
     public async getOrderIdFromActivitys(nameOfATD: string): Promise<string> {
-        await this.browser.click(By.xpath(`//button[@title='Activities']`));
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.clickOnBtn('Activities');
         await this.browser.sleep(1500);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
         await webAppList.validateListRowElements();
-        const orderId = (
-            await (
-                await this.browser.findElement(
-                    By.xpath(`//span[@id='Type' and text()='${nameOfATD}']/../../div//a//span`),
-                )
-            ).getText()
-        ).trim();
+        const xpathQueryForATDId: string = this.OrderIdTextElement.valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', nameOfATD);
+        const orderId: string = (await (await this.browser.findElement(By.xpath(xpathQueryForATDId))).getText()).trim();
         const webAppHome = new WebAppHomePage(this.browser);
         await webAppHome.returnToHomePage();
         return orderId;

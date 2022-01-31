@@ -80,6 +80,9 @@ export class ObjectTypeEditor extends AddonPage {
     public AddonContainerATDEditorTransactionViewsArr: Locator = By.css('#formContTemplate .ui-accordion-header');
     public AddonContainerATDEditorAddViewBtn: Locator = By.xpath(`//div[contains(text(),"VIEW_PLACE_HOLDER")]`);
 
+    //evgeny::field editing btn
+    public FieldEditingBtn: Locator = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
+
     public async selectPostAction(actionName: SelectPostAction): Promise<void> {
         //?
         const selectedTab = Object.assign({}, this.AddonContainerActionsRadioBtn);
@@ -398,7 +401,7 @@ export class ObjectTypeEditor extends AddonPage {
 
         //Validate Editor Page Loaded
         await this.browser.sleep(7500);
-        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 105000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 125000)).to.be.true;
         if (isTransLine) {
             await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
         } else {
@@ -416,7 +419,7 @@ export class ObjectTypeEditor extends AddonPage {
 
         await this.browser.click(this.CalculatedFieldCheckBox);
         await this.browser.sendKeys(this.TextInputElements, fieldObj.Label, 0);
-        await this.browser.click(this.EditFieldScriptBtn);
+        await this.browser.click(this.EditScriptBtn);
         await this.browser.sleep(7800);
         expect(await this.browser.untilIsVisible(this.ScriptEditingTitle, 85000)).to.be.true;
 
@@ -454,6 +457,8 @@ export class ObjectTypeEditor extends AddonPage {
     public async editATDCalculatedFieldScript(
         //remain
         fieldObj: Field,
+        locatorForFieldType: Locator,
+        nameOfFieldToEdit: string,
         scriptParam?: string,
     ): Promise<void> {
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
@@ -472,10 +477,13 @@ export class ObjectTypeEditor extends AddonPage {
         //Validate Editor Page Loaded
         await this.browser.sleep(7500);
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
-        await this.browser.click(By.xpath("//div[text()='Custom Transaction line-item Fields']"));
-        await this.browser.click(By.xpath("//td[@title='ItemConfig']/..//span[contains(@class,'editPenIcon')]"));
+        await this.browser.click(locatorForFieldType);
+        const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', nameOfFieldToEdit);
+        await this.browser.click(By.xpath(injectedFieldEditingBtn));
         await this.browser.sleep(2000);
-        await this.browser.click(this.EditFieldScriptBtn);
+        await this.browser.click(this.EditScriptBtn);
         await this.browser.sleep(6800);
         expect(await this.browser.untilIsVisible(this.ScriptEditingTitle, 55000)).to.be.true;
 
@@ -545,47 +553,6 @@ export class ObjectTypeEditor extends AddonPage {
         )}/..//div[contains(@class, "${addingViewLocator}")]`;
         await this.browser.click(selectedBtn);
         return;
-    }
-
-    public async editItemConfigFeld(nameOfATD: string): Promise<void> {
-        const webAppHeader = new WebAppHeader(this.browser);
-        await this.browser.click(webAppHeader.Settings);
-        await this.browser.sleep(1500);
-        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
-        await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
-        await this.isSpinnerDone();
-        await this.browser.sleep(4000);
-
-        const webAppTopBar = new WebAppTopBar(this.browser);
-        await this.sendKeys(webAppTopBar.EditorSearchField, nameOfATD + Key.ENTER);
-
-        const webAppList = new WebAppList(this.browser);
-        await webAppList.clickOnLinkFromListRowWebElement();
-        await this.browser.sleep(1500);
-        await this.browser.click(By.xpath("//div[@class='menu-container ng-tns-c144-2']"));
-        await this.browser.sleep(3000);
-        await this.browser.click(By.xpath("//button[@title='Edit']"));
-        await this.browser.sleep(1500);
-        await this.browser.switchTo(this.AddonContainerIframe);
-        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
-        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
-        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
-        await this.browser.switchToDefaultContent();
-        await this.editATDCalculatedFieldScript({
-            Label: 'ItemConfig',
-            CalculatedRuleEngine: {
-                JSFormula: `const res = [];
-
-                    res.push(
-                      {"UOMKey": "SIN", "Factor": 3, "Min": 2, "Case": 1, "Decimal": 0, "Negative":true},
-                      {"UOMKey": "Bx", "Factor": 2, "Min": 1, "Case": 2, "Decimal": 3, "Negative":false},
-                      {"UOMKey": "DOU", "Factor": 1, "Min": 10, "Case": 5, "Decimal": 1, "Negative":true}
-                    );
-                  
-                  return JSON.stringify(res);`,
-            },
-        });
     }
 
     /**
