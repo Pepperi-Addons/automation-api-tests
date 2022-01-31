@@ -217,7 +217,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(_TEST_DATA_ATD_NAME);
+                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
+                            _TEST_DATA_ATD_NAME,
+                        );
                         const service = new ObjectsService(generalService);
                         const orderResponse: TransactionLines[] = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
@@ -241,7 +243,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(_TEST_DATA_ATD_NAME);
+                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
+                            _TEST_DATA_ATD_NAME,
+                        );
                         const service = new ObjectsService(generalService);
                         const orderResponse = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
