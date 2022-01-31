@@ -81,10 +81,8 @@ export class WebAppHomePage extends Page {
         //Get to Items
         const webAppList = new WebAppList(this.browser);
         try {
-            if (nameOfAccount)
-                await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
-            else
-                await webAppList.clickOnFromListRowWebElement();
+            if (nameOfAccount) await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
+            else await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(this.browser);
             await webAppTopBar.click(webAppTopBar.DoneBtn);
         } catch (error) {
@@ -138,7 +136,7 @@ export class WebAppHomePage extends Page {
 
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
