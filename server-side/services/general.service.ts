@@ -34,7 +34,6 @@ export const ConsoleColors = {
     Error: 'color: #FF0000',
     Success: 'color: #00FF00',
 };
-
 console.log('%cLogs Colors Information:\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.MenuHeader}`); //Black, Yellow
 console.log('%c#F87217\t\tSystem Information\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SystemInformation}`); //Pumpkin Orange
 console.log('%c#FFD801\t\tInformation\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Information}`); //Rubber Ducky Yellow
@@ -64,6 +63,7 @@ process.on('unhandledRejection', async (error) => {
         console.log(`%cError unhandledRejection: ${error}`, ConsoleColors.Error);
         console.debug(`%cSleep: ${4000} milliseconds`, ConsoleColors.Information);
         msSleep(4000);
+        process.exit(1);
     }
 });
 

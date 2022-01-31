@@ -135,14 +135,16 @@ export class Browser {
         return;
     }
 
-    public async ClickByText(selector: Locator, btnTxt: string) {
-        const buttonsArr: WebElement[] = await this.findElements(selector);
+    public async ClickByText(selector: Locator, btnTxt: string, waitUntil = 1500) {
+        const buttonsArr: WebElement[] = await this.findElements(selector, waitUntil);
         for (let i = 0; i < buttonsArr.length; i++) {
-            if ((await buttonsArr[i].getText()) == btnTxt) {
-                await this.click(selector, i);
-                break;
+            const elementsText = (await buttonsArr[i].getText()).trim();
+            if (elementsText.includes(btnTxt)) {
+                await this.click(selector, i, waitUntil);
+                return;
             }
         }
+        console.log(`element with selector: '${selector}' and text:'${btnTxt}' isn't found`);
         return;
     }
 

@@ -1,17 +1,21 @@
 import { expect } from 'chai';
-import { By, Locator } from 'selenium-webdriver';
-import { AddonPage, WebAppDialog, WebAppList } from '..';
+import { By, Key, Locator, WebElement } from 'selenium-webdriver';
+import { AddonPage } from './base/AddonPage';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
 import { OrderPage } from '../OrderPage';
 import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 
-export class Uom extends AddonPage {
+export class UomPage extends AddonPage {
     //UOM Addon Locators
-    public uomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
-    public uomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
-    public uomInstallBtn: Locator = By.css("[data-qa='install']");
+    public UomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
+    public UomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
+    public UomInstallBtn: Locator = By.css("[data-qa='install']");
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
+    public ItemInOrder: Locator = By.xpath('//fieldset');
+    public UomTypeItemInOrder: Locator = By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']");
+    public LocatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**
      *
@@ -25,23 +29,23 @@ export class Uom extends AddonPage {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('Uom');
         //validate uom is loaded both if installed and if not
-        expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomHeader, 15000)).to.be.true;
         //testing whether already installed - after loading anyway
-        if (await (await this.browser.findElement(this.uomInstallBtn)).isDisplayed()) {
-            await this.browser.click(this.uomInstallBtn);
+        if (await (await this.browser.findElement(this.UomInstallBtn)).isDisplayed()) {
+            await this.browser.click(this.UomInstallBtn);
             const webAppDialog = new WebAppDialog(this.browser);
-            // text not finalized yet - once will be the test is relevant
+            // ****text not finalized yet - once will be the test is relevant****
             // const isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
             // expect(isPupUP).to.equal('Are you sure you want to apply the module on the transaction?');
             await webAppDialog.selectDialogBox('ok');
             await this.isSpinnerDone();
         }
-        expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomInstalledHeader, 15000)).to.be.true;
         await this.selectTabByText('General');
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
         await objectTypeEditor.addATDCalculatedField(
             {
-                Label: 'AllowedUomFieldsForTest', //name
+                Label: 'AllowedUomFieldsForTest',
                 CalculatedRuleEngine: {
                     JSFormula:
                         "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;",
@@ -52,7 +56,7 @@ export class Uom extends AddonPage {
         );
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
-        //**first testing phase will be performed w/o this feature - second whill test this only**
+        //**first testing phase will be performed w/o this feature - second will test this only**
         await objectTypeEditor.addATDCalculatedField(
             {
                 Label: 'ItemConfig',
@@ -124,10 +128,51 @@ export class Uom extends AddonPage {
         await this.browser.click(this.SaveUIControlBtn);
     }
 
+    public async editItemConfigFeld(nameOfATD: string): Promise<void> {
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Settings);
+        await this.browser.sleep(1500);
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
+        await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
+        await this.isSpinnerDone();
+        await this.browser.sleep(4000);
+
+        const webAppTopBar = new WebAppTopBar(this.browser);
+        await this.sendKeys(webAppTopBar.EditorSearchField, nameOfATD + Key.ENTER);
+
+        const webAppList = new WebAppList(this.browser);
+        await webAppList.clickOnLinkFromListRowWebElement();
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+        const FielEditor = new ObjectTypeEditor(this.browser);
+        await FielEditor.editATDCalculatedFieldScript(
+            {
+                Label: 'ItemConfig',
+                CalculatedRuleEngine: {
+                    JSFormula: `const res = [];
+
+                    res.push(
+                      {"UOMKey": "SIN", "Factor": 3, "Min": 2, "Case": 1, "Decimal": 0, "Negative":true},
+                      {"UOMKey": "Bx", "Factor": 2, "Min": 1, "Case": 2, "Decimal": 3, "Negative":false},
+                      {"UOMKey": "DOU", "Factor": 1, "Min": 10, "Case": 5, "Decimal": 1, "Negative":true}
+                    );
+                  
+                  return JSON.stringify(res);`,
+                },
+            },
+            this.LocatorForTransLineField,
+            'ItemConfig',
+        );
+    }
+
     public async configureUomDataFields(...dataFieldNames: string[]): Promise<void> {
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('Uom');
-        expect(await this.browser.untilIsVisible(this.uomHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomHeader, 15000)).to.be.true;
         for (let i = 0; i < dataFieldNames.length; i++) {
             await this.selectDropBoxByString(this.UomDropDownFields, dataFieldNames[i], i);
             await this.isSpinnerDone();
@@ -141,7 +186,7 @@ export class Uom extends AddonPage {
         expect(isPopUpTextPresentedCorrectly).to.equal('Configuration Saved successfully');
         await webAppDialog.selectDialogBox('Close');
         await this.isSpinnerDone();
-        expect(await this.browser.untilIsVisible(this.uomInstalledHeader, 15000)).to.be.true;
+        expect(await this.browser.untilIsVisible(this.UomInstalledHeader, 15000)).to.be.true;
         await this.selectTabByText('General');
     }
 
@@ -760,6 +805,19 @@ export class Uom extends AddonPage {
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
         await webAppList.validateListRowElements();
+    }
+
+    public async initiateUOMActivity(ATDname: string, accountName: string, viewType = 'Medium'): Promise<void> {
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHomePage.initiateSalesActivity(ATDname, accountName);
+        const orderPage = new OrderPage(this.browser);
+        await orderPage.changeOrderPageView(viewType);
+        //validate there are 5 items on screen
+        const allItemPresented: WebElement[] = await this.browser.findElements(this.ItemInOrder);
+        expect(allItemPresented.length).to.equal(5);
+        //validate 4 are UOM items
+        const allUOMItemPresented: WebElement[] = await this.browser.findElements(this.UomTypeItemInOrder);
+        expect(allUOMItemPresented.length).to.equal(4);
     }
 }
 
