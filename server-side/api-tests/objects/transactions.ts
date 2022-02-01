@@ -1506,12 +1506,20 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Update transaction that is not on NUC ExternalID', async () => {
+            const catalog = await service.getCatalogs();
             const UpdatedTransactionNotOnNuc = await service.createTransaction({
                 ExternalID: updatedTransaction.ExternalID,
                 ActivityTypeID: atds[0].TypeID,
                 Account: {
                     Data: {
                         InternalID: transactionAccount.InternalID,
+                    },
+                },
+                Catalog: {
+                    Data: {
+                        ExternalID: catalog[0].ExternalID,
+                        InternalID: catalog[0].InternalID,
+                        UUID: catalog[0].UUID,
                     },
                 },
                 TSADecimalNumberAPI: 10.5,
@@ -1540,12 +1548,20 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Update transaction that is not on NUC UUID', async () => {
+            const catalog = await service.getCatalogs();
             const UpdatedTransactionNotOnNuc = await service.createTransaction({
                 UUID: updatedTransaction.UUID,
                 ActivityTypeID: atds[0].TypeID,
                 Account: {
                     Data: {
                         InternalID: transactionAccount.InternalID,
+                    },
+                },
+                Catalog: {
+                    Data: {
+                        ExternalID: catalog[0].ExternalID,
+                        InternalID: catalog[0].InternalID,
+                        UUID: catalog[0].UUID,
                     },
                 },
                 TSADecimalNumberAPI: 11.5,
