@@ -34,13 +34,6 @@ export async function CodeJobsCleanTests(generalService: GeneralService, tester:
     }
 
     describe('Cleaned Data', () => {
-        it(`Found ${codeJobsResponse.Body.length} Total Code Jobs And Removed Them All`, async () => {
-            const codeJobsResponse = await generalService.fetchStatus('/code_jobs?Fields=IsScheduled&page_size=1000', {
-                method: 'GET',
-            });
-            expect(codeJobsResponse.Body.length).to.equal(0);
-        });
-
         it(`Found ${scheduledCodeJobsArr.length} Scheduled Code Jobs And Removed Them All`, async () => {
             const codeJobsResponse = await generalService.fetchStatus('/code_jobs?Fields=IsScheduled&page_size=1000', {
                 method: 'GET',
