@@ -20,7 +20,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    const _TEST_DATA_ATD_NAME = "UOM_ uqaqphmpeycrnyy";//`UOM_${generalService.generateRandomString(15)}`;
+    const _TEST_DATA_ATD_NAME = 'UOM_ uqaqphmpeycrnyy'; //`UOM_${generalService.generateRandomString(15)}`;
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
 
     //data validating lists to test the result of webapp flow with
@@ -255,18 +255,18 @@ export async function UomTests(email: string, password: string, varPass: string,
                     });
 
                     it('Delete test ATD from dist + home screen using UI', async function () {
-                            const webAppLoginPage = new WebAppLoginPage(driver);
-                            await webAppLoginPage.loginNoCompanyLogo(email, password);
-                            const webAppHeader = new WebAppHeader(driver);
-                            await webAppHeader.openSettings();
-                            const brandedApp = new BrandedApp(driver);
-                            await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                            const objectTypeEditor = new ObjectTypeEditor(driver);
-                            await objectTypeEditor.removeATD(
-                                generalService,
-                                _TEST_DATA_ATD_NAME,
-                                _TEST_DATA_ATD_DESCRIPTION,
-                            );
+                        const webAppLoginPage = new WebAppLoginPage(driver);
+                        await webAppLoginPage.loginNoCompanyLogo(email, password);
+                        const webAppHeader = new WebAppHeader(driver);
+                        await webAppHeader.openSettings();
+                        const brandedApp = new BrandedApp(driver);
+                        await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                        const objectTypeEditor = new ObjectTypeEditor(driver);
+                        await objectTypeEditor.removeATD(
+                            generalService,
+                            _TEST_DATA_ATD_NAME,
+                            _TEST_DATA_ATD_DESCRIPTION,
+                        );
                     });
                 });
 
