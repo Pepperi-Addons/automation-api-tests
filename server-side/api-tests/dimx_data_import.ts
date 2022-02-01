@@ -137,9 +137,9 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         it('Negative - The test will fail on bigger to 500 inserts)  ', async () => {
             assert(logcash.add50InsertsToTableOverwriteFalseStatus, logcash.add50InsertsToTableOverwriteFalseError);
         });
-        // it('Negative - Page Size changing.The test will faill on all 105 inserted keys on GET after get page saize changed to 110 (ovewrite=false))  ', async () => {
-        //     assert(logcash.pageSizeChngesOverwriteFalseStatus, logcash.pageSizeChngesOverwriteFalseError);
-        // });
+        it('RelativeURL function test)  ', async () => {
+            assert(logcash.add50InsertsRelativeURLTestStatus, logcash.add50InsertsRelativeURLTestError);
+        });
         it('Negative - Update (one objects) with saved word INDEXES will faile)  ', async () => {
             assert(logcash.updateDataToTableNegativeStatus, logcash.updateDataToTableNegativeError);
         });
@@ -895,7 +895,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 (logcash.add50InsertsToTableOverwriteFalseError =
                     'The test will fail on bigger to 500 inserts, but actuall not failed');
         }
-        await createSchemaTypeData();
+        await UpdateRelation();
     }
 
     // async function pageSizeChngesOverwriteFalse() {
@@ -944,32 +944,129 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     //     await dropExistingTable();
     // }
 
-    // async function dropExistingTable() {
-    //     //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
-    //     const res = await generalService.fetchStatus(
-    //         baseURL + '/addons/data/import/' + logcash.createSchemaWithMandFieldName.Name + '/purge',
-    //         {
-    //             method: 'POST',
-    //             headers: {
-    //                 Authorization: 'Bearer ' + token,
-    //                 'X-Pepperi-OwnerID': addonUUID,
-    //                 'X-Pepperi-SecretKey': logcash.secretKey,
-    //             },
-    //         },
-    //     ); //.then((data) => data.json())
-    //     //debugger;
+    async function UpdateRelation() {
+        //const secretKey = await relationService.getSecretKey()
+        const relationResponce = await relationService.postRelationStatus(
+            {
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+                // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+            },
+            {
+                Name: 'DIMXDataImport test', // mandatory
+                AddonUUID: addonUUID, // mandatory
+                RelationName: 'DataImportResource', // mandatory
+                Type: 'AddonAPI', // mandatory on create
+                Description: 'DIMX Data Import test',
+                AddonRelativeURL: `/version/0.0.5/test_functions1.js/importRelation`, // mandatory on create
+            },
+        );
+        //debugger;
+        expect(relationResponce).to.equal(200);
+        await add50InsertsRelativeURLTest();
+    }
 
-    //     //if(logcash.dropExistingTable.success == true){
-    //     if (res.Ok) {
-    //         logcash.dropExistingTableStatus = true;
-    //     } else {
-    //         logcash.dropExistingTableStatus = false;
-    //         logcash.dropExistingTableError = 'Drop schema failed. Error message is: ' + logcash.dropExistingTable;
-    //     }
-    //     await createSchemaTypeData();
-    // }
 
-    /////////////////////////////test anoteher types of schema (data and index_data)
+    async function add50InsertsRelativeURLTest() {
+        const num = 49;
+        let tst = 0;
+        let tst1 = 0;
+        let tst2 = 0;
+        // const tst1 = 0;
+        const object = createObjects(num); // add 49 unique inserts
+        object[num] = object[num - 1]; // + 1 duplicated key
+        //debugger;
+        logcash.add50InsertsRelativeURLTest = await generalService
+            .fetchStatus(
+                baseURL + '/addons/data/import/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+
+                    body: JSON.stringify({
+                        Objects: object,
+                        //Overwrite: false,
+                        OverwriteObject: false,
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        for (let index = 0; index <= num; index++) {
+            if (logcash.add50InsertsRelativeURLTest[index].Status == 'Ignore') {
+                tst++;
+            } else if (logcash.add50InsertsRelativeURLTest[index].Status == 'Merge') {
+                tst1++;
+            }
+            else if(logcash.add50InsertsRelativeURLTest[index].Status == 'Error' && logcash.add50InsertsRelativeURLTest[index].Details == "key divides by 5"){
+                tst2++;
+            }
+        }
+        if (tst == num-10 && tst1 == 1 && tst2 == 10) {
+            logcash.add50InsertsRelativeURLTestStatus = true;
+        } else {
+            logcash.add50InsertsRelativeURLTestStatus = false;
+            logcash.add50InsertsRelativeURLTestError = '40 inserts will be ignored, one will be merged and 9 - errors ';
+        }
+        //debugger;
+        await UpdateRelatioSec();
+    }
+
+
+    async function UpdateRelatioSec() {
+        //const secretKey = await relationService.getSecretKey()
+        const UpdateRelatioSec = await relationService.postRelationStatus(
+            {
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+                // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+            },
+            {
+                Name: 'DIMXDataImport test', // mandatory
+                AddonUUID: addonUUID, // mandatory
+                RelationName: 'DataImportResource', // mandatory
+                Type: 'AddonAPI', // mandatory on create
+                Description: 'DIMX Data Import test',
+                AddonRelativeURL: '', // mandatory on create
+            },
+        );
+        //debugger;
+        expect(UpdateRelatioSec).to.equal(200);
+        await dropExistingTable();
+    }
+
+
+
+    async function dropExistingTable() {
+        //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        ); //.then((data) => data.json())
+        //debugger;
+
+        //if(logcash.dropExistingTable.success == true){
+        if (res.Ok) {
+            logcash.dropExistingTableStatus = true;
+        } else {
+            logcash.dropExistingTableStatus = false;
+            logcash.dropExistingTableError = 'Drop schema failed. Error message is: ' + logcash.dropExistingTable;
+        }
+        await createSchemaTypeData();
+    }
+
+    /////////////////////////////test anoteher types of schema (meta_data and index_data)
     async function createSchemaTypeData() {
         logcash.createSchemaTypeData = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {

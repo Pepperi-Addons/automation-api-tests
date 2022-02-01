@@ -1,8 +1,8 @@
 exports.importRelation = async (client, request) => {
     try {
-        if (request.body && request.body.ImportedObjects) {
-            for (let index = 0; index < request.body.ImportedObjects.length; index++) {
-                const element = request.body.ImportedObjects[index];
+        if (request.body && request.body.DIMXObjects) {
+            for (let index = 0; index < request.body.DIMXObjects.length; index++) {
+                const element = request.body.DIMXObjects[index];
                 element.Key = index.toString;
                 if (index % 5 === 0) {
                     element.Status = 'Error';
