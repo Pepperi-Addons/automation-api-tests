@@ -13,7 +13,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'Services Framework': [
             '00000000-0000-0000-0000-000000000a91',
-            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5',
+            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5.479', //'9.5',
         ],
         'Cross Platforms API': [
             '00000000-0000-0000-0000-000000abcdef',
@@ -54,6 +54,10 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
         'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     };
+
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        testData['Services Framework'][1] = '9.5';
+    }
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
