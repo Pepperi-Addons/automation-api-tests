@@ -190,6 +190,27 @@ export class UomPage extends AddonPage {
         await this.selectTabByText('General');
     }
 
+    private async testQtysOfItem(workingUomObject: UomUIObject, aoqmUom1Qty?: number, aoqmUom2Qty?: number, wholeItemQty?: number, itemGrandTotal?: number, pageGrandTotal?: number) {
+        const orderPage = new OrderPage(this.browser);
+        if (aoqmUom1Qty !== undefined)
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
+                aoqmUom1Qty.toString(),
+            );
+        if (aoqmUom2Qty !== undefined)
+            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(aoqmUom2Qty.toString());
+        if (wholeItemQty !== undefined)
+            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
+                wholeItemQty.toString(),
+            );
+        if (itemGrandTotal !== undefined)
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
+                `$${parseFloat(itemGrandTotal.toString()).toFixed(2)}`,
+            );
+        if (pageGrandTotal !== undefined)
+            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
+                `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
+            );
+    }
     /**
      *  UI test of UOM items order
      */
@@ -199,65 +220,32 @@ export class UomPage extends AddonPage {
         //1.1 add 48 items of regular qty - see 48 items are shown + correct price is presented
         let workingUomObject = new UomUIObject('1230');
         const orderPage = new OrderPage(this.browser);
-        for (let i = 1; i < 49; i++) {
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '40', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
+        this.browser.sleep(2500);
+        await this.testQtysOfItem(workingUomObject, 40, undefined, 40, 20, 20);
+        for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                i.toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                i.toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((i * 0.5).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((i * 0.5).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, 40 + i, undefined, 40 + i, 20 + (i * 0.5), 20 + (i * 0.5));
         }
         //1.2. try to add one more regular item - nothing should change
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '48',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$24.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$24.00');
-        //1.3. lower qty to 35 - see price + amount changed everywhere correctly
-        for (let i = 1; i < 14; i++) {
+        await this.testQtysOfItem(workingUomObject, 48, undefined, 48, 48 / 2, 48 / 2);
+        //1.3. lower qty back to 40 - see price + amount changed everywhere correctly
+        for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                (48 - i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (48 - i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat(((48 - i) * 0.5).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat(((48 - i) * 0.5).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, (48 - i), undefined, (48 - i), ((48 - i) * 0.5), ((48 - i) * 0.5));
         }
 
         //1.4. zero the amount of the regular item - see everythins changed correctly
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '0', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '0',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$0.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$0.00');
-
+        await this.testQtysOfItem(workingUomObject, 0, undefined, 0, 0, 0);
         //2. UOM item testing
 
         //2.1. Box & single
@@ -272,100 +260,36 @@ export class UomPage extends AddonPage {
             await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                i.toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (i * 13).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((i * 13).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((i * 13).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, i, undefined, (i * 13), (i * 13), (i * 13));
         }
         //2.1.3. nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '3',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('39');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$39.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$39.00');
+        await this.testQtysOfItem(workingUomObject, 3, undefined, 39, 39, 39);
         //2.1.4. filling the rest with single elements
-        for (let i = 1; i < 10; i++) {
-            await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-            await this.browser.sleep(1500);
-            await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                '3',
-            );
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-                i.toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (39 + i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((39 + i).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((39 + i).toString()).toFixed(2)}`,
-            );
-        }
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom2Qty, workingUomObject.aoqmUom2Qty, '9', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
+        this.browser.sleep(2500);
+        await this.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
+
         //2.1.5. nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-            '9',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$48.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$48.00');
+        await this.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
         //2.1.6. lowering box by 1 and adding 13 singles
         await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '2',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('35');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$35.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$35.00');
-        for (let i = 1; i < 14; i++) {
-            await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-            await this.browser.sleep(1500);
-            await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-                (9 + i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (35 + i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((35 + i).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((35 + i).toString()).toFixed(2)}`,
-            );
-        }
+        await this.testQtysOfItem(workingUomObject, 2, 9, 35, 35, 35);
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom2Qty, workingUomObject.aoqmUom2Qty, (9 + 13).toString(), orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
+        this.browser.sleep(2500);
+        await this.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
         //2.1.7. nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '2',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-            '22',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$48.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$48.00');
+        await this.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
 
         //2.2. Double & Single
         workingUomObject = new UomUIObject('1232');
@@ -376,98 +300,34 @@ export class UomPage extends AddonPage {
         await this.browser.sleep(1500);
 
         //2.2.1 fill the qty with double values
-        for (let i = 1; i < 25; i++) {
-            await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-            await this.browser.sleep(1200);
-            await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                i.toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (i * 2).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((48 + i * 2).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((48 + i * 2).toString()).toFixed(2)}`,
-            ); //
-        }
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '24', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
+        this.browser.sleep(2500);
+        await this.testQtysOfItem(workingUomObject, 24, 0, 48, (48 + 24 * 2), (48 + 24 * 2));
+
         //2.2.2 nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '24',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$96.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$96.00');
+        await this.testQtysOfItem(workingUomObject, 24, 0, 48, (48 + 24 * 2), (48 + 24 * 2));
         //2.2.3 lowering the double qty by half
-        for (let i = 1; i < 13; i++) {
-            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            await this.browser.sleep(1500);
-            await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                (24 - i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (48 - i * 2).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((96 - i * 2).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((96 - i * 2).toString()).toFixed(2)}`,
-            );
-        }
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '12', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
+        this.browser.sleep(2500);
+        await this.testQtysOfItem(workingUomObject, 12, 0, (48 - 12 * 2), (96 - 12 * 2), (96 - 12 * 2));
         //2.2.4 filling the rest with single
-        for (let i = 1; i < 25; i++) {
-            await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-            await this.browser.sleep(1500);
-            await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                '12',
-            );
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-                i.toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (24 + i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((72 + i).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((72 + i).toString()).toFixed(2)}`,
-            );
-        }
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom2Qty, workingUomObject.aoqmUom2Qty, '24', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
+        this.browser.sleep(2500);
+        await this.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
+
         //2.2.5 nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '12',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-            '24',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$96.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$96.00');
+        await this.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
         //2.2.6 nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '12',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-            '24',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$96.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$96.00');
+        await this.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
 
         //2.3. Pack & Double
         workingUomObject = new UomUIObject('1233');
@@ -478,52 +338,21 @@ export class UomPage extends AddonPage {
         await this.browser.sleep(1500);
 
         //2.3.1 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 8 packs
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '20');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '20', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '8',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$144.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$144.00');
+        await this.testQtysOfItem(workingUomObject, 8, 0, 48, 144, 144);
         //2.3.2 lowering pack amount by 3
         for (let i = 1; i < 4; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                (8 - i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (48 - i * 6).toString(),
-            ); //
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((144 - i * 6).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((144 - i * 6).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, (8 - i), 0, (48 - i * 6), (144 - i * 6), (144 - i * 6));
         }
         //2.3.3 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 9 double's
-        await this.browser.click(workingUomObject.aoqmUom2Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom2Qty, '20');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom2Qty, workingUomObject.aoqmUom2Qty, '20', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
         //2.3.4 validating all values
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '5',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-            '9',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('48');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$144.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$144.00');
-
+        await this.testQtysOfItem(workingUomObject, 5, 9, 48, 144, 144);
         //2.4. Case & Box
         workingUomObject = new UomUIObject('1234');
         //set uom types to case in the upper field and box in lower
@@ -536,29 +365,13 @@ export class UomPage extends AddonPage {
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '1',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('24');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$168.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$168.00');
+        await this.testQtysOfItem(workingUomObject, 1, 0, 24, 168, 168);
 
         //2.4.2 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 1 box
-        await this.browser.click(workingUomObject.aoqmUom2Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom2Qty, '20');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom2Qty, workingUomObject.aoqmUom2Qty, '20', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
         //2.4.3 valdating all values
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '1',
-        ); //
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-            '1',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('37'); //
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$181.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$181.00');
+        await this.testQtysOfItem(workingUomObject, 1, 1, 37, 181, 181);
 
         //3. UOM order test ended - submiting to cart
         await this.browser.click(orderPage.SubmitToCart);
@@ -578,63 +391,26 @@ export class UomPage extends AddonPage {
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '2',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('6');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$6.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$6.00');
+        await this.testQtysOfItem(workingUomObject, 2, 0, 6, 6, 6);
         //1.2 click on plus again - this time qty is bigger than minimum
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '3',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('9');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$9.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$9.00');
+        await this.testQtysOfItem(workingUomObject, 3, 0, 9, 9, 9);
         //1.3 zero the amount and set qty of single items to '-8'
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '0', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '0',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$0.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$0.00');
+        await this.testQtysOfItem(workingUomObject, 0, 0, 9, 9, 9);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                (-1 * i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (-3 * i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((i * -3).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((i * -3).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, (-1 * i), 0, (-3 * i), (i * -3), (i * -3));
         }
         //1.4 set qty of single items as '3.5'
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '3.5', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '4',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('12');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$12.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$12.00');
+        await this.testQtysOfItem(workingUomObject, 4, 0, 12, 12, 12);
 
         //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
         workingUomObject = new UomUIObject('1232');
@@ -645,60 +421,26 @@ export class UomPage extends AddonPage {
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '2',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('4');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$16.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$16.00');
+        await this.testQtysOfItem(workingUomObject, 2, 0, 4, 16, 16);
         //2.2 click on plus again - to see how many qtys of box are added
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '4',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('8');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$20.00');
+        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
         //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '0', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '0',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$12.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$12.00');
+        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 12, 12);
         for (let i = 1; i < 4; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                '0',
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                '$12.00',
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$12.00');
+            await this.testQtysOfItem(workingUomObject, 0, 0, 0, 12, 12);
         }
         //2.4 set qty of single items to '3.5'
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '3.5', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '4',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('8');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$20.00');
-
+        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
         //3. Double -> factor:1, min:10, case:5, negative:true, decimal:1
         workingUomObject = new UomUIObject('1233');
         //set uom type to double
@@ -708,50 +450,20 @@ export class UomPage extends AddonPage {
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '10',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('10');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$30.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$30.00');
-        //3.2 click on plus again - to see how many qtys of double are added
+        await this.testQtysOfItem(workingUomObject, 10, 0, 10, 30, 30);
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         await this.browser.sleep(1500);
         await this.isSpinnerDone();
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '15',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('15');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$35.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$35.00');
+        await this.testQtysOfItem(workingUomObject, 15, 0, 15, 35, 35);
         //3.3 zero qty of double and set it to '-8'
-        await this.browser.click(workingUomObject.aoqmUom1Qty);
-        await this.browser.sendKeys(workingUomObject.aoqmUom1Qty, '0');
-        await this.browser.click(orderPage.blankSpaceOnScreenToClick);
-        await this.isSpinnerDone();
+        await this.browser.activateTextInputFieldAndWaitUntillFunction(workingUomObject.aoqmUom1Qty, workingUomObject.aoqmUom1Qty, '0', orderPage.blankSpaceOnScreenToClick, this.isSpinnerDone, this);
         await this.browser.sleep(2500);
-        expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-            '0',
-        );
-        expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal('0');
-        expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal('$20.00');
-        expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal('$20.00');
+        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 20, 20);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                (-i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (-i).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((20 + i * -1).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((20 + i * -1).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, (-i), 0, (-i), (20 + i * -1), (20 + i * -1));
         }
 
         //set lower uom type to Box
@@ -762,42 +474,14 @@ export class UomPage extends AddonPage {
             await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                '-8',
-            );
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-                (i * 2).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (-8 + i * 4).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((12 + i * 4).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((12 + i * 4).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, (-8), i * 2, (-8 + i * 4), (12 + i * 4), (12 + i * 4));
         }
         //3.5. click minus untill there are no more boxes
         for (let i = 1; i < 3; i++) {
             await this.browser.click(workingUomObject.aoqmUom2MinusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                '-8',
-            );
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-                (4 - i * 2).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                (-(i * 4)).toString(),
-            );
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat((20 - i * 4).toString()).toFixed(2)}`,
-            );
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat((20 - i * 4).toString()).toFixed(2)}`,
-            );
+            await this.testQtysOfItem(workingUomObject, (-8), (4 - i * 2), -(i * 4), (20 - i * 4), (20 - i * 4));
         }
 
         //3. UOM order test ended - submiting to cart
@@ -842,43 +526,43 @@ class UomUIObject {
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1.valueOf()['value'] = this.aoqmUom1
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2.valueOf()['value'] = this.aoqmUom2
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
     }
 }
