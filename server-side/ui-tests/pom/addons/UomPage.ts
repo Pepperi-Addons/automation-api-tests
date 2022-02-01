@@ -486,7 +486,7 @@ export class UomPage extends AddonPage {
             this,
         );
         await this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 0, 0, 9, 9, 9);
+        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 0, 0);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             await this.browser.sleep(1500);

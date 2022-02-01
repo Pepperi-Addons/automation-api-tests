@@ -116,7 +116,7 @@ export class WebAppHomePage extends Page {
 
         //This sleep is mandaroy while pop up message of existing order is calculated
         console.log('Wait for existing orders');
-        this.browser.sleep(1000);
+        this.browser.sleep(2500);
 
         //Validate nothing is loading before clicking on dialog box
         await webAppList.isSpinnerDone();
