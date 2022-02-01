@@ -148,6 +148,30 @@ export class Browser {
         return;
     }
 
+    /**
+     * Used for clicking on element, sending keys to an element and clicking after on other element, waiting with given function
+     * @param clickOnLocator Locator of element to click on
+     * @param sendToLocator Locator of element to send the keys to
+     * @param txtToSend The keys to send
+     * @param afterClickLocator Optional locator for elemnt to click on after the keys sent
+     * @param waitFunction Function to call to wait until
+     * @param that This value of the class in which the wait function is found
+     */
+    public async activateTextInputFieldAndWaitUntillFunction(
+        clickOnLocator: Locator,
+        sendToLocator: Locator,
+        txtToSend: string,
+        afterClickLocator?: Locator,
+        waitFunction?: () => Promise<boolean>,
+        that?: any,
+    ) {
+        await this.click(clickOnLocator);
+        await this.sendKeys(sendToLocator, txtToSend);
+        this.sleep(1000);
+        if (afterClickLocator) await this.click(afterClickLocator);
+        if (waitFunction && that) await waitFunction.call(that);
+    }
+
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {

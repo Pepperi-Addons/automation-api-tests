@@ -20,7 +20,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;
+    const _TEST_DATA_ATD_NAME = 'UOM_ uqaqphmpeycrnyy'; //`UOM_${generalService.generateRandomString(15)}`;
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
 
     //data validating lists to test the result of webapp flow with
