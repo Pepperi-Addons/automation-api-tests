@@ -64,7 +64,7 @@ process.on('unhandledRejection', async (error) => {
     } else if (error instanceof Error && JSON.stringify(error.message).includes('Error')) {
         console.log(`%cError unhandledRejection: ${error.message}`, ConsoleColors.Error);
         console.log(
-            `%cIn cases of unhandledRejection that include message of "Error" the procss stopped`,
+            `%cIn cases of unhandledRejection that include message of "Error" the process stopped`,
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
