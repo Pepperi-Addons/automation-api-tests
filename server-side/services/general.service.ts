@@ -52,6 +52,8 @@ console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${Co
 
 /**
  * This listner will be added when scripts start from the API or from CLI
+ * In cased of errors from selenium-webdriver libary or an error that includes message of "Error"
+ * The process will end
  */
 process.on('unhandledRejection', async (error) => {
     if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
@@ -59,11 +61,17 @@ process.on('unhandledRejection', async (error) => {
         console.log('Wait 10 seconds before trying to call the browser api again');
         console.debug(`%cSleep: ${10000} milliseconds`, ConsoleColors.Information);
         msSleep(10000);
+    } else if (error instanceof Error && JSON.stringify(error.message).includes('Error')) {
+        console.log(`%cError unhandledRejection: ${error.message}`, ConsoleColors.Error);
+        console.log(
+            `%cIn cases of unhandledRejection that include message of "Error" the process stopped`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
     } else {
         console.log(`%cError unhandledRejection: ${error}`, ConsoleColors.Error);
         console.debug(`%cSleep: ${4000} milliseconds`, ConsoleColors.Information);
         msSleep(4000);
-        process.exit(1);
     }
 });
 
@@ -221,7 +229,7 @@ export default class GeneralService {
 
     createClient(authorization) {
         if (!authorization) {
-            throw new Error('unauthorized');
+            throw new Error('Error unauthorized');
         }
         const token = authorization.replace('Bearer ', '') || '';
         const parsedToken = jwt_decode(token);
