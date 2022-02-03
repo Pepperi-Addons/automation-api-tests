@@ -8,7 +8,7 @@ import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
 import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
 import { OrderPageItem } from '../pom/OrderPage';
-import { UomPage } from '../pom/addons/UomPage';
+import { Uom } from '../pom/addons/Uom';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
 import { upgradeDependenciesTests } from './test.index';
@@ -189,8 +189,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                         //3. goto new ATD and configure everything needed for the test - 3 calculated fields
                         //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                         //3.2. add fields to UI control of ATD
-                        const uomPage = new UomPage(driver);
-                        await uomPage.configUomATD();
+                        const uom = new Uom(driver);
+                        await uom.configUomATD();
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.returnToHomePage();
                         const webAppHeader = new WebAppHeader(driver);
@@ -208,9 +208,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync(client);
-                        const uomPage = new UomPage(driver);
-                        await uomPage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        await uomPage.testUomAtdUI();
+                        const uom = new Uom(driver);
+                        await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                        await uom.testUomAtdUI();
                         const addonPage = new AddonPage(driver);
                         await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
                         await addonPage.submitOrder();
@@ -230,13 +230,13 @@ export async function UomTests(email: string, password: string, varPass: string,
                     it('UI Test UOM ATD -- testing item configuration field', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        const uomPage = new UomPage(driver);
-                        await uomPage.editItemConfigFeld(_TEST_DATA_ATD_NAME);
+                        const uom = new Uom(driver);
+                        await uom.editItemConfigFeld(_TEST_DATA_ATD_NAME);
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.returnToHomePage();
                         await webAppHomePage.manualResync(client);
-                        await uomPage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        await uomPage.testUomAtdUIWithItemConfig();
+                        await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                        await uom.testUomAtdUIWithItemConfig();
                         const addonPage = new AddonPage(driver);
                         await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
                         await addonPage.submitOrder();

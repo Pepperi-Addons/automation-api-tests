@@ -9,7 +9,7 @@ import { WebAppTransaction } from './WebAppTransaction';
 import { WebAppSettingsSidePanel } from './WebAppSettingsSidePanel';
 import { AddonPage } from './addons/base/AddonPage';
 import { WebAppAPI } from './WebAppAPI';
-import { UomPage } from './addons/UomPage';
+import { Uom } from './addons/Uom';
 import { BrandedApp } from './addons/BrandedApp';
 import { ObjectTypeEditor } from './addons/ObjectTypeEditor';
 import { Promotion } from './addons/Promotion';
@@ -26,7 +26,7 @@ export {
     WebAppSettingsSidePanel,
     AddonPage,
     WebAppAPI,
-    UomPage as Uom,
+    Uom,
     BrandedApp,
     ObjectTypeEditor,
     Promotion,
