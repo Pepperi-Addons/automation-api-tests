@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './base/page';
 import config from '../../config';
-import { Locator, By, WebElement } from 'selenium-webdriver';
+import { Locator, By } from 'selenium-webdriver';
 import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
@@ -16,6 +16,7 @@ export class WebAppHomePage extends Page {
 
     public Main: Locator = By.css('#mainButton');
     public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
+    public HomeScreenSpesificButton: Locator = By.xpath(`//button[@title='|textToFill|']`);
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
@@ -69,10 +70,10 @@ export class WebAppHomePage extends Page {
      * This can only be used from HomePage and when HomePage include button that lead to Transaction ATD
      * This will nevigate to the scope_items of a new transaction, deep link "/transactions/scope_items/${newUUID}"
      */
-    public async initiateSalesActivity(name?: string): Promise<void> {
+    public async initiateSalesActivity(nameOfATD?: string, nameOfAccount?: string): Promise<void> {
         //Start New Workflow
-        if (name) {
-            await this.clickOnBtn(name);
+        if (nameOfATD) {
+            await this.clickOnBtn(nameOfATD);
         } else {
             await this.click(this.Main);
         }
@@ -80,7 +81,8 @@ export class WebAppHomePage extends Page {
         //Get to Items
         const webAppList = new WebAppList(this.browser);
         try {
-            await webAppList.clickOnFromListRowWebElement(); //Accounts
+            if (nameOfAccount) await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
+            else await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(this.browser);
             await webAppTopBar.click(webAppTopBar.DoneBtn);
         } catch (error) {
@@ -114,7 +116,7 @@ export class WebAppHomePage extends Page {
 
         //This sleep is mandaroy while pop up message of existing order is calculated
         console.log('Wait for existing orders');
-        this.browser.sleep(1000);
+        this.browser.sleep(2500);
 
         //Validate nothing is loading before clicking on dialog box
         await webAppList.isSpinnerDone();
@@ -133,52 +135,13 @@ export class WebAppHomePage extends Page {
     }
 
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
-        await this.browser.untilIsVisible(By.xpath(`//button[@title='${ATDname}']`), 5000);
+        const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', ATDname);
+        await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
 
-    public async initiateUOMActivity(ATDname: string, accountName: string, viewType = 'Medium'): Promise<void> {
-        await this.browser.click(By.xpath(`//button[@title='${ATDname}']`));
-        await this.browser.sleep(1500);
-        await this.browser.untilIsVisible(
-            By.xpath("//span[@class='dialog-title ng-star-inserted' and text()=' Select Account  ']"),
-            1500,
-        );
-        await this.browser.click(By.xpath(`//span[@title='${accountName}']/../../../../mat-radio-button`));
-        await this.browser.sleep(1500);
-        await this.browser.click(By.css("[data-qa='doneButton']"));
-        await this.browser.sleep(3500);
-        const webAppDialog = new WebAppDialog(this.browser);
-        let isPupUP;
-        try {
-            isPupUP = await (await this.browser.findElement(webAppDialog.Content)).getText();
-        } catch (Error) {
-            console.log('no popup while opening UOM ATD');
-        }
-        if (isPupUP) {
-            expect(isPupUP).to.equal(
-                'You already have an open order which you have previously started. To start a new order anyway click Continue/Yes. To be directed to the open order click Cancel/No.',
-            );
-            await webAppDialog.selectDialogBox('Yes');
-            await this.isSpinnerDone();
-        }
-        //switch to medium view:
-        //1. click on btn to open drop down
-        await this.browser.click(By.xpath("//mat-icon[@title='Change View']"));
-        await this.browser.sleep(1500);
-        //2. pick wanted view
-        await this.browser.click(By.xpath(`//span[text()='${viewType}']`));
-        await this.isSpinnerDone();
-        //validate there are 5 items on screen
-        const allItemPresented: WebElement[] = await this.browser.findElements(By.xpath('//fieldset'));
-        expect(allItemPresented.length).to.equal(5);
-        //validate 4 are UOM items
-        const allUOMItemPresented: WebElement[] = await this.browser.findElements(
-            By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']"),
-        );
-        expect(allUOMItemPresented.length).to.equal(4);
-    }
-
-    public async returnToHomePage() {
+    public async returnToHomePage(): Promise<void> {
         //Go To HomePage
         await this.browser.switchToDefaultContent();
         const webAppHeader = new WebAppHeader(this.browser);

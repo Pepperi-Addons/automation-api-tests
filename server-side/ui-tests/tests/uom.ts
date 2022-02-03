@@ -8,9 +8,10 @@ import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
 import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
 import { OrderPageItem } from '../pom/OrderPage';
-import { Uom } from '../pom/addons/Uom';
+import { UomPage } from '../pom/addons/UomPage';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
+import { upgradeDependenciesTests } from './test.index';
 
 chai.use(promised);
 
@@ -19,7 +20,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`; //"UOM_ jzwdgqfuajxyyax";
+    const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
 
     //data validating lists to test the result of webapp flow with
@@ -53,9 +54,10 @@ export async function UomTests(email: string, password: string, varPass: string,
 
     //#region Upgrade cpi-node & UOM
     const testData = {
-        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because 0.3.7 which is the most progresive cannot be installed at the moment
+        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because '0.3.7' which is the most progresive cannot be installed at the moment
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''],
     };
+    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM
@@ -176,7 +178,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         //1. validating all items are added to the main catalog
                         const addonPage = new AddonPage(driver);
                         await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
-                        //2. goto ATD editor - create new ATD UOM_{random-hashstring}
+                        //2. goto ATD editor - create new 'ATD UOM_{random string}'
                         const objectTypeEditor = new ObjectTypeEditor(driver);
                         await objectTypeEditor.createNewATD(
                             this,
@@ -187,7 +189,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         //3. goto new ATD and configure everything needed for the test - 3 calculated fields
                         //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                         //3.2. add fields to UI control of ATD
-                        const uomPage = new Uom(driver);
+                        const uomPage = new UomPage(driver);
                         await uomPage.configUomATD();
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.returnToHomePage();
@@ -207,15 +209,17 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        const uomPage = new Uom(driver);
+                        const uomPage = new UomPage(driver);
+                        await uomPage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                         await uomPage.testUomAtdUI();
                         const addonPage = new AddonPage(driver);
                         await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        const orderId: string = await addonPage.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
+                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
+                            _TEST_DATA_ATD_NAME,
+                        );
                         const service = new ObjectsService(generalService);
                         const orderResponse: TransactionLines[] = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
@@ -227,20 +231,21 @@ export async function UomTests(email: string, password: string, varPass: string,
                     it('UI Test UOM ATD -- testing item configuration field', async function () {
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        let objectTypeEditor = new ObjectTypeEditor(driver);
-                        await objectTypeEditor.editItemConfigFeld(_TEST_DATA_ATD_NAME);
+                        const uomPage = new UomPage(driver);
+                        await uomPage.editItemConfigFeld(_TEST_DATA_ATD_NAME);
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.returnToHomePage();
                         await webAppHomePage.manualResync();
-                        await webAppHomePage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        const uomPage = new Uom(driver);
+                        await uomPage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                         await uomPage.testUomAtdUIWithItemConfig();
-                        objectTypeEditor = new ObjectTypeEditor(driver);
-                        await objectTypeEditor.testCartItems('$12.00', ...expectedOrderConfigItems);
-                        await objectTypeEditor.submitOrder();
+                        const addonPage = new AddonPage(driver);
+                        await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
+                        await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.manualResync();
-                        const orderId: string = await objectTypeEditor.getOrderIdFromActivitys(_TEST_DATA_ATD_NAME);
+                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
+                            _TEST_DATA_ATD_NAME,
+                        );
                         const service = new ObjectsService(generalService);
                         const orderResponse = await service.getTransactionLines({
                             where: `TransactionInternalID=${orderId}`,
