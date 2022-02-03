@@ -1,6 +1,6 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
-export async function SchedulerTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function SchedulerTestsOld(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const assert = tester.assert;

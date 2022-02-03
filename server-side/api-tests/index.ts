@@ -33,7 +33,8 @@ import { DBSchemaTests } from './schema';
 import { BatchUpsertTests } from './batch_upsert';
 import { DimxDataImportTests } from './dimx_data_import';
 import { SchedulerTests } from './code-jobs/scheduler';
-import { CodeJobsTests } from './code-jobs/code_jobs'; //
+import { SchedulerTestsOld } from './code-jobs/scheduler-old';
+import { CodeJobsTests } from './code-jobs/code_jobs';
 import { TimeOutAddonJobsTests } from './code-jobs/timeout_addon_jobs';
 import { AddonJobsTests } from './code-jobs/addon_jobs';
 import { InstallTests } from './code-jobs/install';
@@ -111,6 +112,7 @@ export {
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
+    SchedulerTestsOld,
     CodeJobsTests,
     TimeOutAddonJobsTests,
     AddonJobsTests,

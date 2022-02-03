@@ -966,7 +966,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         await add50InsertsRelativeURLTest();
     }
 
-
     async function add50InsertsRelativeURLTest() {
         const num = 49;
         let tst = 0;
@@ -1001,12 +1000,14 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 tst++;
             } else if (logcash.add50InsertsRelativeURLTest[index].Status == 'Merge') {
                 tst1++;
-            }
-            else if(logcash.add50InsertsRelativeURLTest[index].Status == 'Error' && logcash.add50InsertsRelativeURLTest[index].Details == "key divides by 5"){
+            } else if (
+                logcash.add50InsertsRelativeURLTest[index].Status == 'Error' &&
+                logcash.add50InsertsRelativeURLTest[index].Details == 'key divides by 5'
+            ) {
                 tst2++;
             }
         }
-        if (tst == num-10 && tst1 == 1 && tst2 == 10) {
+        if (tst == num - 10 && tst1 == 1 && tst2 == 10) {
             logcash.add50InsertsRelativeURLTestStatus = true;
         } else {
             logcash.add50InsertsRelativeURLTestStatus = false;
@@ -1015,7 +1016,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //debugger;
         await UpdateRelatioSec();
     }
-
 
     async function UpdateRelatioSec() {
         //const secretKey = await relationService.getSecretKey()
@@ -1038,8 +1038,6 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         expect(UpdateRelatioSec).to.equal(200);
         await dropExistingTable();
     }
-
-
 
     async function dropExistingTable() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {

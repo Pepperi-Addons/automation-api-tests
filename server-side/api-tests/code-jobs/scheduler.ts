@@ -17,7 +17,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const jsFileName =  'test_functions.js' //'test.js';
+    const jsFileName = 'test_functions.js'; //'test.js';
     // let functionName = 'ido';
     //const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
     const functionNamecreateNewCodeJobRetryTest = 'scheduler';
@@ -57,7 +57,6 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         });
     });
 
-
     async function installAddonToDist() {
         await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
             method: 'POST',
@@ -94,7 +93,6 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             AddonPath: jsFileName, // Only for AddonJob
             AddonUUID: addonUUID, // Only for AddonJob
             FunctionName: functionNamecreateNewCodeJobRetryTest,
-            
         };
 
         CallbackCash.insertNewCJtoCronVerification = await service.codeJobs.upsert(CodeJobBody);
@@ -102,7 +100,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         //var status = CallbackCash.insertNewCJtoCronVerification.success;
         //CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
         logcash.insertNewCJtoCronVerification = true;
-//debugger;
+        //debugger;
         if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodeJobBody.CodeJobName) {
             // CodeJobUUIDCron != "" removed from IF
             CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
@@ -116,14 +114,12 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                 CallbackCash.insertNewCJtoCronVerification.statusText;
         }
 
-
-
         async function executeDraftCodeWithoutRetry() {
             CallbackCash.executeDraftCodeWithoutRetry = await generalService.fetchStatus(
-                '/code_jobs/async/' + CallbackCash.insertNewCJtoCronVerification.UUID + '/execute', 
+                '/code_jobs/async/' + CallbackCash.insertNewCJtoCronVerification.UUID + '/execute',
                 { method: 'POST' },
             ); // changed to .Body.UUID from .Body.CodeJobUUID
-    
+
             if (
                 CallbackCash.executeDraftCodeWithoutRetry.Status == 200 && // status changed to Status
                 CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID != '' &&
@@ -134,7 +130,7 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                 logcash.executeDraftCodeWithoutRetry = false;
                 logcash.ErrorFromexecuteDraftCodeWithoutRetry = 'Post to execute CodeJob with draft code failed';
             }
-    //debugger;
+            //debugger;
             generalService.sleep(20000);
             await getEmptyLogsToExecutedCronTest();
         }
@@ -209,7 +205,6 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                 logTimeCount = logTimeCount + 1;
                 generalService.sleep(20000);
                 await getLogsToExecutedCronTest();
-                
             } else {
                 if (
                     CallbackCash.ResponseExecutedLogsCronTest[CallbackCash.ResponseExecutedLogsCronTest.length - 1]
