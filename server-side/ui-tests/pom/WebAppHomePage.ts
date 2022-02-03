@@ -6,6 +6,8 @@ import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import { WebAppAPI } from './WebAppAPI';
+import { Client } from '@pepperi-addons/debug-server/dist';
 
 chai.use(promised);
 
@@ -22,10 +24,13 @@ export class WebAppHomePage extends Page {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
         return;
     }
-    public async manualResync(): Promise<void> {
+    public async manualResync(client: Client): Promise<void> {
+        const webAppAPI = new WebAppAPI(this.browser, client);
+        const accessToken = await webAppAPI.getAccessToken();
+        let syncResponse = await webAppAPI.getSyncResponse(accessToken);
+        expect(syncResponse.Status).to.equal('UpToDate');
         const webAppList = new WebAppList(this.browser);
         const webAppHeader = new WebAppHeader(this.browser);
-
         //Resync - Going to Accounts and back to Home Page
         console.log('Wait Before Loading Accounts');
         await this.browser.sleep(2002);
@@ -35,6 +40,8 @@ export class WebAppHomePage extends Page {
         console.log('Wait On Home Page Before Starting New Transaction');
         await this.browser.sleep(5005);
         await this.isSpinnerDone();
+        syncResponse = await webAppAPI.getSyncResponse(accessToken);
+        expect(syncResponse.Status).to.equal('UpToDate');
         return;
     }
 

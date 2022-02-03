@@ -199,8 +199,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const brandedApp = new BrandedApp(driver);
                         await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                         webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync();
-                        await webAppHomePage.manualResync();
+                        await webAppHomePage.manualResync(client);
                         await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
 
@@ -208,7 +207,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         const webAppLoginPage = new WebAppLoginPage(driver);
                         await webAppLoginPage.loginNoCompanyLogo(email, password);
                         let webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync();
+                        await webAppHomePage.manualResync(client);
                         const uomPage = new UomPage(driver);
                         await uomPage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                         await uomPage.testUomAtdUI();
@@ -216,7 +215,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync();
+                        await webAppHomePage.manualResync(client);
                         const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
                             _TEST_DATA_ATD_NAME,
                         );
@@ -235,14 +234,14 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await uomPage.editItemConfigFeld(_TEST_DATA_ATD_NAME);
                         let webAppHomePage = new WebAppHomePage(driver);
                         await webAppHomePage.returnToHomePage();
-                        await webAppHomePage.manualResync();
+                        await webAppHomePage.manualResync(client);
                         await uomPage.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                         await uomPage.testUomAtdUIWithItemConfig();
                         const addonPage = new AddonPage(driver);
                         await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
                         await addonPage.submitOrder();
                         webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync();
+                        await webAppHomePage.manualResync(client);
                         const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
                             _TEST_DATA_ATD_NAME,
                         );
