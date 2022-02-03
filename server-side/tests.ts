@@ -3,6 +3,7 @@ import GeneralService, { TesterFunctions } from './services/general.service';
 import {
     TestDataTests,
     UpgradeDependenciesTests,
+    LocalAddonFileCreatorTests,
     FileStorageTests,
     DataViewsTestsBase,
     DataViewsTestsPositive,
@@ -26,6 +27,7 @@ import {
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
+    SchedulerTestsOld,
     CodeJobsTests,
     TimeOutAddonJobsTests,
     AddonJobsTests,
@@ -98,6 +100,19 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UpgradeDependenciesTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function upload_local_file(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Local_Addon_File_Creator_Tests';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        LocalAddonFileCreatorTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -465,13 +480,16 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     let testResult;
-    //TODO: Remove the scheduler endpoint from Jenkins, This test was removed from Stage: "SchedulerTests", No test was added
+    //TODO: Run new SchedulerTests on Stage and old SchedulerTests on other
     if (client.BaseURL.includes('staging')) {
-        testResult = await Promise.all([await test_data(client, testerFunctions)]).then(() => testerFunctions.run());
-    } else {
         testResult = await Promise.all([
             await test_data(client, testerFunctions),
             SchedulerTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+    } else {
+        testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            SchedulerTestsOld(service, testerFunctions),
         ]).then(() => testerFunctions.run());
     }
     service.PrintMemoryUseToLog('End', testName);

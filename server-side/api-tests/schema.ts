@@ -39,7 +39,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
     //debugger;
-    //const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
     //#region Mocha
     describe('ADAL Tests Suites', () => {
         describe('Prerequisites Addon for ADAL Tests', () => {
