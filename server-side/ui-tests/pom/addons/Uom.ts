@@ -6,7 +6,7 @@ import { OrderPage } from '../OrderPage';
 import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 
-export class UomPage extends AddonPage {
+export class Uom extends AddonPage {
     //UOM Addon Locators
     public UomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
     public UomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
