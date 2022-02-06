@@ -43,17 +43,16 @@ export class WebAppAPI extends Page {
     }
 
     async initSync(accessToken: string) {
+        const generalService = new GeneralService(this._CLIENT);
         //webapi.sandbox.pepperi.com/16.60.82/webapi/Service1.svc/v1/HomePage
         const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/HomePage`;
-        const navigateToHomescreen = await (
-            await fetch(URL, {
-                method: 'GET',
-                headers: {
-                    PepperiSessionToken: accessToken,
-                    'Content-Type': 'application/json',
-                },
-            })
-        ).json();
+        const navigateToHomescreen = await generalService.fetchStatus(URL, {
+            method: 'GET',
+            headers: {
+                PepperiSessionToken: accessToken,
+                'Content-Type': 'application/json',
+            },
+        });
         return navigateToHomescreen;
     }
 
