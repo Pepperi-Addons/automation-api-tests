@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/Page';
+import { Page } from './base/page.base';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 
