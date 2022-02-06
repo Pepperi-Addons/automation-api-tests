@@ -830,7 +830,7 @@ export default class GeneralService {
     }
 
     generateRandomString(length: number): string {
-        let result = ' ';
+        let result = '';
         for (let i = 0; i < length; i++) {
             result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
         }
