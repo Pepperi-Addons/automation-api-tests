@@ -1,7 +1,7 @@
 import { By, Key, Locator } from 'selenium-webdriver';
 import { AddonPage, WebAppHomePage, WebAppSettingsSidePanel } from '..';
 import { ConsoleColors } from '../../../services/general.service';
-import { AddonLoadCondition } from './base/AddonPage';
+import { AddonLoadCondition } from './base/AddonPageBase';
 
 export class BrandedApp extends AddonPage {
     //Branded App Locators
