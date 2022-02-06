@@ -8,7 +8,10 @@ export interface DistributorObject {
     Company: string;
     Password: string;
 }
-
+//DO NOT PUSH THIS TO GITHUB
+// npm run ui-show-report --server=prod --chrome_headless=false --user_email='UOM_UI_STAGE@pepperitest.com' --user_pass='Aa123456' --var_pass='VarQA@pepperitest.com:u6P8C#' --tests='Uom'
+//npm run ui-show-report --server=stage --chrome_headless=false --user_email='yoni1@pepperitest.com' --user_pass='123456' --var_pass='VarQA@pepperitest.com:u6P8C#' --tests='Create'
+//DO NOT PUSH THIS TO GITHUB
 export interface DistributorTrialObject {
     UUID: string;
     TrialExpirationDateTime: string;
@@ -32,6 +35,7 @@ export class DistributorService {
         let newDistributor;
         let maxLoopsCounter = 16;
         console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");
+        debugger;
         do {
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
@@ -41,11 +45,16 @@ export class DistributorService {
                         Authorization: `Basic ${Buffer.from(this.varKey).toString('base64')}`,
                     },
                     body: JSON.stringify({
-                        FirstName: Distributor.FirstName,
-                        LastName: Distributor.LastName,
-                        Email: Distributor.Email,
-                        Company: Distributor.Company,
-                        Password: Distributor.Password,
+                        FirstName: "UOM_UI_STAGE",
+                        LastName: "UOM_UI_STAGE",
+                        Email: "UOM_UI_STAGE@pepperitest.com",
+                        Company: "UOM_UI_STAGE",
+                        Password: "Aa123456",
+                        // FirstName: "UOM_UI_STAGE",
+                        // LastName: "UOM_UI_STAGE",
+                        // Email: "UOM_UI_STAGE@pepperitest.com",
+                        // Company: "UOM_UI_STAGE",
+                        // Password: "Aa123456",
                     }),
                     timeout: 1000 * 60 * 9, //Limit this api call to 9 minutes
                 },
