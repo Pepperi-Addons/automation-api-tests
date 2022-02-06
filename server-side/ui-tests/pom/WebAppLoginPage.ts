@@ -9,10 +9,8 @@ import { WebAppHeader, WebAppHomePage } from './index';
 chai.use(promised);
 
 export class WebAppLoginPage extends Page {
-    protected browser: Browser;
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
-        this.browser = super.browser;
     }
 
     public Email: Locator = By.css('#email');

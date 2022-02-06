@@ -12,10 +12,8 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 chai.use(promised);
 
 export class WebAppHomePage extends Page {
-    protected browser: Browser;
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}/HomePage`);
-        this.browser = super.browser;
     }
 
     public Main: Locator = By.css('#mainButton');
