@@ -17,9 +17,9 @@ export class WebAppAPI extends Page {
     async getSyncResponse(accessToken: string, loopsAmount = 30) {
         const generalService = new GeneralService(this._CLIENT);
         let syncStatusReposnse;
-        const url = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/GetSyncStatus`;
+        const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/GetSyncStatus`;
         do {
-            syncStatusReposnse = await generalService.fetchStatus(url, {
+            syncStatusReposnse = await generalService.fetchStatus(URL, {
                 method: 'GET',
                 headers: {
                     PepperiSessionToken: accessToken,
@@ -67,8 +67,8 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            createSessionResponse = await generalService.fetchStatus(
-                `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/CreateSession`,
+            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/CreateSession`;
+            createSessionResponse = await generalService.fetchStatus(URL,
                 {
                     method: 'POST',
                     body: JSON.stringify({
@@ -97,10 +97,8 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            searchResponse = await generalService.fetchStatus(
-                `${
-                    this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-                }/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`,
+            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`;
+            searchResponse = await generalService.fetchStatus(URL,
                 {
                     method: 'POST',
                     body: JSON.stringify({
@@ -135,10 +133,8 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            searchResponse = await generalService.fetchStatus(
-                `${
-                    this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-                }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`,
+            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
+            searchResponse = await generalService.fetchStatus(URL,
                 {
                     method: 'GET',
                     headers: {
