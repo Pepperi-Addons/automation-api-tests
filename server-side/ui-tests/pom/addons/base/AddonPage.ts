@@ -55,10 +55,8 @@ export enum AddonLoadCondition {
 }
 
 export class AddonPage extends Page {
-    protected browser: Browser;
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
-        this.browser = browser;
     }
 
     public AddonContainerTopButton: Locator = By.css('.addon-page-container button');
