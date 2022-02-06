@@ -32,7 +32,6 @@ export class DistributorService {
         let newDistributor;
         let maxLoopsCounter = 16;
         console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");
-        debugger;
         do {
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
