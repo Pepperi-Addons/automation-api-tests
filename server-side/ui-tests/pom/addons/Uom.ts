@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { By, Key, Locator, WebElement } from 'selenium-webdriver';
-import { AddonPage } from './base/AddonPageBase';
+import { AddonPage } from './base/AddonPage';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
 import { OrderPage } from '../OrderPage';
-import { AddonLoadCondition } from './base/AddonPageBase';
+import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 
 export class Uom extends AddonPage {

@@ -16,7 +16,7 @@ import {
 } from '../pom/index';
 import { LoremIpsum } from 'lorem-ipsum';
 import { DistributorService } from '../../services/distributor.service';
-import { AddonLoadCondition } from '../pom/addons/base/AddonPageBase';
+import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
 import { LoginTests, OrderTests } from '.';
 import { replaceItemsTests, replaceUIControlsTests, upgradeDependenciesTests } from './test.index';
