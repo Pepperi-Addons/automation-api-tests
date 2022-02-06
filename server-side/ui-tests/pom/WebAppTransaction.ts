@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/PageBase';
+import { Page } from './base/Page.js';
 import config from '../../config';
 import { WebAppList, WebAppTopBar, WebAppDialog } from './index';
 import { Key } from 'selenium-webdriver';
