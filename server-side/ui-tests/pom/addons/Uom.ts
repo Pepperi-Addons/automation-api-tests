@@ -13,11 +13,11 @@ export class Uom extends AddonPage {
     public UomInstallBtn: Locator = By.css("[data-qa='install']");
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
-    public ItemInOrder: Locator = By.xpath('//fieldset');
+    public NonUomTypeItemInOrder: Locator = By.xpath('//fieldset');
     public UomTypeItemInOrder: Locator = By.xpath(
         "//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']",
     );
-    public LocatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
+    public TransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**
      *
@@ -127,7 +127,9 @@ export class Uom extends AddonPage {
             'Item ID',
             'Unit Quantity',
         );
+        this.browser.sleep(2000);
         await this.browser.click(this.SaveUIControlBtn);
+        this.browser.sleep(3500);
     }
 
     public async editItemConfigFeld(nameOfATD: string): Promise<void> {
@@ -166,7 +168,7 @@ export class Uom extends AddonPage {
                   return JSON.stringify(res);`,
                 },
             },
-            this.LocatorForTransLineField,
+            this.TransLineField,
             'ItemConfig',
         );
     }
@@ -613,10 +615,17 @@ export class Uom extends AddonPage {
         const orderPage = new OrderPage(this.browser);
         await orderPage.changeOrderPageView(viewType);
         //validate there are 5 items on screen
-        const allItemPresented: WebElement[] = await this.browser.findElements(this.ItemInOrder);
+        const allItemPresented: WebElement[] = await this.browser.findElements(this.NonUomTypeItemInOrder);
         expect(allItemPresented.length).to.equal(5);
         //validate 4 are UOM items
-        const allUOMItemPresented: WebElement[] = await this.browser.findElements(this.UomTypeItemInOrder);
+        let allUOMItemPresented: WebElement[] = [];
+        try {
+            //DI-19257 - https://pepperi.atlassian.net/browse/DI-19257
+            allUOMItemPresented = await this.browser.findElements(this.UomTypeItemInOrder);
+        } catch (error) {
+            console.log('cannot find UOM type items - probably related to: DI-19257');
+            process.exit(1);
+        }
         expect(allUOMItemPresented.length).to.equal(4);
     }
 }
