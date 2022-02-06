@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/PageBase';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 import { ConsoleColors } from '../../services/general.service';
