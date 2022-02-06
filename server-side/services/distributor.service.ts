@@ -47,11 +47,6 @@ export class DistributorService {
                         Email: Distributor.Email,
                         Company: Distributor.Company,
                         Password: Distributor.Password,
-                        // FirstName: "UOM_UI_STAGE",
-                        // LastName: "UOM_UI_STAGE",
-                        // Email: "UOM_UI_STAGE@pepperitest.com",
-                        // Company: "UOM_UI_STAGE",
-                        // Password: "Aa123456",
                     }),
                     timeout: 1000 * 60 * 9, //Limit this api call to 9 minutes
                 },
