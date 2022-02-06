@@ -14,7 +14,9 @@ export class Uom extends AddonPage {
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
     public ItemInOrder: Locator = By.xpath('//fieldset');
-    public UomTypeItemInOrder: Locator = By.xpath("//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']");
+    public UomTypeItemInOrder: Locator = By.xpath(
+        "//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']",
+    );
     public LocatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**

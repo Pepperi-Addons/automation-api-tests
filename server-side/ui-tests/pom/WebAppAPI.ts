@@ -66,8 +66,9 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-                }/Service1.svc/v1/CreateSession`;
+            const URL = `${
+                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+            }/Service1.svc/v1/CreateSession`;
             createSessionResponse = await generalService.fetchStatus(URL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -95,8 +96,9 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-                }/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`;
+            const URL = `${
+                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`;
             searchResponse = await generalService.fetchStatus(URL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -130,8 +132,9 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-                }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
+            const URL = `${
+                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
             searchResponse = await generalService.fetchStatus(URL, {
                 method: 'GET',
                 headers: {
