@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/PageBase';
 import config from '../../config';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
@@ -8,8 +8,10 @@ export class WebAppAPI extends Page {
     table: string[][] = [];
     _CLIENT: Client;
     _BASE_URL: string;
+    protected browser: Browser;
     constructor(browser: Browser, client: Client) {
         super(browser, `${config.baseUrl}`);
+        this.browser = super.browser;
         this._CLIENT = client;
         this._BASE_URL = '';
     }

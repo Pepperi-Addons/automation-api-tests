@@ -7,8 +7,11 @@ import { ConsoleColors } from '../../../services/general.service';
 
 export abstract class Page {
     private url: string;
-    public constructor(protected browser: Browser, url: string) {
+    protected browser: Browser;
+
+    public constructor(browser: Browser, url: string) {
         this.url = url;
+        this.browser = browser;
     }
 
     public PepperiHiddenLoadingSpinner: Locator = By.css('#loadingSpinnerModal[hidden]');
