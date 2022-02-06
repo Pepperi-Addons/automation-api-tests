@@ -7,8 +7,10 @@ import addContext from 'mochawesome/addContext';
 
 export class WebAppTransaction extends Page {
     table: string[][] = [];
+    protected browser: Browser;
     constructor(browser: Browser, uuid: string) {
         super(browser, `${config.baseUrl}/transactions/scope_items/${uuid}`);
+        this.browser = super.browser;
     }
 
     /**

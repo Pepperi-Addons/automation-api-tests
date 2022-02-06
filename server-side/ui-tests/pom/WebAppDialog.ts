@@ -5,8 +5,10 @@ import { Locator, By } from 'selenium-webdriver';
 import { ConsoleColors } from '../../services/general.service';
 
 export class WebAppDialog extends Page {
+    protected browser: Browser;
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}`);
+        this.browser = super.browser;
     }
 
     public Dialog: Locator = By.css('pep-dialog');

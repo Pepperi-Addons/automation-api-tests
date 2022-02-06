@@ -12,8 +12,11 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 chai.use(promised);
 
 export class WebAppHomePage extends Page {
+    
+    protected browser: Browser;
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}/HomePage`);
+        this.browser = super.browser;
     }
 
     public Main: Locator = By.css('#mainButton');
@@ -143,7 +146,7 @@ export class WebAppHomePage extends Page {
 
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }

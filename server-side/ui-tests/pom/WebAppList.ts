@@ -16,7 +16,7 @@ export class WebAppList extends Page {
     protected browser: Browser;
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}`);
-        this.browser = browser;
+        this.browser = super.browser;
     }
 
     public List: Locator = By.css('pep-list .scrollable-content');

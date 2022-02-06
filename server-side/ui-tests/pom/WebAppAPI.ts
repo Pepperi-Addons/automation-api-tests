@@ -8,8 +8,10 @@ export class WebAppAPI extends Page {
     table: string[][] = [];
     _CLIENT: Client;
     _BASE_URL: string;
+    protected browser: Browser;
     constructor(browser: Browser, client: Client) {
         super(browser, `${config.baseUrl}`);
+        this.browser = super.browser;
         this._CLIENT = client;
         this._BASE_URL = '';
     }
@@ -98,8 +100,7 @@ export class WebAppAPI extends Page {
         do {
             generalService.sleep(2000);
             searchResponse = await generalService.fetchStatus(
-                `${
-                    this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+                `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
                 }/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`,
                 {
                     method: 'POST',
@@ -136,8 +137,7 @@ export class WebAppAPI extends Page {
         do {
             generalService.sleep(2000);
             searchResponse = await generalService.fetchStatus(
-                `${
-                    this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+                `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
                 }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`,
                 {
                     method: 'GET',
