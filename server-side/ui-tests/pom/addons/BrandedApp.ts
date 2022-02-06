@@ -29,6 +29,7 @@ export class BrandedApp extends AddonPage {
         await this.browser.click(this.AddonContainerEditAdmin);
         await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
         await this.browser.click(this.AddonContainerEditorSave);
+        this.browser.sleep(3500);
 
         await this.browser.switchToDefaultContent();
         const webAppHomePage = new WebAppHomePage(this.browser);
