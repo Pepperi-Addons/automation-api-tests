@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/PageBase';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
@@ -12,8 +12,10 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 chai.use(promised);
 
 export class WebAppHomePage extends Page {
+    protected browser: Browser;
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}/HomePage`);
+        this.browser = super.browser;
     }
 
     public Main: Locator = By.css('#mainButton');

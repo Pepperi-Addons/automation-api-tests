@@ -1,5 +1,5 @@
 import { Browser } from '../../../utilities/browser';
-import { Page } from '../../base/page';
+import { Page } from '../../base/PageBase';
 import config from '../../../../config';
 import { Locator, By, WebElement, Key } from 'selenium-webdriver';
 import { WebAppHeader } from '../../WebAppHeader';
@@ -55,8 +55,10 @@ export enum AddonLoadCondition {
 }
 
 export class AddonPage extends Page {
+    protected browser: Browser;
     constructor(browser: Browser) {
         super(browser, `${config.baseUrl}`);
+        this.browser = browser;
     }
 
     public AddonContainerTopButton: Locator = By.css('.addon-page-container button');
