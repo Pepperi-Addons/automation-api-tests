@@ -4,10 +4,8 @@ import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 
 export class WebAppTopBar extends Page {
-    protected browser: Browser;
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
-        this.browser = super.browser;
     }
 
     public Header: Locator = By.css('[data-qa="firstMenu"]');
