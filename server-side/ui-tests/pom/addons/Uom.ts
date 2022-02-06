@@ -13,11 +13,11 @@ export class Uom extends AddonPage {
     public UomInstallBtn: Locator = By.css("[data-qa='install']");
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
-    public ItemInOrder: Locator = By.xpath('//fieldset');
+    public NonUomTypeItemInOrder: Locator = By.xpath('//fieldset');
     public UomTypeItemInOrder: Locator = By.xpath(
         "//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']",
     );
-    public LocatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
+    public TransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**
      *
@@ -166,7 +166,7 @@ export class Uom extends AddonPage {
                   return JSON.stringify(res);`,
                 },
             },
-            this.LocatorForTransLineField,
+            this.TransLineField,
             'ItemConfig',
         );
     }
@@ -613,7 +613,7 @@ export class Uom extends AddonPage {
         const orderPage = new OrderPage(this.browser);
         await orderPage.changeOrderPageView(viewType);
         //validate there are 5 items on screen
-        const allItemPresented: WebElement[] = await this.browser.findElements(this.ItemInOrder);
+        const allItemPresented: WebElement[] = await this.browser.findElements(this.NonUomTypeItemInOrder);
         expect(allItemPresented.length).to.equal(5);
         //validate 4 are UOM items
         const allUOMItemPresented: WebElement[] = await this.browser.findElements(this.UomTypeItemInOrder);
