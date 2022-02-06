@@ -141,7 +141,7 @@ export class WebAppHomePage extends Page {
 
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
