@@ -66,19 +66,19 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/CreateSession`;
-            createSessionResponse = await generalService.fetchStatus(URL,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        accessToken: this._CLIENT.OAuthAccessToken,
-                        culture: 'en-US',
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+            const URL = `${
+                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+            }/Service1.svc/v1/CreateSession`;
+            createSessionResponse = await generalService.fetchStatus(URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    accessToken: this._CLIENT.OAuthAccessToken,
+                    culture: 'en-US',
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-            );
+            });
             maxLoopsCounter--;
         } while (createSessionResponse.Body == null && maxLoopsCounter > 0);
         return createSessionResponse.Body.AccessToken;
@@ -96,25 +96,25 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`;
-            searchResponse = await generalService.fetchStatus(URL,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        CatalogUID: catalogUUID,
-                        Top: 100,
-                        ViewType: 'OrderCartGrid',
-                        OrderBy: '',
-                        Ascending: true,
-                        SearchText: '',
-                        SmartSearch: [],
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        PepperiSessionToken: accessToken,
-                    },
+            const URL = `${
+                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`;
+            searchResponse = await generalService.fetchStatus(URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    CatalogUID: catalogUUID,
+                    Top: 100,
+                    ViewType: 'OrderCartGrid',
+                    OrderBy: '',
+                    Ascending: true,
+                    SearchText: '',
+                    SmartSearch: [],
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    PepperiSessionToken: accessToken,
                 },
-            );
+            });
             maxLoopsCounter--;
         } while (searchResponse.Ok == null && maxLoopsCounter > 0);
         return searchResponse.Body;
@@ -132,16 +132,16 @@ export class WebAppAPI extends Page {
         let maxLoopsCounter = 90;
         do {
             generalService.sleep(2000);
-            const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
-            searchResponse = await generalService.fetchStatus(URL,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        PepperiSessionToken: accessToken,
-                    },
+            const URL = `${
+                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
+            searchResponse = await generalService.fetchStatus(URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    PepperiSessionToken: accessToken,
                 },
-            );
+            });
             maxLoopsCounter--;
         } while (searchResponse.Ok == null && maxLoopsCounter > 0);
         return searchResponse.Body;
