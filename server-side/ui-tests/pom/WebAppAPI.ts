@@ -149,6 +149,7 @@ export class WebAppAPI extends Page {
 
     public async getBaseURL() {
         const generalService = new GeneralService(this._CLIENT);
+        console.log("performing GET call to 'base_url' to recive correct URL to use as base in all API calls");
         this._BASE_URL = await (await generalService.papiClient.get('/webapi/base_url')).BaseURL;
         return this._BASE_URL;
     }
