@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/Page.js';
+import { Page } from './base/Page';
 import config from '../../config';
 
 export class WebAppActivity extends Page {
