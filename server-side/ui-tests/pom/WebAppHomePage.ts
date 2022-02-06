@@ -30,16 +30,14 @@ export class WebAppHomePage extends Page {
         let syncResponse = await webAppAPI.getSyncResponse(accessToken);
         expect(syncResponse.Status).to.equal('UpToDate');
         const webAppList = new WebAppList(this.browser);
-        const webAppHeader = new WebAppHeader(this.browser);
         //Resync - Going to Accounts and back to Home Page
         console.log('Wait Before Loading Accounts');
-        await this.browser.sleep(2002);
+        this.browser.sleep(2002);
         await this.clickOnBtn('Accounts');
         await webAppList.validateListRowElements();
-        await this.browser.click(webAppHeader.Home);
-        console.log('Wait On Home Page Before Starting New Transaction');
-        await this.browser.sleep(5005);
-        await this.isSpinnerDone();
+        this.browser.sleep(1500);
+        await this.returnToHomePage();
+        this.browser.sleep(5005);
         syncResponse = await webAppAPI.getSyncResponse(accessToken);
         expect(syncResponse.Status).to.equal('UpToDate');
         return;
@@ -143,7 +141,7 @@ export class WebAppHomePage extends Page {
 
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
