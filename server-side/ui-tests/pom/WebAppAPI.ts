@@ -100,7 +100,8 @@ export class WebAppAPI extends Page {
         do {
             generalService.sleep(2000);
             searchResponse = await generalService.fetchStatus(
-                `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+                `${
+                    this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
                 }/Service1.svc/v1/Cart/Transaction/${catalogUUID}/Items/Search`,
                 {
                     method: 'POST',
@@ -137,7 +138,8 @@ export class WebAppAPI extends Page {
         do {
             generalService.sleep(2000);
             searchResponse = await generalService.fetchStatus(
-                `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+                `${
+                    this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
                 }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`,
                 {
                     method: 'GET',

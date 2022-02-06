@@ -6,7 +6,6 @@ import path from 'path';
 import { ConsoleColors } from '../../../services/general.service';
 
 export abstract class Page {
-
     private url: string;
     protected browser: Browser;
 

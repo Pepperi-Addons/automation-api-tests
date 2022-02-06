@@ -54,7 +54,6 @@ export enum AddonLoadCondition {
     Content,
 }
 
-
 export class AddonPage extends Page {
     protected browser: Browser;
     constructor(browser: Browser) {
@@ -200,7 +199,7 @@ export class AddonPage extends Page {
         }
         await this.browser.sleep(3000);
         const matOptionWithStringInjected: string = this.MatOptionDropBox.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', option);
         await this.browser.click(By.xpath(matOptionWithStringInjected));
         await this.browser.sleep(3000);
@@ -227,7 +226,7 @@ export class AddonPage extends Page {
         await this.browser.click(this.CategoryExpender);
         for (let i = 0; i < itemKesyUomItems.length; i++) {
             const itemCheckBox: string = this.CategoryListItemCheckBox.valueOf()
-            ['value'].slice()
+                ['value'].slice()
                 .replace('|textToFill|', itemKesyUomItems[i]);
             const itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
             const checkBoxClassAtt = await itemCheckBoxElement.getAttribute('class');
@@ -283,7 +282,7 @@ export class AddonPage extends Page {
         await webAppList.isSpinnerDone();
         await webAppList.validateListRowElements();
         const xpathQueryForATDId: string = this.OrderIdTextElement.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', nameOfATD);
         const orderId: string = (await (await this.browser.findElement(By.xpath(xpathQueryForATDId))).getText()).trim();
         const webAppHome = new WebAppHomePage(this.browser);
