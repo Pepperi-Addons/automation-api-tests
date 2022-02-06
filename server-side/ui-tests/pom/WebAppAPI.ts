@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/Page';
+import { Page } from './base/page';
 import config from '../../config';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
