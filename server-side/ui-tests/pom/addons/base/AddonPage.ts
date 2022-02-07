@@ -160,9 +160,9 @@ export class AddonPage extends Page {
 
     public async isAddonFullyLoaded(addonLoadCondition: AddonLoadCondition): Promise<boolean> {
         if (addonLoadCondition == AddonLoadCondition.Footer) {
-            await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 45000);
+            await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 65000);
         } else {
-            await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 45000);
+            await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 65000);
         }
         console.log('%cValidate Addon Loaded', ConsoleColors.PageMessage);
         let bodySize = 0;
