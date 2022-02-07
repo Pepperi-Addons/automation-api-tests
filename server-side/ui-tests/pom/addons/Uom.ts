@@ -498,16 +498,16 @@ export class Uom extends AddonPage {
             await this.testQtysOfItem(workingUomObject, -1 * i, 0, -3 * i, i * -3, i * -3);
         }
         //1.4 set qty of single items as '3.5'
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
-            workingUomObject.aoqmUom1Qty,
-            workingUomObject.aoqmUom1Qty,
-            '3.5',
-            orderPage.blankSpaceOnScreenToClick,
-            this.isSpinnerDone,
-            this,
-        );
-        await this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 4, 0, 12, 12, 12);
+        // await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        //     workingUomObject.aoqmUom1Qty,
+        //     workingUomObject.aoqmUom1Qty,
+        //     '3.5',
+        //     orderPage.blankSpaceOnScreenToClick,
+        //     this.isSpinnerDone,
+        //     this,
+        // );
+        // await this.browser.sleep(2500);
+        // await this.testQtysOfItem(workingUomObject, 4, 0, 12, 12, 12);
 
         //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
         workingUomObject = new UomUIObject('1232');
@@ -541,17 +541,17 @@ export class Uom extends AddonPage {
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, 0, 0, 0, 12, 12);
         }
-        //2.4 set qty of single items to '3.5'
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
-            workingUomObject.aoqmUom1Qty,
-            workingUomObject.aoqmUom1Qty,
-            '3.5',
-            orderPage.blankSpaceOnScreenToClick,
-            this.isSpinnerDone,
-            this,
-        );
-        await this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
+        // //2.4 set qty of single items to '3.5'
+        // await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        //     workingUomObject.aoqmUom1Qty,
+        //     workingUomObject.aoqmUom1Qty,
+        //     '3.5',
+        //     orderPage.blankSpaceOnScreenToClick,
+        //     this.isSpinnerDone,
+        //     this,
+        // );
+        // await this.browser.sleep(2500);
+        // await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
         //3. Double -> factor:1, min:10, case:5, negative:true, decimal:1
         workingUomObject = new UomUIObject('1233');
         //set uom type to double
