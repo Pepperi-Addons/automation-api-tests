@@ -28,7 +28,7 @@ export class WebAppHomePage extends Page {
         const webAppAPI = new WebAppAPI(this.browser, client);
         const accessToken = await webAppAPI.getAccessToken();
         let syncResponse = await webAppAPI.getSyncResponse(accessToken);
-        console.log(`recived sync response: ${syncResponse}`);
+        console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
         expect(syncResponse.Status).to.equal('UpToDate');
         const webAppList = new WebAppList(this.browser);
         //Resync - Going to Accounts and back to Home Page
@@ -40,7 +40,7 @@ export class WebAppHomePage extends Page {
         await this.returnToHomePage();
         this.browser.sleep(5005);
         syncResponse = await webAppAPI.getSyncResponse(accessToken);
-        console.log(`recived sync response: ${syncResponse}`);
+        console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
         expect(syncResponse.Status).to.equal('UpToDate');
         return;
     }

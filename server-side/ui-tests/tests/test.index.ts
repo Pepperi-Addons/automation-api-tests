@@ -305,8 +305,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -341,6 +340,7 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
         let orderCartGrid;
         let orderBanner;
         let orderCartOpenedFooter;
+        let orderCenterClosedFooter;
 
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
@@ -473,7 +473,31 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                         expect(upsertUIControlResponse.Type).to.include('OrderCartOpenedFooter');
                     }
                 });
+            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCenterClosedFooter') {
+                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                    orderCenterClosedFooter = await generalService.papiClient.uiControls.find({
+                        where: "Type LIKE '%OrderCenterClosedFooter'",
+                    });
+                    expect(orderCenterClosedFooter).to.have.length.that.is.above(0);
+                    for (let i = 0; i < orderCenterClosedFooter.length; i++) {
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${orderCenterClosedFooter[i]['Type']}, ${orderCenterClosedFooter[i]['InternalID']}`,
+                        });
+                        const uiControlFromAPI = orderCenterClosedFooter[i].UIControlData.split('OrderCenterClosedFooter');
+                        const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCenterClosedFooter');
+                        orderCenterClosedFooter[
+                            i
+                        ].UIControlData = `${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}`;
+                        const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
+                            orderCenterClosedFooter[i],
+                        );
+                        expect(upsertUIControlResponse.Hidden).to.be.false;
+                        expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
+                    }
+                });
             }
+
         }
     });
 }

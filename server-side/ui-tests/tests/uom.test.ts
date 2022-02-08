@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
+import { AddonPage, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel, WebAppTopBar } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -11,7 +11,7 @@ import { OrderPageItem } from '../pom/OrderPage';
 import { Uom } from '../pom/addons/Uom';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
-import { upgradeDependenciesTests } from './test.index';
+import { replaceUIControlsTests, upgradeDependenciesTests } from './test.index';
 
 chai.use(promised);
 
@@ -58,6 +58,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.240'],
     };
     await upgradeDependenciesTests(generalService, varPass);
+    await replaceUIControlsTests(generalService);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM

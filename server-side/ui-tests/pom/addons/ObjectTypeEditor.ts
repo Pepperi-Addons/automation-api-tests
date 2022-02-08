@@ -115,6 +115,7 @@ export class ObjectTypeEditor extends AddonPage {
 
         const webAppDialog = new WebAppDialog(this.browser);
         await this.browser.sendKeys(webAppDialog.EditorTextBoxInput, name);
+        this.browser.sleep(2500);
         await this.browser.sendKeys(webAppDialog.EditorTextAreaInput, description + Key.TAB);
         await webAppDialog.selectDialogBoxByText('Save');
 
@@ -479,7 +480,7 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
         await this.browser.click(locatorForFieldType);
         const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', nameOfFieldToEdit);
         await this.browser.click(By.xpath(injectedFieldEditingBtn));
         await this.browser.sleep(2000);
