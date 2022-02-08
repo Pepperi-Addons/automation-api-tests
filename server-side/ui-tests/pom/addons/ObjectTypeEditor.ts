@@ -122,7 +122,7 @@ export class ObjectTypeEditor extends AddonPage {
         const webAppList = new WebAppList(this.browser);
 
         //If not in new ATD, try to remove ATD and recreate new ATD
-        try {
+        try {//TODO: fix this for stage new behavior of error popup and refresh after
             //Make sure the page finish to load after creating new ATD
             await this.isSpinnerDone();
             await this.browser.switchTo(this.AddonContainerIframe);
