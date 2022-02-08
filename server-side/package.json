@@ -13,6 +13,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "compile-tests": "npm run compile && npm run lint",
         "compile": "tsc",
+        "prebuild": "tsc",
         "build": "npm run lint && rollup -c rollup.config.js",
         "start": "tsc -w app.local.ts",
         "lint": "eslint --ext .ts .",
