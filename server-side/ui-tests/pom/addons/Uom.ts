@@ -235,7 +235,7 @@ export class Uom extends AddonPage {
      */
     public async testUomAtdUI(): Promise<void> {
         //1. regular item testing
-        debugger;
+        debugger;//TODO: delete this debugger
         //1.1 add 48 items of regular qty - see 48 items are shown + correct price is presented
         let workingUomObject = new UomUIObject('1230');
         const orderPage = new OrderPage(this.browser);

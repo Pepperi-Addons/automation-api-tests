@@ -1,4 +1,4 @@
-import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions, ResourceTypes } from '../../services/general.service';
 import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
@@ -334,18 +334,10 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
         });
         const uIControlArr = JSON.parse(uIControlArrFromFile);
 
-        let catalogSelectionCard;
-        let catalogForm;
-        let orderViewsMenu;
-        let orderCartGrid;
-        let orderBanner;
-        let orderCartOpenedFooter;
-        let orderCenterClosedFooter;
-
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    catalogSelectionCard = await generalService.papiClient.uiControls.find({
+                    const catalogSelectionCard = await generalService.papiClient.uiControls.find({
                         where: `Type='CatalogSelectionCard'`,
                     });
                     expect(catalogSelectionCard).to.have.length.that.is.above(0);
@@ -368,7 +360,7 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == 'CatalogForm') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    catalogForm = await generalService.papiClient.uiControls.find({
+                    const catalogForm = await generalService.papiClient.uiControls.find({
                         where: `Type='CatalogForm'`,
                     });
                     expect(catalogForm).to.have.length.that.is.above(0);
@@ -389,7 +381,7 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderViewsMenu') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    orderViewsMenu = await generalService.papiClient.uiControls.find({
+                    const orderViewsMenu = await generalService.papiClient.uiControls.find({
                         where: "Type LIKE '%OrderViewsMenu'",
                     });
                     expect(orderViewsMenu).to.have.length.that.is.above(0);
@@ -410,7 +402,7 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartGrid') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    orderCartGrid = await generalService.papiClient.uiControls.find({
+                    const orderCartGrid = await generalService.papiClient.uiControls.find({
                         where: "Type LIKE '%OrderCartGrid'",
                     });
                     expect(orderCartGrid).to.have.length.that.is.above(0);
@@ -431,7 +423,7 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderBanner') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    orderBanner = await generalService.papiClient.uiControls.find({
+                    const orderBanner = await generalService.papiClient.uiControls.find({
                         where: "Type LIKE '%OrderBanner'",
                     });
                     expect(orderBanner).to.have.length.that.is.above(0);
@@ -452,7 +444,7 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartOpenedFooter') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    orderCartOpenedFooter = await generalService.papiClient.uiControls.find({
+                    const orderCartOpenedFooter = await generalService.papiClient.uiControls.find({
                         where: "Type LIKE '%OrderCartOpenedFooter'",
                     });
                     expect(orderCartOpenedFooter).to.have.length.that.is.above(0);
@@ -475,29 +467,35 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCenterClosedFooter') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    orderCenterClosedFooter = await generalService.papiClient.uiControls.find({
+                    const orderCenterClosedFooter = await generalService.papiClient.uiControls.find({
                         where: "Type LIKE '%OrderCenterClosedFooter'",
                     });
                     expect(orderCenterClosedFooter).to.have.length.that.is.above(0);
-                    for (let i = 0; i < orderCenterClosedFooter.length; i++) {
-                        addContext(this, {
-                            title: 'Test Data',
-                            value: `Add UIControls ${orderCenterClosedFooter[i]['Type']}, ${orderCenterClosedFooter[i]['InternalID']}`,
-                        });
-                        const uiControlFromAPI = orderCenterClosedFooter[i].UIControlData.split('OrderCenterClosedFooter');
+                    const atdArray: any = await generalService.papiClient.metaData.type('transactions' as ResourceTypes).types.get();
+                    for (let i = 0; i < atdArray.length; i++) {
+                        const uiControlFromAPI = orderCenterClosedFooter[0].UIControlData.split('OrderCenterClosedFooter');
+                        uiControlFromAPI[0] = uiControlFromAPI[0].split('OA#')[0] + `OA#${atdArray[i]['InternalID']}]`;
                         const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCenterClosedFooter');
                         orderCenterClosedFooter[
                             i
                         ].UIControlData = `${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}`;
+                        addContext(this, {
+                            title: 'Test Data',
+                            value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
+                        });
+                        orderCenterClosedFooter[0].Type = `[OA#${atdArray[i]['InternalID']}]OrderCenterClosedFooter`;
+                        if (JSON.stringify(orderCenterClosedFooter).includes(atdArray[i].InternalID)) {
+                            orderCenterClosedFooter[0].InternalID = atdArray[i].InternalID;
+                        }
                         const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
-                            orderCenterClosedFooter[i],
+                            orderCenterClosedFooter[0],
                         );
                         expect(upsertUIControlResponse.Hidden).to.be.false;
                         expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
                     }
                 });
             }
-
         }
     });
+
 }

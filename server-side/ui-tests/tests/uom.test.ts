@@ -58,7 +58,6 @@ export async function UomTests(email: string, password: string, varPass: string,
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.240'],
     };
     await upgradeDependenciesTests(generalService, varPass);
-    await replaceUIControlsTests(generalService);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM
@@ -204,69 +203,75 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
 
-                    it('UI Test UOM ATD', async function () {
-                        const webAppLoginPage = new WebAppLoginPage(driver);
-                        await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        let webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync(client);
-                        const uom = new Uom(driver);
-                        await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        await uom.testUomAtdUI();
-                        const addonPage = new AddonPage(driver);
-                        await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
-                        await addonPage.submitOrder();
-                        webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync(client);
-                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
-                            _TEST_DATA_ATD_NAME,
-                        );
-                        const service = new ObjectsService(generalService);
-                        const orderResponse: TransactionLines[] = await service.getTransactionLines({
-                            where: `TransactionInternalID=${orderId}`,
-                        });
-                        expect(orderResponse).to.be.an('array').with.lengthOf(4);
-                        validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
-                    });
+                    describe("B2", async () => {
+                        await replaceUIControlsTests(generalService);
 
-                    it('UI Test UOM ATD -- testing item configuration field', async function () {
-                        const webAppLoginPage = new WebAppLoginPage(driver);
-                        await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        const uom = new Uom(driver);
-                        await uom.editItemConfigFeld(_TEST_DATA_ATD_NAME);
-                        let webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.returnToHomePage();
-                        await webAppHomePage.manualResync(client);
-                        await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                        await uom.testUomAtdUIWithItemConfig();
-                        const addonPage = new AddonPage(driver);
-                        await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
-                        await addonPage.submitOrder();
-                        webAppHomePage = new WebAppHomePage(driver);
-                        await webAppHomePage.manualResync(client);
-                        const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
-                            _TEST_DATA_ATD_NAME,
-                        );
-                        const service = new ObjectsService(generalService);
-                        const orderResponse = await service.getTransactionLines({
-                            where: `TransactionInternalID=${orderId}`,
+                        it('UI Test UOM ATD', async function () {
+                            const webAppLoginPage = new WebAppLoginPage(driver);
+                            await webAppLoginPage.loginNoCompanyLogo(email, password);
+                            let webAppHomePage = new WebAppHomePage(driver);
+                            await webAppHomePage.manualResync(client);
+                            debugger;
+                            const uom = new Uom(driver);
+                            await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                            await uom.testUomAtdUI();
+                            const addonPage = new AddonPage(driver);
+                            await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
+                            await addonPage.submitOrder();
+                            webAppHomePage = new WebAppHomePage(driver);
+                            await webAppHomePage.manualResync(client);
+                            const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
+                                _TEST_DATA_ATD_NAME,
+                            );
+                            const service = new ObjectsService(generalService);
+                            const orderResponse: TransactionLines[] = await service.getTransactionLines({
+                                where: `TransactionInternalID=${orderId}`,
+                            });
+                            expect(orderResponse).to.be.an('array').with.lengthOf(4);
+                            validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
                         });
-                        expect(orderResponse).to.be.an('array').with.lengthOf(3);
-                        validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
-                    });
 
-                    it('Delete test ATD from dist + home screen using UI', async function () {
-                        const webAppLoginPage = new WebAppLoginPage(driver);
-                        await webAppLoginPage.loginNoCompanyLogo(email, password);
-                        const webAppHeader = new WebAppHeader(driver);
-                        await webAppHeader.openSettings();
-                        const brandedApp = new BrandedApp(driver);
-                        await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                        const objectTypeEditor = new ObjectTypeEditor(driver);
-                        await objectTypeEditor.removeATD(
-                            generalService,
-                            _TEST_DATA_ATD_NAME,
-                            _TEST_DATA_ATD_DESCRIPTION,
-                        );
+
+                        it('UI Test UOM ATD -- testing item configuration field', async function () {
+                            const webAppLoginPage = new WebAppLoginPage(driver);
+                            await webAppLoginPage.loginNoCompanyLogo(email, password);
+                            const uom = new Uom(driver);
+                            await uom.editItemConfigFeld(_TEST_DATA_ATD_NAME);
+                            let webAppHomePage = new WebAppHomePage(driver);
+                            await webAppHomePage.returnToHomePage();
+                            await webAppHomePage.manualResync(client);
+                            await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+                            await uom.testUomAtdUIWithItemConfig();
+                            const addonPage = new AddonPage(driver);
+                            await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
+                            await addonPage.submitOrder();
+                            webAppHomePage = new WebAppHomePage(driver);
+                            await webAppHomePage.manualResync(client);
+                            const orderId: string = await addonPage.getLastOrderIdFromActivitiesByATDName(
+                                _TEST_DATA_ATD_NAME,
+                            );
+                            const service = new ObjectsService(generalService);
+                            const orderResponse = await service.getTransactionLines({
+                                where: `TransactionInternalID=${orderId}`,
+                            });
+                            expect(orderResponse).to.be.an('array').with.lengthOf(3);
+                            validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
+                        });
+
+                        it('Delete test ATD from dist + home screen using UI', async function () {
+                            const webAppLoginPage = new WebAppLoginPage(driver);
+                            await webAppLoginPage.loginNoCompanyLogo(email, password);
+                            const webAppHeader = new WebAppHeader(driver);
+                            await webAppHeader.openSettings();
+                            const brandedApp = new BrandedApp(driver);
+                            await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
+                            const objectTypeEditor = new ObjectTypeEditor(driver);
+                            await objectTypeEditor.removeATD(
+                                generalService,
+                                _TEST_DATA_ATD_NAME,
+                                _TEST_DATA_ATD_DESCRIPTION,
+                            );
+                        });
                     });
                 });
 
