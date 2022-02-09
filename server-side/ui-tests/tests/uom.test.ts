@@ -1,6 +1,14 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPage, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel, WebAppTopBar } from '../pom/index';
+import {
+    AddonPage,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppSettingsSidePanel,
+    WebAppTopBar,
+} from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -203,7 +211,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                     });
 
-                    describe("B2", async () => {
+                    describe('B2', async () => {
                         await replaceUIControlsTests(generalService);
 
                         it('UI Test UOM ATD', async function () {
@@ -230,7 +238,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             expect(orderResponse).to.be.an('array').with.lengthOf(4);
                             validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
                         });
-
 
                         it('UI Test UOM ATD -- testing item configuration field', async function () {
                             const webAppLoginPage = new WebAppLoginPage(driver);

@@ -305,7 +305,8 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
+                                    maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -467,26 +468,32 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCenterClosedFooter') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    const orderCenterClosedFooter = await generalService.papiClient.uiControls.find({
+                    const orderCenterClosedFooter: any = await generalService.papiClient.uiControls.find({
                         where: "Type LIKE '%OrderCenterClosedFooter'",
                     });
                     expect(orderCenterClosedFooter).to.have.length.that.is.above(0);
-                    const atdArray: any = await generalService.papiClient.metaData.type('transactions' as ResourceTypes).types.get();
+                    const atdArray: any = await generalService.papiClient.metaData
+                        .type('transactions' as ResourceTypes)
+                        .types.get();
+                    let orderOrigenUpdateCounter = 0;
                     for (let i = 0; i < atdArray.length; i++) {
-                        const uiControlFromAPI = orderCenterClosedFooter[0].UIControlData.split('OrderCenterClosedFooter');
-                        uiControlFromAPI[0] = uiControlFromAPI[0].split('OA#')[0] + `OA#${atdArray[i]['InternalID']}]`;
+                        const uiControlFromAPI =
+                            orderCenterClosedFooter[0].UIControlData.split('OrderCenterClosedFooter');
+                        uiControlFromAPI[0] = `${uiControlFromAPI[0].split('OA#')[0]}OA#${atdArray[i]['InternalID']}]`;
                         const uiControlFromFile = uIControlArr[j].UIControlData.split('OrderCenterClosedFooter');
-                        orderCenterClosedFooter[
-                            i
-                        ].UIControlData = `${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}`;
                         addContext(this, {
                             title: 'Test Data',
                             value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
                         });
-                        orderCenterClosedFooter[0].Type = `[OA#${atdArray[i]['InternalID']}]OrderCenterClosedFooter`;
                         if (JSON.stringify(orderCenterClosedFooter).includes(atdArray[i].InternalID)) {
-                            orderCenterClosedFooter[0].InternalID = atdArray[i].InternalID;
+                            orderCenterClosedFooter[0]['InternalID'] =
+                                orderCenterClosedFooter[orderOrigenUpdateCounter].InternalID;
+                            orderOrigenUpdateCounter++;
+                        } else {
+                            delete orderCenterClosedFooter[0].InternalID;
                         }
+                        orderCenterClosedFooter[0].UIControlData = `${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}`;
+                        orderCenterClosedFooter[0].Type = `[OA#${atdArray[i]['InternalID']}]OrderCenterClosedFooter`;
                         const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(
                             orderCenterClosedFooter[0],
                         );
@@ -497,5 +504,4 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
             }
         }
     });
-
 }

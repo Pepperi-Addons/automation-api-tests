@@ -122,7 +122,8 @@ export class ObjectTypeEditor extends AddonPage {
         const webAppList = new WebAppList(this.browser);
 
         //If not in new ATD, try to remove ATD and recreate new ATD
-        try {//TODO: fix this for stage new behavior of error popup and refresh after
+        try {
+            //TODO: fix this for stage new behavior of error popup and refresh after
             //Make sure the page finish to load after creating new ATD
             await this.isSpinnerDone();
             await this.browser.switchTo(this.AddonContainerIframe);
@@ -480,7 +481,7 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
         await this.browser.click(locatorForFieldType);
         const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', nameOfFieldToEdit);
         await this.browser.click(By.xpath(injectedFieldEditingBtn));
         await this.browser.sleep(2000);
