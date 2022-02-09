@@ -461,36 +461,38 @@ export default class GeneralService {
         const isInstalledArr: boolean[] = [];
         const installedAddonsArr = await this.getInstalledAddons({ page_size: -1 });
         let installResponse;
-        for (const addonUUID in testData) {
+        for (const addonName in testData) {
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
             let isInstalled = false;
             for (let i = 0; i < installedAddonsArr.length; i++) {
                 if (installedAddonsArr[i].Addon !== null) {
-                    if (installedAddonsArr[i].Addon.Name == addonUUID) {
+                    if (installedAddonsArr[i].Addon.Name == addonName) {
                         isInstalled = true;
                         break;
                     }
                 }
             }
             if (!isInstalled) {
-                if (testData[addonUUID][0] == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
+                if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${testData[addonUUID][0]}`)
+                        .addonUUID(`${addonUUID}`)
                         .install('0.0.235');
                 } else {
-                    if (testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/)) {
-                        const version = testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/);
+                    if (version.match(/\d+[\.]\d+[/.]\d+/)) {
+                        const versionToInstall = version.match(/\d+[\.]\d+[/.]\d+/);
                         if (version?.length && typeof version[0] === 'string') {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${testData[addonUUID][0]}`)
-                                .install(version[0]);
+                                .addonUUID(`${addonUUID}`)
+                                .install(String(versionToInstall));
                         } else {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .addonUUID(`${addonUUID}`)
                                 .install();
                         }
                     } else {
                         installResponse = await this.papiClient.addons.installedAddons
-                            .addonUUID(`${testData[addonUUID][0]}`)
+                            .addonUUID(`${addonUUID}`)
                             .install();
                     }
                 }
