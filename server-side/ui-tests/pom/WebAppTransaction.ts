@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/Page';
 import config from '../../config';
 import { WebAppList, WebAppTopBar, WebAppDialog } from './index';
 import { Key } from 'selenium-webdriver';
@@ -7,7 +7,7 @@ import addContext from 'mochawesome/addContext';
 
 export class WebAppTransaction extends Page {
     table: string[][] = [];
-    constructor(browser: Browser, uuid: string) {
+    constructor(protected browser: Browser, uuid: string) {
         super(browser, `${config.baseUrl}/transactions/scope_items/${uuid}`);
     }
 

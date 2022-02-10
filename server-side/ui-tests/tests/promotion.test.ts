@@ -11,6 +11,8 @@ import {
     WebAppTransaction,
     WebAppAPI,
     WebAppDialog,
+    WebAppSettingsSidePanel,
+    Promotion,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import GeneralService, { ConsoleColors } from '../../services/general.service';
@@ -1375,6 +1377,27 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     );
                     expect(testDataTransaction).to.be.true;
                 }
+            });
+        });
+
+        describe('Bug Verification', function () {
+            it('Package TP Editor UI Pop-Up Container (DI-19254)', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.openSettings();
+
+                const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
+                await webAppSettingsSidePanel.selectSettingsByID('Promotion Editor');
+                await driver.click(webAppSettingsSidePanel.PackageTPEditor);
+
+                const promotion = new Promotion(driver);
+
+                await driver.click(promotion.EditPromotionBtn);
+                await driver.click(promotion.PromotionDetailsBtn);
+                await driver.click(promotion.PromotionEditBtn);
+                await expect(driver.untilIsVisible(promotion.PromotionEditDialogClose, 5000)).eventually.to.be
+                    .fulfilled;
             });
         });
     });

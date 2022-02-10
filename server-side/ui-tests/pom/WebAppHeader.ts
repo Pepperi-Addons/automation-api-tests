@@ -1,10 +1,10 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/Page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 
 export class WebAppHeader extends Page {
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 
@@ -13,4 +13,10 @@ export class WebAppHeader extends Page {
     public Help: Locator = By.css('[data-qa="systemSuppot"]');
     public UserBtn: Locator = By.css('[data-qa="systemAvatar"]');
     public Home: Locator = By.css('[data-qa="systemHome"]');
+
+    public async openSettings() {
+        await this.browser.click(this.Settings);
+        await this.browser.sleep(1800);
+        return;
+    }
 }

@@ -93,7 +93,7 @@ export class Browser {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
             console.log(
-                `%cClicked with defult selector: ${selector.valueOf()['value']}, on element with index of: ${index}`,
+                `%cClicked with defult selector: '${selector.valueOf()['value']}', on element with index of: ${index}`,
                 ConsoleColors.ClickedMessage,
             );
         } catch (error) {
@@ -109,9 +109,9 @@ export class Browser {
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
                         console.log(
-                            `%cClicked with xpath selector: ${
+                            `%cClicked with xpath selector: '${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}`,
+                            }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
                     } else {
@@ -119,9 +119,9 @@ export class Browser {
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
                         console.log(
-                            `%cClicked with css selector: ${
+                            `%cClicked with css selector: '${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}`,
+                            }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
                     }
@@ -135,6 +135,43 @@ export class Browser {
         return;
     }
 
+    public async ClickByText(selector: Locator, btnTxt: string, waitUntil = 1500) {
+        const buttonsArr: WebElement[] = await this.findElements(selector, waitUntil);
+        for (let i = 0; i < buttonsArr.length; i++) {
+            const elementsText = (await buttonsArr[i].getText()).trim();
+            if (elementsText.includes(btnTxt)) {
+                await this.click(selector, i, waitUntil);
+                return;
+            }
+        }
+        console.log(`element with selector: '${selector}' and text:'${btnTxt}' isn't found`);
+        return;
+    }
+
+    /**
+     * Used for clicking on element, sending keys to an element and clicking after on other element, waiting with given function
+     * @param clickOnLocator Locator of element to click on
+     * @param sendToLocator Locator of element to send the keys to
+     * @param txtToSend The keys to send
+     * @param afterClickLocator Optional locator for elemnt to click on after the keys sent
+     * @param waitFunction Function to call to wait until
+     * @param that This value of the class in which the wait function is found
+     */
+    public async activateTextInputFieldAndWaitUntillFunction(
+        clickOnLocator: Locator,
+        sendToLocator: Locator,
+        txtToSend: string,
+        afterClickLocator?: Locator,
+        waitFunction?: () => Promise<boolean>,
+        that?: any,
+    ) {
+        await this.click(clickOnLocator);
+        await this.sendKeys(sendToLocator, txtToSend);
+        this.sleep(1000);
+        if (afterClickLocator) await this.click(afterClickLocator);
+        if (waitFunction && that) await waitFunction.call(that);
+    }
+
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {
@@ -143,9 +180,9 @@ export class Browser {
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
             console.log(
-                `%cSentKeys with defult selector: ${
+                `%cSentKeys with defult selector: '${
                     selector.valueOf()['value']
-                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                 ConsoleColors.SentKeysMessage,
             );
         } catch (error) {
@@ -163,9 +200,9 @@ export class Browser {
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
                         console.log(
-                            `%cSentKeys with actions and defult selector: ${
+                            `%cSentKeys with actions and defult selector: '${
                                 selector.valueOf()['value']
-                            }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                            }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                             ConsoleColors.SentKeysMessage,
                         );
                     } catch (error) {
@@ -174,9 +211,9 @@ export class Browser {
                                 `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with xpath selector: ${
+                                `%cSet value with xpath selector: '${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         } else {
@@ -184,9 +221,9 @@ export class Browser {
                                 `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with css selector: ${
+                                `%cSet value with css selector: '${
                                     selector.valueOf()['value']
-                                }, on element with index of: ${index}, Keys: ${isSecret ? '******' : keys}`,
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
                         }
@@ -237,12 +274,16 @@ export class Browser {
         await this.driver.manage().setTimeouts({ implicit: this.TIMEOUT });
         if (elArr === undefined) {
             throw new Error(
-                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is: ${elArr}`,
+                `After wait time of: ${waitUntil}, for selector of '${selector['value']}', The test must end, The element is: ${elArr}`,
             );
-        }
-        if (isElVisible === false) {
+        } else if (isElVisible === false) {
             throw new Error(
-                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is not visible`,
+                `After wait time of: ${waitUntil}, for selector of '${selector['value']}', The test must end, The element is not visible`,
+            );
+        } else {
+            console.log(
+                `%cElement with selector: '${selector.valueOf()['value']}' is found successfully`,
+                ConsoleColors.ElementFoundMessage,
             );
         }
         return elArr;
@@ -252,6 +293,7 @@ export class Browser {
         if ((await this.findElement(selector, waitUntil)) === undefined) {
             return false;
         }
+        console.log(`%cElement '${selector.valueOf()['value']}' is visibale`, ConsoleColors.ElementFoundMessage);
         return true;
     }
 
@@ -265,7 +307,7 @@ export class Browser {
      * @returns
      */
     public sleepTimeout(ms: number) {
-        return this.tempGeneralService.sleepTimeout(ms);
+        return this.tempGeneralService.sleepAsync(ms);
     }
 
     /**
@@ -356,7 +398,7 @@ export class Browser {
     public async close(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         const windowTitle = await this.driver.getTitle();
-        console.log(`%cClose Window With Title: ${windowTitle}`, ConsoleColors.Success);
+        console.log(`%cClose Window With Title: '${windowTitle}'`, ConsoleColors.Success);
         return await this.driver.close();
     }
 
@@ -368,7 +410,7 @@ export class Browser {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         try {
             const windowTitle = await this.driver.getTitle();
-            console.log(`%cQuit Window With Title: ${windowTitle}`, ConsoleColors.SystemInformation);
+            console.log(`%cQuit Window With Title: '${windowTitle}'`, ConsoleColors.SystemInformation);
         } catch (error) {
             console.log(`%cQuit Window With Title Error: ${error}`, ConsoleColors.Error);
         }
