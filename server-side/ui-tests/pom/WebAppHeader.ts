@@ -1,10 +1,10 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/Page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 
 export class WebAppHeader extends Page {
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 

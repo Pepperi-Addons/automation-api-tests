@@ -374,14 +374,13 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
                 );
                 console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL });
-                expect(relationResponse.Body.Text.split('\n').map((x) => x.split(','))).to.deep.equal([
-                    ['Key', 'Status'],
-                    ['testKeyDIMX0', 'Insert'],
-                    ['testKeyDIMX1', 'Ignore'],
-                    ['testKeyDIMX2', 'Ignore'],
-                    ['testKeyDIMX3', 'Ignore'],
-                    ['testKeyDIMX4', 'Insert'],
-                    ['testKeyDIMX5', 'Insert'],
+                expect(relationResponse.Body).to.deep.equal([
+                    { Key: 'testKeyDIMX0', Status: 'Insert' },
+                    { Key: 'testKeyDIMX1', Status: 'Ignore' },
+                    { Key: 'testKeyDIMX2', Status: 'Ignore' },
+                    { Key: 'testKeyDIMX3', Status: 'Ignore' },
+                    { Key: 'testKeyDIMX4', Status: 'Insert' },
+                    { Key: 'testKeyDIMX5', Status: 'Insert' },
                 ]);
             });
 
@@ -411,14 +410,13 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
                 );
                 console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL });
-                expect(relationResponse.Body.Text.split('\n').map((x) => x.split(','))).to.deep.equal([
-                    ['Key', 'Status'],
-                    ['testKeyDIMX0', 'Insert'],
-                    ['testKeyDIMX1', 'Insert'],
-                    ['testKeyDIMX2', 'Insert'],
-                    ['testKeyDIMX3', 'Insert'],
-                    ['testKeyDIMX4', 'Insert'],
-                    ['testKeyDIMX5', 'Insert'],
+                expect(relationResponse.Body).to.deep.equal([
+                    { Key: 'testKeyDIMX0', Status: 'Insert' },
+                    { Key: 'testKeyDIMX1', Status: 'Insert' },
+                    { Key: 'testKeyDIMX2', Status: 'Insert' },
+                    { Key: 'testKeyDIMX3', Status: 'Insert' },
+                    { Key: 'testKeyDIMX4', Status: 'Insert' },
+                    { Key: 'testKeyDIMX5', Status: 'Insert' },
                 ]);
             });
 

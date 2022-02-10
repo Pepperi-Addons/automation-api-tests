@@ -1,7 +1,8 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/Page';
 import config from '../../config';
 import { WebElement, Locator, By } from 'selenium-webdriver';
+import { ConsoleColors } from '../../services/general.service';
 
 export enum SelectSmartSearchRange {
     '=' = 1,
@@ -12,7 +13,7 @@ export enum SelectSmartSearchRange {
 
 export class WebAppList extends Page {
     table: string[][] = [];
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 
@@ -79,6 +80,11 @@ export class WebAppList extends Page {
     public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
         return await this.browser.click(this.ListRowElements, position, waitUntil);
+    }
+
+    public async clickOnFromListRowWebElementByName(textOfElement: string, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.ClickByText(this.ListRowElements, textOfElement, waitUntil);
     }
 
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
@@ -195,7 +201,7 @@ export class WebAppList extends Page {
                 throw new Error(`Index of ${index} is out of range`);
             },
             () => {
-                console.log(`Element ${this.SmartSearchCheckBoxOptions.toString()} not found`);
+                console.log(`%cElement ${this.SmartSearchCheckBoxOptions.toString()} not found`, ConsoleColors.Error);
             },
         );
         return;

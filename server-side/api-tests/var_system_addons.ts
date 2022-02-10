@@ -62,7 +62,6 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
 
     let UsageMonitorTestData;
     let DataRetentionTestData;
-    let ShirMaintenancetTest2TestData;
 
     for (let index = 0; index < arrayOfAddonsDiff.length; index++) {
         if (arrayOfAddonsDiff[index]['Prod'].Name == 'Usage Monitor') {
@@ -70,9 +69,6 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
             arrayOfAddonsDiff.splice(index, 1);
         } else if (arrayOfAddonsDiff[index]['Prod'].Name == 'Data Retention') {
             DataRetentionTestData = arrayOfAddonsDiff[index]['Stage'];
-            arrayOfAddonsDiff.splice(index, 1);
-        } else if (arrayOfAddonsDiff[index]['Stage'].Name == 'Shir maintenance test2') {
-            ShirMaintenancetTest2TestData = arrayOfAddonsDiff[index]['Prod'];
             arrayOfAddonsDiff.splice(index, 1);
         }
     }
@@ -92,10 +88,6 @@ export async function VarSystemAddonsTests(generalService: GeneralService, reque
 
         it(`Expect Data Retention Is System in Production Only `, async () => {
             expect(DataRetentionTestData).to.equal('Addon Missing');
-        });
-
-        it(`Expect Shir maintenance test2 Is System in Stage Only `, async () => {
-            expect(ShirMaintenancetTest2TestData).to.equal('Addon Missing');
         });
 
         it(`No Diff Between Production and Stage System Addons`, async () => {

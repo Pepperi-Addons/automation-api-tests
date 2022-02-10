@@ -1,11 +1,11 @@
-import { LoginTests } from './login';
-import { OrderTests } from './order';
-import { WorkflowTests } from './workflow';
-import { DeepLinkTests } from './deep_link';
-import { PromotionTests } from './promotion';
-import { SecurityPolicyTests } from './security_policy';
-import { CreateDistributorTests } from './create_distributor';
-import { UomTests } from './uom';
+import { LoginTests } from './login.test';
+import { OrderTests } from './order.test';
+import { WorkflowTests } from './workflow.test';
+import { DeepLinkTests } from './deep_link.test';
+import { PromotionTests } from './promotion.test';
+import { SecurityPolicyTests } from './security_policy.test';
+import { CreateDistributorTests } from './create_distributor.test';
+import { UomTests } from './uom.test';
 
 export {
     LoginTests,
