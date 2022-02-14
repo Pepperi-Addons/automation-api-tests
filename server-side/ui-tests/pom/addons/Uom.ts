@@ -466,7 +466,12 @@ export class Uom extends AddonPage {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
-        await orderPage.changeOrderCenterPageView("GridLine");
+        try {
+            await orderPage.changeOrderCenterPageView('GridLine');
+        } catch (Error) {
+            await orderPage.changeOrderCenterPageView('Grid');
+        }
+
         await webAppList.validateListRowElements();
     }
 
@@ -613,7 +618,7 @@ export class Uom extends AddonPage {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
-        await orderPage.changeOrderCenterPageView("GridLine");
+        await orderPage.changeOrderCenterPageView('GridLine');
         await webAppList.validateListRowElements();
     }
 

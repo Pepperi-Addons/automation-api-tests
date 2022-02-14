@@ -554,7 +554,7 @@ export default class GeneralService {
                 }
             } else if (fetchVarResponse.Status == 401) {
                 throw new Error(
-                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.Header.title}`,
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
                 );
             } else {
                 throw new Error(

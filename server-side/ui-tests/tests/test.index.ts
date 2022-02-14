@@ -127,7 +127,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
-        await replaceUIControlsTests(generalService);
+        await replaceUIControlsTests(this, generalService);
 
         //Verify all items exist or replace them
         await replaceItemsTests(generalService);
@@ -306,8 +306,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -325,7 +324,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
     }
 }
 
-export async function replaceUIControlsTests(generalService: GeneralService) {
+export async function replaceUIControlsTests(that: any, generalService: GeneralService) {
     describe('Replace UIControls', async function () {
         this.retries(1);
 
@@ -339,31 +338,38 @@ export async function replaceUIControlsTests(generalService: GeneralService) {
         for (let j = 0; j < uIControlArr.length; j++) {
             if (uIControlArr[j]['Type'] == 'CatalogSelectionCard') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setCatalogSelectionCardUI(generalService, uIControlArr[j]);
+                    const setCatalogSelectionCardUIBinded = setCatalogSelectionCardUI.bind(that);
+                    await setCatalogSelectionCardUIBinded(generalService, uIControlArr[j]);
                 });
             } else if (uIControlArr[j]['Type'] == 'CatalogForm') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setCatalogFormUI(generalService, uIControlArr[j]);
+                    const setCatalogFormUIBinded = setCatalogFormUI.bind(that);
+                    await setCatalogFormUIBinded(generalService, uIControlArr[j]);
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderViewsMenu') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setOrderViewsMenu(generalService, uIControlArr[j]);
+                    const setOrderViewsMenuBinded = setOrderViewsMenu.bind(that);
+                    await setOrderViewsMenuBinded(generalService, uIControlArr[j]);
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartGrid') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setOrderCartGrid(generalService, uIControlArr[j]);
+                    const setOrderCartGridBinded = setOrderCartGrid.bind(that);
+                    await setOrderCartGridBinded(generalService, uIControlArr[j]);
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderBanner') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setOrderBanner(generalService, uIControlArr[j]);
+                    const setOrderBannerBinded = setOrderBanner.bind(that);
+                    await setOrderBannerBinded(generalService, uIControlArr[j]);
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartOpenedFooter') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setOrderCartOpenedFooter(generalService, uIControlArr[j]);
+                    const setOrderCartOpenedFooterBinded = setOrderCartOpenedFooter.bind(that);
+                    await setOrderCartOpenedFooterBinded(generalService, uIControlArr[j]);
                 });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCenterClosedFooter') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    await setOrderCenterClosedFooter(generalService, uIControlArr[j]);
+                    const setOrderCenterClosedFooterBinded = setOrderCenterClosedFooter.bind(that);
+                    await setOrderCenterClosedFooterBinded(generalService, uIControlArr[j]);
                 });
             }
         }

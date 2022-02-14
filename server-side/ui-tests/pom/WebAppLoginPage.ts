@@ -50,14 +50,6 @@ export class WebAppLoginPage extends Page {
         return;
     }
 
-    public async loginNoCompanyLogo(email: string, password: string): Promise<void> {
-        await this.navigate();
-        await this.signIn(email, password);
-        const homePage = new WebAppHomePage(this.browser);
-        await expect(homePage.untilIsVisible(homePage.Main, 90000)).eventually.to.be.true;
-        return;
-    }
-
     public async loginDeepLink(url: string, email: string, password: string): Promise<void> {
         await this.browser.navigate(url);
         await this.signIn(email, password);
