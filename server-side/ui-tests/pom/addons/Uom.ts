@@ -112,7 +112,7 @@ export class Uom extends AddonPage {
         try {
             //in case medium view isnt added yet
             await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
-        } catch (error) {
+        } catch (Error) {
             await this.browser.switchToDefaultContent();
             await this.selectTabByText('General');
             await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View');
