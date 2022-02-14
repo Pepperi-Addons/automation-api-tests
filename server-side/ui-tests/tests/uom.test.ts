@@ -57,7 +57,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because '0.3.7' which is the most progresive cannot be installed at the moment
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.240'],
     };
-    //await upgradeDependenciesTests(generalService, varPass);
+    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM
@@ -102,7 +102,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             describe('Data Preparation For Test Using Endpoints', () => {
                 it('Post items for uom', async function () {
                     let numOfGoodItems = 0;
-                    const itemList: Item[] = await objectsService.getItems();
+                    const itemList: Item[] = await generalService.papiClient.items.find({ page_size: -1 });
                     if (itemList.length === 5) {
                         for (let i = 0; i < itemList.length; i++) {
                             if (
