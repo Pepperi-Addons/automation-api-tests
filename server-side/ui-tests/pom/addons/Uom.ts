@@ -109,7 +109,14 @@ export class Uom extends AddonPage {
             'Fix Quantity',
         );
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
-        await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
+        try {
+            //in case medium view isnt added yet
+            await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
+        } catch (Error) {
+            await this.browser.switchToDefaultContent();
+            await this.selectTabByText('General');
+            await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View');
+        }
         await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
         await this.deleteAllFieldFromUIControl();
@@ -229,7 +236,6 @@ export class Uom extends AddonPage {
      */
     public async testUomAtdUI(): Promise<void> {
         //1. regular item testing
-
         //1.1 add 48 items of regular qty - see 48 items are shown + correct price is presented
         let workingUomObject = new UomUIObject('1230');
         const orderPage = new OrderPage(this.browser);
@@ -460,6 +466,12 @@ export class Uom extends AddonPage {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
+        try {
+            await orderPage.changeOrderCenterPageView('GridLine');
+        } catch (Error) {
+            await orderPage.changeOrderCenterPageView('Grid');
+        }
+
         await webAppList.validateListRowElements();
     }
 
@@ -606,6 +618,7 @@ export class Uom extends AddonPage {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
+        await orderPage.changeOrderCenterPageView('GridLine');
         await webAppList.validateListRowElements();
     }
 
@@ -613,7 +626,7 @@ export class Uom extends AddonPage {
         const webAppHomePage = new WebAppHomePage(this.browser);
         await webAppHomePage.initiateSalesActivity(ATDname, accountName);
         const orderPage = new OrderPage(this.browser);
-        await orderPage.changeOrderPageView(viewType);
+        await orderPage.changeOrderCenterPageView(viewType);
         //validate there are 5 items on screen
         const allItemPresented: WebElement[] = await this.browser.findElements(this.NonUomTypeItemInOrder);
         expect(allItemPresented.length).to.equal(5);
