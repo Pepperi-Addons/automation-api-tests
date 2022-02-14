@@ -469,6 +469,7 @@ export class Uom extends AddonPage {
         try {
             await orderPage.changeOrderCenterPageView('GridLine');
         } catch (Error) {
+            await orderPage.clickViewMenu(); //to close the menu first
             await orderPage.changeOrderCenterPageView('Grid');
         }
 
@@ -635,7 +636,7 @@ export class Uom extends AddonPage {
         try {
             //DI-19257 - https://pepperi.atlassian.net/browse/DI-19257
             allUOMItemPresented = await this.browser.findElements(this.UomTypeItemInOrder);
-        } catch (error) {
+        } catch (Error) {
             console.log('cannot find UOM type items - probably related to: DI-19257');
             process.exit(1);
         }
