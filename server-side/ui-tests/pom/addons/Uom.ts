@@ -469,6 +469,7 @@ export class Uom extends AddonPage {
         try {
             await orderPage.changeOrderCenterPageView('GridLine');
         } catch (Error) {
+            await orderPage.clickViewMenu();//to close the menu first
             await orderPage.changeOrderCenterPageView('Grid');
         }
 
@@ -635,7 +636,7 @@ export class Uom extends AddonPage {
         try {
             //DI-19257 - https://pepperi.atlassian.net/browse/DI-19257
             allUOMItemPresented = await this.browser.findElements(this.UomTypeItemInOrder);
-        } catch (error) {
+        } catch (Error) {
             console.log('cannot find UOM type items - probably related to: DI-19257');
             process.exit(1);
         }
@@ -664,43 +665,43 @@ class UomUIObject {
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1.valueOf()['value'] = this.aoqmUom1
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2.valueOf()['value'] = this.aoqmUom2
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
     }
 }
