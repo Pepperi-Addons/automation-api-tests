@@ -41,7 +41,7 @@ export class OrderPageItem {
         this.qty.valueOf()['value'] = this.qty.valueOf()['value'].slice().replace('|textToFill|', idOfWUomElement);
         this.totalUnitPrice.valueOf()['value'] = this.totalUnitPrice
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.expectedQty = expectedQty;
         this.expectedUnitPrice = expectedUnitPrice;
