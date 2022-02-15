@@ -30,7 +30,7 @@ function testDataNewAddonVersion(addonUUID, testNumber) {
 // }
 
 function testDatagetBase64FileFromFileAtPath(pathOfFileToReadFrom): string {
-    const file = fs.readFileSync(path.resolve(__dirname, pathOfFileToReadFrom));
+    const file = fs.readFileSync(path.resolve(__dirname.replace('\\build\\server-side', ''), pathOfFileToReadFrom));
     return file.toString('base64');
 }
 
