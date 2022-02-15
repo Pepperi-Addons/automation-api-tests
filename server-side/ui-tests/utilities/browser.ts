@@ -282,7 +282,7 @@ export class Browser {
             );
         } else {
             console.log(
-                `%cElement with selector: '${selector.valueOf()['value']}' is found successfully`,
+                `%cElement with selector: '${selector.valueOf()['value']}' is successfully found `,
                 ConsoleColors.ElementFoundMessage,
             );
         }
