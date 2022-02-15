@@ -732,7 +732,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     const NewRelationResponseArr = NewRelationResponse.Body.Text.split('\n');
                     NewRelationResponseArr.sort();
                     contentFromFileAsArr.sort();
-                    const contentFromFileWithFixedDelimiterAsArr:string[] = []
+                    const contentFromFileWithFixedDelimiterAsArr: string[] = [];
                     for (let i = 0; i < contentFromFileAsArr.length; i++) {
                         contentFromFileWithFixedDelimiterAsArr.push(contentFromFileAsArr[i].replaceAll(',', ';'));
                     }
