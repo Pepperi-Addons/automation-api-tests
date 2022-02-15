@@ -306,8 +306,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -325,6 +324,11 @@ export async function replaceItemsTests(generalService: GeneralService) {
     }
 }
 
+/**
+ * this function is used as a TEST for replacing UI controls using the API - should be used in creating a dist kind of situations
+ * @param that 'this' of the TEST class which the function called from
+ * @param generalService general service instance to use inside the function
+ */
 export async function replaceUIControlsTests(that: any, generalService: GeneralService) {
     describe('Replace UIControls', async function () {
         this.retries(1);
@@ -377,6 +381,11 @@ export async function replaceUIControlsTests(that: any, generalService: GeneralS
     });
 }
 
+/**
+ * this function is used as a routine inside a flow to validate all UI controls are configured correctly before starting the test
+ * @param that 'this' of the TEST class which the function called from
+ * @param generalService general service instance to use inside the function
+ */
 export async function replaceUIControls(that: any, generalService: GeneralService) {
     //Add new UIControls from local file
     const uIControlArrFromFile = fs.readFileSync('../server-side/api-tests/test-data/UIControls.json', {
@@ -410,6 +419,7 @@ export async function replaceUIControls(that: any, generalService: GeneralServic
     }
 }
 
+//#region Replacing UI Functions
 async function setCatalogSelectionCardUI(generalService: GeneralService, catalogSelectionUIControl: UIControl) {
     const catalogSelectionCard: UIControl[] = await generalService.papiClient.uiControls.find({
         where: `Type='CatalogSelectionCard'`,
@@ -417,7 +427,6 @@ async function setCatalogSelectionCardUI(generalService: GeneralService, catalog
     expect(catalogSelectionCard).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogSelectionCard.length; i++) {
         addContext(this, {
-            //'this' is undefiend which results in  '[mochawesome] Error adding context: Invalid arguments.'
             title: 'Test Data',
             value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
         });
@@ -553,3 +562,4 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
     }
 }
+//#endregion Replacing UI Functions
