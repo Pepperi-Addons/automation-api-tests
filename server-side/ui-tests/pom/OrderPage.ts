@@ -11,12 +11,16 @@ export class OrderPage extends WebAppList {
     public async changeOrderCenterPageView(viewType: string) {
         //switch to medium view:
         //1. click on btn to open drop down
-        await this.browser.click(this.ChangeViewButton);
-        await this.browser.sleep(1500);
+        await this.clickViewMenu();
         //2. pick wanted view
         const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
         await this.browser.click(By.xpath(injectedViewType));
         await this.isSpinnerDone();
+    }
+
+    public async clickViewMenu() {
+        await this.browser.click(this.ChangeViewButton);
+        await this.browser.sleep(1500);
     }
 }
 

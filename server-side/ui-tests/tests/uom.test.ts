@@ -57,6 +57,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because '0.3.7' which is the most progresive cannot be installed at the moment
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.240'],
     };
+
     await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
