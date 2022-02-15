@@ -212,6 +212,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
 
                 const cbjectTypeEditor = new ObjectTypeEditor(driver);
                 await cbjectTypeEditor.editATDView('Footer', 'Expanded Cart Footer View');
+                await cbjectTypeEditor.editATDView('Footer', 'Order Center Footer Field');
 
                 await driver.switchToDefaultContent();
 
@@ -236,7 +237,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     const adminService = new GeneralService(adminClient);
 
                     //Reset the needed UI Controls for the UI tests.
-                    await replaceUIControlsTests(adminService);
+                    await replaceUIControlsTests(this, adminService);
 
                     //Verify all items exist or replace them
                     await replaceItemsTests(adminService);

@@ -35,7 +35,7 @@ export class WebAppAPI extends Page {
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (syncStatusReposnse.Status == 'Processing') {
                 await this.browser.sleep(5000);
-                console.log(`UpToDate: Retry ${loopsAmount} Times.`);
+                console.log(`Processing: Retry ${loopsAmount} Times.`);
             }
             loopsAmount--;
         } while ((syncStatusReposnse === null || syncStatusReposnse.Status == 'Processing') && loopsAmount > 0);

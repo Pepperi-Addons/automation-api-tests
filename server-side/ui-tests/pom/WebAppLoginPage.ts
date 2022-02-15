@@ -4,7 +4,7 @@ import config from '../../config';
 import { By, Locator } from 'selenium-webdriver';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader, WebAppHomePage } from './index';
+import { WebAppHeader } from './index';
 
 chai.use(promised);
 
@@ -47,14 +47,6 @@ export class WebAppLoginPage extends Page {
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
         await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
-        return;
-    }
-
-    public async loginNoCompanyLogo(email: string, password: string): Promise<void> {
-        await this.navigate();
-        await this.signIn(email, password);
-        const homePage = new WebAppHomePage(this.browser);
-        await expect(homePage.untilIsVisible(homePage.Main, 90000)).eventually.to.be.true;
         return;
     }
 
