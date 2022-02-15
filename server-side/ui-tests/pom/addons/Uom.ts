@@ -463,17 +463,7 @@ export class Uom extends AddonPage {
         await this.testQtysOfItem(workingUomObject, 1, 1, 37, 181, 181);
 
         //3. UOM order test ended - submiting to cart
-        await this.browser.click(orderPage.SubmitToCart);
-        const webAppList = new WebAppList(this.browser);
-        await webAppList.isSpinnerDone();
-        try {
-            await orderPage.changeOrderCenterPageView('GridLine');
-        } catch (Error) {
-            await orderPage.clickViewMenu(); //to close the menu first
-            await orderPage.changeOrderCenterPageView('Grid');
-        }
-
-        await webAppList.validateListRowElements();
+        await this.gotoCart(orderPage);
     }
 
     public async testUomAtdUIWithItemConfig(): Promise<void> {
@@ -616,10 +606,19 @@ export class Uom extends AddonPage {
         }
 
         //3. UOM order test ended - submiting to cart
+        await this.gotoCart(orderPage);
+    }
+
+    private async gotoCart(orderPage: OrderPage) {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
-        await orderPage.changeOrderCenterPageView('GridLine');
+        try {
+            await orderPage.changeOrderCenterPageView('GridLine');
+        } catch (Error) {
+            await orderPage.clickViewMenu(); //to close the menu first
+            await orderPage.changeOrderCenterPageView('Grid');
+        }
         await webAppList.validateListRowElements();
     }
 

@@ -19,8 +19,6 @@ export class OrderPage extends WebAppList {
     }
 
     public async clickViewMenu() {
-        //switch to medium view:
-        //1. click on btn to open drop down
         await this.browser.click(this.ChangeViewButton);
         await this.browser.sleep(1500);
     }
