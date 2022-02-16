@@ -13,6 +13,7 @@ import {
     SecurityPolicyTests,
     CreateDistributorTests,
     UomTests,
+    NgxTests
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
@@ -162,6 +163,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Uom')) {
         await UomTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('Ngx')) {
+        await NgxTests(email, pass, varPass, client);
     }
 
     if (tests.includes('Distributor')) {

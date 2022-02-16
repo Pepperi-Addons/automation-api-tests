@@ -1,21 +1,17 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
+import {  WebAppHeader,WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService, { FetchStatusResponse } from '../../services/general.service';
+import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
-import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
-import { OrderPageItem } from '../pom/OrderPage';
-import { Uom } from '../pom/addons/Uom';
-import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
-import { BrandedApp } from '../pom/addons/BrandedApp';
-import { replaceUIControls, upgradeDependenciesTests } from './test.index';
+import { upgradeDependenciesTests } from './test.index';
+import { NgxLibComponents } from '../pom/addons/NgxLibComponents';
 
 chai.use(promised);
 
-export async function UomTests(email: string, password: string, varPass: string, client: Client) {
+export async function NgxTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
@@ -66,8 +62,28 @@ export async function UomTests(email: string, password: string, varPass: string,
                 }
             });
 
-            describe('', () => {
+            describe('NGX COMPONENETS UI TEST', () => {
+                this.retries(1);
 
+                beforeEach(async function () {
+                    driver = await Browser.initiateChrome();
+                });
+
+                afterEach(async function () {
+                    const webAppLoginPage = new WebAppLoginPage(driver);
+                    await webAppLoginPage.collectEndTestData(this);
+                    await driver.quit();
+                });
+
+                it('POC1: Entering app and trying to get to the new addon', async () => {
+                    const webAppLoginPage = new WebAppLoginPage(driver);
+                    await webAppLoginPage.login(email, password);
+                    const webAppHeader = new WebAppHeader(driver);
+                    await webAppHeader.openSettings();
+                    const ngxLibAddon = new NgxLibComponents(driver);
+                    await ngxLibAddon.gotoNgxAddon();
+                    
+                });
             });
 
 
