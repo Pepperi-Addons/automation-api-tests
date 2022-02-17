@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import {  WebAppHeader,WebAppLoginPage } from '../pom/index';
+import { WebAppHeader, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -18,7 +18,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
 
     //#region Upgrade ngx-lib-testing addon + dependencies 
     const testData = {
-        'ngx-lib-testing': ['47db1b61-e1a7-42bd-9d55-93dd85044e91', '0.0.6']
+        'ngx-lib-testing': ['47db1b61-e1a7-42bd-9d55-93dd85044e91', '0.0.9']
     };
 
     await upgradeDependenciesTests(generalService, varPass);
@@ -75,14 +75,23 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await driver.quit();
                 });
 
-                it('POC1: Entering app and trying to get to the new addon', async () => {
+                it('POC1: clickig the change btn and reading the logs', async () => {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.login(email, password);
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
+                    await driver.getALLConsoleLogs();//to clear logs created before entering the addon
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNgxAddon();
-                    
+                    driver.sleep(1200);
+                    debugger;
+                    let consoleLog = await driver.getALLConsoleLogs();
+                    let consoleLogJoined = consoleLog.join();
+                    expect(consoleLogJoined).to.not.include("We could not find the Icon with the name arrow_back_left,\\n                did you add it to the Icon registry?");
+                    let componentData = await ngxLibAddon.getComponentName();
+                    await ngxLibAddon.clickComponent();
+                    consoleLog = await driver.getALLConsoleLogs();
+                    expect(consoleLogJoined).to.include(`clicked button: ${componentData}`);
                 });
             });
 
@@ -93,4 +102,4 @@ export async function NgxTests(email: string, password: string, varPass: string,
     });
 }
 
-
+//We could not find the Icon with the name <arrow_back_left>,\\n                did you add it to the Icon registry?
