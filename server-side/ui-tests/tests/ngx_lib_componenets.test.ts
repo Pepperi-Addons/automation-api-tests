@@ -80,7 +80,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await webAppLoginPage.login(email, password);
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
-                    await driver.getALLConsoleLogs();//to clear logs created before entering the addon
+                    await driver.getALLConsoleLogs();//clear logs created before entering the addon
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNgxAddon();
                     driver.sleep(1200);
