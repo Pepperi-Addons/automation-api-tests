@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, before, after } from 'mocha';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
+import { WebAppHeader, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -130,7 +130,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     //8. is not visibale element is indeed not visiale
                     expect(await ngxLibAddon.isComponentVisibale()).to.be.false;
                 });
-                
+
                 it('pep-attachment testing', async function () {
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNextTest();
