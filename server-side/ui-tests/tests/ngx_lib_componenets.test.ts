@@ -98,10 +98,10 @@ export async function NgxTests(email: string, password: string, varPass: string,
                                 iconName,
                             );
                         } else {
-                            const truedH = (await ngxLibAddon.getActualComponentSize()).height;
-                            const truedW = (await ngxLibAddon.getActualComponentSize()).width;
-                            const expectedH = (await ngxLibAddon.getExpectedComponentSize()).height;
-                            const expectedW = (await ngxLibAddon.getExpectedComponentSize()).width;
+                            const truedH: number = (await ngxLibAddon.getActualComponentSize()).height;
+                            const truedW: number = (await ngxLibAddon.getActualComponentSize()).width;
+                            const expectedH: number = (await ngxLibAddon.getExpectedComponentSize()).height;
+                            const expectedW: number = (await ngxLibAddon.getExpectedComponentSize()).width;
                             //3. is size correct
                             expect(expectedH).to.equal(truedH);
                             expect(expectedW).to.equal(truedW);
