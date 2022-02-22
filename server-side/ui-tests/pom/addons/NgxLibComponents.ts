@@ -6,7 +6,11 @@ export class NgxLibComponents extends AddonPage {
     public changeStyleButton: Locator = By.css('[data-qa="style change btn"]');
     public componentButton: Locator = By.css('[data-qa="componentBtn"]');
     public autoData: Locator = By.css('[data-qa="auto-data"]');
+    public disableButtonBtn: Locator = By.css('[data-qa="dis-comp"]');
+    public visibilityOfButtonBtn: Locator = By.css('[data-qa="vis-comp"]');
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
+    
+    
 
 
     /**
@@ -37,7 +41,7 @@ export class NgxLibComponents extends AddonPage {
      */
     public async clickComponent(): Promise<void> {
         await this.browser.click(this.componentButton);
-        this.browser.sleep(2500);
+        this.browser.sleep(1500);
     }
 
     /**

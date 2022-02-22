@@ -32,7 +32,6 @@ export async function NgxTests(email: string, password: string, varPass: string,
         describe('UOM Tests Suites', async function () {
             describe('Prerequisites Addons for UOM Tests', async function () {
                 //Test Data
-                //UOM
                 it('Validate That All The Needed Addons Installed', async () => {
                     isInstalledArr.forEach((isInstalled) => {
                         expect(isInstalled).to.be.true;
@@ -88,7 +87,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await ngxLibAddon.gotoNgxAddon();
                     driver.sleep(2200);
                     do {
-                        //TODO: refactor code
+                        //TODO: refactor code after tests pass
                         const insideButtonComponentActualClasses = await (await driver.findElement(ngxLibAddon.insideButton)).getAttribute("class");
                         const expectedComponentClasses: string = await (await driver.findElement(ngxLibAddon.autoData)).getText();
                         let expectedComponentClassesSplited = expectedComponentClasses.split(' ');
@@ -101,17 +100,18 @@ export async function NgxTests(email: string, password: string, varPass: string,
                         if (expectedComponentClassesSplited.length === 6) {
                             let iconName = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 3];
                             console.log(browserConsoleLogJoined);
-                            isIconFound(this, browserConsoleLogJoined, `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`, iconName);
+                            await isIconFound(this, browserConsoleLogJoined, `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`, iconName);
                         }
-                        const btnComp = await driver.findElement(ngxLibAddon.componentButton);
-                        // let color = await (await driver.findElement(ngxLibAddon.insideButton)).getCssValue("background-color");
-                        const size = await btnComp.getRect();
-                        const truedH = size.height;
-                        const truedW = size.width;
-                        const expectedH = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[0];
-                        const expectedW = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[1];
-                        expect(parseInt(expectedH)).to.equal(truedH);
-                        expect(parseInt(expectedW)).to.equal(truedW);
+                        else {
+                            const btnComp = await driver.findElement(ngxLibAddon.componentButton);
+                            const size = await btnComp.getRect();
+                            const truedH = size.height;
+                            const truedW = size.width;
+                            const expectedH = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[0];
+                            const expectedW = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[1];
+                            expect(parseInt(expectedH)).to.equal(truedH);
+                            expect(parseInt(expectedW)).to.equal(truedW);
+                        }
                         let trueBgColor = await (await driver.findElement(ngxLibAddon.insideButton)).getCssValue("background-color");
                         let expectedBgColor = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1].split(';')[0].replace(/,/g, ", ");
                         expect(expectedBgColor).to.equal(trueBgColor);//pre click
@@ -126,12 +126,30 @@ export async function NgxTests(email: string, password: string, varPass: string,
                         await ngxLibAddon.changeStyle();
                     } while (await checkIfAlertAlreadyPresented() !== 'button testing ended');
                     (await driver.switchToAlertElement()).dismiss();
+                    await driver.click(ngxLibAddon.disableButtonBtn);
+                    driver.sleep(1500);
+                    await ngxLibAddon.clickComponent();
+                    let browserConsoleLog = await driver.getALLConsoleLogs();
+                    let browserConsoleLogJoined = browserConsoleLog.join();
+                    let componentData = await ngxLibAddon.getComponentData();
+                    isButtonNOTClicked(this, browserConsoleLogJoined, `clicked button: ${componentData}`);
+                    await driver.click(ngxLibAddon.disableButtonBtn);
+                    driver.sleep(1500);
+                    await driver.click(ngxLibAddon.disableButtonBtn);
+
+                    await driver.click(ngxLibAddon.visibilityOfButtonBtn);
+                    driver.sleep(1500);
+                    let isVis: boolean = true;
+                    try {
+                        isVis = await driver.untilIsVisible(ngxLibAddon.componentButton);
+                    } catch (e: any) {
+                        if (e.message.includes(`'[data-qa="componentBtn"]', The test must end, The element is not visible`)) {
+                            isVis = false;
+                        }
+                    }
+                    expect(isVis).to.be.false;
                 });
             });
-
-
-
-
         });
     });
     async function checkIfAlertAlreadyPresented(): Promise<string> {
@@ -157,11 +175,22 @@ export async function NgxTests(email: string, password: string, varPass: string,
         expect(consoleOutput).to.include(expectedValueInConsole);
     }
 
-    function isIconFound(that: any, consoleOutput: string, valueExpectedToNotShow: string, iconName: string): void {
+    function isButtonNOTClicked(that: any, consoleOutput: string, expectedValueInConsole: string): void {
+        if (consoleOutput.includes(expectedValueInConsole)) {
+            addContext(that, {
+                title: `the button: '${expectedValueInConsole.substring(expectedValueInConsole.indexOf(':') + 1)}' was clicked although is disabled`,
+                value: `current log value: ${consoleOutput}, expected to find: '${expectedValueInConsole}'`,
+            });
+        }
+        expect(consoleOutput).to.not.include(expectedValueInConsole);
+    }
+
+    async function isIconFound(that: any, consoleOutput: string, valueExpectedToNotShow: string, iconName: string): Promise<void> {
+        let base64Image = await driver.saveScreenshots();
         if (consoleOutput.includes(valueExpectedToNotShow)) {
             addContext(that, {
-                title: `the icon: '${iconName}' isn't found`,
-                value: `browser console log showed the next warning: '${valueExpectedToNotShow}'`,
+                title: `the icon: '${iconName}' isn't presented (${valueExpectedToNotShow.substring(valueExpectedToNotShow.indexOf("\n") - 1)})`,
+                value: 'data:image/png;base64,' + base64Image,
             });
         }
     }
