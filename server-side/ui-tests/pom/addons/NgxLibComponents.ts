@@ -8,7 +8,7 @@ export class NgxLibComponents extends AddonPage {
     public disableButtonBtn: Locator = By.css('[data-qa="dis-comp"]');
     public visibilityOfButtonBtn: Locator = By.css('[data-qa="vis-comp"]');
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
-
+    public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
     /**
      * goto NGX - lib page from homepage
      */
@@ -163,5 +163,14 @@ export class NgxLibComponents extends AddonPage {
     public async changeVisibilityOfBtn(): Promise<void> {
         await this.browser.click(this.visibilityOfButtonBtn);
         this.browser.sleep(1500);
+    }
+
+    /**
+     *
+     *
+     */
+     public async gotoNextTest(): Promise<void> {
+        await this.browser.click(this.nextTestBtn);
+        this.browser.sleep(2000);
     }
 }

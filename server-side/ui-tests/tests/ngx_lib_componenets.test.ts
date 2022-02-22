@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, afterEach, beforeEach } from 'mocha';
-import { WebAppHeader, WebAppLoginPage } from '../pom/index';
+import { describe, it, before, after } from 'mocha';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -65,17 +65,17 @@ export async function NgxTests(email: string, password: string, varPass: string,
             describe('NGX COMPONENETS UI TEST', async function () {
                 this.retries(0);
 
-                beforeEach(async function () {
+                before(async function () {
                     driver = await Browser.initiateChrome();
                 });
 
-                afterEach(async function () {
+                after(async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.collectEndTestData(this);
                     await driver.quit();
                 });
 
-                it('POC1: clickig the change btn and reading the logs', async function () {
+                it('pep-button testing', async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.login(email, password);
                     const webAppHeader = new WebAppHeader(driver);
@@ -83,7 +83,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await driver.getALLConsoleLogs(); //clear logs created before entering the addon
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNgxAddon();
-                    
+
                     do {
                         //1. are all classes from NGX presented on the element
                         expect(await ngxLibAddon.areAllClassesIncluded()).to.be.true;
@@ -129,6 +129,10 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await ngxLibAddon.changeVisibilityOfBtn();
                     //8. is not visibale element is indeed not visiale
                     expect(await ngxLibAddon.isComponentVisibale()).to.be.false;
+                });
+                it('pep-attachment testing', async function () {
+                    const ngxLibAddon = new NgxLibComponents(driver);
+                    await ngxLibAddon.gotoNextTest();
                 });
             });
         });
