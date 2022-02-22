@@ -130,6 +130,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     //8. is not visibale element is indeed not visiale
                     expect(await ngxLibAddon.isComponentVisibale()).to.be.false;
                 });
+                
                 it('pep-attachment testing', async function () {
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNextTest();
