@@ -13,7 +13,7 @@ import {
     SecurityPolicyTests,
     CreateDistributorTests,
     UomTests,
-    NgxTests
+    NgxTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';

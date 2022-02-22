@@ -19,9 +19,7 @@ export class WebAppSettingsSidePanel extends Page {
     public ObjectEditorTransactions: Locator = By.id(
         'settings/04de9428-8658-4bf7-8171-b59f6327bbf1/transactions/types',
     );
-    public ObjectEditorNGX: Locator = By.id(
-        'settings/47db1b61-e1a7-42bd-9d55-93dd85044e91/Buttons',
-    );
+    public ObjectEditorNGX: Locator = By.id('settings/47db1b61-e1a7-42bd-9d55-93dd85044e91/Buttons');
     public ObjectEditorActivities: Locator = By.id('settings/04de9428-8658-4bf7-8171-b59f6327bbf1/activities/types');
 
     //Branded App / Settings Framework Locators
