@@ -8,7 +8,7 @@ import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
 import { upgradeDependenciesTests } from './test.index';
 import { NgxLibComponents } from '../pom/addons/NgxLibComponents';
-import { Alert, AlertPromise, WebDriver, WebElement } from 'selenium-webdriver';
+import { Alert } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 
 
@@ -16,7 +16,7 @@ chai.use(promised);
 
 export async function NgxTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
+    // const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
     //#region Upgrade ngx-lib-testing addon + dependencies 
@@ -85,73 +85,57 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await driver.getALLConsoleLogs();//clear logs created before entering the addon
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNgxAddon();
-                    driver.sleep(2200);
                     do {
-                        //TODO: refactor code after tests pass
-                        const insideButtonComponentActualClasses = await (await driver.findElement(ngxLibAddon.insideButton)).getAttribute("class");
-                        const expectedComponentClasses: string = await (await driver.findElement(ngxLibAddon.autoData)).getText();
-                        let expectedComponentClassesSplited = expectedComponentClasses.split(' ');
-                        let browserConsoleLog = await driver.getALLConsoleLogs();
-                        for (let i = 0; i < 3; i++) {
-                            assertIsClassFound(expectedComponentClasses[i], insideButtonComponentActualClasses);
-                        }
-                        let browserConsoleLogJoined = browserConsoleLog.join();
-                        let componentData = await ngxLibAddon.getComponentData();
-                        if (expectedComponentClassesSplited.length === 6) {
-                            let iconName = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 3];
-                            console.log(browserConsoleLogJoined);
-                            await isIconFound(this, browserConsoleLogJoined, `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`, iconName);
+                        //1. are all classes from NGX presented on the element
+                        expect(await ngxLibAddon.areAllClassesIncluded()).to.be.true;
+                        let browserConsoleLog = (await driver.getALLConsoleLogs()).join();
+                        if (await ngxLibAddon.isComponentWithIcon()) {
+                            //2. is icon found
+                            let iconName: string = await ngxLibAddon.getIconNameOutOfExpectedData();
+                            await isIconFound(this, browserConsoleLog, `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`, iconName);
                         }
                         else {
-                            const btnComp = await driver.findElement(ngxLibAddon.componentButton);
-                            const size = await btnComp.getRect();
-                            const truedH = size.height;
-                            const truedW = size.width;
-                            const expectedH = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[0];
-                            const expectedW = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[1];
-                            expect(parseInt(expectedH)).to.equal(truedH);
-                            expect(parseInt(expectedW)).to.equal(truedW);
+                            const truedH = (await ngxLibAddon.getActualComponentSize()).height;
+                            const truedW = (await ngxLibAddon.getActualComponentSize()).width;
+                            const expectedH = (await ngxLibAddon.getExpectedComponentSize()).height;
+                            const expectedW = (await ngxLibAddon.getExpectedComponentSize()).width;
+                            //3. is size correct
+                            expect(expectedH).to.equal(truedH);
+                            expect(expectedW).to.equal(truedW);
                         }
-                        let trueBgColor = await (await driver.findElement(ngxLibAddon.insideButton)).getCssValue("background-color");
-                        let expectedBgColor = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1].split(';')[0].replace(/,/g, ", ");
-                        expect(expectedBgColor).to.equal(trueBgColor);//pre click
-                        await ngxLibAddon.clickComponent();
-                        trueBgColor = await (await driver.findElement(ngxLibAddon.insideButton)).getCssValue("background-color");
-                        expectedBgColor = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1].split(';')[1].replace(/,/g, ", ");
-                        expect(expectedBgColor).to.equal(trueBgColor);//post click
-                        browserConsoleLog = await driver.getALLConsoleLogs();
-                        browserConsoleLogJoined = browserConsoleLog.join();
-                        console.log(browserConsoleLogJoined);
-                        isButtonClicked(this, browserConsoleLogJoined, `clicked button: ${componentData}`);
+                        //4. pre click color test
+                        await testColor(ngxLibAddon, 0);
+                        await ngxLibAddon.clickComponent();//clicking component
+                        //5. post click color test
+                        await testColor(ngxLibAddon, 1);
+                        browserConsoleLog = (await driver.getALLConsoleLogs()).join();
+                        //6. component clicked test
+                        const ActualComponentData: string = await ngxLibAddon.getComponentData();
+                        isButtonClicked(this, browserConsoleLog, `clicked button: ${ActualComponentData}`);
                         await ngxLibAddon.changeStyle();
                     } while (await checkIfAlertAlreadyPresented() !== 'button testing ended');
                     (await driver.switchToAlertElement()).dismiss();
-                    await driver.click(ngxLibAddon.disableButtonBtn);
-                    driver.sleep(1500);
+                    await ngxLibAddon.disableBtn();
                     await ngxLibAddon.clickComponent();
-                    let browserConsoleLog = await driver.getALLConsoleLogs();
-                    let browserConsoleLogJoined = browserConsoleLog.join();
+                    let browserConsoleLog = (await driver.getALLConsoleLogs()).join();
                     let componentData = await ngxLibAddon.getComponentData();
-                    isButtonNOTClicked(this, browserConsoleLogJoined, `clicked button: ${componentData}`);
-                    await driver.click(ngxLibAddon.disableButtonBtn);
-                    driver.sleep(1500);
-                    await driver.click(ngxLibAddon.disableButtonBtn);
-
-                    await driver.click(ngxLibAddon.visibilityOfButtonBtn);
-                    driver.sleep(1500);
-                    let isVis: boolean = true;
-                    try {
-                        isVis = await driver.untilIsVisible(ngxLibAddon.componentButton);
-                    } catch (e: any) {
-                        if (e.message.includes(`'[data-qa="componentBtn"]', The test must end, The element is not visible`)) {
-                            isVis = false;
-                        }
-                    }
-                    expect(isVis).to.be.false;
+                    //7. is disabled button clicked
+                    isButtonNOTClicked(this, browserConsoleLog, `clicked button: ${componentData}`);
+                    await ngxLibAddon.disableBtn();//to return the btn to not disable state
+                    await ngxLibAddon.changeVisibilityOfBtn();
+                    //8. is not visibale element is indeed not visiale
+                    expect(await ngxLibAddon.isComponentVisibale()).to.be.false;
                 });
             });
         });
     });
+
+    async function testColor(ngxLibAddon: NgxLibComponents, index: number): Promise<void> {
+        let trueBgColor = await ngxLibAddon.getActualBgColor();
+        let expectedBgColor = await ngxLibAddon.getExpectedBgColor(index);
+        expect(expectedBgColor).to.equal(trueBgColor);
+    }
+
     async function checkIfAlertAlreadyPresented(): Promise<string> {
         try {
             let alert: Alert = await driver.switchToAlertElement();
@@ -194,13 +178,4 @@ export async function NgxTests(email: string, password: string, varPass: string,
             });
         }
     }
-
-    function assertIsClassFound(expectedClass: string, allElementsClasses: string) {
-        expect(allElementsClasses).to.include(expectedClass);
-
-    }
 }
-
-
-
-//We could not find the Icon with the name <arrow_back_left>,\\n                did you add it to the Icon registry?
