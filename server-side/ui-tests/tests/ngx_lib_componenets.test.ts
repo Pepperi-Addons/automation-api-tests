@@ -83,6 +83,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await driver.getALLConsoleLogs(); //clear logs created before entering the addon
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNgxAddon();
+                    
                     do {
                         //1. are all classes from NGX presented on the element
                         expect(await ngxLibAddon.areAllClassesIncluded()).to.be.true;
