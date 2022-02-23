@@ -9,6 +9,7 @@ export class NgxLibComponents extends AddonPage {
     public visibilityOfButtonBtn: Locator = By.css('[data-qa="vis-comp"]');
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
     public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
+    public pepIconMandatory: Locator = By.css('[name="system_must"]');
     /**
      * goto NGX - lib page from homepage
      */
@@ -144,7 +145,7 @@ export class NgxLibComponents extends AddonPage {
         const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(' ');
         return expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1]
             .split(';')
-            [index].replace(/,/g, ', ');
+        [index].replace(/,/g, ', ');
     }
 
     /**
@@ -169,7 +170,7 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-     public async gotoNextTest(): Promise<void> {
+    public async gotoNextTest(): Promise<void> {
         await this.browser.click(this.nextTestBtn);
         this.browser.sleep(2000);
     }
