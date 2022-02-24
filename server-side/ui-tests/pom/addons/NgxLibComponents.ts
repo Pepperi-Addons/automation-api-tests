@@ -1,6 +1,11 @@
 import { By, IRectangle, Locator, WebElement } from 'selenium-webdriver';
 import { AddonPage, WebAppSettingsSidePanel } from '..';
 
+export enum Components {
+    Button = "Button",
+    Attachment = "Attachment"
+}
+
 export class NgxLibComponents extends AddonPage {
     public changeStyleButton: Locator = By.css('[data-qa="style change btn"]');
     public componentButton: Locator = By.css('[data-qa="componentBtn"]');
@@ -10,6 +15,11 @@ export class NgxLibComponents extends AddonPage {
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
     public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
     public pepIconMandatory: Locator = By.css('[name="system_must"]');
+    public titleLabel: Locator = By.css('mat-label');
+    public pepFileUploader: Locator = By.css('pep-files-uploader');
+
+
+
     /**
      * goto NGX - lib page from homepage
      */
@@ -113,8 +123,20 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-    public async getActualComponentSize(): Promise<IRectangle> {
-        const btnComp: WebElement = await this.browser.findElement(this.componentButton);
+    public async getActualComponentSize(typeOfComponent: Components): Promise<IRectangle> {
+        let locator: Locator;
+        switch (typeOfComponent) {
+            case 'Button':
+                locator = this.componentButton;
+                break;
+            case 'Attachment':
+                locator = this.pepFileUploader;
+                break;
+            default://dunmmy fot ts
+                locator = this.pepFileUploader;
+                break;
+        }
+        const btnComp: WebElement = await this.browser.findElement(locator);
         return await btnComp.getRect();
     }
 
@@ -122,10 +144,38 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-    public async getExpectedComponentSize(): Promise<IRectangle> {
-        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(' ');
-        const expectedH = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[0];
-        const expectedW = expectedComponentClassesSplited[expectedComponentClassesSplited.length - 2].split('x')[1];
+    public async getExpectedComponentSize(typeOfComponent: Components): Promise<IRectangle> {
+        let delimiterToSplitBy = '';
+        switch (typeOfComponent) {
+            case 'Button':
+                delimiterToSplitBy = ' ';
+                break;
+            case 'Attachment':
+                delimiterToSplitBy = ',';
+                break;
+        }
+        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(delimiterToSplitBy);
+        let parsedExpectedData: (string | boolean)[] = [];
+        if (typeOfComponent === "Attachment") {
+            expectedComponentClassesSplited.forEach(element => {
+                element = element.split(':')[1];
+                let bool = (element === "true" || element === "false") ? element === "true" : undefined;
+                parsedExpectedData.push(bool === true || bool === false ? bool : element);
+            });
+        }
+        let indexToGetDataFrom = 0;
+        switch (typeOfComponent) {
+            case 'Button':
+                indexToGetDataFrom = expectedComponentClassesSplited.length - 2;
+                delimiterToSplitBy = 'x';
+                break;
+            case 'Attachment':
+                indexToGetDataFrom = expectedComponentClassesSplited.length - 1;
+                delimiterToSplitBy = '->';
+                break;
+        }
+        const expectedH = typeOfComponent === "Button" ? expectedComponentClassesSplited[indexToGetDataFrom].split(delimiterToSplitBy)[0] : (parsedExpectedData[indexToGetDataFrom] as string).split(delimiterToSplitBy)[1].split('x')[0];
+        const expectedW = typeOfComponent === "Button" ? expectedComponentClassesSplited[indexToGetDataFrom].split(delimiterToSplitBy)[0] : (parsedExpectedData[indexToGetDataFrom] as string).split(delimiterToSplitBy)[1].split('x')[1];
         return { height: parseInt(expectedH), width: parseInt(expectedW), x: 0, y: 0 } as IRectangle;
     }
 

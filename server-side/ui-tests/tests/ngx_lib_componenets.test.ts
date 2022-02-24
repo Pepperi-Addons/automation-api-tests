@@ -6,8 +6,8 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { upgradeDependenciesTests } from './test.index';
-import { NgxLibComponents } from '../pom/addons/NgxLibComponents';
-import { Alert, WebElement } from 'selenium-webdriver';
+import { Components, NgxLibComponents } from '../pom/addons/NgxLibComponents';
+import { Alert, Locator, WebElement } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
@@ -135,28 +135,25 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNextTest();
                     do {
-                        debugger;
                         let expectedData = (await ngxLibAddon.getExpectedData()).split(',');
                         let parsedExpectedData: (string | boolean)[] = [];
                         expectedData.forEach(element => {
                             element = element.split(':')[1];
                             let bool = (element === "true" || element === "false") ? element === "true" : undefined;
-                            debugger;
                             parsedExpectedData.push(bool === true || bool === false ? bool : element);
                         });
                         let [isMandatory, xAligment, showTitle, rowSpan] = parsedExpectedData;
-                        if (isMandatory) {
-                            let mandatoryIcon: WebElement | undefined = undefined;
-                            try {
-                                mandatoryIcon = await driver.findElement(ngxLibAddon.pepIconMandatory);
-                            } catch (e: any) {
-                                if (e.message.includes(`'[name="system_must"]', The test must end, The element is: undefined`)) {
-                                    mandatoryIcon = undefined;
-                                }
-                            }
-                            expect(mandatoryIcon).to.not.be.undefined;
-
-                        }
+                        await testIfElementShown(isMandatory as boolean, ngxLibAddon.pepIconMandatory);
+                        await testIfElementShown(showTitle as boolean, ngxLibAddon.titleLabel);
+                        const truedH: number = (await ngxLibAddon.getActualComponentSize(Components.Attachment)).height;
+                        const truedW: number = (await ngxLibAddon.getActualComponentSize(Components.Attachment)).width;
+                        const expectedH: number = (await ngxLibAddon.getExpectedComponentSize(Components.Attachment)).height;
+                        const expectedW: number = (await ngxLibAddon.getExpectedComponentSize(Components.Attachment)).width;
+                        //3. is size correct
+                        expect(expectedH).to.equal(truedH);
+                        expect(expectedW).to.equal(truedW);
+                        //2. test size by row-span
+                        //3. think how to test the aligment
                         await ngxLibAddon.changeStyle();
                     } while ((await checkIfAlertAlreadyPresented()) !== 'attachment testing ended');
 
@@ -165,6 +162,22 @@ export async function NgxTests(email: string, password: string, varPass: string,
             });
         });
     });
+
+    async function testIfElementShown(isFound: boolean, locator: Locator) {
+        let foundElement: WebElement | undefined = undefined;
+        try {
+            foundElement = await driver.findElement(locator);
+        } catch (e: any) {
+            if (e.message.includes(`'${locator.valueOf()['value']}', The test must end, The element is: undefined`)) {
+                foundElement = undefined;
+            }
+        }
+        if (isFound) {
+            expect(foundElement).to.not.be.undefined;
+        } else {
+            expect(foundElement).to.be.undefined;
+        }
+    }
 
     async function testColor(ngxLibAddon: NgxLibComponents, index: number): Promise<void> {
         const trueBgColor = await ngxLibAddon.getActualBgColor();
