@@ -11,7 +11,7 @@ export interface ImportObjects {
 export class DIMXService {
     constructor(public papiClient: PapiClient) {}
 
-    dataExport(addonUUID: string, tableName: string, body?: { Format?: string; Delimiter?: string }) {
+    dataExport(addonUUID: string, tableName: string, body?: { Format?: string; Delimiter?: string; Where?: string }) {
         return this.papiClient.post(`/addons/data/export/file/${addonUUID}/${tableName}`, body);
     }
 
