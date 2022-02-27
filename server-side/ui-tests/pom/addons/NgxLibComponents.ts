@@ -15,8 +15,13 @@ export class NgxLibComponents extends AddonPage {
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
     public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
     public pepIconMandatory: Locator = By.css('[name="system_must"]');
+    public pepIconTrash: Locator = By.css('[name="system_bin"]');
     public titleLabel: Locator = By.css('mat-label');
     public pepFileUploader: Locator = By.css('pep-files-uploader');
+    public matError: Locator = By.css('[id="mat-error-0"]');
+    public formTitle: Locator = By.xpath('//*[@class="mat-form-title"]');
+    public noFileTitle: Locator = By.xpath('//*[contains(text(),"Drag and drop a file here or click")]');
+    public openSrcButton: Locator = By.xpath("//*[@class='pep-file-preview ng-star-inserted']");
 
 
 

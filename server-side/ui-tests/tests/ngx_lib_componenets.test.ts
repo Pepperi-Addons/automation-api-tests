@@ -7,7 +7,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { upgradeDependenciesTests } from './test.index';
 import { Components, NgxLibComponents } from '../pom/addons/NgxLibComponents';
-import { Alert, Locator, WebElement } from 'selenium-webdriver';
+import { Alert, By, Locator, WebElement } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
@@ -22,7 +22,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
         'ngx-lib-testing': ['47db1b61-e1a7-42bd-9d55-93dd85044e91', ''],
     };
 
-    await upgradeDependenciesTests(generalService, varPass);
+    // await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade ngx-lib-testing addon + dependencies
@@ -84,51 +84,50 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     const ngxLibAddon = new NgxLibComponents(driver);
                     await ngxLibAddon.gotoNgxAddon();
 
-                    // do {
-                    //     //1. are all classes from NGX presented on the element
-                    //     expect(await ngxLibAddon.areAllClassesIncluded()).to.be.true;
-                    //     let browserConsoleLog = (await driver.getALLConsoleLogs()).join();
-                    //     if (await ngxLibAddon.isComponentWithIcon()) {
-                    //         //2. is icon found
-                    //         const iconName: string = await ngxLibAddon.getIconNameOutOfExpectedData();
-                    //         await isIconFound(
-                    //             this,
-                    //             browserConsoleLog,
-                    //             `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`,
-                    //             iconName,
-                    //         );
-                    //     } else {
-                    //         const truedH: number = (await ngxLibAddon.getActualComponentSize()).height;
-                    //         const truedW: number = (await ngxLibAddon.getActualComponentSize()).width;
-                    //         const expectedH: number = (await ngxLibAddon.getExpectedComponentSize()).height;
-                    //         const expectedW: number = (await ngxLibAddon.getExpectedComponentSize()).width;
-                    //         //3. is size correct
-                    //         expect(expectedH).to.equal(truedH);
-                    //         expect(expectedW).to.equal(truedW);
-                    //     }
-                    //     //4. pre click color test
-                    //     await testColor(ngxLibAddon, 0);
-                    //     await ngxLibAddon.clickComponent(); //clicking component
-                    //     //5. post click color test
-                    //     await testColor(ngxLibAddon, 1);
-                    //     browserConsoleLog = (await driver.getALLConsoleLogs()).join();
-                    //     //6. component clicked test
-                    //     const ActualComponentData: string = await ngxLibAddon.getComponentData();
-                    //     isButtonClicked(this, browserConsoleLog, `clicked button: ${ActualComponentData}`);
-                    //     await ngxLibAddon.changeStyle();
-                    // } while ((await checkIfAlertAlreadyPresented()) !== 'button testing ended');
+                    do {
+                        //1. are all classes from NGX presented on the element
+                        expect(await ngxLibAddon.areAllClassesIncluded()).to.be.true;
+                        const browserConsoleLog = (await driver.getALLConsoleLogs()).join();
+                        if (await ngxLibAddon.isComponentWithIcon()) {
+                            //2. is icon found
+                            const iconName: string = await ngxLibAddon.getIconNameOutOfExpectedData();
+                            await isIconFound(
+                                this,
+                                browserConsoleLog,
+                                `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`,
+                                iconName,
+                            );
+                        } else {
+                            const truedH: number = (await ngxLibAddon.getActualComponentSize(Components.Button)).height;
+                            const truedW: number = (await ngxLibAddon.getActualComponentSize(Components.Button)).width;
+                            const expectedH: number = (await ngxLibAddon.getExpectedComponentSize(Components.Button)).height;
+                            const expectedW: number = (await ngxLibAddon.getExpectedComponentSize(Components.Button)).width;
+                            //3. is size correct
+                            expect(expectedH).to.equal(truedH);
+                            expect(expectedW).to.equal(truedW);
+                        }
+                        //4. pre click color test
+                        await testColor(ngxLibAddon, 0);
+                        await ngxLibAddon.clickComponent(); //clicking component
+                        //5. post click color test
+                        await testColor(ngxLibAddon, 1);
+                        //6. component clicked test
+                        const ActualComponentData: string = await ngxLibAddon.getComponentData();
+                        isTextPresentedInConsole(this, `clicked button: ${ActualComponentData}`);
+                        await ngxLibAddon.changeStyle();
+                    } while ((await checkIfAlertAlreadyPresented()) !== 'button testing ended');
 
-                    // (await driver.switchToAlertElement()).dismiss();
-                    // await ngxLibAddon.disableBtn();
-                    // await ngxLibAddon.clickComponent();
-                    // const browserConsoleLog = (await driver.getALLConsoleLogs()).join();
-                    // const componentData = await ngxLibAddon.getComponentData();
-                    // //7. is disabled button clicked
-                    // isButtonNOTClicked(this, browserConsoleLog, `clicked button: ${componentData}`);
-                    // await ngxLibAddon.disableBtn(); //to return the btn to not disable state
-                    // await ngxLibAddon.changeVisibilityOfBtn();
-                    // //8. is not visibale element is indeed not visiale
-                    // expect(await ngxLibAddon.isComponentVisibale()).to.be.false;
+                    (await driver.switchToAlertElement()).dismiss();
+                    await ngxLibAddon.disableBtn();
+                    await ngxLibAddon.clickComponent();
+                    const browserConsoleLog = (await driver.getALLConsoleLogs()).join();
+                    const componentData = await ngxLibAddon.getComponentData();
+                    //7. is disabled button clicked
+                    isButtonNOTClicked(this, browserConsoleLog, `clicked button: ${componentData}`);
+                    await ngxLibAddon.disableBtn(); //to return the btn to not disable state
+                    await ngxLibAddon.changeVisibilityOfBtn();
+                    //8. is not visibale element is indeed not visiale
+                    expect(await ngxLibAddon.isComponentVisibale()).to.be.false;
                 });
 
                 it('pep-attachment testing', async function () {
@@ -142,8 +141,10 @@ export async function NgxTests(email: string, password: string, varPass: string,
                             let bool = (element === "true" || element === "false") ? element === "true" : undefined;
                             parsedExpectedData.push(bool === true || bool === false ? bool : element);
                         });
-                        let [isMandatory, xAligment, showTitle, rowSpan] = parsedExpectedData;
+                        let [isMandatory, xAligment, showTitle] = parsedExpectedData;
+                        //1. is mandatory icon shown if the element is cnofigured as mandatory
                         await testIfElementShown(isMandatory as boolean, ngxLibAddon.pepIconMandatory);
+                        //2. is title label shown if it should
                         await testIfElementShown(showTitle as boolean, ngxLibAddon.titleLabel);
                         const truedH: number = (await ngxLibAddon.getActualComponentSize(Components.Attachment)).height;
                         const truedW: number = (await ngxLibAddon.getActualComponentSize(Components.Attachment)).width;
@@ -152,12 +153,28 @@ export async function NgxTests(email: string, password: string, varPass: string,
                         //3. is size correct
                         expect(expectedH).to.equal(truedH);
                         expect(expectedW).to.equal(truedW);
-                        //2. test size by row-span
-                        //3. think how to test the aligment
+                        //4. is aligment correct
+                        const formTitle: WebElement = await driver.findElement(ngxLibAddon.formTitle);
+                        const formTitleStyle: string = await formTitle.getCssValue("text-align");
+                        expect(xAligment).to.equal(formTitleStyle);
                         await ngxLibAddon.changeStyle();
                     } while ((await checkIfAlertAlreadyPresented()) !== 'attachment testing ended');
-
                     (await driver.switchToAlertElement()).dismiss();
+                    //5. test 'see original' button
+                    await driver.click(ngxLibAddon.openSrcButton);
+                    driver.sleep(1500);
+                    await driver.switchToTab(1);
+                    let urlAfterClick = await driver.getCurrentUrl();
+                    expect(urlAfterClick).to.equal("https://idpfiles.sandbox.pepperi.com/f389fd2e-4a31-4965-a21e-3a98b4553300/images/logo.svg");
+                    await driver.closeCurrentTabAndSwitchToOther(0);
+                    isTextPresentedInConsole(this, `element clicked`);
+                    //6. test deleting icon pressing 
+                    await driver.click(ngxLibAddon.pepIconTrash);
+                    await testIfElementShown(true, ngxLibAddon.noFileTitle);
+                    await testIfElementShown(true, ngxLibAddon.matError);
+                    //test file changed function printed to console
+                    isTextPresentedInConsole(this, `file changed`);
+                    //7. test inserting file into the element - dunno how to implement this rn
                 });
             });
         });
@@ -198,7 +215,8 @@ export async function NgxTests(email: string, password: string, varPass: string,
         }
     }
 
-    function isButtonClicked(that: any, consoleOutput: string, expectedValueInConsole: string): void {
+    async function isTextPresentedInConsole(that: any, expectedValueInConsole: string): Promise<void> {
+        const consoleOutput = (await driver.getALLConsoleLogs()).join();
         if (!consoleOutput.includes(expectedValueInConsole)) {
             addContext(that, {
                 title: `the button: '${expectedValueInConsole.substring(
