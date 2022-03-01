@@ -69,6 +69,7 @@ import {
     CodeJobsCleanTests,
     VarSystemAddonsTests,
     AddonDataImportExportTests,
+    AddonDataImportExportPerformanceTests,
     ADALStressTests,
 } from './api-tests/index';
 
@@ -1095,6 +1096,23 @@ export async function addon_data_import_export(client: Client, request: Request,
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonDataImportExportTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export_performanc(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export_Performanc';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportPerformanceTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
