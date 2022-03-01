@@ -107,8 +107,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                     if (itemList.length === 5) {
                         for (let i = 0; i < itemList.length; i++) {
                             if (
-                                itemList[i].MainCategoryID === 'NOT uom item' ||
-                                itemList[i].MainCategoryID === 'uom item'
+                                itemList[i].MainCategoryID.toLowerCase().trim() === 'NOT uom item' ||
+                                itemList[i].MainCategoryID.toLowerCase().trim() === 'uom item'
                             ) {
                                 numOfGoodItems++;
                             }
