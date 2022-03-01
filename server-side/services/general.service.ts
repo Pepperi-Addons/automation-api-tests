@@ -521,10 +521,10 @@ export default class GeneralService {
             let changeType = 'Upgrade';
             let searchString = `AND Version Like'${version}%' AND Available Like 1 AND Phased Like 1`;
             if (
-                // addonName == 'Services Framework' ||
-                // addonName == 'Cross Platforms API' ||
+                addonName == 'Services Framework' ||
+                addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
-                // addonName == 'WebApp API Framework' ||
+                addonName == 'WebApp API Framework' ||
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
