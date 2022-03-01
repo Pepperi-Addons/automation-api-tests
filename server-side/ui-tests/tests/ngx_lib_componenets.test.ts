@@ -22,7 +22,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
         'ngx-lib-testing': ['47db1b61-e1a7-42bd-9d55-93dd85044e91', ''],
     };
 
-    // await upgradeDependenciesTests(generalService, varPass);
+    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade ngx-lib-testing addon + dependencies
@@ -97,14 +97,14 @@ export async function NgxTests(email: string, password: string, varPass: string,
                                 `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`,
                                 iconName,
                             );
-                        } else {
+                        } else {//only buttons w/o icon are tested for size
                             const truedH: number = (await ngxLibAddon.getActualComponentSize(Components.Button)).height;
                             const truedW: number = (await ngxLibAddon.getActualComponentSize(Components.Button)).width;
                             const expectedH: number = (await ngxLibAddon.getExpectedComponentSize(Components.Button)).height;
                             const expectedW: number = (await ngxLibAddon.getExpectedComponentSize(Components.Button)).width;
                             //3. is size correct
                             expect(expectedH).to.equal(truedH);
-                            expect(expectedW).to.equal(truedW);
+                            expect(expectedW).to.equal(truedW);//problem here
                         }
                         //4. pre click color test
                         await testColor(ngxLibAddon, 0);
@@ -120,10 +120,9 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     (await driver.switchToAlertElement()).dismiss();
                     await ngxLibAddon.disableBtn();
                     await ngxLibAddon.clickComponent();
-                    const browserConsoleLog = (await driver.getALLConsoleLogs()).join();
                     const componentData = await ngxLibAddon.getComponentData();
                     //7. is disabled button clicked
-                    isButtonNOTClicked(this, browserConsoleLog, `clicked button: ${componentData}`);
+                    isTextNOTFound(this, `clicked button: ${componentData}`);
                     await ngxLibAddon.disableBtn(); //to return the btn to not disable state
                     await ngxLibAddon.changeVisibilityOfBtn();
                     //8. is not visibale element is indeed not visiale
@@ -176,9 +175,48 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     isTextPresentedInConsole(this, `file changed`);
                     //7. test inserting file into the element - dunno how to implement this rn
                 });
+
+                it('pep-checkbox testing', async function () {
+                    const ngxLibAddon = new NgxLibComponents(driver);
+                    await ngxLibAddon.gotoNextTest();
+                    do {
+                        let expectedData = (await ngxLibAddon.getExpectedData()).split(';');
+                        let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                        let [value, label, type, alignment, , , renderTitle, visible, mandatory, disabled] = parsedExpectedData;
+                        if (visible) {
+                            let checkBoxValueBool = await ngxLibAddon.getCheckBoxValue(type as string);
+                            expect(checkBoxValueBool).to.equal(value);
+                            let checkBoxLabelText = await ngxLibAddon.getCheckBoxLabelText(type as string);
+                            expect(label).to.equal(checkBoxLabelText);
+                            const isCheckboxShown = await ngxLibAddon.getIfCheckBoxShown(type as string, value as boolean, disabled as boolean);
+                            expect(isCheckboxShown).to.be.true;
+                            if (mandatory && renderTitle) {
+                                const checkBoxFieldTitle = await (await driver.findElement(ngxLibAddon.checkBoxFieldTitle)).getCssValue("text-align");
+                                expect(checkBoxFieldTitle).to.equal(alignment);
+                            }
+                            expect(await ngxLibAddon.validateDisabledCheckbox(disabled as boolean)).to.be.true;
+                            //show title??
+                            await testIfElementShown((mandatory && renderTitle) as boolean, ngxLibAddon.pepIconMandatory);
+                        }
+                        await testIfElementShown(visible as boolean, ngxLibAddon.checkBoxComponent);
+                        await ngxLibAddon.changeStyle();
+                    } while ((await checkIfAlertAlreadyPresented()) !== 'checkbox testing ended');
+                    (await driver.switchToAlertElement()).dismiss();
+                    expect(await ngxLibAddon.validateClick(ngxLibAddon.checkBoxComponent)).to.be.true;
+                });
             });
         });
     });
+
+    function prepareExpectedData(expectedData: string[]): (string | boolean)[] {
+        let parsedExpectedData: (string | boolean)[] = [];
+        expectedData.forEach(element => {
+            element = element.split(':')[1];
+            let bool = (element === "true" || element === "false") ? element === "true" : undefined;
+            parsedExpectedData.push(bool === true || bool === false ? bool : element);
+        });
+        return parsedExpectedData;
+    }
 
     async function testIfElementShown(isFound: boolean, locator: Locator) {
         let foundElement: WebElement | undefined = undefined;
@@ -187,7 +225,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
         } catch (e: any) {
             if (e.message.includes(`'${locator.valueOf()['value']}', The test must end, The element is: undefined`)) {
                 foundElement = undefined;
-            }
+            } else throw e;
         }
         if (isFound) {
             expect(foundElement).to.not.be.undefined;
@@ -228,7 +266,8 @@ export async function NgxTests(email: string, password: string, varPass: string,
         expect(consoleOutput).to.include(expectedValueInConsole);
     }
 
-    function isButtonNOTClicked(that: any, consoleOutput: string, expectedValueInConsole: string): void {
+    async function isTextNOTFound(that: any, expectedValueInConsole: string): Promise<void> {
+        const consoleOutput = (await driver.getALLConsoleLogs()).join();
         if (consoleOutput.includes(expectedValueInConsole)) {
             addContext(that, {
                 title: `the button: '${expectedValueInConsole.substring(
@@ -257,3 +296,4 @@ export async function NgxTests(email: string, password: string, varPass: string,
         }
     }
 }
+
