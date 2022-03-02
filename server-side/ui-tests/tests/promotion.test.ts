@@ -1416,9 +1416,19 @@ export async function PromotionTests(email: string, password: string, client: Cl
 16:TSAPPIOrderPromotionPromotionCode, 17:TSAPPIOrderPromotionReason, 18:TSAPPIOrderPromotionReasonReference,
 19:SubTotalAfterItemsDiscount.
  */
-async function GetDataFromCartWebAPI(webAPI, accessToken, catalogUUID) {
+async function GetDataFromCartWebAPI(webAPI: WebAppAPI, accessToken: string, catalogUUID: string) {
     const cart = await webAPI.getCart(accessToken, catalogUUID);
     const cartSmartSerch = await webAPI.getCartItemSearch(accessToken, catalogUUID);
+    if (cart.AccountUID == null) {
+        throw new Error(
+            `The cart have account of: NULL, With Error code: ${cart.ErrorCode}, and Error Message: ${cart.ErrorMessage}`,
+        );
+    }
+    if (cartSmartSerch.Rows) {
+        throw new Error(
+            `The cartSmartSerch have Rows of: NULL, With Error code: ${cart.ErrorCode}, and Error Message: ${cart.ErrorMessage}`,
+        );
+    }
     const dataFromCartArr: string[][] = [];
     for (let j = 0; j < cartSmartSerch.Rows.length; j++) {
         for (let i = 0; i < cartSmartSerch.Rows[j].Fields.length; i++) {
