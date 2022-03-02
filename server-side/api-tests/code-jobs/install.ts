@@ -70,6 +70,14 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
 
     async function installDistributorAddon() {
         //debugger;
+        //Another way to fix this test but lose the install part
+        // const testData = {
+        //     ADAL: [addonUUID, version],
+        // };
+        // CallbackCash.installDistributorAddon = await generalService.changeToAnyAvailableVersion(testData)
+        await service.addons.installedAddons.addonUUID(addonUUID).uninstall();
+        //Wait for Uninstall to fullly finish
+        generalService.sleep(4000);
         CallbackCash.installDistributorAddon = await service.addons.installedAddons
             .addonUUID(addonUUID)
             .install(version);
