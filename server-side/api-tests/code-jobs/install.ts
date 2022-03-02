@@ -75,11 +75,9 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         //     ADAL: [addonUUID, version],
         // };
         // CallbackCash.installDistributorAddon = await generalService.changeToAnyAvailableVersion(testData)
-        await service.addons.installedAddons
-            .addonUUID(addonUUID)
-            .uninstall();
-            //Wait for Uninstall to fullly finish
-            generalService.sleep(4000);
+        await service.addons.installedAddons.addonUUID(addonUUID).uninstall();
+        //Wait for Uninstall to fullly finish
+        generalService.sleep(4000);
         CallbackCash.installDistributorAddon = await service.addons.installedAddons
             .addonUUID(addonUUID)
             .install(version);
@@ -421,13 +419,13 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
     async function getAsyncedCallback() {
         CallbackCash.getAsyncedCallback = await service.get(
             '/addons/api/async/' +
-            addonUUID +
-            '/' +
-            jsFileName +
-            '/' +
-            functionName +
-            '?callback=' +
-            CallbackCash.callbackForAddon.result,
+                addonUUID +
+                '/' +
+                jsFileName +
+                '/' +
+                functionName +
+                '?callback=' +
+                CallbackCash.callbackForAddon.result,
         );
         //debugger;
         if (
