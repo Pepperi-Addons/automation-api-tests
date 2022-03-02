@@ -129,12 +129,12 @@ export class WebAppAPI extends Page {
     public async getCart(accessToken: string, catalogUUID: string) {
         const generalService = new GeneralService(this._CLIENT);
         let searchResponse;
-        let maxLoopsCounter = 4;
+        let maxLoopsCounter = 60;
+        const URL = `${
+            this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+        }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
         do {
             generalService.sleep(2000);
-            const URL = `${
-                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
             searchResponse = await generalService.fetchStatus(URL, {
                 method: 'GET',
                 headers: {
@@ -143,13 +143,7 @@ export class WebAppAPI extends Page {
                 },
             });
             maxLoopsCounter--;
-            /**
-             * In cases where the response came back without cart, wait 2 minutes before trying again
-             */
-            if (searchResponse.Body.AccountUID == null) {
-                generalService.sleep(120000);
-            }
-        } while ((searchResponse.Ok == null || searchResponse.Body.AccountUID == null) && maxLoopsCounter > 0);
+        } while (searchResponse.Ok == null && maxLoopsCounter > 0);
         return searchResponse.Body;
     }
 
