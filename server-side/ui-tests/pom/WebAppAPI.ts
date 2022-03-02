@@ -129,7 +129,7 @@ export class WebAppAPI extends Page {
     public async getCart(accessToken: string, catalogUUID: string) {
         const generalService = new GeneralService(this._CLIENT);
         let searchResponse;
-        let maxLoopsCounter = 90;
+        let maxLoopsCounter = 4;
         do {
             generalService.sleep(2000);
             const URL = `${
@@ -143,7 +143,13 @@ export class WebAppAPI extends Page {
                 },
             });
             maxLoopsCounter--;
-        } while (searchResponse.Ok == null && maxLoopsCounter > 0);
+            /**
+             * In cases where the response came back without cart, wait 2 minutes before trying again
+             */
+            if (searchResponse.Body.AccountUID == null) {
+                generalService.sleep(120000);
+            }
+        } while ((searchResponse.Ok == null || searchResponse.Body.AccountUID == null) && maxLoopsCounter > 0);
         return searchResponse.Body;
     }
 
