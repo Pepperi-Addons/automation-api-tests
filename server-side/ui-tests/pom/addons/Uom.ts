@@ -6,16 +6,18 @@ import { OrderPage } from '../OrderPage';
 import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 
-export class UomPage extends AddonPage {
+export class Uom extends AddonPage {
     //UOM Addon Locators
     public UomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
     public UomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
     public UomInstallBtn: Locator = By.css("[data-qa='install']");
     public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
     public UomSaveBtn: Locator = By.css("[data-qa='Save']");
-    public ItemInOrder: Locator = By.xpath('//fieldset');
-    public UomTypeItemInOrder: Locator = By.xpath("//span[@id='TSAAOQMUOM2' and text()='Single']");
-    public LocatorForTransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
+    public NonUomTypeItemInOrder: Locator = By.xpath('//fieldset');
+    public UomTypeItemInOrder: Locator = By.xpath(
+        "//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']",
+    );
+    public TransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**
      *
@@ -107,7 +109,14 @@ export class UomPage extends AddonPage {
             'Fix Quantity',
         );
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
-        await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
+        try {
+            //in case medium view isnt added yet
+            await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
+        } catch (Error) {
+            await this.browser.switchToDefaultContent();
+            await this.selectTabByText('General');
+            await objectTypeEditor.editATDView('Order Center Views', 'Medium Thumbnails View');
+        }
         await this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
         await this.deleteAllFieldFromUIControl();
@@ -125,7 +134,9 @@ export class UomPage extends AddonPage {
             'Item ID',
             'Unit Quantity',
         );
+        this.browser.sleep(2000);
         await this.browser.click(this.SaveUIControlBtn);
+        this.browser.sleep(3500);
     }
 
     public async editItemConfigFeld(nameOfATD: string): Promise<void> {
@@ -164,7 +175,7 @@ export class UomPage extends AddonPage {
                   return JSON.stringify(res);`,
                 },
             },
-            this.LocatorForTransLineField,
+            this.TransLineField,
             'ItemConfig',
         );
     }
@@ -225,7 +236,6 @@ export class UomPage extends AddonPage {
      */
     public async testUomAtdUI(): Promise<void> {
         //1. regular item testing
-
         //1.1 add 48 items of regular qty - see 48 items are shown + correct price is presented
         let workingUomObject = new UomUIObject('1230');
         const orderPage = new OrderPage(this.browser);
@@ -453,10 +463,7 @@ export class UomPage extends AddonPage {
         await this.testQtysOfItem(workingUomObject, 1, 1, 37, 181, 181);
 
         //3. UOM order test ended - submiting to cart
-        await this.browser.click(orderPage.SubmitToCart);
-        const webAppList = new WebAppList(this.browser);
-        await webAppList.isSpinnerDone();
-        await webAppList.validateListRowElements();
+        await this.gotoCart(orderPage);
     }
 
     public async testUomAtdUIWithItemConfig(): Promise<void> {
@@ -599,9 +606,19 @@ export class UomPage extends AddonPage {
         }
 
         //3. UOM order test ended - submiting to cart
+        await this.gotoCart(orderPage);
+    }
+
+    private async gotoCart(orderPage: OrderPage) {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
+        try {
+            await orderPage.changeOrderCenterPageView('GridLine');
+        } catch (Error) {
+            await orderPage.clickViewMenu(); //to close the menu first
+            await orderPage.changeOrderCenterPageView('Grid');
+        }
         await webAppList.validateListRowElements();
     }
 
@@ -609,12 +626,19 @@ export class UomPage extends AddonPage {
         const webAppHomePage = new WebAppHomePage(this.browser);
         await webAppHomePage.initiateSalesActivity(ATDname, accountName);
         const orderPage = new OrderPage(this.browser);
-        await orderPage.changeOrderPageView(viewType);
+        await orderPage.changeOrderCenterPageView(viewType);
         //validate there are 5 items on screen
-        const allItemPresented: WebElement[] = await this.browser.findElements(this.ItemInOrder);
+        const allItemPresented: WebElement[] = await this.browser.findElements(this.NonUomTypeItemInOrder);
         expect(allItemPresented.length).to.equal(5);
         //validate 4 are UOM items
-        const allUOMItemPresented: WebElement[] = await this.browser.findElements(this.UomTypeItemInOrder);
+        let allUOMItemPresented: WebElement[] = [];
+        try {
+            //DI-19257 - https://pepperi.atlassian.net/browse/DI-19257
+            allUOMItemPresented = await this.browser.findElements(this.UomTypeItemInOrder);
+        } catch (Error) {
+            console.log('cannot find UOM type items - probably related to: DI-19257');
+            process.exit(1);
+        }
         expect(allUOMItemPresented.length).to.equal(4);
     }
 }

@@ -1,5 +1,5 @@
 import { Browser } from '../../../utilities/browser';
-import { Page } from '../../base/page';
+import { Page } from '../../base/Page';
 import config from '../../../../config';
 import { Locator, By, WebElement, Key } from 'selenium-webdriver';
 import { WebAppHeader } from '../../WebAppHeader';
@@ -55,7 +55,7 @@ export enum AddonLoadCondition {
 }
 
 export class AddonPage extends Page {
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 
@@ -160,9 +160,11 @@ export class AddonPage extends Page {
 
     public async isAddonFullyLoaded(addonLoadCondition: AddonLoadCondition): Promise<boolean> {
         if (addonLoadCondition == AddonLoadCondition.Footer) {
-            await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 45000);
+            this.browser.sleep(2500);
+            await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 65000);
         } else {
-            await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 45000);
+            this.browser.sleep(2500);
+            await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 65000);
         }
         console.log('%cValidate Addon Loaded', ConsoleColors.PageMessage);
         let bodySize = 0;

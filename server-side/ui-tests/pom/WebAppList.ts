@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/Page';
 import config from '../../config';
 import { WebElement, Locator, By } from 'selenium-webdriver';
 import { ConsoleColors } from '../../services/general.service';
@@ -13,7 +13,7 @@ export enum SelectSmartSearchRange {
 
 export class WebAppList extends Page {
     table: string[][] = [];
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 

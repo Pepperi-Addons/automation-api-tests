@@ -98,7 +98,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             expect(updatedInventory.InStockQuantity).to.equal(100);
 
             const webAppHomePage = new WebAppHomePage(driver);
-            await webAppHomePage.manualResync();
+            await webAppHomePage.manualResync(client);
 
             await webAppHomePage.initiateSalesActivity(_TEST_DATA_ATD_NAME);
 
