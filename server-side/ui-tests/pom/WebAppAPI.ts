@@ -35,7 +35,7 @@ export class WebAppAPI extends Page {
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (syncStatusReposnse.Status == 'Processing') {
                 await this.browser.sleep(5000);
-                console.log(`UpToDate: Retry ${loopsAmount} Times.`);
+                console.log(`Processing: Retry ${loopsAmount} Times.`);
             }
             loopsAmount--;
         } while ((syncStatusReposnse === null || syncStatusReposnse.Status == 'Processing') && loopsAmount > 0);
@@ -129,12 +129,12 @@ export class WebAppAPI extends Page {
     public async getCart(accessToken: string, catalogUUID: string) {
         const generalService = new GeneralService(this._CLIENT);
         let searchResponse;
-        let maxLoopsCounter = 90;
+        let maxLoopsCounter = 60;
+        const URL = `${
+            this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+        }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
         do {
             generalService.sleep(2000);
-            const URL = `${
-                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
             searchResponse = await generalService.fetchStatus(URL, {
                 method: 'GET',
                 headers: {

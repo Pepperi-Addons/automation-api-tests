@@ -115,6 +115,7 @@ export class ObjectTypeEditor extends AddonPage {
 
         const webAppDialog = new WebAppDialog(this.browser);
         await this.browser.sendKeys(webAppDialog.EditorTextBoxInput, name);
+        this.browser.sleep(2500);
         await this.browser.sendKeys(webAppDialog.EditorTextAreaInput, description + Key.TAB);
         await webAppDialog.selectDialogBoxByText('Save');
 
@@ -122,6 +123,7 @@ export class ObjectTypeEditor extends AddonPage {
 
         //If not in new ATD, try to remove ATD and recreate new ATD
         try {
+            //TODO: fix this for stage new behavior of error popup and refresh after
             //Make sure the page finish to load after creating new ATD
             await this.isSpinnerDone();
             await this.browser.switchTo(this.AddonContainerIframe);
