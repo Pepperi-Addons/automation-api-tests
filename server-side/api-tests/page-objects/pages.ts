@@ -1,6 +1,6 @@
 import { NgComponentRelation, Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../../services/general.service';
-import { PagesService } from '../../services/pages.service';
+import { PagesService } from '../../services/pages/pages.service';
 import { v4 as newUuid } from 'uuid';
 import { PageClass } from '../../models/page.class';
 import { PageFactory } from '../../models/page.factory';
@@ -13,10 +13,10 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
     //#region Upgrade Addon requirements
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
-        // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.75'], //16.65.12
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.0.68'], //Page Builder Addon
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.68
         PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.38'], //Slideshow Addon 0.0.36
     };
@@ -28,12 +28,10 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
     const pagesService = new PagesService(generalService);
     let basePage: Page = PageFactory.defaultPage();
-    const pageBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Page Block Tester');
-
+    const pageBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Static Tester');
     const basePageBlock: PageBlock = PageFactory.defaultPageBlock(pageBlockRelation);
 
     describe('Pages API Tests Suite', function () {
-
         describe('Prerequisites Addon for Pages API Tests', () => {
             //Test Data
             it('Validate That All The Needed Addons Installed', async () => {
@@ -68,7 +66,6 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
         describe('Base Page Tests Suite', function () {
             it('Create new page', async function () {
-
                 const resultPage = await pagesService.createOrUpdatePage(basePage);
                 basePage.Key = resultPage.Key;
                 pagesService.deepCompareObjects(basePage, resultPage, expect);
@@ -151,7 +148,6 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const pageClass = new PageClass(basePage);
                 const pageBlock: PageBlock = { Key: basePageBlock.Key } as any;
                 for (const prop of properties) {
-
                     pageBlock.Relation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
 
                     pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
@@ -159,7 +155,6 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
                         `${prop} is missing`,
                     );
-
                 }
             });
 
@@ -504,8 +499,9 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 for (const page of pagesFromApi) {
                     if (page?.Name) {
                         if (page.Name.includes('PagesApiTest') || page.Name.includes('Remove Slideshow Test')) {
-                            page.Blocks.filter((block) => !block.Configuration?.Data)
-                                .forEach(block => block.Configuration.Data = {});
+                            page.Blocks.filter((block) => !block.Configuration?.Data).forEach(
+                                (block) => (block.Configuration.Data = {}),
+                            );
 
                             await pagesService
                                 .deletePage(page)
@@ -519,7 +515,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 ).to.be.empty;
 
                 const resultNames = (await pagesService.getPages({ page_size: -1 })).map((page) => page?.Name);
-                expect(resultNames).to.not.include.members(['PagesApiTest','Remove Slideshow Test']);
+                expect(resultNames).to.not.include.members(['PagesApiTest', 'Remove Slideshow Test']);
             });
         });
 
