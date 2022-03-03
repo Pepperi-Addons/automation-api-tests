@@ -50,11 +50,6 @@ export class PageClass implements Partial<Page> {
             throw new Error("The page's 'Blocks' property is undefined/not initialzied");
         }
         this._page.Blocks.push(pageBlock);
-
-        if (!this.Blocks) {
-            throw new Error("The page's 'Blocks' property is undefined/not initialzied");
-        }
-        this.Blocks.push(pageBlock);
     }
 
     overwriteBlockByKey(blockKey: string, pageBlock: PageBlock): void {
@@ -65,21 +60,21 @@ export class PageClass implements Partial<Page> {
     addBlockToSection(
         blockKey: string,
         sectionKey: string,
-        column?: number | undefined,
+        column: number = 0,
         hide?: Array<DataViewScreenSize> | undefined,
     ): void {
-        const pageSectionBlock: PageBlockContainer = {
+        const pageBlockContainer: PageBlockContainer = {
             BlockKey: blockKey,
             Hide: hide ?? undefined,
         };
         const sectionIndex = this._page.Layout.Sections.findIndex((section: PageSection) => section.Key === sectionKey);
-        this._page.Layout.Sections[sectionIndex].Columns[column ?? 0].BlockContainer = pageSectionBlock;
+        this._page.Layout.Sections[sectionIndex].Columns[column]= {BlockContainer: pageBlockContainer};
     }
 
     addNewBlockToSection(
         pageBlock: PageBlock,
         sectionKey: string,
-        column?: number | undefined,
+        column: number = 0,
         hide?: Array<DataViewScreenSize> | undefined,
     ) {
         this.addNewBlock(pageBlock);

@@ -16,7 +16,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.68
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.81
         PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.38'], //Slideshow Addon 0.0.36
     };
