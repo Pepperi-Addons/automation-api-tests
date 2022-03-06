@@ -1,13 +1,7 @@
-import {
-    NgComponentRelation,
-    Page,
-    PageBlock,
-    PageSection,
-    PageSectionColumn,
-    SplitType,
-} from '@pepperi-addons/papi-sdk';
+import { NgComponentRelation, Page, PageBlock, SplitType } from '@pepperi-addons/papi-sdk';
 import { v4 as newUuid } from 'uuid';
 import { PageClass } from './page.class';
+import { PageSectionClass } from './pages/page-section.class';
 
 export class PageFactory {
     //Returns new Page object with all mandatory properties + Page name
@@ -41,27 +35,10 @@ export class PageFactory {
         return pageBlock;
     }
 
-    public static defaultSection(split?: SplitType | undefined, sectionKey?: string | undefined): PageSection {
+    public static defaultSection(split?: SplitType | undefined, sectionKey?: string | undefined): PageSectionClass {
         sectionKey = sectionKey ?? newUuid();
         split = split ?? undefined;
-        const baseSection: PageSection = {
-            Key: sectionKey,
-            Columns: getColumnsLength(split),
-            Split: split,
-        };
-        return baseSection;
 
-        function getColumnsLength(split?: SplitType | undefined) {
-            const columns: PageSectionColumn[] = [];
-
-            let columnNumber = 1;
-            if (split) {
-                columnNumber = Math.max(split.split('/').length - 1, 1);
-            }
-            for (let i = 0; i < columnNumber; i++) {
-                columns.push({});
-            }
-            return columns;
-        }
+        return new PageSectionClass(sectionKey, split);
     }
 }
