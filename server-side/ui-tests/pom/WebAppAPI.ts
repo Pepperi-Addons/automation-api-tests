@@ -129,12 +129,12 @@ export class WebAppAPI extends Page {
     public async getCart(accessToken: string, catalogUUID: string) {
         const generalService = new GeneralService(this._CLIENT);
         let searchResponse;
-        let maxLoopsCounter = 90;
+        let maxLoopsCounter = 60;
+        const URL = `${
+            this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+        }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
         do {
             generalService.sleep(2000);
-            const URL = `${
-                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
             searchResponse = await generalService.fetchStatus(URL, {
                 method: 'GET',
                 headers: {

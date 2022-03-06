@@ -1,5 +1,12 @@
-import { DataViewScreenSize, Page, PageBlock, PageSection, PageBlockContainer } from '@pepperi-addons/papi-sdk';
-export class PageClass {
+import {
+    DataViewScreenSize,
+    Page,
+    PageBlock,
+    PageSection,
+    PageBlockContainer,
+    PageLayout,
+} from '@pepperi-addons/papi-sdk';
+export class PageClass implements Partial<Page> {
     /**
      *
      */
@@ -13,7 +20,21 @@ export class PageClass {
             throw new Error("'page' cannot be null/undefined");
         }
         this._page = this.shallowCopyPage(_page);
+        for (const prop in this._page) {
+            if (this._page[prop]) {
+                this[prop] = this._page[prop];
+            }
+        }
     }
+    [key: string]: any;
+    Name?: string | undefined;
+    Description?: string | undefined;
+    Blocks?: PageBlock[];
+    Layout?: PageLayout;
+    Hidden?: boolean | undefined;
+    CreationDateTime?: string | undefined;
+    ModificationDateTime?: string | undefined;
+    Key?: string | undefined;
 
     private shallowCopyPage(page: Page): Page {
         return JSON.parse(JSON.stringify(page));
@@ -21,6 +42,7 @@ export class PageClass {
 
     editPageKey(key: string | undefined) {
         this._page.Key = key;
+        this.Key = key;
     }
 
     addNewBlock(pageBlock: PageBlock): void {
@@ -28,6 +50,11 @@ export class PageClass {
             throw new Error("The page's 'Blocks' property is undefined/not initialzied");
         }
         this._page.Blocks.push(pageBlock);
+
+        if (!this.Blocks) {
+            throw new Error("The page's 'Blocks' property is undefined/not initialzied");
+        }
+        this.Blocks.push(pageBlock);
     }
 
     overwriteBlockByKey(blockKey: string, pageBlock: PageBlock): void {
