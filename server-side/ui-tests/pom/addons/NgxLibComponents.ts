@@ -355,6 +355,36 @@ export class NgxLibComponents extends AddonPage {
         const formTitle: WebElement = await this.browser.findElement(aligmentElement);
         return await formTitle.getCssValue("text-align");
     }
+
+    public async openSrcLink(): Promise<string> {
+        await this.browser.click(this.openSrcButton);
+        this.browser.sleep(1500);
+        await this.browser.switchToTab(1);
+        let urlAfterClick = await this.browser.getCurrentUrl();
+        return urlAfterClick;
+    }
+
+    public async deleteCurrentAttachment() {
+        await this.browser.click(this.pepIconTrash);
+
+    }
+
+    public async getIntoColorDialog() {
+        await this.browser.click(this.outerDialogContainer);
+    }
+
+    public async disableAAComp() {
+        const checkBoxElement = await this.browser.findElement(this.aaComplientCheckBox);
+        if ((await checkBoxElement.getAttribute("aria-checked")) === "true") {
+            await this.browser.click(this.aaComplientCheckBox);
+        }
+    }
+
+
+    public async okColorDialog() {
+        await this.browser.click(this.okDialog);
+    }
 }
+
 
 
