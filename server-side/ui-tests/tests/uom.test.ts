@@ -80,17 +80,13 @@ export async function UomTests(email: string, password: string, varPass: string,
                 describe(`Test Data: ${addonName}`, () => {
                     it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
                         if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include(
-                                'is already working on version',
-                            );
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
                         } else {
                             expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
                         }
                     });
                     it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(
-                            generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get(),
-                        )
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
                             .eventually.to.have.property('Version')
                             .a('string')
                             .that.is.equal(varLatestVersion);
@@ -142,13 +138,10 @@ export async function UomTests(email: string, password: string, varPass: string,
                 const postUomItemsResponse: FetchStatusResponse[] = [];
                 for (let i = 0; i < uomItemsToPost.length; i++) {
                     postUomItemsResponse.push(
-                        await generalService.fetchStatus(
-                            `/addons/api/1238582e-9b32-4d21-9567-4e17379f41bb/api/uoms`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(uomItemsToPost[i]),
-                            },
-                        ),
+                        await generalService.fetchStatus(`/addons/api/1238582e-9b32-4d21-9567-4e17379f41bb/api/uoms`, {
+                            method: 'POST',
+                            body: JSON.stringify(uomItemsToPost[i]),
+                        }),
                     );
                 }
                 for (let i = 0; i < postUomItemsResponse.length; i++) {
@@ -271,11 +264,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                     const brandedApp = new BrandedApp(driver);
                     await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                     const objectTypeEditor = new ObjectTypeEditor(driver);
-                    await objectTypeEditor.removeATD(
-                        generalService,
-                        _TEST_DATA_ATD_NAME,
-                        _TEST_DATA_ATD_DESCRIPTION,
-                    );
+                    await objectTypeEditor.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
                 });
                 it('Reset Existing Items', async function () {
                     //Remove all items
