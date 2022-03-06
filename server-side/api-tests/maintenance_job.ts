@@ -56,9 +56,12 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
         describe('Maintenance Job', () => {
             it('Validate Maintenance Job Works On Phased Version', async () => {
                 const maintenanceJobResponse = await generalService.papiClient.post(
-                    '/addons/api/00000000-0000-0000-0000-000000000a91/installation/maintenanceJob',
+                    '/addons/api/async/00000000-0000-0000-0000-000000000a91/installation/maintenanceJob',
                 );
-                expect(maintenanceJobResponse.success).to.be.true;
+                const auditLogsResultObject = await generalService.getAuditLogResultObjectIfValid(
+                    maintenanceJobResponse.URI,
+                );
+                expect(JSON.parse(auditLogsResultObject.AuditInfo.ResultObject).success).to.be.true;
 
                 //TODO: Remove this region - This was add 25/12/2021 since the job need to be called only on the
                 //TODO: Maintenance Window, and this need to be developed.

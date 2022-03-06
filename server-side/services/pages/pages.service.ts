@@ -1,5 +1,5 @@
-import { FindOptions, NgComponentRelation, Page } from '@pepperi-addons/papi-sdk';
-import GeneralService from './general.service';
+import { FindOptions, NgComponentRelation, Page, PapiClient } from '@pepperi-addons/papi-sdk';
+import GeneralService from '../general.service';
 
 export interface PageBlockRelation {
     AddonUUID: string;
@@ -13,8 +13,11 @@ export class PagesService {
     /**
      *
      */
+    private papiClient: PapiClient;
     mandatoryRelationFields = ['AddonUUID', 'SubType', 'Name', 'AddonRelativeURL', 'ModuleName', 'ComponentName'];
-    constructor(private generalService: GeneralService) {}
+    constructor(generalService: GeneralService) {
+        this.papiClient = generalService.papiClient;
+    }
 
     private validatePageExists(page: Page) {
         if (!page) {
@@ -23,7 +26,7 @@ export class PagesService {
     }
     //Returns only the mandatory fields for PageBlock's 'Relation' property by name from the relations record
     async getBlockRelation(blockName: string): Promise<NgComponentRelation> {
-        const apiResponse = await this.generalService.papiClient.addons.data.relations.find({
+        const apiResponse = await this.papiClient.addons.data.relations.find({
             where: `Name='${blockName}'`,
         });
         const fullRelation: NgComponentRelation = apiResponse[0];
@@ -45,13 +48,13 @@ export class PagesService {
     }
     async createOrUpdatePage(page: Page): Promise<Page> {
         // console.log(`${new Date().getTime()} - Create or Update Page`);
-        return this.generalService.papiClient.pages.upsert(page);
+        return this.papiClient.pages.upsert(page);
     }
     async getPage(pageUuid: string): Promise<Page> {
-        return this.generalService.papiClient.pages.uuid(pageUuid).get();
+        return this.papiClient.pages.uuid(pageUuid).get();
     }
     async getPages(findOptions?: FindOptions): Promise<Array<Page>> {
-        return this.generalService.papiClient.pages.find(findOptions);
+        return this.papiClient.pages.find(findOptions);
     }
 
     assertAndLog(expected: any, actual: any, expect: Chai.ExpectStatic): void {
