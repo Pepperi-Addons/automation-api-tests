@@ -7,16 +7,19 @@ export enum Components {
 }
 
 export class NgxLibComponents extends AddonPage {
+    //*generic*//
     public changeStyleButton: Locator = By.css('[data-qa="style change btn"]');
-    public componentButton: Locator = By.css('[data-qa="componentBtn"]');
     public autoData: Locator = By.css('[data-qa="auto-data"]');
+    public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
+    public pepIconMandatory: Locator = By.css('[name="system_must"]');
+    //*button*//
+    public componentButton: Locator = By.css('[data-qa="componentBtn"]');
     public disableButtonBtn: Locator = By.css('[data-qa="dis-comp"]');
     public visibilityOfButtonBtn: Locator = By.css('[data-qa="vis-comp"]');
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
-    public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
-    public pepIconMandatory: Locator = By.css('[name="system_must"]');
     public pepIconTrash: Locator = By.css('[name="system_bin"]');
     public titleLabel: Locator = By.css('mat-label');
+    //*attachment*//
     public pepFileUploader: Locator = By.css('pep-files-uploader');
     public matError: Locator = By.css('[id="mat-error-0"]');
     public formTitle: Locator = By.xpath('//*[@class="mat-form-title"]');
@@ -29,9 +32,21 @@ export class NgxLibComponents extends AddonPage {
     public checkBoxComponent: Locator = By.css("pep-checkbox");
     public checkBoxEmoji: Locator = By.xpath("//button[contains(@class,'emoji-icon')]");
     public checkBoxEmojiTitle: Locator = By.xpath("//span[contains(@class,'emoji-title')]");
+    //*color*//
+    public outerDialogContainer: Locator = By.xpath("//*[contains(@class,'pep-color')]");
+    public dialogContainer: Locator = By.css("mat-dialog-container");
+    public changeHueSlider: Locator = By.xpath("(//mat-slider)[1]");
+    public changeSaturationSlider: Locator = By.xpath("(//mat-slider)[2]");
+    public changeLightnessSlider: Locator = By.xpath("(//mat-slider)[3]");
+    public currentColor: Locator = By.className("current-color");
+    public okDialog: Locator = By.xpath("//span[contains(text(),'Ok')]");
+    public outterComponentColor: Locator = By.css("pep-color > div > div");
+    public aaComplientCheckBox: Locator = By.xpath("//mat-checkbox//label//span//input");
+    public titleAlignment: Locator = By.xpath("//div[@class='mat-form-title']");
+    public AAcomp: Locator = By.xpath("//div[@class='color-complient']");
+
     //->
-
-
+    //
 
     /**
      * goto NGX - lib page from homepage
@@ -196,19 +211,18 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-    public async getActualBgColor(): Promise<string> {
-        return await (await this.browser.findElement(this.insideButton)).getCssValue('background-color');
+    public async getActualBgColor(locator: Locator): Promise<string> {
+        return await (await this.browser.findElement(locator)).getCssValue('background-color');
     }
 
     /**
      *
      *
      */
-    public async getExpectedBgColor(index: number): Promise<string> {
-        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(' ');
+    public async getExpectedBgColor(delimiterToSplitData: string, delimiterToSplitColor: string, index: number): Promise<string> {
+        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(delimiterToSplitData);
         return expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1]
-            .split(';')
-        [index].replace(/,/g, ', ');
+            .split(delimiterToSplitColor)[index].replace(/,/g, ', ');
     }
 
     /**
@@ -335,6 +349,11 @@ export class NgxLibComponents extends AddonPage {
     public async isTextPresentedInConsole(expectedValueInConsole: string): Promise<boolean> {
         const consoleOutput = (await this.browser.getALLConsoleLogs()).join();
         return consoleOutput.includes(expectedValueInConsole);
+    }
+
+    public async getXAligment(aligmentElement: Locator): Promise<string> {
+        const formTitle: WebElement = await this.browser.findElement(aligmentElement);
+        return await formTitle.getCssValue("text-align");
     }
 }
 

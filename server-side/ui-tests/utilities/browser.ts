@@ -1,6 +1,7 @@
 import 'chromedriver';
-import { Builder, ThenableWebDriver, WebElement, until, Locator, Key, AlertPromise } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome';
+import { Builder, ThenableWebDriver, WebElement, until, Locator, Key, AlertPromise, Actions } from 'selenium-webdriver';
+import chrome, { Driver } from 'selenium-webdriver/chrome';
+import { Executor } from 'selenium-webdriver/http';
 import GeneralService, { ConsoleColors } from '../../services/general.service';
 
 export class Browser {
@@ -103,6 +104,10 @@ export class Browser {
 
     public async switchToAlertElement(): Promise<AlertPromise> {
         return await this.driver.switchTo().alert();
+    }
+
+    public async executeScript(script: string) {
+        await this.driver.executeScript(script);
     }
 
     public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
