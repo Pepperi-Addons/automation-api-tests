@@ -12,13 +12,13 @@ export class NgxLibComponents extends AddonPage {
     public autoData: Locator = By.css('[data-qa="auto-data"]');
     public nextTestBtn: Locator = By.css('[data-qa="next-test"]');
     public pepIconMandatory: Locator = By.css('[name="system_must"]');
+    public titleLabel: Locator = By.css('mat-label');
     //*button*//
     public componentButton: Locator = By.css('[data-qa="componentBtn"]');
     public disableButtonBtn: Locator = By.css('[data-qa="dis-comp"]');
     public visibilityOfButtonBtn: Locator = By.css('[data-qa="vis-comp"]');
     public insideButton: Locator = By.css("[data-qa='componentBtn'] > button");
     public pepIconTrash: Locator = By.css('[name="system_bin"]');
-    public titleLabel: Locator = By.css('mat-label');
     //*attachment*//
     public pepFileUploader: Locator = By.css('pep-files-uploader');
     public matError: Locator = By.css('[id="mat-error-0"]');
@@ -44,7 +44,14 @@ export class NgxLibComponents extends AddonPage {
     public aaComplientCheckBox: Locator = By.xpath("//mat-checkbox//label//span//input");
     public titleAlignment: Locator = By.xpath("//div[@class='mat-form-title']");
     public AAcomp: Locator = By.xpath("//div[@class='color-complient']");
-
+    //*date*//
+    public dateValue: Locator = By.xpath("//input[contains(@class,'mat-input-element')]");
+    public pepTimeIcon: Locator = By.css('[name="time_cal"]');
+    public pepDate: Locator = By.css('pep-date');
+    public datePicker: Locator = By.css('mat-datetimepicker-calendar');
+    public datePickerMinutes: Locator = By.xpath("//div[contains(@class,'minutes')]");
+    public datePickerHours: Locator = By.xpath("//div[contains(@class,'hours')]");
+    public jan8thDate: Locator = By.xpath("//td[@aria-label='January 8, 2020']");
     //->
     //
 
@@ -211,8 +218,8 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-    public async getActualBgColor(locator: Locator): Promise<string> {
-        return await (await this.browser.findElement(locator)).getCssValue('background-color');
+    public async getActualBgColor(locator: Locator, colorType: string): Promise<string> {
+        return await (await this.browser.findElement(locator)).getCssValue(colorType);
     }
 
     /**
@@ -221,7 +228,7 @@ export class NgxLibComponents extends AddonPage {
      */
     public async getExpectedBgColor(delimiterToSplitData: string, delimiterToSplitColor: string, index: number): Promise<string> {
         const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(delimiterToSplitData);
-        return expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1]
+        return delimiterToSplitColor === '' ? expectedComponentClassesSplited[expectedComponentClassesSplited.length - 6].replace(/,/g, ', ') : expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1]
             .split(delimiterToSplitColor)[index].replace(/,/g, ', ');
     }
 
