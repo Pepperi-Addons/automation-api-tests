@@ -151,6 +151,8 @@ export class WebAppAPI extends Page {
         const generalService = new GeneralService(this._CLIENT);
         console.log("performing GET call to 'base_url' to recive correct URL to use as base in all API calls");
         this._BASE_URL = await (await generalService.papiClient.get('/webapi/base_url')).BaseURL;
+        //TODO: 07/03/2022: Improve this to also be able to work with EU when there will be time
+        this._BASE_URL = this._BASE_URL.replace('euwebapi', 'webapi');
         return this._BASE_URL;
     }
 }
