@@ -1,4 +1,4 @@
-import { By, IRectangle, Locator, WebElement } from 'selenium-webdriver';
+import { By, IRectangle, Key, Locator, WebElement } from 'selenium-webdriver';
 import { AddonPage, WebAppSettingsSidePanel } from '..';
 
 export enum Components {
@@ -220,7 +220,7 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-    public async getActualBgColor(locator: Locator, colorType: string): Promise<string> {
+    public async getActualElementColor(locator: Locator, colorType: string): Promise<string> {
         return await (await this.browser.findElement(locator)).getCssValue(colorType);
     }
 
@@ -392,6 +392,71 @@ export class NgxLibComponents extends AddonPage {
 
     public async okColorDialog() {
         await this.browser.click(this.okDialog);
+    }
+
+    public async changeDateAndReturnNew(dateType: string, renderSymbol: boolean, xAligment: string) {
+        (await this.browser.getALLConsoleLogs());//to clean the log
+        let dateValueTitle = "";
+        if (dateType === "date") {//create "change and return date from component" in NGX class and only validate here
+            if (renderSymbol && (xAligment !== "center")) {
+                await this.browser.click(this.pepDateIcon);
+            } else {
+                await this.browser.click(this.dateValue);
+                this.browser.sleep(1000);
+            }
+            await this.browser.click(this.jan8thDate);
+            const dateValue = await this.browser.findElement(this.dateValue);
+            dateValueTitle = (await dateValue.getAttribute("title"))
+        } else {
+            await this.browser.click(this.dateValue);
+            this.browser.sleep(1000);
+            const elem = await await this.browser.findElement(this.datePicker);
+            await elem.sendKeys(Key.ENTER);
+            const hourLocator = this.datePickerHours.valueOf()['value'].slice() + "//div[text()='13']";
+            await this.browser.click(By.xpath(hourLocator));
+            const minuteLocator = this.datePickerMinutes.valueOf()['value'].slice() + "//div[text()='30']";
+            await this.browser.click(By.xpath(minuteLocator));
+            await this.browser.click(this.autoData);
+            const dateValue = await this.browser.findElement(this.dateValue);
+            dateValueTitle = (await dateValue.getAttribute("title"))
+        }
+        return dateValueTitle;
+    }
+
+    public async resetDateToDeafult(type: string) {
+        switch (type) {
+            case "date":
+                await this.browser.click(this.dateValue);
+                this.browser.sleep(1000);
+                await this.browser.click(this.jan1stDate);
+                await this.browser.click(this.autoData);
+                break;
+            case "datetime":
+                await this.browser.click(this.dateValue);
+                this.browser.sleep(1000);
+                const elem = await this.browser.findElement(this.datePicker);
+                await elem.sendKeys(Key.ENTER);
+                const hourLocator = this.datePickerHours.valueOf()['value'].slice() + "//div[text()='00']";
+                await this.browser.click(By.xpath(hourLocator));
+                const minuteLocator = this.datePickerMinutes.valueOf()['value'].slice() + "//div[text()='00']";
+                await this.browser.click(By.xpath(minuteLocator));
+                await this.browser.click(this.autoData);
+                break;
+        }
+    }
+
+    public async testColor(indexOfColor: number, locatorToActual: Locator, colorType: string, delimiterToSplitData: string, delimiterToSplitColor: string, secondaryIndex?: number): Promise<{ "true": string, "expected": string }> {
+        const trueBgColor = await this.getActualElementColor(locatorToActual, colorType);
+        const color = (await this.getExpectedBgColor(delimiterToSplitData, delimiterToSplitColor, indexOfColor));
+        const expectedBgColor = color.includes("/") ? color.split("/")[secondaryIndex ? secondaryIndex : 0] : color.includes(':') ? color.split(':')[1] : color;
+        return { "true": trueBgColor, "expected": expectedBgColor };
+    }
+
+    public async moveSlider(locator: Locator, numOfMovments: number) {
+        const changeLightnessSlider = await this.browser.findElement(locator);
+        for (let i = 0; i < numOfMovments; i++) {
+            await changeLightnessSlider.sendKeys(Key.ARROW_RIGHT)
+        }
     }
 }
 
