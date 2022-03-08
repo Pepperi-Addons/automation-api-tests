@@ -235,6 +235,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 // await testColor(ngxLibAddon, 1, ngxLibAddon.outterComponentColor, ";", " => ", 1);
             });
             it('pep-date testing', async function () {
+                const hardCodedDeafultDate = "01/01/2020";//this shouldnt be here -- here for now because of a bug
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
                 do {
@@ -243,9 +244,10 @@ export async function NgxTests(email: string, password: string, varPass: string,
                         title: `context:`,
                         value: 'data:image/png;base64,' + base64Image,
                     });
+                    (await driver.getALLConsoleLogs());//to clean the log
                     let expectedData = (await ngxLibAddon.getExpectedData()).split(';');
                     let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
-                    let [value, label, dateType, isMandatory, disabdled, textColor,
+                    let [value, label, dateType, isMandatory, disabled, textColor,
                         xAligment, showTitle, renderTitle, renderError, renderSymbol] = parsedExpectedData;
                     if (showTitle && renderTitle as boolean) {
                         const titleElem = await driver.findElement(ngxLibAddon.titleLabel);
@@ -253,27 +255,28 @@ export async function NgxTests(email: string, password: string, varPass: string,
                         const dateTitle = await ngxLibAddon.getXAligment(ngxLibAddon.titleLabel);
                         expect(dateTitle).to.equal(xAligment);
                     }
-                    await testIfElementShown((renderSymbol && (xAligment !== "center") && !disabdled) as boolean, ngxLibAddon.pepTimeIcon);
+                    await testIfElementShown((renderSymbol && (xAligment !== "center") && !disabled) as boolean, dateType === "date" ? ngxLibAddon.pepDateIcon : ngxLibAddon.pepDateTimeIcon);
                     const dateValue = await driver.findElement(ngxLibAddon.dateValue);
                     const dateValueTitle = (await dateValue.getAttribute("title"));
-                    expect(dateValueTitle).to.equal("01/01/2020");//this shouldnt be here -- here for now because of a bug
-                    if (!disabdled) {
+                    expect(dateValueTitle).to.include(hardCodedDeafultDate);//this shouldnt be here -- here for now because of a bug in date component
+                    if (!disabled) {
                         (await driver.getALLConsoleLogs());//to clean the log
-                        if (dateType === "date") {
+                        if (dateType === "date") {//create "change and return date from component" in NGX class and only validate here
                             if (renderSymbol && (xAligment !== "center")) {
-                                await driver.click(ngxLibAddon.pepTimeIcon);
+                                await driver.click(ngxLibAddon.pepDateIcon);
                             } else {
-                                await driver.click(ngxLibAddon.pepDate);
-                                await driver.click(ngxLibAddon.pepDate);
+                                await driver.click(ngxLibAddon.dateValue);
+                                driver.sleep(1000);
                             }
                             await testIfElementShown(false, ngxLibAddon.datePickerHours);
                             await driver.click(ngxLibAddon.jan8thDate);
                             const dateValue = await driver.findElement(ngxLibAddon.dateValue);
                             const dateValueTitle = (await dateValue.getAttribute("title"))
                             expect("01/08/2020").to.equal(dateValueTitle);
-                            await isTextPresentedInConsole(this, "date changed");
+
                         } else {
-                            await driver.click(ngxLibAddon.pepDate);
+                            await driver.click(ngxLibAddon.dateValue);
+                            driver.sleep(1000);
                             const elem = await driver.findElement(ngxLibAddon.datePicker);
                             await elem.sendKeys(Key.ENTER);
                             const hourLocator = ngxLibAddon.datePickerHours.valueOf()['value'].slice() + "//div[text()='13']";
@@ -283,13 +286,15 @@ export async function NgxTests(email: string, password: string, varPass: string,
                             await driver.click(ngxLibAddon.autoData);
                             const dateValue = await driver.findElement(ngxLibAddon.dateValue);
                             const dateValueTitle = (await dateValue.getAttribute("title"))
-                            expect("01/01/2020 1:30 PM").to.equal(dateValueTitle + " " + "1:30 PM");
-                            await isTextPresentedInConsole(this, "date changed");
+                            expect(hardCodedDeafultDate + " 1:30 PM").to.equal(dateValueTitle);
                         }
-                        //return it to the deafult date to continue testing
+                        await isTextPresentedInConsole(this, "date changed");
+                        (await driver.getALLConsoleLogs());//to clean the log
+                        await resetDateToDeafult(ngxLibAddon, dateType as string);
                     } else {
                         await driver.click(ngxLibAddon.pepDate);
                         await testIfElementShown(false, ngxLibAddon.datePicker);
+                        await isTextNOTFound(this, "date changed");
                     }
                     await testColor(ngxLibAddon, 0, ngxLibAddon.dateValue, "color", ';', '');
                     await testIfElementShown((isMandatory && renderTitle) as boolean, ngxLibAddon.pepIconMandatory);
@@ -299,6 +304,28 @@ export async function NgxTests(email: string, password: string, varPass: string,
             });
         });
     });
+
+    async function resetDateToDeafult(ngxLibAddon: NgxLibComponents, type: string) {
+        switch (type) {
+            case "date":
+                await driver.click(ngxLibAddon.dateValue);
+                driver.sleep(1000);
+                await driver.click(ngxLibAddon.jan1stDate);
+                await driver.click(ngxLibAddon.autoData);
+                break;
+            case "datetime":
+                await driver.click(ngxLibAddon.dateValue);
+                driver.sleep(1000);
+                const elem = await driver.findElement(ngxLibAddon.datePicker);
+                await elem.sendKeys(Key.ENTER);
+                const hourLocator = ngxLibAddon.datePickerHours.valueOf()['value'].slice() + "//div[text()='00']";
+                await driver.click(By.xpath(hourLocator));
+                const minuteLocator = ngxLibAddon.datePickerMinutes.valueOf()['value'].slice() + "//div[text()='00']";
+                await driver.click(By.xpath(minuteLocator));
+                await driver.click(ngxLibAddon.autoData);
+                break;
+        }
+    }
 
     async function dismissAlert() {
         await (await driver.switchToAlertElement()).dismiss();
@@ -324,7 +351,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
     async function testIfElementShown(isFound: boolean, locator: Locator) {
         let foundElement: WebElement | undefined = undefined;
         try {
-            foundElement = await driver.findElement(locator);
+            foundElement = await driver.findElement(locator, 3500);
         } catch (e: any) {
             if (e.message.includes(`'${locator.valueOf()['value']}', The test must end, The element is: undefined`)) {
                 foundElement = undefined;

@@ -46,12 +46,14 @@ export class NgxLibComponents extends AddonPage {
     public AAcomp: Locator = By.xpath("//div[@class='color-complient']");
     //*date*//
     public dateValue: Locator = By.xpath("//input[contains(@class,'mat-input-element')]");
-    public pepTimeIcon: Locator = By.css('[name="time_cal"]');
+    public pepDateIcon: Locator = By.css('[name="time_cal"]');
+    public pepDateTimeIcon: Locator = By.css('[name="time_datetime"]');
     public pepDate: Locator = By.css('pep-date');
     public datePicker: Locator = By.css('mat-datetimepicker-calendar');
     public datePickerMinutes: Locator = By.xpath("//div[contains(@class,'minutes')]");
     public datePickerHours: Locator = By.xpath("//div[contains(@class,'hours')]");
     public jan8thDate: Locator = By.xpath("//td[@aria-label='January 8, 2020']");
+    public jan1stDate: Locator = By.xpath("//td[@aria-label='January 1, 2020']");
     //->
     //
 
@@ -73,7 +75,7 @@ export class NgxLibComponents extends AddonPage {
      */
     public async changeStyle(): Promise<void> {
         await this.browser.click(this.changeStyleButton);
-        this.browser.sleep(2000);
+        this.browser.sleep(1200);
     }
 
     /**
