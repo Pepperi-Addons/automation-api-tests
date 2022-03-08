@@ -166,7 +166,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 await isTextPresentedInConsole(this, `file changed`);
                 //7. test inserting file into the element - dunno how to implement this rn
             });
-            
+
             it('pep-checkbox testing', async function () {
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
@@ -249,11 +249,6 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
                 do {
-                    const base64Image = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `context:`,
-                        value: 'data:image/png;base64,' + base64Image,
-                    });
                     (await driver.getALLConsoleLogs());//to clean the log
                     let expectedData = (await ngxLibAddon.getExpectedData()).split(';');
                     let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
