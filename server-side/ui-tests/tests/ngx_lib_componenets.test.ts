@@ -166,6 +166,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 await isTextPresentedInConsole(this, `file changed`);
                 //7. test inserting file into the element - dunno how to implement this rn
             });
+            
             it('pep-checkbox testing', async function () {
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
@@ -194,6 +195,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 await dismissAlert();
                 expect(await ngxLibAddon.validateClick(ngxLibAddon.checkBoxComponent)).to.be.true;
             });
+
             it('pep-color testing', async function () {
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
@@ -240,8 +242,8 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 await dismissAlert();
                 const colorValues = await ngxLibAddon.testColor(1, ngxLibAddon.outterComponentColor, "background-color", ";", " => ", 1);
                 expect(colorValues.expected).to.equal(colorValues.true);
-
             });
+
             it('pep-date testing', async function () {
                 const hardCodedDeafultDate = "01/01/2020";//this shouldnt be here -- here for now because of a bug in the component
                 const ngxLibAddon = new NgxLibComponents(driver);
