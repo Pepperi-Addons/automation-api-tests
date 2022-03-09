@@ -1,5 +1,5 @@
 import 'chromedriver';
-import { Builder, ThenableWebDriver, WebElement, until, Locator, Key, AlertPromise, Actions } from 'selenium-webdriver';
+import { Builder, ThenableWebDriver, WebElement, until, Locator, Key, AlertPromise } from 'selenium-webdriver';
 import chrome, { Driver } from 'selenium-webdriver/chrome';
 import { Executor } from 'selenium-webdriver/http';
 import GeneralService, { ConsoleColors } from '../../services/general.service';

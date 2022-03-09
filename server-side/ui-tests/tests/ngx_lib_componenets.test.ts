@@ -7,7 +7,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { upgradeDependenciesTests } from './test.index';
 import { Components, NgxLibComponents } from '../pom/addons/NgxLibComponents';
-import { Actions, Alert, By, Locator, WebElement, Key } from 'selenium-webdriver';
+import { Alert, Locator, WebElement } from 'selenium-webdriver';
 
 import addContext from 'mochawesome/addContext';
 
@@ -23,7 +23,7 @@ export async function NgxTests(email: string, password: string, varPass: string,
         'ngx-lib-testing': ['47db1b61-e1a7-42bd-9d55-93dd85044e91', ''],
     };
 
-    // await upgradeDependenciesTests(generalService, varPass);
+    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade ngx-lib-testing addon + dependencies
@@ -43,17 +43,13 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 describe(`Test Data: ${addonName}`, () => {
                     it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
                         if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include(
-                                'is already working on version',
-                            );
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
                         } else {
                             expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
                         }
                     });
                     it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(
-                            generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get(),
-                        )
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
                             .eventually.to.have.property('Version')
                             .a('string')
                             .that.is.equal(varLatestVersion);
@@ -84,45 +80,60 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNgxAddon();
                 do {
+                    const expectedData = await ngxLibAddon.getExpectedData();
+                    const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                    const [style, state, size, icon, autoSize, autoColor] = parsedExpectedData;
                     //1. are all classes from NGX presented on the element
-                    expect(await ngxLibAddon.areAllClassesIncluded()).to.be.true;
+                    expect(await ngxLibAddon.areAllClassesIncluded(style, state, size)).to.be.true;
                     const browserConsoleLog = (await driver.getALLConsoleLogs()).join();
-                    if (await ngxLibAddon.isComponentWithIcon()) {
-                        //2. is icon found
-                        const iconName: string = await ngxLibAddon.getIconNameOutOfExpectedData();
+                    if (icon !== 'undefined') {
                         await isIconFound(
                             this,
                             browserConsoleLog,
-                            `We could not find the Icon with the name ${iconName},\\n                did you add it to the Icon registry?`,
-                            iconName,
+                            `We could not find the Icon with the name ${icon},\\n                did you add it to the Icon registry?`,
+                            icon as string,
                         );
-                    } else {//only buttons w/o icon are tested for size
+                    } else {
+                        //only buttons w/o icon are tested for size
                         const truedH: number = (await ngxLibAddon.getActualComponentSize(Components.Button)).height;
                         const truedW: number = (await ngxLibAddon.getActualComponentSize(Components.Button)).width;
-                        const expectedH: number = (await ngxLibAddon.getExpectedComponentSize(Components.Button)).height;
-                        const expectedW: number = (await ngxLibAddon.getExpectedComponentSize(Components.Button)).width;
+                        const expectedH: number = (await ngxLibAddon.getExpectedComponentSize(autoSize as string))
+                            .height;
+                        const expectedW: number = (await ngxLibAddon.getExpectedComponentSize(autoSize as string))
+                            .width;
                         //3. is size correct
                         expect(expectedH).to.equal(truedH);
-                        expect(expectedW).to.equal(truedW);//problem here
+                        expect(expectedW).to.equal(truedW);
                     }
                     //4. pre click color test
-                    let colorValues = await ngxLibAddon.testColor(0, ngxLibAddon.insideButton, "background-color", ' ', ';');
+                    let colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                        0,
+                        ngxLibAddon.insideButton,
+                        'background-color',
+                        autoColor as string,
+                    );
                     expect(colorValues.expected).to.equal(colorValues.true);
-                    await ngxLibAddon.clickComponent(); //clicking component
+                    await ngxLibAddon.clickNGXButton(); //clicking component
                     //5. post click color test
-                    colorValues = await ngxLibAddon.testColor(1, ngxLibAddon.insideButton, "background-color", ' ', ';');
+                    colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                        1,
+                        ngxLibAddon.insideButton,
+                        'background-color',
+                        autoColor as string,
+                    );
                     expect(colorValues.expected).to.equal(colorValues.true);
                     //6. component clicked test
-                    const ActualComponentData: string = await ngxLibAddon.getComponentData();
-                    await isTextPresentedInConsole(this, `clicked button: ${ActualComponentData}`);
+                    await isTextPresentedInConsole(this, `clicked button: ${style} ${state} ${size}`);
                     await ngxLibAddon.changeStyle();
                 } while ((await checkIfAlertAlreadyPresented()) !== 'button testing ended');
                 await dismissAlert();
                 await ngxLibAddon.disableBtn();
-                await ngxLibAddon.clickComponent();
-                const componentData = await ngxLibAddon.getComponentData();
+                await ngxLibAddon.clickNGXButton();
+                const expectedData = await ngxLibAddon.getExpectedData();
+                const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                const [style, state, size, icon, autoSize, autoColor] = parsedExpectedData;
                 //7. is disabled button clicked
-                await isTextNOTFound(this, `clicked button: ${componentData}`);
+                await isTextNOTFound(this, `clicked button: ${style} ${state} ${size}`);
                 await ngxLibAddon.disableBtn(); //to return the btn to not disable state
                 await ngxLibAddon.changeVisibilityOfBtn();
                 //8. is not visibale element is indeed not visiale
@@ -133,17 +144,21 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
                 do {
-                    let expectedData = (await ngxLibAddon.getExpectedData()).split(',');
-                    let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
-                    let [isMandatory, xAligment, showTitle] = parsedExpectedData;
+                    const expectedData = await ngxLibAddon.getExpectedData();
+                    const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                    const [isMandatory, xAligment, showTitle, size] = parsedExpectedData;
                     //1. is mandatory icon shown if the element is cnofigured as mandatory
                     await testIfElementShown(isMandatory as boolean, ngxLibAddon.pepIconMandatory);
                     //2. is title label shown if it should
                     await testIfElementShown(showTitle as boolean, ngxLibAddon.titleLabel);
                     const truedH: number = (await ngxLibAddon.getActualComponentSize(Components.Attachment)).height;
                     const truedW: number = (await ngxLibAddon.getActualComponentSize(Components.Attachment)).width;
-                    const expectedH: number = (await ngxLibAddon.getExpectedComponentSize(Components.Attachment)).height;
-                    const expectedW: number = (await ngxLibAddon.getExpectedComponentSize(Components.Attachment)).width;
+                    const expectedH: number = (
+                        await ngxLibAddon.getExpectedComponentSize((size as string).split('->')[1])
+                    ).height;
+                    const expectedW: number = (
+                        await ngxLibAddon.getExpectedComponentSize((size as string).split('->')[1])
+                    ).width;
                     //3. is size correct
                     expect(expectedH).to.equal(truedH);
                     expect(expectedW).to.equal(truedW);
@@ -155,10 +170,12 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 await dismissAlert();
                 //5. test 'see original' button
                 const urlAfterClick: string = await ngxLibAddon.openSrcLink();
-                expect(urlAfterClick).to.equal("https://idpfiles.sandbox.pepperi.com/f389fd2e-4a31-4965-a21e-3a98b4553300/images/logo.svg");
+                expect(urlAfterClick).to.equal(
+                    'https://idpfiles.sandbox.pepperi.com/f389fd2e-4a31-4965-a21e-3a98b4553300/images/logo.svg',
+                );
                 await driver.closeCurrentTabAndSwitchToOther(0);
                 await isTextPresentedInConsole(this, `element clicked`);
-                //6. test deleting icon pressing 
+                //6. test deleting icon pressing
                 await ngxLibAddon.deleteCurrentAttachment();
                 await testIfElementShown(true, ngxLibAddon.noFileTitle);
                 await testIfElementShown(true, ngxLibAddon.matError);
@@ -171,22 +188,26 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
                 do {
-                    let expectedData = (await ngxLibAddon.getExpectedData()).split(';');
-                    let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
-                    let [value, label, type, alignment, , , renderTitle, visible, mandatory, disabled] = parsedExpectedData;
+                    const expectedData = await ngxLibAddon.getExpectedData();
+                    const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                    const [value, label, type, alignment, , , renderTitle, visible, mandatory, disabled] =
+                        parsedExpectedData;
                     if (visible) {
-                        let checkBoxValueBool = await ngxLibAddon.getCheckBoxValue(type as string);
+                        const checkBoxValueBool = await ngxLibAddon.getCheckBoxValue(type as string);
                         expect(checkBoxValueBool).to.equal(value);
-                        let checkBoxLabelText = await ngxLibAddon.getCheckBoxLabelText(type as string);
+                        const checkBoxLabelText = await ngxLibAddon.getCheckBoxLabelText(type as string);
                         expect(label).to.equal(checkBoxLabelText);
-                        const isCheckboxShown = await ngxLibAddon.getIfCheckBoxShown(type as string, value as boolean, disabled as boolean);
+                        const isCheckboxShown = await ngxLibAddon.getIfCheckBoxShown(
+                            type as string,
+                            value as boolean,
+                            disabled as boolean,
+                        );
                         expect(isCheckboxShown).to.be.true;
                         if (mandatory && renderTitle) {
                             const checkBoxFieldTitle = await ngxLibAddon.getXAligment(ngxLibAddon.checkBoxFieldTitle);
                             expect(checkBoxFieldTitle).to.equal(alignment);
                         }
                         expect(await ngxLibAddon.validateDisabledCheckbox(disabled as boolean)).to.be.true;
-                        //show title??
                         await testIfElementShown((mandatory && renderTitle) as boolean, ngxLibAddon.pepIconMandatory);
                     }
                     await testIfElementShown(visible as boolean, ngxLibAddon.checkBoxComponent);
@@ -200,21 +221,33 @@ export async function NgxTests(email: string, password: string, varPass: string,
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
                 do {
-                    (await driver.getALLConsoleLogs());//to clean the log
-                    let expectedData = (await ngxLibAddon.getExpectedData()).split(';');
-                    let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
-                    let [value, disabdled, xAlignment, type, showTitle, showAAComplient] = parsedExpectedData;//value dosent work
+                    await driver.getALLConsoleLogs(); //to clean the log
+                    const expectedData = await ngxLibAddon.getExpectedData();
+                    const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                    const [value, disabdled, xAlignment, type, showTitle, showAAComplient, expectedColor] =
+                        parsedExpectedData; //value dosent work
                     if (!disabdled) {
                         await testIfElementShown(showTitle as boolean, ngxLibAddon.titleLabel);
                         if (showTitle as boolean) {
-                            const titleElem = await driver.findElement(ngxLibAddon.titleAlignment);
-                            expect(await titleElem.getCssValue("text-align")).to.equal(xAlignment);
+                            const dateTitle = await ngxLibAddon.getXAligment(ngxLibAddon.titleLabel);
+                            expect(dateTitle).to.equal(xAlignment);
                         }
-                        let colorValues = await ngxLibAddon.testColor(0, ngxLibAddon.outterComponentColor, "background-color", ";", " => ", 0);
+                        let colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                            0,
+                            ngxLibAddon.outterComponentColor,
+                            'background-color',
+                            expectedColor as string,
+                        );
                         expect(colorValues.expected).to.equal(colorValues.true);
                         await ngxLibAddon.getIntoColorDialog();
                         driver.sleep(1000);
-                        colorValues = await ngxLibAddon.testColor(0, ngxLibAddon.currentColor, "background-color", ";", " => ", 1);
+                        colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                            0,
+                            ngxLibAddon.currentColor,
+                            'background-color',
+                            expectedColor as string,
+                            (expectedColor as string).includes('/') ? 1 : undefined,
+                        );
                         expect(colorValues.expected).to.equal(colorValues.true);
                         await ngxLibAddon.moveSlider(ngxLibAddon.changeHueSlider, 5);
                         await ngxLibAddon.moveSlider(ngxLibAddon.changeSaturationSlider, 5);
@@ -225,13 +258,23 @@ export async function NgxTests(email: string, password: string, varPass: string,
                             await testIfElementShown(!showAAComplient as boolean, ngxLibAddon.AAcomp);
                         }
                         driver.sleep(1100);
-                        colorValues = await ngxLibAddon.testColor(1, ngxLibAddon.currentColor, "background-color", ";", " => ");
+                        colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                            1,
+                            ngxLibAddon.currentColor,
+                            'background-color',
+                            expectedColor as string,
+                        );
                         expect(colorValues.expected).to.equal(colorValues.true);
                         await ngxLibAddon.okColorDialog();
                         driver.sleep(1000);
-                        await isTextPresentedInConsole(this, "color changed");
+                        await isTextPresentedInConsole(this, 'color changed');
                         driver.sleep(1500);
-                        colorValues = await ngxLibAddon.testColor(1, ngxLibAddon.outterComponentColor, "background-color", ";", " => ");
+                        colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                            1,
+                            ngxLibAddon.outterComponentColor,
+                            'background-color',
+                            expectedColor as string,
+                        );
                         expect(colorValues.expected).to.equal(colorValues.true);
                     } else if (disabdled) {
                         await ngxLibAddon.getIntoColorDialog();
@@ -240,47 +283,80 @@ export async function NgxTests(email: string, password: string, varPass: string,
                     await ngxLibAddon.changeStyle();
                 } while ((await checkIfAlertAlreadyPresented()) !== 'color testing ended');
                 await dismissAlert();
-                const colorValues = await ngxLibAddon.testColor(1, ngxLibAddon.outterComponentColor, "background-color", ";", " => ", 1);
+                const expectedData = await ngxLibAddon.getExpectedData();
+                const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                const [value, disabdled, xAlignment, type, showTitle, showAAComplient, expectedColor] =
+                    parsedExpectedData; //value dosent work
+                const colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                    1,
+                    ngxLibAddon.outterComponentColor,
+                    'background-color',
+                    expectedColor as string,
+                    1,
+                );
                 expect(colorValues.expected).to.equal(colorValues.true);
             });
 
             it('pep-date testing', async function () {
-                const hardCodedDeafultDate = "01/01/2020";//this shouldnt be here -- here for now because of a bug in the component
+                const hardCodedDeafultDate = '01/01/2020'; //this shouldnt be here -- here for now because of a bug in the component
                 const ngxLibAddon = new NgxLibComponents(driver);
                 await ngxLibAddon.gotoNextTest();
                 do {
-                    (await driver.getALLConsoleLogs());//to clean the log
-                    let expectedData = (await ngxLibAddon.getExpectedData()).split(';');
-                    let parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
-                    let [value, label, dateType, isMandatory, disabled, textColor,
-                        xAligment, showTitle, renderTitle, renderError, renderSymbol] = parsedExpectedData;
-                    if (showTitle && renderTitle as boolean) {
+                    await driver.getALLConsoleLogs(); //to clean the log
+                    const expectedData = await ngxLibAddon.getExpectedData();
+                    const parsedExpectedData: (string | boolean)[] = prepareExpectedData(expectedData);
+                    const [
+                        value,
+                        label,
+                        dateType,
+                        isMandatory,
+                        disabled,
+                        textColor,
+                        xAligment,
+                        showTitle,
+                        renderTitle,
+                        renderError,
+                        renderSymbol,
+                    ] = parsedExpectedData;
+                    if (showTitle && (renderTitle as boolean)) {
                         const titleElem = await driver.findElement(ngxLibAddon.titleLabel);
                         expect(await titleElem.getText()).to.equal(label);
                         const dateTitle = await ngxLibAddon.getXAligment(ngxLibAddon.titleLabel);
                         expect(dateTitle).to.equal(xAligment);
                     }
-                    await testIfElementShown((renderSymbol && (xAligment !== "center") && !disabled) as boolean, dateType === "date" ? ngxLibAddon.pepDateIcon : ngxLibAddon.pepDateTimeIcon);
+                    await testIfElementShown(
+                        (renderSymbol && xAligment !== 'center' && !disabled) as boolean,
+                        dateType === 'date' ? ngxLibAddon.pepDateIcon : ngxLibAddon.pepDateTimeIcon,
+                    );
                     const dateValue = await driver.findElement(ngxLibAddon.dateValue);
-                    const dateValueTitle = (await dateValue.getAttribute("title"));
-                    expect(dateValueTitle).to.include(hardCodedDeafultDate);//this shouldnt be here -- here for now because of a bug in date component
+                    const dateValueTitle = await dateValue.getAttribute('title');
+                    expect(dateValueTitle).to.include(hardCodedDeafultDate); //this shouldnt be here -- here for now because of a bug in date component
                     if (!disabled) {
-                        (await driver.getALLConsoleLogs());//to clean the log
-                        const dateValueTitle = await ngxLibAddon.changeDateAndReturnNew(dateType as string, renderSymbol as boolean, xAligment as string);
-                        if (dateType === "date") {
-                            expect("01/08/2020").to.equal(dateValueTitle);
+                        await driver.getALLConsoleLogs(); //to clean the log
+                        const dateValueTitle = await ngxLibAddon.changeDateAndReturnNew(
+                            dateType as string,
+                            renderSymbol as boolean,
+                            xAligment as string,
+                        );
+                        if (dateType === 'date') {
+                            expect('01/08/2020').to.equal(dateValueTitle);
                         } else {
-                            expect(hardCodedDeafultDate + " 1:30 PM").to.equal(dateValueTitle);
+                            expect(hardCodedDeafultDate + ' 1:30 PM').to.equal(dateValueTitle);
                         }
-                        await isTextPresentedInConsole(this, "date changed");
-                        (await driver.getALLConsoleLogs());//to clean the log
+                        await isTextPresentedInConsole(this, 'date changed');
+                        await driver.getALLConsoleLogs(); //to clean the log
                         await ngxLibAddon.resetDateToDeafult(dateType as string);
                     } else {
                         await driver.click(ngxLibAddon.pepDate);
                         await testIfElementShown(false, ngxLibAddon.datePicker);
-                        await isTextNOTFound(this, "date changed");
+                        await isTextNOTFound(this, 'date changed');
                     }
-                    const colorValues = await ngxLibAddon.testColor(0, ngxLibAddon.dateValue, "color", ';', '');
+                    const colorValues = await ngxLibAddon.getExpectedAndActualElemColor(
+                        0,
+                        ngxLibAddon.dateValue,
+                        'color',
+                        textColor as string,
+                    );
                     expect(colorValues.expected).to.equal(colorValues.true);
                     await testIfElementShown((isMandatory && renderTitle) as boolean, ngxLibAddon.pepIconMandatory);
                     await ngxLibAddon.changeStyle();
@@ -295,10 +371,10 @@ export async function NgxTests(email: string, password: string, varPass: string,
     }
 
     function prepareExpectedData(expectedData: string[]): (string | boolean)[] {
-        let parsedExpectedData: (string | boolean)[] = [];
-        expectedData.forEach(element => {
+        const parsedExpectedData: (string | boolean)[] = [];
+        expectedData.forEach((element) => {
             element = element.split(':')[1];
-            let bool = (element === "true" || element === "false") ? element === "true" : undefined;
+            const bool = element === 'true' || element === 'false' ? element === 'true' : undefined;
             parsedExpectedData.push(bool === true || bool === false ? bool : element);
         });
         return parsedExpectedData;
@@ -376,4 +452,3 @@ export async function NgxTests(email: string, password: string, varPass: string,
         }
     }
 }
-

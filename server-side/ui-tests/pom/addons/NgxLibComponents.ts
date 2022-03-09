@@ -2,8 +2,8 @@ import { By, IRectangle, Key, Locator, WebElement } from 'selenium-webdriver';
 import { AddonPage, WebAppSettingsSidePanel } from '..';
 
 export enum Components {
-    Button = "Button",
-    Attachment = "Attachment"
+    Button = 'Button',
+    Attachment = 'Attachment',
 }
 
 export class NgxLibComponents extends AddonPage {
@@ -28,20 +28,20 @@ export class NgxLibComponents extends AddonPage {
     public checkBoxLabel: Locator = By.xpath("//span[@class='mat-checkbox-label']//span[2]");
     public checkBoxValueEmoji: Locator = By.xpath("//div[contains(@title,'checkbox')]");
     public checkBoxValueCheck: Locator = By.xpath("//input[@type='checkbox']");
-    public checkBoxFieldTitle: Locator = By.css("pep-field-title > div");
-    public checkBoxComponent: Locator = By.css("pep-checkbox");
+    public checkBoxFieldTitle: Locator = By.css('pep-field-title > div');
+    public checkBoxComponent: Locator = By.css('pep-checkbox');
     public checkBoxEmoji: Locator = By.xpath("//button[contains(@class,'emoji-icon')]");
     public checkBoxEmojiTitle: Locator = By.xpath("//span[contains(@class,'emoji-title')]");
     //*color*//
     public outerDialogContainer: Locator = By.xpath("//*[contains(@class,'pep-color')]");
-    public dialogContainer: Locator = By.css("mat-dialog-container");
-    public changeHueSlider: Locator = By.xpath("(//mat-slider)[1]");
-    public changeSaturationSlider: Locator = By.xpath("(//mat-slider)[2]");
-    public changeLightnessSlider: Locator = By.xpath("(//mat-slider)[3]");
-    public currentColor: Locator = By.className("current-color");
+    public dialogContainer: Locator = By.css('mat-dialog-container');
+    public changeHueSlider: Locator = By.xpath('(//mat-slider)[1]');
+    public changeSaturationSlider: Locator = By.xpath('(//mat-slider)[2]');
+    public changeLightnessSlider: Locator = By.xpath('(//mat-slider)[3]');
+    public currentColor: Locator = By.className('current-color');
     public okDialog: Locator = By.xpath("//span[contains(text(),'Ok')]");
-    public outterComponentColor: Locator = By.css("pep-color > div > div");
-    public aaComplientCheckBox: Locator = By.xpath("//mat-checkbox//label//span//input");
+    public outterComponentColor: Locator = By.css('pep-color > div > div');
+    public aaComplientCheckBox: Locator = By.xpath('//mat-checkbox//label//span//input');
     public titleAlignment: Locator = By.xpath("//div[@class='mat-form-title']");
     public AAcomp: Locator = By.xpath("//div[@class='color-complient']");
     //*date*//
@@ -81,9 +81,9 @@ export class NgxLibComponents extends AddonPage {
     /**
      * click the button component
      */
-    public async clickComponent(): Promise<void> {
+    public async clickNGXButton(): Promise<void> {
         await this.browser.click(this.componentButton);
-        this.browser.sleep(1500);
+        this.browser.sleep(3000);
     }
 
     /**
@@ -96,26 +96,25 @@ export class NgxLibComponents extends AddonPage {
     /**
      * returns all the expected data shown on the page
      */
-    public async getExpectedData(): Promise<string> {
-        return await (await this.browser.findElement(this.autoData)).getText();
+    public async getExpectedData(): Promise<string[]> {
+        return (await (await this.browser.findElement(this.autoData)).getText()).split(';');
     }
 
     /**
      * returns whether this component is icon component
      */
     public async isComponentWithIcon(): Promise<boolean> {
-        const expectedDataLength: number = (await this.getExpectedData()).split(' ').length;
+        const expectedDataLength: number = (await this.getExpectedData()).length;
         return expectedDataLength === 6;
     }
 
     /**
      * returns whether this component is icon component
      */
-    public async areAllClassesIncluded(): Promise<boolean> {
+    public async areAllClassesIncluded(...expectedData): Promise<boolean> {
         const insideButtonComponentActualClasses = await this.getInsideBtnClasses();
-        const expectedComponentClasses = await this.getExpectedData();
-        for (let i = 0; i < 3; i++) {
-            if (!insideButtonComponentActualClasses.includes(expectedComponentClasses[i])) {
+        for (let i = 0; i < expectedData.length; i++) {
+            if (!insideButtonComponentActualClasses.includes(expectedData[i])) {
                 return false;
             }
         }
@@ -143,7 +142,7 @@ export class NgxLibComponents extends AddonPage {
      *
      */
     public async getIconNameOutOfExpectedData(): Promise<string> {
-        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(' ');
+        const expectedComponentClassesSplited: string[] = await this.getExpectedData();
         return expectedComponentClassesSplited[expectedComponentClassesSplited.length - 3];
     }
 
@@ -169,7 +168,8 @@ export class NgxLibComponents extends AddonPage {
             case 'Attachment':
                 locator = this.pepFileUploader;
                 break;
-            default://dunmmy fot ts
+            default:
+                //dunmmy fot ts
                 locator = this.pepFileUploader;
                 break;
         }
@@ -181,38 +181,8 @@ export class NgxLibComponents extends AddonPage {
      *
      *
      */
-    public async getExpectedComponentSize(typeOfComponent: Components): Promise<IRectangle> {
-        let delimiterToSplitBy = '';
-        switch (typeOfComponent) {
-            case 'Button':
-                delimiterToSplitBy = ' ';
-                break;
-            case 'Attachment':
-                delimiterToSplitBy = ',';
-                break;
-        }
-        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(delimiterToSplitBy);
-        let parsedExpectedData: (string | boolean)[] = [];
-        if (typeOfComponent === "Attachment") {
-            expectedComponentClassesSplited.forEach(element => {
-                element = element.split(':')[1];
-                let bool = (element === "true" || element === "false") ? element === "true" : undefined;
-                parsedExpectedData.push(bool === true || bool === false ? bool : element);
-            });
-        }
-        let indexToGetDataFrom = 0;
-        switch (typeOfComponent) {
-            case 'Button':
-                indexToGetDataFrom = expectedComponentClassesSplited.length - 2;
-                delimiterToSplitBy = 'x';
-                break;
-            case 'Attachment':
-                indexToGetDataFrom = expectedComponentClassesSplited.length - 1;
-                delimiterToSplitBy = '->';
-                break;
-        }
-        const expectedH = typeOfComponent === "Button" ? expectedComponentClassesSplited[indexToGetDataFrom].split(delimiterToSplitBy)[0] : (parsedExpectedData[indexToGetDataFrom] as string).split(delimiterToSplitBy)[1].split('x')[0];
-        const expectedW = typeOfComponent === "Button" ? expectedComponentClassesSplited[indexToGetDataFrom].split(delimiterToSplitBy)[1] : (parsedExpectedData[indexToGetDataFrom] as string).split(delimiterToSplitBy)[1].split('x')[1];
+    public async getExpectedComponentSize(size: string): Promise<IRectangle> {
+        const [expectedH, expectedW] = size.split('x');
         return { height: parseInt(expectedH), width: parseInt(expectedW), x: 0, y: 0 } as IRectangle;
     }
 
@@ -222,16 +192,6 @@ export class NgxLibComponents extends AddonPage {
      */
     public async getActualElementColor(locator: Locator, colorType: string): Promise<string> {
         return await (await this.browser.findElement(locator)).getCssValue(colorType);
-    }
-
-    /**
-     *
-     *
-     */
-    public async getExpectedBgColor(delimiterToSplitData: string, delimiterToSplitColor: string, index: number): Promise<string> {
-        const expectedComponentClassesSplited: string[] = (await this.getExpectedData()).split(delimiterToSplitData);
-        return delimiterToSplitColor === '' ? expectedComponentClassesSplited[expectedComponentClassesSplited.length - 6].replace(/,/g, ', ') : expectedComponentClassesSplited[expectedComponentClassesSplited.length - 1]
-            .split(delimiterToSplitColor)[index].replace(/,/g, ', ');
     }
 
     /**
@@ -266,25 +226,32 @@ export class NgxLibComponents extends AddonPage {
      *
      */
     public async getCheckBoxValue(type: string): Promise<boolean> {
-        const checkBoxValue = type === "checkbox" ? (await (await this.browser.findElement(this.checkBoxValueCheck)).getAttribute("aria-checked")) :
-            (await (await this.browser.findElement(this.checkBoxValueEmoji)).getAttribute("title")).split(":")[1].trim().toLowerCase();
-        return checkBoxValue === "true" ? true : false;
+        const checkBoxValue =
+            type === 'checkbox'
+                ? await (await this.browser.findElement(this.checkBoxValueCheck)).getAttribute('aria-checked')
+                : (await (await this.browser.findElement(this.checkBoxValueEmoji)).getAttribute('title'))
+                      .split(':')[1]
+                      .trim()
+                      .toLowerCase();
+        return checkBoxValue === 'true' ? true : false;
     }
 
     /**
-    *
-    *
-    */
+     *
+     *
+     */
     public async getCheckBoxLabelText(type: string): Promise<string> {
-        return type === "checkbox" ? await (await this.browser.findElement(this.checkBoxLabel)).getText() : await (await this.browser.findElement(this.checkBoxEmojiTitle)).getText();
+        return type === 'checkbox'
+            ? await (await this.browser.findElement(this.checkBoxLabel)).getText()
+            : await (await this.browser.findElement(this.checkBoxEmojiTitle)).getText();
     }
 
     /**
-    *
-    *
-    */
+     *
+     *
+     */
     public async getIfCheckBoxShown(type: string, value: boolean, isDisabled: boolean): Promise<boolean> {
-        if (type === "checkbox") {
+        if (type === 'checkbox') {
             return await this.testIfElementShown(this.checkBoxValueCheck);
         } else {
             if (!(await this.testIfElementShown(this.checkBoxEmoji))) {
@@ -292,15 +259,13 @@ export class NgxLibComponents extends AddonPage {
             }
             const checkBoxEmoji = await (await this.browser.findElement(this.checkBoxEmoji)).getText();
             if (value) {
-                if (checkBoxEmoji !== "❤") {
+                if (checkBoxEmoji !== '❤') {
                     return false;
                 }
-                // expect(checkBoxEmoji).to.equal("❤");
             } else {
-                if (checkBoxEmoji !== "✌️") {
+                if (checkBoxEmoji !== '✌️') {
                     return false;
                 }
-                // expect(checkBoxEmoji).to.equal("✌️");
             }
             if (!isDisabled) {
                 if (!(await this.validateClick(this.checkBoxEmoji))) {
@@ -308,25 +273,24 @@ export class NgxLibComponents extends AddonPage {
                 }
                 const checkBoxEmoji = await (await this.browser.findElement(this.checkBoxEmoji)).getText();
                 if (value) {
-                    if (checkBoxEmoji !== "✌️") {
+                    if (checkBoxEmoji !== '✌️') {
                         return false;
                     }
                 } else {
-                    if (checkBoxEmoji !== "❤") {
+                    if (checkBoxEmoji !== '❤') {
                         return false;
                     }
                 }
                 await this.browser.click(this.checkBoxEmoji);
             }
             return true;
-
         }
     }
     private isDisabledTested = false;
     public async validateDisabledCheckbox(disabled: boolean): Promise<boolean> {
-        if (disabled && (!this.isDisabledTested)) {
+        if (disabled && !this.isDisabledTested) {
             this.isDisabledTested = true;
-            (await this.browser.getALLConsoleLogs());//to delete all logs before click
+            await this.browser.getALLConsoleLogs(); //to delete all logs before click
             await this.browser.click(this.checkBoxComponent);
             if (await this.isTextPresentedInConsole(`checkbox value changed`)) {
                 return false;
@@ -337,7 +301,7 @@ export class NgxLibComponents extends AddonPage {
     }
 
     public async validateClick(locator: Locator): Promise<boolean> {
-        (await this.browser.getALLConsoleLogs());//to delete all logs before click
+        await this.browser.getALLConsoleLogs(); //to delete all logs before click
         await this.browser.click(locator);
         if (!(await this.isTextPresentedInConsole(`checkbox value changed`))) {
             return false;
@@ -362,20 +326,19 @@ export class NgxLibComponents extends AddonPage {
 
     public async getXAligment(aligmentElement: Locator): Promise<string> {
         const formTitle: WebElement = await this.browser.findElement(aligmentElement);
-        return await formTitle.getCssValue("text-align");
+        return await formTitle.getCssValue('text-align');
     }
 
     public async openSrcLink(): Promise<string> {
         await this.browser.click(this.openSrcButton);
         this.browser.sleep(1500);
         await this.browser.switchToTab(1);
-        let urlAfterClick = await this.browser.getCurrentUrl();
+        const urlAfterClick = await this.browser.getCurrentUrl();
         return urlAfterClick;
     }
 
     public async deleteCurrentAttachment() {
         await this.browser.click(this.pepIconTrash);
-
     }
 
     public async getIntoColorDialog() {
@@ -384,21 +347,21 @@ export class NgxLibComponents extends AddonPage {
 
     public async disableAAComp() {
         const checkBoxElement = await this.browser.findElement(this.aaComplientCheckBox);
-        if ((await checkBoxElement.getAttribute("aria-checked")) === "true") {
+        if ((await checkBoxElement.getAttribute('aria-checked')) === 'true') {
             await this.browser.click(this.aaComplientCheckBox);
         }
     }
-
 
     public async okColorDialog() {
         await this.browser.click(this.okDialog);
     }
 
     public async changeDateAndReturnNew(dateType: string, renderSymbol: boolean, xAligment: string) {
-        (await this.browser.getALLConsoleLogs());//to clean the log
-        let dateValueTitle = "";
-        if (dateType === "date") {//create "change and return date from component" in NGX class and only validate here
-            if (renderSymbol && (xAligment !== "center")) {
+        await this.browser.getALLConsoleLogs(); //to clean the log
+        let dateValueTitle = '';
+        if (dateType === 'date') {
+            //create "change and return date from component" in NGX class and only validate here
+            if (renderSymbol && xAligment !== 'center') {
                 await this.browser.click(this.pepDateIcon);
             } else {
                 await this.browser.click(this.dateValue);
@@ -406,7 +369,7 @@ export class NgxLibComponents extends AddonPage {
             }
             await this.browser.click(this.jan8thDate);
             const dateValue = await this.browser.findElement(this.dateValue);
-            dateValueTitle = (await dateValue.getAttribute("title"))
+            dateValueTitle = await dateValue.getAttribute('title');
         } else {
             await this.browser.click(this.dateValue);
             this.browser.sleep(1000);
@@ -418,20 +381,20 @@ export class NgxLibComponents extends AddonPage {
             await this.browser.click(By.xpath(minuteLocator));
             await this.browser.click(this.autoData);
             const dateValue = await this.browser.findElement(this.dateValue);
-            dateValueTitle = (await dateValue.getAttribute("title"))
+            dateValueTitle = await dateValue.getAttribute('title');
         }
         return dateValueTitle;
     }
 
     public async resetDateToDeafult(type: string) {
         switch (type) {
-            case "date":
+            case 'date':
                 await this.browser.click(this.dateValue);
                 this.browser.sleep(1000);
                 await this.browser.click(this.jan1stDate);
                 await this.browser.click(this.autoData);
                 break;
-            case "datetime":
+            case 'datetime':
                 await this.browser.click(this.dateValue);
                 this.browser.sleep(1000);
                 const elem = await this.browser.findElement(this.datePicker);
@@ -445,20 +408,25 @@ export class NgxLibComponents extends AddonPage {
         }
     }
 
-    public async testColor(indexOfColor: number, locatorToActual: Locator, colorType: string, delimiterToSplitData: string, delimiterToSplitColor: string, secondaryIndex?: number): Promise<{ "true": string, "expected": string }> {
-        const trueBgColor = await this.getActualElementColor(locatorToActual, colorType);
-        const color = (await this.getExpectedBgColor(delimiterToSplitData, delimiterToSplitColor, indexOfColor));
-        const expectedBgColor = color.includes("/") ? color.split("/")[secondaryIndex ? secondaryIndex : 0] : color.includes(':') ? color.split(':')[1] : color;
-        return { "true": trueBgColor, "expected": expectedBgColor };
+    public async getExpectedAndActualElemColor(
+        indexOfColor: number,
+        locatorToActual: Locator,
+        colorType: string,
+        expectedColor: string,
+        secondaryIndex?: number,
+    ): Promise<{ true: string; expected: string }> {
+        const trueColor = await this.getActualElementColor(locatorToActual, colorType);
+        const webElementColor = expectedColor.split('=>')[indexOfColor].replace(/,/g, ', ');
+        const expectedColorAfterParse = webElementColor.includes('/')
+            ? webElementColor.split('/')[secondaryIndex ? secondaryIndex : 0]
+            : webElementColor;
+        return { true: trueColor, expected: expectedColorAfterParse };
     }
 
     public async moveSlider(locator: Locator, numOfMovments: number) {
         const changeLightnessSlider = await this.browser.findElement(locator);
         for (let i = 0; i < numOfMovments; i++) {
-            await changeLightnessSlider.sendKeys(Key.ARROW_RIGHT)
+            await changeLightnessSlider.sendKeys(Key.ARROW_RIGHT);
         }
     }
 }
-
-
-
