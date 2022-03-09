@@ -102,7 +102,7 @@ export class Browser {
         return await this.driver.switchTo().activeElement();
     }
 
-    public async switchToAlertElement(): Promise<AlertPromise> {
+    public async switchToAlertElement(): Promise<any> {
         return await this.driver.switchTo().alert();
     }
 

@@ -384,8 +384,8 @@ export async function NgxTests(email: string, password: string, varPass: string,
         let foundElement: WebElement | undefined = undefined;
         try {
             foundElement = await driver.findElement(locator, 3500);
-        } catch (e: any) {
-            if (e.message.includes(`'${locator.valueOf()['value']}', The test must end, The element is: undefined`)) {
+        } catch (e) {
+            if ((e as any).message.includes(`'${locator.valueOf()['value']}', The test must end, The element is: undefined`)) {
                 foundElement = undefined;
             } else throw e;
         }
@@ -400,8 +400,8 @@ export async function NgxTests(email: string, password: string, varPass: string,
         try {
             const alert: Alert = await driver.switchToAlertElement();
             return await alert.getText();
-        } catch (e: any) {
-            if (e.name !== 'NoSuchAlertError') {
+        } catch (e) {
+            if ((e as any).name !== 'NoSuchAlertError') {
                 throw e;
             } else {
                 return '';

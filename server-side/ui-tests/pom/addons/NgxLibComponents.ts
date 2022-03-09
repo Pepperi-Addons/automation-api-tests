@@ -129,8 +129,8 @@ export class NgxLibComponents extends AddonPage {
         let isVis = true;
         try {
             isVis = await this.browser.untilIsVisible(this.componentButton);
-        } catch (e: any) {
-            if (e.message.includes(`'[data-qa="componentBtn"]', The test must end, The element is not visible`)) {
+        } catch (e) {
+            if ((e as any).message.includes(`'[data-qa="componentBtn"]', The test must end, The element is not visible`)) {
                 isVis = false;
             }
         }
@@ -313,7 +313,7 @@ export class NgxLibComponents extends AddonPage {
         let foundElement: WebElement | undefined = undefined;
         try {
             foundElement = await this.browser.findElement(locator);
-        } catch (e: any) {
+        } catch (e) {
             return false;
         }
         return true;
