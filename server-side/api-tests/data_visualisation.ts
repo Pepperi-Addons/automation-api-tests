@@ -30,7 +30,8 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
     //#region Upgrade Data Visualisation
     const testData = {
-        'Training Template': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
+
+        'Data Visualization': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -38,6 +39,8 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     } else {
         varKey = request.body.varKeyPro;
     }
+
+
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Visualisation
@@ -85,7 +88,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('Name');
                         expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('ScriptURI');
-                        expect(generalService.isValidUrl(jsonChartData.ScriptURI)).to.equal(true);
+                        expect(jsonChartData.ScriptURI).to.not.equal(undefined);
+                        expect(jsonChartData.ScriptURI).to.not.equal(null);
+                        expect(jsonChartData.ScriptURI).to.not.equal("");
+                        expect(jsonChartData.ScriptURI).to.include.oneOf(["pfs.pepperi.com", "cdn.pepperi.com"]);
+                        expect(jsonChartData.ScriptURI).to.include(".js");
+                        expect(jsonChartData.ScriptURI).to.include(jsonChartData.Name);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
                         expect(jsonChartData.ReadOnly).to.be.a('Boolean');
                     });
@@ -102,7 +110,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                             ScriptURI: scriptURI,
                         } as Chart;
                         const chartResponse = await generalService.fetchStatus(
-                            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                            `/charts`,
                             {
                                 method: 'POST',
                                 body: JSON.stringify(chart),
@@ -116,7 +124,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(chartResponse.Body).to.have.own.property('Description');
                         expect(chartResponse.Body.Description).to.equal(chart.Description);
                         expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                        expect(generalService.isValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
+                        expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
+                        expect(chartResponse.Body.ScriptURI).to.not.equal(null);
+                        expect(chartResponse.Body.ScriptURI).to.not.equal("");
+                        expect(chartResponse.Body.ScriptURI).to.include.oneOf(["pfs.pepperi.com", "cdn.pepperi.com"]);
+                        expect(chartResponse.Body.ScriptURI).to.include(".js");
+                        expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                         expect(chartResponse.Body).to.have.own.property('ReadOnly');
                         expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     });
@@ -134,7 +147,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                             Authorization: null as any,
                         };
                         const chartResponse = await generalService.fetchStatus(
-                            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                            `/charts`,
                             {
                                 method: 'POST',
                                 body: JSON.stringify(chart),
@@ -148,7 +161,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     it('Upsert chart - w/o mandatory field: Name', async () => {
                         const chart: Chart = { Description: '', ReadOnly: true, ScriptURI: scriptURI } as Chart;
                         const chartResponse = await generalService.fetchStatus(
-                            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                            `/charts`,
                             {
                                 method: 'POST',
                                 body: JSON.stringify(chart),
@@ -168,7 +181,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         } as Chart;
 
                         const chartResponse = await generalService.fetchStatus(
-                            `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                            `/charts`,
                             {
                                 method: 'POST',
                                 body: JSON.stringify(chart),
@@ -188,7 +201,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 for (let i = 0; i < listOfChartsToUpsert.length; i++) {
                     listOfChartsToUpsert[i].Hidden = false;
                     const chartResponse = await generalService.fetchStatus(
-                        `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                        `/charts`,
                         {
                             method: 'POST',
                             body: JSON.stringify(listOfChartsToUpsert[i]),
@@ -203,7 +216,13 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(chartResponse.Body).to.have.own.property('Description');
                     expect(chartResponse.Body.Description).to.equal(listOfChartsToUpsert[i].Description);
                     expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                    expect(generalService.isValidUrl(chartResponse.Body.ScriptURI)).to.equal(true);
+                    expect(chartResponse.Body).to.have.own.property('ScriptURI');
+                    expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
+                    expect(chartResponse.Body.ScriptURI).to.not.equal(null);
+                    expect(chartResponse.Body.ScriptURI).to.not.equal("");
+                    expect(chartResponse.Body.ScriptURI).to.include.oneOf(["pfs.pepperi.com", "cdn.pepperi.com"]);
+                    expect(chartResponse.Body.ScriptURI).to.include(".js");
+                    expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                     expect(chartResponse.Body).to.have.own.property('ReadOnly');
                     expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     //using returning data from server to save this chart script uri, read only and key attributes
@@ -242,16 +261,15 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     ScriptURI: 721346,
                 };
                 const chartResponse = await generalService.fetchStatus(
-                    `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                    `/charts`,
                     {
                         method: 'POST',
                         body: JSON.stringify(chart),
                     },
                 );
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.equal(
-                    'Failed due to exception: Failed upsert file storage. error: TypeError: s.match is not a function',
-                );
+                expect(chartResponse.Body.fault.faultstring).to.include('Failed due to exception: Failed upsert file storage');
+                expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
 
             it('POST - upserting a chart with non url string as script uri', async () => {
@@ -262,16 +280,15 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     ScriptURI: 'https:fsdjkfd',
                 };
                 const chartResponse = await generalService.fetchStatus(
-                    `/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`,
+                    `/charts`,
                     {
                         method: 'POST',
                         body: JSON.stringify(chart),
                     },
                 );
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.include(
-                    '/V1.0/file_storage failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Invalid URL","detail":{"errorcode":"InvalidData"}}}',
-                );
+                expect(chartResponse.Body.fault.faultstring).to.include('Failed due to exception: Failed upsert file storage');
+                expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
         });
         describe('Test Clean Up (Hidden = true)', () => {
