@@ -30,7 +30,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
     //#region Upgrade Data Visualisation
     const testData = {
-
         'Data Visualization': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     let varKey;
@@ -39,7 +38,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     } else {
         varKey = request.body.varKeyPro;
     }
-
 
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -90,9 +88,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData).to.have.own.property('ScriptURI');
                         expect(jsonChartData.ScriptURI).to.not.equal(undefined);
                         expect(jsonChartData.ScriptURI).to.not.equal(null);
-                        expect(jsonChartData.ScriptURI).to.not.equal("");
-                        expect(jsonChartData.ScriptURI).to.include.oneOf(["pfs.pepperi.com", "cdn.pepperi.com"]);
-                        expect(jsonChartData.ScriptURI).to.include(".js");
+                        expect(jsonChartData.ScriptURI).to.not.equal('');
+                        expect(jsonChartData.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                        expect(jsonChartData.ScriptURI).to.include('.js');
                         expect(jsonChartData.ScriptURI).to.include(jsonChartData.Name);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
                         expect(jsonChartData.ReadOnly).to.be.a('Boolean');
@@ -109,13 +107,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                             ReadOnly: true,
                             ScriptURI: scriptURI,
                         } as Chart;
-                        const chartResponse = await generalService.fetchStatus(
-                            `/charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                            },
-                        );
+                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                            method: 'POST',
+                            body: JSON.stringify(chart),
+                        });
                         expect(chartResponse.Status).to.equal(200);
                         expect(chartResponse.Ok).to.be.true;
                         expect(chartResponse.Body).to.have.own.property('Key');
@@ -126,9 +121,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(chartResponse.Body).to.have.own.property('ScriptURI');
                         expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
                         expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-                        expect(chartResponse.Body.ScriptURI).to.not.equal("");
-                        expect(chartResponse.Body.ScriptURI).to.include.oneOf(["pfs.pepperi.com", "cdn.pepperi.com"]);
-                        expect(chartResponse.Body.ScriptURI).to.include(".js");
+                        expect(chartResponse.Body.ScriptURI).to.not.equal('');
+                        expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                        expect(chartResponse.Body.ScriptURI).to.include('.js');
                         expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                         expect(chartResponse.Body).to.have.own.property('ReadOnly');
                         expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
@@ -146,27 +141,21 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         const headers = {
                             Authorization: null as any,
                         };
-                        const chartResponse = await generalService.fetchStatus(
-                            `/charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                                headers: headers,
-                            },
-                        );
+                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                            method: 'POST',
+                            body: JSON.stringify(chart),
+                            headers: headers,
+                        });
                         expect(chartResponse.Status).to.equal(401);
                         expect(chartResponse.Body.message).to.equal('Unauthorized');
                     });
 
                     it('Upsert chart - w/o mandatory field: Name', async () => {
                         const chart: Chart = { Description: '', ReadOnly: true, ScriptURI: scriptURI } as Chart;
-                        const chartResponse = await generalService.fetchStatus(
-                            `/charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                            },
-                        );
+                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                            method: 'POST',
+                            body: JSON.stringify(chart),
+                        });
                         expect(chartResponse.Status).to.equal(400);
                         expect(chartResponse.Body.fault.faultstring).to.equal(
                             'Failed due to exception: Name is a required field',
@@ -180,13 +169,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                             ReadOnly: true,
                         } as Chart;
 
-                        const chartResponse = await generalService.fetchStatus(
-                            `/charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                            },
-                        );
+                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                            method: 'POST',
+                            body: JSON.stringify(chart),
+                        });
                         expect(chartResponse.Status).to.equal(400);
                         expect(chartResponse.Body.fault.faultstring).to.equal(
                             'Failed due to exception: ScriptURI is a required field',
@@ -200,13 +186,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             it('Testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
                 for (let i = 0; i < listOfChartsToUpsert.length; i++) {
                     listOfChartsToUpsert[i].Hidden = false;
-                    const chartResponse = await generalService.fetchStatus(
-                        `/charts`,
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(listOfChartsToUpsert[i]),
-                        },
-                    );
+                    const chartResponse = await generalService.fetchStatus(`/charts`, {
+                        method: 'POST',
+                        body: JSON.stringify(listOfChartsToUpsert[i]),
+                    });
 
                     expect(chartResponse.Status).to.equal(200);
                     expect(chartResponse.Ok).to.be.true;
@@ -219,9 +202,9 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(chartResponse.Body).to.have.own.property('ScriptURI');
                     expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
                     expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-                    expect(chartResponse.Body.ScriptURI).to.not.equal("");
-                    expect(chartResponse.Body.ScriptURI).to.include.oneOf(["pfs.pepperi.com", "cdn.pepperi.com"]);
-                    expect(chartResponse.Body.ScriptURI).to.include(".js");
+                    expect(chartResponse.Body.ScriptURI).to.not.equal('');
+                    expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                    expect(chartResponse.Body.ScriptURI).to.include('.js');
                     expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                     expect(chartResponse.Body).to.have.own.property('ReadOnly');
                     expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
@@ -260,15 +243,14 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     ReadOnly: true,
                     ScriptURI: 721346,
                 };
-                const chartResponse = await generalService.fetchStatus(
-                    `/charts`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(chart),
-                    },
-                );
+                const chartResponse = await generalService.fetchStatus(`/charts`, {
+                    method: 'POST',
+                    body: JSON.stringify(chart),
+                });
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.include('Failed due to exception: Failed upsert file storage');
+                expect(chartResponse.Body.fault.faultstring).to.include(
+                    'Failed due to exception: Failed upsert file storage',
+                );
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
 
@@ -279,15 +261,14 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     ReadOnly: true,
                     ScriptURI: 'https:fsdjkfd',
                 };
-                const chartResponse = await generalService.fetchStatus(
-                    `/charts`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(chart),
-                    },
-                );
+                const chartResponse = await generalService.fetchStatus(`/charts`, {
+                    method: 'POST',
+                    body: JSON.stringify(chart),
+                });
                 expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.include('Failed due to exception: Failed upsert file storage');
+                expect(chartResponse.Body.fault.faultstring).to.include(
+                    'Failed due to exception: Failed upsert file storage',
+                );
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
         });
