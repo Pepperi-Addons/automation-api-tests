@@ -251,27 +251,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
-
-                        //TODO: Remove this when bug (DI-19464) will be fixed
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
-                        await adalService.deleteSchema(schemaName);
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
-                        await adalService.deleteSchema(schemaName);
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
-                        await adalService.deleteSchema(schemaName);
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
                         purgedSchema = await adalService.deleteSchema(schemaName);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
@@ -890,26 +869,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
-                        //TODO: Remove this when bug (DI-19464) will be fixed
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
-                        await adalService.deleteSchema(schemaName);
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
-                        await adalService.deleteSchema(schemaName);
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
-                        await adalService.deleteSchema(schemaName);
-                        await adalService.postSchema({
-                            Name: schemaName,
-                            Type: 'data',
-                        });
                         purgedSchema = await adalService.deleteSchema(schemaName);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
@@ -1163,6 +1122,336 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         }
                     }
                 });
+
+                // describe(`Check Object Schema (DI-19026)`, async () => {
+                //     let dimxExportDefult;
+                //     const jsonCsv = ['json', 'csv'];
+                //     it(`Reset Schema Before`, async () => {
+                //         const adalService = new ADALService(generalService.papiClient);
+                //         adalService.papiClient['options'].addonUUID = addonUUID;
+                //         adalService.papiClient['options'].addonSecretKey = secretKey;
+                //         let purgedSchema;
+                //         try {
+                //             purgedSchema = await adalService.deleteSchema(schemaName);
+                //         } catch (error) {
+                //             purgedSchema = '';
+                //             expect(error)
+                //                 .to.have.property('message')
+                //                 .that.includes(
+                //                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                //                 );
+                //         }
+                //         purgedSchema = await adalService.deleteSchema(schemaName);
+                //         const newSchema = await adalService.postSchema({
+                //             Name: schemaName,
+                //             Type: 'data',
+                //             Fields: {
+                //                 Name: { Type: 'String' },
+                //                 Description: { Type: 'String' },
+                //                 Key: { Type: 'String' },
+                //                 Column1: {
+                //                     Type: 'Array',
+                //                     Items: {
+                //                         Type: 'String',
+                //                     },
+                //                 } as any,
+                //                 object: {
+                //                     Type: 'Object',
+                //                     Fields: {
+                //                         Object: {
+                //                             Type: 'Object',
+                //                             Fields: {
+                //                                 Value1: { Type: 'Integer' },
+                //                                 Value2: { Type: 'Integer' },
+                //                                 Value3: { Type: 'Integer' },
+                //                             },
+                //                         },
+                //                         String: { Type: 'String' },
+                //                         Array: {
+                //                             Type: 'Array',
+                //                             Items: { Type: 'String' },
+                //                         },
+                //                     },
+                //                 } as any,
+                //                 Number: { Type: 'Integer' },
+                //                 ArrayOfNumbers: {
+                //                     Type: 'Array',
+                //                     Items: { Type: 'Integer' },
+                //                 } as any,
+                //                 ObjectOfNumbers: {
+                //                     Type: 'Object',
+                //                     Fields: {
+                //                         a: { Type: 'Integer' },
+                //                         b: { Type: 'Integer' },
+                //                         c: { Type: 'Integer' },
+                //                         d: { Type: 'Integer' },
+                //                     },
+                //                 } as any,
+                //             },
+                //         });
+                //         expect(purgedSchema).to.equal('');
+                //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+                //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
+                //     });
+
+                //     it(`Create Schema With Array, Object and Number`, async () => {
+                //         const adalService = new ADALService(generalService.papiClient);
+                //         adalService.papiClient['options'].addonUUID = addonUUID;
+                //         adalService.papiClient['options'].addonSecretKey = secretKey;
+                //         const dataArr: AddonData[] = [];
+                //         for (let j = 0; j < 10; j++) {
+                //             dataArr.push({
+                //                 Name: schemaName,
+                //                 Description: `DIMX Test ${j + 1}`,
+                //                 Version: 'TestForObjectSchema',
+                //                 Key: `testKeyDIMX${j + 1}`,
+                //                 Number: 5,
+                //                 ArrayOfNumbers: [4, 33, 0, 11],
+                //                 ObjectOfNumbers: { a: 11, b: 0, c: 33, d: 4 },
+                //             });
+                //             await adalService.postBatchDataToSchema(addonUUID, schemaName, dataArr);
+                //         }
+                //     });
+
+                //     for (let i = 0; i < jsonCsv.length; i++) {
+                //         describe(`Type: ${jsonCsv[i]}`, async () => {
+                //             it(`Export From Relation`, async () => {
+                //                 const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
+                //                     Format: jsonCsv[i],
+                //                 });
+
+                //                 dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
+                //                     relationResponse.URI,
+                //                     90,
+                //                 );
+                //                 expect(
+                //                     dimxExportDefult.Status?.ID,
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.equal(1);
+                //                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                //                     ? 'cdn.staging.pepperi'
+                //                     : generalService['client'].BaseURL.includes('papi-eu')
+                //                     ? 'eucdn.pepperi'
+                //                     : 'cdn.pepperi';
+                //                 expect(
+                //                     dimxExportDefult.AuditInfo.ResultObject,
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.include(`https://${testResponseEnvironment}`);
+                //             });
+
+                //             it(`Export Content`, async () => {
+                //                 const relationResponse = await generalService.fetchStatus(
+                //                     JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                //                 );
+                //                 console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
+                //                 if (jsonCsv[i] == 'json') {
+                //                     relationResponse.Body.sort(compareByDescription);
+                //                     expect(
+                //                         relationResponse.Body[0],
+                //                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                     ).to.deep.equal({
+                //                         Version: 'TestForObjectSchema',
+                //                         Description: 'DIMX Test 0',
+                //                         Name: 'DIMX Test',
+                //                         Key: 'testKeyDIMX0',
+                //                     });
+                //                 } else {
+                //                     const NewRelationResponseArr =
+                //                         relationResponse.Body.Text.split('\n').sort(compareByDescription);
+                //                     expect(
+                //                         NewRelationResponseArr[1].split(','),
+                //                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                     ).to.deep.equal([
+                //                         'TestForObjectSchema',
+                //                         'DIMX Test 0',
+                //                         'DIMX Test',
+                //                         'testKeyDIMX0',
+                //                     ]);
+                //                 }
+                //             });
+
+                //             it(`Change Data Of Schema`, async () => {
+                //                 const adalService = new ADALService(generalService.papiClient);
+                //                 adalService.papiClient['options'].addonUUID = addonUUID;
+                //                 adalService.papiClient['options'].addonSecretKey = secretKey;
+                //                 const dataArr: AddonData[] = [];
+                //                 for (let j = 0; j < 10; j++) {
+                //                     dataArr.push({
+                //                         Name: schemaName,
+                //                         Description: `DIMX Test ${j + 1}`,
+                //                         Version: 'TestForObjectSchema Changed',
+                //                         Key: `testKeyDIMX${j + 1}`,
+                //                         Number: 5,
+                //                         ArrayOfNumbers: [4, 33, 0, 11],
+                //                         ObjectOfNumbers: { a: 11, b: 0, c: 33, d: 4 },
+                //                     });
+                //                 }
+                //                 const adalResponse = await adalService.postBatchDataToSchema(
+                //                     addonUUID,
+                //                     schemaName,
+                //                     dataArr,
+                //                 );
+
+                //                 expect(
+                //                     adalResponse[0],
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.deep.equal({
+                //                     Status: 'Update',
+                //                     Key: `testKeyDIMX1`,
+                //                 });
+                //             });
+
+                //             it(`Export From Relation After Change`, async () => {
+                //                 const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
+                //                     Format: jsonCsv[i],
+                //                     Delimiter: ',',
+                //                 });
+                //                 await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
+                //                 expect(
+                //                     dimxExportDefult.Status?.ID,
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.equal(1);
+                //                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                //                     ? 'cdn.staging.pepperi'
+                //                     : generalService['client'].BaseURL.includes('papi-eu')
+                //                     ? 'eucdn.pepperi'
+                //                     : 'cdn.pepperi';
+                //                 expect(
+                //                     dimxExportDefult.AuditInfo.ResultObject,
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.include(`https://${testResponseEnvironment}`);
+                //             });
+
+                //             it(`Export Content After Change`, async () => {
+                //                 const relationResponse = await generalService.fetchStatus(
+                //                     JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                //                 );
+                //                 console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
+                //                 if (jsonCsv[i] == 'json') {
+                //                     relationResponse.Body.sort(compareByDescription);
+                //                     expect(
+                //                         relationResponse.Body[0],
+                //                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                     ).to.deep.equal({
+                //                         Version: `${'TestForObjectSchema'} Changed`,
+                //                         Description: 'DIMX Test 0',
+                //                         Name: 'DIMX Test',
+                //                         Key: 'testKeyDIMX0',
+                //                     });
+                //                 } else {
+                //                     relationResponse.Body.Text = relationResponse.Body.Text.replaceAll(
+                //                         ' Changed',
+                //                         'Changed',
+                //                     );
+                //                     const NewRelationResponseArr =
+                //                         relationResponse.Body.Text.split('\n').sort(compareByDescription);
+                //                     expect(
+                //                         NewRelationResponseArr[1].split(','),
+                //                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                     ).to.deep.equal([
+                //                         `${'TestForObjectSchema'}Changed`,
+                //                         'DIMX Test 0',
+                //                         'DIMX Test',
+                //                         'testKeyDIMX0',
+                //                     ]);
+                //                 }
+                //             });
+
+                //             it(`Import With Relation Restore`, async () => {
+                //                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
+                //                     URI: dataToImportWithURLResponse.URL,
+                //                     OverwriteObject: false,
+                //                     Delimiter: ',',
+                //                 });
+                //                 const dimxImport = await generalService.getAuditLogResultObjectIfValid(
+                //                     relationResponse.URI,
+                //                     90,
+                //                 );
+
+                //                 expect(
+                //                     dimxImport.Status?.ID,
+                //                     JSON.stringify(dimxImport.AuditInfo.ResultObject),
+                //                 ).to.equal(1);
+                //                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                //                     ? 'cdn.staging.pepperi'
+                //                     : generalService['client'].BaseURL.includes('papi-eu')
+                //                     ? 'eucdn.pepperi'
+                //                     : 'cdn.pepperi';
+                //                 expect(
+                //                     dimxImport.AuditInfo.ResultObject,
+                //                     JSON.stringify(dimxImport.AuditInfo.ResultObject),
+                //                 ).to.include(`https://${testResponseEnvironment}`);
+                //             });
+
+                //             it(`Import Content After Restore`, async () => {
+                //                 const relationResponse = await generalService.fetchStatus(
+                //                     JSON.parse(dimxImport.AuditInfo.ResultObject).DownloadURL,
+                //                 );
+                //                 console.log({ URL: JSON.parse(dimxImport.AuditInfo.ResultObject).DownloadURL });
+                //                 relationResponse.Body.sort(compareByKey);
+                //                 expect(
+                //                     relationResponse.Body[0],
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.deep.equal({
+                //                     Status: 'Update',
+                //                     Key: 'testKeyDIMX0',
+                //                 });
+                //             });
+
+                //             it(`Export From Relation After Restore`, async () => {
+                //                 const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
+                //                     Format: jsonCsv[i],
+                //                     Delimiter: ',',
+                //                 });
+                //                 await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
+                //                 expect(
+                //                     dimxExportDefult.Status?.ID,
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.equal(1);
+                //                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                //                     ? 'cdn.staging.pepperi'
+                //                     : generalService['client'].BaseURL.includes('papi-eu')
+                //                     ? 'eucdn.pepperi'
+                //                     : 'cdn.pepperi';
+                //                 expect(
+                //                     dimxExportDefult.AuditInfo.ResultObject,
+                //                     JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                 ).to.include(`https://${testResponseEnvironment}`);
+                //             });
+
+                //             it(`Export Content After Restore`, async () => {
+                //                 const relationResponse = await generalService.fetchStatus(
+                //                     JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                //                 );
+                //                 console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
+                //                 if (jsonCsv[i] == 'json') {
+                //                     relationResponse.Body.sort(compareByDescription);
+                //                     expect(
+                //                         relationResponse.Body[0],
+                //                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                     ).to.deep.equal({
+                //                         Version: 'TestForObjectSchema',
+                //                         Description: 'DIMX Test 0',
+                //                         Name: 'DIMX Test',
+                //                         Key: 'testKeyDIMX0',
+                //                     });
+                //                 } else {
+                //                     const NewRelationResponseArr =
+                //                         relationResponse.Body.Text.split('\n').sort(compareByDescription);
+                //                     expect(
+                //                         NewRelationResponseArr[1].split(','),
+                //                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                //                     ).to.deep.equal([
+                //                         'TestForObjectSchema',
+                //                         'DIMX Test 0',
+                //                         'DIMX Test',
+                //                         'testKeyDIMX0',
+                //                     ]);
+                //                 }
+                //             });
+                //         });
+                //     }
+                // });
             });
         }
 
@@ -1374,20 +1663,20 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         Key: `testKeyDIMX${j * SchemaSize + i}`,
                                     });
                                 }
-                                const relationResponse = await adalService.postBatchDataToSchema(
+                                const adalResponse = await adalService.postBatchDataToSchema(
                                     addonUUID,
                                     schemaName,
                                     dataArr,
                                 );
                                 expect(
-                                    relationResponse[0],
+                                    adalResponse[0],
                                     JSON.stringify(dimxExport.AuditInfo.ResultObject),
                                 ).to.deep.equal({
                                     Status: 'Update',
                                     Key: `testKeyDIMX${j * 500}`,
                                 });
                                 expect(
-                                    relationResponse[
+                                    adalResponse[
                                         performanceTest.SchemaSize > 499 ? 499 : performanceTest.SchemaSize - 1
                                     ],
                                     JSON.stringify(dimxExport.AuditInfo.ResultObject),

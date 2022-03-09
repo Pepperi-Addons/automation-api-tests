@@ -1424,7 +1424,7 @@ async function GetDataFromCartWebAPI(webAPI: WebAppAPI, accessToken: string, cat
             `The cart have account of: NULL, With Error code: ${cart.ErrorCode}, and Error Message: ${cart.ErrorMessage}`,
         );
     }
-    if (cartSmartSerch.Rows) {
+    if (!cartSmartSerch.Rows) {
         throw new Error(
             `The cartSmartSerch have Rows of: NULL, With Error code: ${cart.ErrorCode}, and Error Message: ${cart.ErrorMessage}`,
         );
