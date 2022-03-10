@@ -129,6 +129,30 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 basePage = testPage.page;
             });
 
+            // it('Add Page Block with Incorrect Relation', async function () {
+            //     const testPage = new PageClass(basePage);
+            //     let tempRel = basePageBlock;
+            //     tempRel.Relation.
+            //     testPage.addNewBlock(basePageBlock);
+            //     const resultPage = await pagesService.createOrUpdatePage(testPage.page);
+            //     pagesService.deepCompareObjects(testPage.page, resultPage, expect);
+            //     basePage = testPage.page;
+            // });
+            it("Add PageBlock with Incorrect Relation Fields", async function () {
+                const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
+                const pageClass = new PageClass(basePage);
+                const pageBlock: PageBlock = { Key: basePageBlock.Key, Configuration: basePageBlock.Configuration} as any;
+                for (const prop of properties) {
+                    pageBlock.Relation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
+                    pageBlock.Relation[prop] = "FillerProp";
+                    pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
+
+                    // await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                    //     `${prop} is missing`,
+                    // );
+                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejected;
+                }
+            });
             it('Add PageBlock without mandatory field', async function () {
                 const blockProps = Object.getOwnPropertyNames(basePageBlock).filter((prop) => prop !== 'length');
                 for (const prop of blockProps) {

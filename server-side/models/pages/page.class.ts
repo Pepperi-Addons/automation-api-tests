@@ -13,10 +13,12 @@ export class PageClass implements Page {
     ModificationDateTime?: string;
     Key?: string;
 
+
     constructor(blocks?: PageBlocksArray, layout?: PageLayoutClass) {
         this.Blocks = blocks ?? new PageBlocksArray();
         this.Layout = layout ?? new PageLayoutClass();
     }
+
 
     static fromPage(page: Page) {
         const autoLayout: PageLayoutClass = PageLayoutClass.fromLayout(page.Layout);
