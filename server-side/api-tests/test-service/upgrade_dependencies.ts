@@ -25,7 +25,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'WebApp Platform': [
             '00000000-0000-0000-1234-000000000b2b',
-            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.60',
+            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.65',
         ],
         'Settings Framework': [
             '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
