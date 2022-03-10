@@ -39,7 +39,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
         varKey = request.body.varKeyPro;
     }
 
-    
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Visualisation
