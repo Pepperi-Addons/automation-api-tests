@@ -106,6 +106,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         'exports.AsIs = async (Client, Request) => {\n' +
                             '    return Request.body;\n' +
                             '};\n' +
+                            '\n' +
                             'exports.RemoveObject = async (Client, Request) => {\n' +
                             '    for (let i = 0; i < Request.body.DIMXObjects.length; i++) {\n' +
                             '        if (Request.body.DIMXObjects[i]) {\n' +
@@ -117,12 +118,13 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             '    }\n' +
                             '    return Request.body;\n' +
                             '};\n' +
+                            '\n' +
                             'exports.RemoveColumn1 = async (Client, Request) => {\n' +
                             '    for (let i = 0; i < Request.body.DIMXObjects.length; i++) {\n' +
                             '        if (Request.body.DIMXObjects[i].Object.Column1) {\n' +
                             '            delete Request.body.DIMXObjects[i].Object.Column1;\n' +
                             '        }\n' +
-                            '   }\n' +
+                            '    }\n' +
                             '    return Request.body;\n' +
                             '};\n',
                     ).toString('base64');

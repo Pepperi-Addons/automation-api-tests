@@ -21,7 +21,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'WebApp API Framework': [
             '00000000-0000-0000-0000-0000003eba91',
-            request.body.webAppApiFramework ? `${request.body.webAppApiFramework}` : '16.80.4',
+            request.body.webAppApiFramework ? `${request.body.webAppApiFramework}` : '16.80', //'16.70'
         ],
         'WebApp Platform': [
             '00000000-0000-0000-1234-000000000b2b',
