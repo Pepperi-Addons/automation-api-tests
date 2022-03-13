@@ -27,8 +27,6 @@ import {
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
-    SchedulerTestsOld,
-    CodeJobsTests,
     TimeOutAddonJobsTests,
     AddonJobsTests,
     InstallTests,
@@ -480,19 +478,20 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
     testName = 'Scheduler';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    let testResult;
+    // let testResult;
     //TODO: Run new SchedulerTests on Stage and old SchedulerTests on other
-    if (client.BaseURL.includes('staging')) {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            SchedulerTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    } else {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            SchedulerTestsOld(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    }
+    //TODO: If tests pass on 13/03/2022 remove these comments
+    // if (client.BaseURL.includes('staging')) {
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SchedulerTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    // } else {
+    //     testResult = await Promise.all([
+    //         await test_data(client, testerFunctions),
+    //         SchedulerTestsOld(service, testerFunctions),
+    //     ]).then(() => testerFunctions.run());
+    // }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -502,19 +501,20 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
     testName = 'Code_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    let testResult;
+    // let testResult;
     //TODO: Remove the code_jobs endpoint from Jenkins, This test was removed from Stage: "CodeJobsTests", This test was added for now: "AddonJobsTests"
-    if (client.BaseURL.includes('staging')) {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            AddonJobsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    } else {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            CodeJobsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    }
+    //TODO: If tests pass on 13/03/2022 remove these comments
+    // if (client.BaseURL.includes('staging')) {
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    // } else {
+    //     testResult = await Promise.all([
+    //         await test_data(client, testerFunctions),
+    //         CodeJobsTests(service, testerFunctions),
+    //     ]).then(() => testerFunctions.run());
+    // }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
