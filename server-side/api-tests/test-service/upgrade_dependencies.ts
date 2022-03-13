@@ -13,7 +13,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'Services Framework': [
             '00000000-0000-0000-0000-000000000a91',
-            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5.479', //'9.5',
+            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5', //'9.5',
         ],
         'Cross Platforms API': [
             '00000000-0000-0000-0000-000000abcdef',
