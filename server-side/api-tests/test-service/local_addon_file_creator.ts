@@ -74,11 +74,15 @@ export async function LocalAddonFileCreatorTests(generalService: GeneralService,
 
                 let base64File;
                 if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                    // const file = fs.readFileSync(path.resolve(process.cwd(), './api-tests/test-service/test-data/test_functions.js'));
-                    const file = fs.readFileSync(
-                        path.resolve('build/server-side/api-tests/test-data/test_functions.js'),
+                    base64File = fs.readFileSync(
+                        path.resolve(
+                            __dirname.replace('\\build\\server-side\\api-tests\\test-service', ''),
+                            './api-tests/test-data/test_functions.js',
+                        ),
+                        {
+                            encoding: 'base64',
+                        },
                     );
-                    base64File = file.toString('base64');
                 } else {
                     //Changed to not use local files, but always the same file
                     base64File = Buffer.from(
