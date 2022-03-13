@@ -15,7 +15,7 @@ export async function LocalAddonFileCreatorTests(generalService: GeneralService,
      * After changing to new .js file, must run 'npm run build'
      * To compile and crearte the files in the build folder in server-side
      */
-    const addonFileName = 'test_functions1.js';
+    const addonFileName = 'test_functions.js';
 
     //#region Upgrade Pepperitest (Jenkins Special Addon) - Code Jobs
     const testData = {
