@@ -6,7 +6,7 @@ export interface Chart {
     Hidden?: boolean;
     ModificationDateTime?: string;
     Key?: string;
-    Description?: string;
+    Description?: string;//just to make sure i could send w\o any desc. although rn its impossible (gives 400)
     FileID?: string;
     Name: string;
     ReadOnly: boolean;
@@ -24,9 +24,7 @@ export class DataVisualisationService {
 
     //This should be replace with return this.papiClient.charts.find(); once SDK is developed
     async getCharts(): Promise<Chart[]> {
-        const chartResponse = await this.papiClient.get(
-            '/charts?page_size=-1',
-        );
+        const chartResponse = await this.papiClient.get('/charts?page_size=-1');
         return chartResponse;
     }
 

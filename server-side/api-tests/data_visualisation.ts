@@ -313,14 +313,14 @@ async function TestCleanUp(service: DataVisualisationService) {
     let deletedCounter = 0;
 
     for (let index = 0; index < allChartsObjects.length; index++) {
-            if (
-                allChartsObjects[index].Description?.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
-                allChartsObjects[index].Hidden == false
-            ) {
-                allChartsObjects[index].Hidden = true;
-                await service.postChart(allChartsObjects[index]);
-                deletedCounter++;
-            }
+        if (
+            allChartsObjects[index].Description?.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
+            allChartsObjects[index].Hidden == false
+        ) {
+            allChartsObjects[index].Hidden = true;
+            await service.postChart(allChartsObjects[index]);
+            deletedCounter++;
+        }
     }
     console.log('Hidded Charts: ' + deletedCounter);
     return deletedCounter;
