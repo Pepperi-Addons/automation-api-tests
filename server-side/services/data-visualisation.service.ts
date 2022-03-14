@@ -6,7 +6,7 @@ export interface Chart {
     Hidden?: boolean;
     ModificationDateTime?: string;
     Key?: string;
-    Description?: string; //just to make sure i could send w\o any desc. although rn its impossible (gives 400)
+    Description?: string; //just to make sure i could send w\o any desc. although rn its impossible (returns 400)
     FileID?: string;
     Name: string;
     ReadOnly: boolean;
