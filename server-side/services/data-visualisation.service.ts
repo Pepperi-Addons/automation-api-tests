@@ -1,4 +1,4 @@
-import { PapiClient, AuditLog } from '@pepperi-addons/papi-sdk';
+import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface Chart {
@@ -6,7 +6,7 @@ export interface Chart {
     Hidden?: boolean;
     ModificationDateTime?: string;
     Key?: string;
-    Description: string;
+    Description?: string; //just to make sure i could send w\o any desc. although rn its impossible (returns 400)
     FileID?: string;
     Name: string;
     ReadOnly: boolean;
@@ -22,20 +22,13 @@ export class DataVisualisationService {
         this.generalService = service;
     }
 
-    //This should be replace with getCharts() that will used from the sdk and will always return Chart[] => return this.papiClient.charts.find();
+    //This should be replace with return this.papiClient.charts.find(); once SDK is developed
     async getCharts(): Promise<Chart[]> {
-        const chartResponse = await this.papiClient.get(
-            `/addons/api/async/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts?page_size=-1`,
-        );
-        const chartAuditLogAsync: AuditLog = await this.generalService.getAuditLogResultObjectIfValid(
-            chartResponse.URI,
-            40,
-        );
-        const jsonDataFromAuditLog: Chart[] = JSON.parse(chartAuditLogAsync.AuditInfo.ResultObject);
-        return jsonDataFromAuditLog;
+        const chartResponse = await this.papiClient.get('/charts?page_size=-1');
+        return chartResponse;
     }
 
     postChart(chart: Chart): Promise<Chart> {
-        return this.papiClient.post(`/addons/api/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/api/charts`, chart);
+        return this.papiClient.post('/charts', chart);
     }
 }
