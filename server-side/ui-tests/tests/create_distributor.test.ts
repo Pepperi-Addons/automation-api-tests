@@ -151,7 +151,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
                     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
                     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65'], //16.60.38 //16.60
+                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.36'], //16.60.38 //16.60
                 });
 
                 isInstalledArr.forEach((isInstalled) => {
@@ -211,15 +211,15 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppList.clickOnLinkFromListRowWebElement();
 
                 const cbjectTypeEditor = new ObjectTypeEditor(driver);
-                await cbjectTypeEditor.editATDView('Footer', 'Expanded Cart Footer View');
-                await cbjectTypeEditor.editATDView('Footer', 'Order Center Footer Field');
+                await cbjectTypeEditor.addFieldToATD('Footer', 'Expanded Cart Footer View');
+                await cbjectTypeEditor.addFieldToATD('Footer', 'Order Center Footer Field');
 
                 await driver.switchToDefaultContent();
 
                 console.log('Wait for ATD View to update before move to settings');
                 driver.sleep(1000);
 
-                await driver.click(webAppHeader.Settings);
+                // await driver.click(webAppHeader.Settings);//problem -- why do this anyway?
                 await driver.click(webAppSettingsSidePanel.ObjectEditorTransactions);
 
                 await driver.sendKeys(webAppTopBar.EditorSearchField, 'Sales Order' + Key.ENTER);
@@ -228,7 +228,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 driver.sleep(1000);
 
                 await webAppList.clickOnLinkFromListRowWebElement();
-                await cbjectTypeEditor.editATDView('Transaction Details', 'Order Banner');
+                await cbjectTypeEditor.addFieldToATD('Transaction Details', 'Order Banner');
             });
 
             describe(`Reset New Distributor`, async function () {
