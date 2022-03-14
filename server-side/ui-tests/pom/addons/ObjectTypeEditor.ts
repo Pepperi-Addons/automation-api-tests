@@ -82,6 +82,10 @@ export class ObjectTypeEditor extends AddonPage {
 
     //evgeny::field editing btn
     public FieldEditingBtn: Locator = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
+    //evgeny::view arrow icon
+    public viewArrowIcon: Locator = By.xpath(
+        "//div[@id='formContTemplate']//h3[contains(@class,'ui-accordion-header')]//span[contains(@class,'ui-icon')]",
+    );
 
     public async selectPostAction(actionName: SelectPostAction): Promise<void> {
         //?
@@ -367,10 +371,8 @@ export class ObjectTypeEditor extends AddonPage {
             0,
             6000,
         );
-
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
-
         return;
     }
 
@@ -522,7 +524,7 @@ export class ObjectTypeEditor extends AddonPage {
      * @param addingViewLocator Optinal variable - locator for adding a view button other than default 'plusIcon'
      * @returns
      */
-    public async editATDView(viewType: string, viewName: string, addingViewLocator = 'plusIcon'): Promise<void> {
+    public async addFieldToATD(viewType: string, viewName: string, addingViewLocator = 'plusIcon'): Promise<void> {
         //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
@@ -540,20 +542,28 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.findElement(this.AddonContainerATDEditorViewsOrderCenterViews));
 
         const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionViewsArr);
+        const arrowsArr = await this.browser.findElements(this.viewArrowIcon);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
-            if ((await element.getText()).includes(viewType)) {
+            const childElementSpan = arrowsArr[index];
+            const spanClasses = await childElementSpan.getAttribute('class');
+            if ((await element.getText()).includes(viewType) && spanClasses.includes('downArrowIcon')) {
                 await element.click();
                 break;
             }
         }
-
         const selectedBtn = Object.assign({}, this.AddonContainerATDEditorAddViewBtn);
         selectedBtn['value'] = `${selectedBtn['value'].replace(
             'VIEW_PLACE_HOLDER',
             viewName,
         )}/..//div[contains(@class, "${addingViewLocator}")]`;
-        await this.browser.click(selectedBtn);
+        try {
+            await this.browser.click(selectedBtn);
+        } catch (error) {
+            console.log(`${viewName} is already added and has no '+' button`);
+        }
+        await this.browser.switchToDefaultContent();
+        await this.selectTabByText('General');
         return;
     }
 
