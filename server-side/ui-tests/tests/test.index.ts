@@ -3,7 +3,7 @@ import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { TestDataTests, DistributorTests } from '../../api-tests/index';
+import { TestDataTests, DistributorTests, AddonDataImportExportPerformanceTests } from '../../api-tests/index';
 import {
     LoginTests,
     OrderTests,
@@ -166,6 +166,20 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Distributor')) {
         await DistributorTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+    }
+
+    if (tests.includes('Dimx')) {
+        await AddonDataImportExportPerformanceTests(
             generalService,
             {
                 body: {
