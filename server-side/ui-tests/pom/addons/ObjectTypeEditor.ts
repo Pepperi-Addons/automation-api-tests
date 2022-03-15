@@ -523,7 +523,7 @@ export class ObjectTypeEditor extends AddonPage {
      * @param viewType The name of the view
      * @returns
      */
-    public async addFieldToATD(viewType: string, viewName: string): Promise<void> {
+    public async addViewToATD(viewType: string, viewName: string): Promise<void> {
         //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
@@ -572,7 +572,7 @@ export class ObjectTypeEditor extends AddonPage {
      * @param viewType The name of the view
      * @returns
      */
-    public async enterATDField(viewType: string, viewName: string): Promise<void> {
+    public async enterATDView(viewType: string, viewName: string): Promise<void> {
         //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
