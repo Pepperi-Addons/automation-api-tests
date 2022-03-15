@@ -73,14 +73,14 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             ) {
                 const suiteTitle = this.currentTest.parent.title;
                 nestedGap += '\t';
-                console.log(`%c${nestedGap.slice(1)}Test Suite Start: ${suiteTitle}`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap.slice(1)}Test Suite Start: '${suiteTitle}'`, ConsoleColors.SystemInformation);
                 startedTestSuiteTitle = suiteTitle;
             } else if (
                 this.currentTest.parent.suites.length < nestedGap.length &&
                 this.currentTest.parent.title != startedTestSuiteTitle
             ) {
                 console.log(
-                    `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                    `%c${nestedGap.slice(1)}Test Suite End: '${startedTestSuiteTitle}'\n`,
                     ConsoleColors.SystemInformation,
                 );
                 nestedGap = nestedGap.slice(1);
@@ -90,12 +90,12 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             ) {
                 isCorrectNestedGap = true;
                 nestedGap = '\t';
-                console.log(`%cTest Suite Start: ${this.currentTest.parent.title}`, ConsoleColors.SystemInformation);
-                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+                console.log(`%cTest Suite Start: '${this.currentTest.parent.title}'`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap}Test Start: '${this.currentTest.title}'`, ConsoleColors.SystemInformation);
                 startedTestSuiteTitle = this.currentTest.parent.title;
             } else {
                 isCorrectNestedGap = true;
-                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap}Test Start: '${this.currentTest.title}'`, ConsoleColors.SystemInformation);
             }
         } while (!isCorrectNestedGap);
     });
@@ -103,18 +103,18 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     afterEach(function () {
         if (this.currentTest.state != 'passed') {
             console.log(
-                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
         } else {
             console.log(
-                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Success,
             );
         }
         if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
             console.log(
-                `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                `%c${nestedGap.slice(1)}Test Suite End: '${startedTestSuiteTitle}'\n`,
                 ConsoleColors.SystemInformation,
             );
             nestedGap = nestedGap.slice(1);
