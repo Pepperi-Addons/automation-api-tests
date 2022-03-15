@@ -73,7 +73,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             ) {
                 const suiteTitle = this.currentTest.parent.title;
                 nestedGap += '\t';
-                console.log(`%c${nestedGap.slice(1)}Test Suite Start: '${suiteTitle}'`, ConsoleColors.SystemInformation);
+                console.log(
+                    `%c${nestedGap.slice(1)}Test Suite Start: '${suiteTitle}'`,
+                    ConsoleColors.SystemInformation,
+                );
                 startedTestSuiteTitle = suiteTitle;
             } else if (
                 this.currentTest.parent.suites.length < nestedGap.length &&
