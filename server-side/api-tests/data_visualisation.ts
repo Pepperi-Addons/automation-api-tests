@@ -271,6 +271,32 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 );
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
+
+            // it('POST - upserting a chart without desc. at all', async () => {
+            //     const chart: Chart = {
+            //         Name: generalService.generateRandomString(7),
+            //         ReadOnly: true,
+            //         ScriptURI: scriptURI,
+            //     };
+            //     const chartResponse = await generalService.fetchStatus(`/charts`, {
+            //         method: 'POST',
+            //         body: JSON.stringify(chart),
+            //     });
+            //     expect(chartResponse.Status).to.equal(200);
+            //     expect(chartResponse.Ok).to.be.true;
+            //     expect(chartResponse.Body).to.have.own.property('Key');
+            //     expect(chartResponse.Body).to.have.own.property('Name');
+            //     expect(chartResponse.Body.Name).to.equal(chart.Name);
+            //     expect(chartResponse.Body).to.have.own.property('ScriptURI');
+            //     expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
+            //     expect(chartResponse.Body.ScriptURI).to.not.equal(null);
+            //     expect(chartResponse.Body.ScriptURI).to.not.equal('');
+            //     expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+            //     expect(chartResponse.Body.ScriptURI).to.include('.js');
+            //     expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
+            //     expect(chartResponse.Body).to.have.own.property('ReadOnly');
+            //     expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+            // });
         });
         describe('Test Clean Up (Hidden = true)', () => {
             it('All The Charts Hidden', async () => {
@@ -288,7 +314,7 @@ async function TestCleanUp(service: DataVisualisationService) {
 
     for (let index = 0; index < allChartsObjects.length; index++) {
         if (
-            allChartsObjects[index].Description.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
+            allChartsObjects[index].Description?.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
             allChartsObjects[index].Hidden == false
         ) {
             allChartsObjects[index].Hidden = true;
