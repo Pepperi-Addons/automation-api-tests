@@ -111,7 +111,7 @@ export class Uom extends AddonPage {
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
         try {
             //in case medium view isnt added yet
-            await objectTypeEditor.addFieldToATD('Order Center Views', 'Medium Thumbnails View', 'editPenIcon');
+            await objectTypeEditor.addFieldToATD('Order Center Views', 'Medium Thumbnails View');
         } catch (Error) {
             await this.browser.switchToDefaultContent();
             await this.selectTabByText('General');

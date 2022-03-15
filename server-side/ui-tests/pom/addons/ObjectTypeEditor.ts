@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
 import { By, Key, Locator } from 'selenium-webdriver';
 import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
-import GeneralService from '../../../services/general.service';
+import GeneralService, { ConsoleColors } from '../../../services/general.service';
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
 import { ObjectsService } from '../../../services/objects.service';
 import { AddonLoadCondition, SelectOption, SelectPostAction } from './base/AddonPage';
@@ -524,7 +524,7 @@ export class ObjectTypeEditor extends AddonPage {
      * @param addingViewLocator Optinal variable - locator for adding a view button other than default 'plusIcon'
      * @returns
      */
-    public async addFieldToATD(viewType: string, viewName: string, addingViewLocator = 'plusIcon'): Promise<void> {
+    public async addFieldToATD(viewType: string, viewName: string): Promise<void> {
         //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
@@ -556,11 +556,11 @@ export class ObjectTypeEditor extends AddonPage {
         selectedBtn['value'] = `${selectedBtn['value'].replace(
             'VIEW_PLACE_HOLDER',
             viewName,
-        )}/..//div[contains(@class, "${addingViewLocator}")]`;
+        )}/..//div[contains(@class, "plusIcon")]`;
         try {
             await this.browser.click(selectedBtn);
         } catch (error) {
-            console.log(`${viewName} is already added and has no '+' button`);
+            console.log(`%c${viewName} is already added and has no '+' button`, ConsoleColors.PageMessage);
         }
         await this.browser.switchToDefaultContent();
         await this.selectTabByText('General');
