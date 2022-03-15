@@ -211,8 +211,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppList.clickOnLinkFromListRowWebElement();
 
                 const cbjectTypeEditor = new ObjectTypeEditor(driver);
-                await cbjectTypeEditor.addFieldToATD('Footer', 'Expanded Cart Footer View');
-                await cbjectTypeEditor.addFieldToATD('Footer', 'Order Center Footer Field');
+                await cbjectTypeEditor.addViewToATD('Footer', 'Expanded Cart Footer View');
+                await cbjectTypeEditor.addViewToATD('Footer', 'Order Center Footer Field');
 
                 await driver.switchToDefaultContent();
 
@@ -228,7 +228,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 driver.sleep(1000);
 
                 await webAppList.clickOnLinkFromListRowWebElement();
-                await cbjectTypeEditor.addFieldToATD('Transaction Details', 'Order Banner');
+                await cbjectTypeEditor.addViewToATD('Transaction Details', 'Order Banner');
             });
 
             describe(`Reset New Distributor`, async function () {

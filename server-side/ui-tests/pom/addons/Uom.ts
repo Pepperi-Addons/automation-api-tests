@@ -110,15 +110,13 @@ export class Uom extends AddonPage {
         );
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
         try {
-            await objectTypeEditor.enterATDField('Order Center Views', 'Medium Thumbnails View');
+            await objectTypeEditor.enterATDView('Order Center Views', 'Medium Thumbnails View');
         } catch (Error) {
             //in case medium view isnt added yet
             await this.browser.switchToDefaultContent();
             await this.selectTabByText('General');
-            await objectTypeEditor.addFieldToATD('Order Center Views', 'Medium Thumbnails View');
-            await this.browser.switchToDefaultContent();
-            await this.selectTabByText('Views');
-            await objectTypeEditor.enterATDField('Order Center Views', 'Medium Thumbnails View');
+            await objectTypeEditor.addViewToATD('Order Center Views', 'Medium Thumbnails View');
+            await objectTypeEditor.enterATDView('Order Center Views', 'Medium Thumbnails View');
         }
         this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
