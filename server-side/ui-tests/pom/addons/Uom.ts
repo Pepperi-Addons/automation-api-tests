@@ -110,14 +110,16 @@ export class Uom extends AddonPage {
         );
         const objectTypeEditor = new ObjectTypeEditor(this.browser);
         try {
-            //in case medium view isnt added yet
-            await objectTypeEditor.addFieldToATD('Order Center Views', 'Medium Thumbnails View');
-        } catch (Error) {
+            await objectTypeEditor.enterATDField('Order Center Views', 'Medium Thumbnails View');
+        } catch (Error) { //in case medium view isnt added yet
             await this.browser.switchToDefaultContent();
             await this.selectTabByText('General');
             await objectTypeEditor.addFieldToATD('Order Center Views', 'Medium Thumbnails View');
+            await this.browser.switchToDefaultContent();
+            await this.selectTabByText('Views');
+            await objectTypeEditor.enterATDField('Order Center Views', 'Medium Thumbnails View');
         }
-        await this.browser.sleep(7500);
+        this.browser.sleep(7500);
         await this.browser.click(this.RepViewEditIcon);
         await this.deleteAllFieldFromUIControl();
         await this.setFieldsInUIControl(
@@ -142,12 +144,12 @@ export class Uom extends AddonPage {
     public async editItemConfigFeld(nameOfATD: string): Promise<void> {
         const webAppHeader = new WebAppHeader(this.browser);
         await this.browser.click(webAppHeader.Settings);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
         await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
         await this.isSpinnerDone();
-        await this.browser.sleep(4000);
+        this.browser.sleep(4000);
 
         const webAppTopBar = new WebAppTopBar(this.browser);
         await this.sendKeys(webAppTopBar.EditorSearchField, nameOfATD + Key.ENTER);
@@ -187,7 +189,7 @@ export class Uom extends AddonPage {
         for (let i = 0; i < dataFieldNames.length; i++) {
             await this.selectDropBoxByString(this.UomDropDownFields, dataFieldNames[i], i);
             await this.isSpinnerDone();
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
         }
         await this.browser.click(this.UomSaveBtn);
         const webAppDialog = new WebAppDialog(this.browser);
@@ -251,7 +253,7 @@ export class Uom extends AddonPage {
         await this.testQtysOfItem(workingUomObject, 40, undefined, 40, 20, 20);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, 40 + i, undefined, 40 + i, 20 + i * 0.5, 20 + i * 0.5);
         }
@@ -277,7 +279,7 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, undefined, 0, 0, 0);
         //2. UOM item testing
 
@@ -285,19 +287,19 @@ export class Uom extends AddonPage {
         workingUomObject = new UomUIObject('1231');
         //set uom types to double in the upper field and single in lower
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Single');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         //2.1.2. fill the order with boxes - the rest in singel items
         for (let i = 1; i < 4; i++) {
             await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, i, undefined, i * 13, i * 13, i * 13);
         }
         //2.1.3. nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 3, undefined, 39, 39, 39);
         //2.1.4. filling the rest with single elements
@@ -314,12 +316,12 @@ export class Uom extends AddonPage {
 
         //2.1.5. nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
         //2.1.6. lowering box by 1 and adding 13 singles
         await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 2, 9, 35, 35, 35);
         await this.browser.activateTextInputFieldAndWaitUntillFunction(
@@ -334,7 +336,7 @@ export class Uom extends AddonPage {
         await this.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
         //2.1.7. nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
 
@@ -342,9 +344,9 @@ export class Uom extends AddonPage {
         workingUomObject = new UomUIObject('1232');
         //set uom types to double in the upper field and single in lower
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Single');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
 
         //2.2.1 fill the qty with double values
         await this.browser.activateTextInputFieldAndWaitUntillFunction(
@@ -360,7 +362,7 @@ export class Uom extends AddonPage {
 
         //2.2.2 nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 24, 0, 48, 48 + 24 * 2, 48 + 24 * 2);
         //2.2.3 lowering the double qty by half
@@ -388,12 +390,12 @@ export class Uom extends AddonPage {
 
         //2.2.5 nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
         //2.2.6 nothing changes as qty bigger than inventory
         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
 
@@ -401,9 +403,9 @@ export class Uom extends AddonPage {
         workingUomObject = new UomUIObject('1233');
         //set uom types to double in the upper field and single in lower
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Pack');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'double');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
 
         //2.3.1 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 8 packs
         await this.browser.activateTextInputFieldAndWaitUntillFunction(
@@ -414,12 +416,12 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 8, 0, 48, 144, 144);
         //2.3.2 lowering pack amount by 3
         for (let i = 1; i < 4; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, 8 - i, 0, 48 - i * 6, 144 - i * 6, 144 - i * 6);
         }
@@ -432,16 +434,16 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         //2.3.4 validating all values
         await this.testQtysOfItem(workingUomObject, 5, 9, 48, 144, 144);
         //2.4. Case & Box
         workingUomObject = new UomUIObject('1234');
         //set uom types to case in the upper field and box in lower
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Case');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
 
         //2.4.1 raise the case qty by 1 and check all values
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
@@ -458,7 +460,7 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         //2.4.3 valdating all values
         await this.testQtysOfItem(workingUomObject, 1, 1, 37, 181, 181);
 
@@ -472,15 +474,15 @@ export class Uom extends AddonPage {
         const orderPage = new OrderPage(this.browser);
         //set uom type to single
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Single');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         //1.1. try to add one single item
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 2, 0, 6, 6, 6);
         //1.2 click on plus again - this time qty is bigger than minimum
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 3, 0, 9, 9, 9);
         //1.3 zero the amount and set qty of single items to '-8'
@@ -492,11 +494,11 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 0, 0);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -1 * i, 0, -3 * i, i * -3, i * -3);
         }
@@ -509,22 +511,22 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 4, 0, 12, 12, 12);
 
         //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
         workingUomObject = new UomUIObject('1232');
         //set uom type to Box
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         //2.1. try to add one box item
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 2, 0, 4, 16, 16);
         //2.2 click on plus again - to see how many qtys of box are added
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
         //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
@@ -536,7 +538,7 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 12, 12);
         for (let i = 1; i < 4; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
@@ -553,20 +555,20 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
         //3. Double -> factor:1, min:10, case:5, negative:true, decimal:1
         workingUomObject = new UomUIObject('1233');
         //set uom type to double
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         //3.1. try to add one double item
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 10, 0, 10, 30, 30);
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 15, 0, 15, 35, 35);
         //3.3 zero qty of double and set it to '-8'
@@ -578,18 +580,18 @@ export class Uom extends AddonPage {
             this.isSpinnerDone,
             this,
         );
-        await this.browser.sleep(2500);
+        this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 20, 20);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -i, 0, -i, 20 + i * -1, 20 + i * -1);
         }
 
         //set lower uom type to Box
         await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
-        await this.browser.sleep(1500);
+        this.browser.sleep(1500);
         //3.4. add three more boxes - untill there are 0 items
         for (let i = 1; i < 3; i++) {
             await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
@@ -600,7 +602,7 @@ export class Uom extends AddonPage {
         //3.5. click minus untill there are no more boxes
         for (let i = 1; i < 3; i++) {
             await this.browser.click(workingUomObject.aoqmUom2MinusQtyButton);
-            await this.browser.sleep(1500);
+            this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -8, 4 - i * 2, -(i * 4), 20 - i * 4, 20 - i * 4);
         }
@@ -664,43 +666,43 @@ class UomUIObject {
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1.valueOf()['value'] = this.aoqmUom1
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2.valueOf()['value'] = this.aoqmUom2
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
     }
 }
