@@ -111,7 +111,8 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     const syncOldNegativeTest = 'Old Sync Negative Test';
     setNewTestHeadline(syncOldNegativeTest);
 
-    const codeJobPositiveTest = 'Audit Logs Positive CodeJob Test';
+    //Finally removed 14/03/2022 after nofar flipped how code job run
+    /*const codeJobPositiveTest = 'Audit Logs Positive CodeJob Test';
     setNewTestHeadline(codeJobPositiveTest);
 
     const codeJobNegativeTest = 'Audit Logs Negative CodeJob Test';
@@ -121,7 +122,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     setNewTestHeadline(codeJobPositiveAsyncTest);
 
     const codeJobNegativeAsyncTest = 'Audit Logs Negative Async CodeJob Test';
-    setNewTestHeadline(codeJobNegativeAsyncTest);
+    setNewTestHeadline(codeJobNegativeAsyncTest);*/
 
     //#endregion Test Config area
 
