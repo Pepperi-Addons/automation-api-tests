@@ -725,23 +725,17 @@ export default class GeneralService {
                 };
             })
             .catch((error) => {
-                if (error.message) {
-                    console.error(`Error type: ${error.type}, ${error}`);
-                    return {
-                        Ok: undefined as any,
-                        Status: undefined as any,
-                        Headers: undefined as any,
-                        Body: {
-                            Type: error.type,
-                            Name: error.name,
-                        },
-                        Error: error.message,
-                    };
-                }
                 console.error(`Error type: ${error.type}, ${error}`);
                 return {
-                    Error: error,
-                } as any;
+                    Ok: undefined as any,
+                    Status: undefined as any,
+                    Headers: undefined as any,
+                    Body: {
+                        Type: error.type,
+                        Name: error.name,
+                    },
+                    Error: error.message,
+                };
             });
     }
 
