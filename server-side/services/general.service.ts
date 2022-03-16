@@ -499,6 +499,7 @@ export default class GeneralService {
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
                     isInstalledArr.push(false);
+                    continue;
                 }
             }
             isInstalledArr.push(true);

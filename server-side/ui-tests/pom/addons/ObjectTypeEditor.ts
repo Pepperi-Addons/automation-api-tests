@@ -483,7 +483,7 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
         await this.browser.click(locatorForFieldType);
         const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', nameOfFieldToEdit);
         await this.browser.click(By.xpath(injectedFieldEditingBtn));
         await this.browser.sleep(2000);
@@ -531,7 +531,13 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
-        await this.gotoViewAndClickElement(viewType, viewName, "plusIcon");
+        try {
+            await this.gotoViewAndClickElement(viewType, viewName, 'plusIcon');
+        } catch (Error) {
+            console.log(`%c${viewName} is already added and has no '+' button`, ConsoleColors.PageMessage);
+        }
+        await this.browser.switchToDefaultContent();
+        await this.selectTabByText('General');
         return;
     }
 
@@ -549,7 +555,7 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
-        await this.gotoViewAndClickElement(viewType, viewName, "editPenIcon");
+        await this.gotoViewAndClickElement(viewType, viewName, 'editPenIcon');
     }
 
     private async gotoViewAndClickElement(viewType: string, viewName: string, buttonName: string) {

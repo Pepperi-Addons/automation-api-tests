@@ -30,6 +30,8 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
     //#region Upgrade Data Visualisation
     const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.194'], //hardcoded version to match dependency of PFS
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.86'], //hardcoded because there are a number of versions - this is the working one
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     let varKey;
@@ -43,16 +45,16 @@ export async function DataVisualisationTests(generalService: GeneralService, req
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Visualisation
 
-    describe('Data Visualisation Tests Suites', () => {
-        describe('Prerequisites Addon for Data Visualisation Tests', () => {
+    describe('Chart Manager Tests Suites', () => {
+        describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
             //Pepperi Notification Service
             it('Validate That All The Needed Addons Installed', async () => {
+                debugger;
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
                 });
             });
-
             for (const addonName in testData) {
                 const addonUUID = testData[addonName][0];
                 const version = testData[addonName][1];
@@ -89,7 +91,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(jsonChartData.ScriptURI).to.not.equal(undefined);
                         expect(jsonChartData.ScriptURI).to.not.equal(null);
                         expect(jsonChartData.ScriptURI).to.not.equal('');
-                        expect(jsonChartData.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                        expect(jsonChartData.ScriptURI).to.include.oneOf([
+                            'pfs.pepperi.com',
+                            'cdn.pepperi.com',
+                            'pfs.staging.pepperi.com',
+                            'cdn.staging.pepperi.com',
+                        ]);
                         expect(jsonChartData.ScriptURI).to.include('.js');
                         expect(jsonChartData.ScriptURI).to.include(jsonChartData.Name);
                         expect(jsonChartData).to.have.own.property('ReadOnly');
@@ -122,7 +129,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                         expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
                         expect(chartResponse.Body.ScriptURI).to.not.equal(null);
                         expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                        expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                        expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                            'pfs.pepperi.com',
+                            'cdn.pepperi.com',
+                            'pfs.staging.pepperi.com',
+                            'cdn.staging.pepperi.com',
+                        ]);
                         expect(chartResponse.Body.ScriptURI).to.include('.js');
                         expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                         expect(chartResponse.Body).to.have.own.property('ReadOnly');
@@ -203,7 +215,12 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
                     expect(chartResponse.Body.ScriptURI).to.not.equal(null);
                     expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                    expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                    expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                        'pfs.pepperi.com',
+                        'cdn.pepperi.com',
+                        'pfs.staging.pepperi.com',
+                        'cdn.staging.pepperi.com',
+                    ]);
                     expect(chartResponse.Body.ScriptURI).to.include('.js');
                     expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                     expect(chartResponse.Body).to.have.own.property('ReadOnly');
