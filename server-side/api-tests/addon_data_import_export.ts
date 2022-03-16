@@ -247,16 +247,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
@@ -334,7 +329,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     let dimxExportDefult;
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -439,7 +433,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                             OverwriteObject: false,
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -482,7 +475,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                             OverwriteObject: true,
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -519,12 +511,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export the Imported Content`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
                         );
-
                         let contentFromFileAsArr;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
                             //js instead of json since build process ignore json in intention
@@ -578,16 +568,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
@@ -667,7 +652,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -764,7 +748,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             OverwriteObject: false,
                             Delimiter: ',',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -804,7 +787,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             OverwriteObject: true,
                             Delimiter: ',',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -836,17 +818,14 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Export the Imported Content`, async () => {
-                        await generalService.sleepAsync(4 * 1000);
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
                         );
 
-                        //TODO: Understand why this Fail Online
                         let contentFromFileAsArr;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
                             //js instead of json since build process ignore json in intention
@@ -909,22 +888,15 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         let purgedSchema;
                         try {
-                            await generalService.sleepAsync(4 * 1000);
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
-                        await generalService.sleepAsync(4 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',
@@ -965,7 +937,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -1027,25 +998,17 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonUUID = addonUUID;
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         let purgedSchema;
-                        //TODO: This sleep does nothing so it should be removed
-                        // await generalService.sleepAsync(1000 * 60 * 2);
                         try {
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
-                        //TODO: This sleep does nothing so it should be removed
-                        // await generalService.sleepAsync(1000 * 60 * 2);
+                        await generalService.sleepAsync(10 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',
@@ -1086,7 +1049,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -1155,7 +1117,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         Format: jsonCsv[j],
                                         Where: whereToTestArr[i],
                                     });
-                                    await generalService.sleepAsync(4 * 1000);
                                     dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                                         relationResponse.URI,
                                         90,
@@ -1213,22 +1174,15 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 adalService.papiClient['options'].addonSecretKey = secretKey;
                                 let purgedSchema;
                                 try {
-                                    await generalService.sleepAsync(4 * 1000);
                                     purgedSchema = await adalService.deleteSchema(schemaName);
                                 } catch (error) {
                                     purgedSchema = '';
-                                    try {
-                                        expect(error)
-                                            .to.have.property('message')
-                                            .that.includes(
-                                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                            );
-                                    } catch (error) {
-                                        //TODO: Understand why this Fail only Online
-                                        console.log(`This Should Never Happen!!! ${error}`);
-                                    }
+                                    expect(error)
+                                        .to.have.property('message')
+                                        .that.includes(
+                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                        );
                                 }
-                                await generalService.sleepAsync(4 * 1000);
                                 const newSchema = await adalService.postSchema({
                                     Name: schemaName,
                                     Type: 'data',
@@ -1335,7 +1289,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Delimiter: ',',
                                 });
 
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExport = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1482,7 +1435,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1605,7 +1557,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxImport = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1653,7 +1604,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterRestore = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1773,16 +1723,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     purgedSchema = await adalService.deleteSchema(schemaName);
                                 } catch (error) {
                                     purgedSchema = '';
-                                    try {
-                                        expect(error)
-                                            .to.have.property('message')
-                                            .that.includes(
-                                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                            );
-                                    } catch (error) {
-                                        //TODO: Understand why this Fail only Online
-                                        console.log(`This Should Never Happen!!! ${error}`);
-                                    }
+                                    expect(error)
+                                        .to.have.property('message')
+                                        .that.includes(
+                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                        );
                                 }
                                 const newSchema = await adalService.postSchema({
                                     Name: schemaName,
@@ -1842,7 +1787,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxImportInsert = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1890,7 +1834,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterInsert = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -2045,16 +1988,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 purgedSchema = await adalService.deleteSchema(schemaName);
                             } catch (error) {
                                 purgedSchema = '';
-                                try {
-                                    expect(error)
-                                        .to.have.property('message')
-                                        .that.includes(
-                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                        );
-                                } catch (error) {
-                                    //TODO: Understand why this Fail only Online
-                                    console.log(`This Should Never Happen!!! ${error}`);
-                                }
+                                expect(error)
+                                    .to.have.property('message')
+                                    .that.includes(
+                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                    );
                             }
                             const newSchema = await adalService.postSchema({
                                 Name: schemaName,
@@ -2132,7 +2070,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2239,7 +2176,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2325,7 +2261,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxImportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2379,7 +2314,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
