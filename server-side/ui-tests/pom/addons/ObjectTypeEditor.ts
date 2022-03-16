@@ -531,34 +531,9 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
-
-        await this.selectTabByText('Views');
-        await this.browser.switchTo(this.AddonContainerIframe);
-        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
-        expect(await this.isEditorTabVisible('Layouts')).to.be.true;
-
-        //Validate Editor Page Loaded
-        expect(await this.browser.findElement(this.AddonContainerATDEditorViewsOrderCenterViews));
-
-        const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionViewsArr);
-        const arrowsArr = await this.browser.findElements(this.viewArrowIcon);
-        for (let index = 0; index < buttonsArr.length; index++) {
-            const element = buttonsArr[index];
-            const childElementSpan = arrowsArr[index];
-            const spanClasses = await childElementSpan.getAttribute('class');
-            if ((await element.getText()).includes(viewType) && spanClasses.includes('downArrowIcon')) {
-                await element.click();
-                break;
-            }
-        }
-        const selectedBtn = Object.assign({}, this.AddonContainerATDEditorAddViewBtn);
-        selectedBtn['value'] = `${selectedBtn['value'].replace(
-            'VIEW_PLACE_HOLDER',
-            viewName,
-        )}/..//div[contains(@class, "plusIcon")]`;
         try {
-            await this.browser.click(selectedBtn);
-        } catch (error) {
+            await this.gotoViewAndClickElement(viewType, viewName, 'plusIcon');
+        } catch (Error) {
             console.log(`%c${viewName} is already added and has no '+' button`, ConsoleColors.PageMessage);
         }
         await this.browser.switchToDefaultContent();
@@ -580,7 +555,10 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
+        await this.gotoViewAndClickElement(viewType, viewName, 'editPenIcon');
+    }
 
+    private async gotoViewAndClickElement(viewType: string, viewName: string, buttonName: string) {
         await this.selectTabByText('Views');
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -604,7 +582,7 @@ export class ObjectTypeEditor extends AddonPage {
         selectedBtn['value'] = `${selectedBtn['value'].replace(
             'VIEW_PLACE_HOLDER',
             viewName,
-        )}/..//div[contains(@class, "editPenIcon")]`;
+        )}/..//div[contains(@class, "${buttonName}")]`;
         await this.browser.click(selectedBtn);
         return;
     }
