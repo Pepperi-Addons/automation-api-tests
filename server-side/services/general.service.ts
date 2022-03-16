@@ -739,7 +739,7 @@ export default class GeneralService {
                 }
                 console.error(`Error type: ${error.type}, ${error}`);
                 return {
-                    Error: error.message,
+                    Error: error,
                 } as any;
             });
     }
