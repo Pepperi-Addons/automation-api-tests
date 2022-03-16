@@ -334,7 +334,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     let dimxExportDefult;
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -439,7 +439,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                             OverwriteObject: false,
                         });
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -482,7 +482,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                             OverwriteObject: true,
                         });
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -519,7 +519,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export the Imported Content`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -667,7 +667,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -764,7 +764,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             OverwriteObject: false,
                             Delimiter: ',',
                         });
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -804,7 +804,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             OverwriteObject: true,
                             Delimiter: ',',
                         });
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -839,7 +839,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -962,7 +962,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -1083,7 +1083,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(60 * 4 * 1000);
+                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -1152,7 +1152,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         Format: jsonCsv[j],
                                         Where: whereToTestArr[i],
                                     });
-                                    await generalService.sleepAsync(60 * 4 * 1000);
+                                    await generalService.sleepAsync(4 * 1000);
                                     dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                                         relationResponse.URI,
                                         90,
@@ -1330,7 +1330,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Delimiter: ',',
                                 });
 
-                                await generalService.sleepAsync(60 * 4 * 1000);
+                                await generalService.sleepAsync(4 * 1000);
                                 dimxExport = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1477,7 +1477,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(60 * 4 * 1000);
+                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1600,7 +1600,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(60 * 4 * 1000);
+                                await generalService.sleepAsync(4 * 1000);
                                 dimxImport = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1648,7 +1648,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(60 * 4 * 1000);
+                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterRestore = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1837,7 +1837,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(60 * 4 * 1000);
+                                await generalService.sleepAsync(4 * 1000);
                                 dimxImportInsert = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1885,7 +1885,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(60 * 4 * 1000);
+                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterInsert = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -2127,7 +2127,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(60 * 4 * 1000);
+                            await generalService.sleepAsync(4 * 1000);
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2234,7 +2234,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(60 * 4 * 1000);
+                            await generalService.sleepAsync(4 * 1000);
                             dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2320,7 +2320,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(60 * 4 * 1000);
+                            await generalService.sleepAsync(4 * 1000);
                             dimxImportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2374,7 +2374,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(60 * 4 * 1000);
+                            await generalService.sleepAsync(4 * 1000);
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
