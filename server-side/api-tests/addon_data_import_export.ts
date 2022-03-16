@@ -836,6 +836,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Export the Imported Content`, async () => {
+                        await generalService.sleepAsync(4 * 1000);
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
@@ -908,6 +909,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         let purgedSchema;
                         try {
+                            await generalService.sleepAsync(4 * 1000);
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
@@ -922,6 +924,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 console.log(`This Should Never Happen!!! ${error}`);
                             }
                         }
+                        await generalService.sleepAsync(4 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',
@@ -1210,6 +1213,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 adalService.papiClient['options'].addonSecretKey = secretKey;
                                 let purgedSchema;
                                 try {
+                                    await generalService.sleepAsync(4 * 1000);
                                     purgedSchema = await adalService.deleteSchema(schemaName);
                                 } catch (error) {
                                     purgedSchema = '';
@@ -1224,6 +1228,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         console.log(`This Should Never Happen!!! ${error}`);
                                     }
                                 }
+                                await generalService.sleepAsync(4 * 1000);
                                 const newSchema = await adalService.postSchema({
                                     Name: schemaName,
                                     Type: 'data',
