@@ -30,7 +30,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
     //#region Upgrade Data Visualisation
     const testData = {
-        'Data Visualization': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
+        'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -165,7 +165,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                     it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
                         const chart: Chart = {
                             Name: generalService.generateRandomString(7),
-                            Description: '',
+                            Description: 'desc',
                             ReadOnly: true,
                         } as Chart;
 
@@ -239,7 +239,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             it('POST - upserting a chart with number as script uri', async () => {
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
-                    Description: '',
+                    Description: 'desc',
                     ReadOnly: true,
                     ScriptURI: 721346,
                 };
@@ -257,7 +257,7 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             it('POST - upserting a chart with non url string as script uri', async () => {
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
-                    Description: '',
+                    Description: 'desc',
                     ReadOnly: true,
                     ScriptURI: 'https:fsdjkfd',
                 };
@@ -272,9 +272,10 @@ export async function DataVisualisationTests(generalService: GeneralService, req
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
 
-            // it('POST - upserting a chart without desc. at all', async () => {
+            // it('POST - upserting a chart with desc as empty string', async () => {
             //     const chart: Chart = {
             //         Name: generalService.generateRandomString(7),
+            //         Description: "",
             //         ReadOnly: true,
             //         ScriptURI: scriptURI,
             //     };
