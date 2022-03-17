@@ -151,7 +151,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
                     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
                     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.36'], //16.60.38 //16.60
+                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.37'], //16.60.38 //16.60
                 });
 
                 isInstalledArr.forEach((isInstalled) => {
