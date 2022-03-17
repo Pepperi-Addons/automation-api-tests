@@ -1,10 +1,11 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../services/general.service';
 import { AddonRelationService } from '../services/addon-relation.service';
 import { ADALService } from '../services/adal.service';
 import { DIMXService } from '../services/addon-data-import-export.service';
 import fs from 'fs';
 import path from 'path';
 import { AddonData } from '@pepperi-addons/papi-sdk';
+import { performance } from 'perf_hooks';
 
 let isPerformance = false;
 export async function AddonDataImportExportPerformanceTests(
@@ -39,9 +40,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.0.54'],
+        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.72'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.99'],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -247,16 +248,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
@@ -334,7 +330,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     let dimxExportDefult;
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -439,7 +434,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                             OverwriteObject: false,
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -482,7 +476,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
                             OverwriteObject: true,
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -519,32 +512,36 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export the Imported Content`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
                         );
-
                         let contentFromFileAsArr;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                            //js instead of json since build process ignore json in intention
-                            const file = fs.readFileSync(
-                                path.resolve(
-                                    __dirname.replace('\\build\\server-side', ''),
-                                    './test-data/import.json.js',
-                                ),
-                                {
-                                    encoding: 'utf8',
-                                },
-                            );
-                            contentFromFileAsArr = JSON.parse(file);
+                            try {
+                                //js instead of json since build process ignore json in intention
+                                const file = fs.readFileSync(
+                                    path.resolve(
+                                        __dirname.replace('\\build\\server-side', ''),
+                                        './test-data/import.json.js',
+                                    ),
+                                    {
+                                        encoding: 'utf8',
+                                    },
+                                );
+                                contentFromFileAsArr = JSON.parse(file);
 
-                            for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                                const object = contentFromFileAsArr[i];
-                                delete object.Column1;
-                                delete object.object;
+                                for (let i = 0; i < contentFromFileAsArr.length; i++) {
+                                    const object = contentFromFileAsArr[i];
+                                    delete object.Column1;
+                                    delete object.object;
+                                }
+                            } catch (error) {
+                                console.log(`%cError in local read file: ${error}`, ConsoleColors.Error);
                             }
-                        } else {
+                        }
+
+                        if (!contentFromFileAsArr) {
                             contentFromFileAsArr = [
                                 { Name: 'DIMX Test', Description: 'DIMX Test 0', Key: 'testKeyDIMX0' },
                                 { Name: 'DIMX Test', Description: 'DIMX Test 1', Key: 'testKeyDIMX1' },
@@ -578,16 +575,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
@@ -667,7 +659,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -705,22 +696,26 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         });
                         expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
                         expect(adoonVersionResponse[0].Version).to.equal(version);
-
                         let base64File;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                            //js instead of json since build process ignore json in intention
-                            const file = fs.readFileSync(
-                                path.resolve(
-                                    __dirname.replace('\\build\\server-side', ''),
-                                    './test-data/import.csv.js',
-                                ),
-                                {
-                                    encoding: 'utf8',
-                                },
-                            );
-                            const fileJSContent = file.split(`/*\r\n`)[1].split('\r\n*/')[0];
-                            base64File = Buffer.from(fileJSContent).toString('base64');
-                        } else {
+                            try {
+                                //js instead of json since build process ignore json in intention
+                                const file = fs.readFileSync(
+                                    path.resolve(
+                                        __dirname.replace('\\build\\server-side', ''),
+                                        './test-data/import.csv.js',
+                                    ),
+                                    {
+                                        encoding: 'utf8',
+                                    },
+                                );
+                                const fileJSContent = file.split(`/*\r\n`)[1].split('\r\n*/')[0];
+                                base64File = Buffer.from(fileJSContent).toString('base64');
+                            } catch (error) {
+                                console.log(`%cError in local read file: ${error}`, ConsoleColors.Error);
+                            }
+                        }
+                        if (!base64File) {
                             // Changed to not use local files, but always the same content
                             base64File = Buffer.from(
                                 'object.Array.0,object.Array.1,object.Array.2,object.Object.Value3,object.Object.Value1,object.Object.Value2,object.String,Description,Column1.0,Column1.1,Column1.2,Name,Key\n' +
@@ -764,7 +759,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             OverwriteObject: false,
                             Delimiter: ',',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -804,7 +798,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             OverwriteObject: true,
                             Delimiter: ',',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
                             1,
@@ -836,48 +829,50 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Export the Imported Content`, async () => {
-                        await generalService.sleepAsync(4 * 1000);
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
                         });
-                        await generalService.sleepAsync(4 * 1000);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
                         );
 
-                        //TODO: Understand why this Fail Online
                         let contentFromFileAsArr;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                            //js instead of json since build process ignore json in intention
-                            const file = fs.readFileSync(
-                                path.resolve(
-                                    __dirname.replace('\\build\\server-side', ''),
-                                    './test-data/import.csv.js',
-                                ),
-                                {
-                                    encoding: 'utf8',
-                                },
-                            );
-                            const fileJSContent = file.split(`/*\r\n`)[1].split(`\r\n*/`)[0];
-                            contentFromFileAsArr = fileJSContent.split('\r\n');
+                            try {
+                                //js instead of json since build process ignore json in intention
+                                const file = fs.readFileSync(
+                                    path.resolve(
+                                        __dirname.replace('\\build\\server-side', ''),
+                                        './test-data/import.csv.js',
+                                    ),
+                                    {
+                                        encoding: 'utf8',
+                                    },
+                                );
+                                const fileJSContent = file.split(`/*\r\n`)[1].split(`\r\n*/`)[0];
+                                contentFromFileAsArr = fileJSContent.split('\r\n');
 
-                            for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                                const lineArr = contentFromFileAsArr[i].split(',');
-                                lineArr.splice(0, 7);
-                                lineArr.splice(1, 3);
-                                contentFromFileAsArr[i] = lineArr.join();
+                                for (let i = 0; i < contentFromFileAsArr.length; i++) {
+                                    const lineArr = contentFromFileAsArr[i].split(',');
+                                    lineArr.splice(0, 7);
+                                    lineArr.splice(1, 3);
+                                    contentFromFileAsArr[i] = lineArr.join();
+                                }
+                            } catch (error) {
+                                console.log(`%cError in local read file: ${error}`, ConsoleColors.Error);
                             }
-                        } else {
-                            contentFromFileAsArr = [
-                                'Description,Name,Key',
-                                'DIMX Test 0,DIMX Test,testKeyDIMX0',
-                                'DIMX Test 1,DIMX Test,testKeyDIMX1',
-                                'DIMX Test 2,DIMX Test,testKeyDIMX2',
-                                'DIMX Test 3,DIMX Test,testKeyDIMX3',
-                                'DIMX Test 4,DIMX Test,testKeyDIMX4',
-                                'DIMX Test 5,DIMX Test,testKeyDIMX5',
-                            ];
+
+                            if (!contentFromFileAsArr)
+                                contentFromFileAsArr = [
+                                    'Description,Name,Key',
+                                    'DIMX Test 0,DIMX Test,testKeyDIMX0',
+                                    'DIMX Test 1,DIMX Test,testKeyDIMX1',
+                                    'DIMX Test 2,DIMX Test,testKeyDIMX2',
+                                    'DIMX Test 3,DIMX Test,testKeyDIMX3',
+                                    'DIMX Test 4,DIMX Test,testKeyDIMX4',
+                                    'DIMX Test 5,DIMX Test,testKeyDIMX5',
+                                ];
                         }
 
                         const NewRelationResponse = await generalService.fetchStatus(
@@ -891,7 +886,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         contentFromFileAsArr.sort();
                         const contentFromFileWithFixedDelimiterAsArr: string[] = [];
                         for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                            contentFromFileWithFixedDelimiterAsArr.push(contentFromFileAsArr[i].replaceAll(',', ';'));
+                            contentFromFileWithFixedDelimiterAsArr.push(contentFromFileAsArr[i].replace(/,/g, ';'));
                         }
                         expect(NewRelationResponseArr, JSON.stringify(NewRelationResponse)).to.deep.equal(
                             contentFromFileWithFixedDelimiterAsArr,
@@ -909,22 +904,15 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         let purgedSchema;
                         try {
-                            await generalService.sleepAsync(4 * 1000);
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
-                        await generalService.sleepAsync(4 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',
@@ -965,7 +953,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -1027,25 +1014,17 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonUUID = addonUUID;
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         let purgedSchema;
-                        //TODO: This sleep does nothing so it should be removed
-                        // await generalService.sleepAsync(1000 * 60 * 2);
                         try {
                             purgedSchema = await adalService.deleteSchema(schemaName);
                         } catch (error) {
                             purgedSchema = '';
-                            try {
-                                expect(error)
-                                    .to.have.property('message')
-                                    .that.includes(
-                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                    );
-                            } catch (error) {
-                                //TODO: Understand why this Fail only Online
-                                console.log(`This Should Never Happen!!! ${error}`);
-                            }
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
                         }
-                        //TODO: This sleep does nothing so it should be removed
-                        // await generalService.sleepAsync(1000 * 60 * 2);
+                        await generalService.sleepAsync(10 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',
@@ -1086,7 +1065,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
-                        await generalService.sleepAsync(4 * 1000);
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
                             90,
@@ -1155,7 +1133,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         Format: jsonCsv[j],
                                         Where: whereToTestArr[i],
                                     });
-                                    await generalService.sleepAsync(4 * 1000);
                                     dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
                                         relationResponse.URI,
                                         90,
@@ -1213,22 +1190,15 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 adalService.papiClient['options'].addonSecretKey = secretKey;
                                 let purgedSchema;
                                 try {
-                                    await generalService.sleepAsync(4 * 1000);
                                     purgedSchema = await adalService.deleteSchema(schemaName);
                                 } catch (error) {
                                     purgedSchema = '';
-                                    try {
-                                        expect(error)
-                                            .to.have.property('message')
-                                            .that.includes(
-                                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                            );
-                                    } catch (error) {
-                                        //TODO: Understand why this Fail only Online
-                                        console.log(`This Should Never Happen!!! ${error}`);
-                                    }
+                                    expect(error)
+                                        .to.have.property('message')
+                                        .that.includes(
+                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                        );
                                 }
-                                await generalService.sleepAsync(4 * 1000);
                                 const newSchema = await adalService.postSchema({
                                     Name: schemaName,
                                     Type: 'data',
@@ -1335,7 +1305,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Delimiter: ',',
                                 });
 
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExport = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1482,7 +1451,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1578,8 +1546,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         JSON.stringify(relationResponse.Body[9]),
                                     ).to.deep.equal({ a: '4', b: '33', c: '0', d: '11' });
                                 } else {
-                                    relationResponse.Body.Text = relationResponse.Body.Text.replaceAll(
-                                        ' Changed',
+                                    relationResponse.Body.Text = relationResponse.Body.Text.replace(
+                                        / Changed/g,
                                         'Changed',
                                     );
                                     const NewRelationResponseArr =
@@ -1605,7 +1573,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxImport = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1653,7 +1620,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterRestore = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1773,16 +1739,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     purgedSchema = await adalService.deleteSchema(schemaName);
                                 } catch (error) {
                                     purgedSchema = '';
-                                    try {
-                                        expect(error)
-                                            .to.have.property('message')
-                                            .that.includes(
-                                                `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                            );
-                                    } catch (error) {
-                                        //TODO: Understand why this Fail only Online
-                                        console.log(`This Should Never Happen!!! ${error}`);
-                                    }
+                                    expect(error)
+                                        .to.have.property('message')
+                                        .that.includes(
+                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                        );
                                 }
                                 const newSchema = await adalService.postSchema({
                                     Name: schemaName,
@@ -1842,7 +1803,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxImportInsert = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -1890,7 +1850,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Format: jsonCsv[i],
                                     Delimiter: ',',
                                 });
-                                await generalService.sleepAsync(4 * 1000);
                                 dimxExportAfterInsert = await generalService.getAuditLogResultObjectIfValid(
                                     relationResponse.URI,
                                     90,
@@ -2045,16 +2004,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 purgedSchema = await adalService.deleteSchema(schemaName);
                             } catch (error) {
                                 purgedSchema = '';
-                                try {
-                                    expect(error)
-                                        .to.have.property('message')
-                                        .that.includes(
-                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
-                                        );
-                                } catch (error) {
-                                    //TODO: Understand why this Fail only Online
-                                    console.log(`This Should Never Happen!!! ${error}`);
-                                }
+                                expect(error)
+                                    .to.have.property('message')
+                                    .that.includes(
+                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                    );
                             }
                             const newSchema = await adalService.postSchema({
                                 Name: schemaName,
@@ -2132,7 +2086,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2239,7 +2192,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2291,10 +2243,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Key: `testKeyDIMX${performanceTest.SchemaSize - 1}`,
                                 });
                             } else {
-                                relationResponse.Body.Text = relationResponse.Body.Text.replaceAll(
-                                    ' Changed',
-                                    'Changed',
-                                );
+                                relationResponse.Body.Text = relationResponse.Body.Text.replace(/ Changed/g, 'Changed');
                                 const NewRelationResponseArr =
                                     relationResponse.Body.Text.split('\n').sort(compareByDescription);
                                 expect(
@@ -2325,7 +2274,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxImportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
@@ -2379,7 +2327,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Delimiter: ',',
                             });
                             const start = performance.now();
-                            await generalService.sleepAsync(4 * 1000);
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
                                 90,
