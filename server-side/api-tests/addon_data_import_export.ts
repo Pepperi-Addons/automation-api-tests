@@ -40,9 +40,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.0.54'],
+        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.72'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.99'],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -839,35 +839,40 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         let contentFromFileAsArr;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                            //js instead of json since build process ignore json in intention
-                            const file = fs.readFileSync(
-                                path.resolve(
-                                    __dirname.replace('\\build\\server-side', ''),
-                                    './test-data/import.csv.js',
-                                ),
-                                {
-                                    encoding: 'utf8',
-                                },
-                            );
-                            const fileJSContent = file.split(`/*\r\n`)[1].split(`\r\n*/`)[0];
-                            contentFromFileAsArr = fileJSContent.split('\r\n');
+                            try {
+                                //js instead of json since build process ignore json in intention
+                                const file = fs.readFileSync(
+                                    path.resolve(
+                                        __dirname.replace('\\build\\server-side', ''),
+                                        './test-data/import.csv.js',
+                                    ),
+                                    {
+                                        encoding: 'utf8',
+                                    },
+                                );
+                                const fileJSContent = file.split(`/*\r\n`)[1].split(`\r\n*/`)[0];
+                                contentFromFileAsArr = fileJSContent.split('\r\n');
 
-                            for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                                const lineArr = contentFromFileAsArr[i].split(',');
-                                lineArr.splice(0, 7);
-                                lineArr.splice(1, 3);
-                                contentFromFileAsArr[i] = lineArr.join();
+                                for (let i = 0; i < contentFromFileAsArr.length; i++) {
+                                    const lineArr = contentFromFileAsArr[i].split(',');
+                                    lineArr.splice(0, 7);
+                                    lineArr.splice(1, 3);
+                                    contentFromFileAsArr[i] = lineArr.join();
+                                }
+                            } catch (error) {
+                                console.log(`%cError in local read file: ${error}`, ConsoleColors.Error);
                             }
-                        } else {
-                            contentFromFileAsArr = [
-                                'Description,Name,Key',
-                                'DIMX Test 0,DIMX Test,testKeyDIMX0',
-                                'DIMX Test 1,DIMX Test,testKeyDIMX1',
-                                'DIMX Test 2,DIMX Test,testKeyDIMX2',
-                                'DIMX Test 3,DIMX Test,testKeyDIMX3',
-                                'DIMX Test 4,DIMX Test,testKeyDIMX4',
-                                'DIMX Test 5,DIMX Test,testKeyDIMX5',
-                            ];
+
+                            if (!contentFromFileAsArr)
+                                contentFromFileAsArr = [
+                                    'Description,Name,Key',
+                                    'DIMX Test 0,DIMX Test,testKeyDIMX0',
+                                    'DIMX Test 1,DIMX Test,testKeyDIMX1',
+                                    'DIMX Test 2,DIMX Test,testKeyDIMX2',
+                                    'DIMX Test 3,DIMX Test,testKeyDIMX3',
+                                    'DIMX Test 4,DIMX Test,testKeyDIMX4',
+                                    'DIMX Test 5,DIMX Test,testKeyDIMX5',
+                                ];
                         }
 
                         const NewRelationResponse = await generalService.fetchStatus(
