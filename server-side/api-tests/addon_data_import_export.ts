@@ -1,10 +1,11 @@
-import GeneralService, { TesterFunctions } from '../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../services/general.service';
 import { AddonRelationService } from '../services/addon-relation.service';
 import { ADALService } from '../services/adal.service';
 import { DIMXService } from '../services/addon-data-import-export.service';
 import fs from 'fs';
 import path from 'path';
 import { AddonData } from '@pepperi-addons/papi-sdk';
+import { performance } from 'perf_hooks';
 
 let isPerformance = false;
 export async function AddonDataImportExportPerformanceTests(
@@ -517,24 +518,30 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         );
                         let contentFromFileAsArr;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                            //js instead of json since build process ignore json in intention
-                            const file = fs.readFileSync(
-                                path.resolve(
-                                    __dirname.replace('\\build\\server-side', ''),
-                                    './test-data/import.json.js',
-                                ),
-                                {
-                                    encoding: 'utf8',
-                                },
-                            );
-                            contentFromFileAsArr = JSON.parse(file);
+                            try {
+                                //js instead of json since build process ignore json in intention
+                                const file = fs.readFileSync(
+                                    path.resolve(
+                                        __dirname.replace('\\build\\server-side', ''),
+                                        './test-data/import.json.js',
+                                    ),
+                                    {
+                                        encoding: 'utf8',
+                                    },
+                                );
+                                contentFromFileAsArr = JSON.parse(file);
 
-                            for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                                const object = contentFromFileAsArr[i];
-                                delete object.Column1;
-                                delete object.object;
+                                for (let i = 0; i < contentFromFileAsArr.length; i++) {
+                                    const object = contentFromFileAsArr[i];
+                                    delete object.Column1;
+                                    delete object.object;
+                                }
+                            } catch (error) {
+                                console.log(`%cError in local read file: ${error}`, ConsoleColors.Error);
                             }
-                        } else {
+                        }
+
+                        if (!contentFromFileAsArr) {
                             contentFromFileAsArr = [
                                 { Name: 'DIMX Test', Description: 'DIMX Test 0', Key: 'testKeyDIMX0' },
                                 { Name: 'DIMX Test', Description: 'DIMX Test 1', Key: 'testKeyDIMX1' },
@@ -689,22 +696,26 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         });
                         expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
                         expect(adoonVersionResponse[0].Version).to.equal(version);
-
                         let base64File;
                         if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
-                            //js instead of json since build process ignore json in intention
-                            const file = fs.readFileSync(
-                                path.resolve(
-                                    __dirname.replace('\\build\\server-side', ''),
-                                    './test-data/import.csv.js',
-                                ),
-                                {
-                                    encoding: 'utf8',
-                                },
-                            );
-                            const fileJSContent = file.split(`/*\r\n`)[1].split('\r\n*/')[0];
-                            base64File = Buffer.from(fileJSContent).toString('base64');
-                        } else {
+                            try {
+                                //js instead of json since build process ignore json in intention
+                                const file = fs.readFileSync(
+                                    path.resolve(
+                                        __dirname.replace('\\build\\server-side', ''),
+                                        './test-data/import.csv.js',
+                                    ),
+                                    {
+                                        encoding: 'utf8',
+                                    },
+                                );
+                                const fileJSContent = file.split(`/*\r\n`)[1].split('\r\n*/')[0];
+                                base64File = Buffer.from(fileJSContent).toString('base64');
+                            } catch (error) {
+                                console.log(`%cError in local read file: ${error}`, ConsoleColors.Error);
+                            }
+                        }
+                        if (!base64File) {
                             // Changed to not use local files, but always the same content
                             base64File = Buffer.from(
                                 'object.Array.0,object.Array.1,object.Array.2,object.Object.Value3,object.Object.Value1,object.Object.Value2,object.String,Description,Column1.0,Column1.1,Column1.2,Name,Key\n' +
@@ -870,7 +881,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         contentFromFileAsArr.sort();
                         const contentFromFileWithFixedDelimiterAsArr: string[] = [];
                         for (let i = 0; i < contentFromFileAsArr.length; i++) {
-                            contentFromFileWithFixedDelimiterAsArr.push(contentFromFileAsArr[i].replaceAll(',', ';'));
+                            contentFromFileWithFixedDelimiterAsArr.push(contentFromFileAsArr[i].replace(/,/g, ';'));
                         }
                         expect(NewRelationResponseArr, JSON.stringify(NewRelationResponse)).to.deep.equal(
                             contentFromFileWithFixedDelimiterAsArr,
@@ -1530,8 +1541,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         JSON.stringify(relationResponse.Body[9]),
                                     ).to.deep.equal({ a: '4', b: '33', c: '0', d: '11' });
                                 } else {
-                                    relationResponse.Body.Text = relationResponse.Body.Text.replaceAll(
-                                        ' Changed',
+                                    relationResponse.Body.Text = relationResponse.Body.Text.replace(
+                                        / Changed/g,
                                         'Changed',
                                     );
                                     const NewRelationResponseArr =
@@ -2227,10 +2238,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Key: `testKeyDIMX${performanceTest.SchemaSize - 1}`,
                                 });
                             } else {
-                                relationResponse.Body.Text = relationResponse.Body.Text.replaceAll(
-                                    ' Changed',
-                                    'Changed',
-                                );
+                                relationResponse.Body.Text = relationResponse.Body.Text.replace(/ Changed/g, 'Changed');
                                 const NewRelationResponseArr =
                                     relationResponse.Body.Text.split('\n').sort(compareByDescription);
                                 expect(
