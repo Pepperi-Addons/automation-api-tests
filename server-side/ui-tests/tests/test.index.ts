@@ -18,6 +18,7 @@ import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
+import { PageBuilderTests } from './page_builder.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -162,6 +163,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Uom')) {
         await UomTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('PageBuilder')) {
+        await PageBuilderTests(email, pass, varPass, generalService);
     }
 
     if (tests.includes('Distributor')) {

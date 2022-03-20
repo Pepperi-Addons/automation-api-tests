@@ -5,7 +5,9 @@ import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePa
 import GeneralService from '../../../services/general.service';
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
 import { ObjectsService } from '../../../services/objects.service';
-import { AddonLoadCondition, SelectOption, SelectPostAction } from './base/AddonPage';
+import { AddonLoadCondition } from './base/AddonPage';
+import { PepperiStatus } from './base/PepperiStatus';
+import { WorkflowAction } from './base/WorkflowAction';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Field {
@@ -83,7 +85,7 @@ export class ObjectTypeEditor extends AddonPage {
     //evgeny::field editing btn
     public FieldEditingBtn: Locator = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
 
-    public async selectPostAction(actionName: SelectPostAction): Promise<void> {
+    public async selectPostAction(actionName: WorkflowAction): Promise<void> {
         //?
         const selectedTab = Object.assign({}, this.AddonContainerActionsRadioBtn);
         selectedTab['value'] = `.//li[@data-type='${actionName}'] ${selectedTab['value']}`;
@@ -233,10 +235,10 @@ export class ObjectTypeEditor extends AddonPage {
      *
      * @param postAction Enum that can be used like this in a test: SelectPostAction.UpdateInventory;
      */
-    public async editATDWorkflow(postAction: SelectPostAction): Promise<void> {
+    public async editATDWorkflow(postAction: WorkflowAction): Promise<void> {
         //remain
         switch (postAction) {
-            case SelectPostAction.UpdateInventory:
+            case WorkflowAction.UpdateInventory:
                 const webAppDialog = new WebAppDialog(this.browser);
 
                 //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
@@ -274,11 +276,11 @@ export class ObjectTypeEditor extends AddonPage {
                 await this.browser.sendKeys(this.AddonContainerATDEditorWorkflowFlowchartransitionNameBtn, 'Create');
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartFromStatusBtn,
-                    SelectOption.New,
+                    PepperiStatus.New,
                 );
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartoStatusBtn,
-                    SelectOption.InCreation,
+                    PepperiStatus.InCreation,
                 );
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartSaveBtn);
 
@@ -286,11 +288,11 @@ export class ObjectTypeEditor extends AddonPage {
                 await this.browser.sendKeys(this.AddonContainerATDEditorWorkflowFlowchartransitionNameBtn, 'Submit');
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartFromStatusBtn,
-                    SelectOption.InCreation,
+                    PepperiStatus.InCreation,
                 );
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartoStatusBtn,
-                    SelectOption.Submitted,
+                    PepperiStatus.Submitted,
                 );
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartSaveBtn);
 
@@ -302,7 +304,7 @@ export class ObjectTypeEditor extends AddonPage {
                 //Add Update Inventory
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartElEditBtn);
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartAddAction, 1);
-                await this.selectPostAction(SelectPostAction.UpdateInventory);
+                await this.selectPostAction(WorkflowAction.UpdateInventory);
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartAddActionsSaveBtn);
 
                 //Config Update Inventory

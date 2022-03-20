@@ -12,7 +12,15 @@ export class WebAppSettingsSidePanel extends Page {
     //WebApp Platform | Version: 16.60.38 = settings-bar-container
     //WebApp Platform | Version: 16.65.30/16.65.34 = pep-side-bar-container
     //public SettingsBarContainer: Locator = By.xpath('.//*[@class="settings-bar-container"]//*[@role="button"]');
-    public SettingsBarContainer: Locator = By.xpath('.//*[@class="pep-side-bar-container"]//*[@role="button"]');
+    public SettingsBarContainer: Locator = By.xpath('//*[@class="pep-side-bar-container"]//*[@role="button"]');
+    public static readonly PepSideBarContainer = By.xpath('//pep-side-bar');
+    public static getCategoryBtn(categoryId: string): By {
+        return By.xpath(`${WebAppSettingsSidePanel.PepSideBarContainer.value}//*[@id='${categoryId}']/ancestor::mat-expansion-panel-header[@role="button"]`);
+    }
+
+    public static getSubCategoryBtn(subCategoryId: string, categoryId: string): By {
+        return By.xpath(`${WebAppSettingsSidePanel.getCategoryBtn(categoryId).value}/parent::mat-expansion-panel//li[contains(@id,'${categoryId}')]`);
+    }
 
     //Object Types Editor Locators
     public ObjectEditorAccounts: Locator = By.id('settings/04de9428-8658-4bf7-8171-b59f6327bbf1/accounts/types');
@@ -42,5 +50,26 @@ export class WebAppSettingsSidePanel extends Page {
         selectedSettings['value'] += `//*[contains(@id,"${settingsButtonID}")]/../../..`;
         await this.browser.click(selectedSettings);
         return;
+    }
+
+    public async isCategoryExpanded(categoryId: string): Promise<boolean> {
+        return this.browser.getElementAttribute(WebAppSettingsSidePanel.getCategoryBtn(categoryId), "aria-expanded").then(ariaExpanded => ariaExpanded === 'true');
+    }
+
+    public async expandSettingsCategory(categoryId: string): Promise<void> {
+        return this.isCategoryExpanded(categoryId).then(isExpanded => {
+            if(!isExpanded){
+                return this.browser.click(WebAppSettingsSidePanel.getCategoryBtn(categoryId));
+            }
+        })
+    }
+
+    public async clickSettingsSubCategory(subCategoryId: string, categoryId: string): Promise<void> {
+        this.browser.click(WebAppSettingsSidePanel.getSubCategoryBtn(subCategoryId, categoryId));
+        return;
+    }
+
+    public async enterSettingsPage(categoryId: string, subCategoryId: string): Promise<void> {
+        this.expandSettingsCategory(categoryId).then(() => this.clickSettingsSubCategory(subCategoryId, categoryId));
     }
 }

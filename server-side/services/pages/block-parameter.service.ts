@@ -1,4 +1,9 @@
-import { PageConfigurationParameterFilter, PageConfigurationParameterString, PapiClient, ResourceType } from '@pepperi-addons/papi-sdk';
+import {
+    PageConfigurationParameterFilter,
+    PageConfigurationParameterString,
+    PapiClient,
+    ResourceType,
+} from '@pepperi-addons/papi-sdk';
 import GeneralService from '../general.service';
 
 export interface IBlockStringParameter extends PageConfigurationParameterString {
@@ -6,17 +11,17 @@ export interface IBlockStringParameter extends PageConfigurationParameterString 
 }
 
 export interface IBlockFilterParameter extends PageConfigurationParameterFilter {
-    Value?: IFilter[]
+    Value?: IFilter[];
 }
 
 export interface IFilter {
-    resource?: ResourceType,
+    resource?: ResourceType;
     filter?: {
         FieldType?: string;
         ApiName?: string;
         Operation?: string;
         Values?: Array<any>;
-    }
+    };
 }
 
 export class BlockParameterService {

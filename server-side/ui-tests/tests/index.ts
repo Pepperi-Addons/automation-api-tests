@@ -17,5 +17,5 @@ export {
     SecurityPolicyTests,
     CreateDistributorTests,
     UomTests,
-    PageBuilderTests
+    PageBuilderTests,
 };

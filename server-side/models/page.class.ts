@@ -60,7 +60,7 @@ export class PageClass implements Partial<Page> {
     addBlockToSection(
         blockKey: string,
         sectionKey: string,
-        column: number = 0,
+        column = 0,
         hide?: Array<DataViewScreenSize> | undefined,
     ): void {
         const pageBlockContainer: PageBlockContainer = {
@@ -68,13 +68,13 @@ export class PageClass implements Partial<Page> {
             Hide: hide ?? undefined,
         };
         const sectionIndex = this._page.Layout.Sections.findIndex((section: PageSection) => section.Key === sectionKey);
-        this._page.Layout.Sections[sectionIndex].Columns[column]= {BlockContainer: pageBlockContainer};
+        this._page.Layout.Sections[sectionIndex].Columns[column] = { BlockContainer: pageBlockContainer };
     }
 
     addNewBlockToSection(
         pageBlock: PageBlock,
         sectionKey: string,
-        column: number = 0,
+        column = 0,
         hide?: Array<DataViewScreenSize> | undefined,
     ) {
         this.addNewBlock(pageBlock);

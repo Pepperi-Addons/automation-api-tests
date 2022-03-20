@@ -138,13 +138,16 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             //     pagesService.deepCompareObjects(testPage.page, resultPage, expect);
             //     basePage = testPage.page;
             // });
-            it("Add PageBlock with Incorrect Relation Fields", async function () {
+            it('Add PageBlock with Incorrect Relation Fields', async function () {
                 const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
                 const pageClass = new PageClass(basePage);
-                const pageBlock: PageBlock = { Key: basePageBlock.Key, Configuration: basePageBlock.Configuration} as any;
+                const pageBlock: PageBlock = {
+                    Key: basePageBlock.Key,
+                    Configuration: basePageBlock.Configuration,
+                } as any;
                 for (const prop of properties) {
                     pageBlock.Relation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
-                    pageBlock.Relation[prop] = "FillerProp";
+                    pageBlock.Relation[prop] = 'FillerProp';
                     pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
 
                     // await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
@@ -519,7 +522,11 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const pagesFromApi = await pagesService.getPages({ page_size: -1 });
                 for (const page of pagesFromApi) {
                     if (page?.Name) {
-                        if (page.Name.includes('PagesApiTest') || page.Name.includes('Remove Slideshow Test')) {
+                        if (
+                            page.Name.includes('PagesApiTest') ||
+                            page.Name.includes('Remove Slideshow Test') ||
+                            page.Name.includes('SamplePage')
+                        ) {
                             page.Blocks.filter((block) => !block.Configuration?.Data).forEach(
                                 (block) => (block.Configuration.Data = {}),
                             );
