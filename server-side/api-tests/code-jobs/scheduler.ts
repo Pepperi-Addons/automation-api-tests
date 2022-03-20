@@ -30,9 +30,9 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         it('Insert New AddonJob For Cron Verification Test: Finished', () => {
             assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
         });
-        it('Execute New Addon Job For Cron Verification Test: Finished', () => {
-            assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
-        });
+        // it('Execute New Addon Job For Cron Verification Test: Finished', () => {
+        //     assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
+        // });
 
         it('Validate Empty log (The Log should Be Empty): Finished', () => {
             assert(logcash.emtyLogResponsCron, logcash.emtyLogResponsCronError);
@@ -104,7 +104,8 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodeJobBody.CodeJobName) {
             // CodeJobUUIDCron != "" removed from IF
             CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
-            await executeDraftCodeWithoutRetry();
+            //await executeDraftCodeWithoutRetry();
+            await getEmptyLogsToExecutedCronTest();
         } else {
             logcash.insertNewCJtoCronVerification = false;
             logcash.insertNewCJtoCronVerificationErrorMsg =
@@ -114,26 +115,26 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                 CallbackCash.insertNewCJtoCronVerification.statusText;
         }
 
-        async function executeDraftCodeWithoutRetry() {
-            CallbackCash.executeDraftCodeWithoutRetry = await generalService.fetchStatus(
-                '/code_jobs/async/' + CallbackCash.insertNewCJtoCronVerification.UUID + '/execute',
-                { method: 'POST' },
-            ); // changed to .Body.UUID from .Body.CodeJobUUID
+        // async function executeDraftCodeWithoutRetry() {
+        //     CallbackCash.executeDraftCodeWithoutRetry = await generalService.fetchStatus(
+        //         '/code_jobs/async/' + CallbackCash.insertNewCJtoCronVerification.UUID + '/execute',
+        //         { method: 'POST' },
+        //     ); // changed to .Body.UUID from .Body.CodeJobUUID
 
-            if (
-                CallbackCash.executeDraftCodeWithoutRetry.Status == 200 && // status changed to Status
-                CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID != '' &&
-                CallbackCash.executeDraftCodeWithoutRetry.Body.URI != ''
-            ) {
-                logcash.executeDraftCodeWithoutRetry = true;
-            } else {
-                logcash.executeDraftCodeWithoutRetry = false;
-                logcash.ErrorFromexecuteDraftCodeWithoutRetry = 'Post to execute CodeJob with draft code failed';
-            }
-            //debugger;
-            generalService.sleep(20000);
-            await getEmptyLogsToExecutedCronTest();
-        }
+        //     if (
+        //         CallbackCash.executeDraftCodeWithoutRetry.Status == 200 && // status changed to Status
+        //         CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID != '' &&
+        //         CallbackCash.executeDraftCodeWithoutRetry.Body.URI != ''
+        //     ) {
+        //         logcash.executeDraftCodeWithoutRetry = true;
+        //     } else {
+        //         logcash.executeDraftCodeWithoutRetry = false;
+        //         logcash.ErrorFromexecuteDraftCodeWithoutRetry = 'Post to execute CodeJob with draft code failed';
+        //     }
+        //     //debugger;
+        //     generalService.sleep(20000);
+        //     await getEmptyLogsToExecutedCronTest();
+        // }
         // service .httpPost("/code_jobs", CodeJobBody, (success) => {
         //     logcash.insertNewCJtoCronVerification = true;
         //     CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;  // result.CodeJobUUID to result.UUID

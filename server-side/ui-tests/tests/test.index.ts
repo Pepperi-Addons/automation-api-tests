@@ -3,7 +3,12 @@ import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { TestDataTests, DistributorTests } from '../../api-tests/index';
+import {
+    TestDataTests,
+    DistributorTests,
+    AddonDataImportExportTests,
+    AddonDataImportExportPerformanceTests,
+} from '../../api-tests/index';
 import {
     LoginTests,
     OrderTests,
@@ -74,14 +79,17 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             ) {
                 const suiteTitle = this.currentTest.parent.title;
                 nestedGap += '\t';
-                console.log(`%c${nestedGap.slice(1)}Test Suite Start: ${suiteTitle}`, ConsoleColors.SystemInformation);
+                console.log(
+                    `%c${nestedGap.slice(1)}Test Suite Start: '${suiteTitle}'`,
+                    ConsoleColors.SystemInformation,
+                );
                 startedTestSuiteTitle = suiteTitle;
             } else if (
                 this.currentTest.parent.suites.length < nestedGap.length &&
                 this.currentTest.parent.title != startedTestSuiteTitle
             ) {
                 console.log(
-                    `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                    `%c${nestedGap.slice(1)}Test Suite End: '${startedTestSuiteTitle}'\n`,
                     ConsoleColors.SystemInformation,
                 );
                 nestedGap = nestedGap.slice(1);
@@ -91,12 +99,12 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             ) {
                 isCorrectNestedGap = true;
                 nestedGap = '\t';
-                console.log(`%cTest Suite Start: ${this.currentTest.parent.title}`, ConsoleColors.SystemInformation);
-                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+                console.log(`%cTest Suite Start: '${this.currentTest.parent.title}'`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap}Test Start: '${this.currentTest.title}'`, ConsoleColors.SystemInformation);
                 startedTestSuiteTitle = this.currentTest.parent.title;
             } else {
                 isCorrectNestedGap = true;
-                console.log(`%c${nestedGap}Test Start: ${this.currentTest.title}`, ConsoleColors.SystemInformation);
+                console.log(`%c${nestedGap}Test Start: '${this.currentTest.title}'`, ConsoleColors.SystemInformation);
             }
         } while (!isCorrectNestedGap);
     });
@@ -104,18 +112,18 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     afterEach(function () {
         if (this.currentTest.state != 'passed') {
             console.log(
-                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
         } else {
             console.log(
-                `%c${nestedGap}Test End: ${this.currentTest.title}: Result: ${this.currentTest.state}`,
+                `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Success,
             );
         }
         if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
             console.log(
-                `%c${nestedGap.slice(1)}Test Suite End: ${startedTestSuiteTitle}\n`,
+                `%c${nestedGap.slice(1)}Test Suite End: '${startedTestSuiteTitle}'\n`,
                 ConsoleColors.SystemInformation,
             );
             nestedGap = nestedGap.slice(1);
@@ -183,6 +191,34 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         );
     }
 
+    if (tests.includes('DimxAPI')) {
+        await AddonDataImportExportTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+    }
+
+    if (tests.includes('DimxPerformance')) {
+        await AddonDataImportExportPerformanceTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+    }
+
     run();
 })();
 
@@ -191,8 +227,8 @@ export async function upgradeDependenciesTests(generalService: GeneralService, v
         'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.70'],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.34'], //16.60.38 //16.60
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.4'], //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.37'], //16.60.38 //16.60
         'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.305'], //9.5
         'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],

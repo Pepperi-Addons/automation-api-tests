@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
 import { By, Key, Locator } from 'selenium-webdriver';
 import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
-import GeneralService from '../../../services/general.service';
+import GeneralService, { ConsoleColors } from '../../../services/general.service';
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
 import { ObjectsService } from '../../../services/objects.service';
 import { AddonLoadCondition } from './base/AddonPage';
@@ -84,6 +84,10 @@ export class ObjectTypeEditor extends AddonPage {
 
     //evgeny::field editing btn
     public FieldEditingBtn: Locator = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
+    //evgeny::view arrow icon
+    public viewArrowIcon: Locator = By.xpath(
+        "//div[@id='formContTemplate']//h3[contains(@class,'ui-accordion-header')]//span[contains(@class,'ui-icon')]",
+    );
 
     public async selectPostAction(actionName: WorkflowAction): Promise<void> {
         //?
@@ -369,10 +373,8 @@ export class ObjectTypeEditor extends AddonPage {
             0,
             6000,
         );
-
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
-
         return;
     }
 
@@ -521,10 +523,9 @@ export class ObjectTypeEditor extends AddonPage {
      *
      * @param viewName The name of the view group
      * @param viewType The name of the view
-     * @param addingViewLocator Optinal variable - locator for adding a view button other than default 'plusIcon'
      * @returns
      */
-    public async editATDView(viewType: string, viewName: string, addingViewLocator = 'plusIcon'): Promise<void> {
+    public async addViewToATD(viewType: string, viewName: string): Promise<void> {
         //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
@@ -532,7 +533,34 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
+        try {
+            await this.gotoViewAndClickElement(viewType, viewName, 'plusIcon');
+        } catch (Error) {
+            console.log(`%c${viewName} is already added and has no '+' button`, ConsoleColors.PageMessage);
+        }
+        await this.browser.switchToDefaultContent();
+        await this.selectTabByText('General');
+        return;
+    }
 
+    /**
+     *
+     * @param viewName The name of the view group
+     * @param viewType The name of the view
+     * @returns
+     */
+    public async enterATDView(viewType: string, viewName: string): Promise<void> {
+        //remain
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+        await this.gotoViewAndClickElement(viewType, viewName, 'editPenIcon');
+    }
+
+    private async gotoViewAndClickElement(viewType: string, viewName: string, buttonName: string) {
         await this.selectTabByText('Views');
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -542,19 +570,21 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.findElement(this.AddonContainerATDEditorViewsOrderCenterViews));
 
         const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionViewsArr);
+        const arrowsArr = await this.browser.findElements(this.viewArrowIcon);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
-            if ((await element.getText()).includes(viewType)) {
+            const childElementSpan = arrowsArr[index];
+            const spanClasses = await childElementSpan.getAttribute('class');
+            if ((await element.getText()).includes(viewType) && spanClasses.includes('downArrowIcon')) {
                 await element.click();
                 break;
             }
         }
-
         const selectedBtn = Object.assign({}, this.AddonContainerATDEditorAddViewBtn);
         selectedBtn['value'] = `${selectedBtn['value'].replace(
             'VIEW_PLACE_HOLDER',
             viewName,
-        )}/..//div[contains(@class, "${addingViewLocator}")]`;
+        )}/..//div[contains(@class, "${buttonName}")]`;
         await this.browser.click(selectedBtn);
         return;
     }
