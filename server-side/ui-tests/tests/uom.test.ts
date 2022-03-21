@@ -47,9 +47,9 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
     //4. expected response from server data of item config order - second phase
     const expectedResultItemCondfig: UomOrderExpectedValues[] = [
-        new UomOrderExpectedValues('1233', -20, -20, -20, 'DOU'),
-        new UomOrderExpectedValues('1232', 8, 8, 8, 'Bx'),
-        new UomOrderExpectedValues('1231', 48, 48, 48, 'SIN'),
+        new UomOrderExpectedValues('1233', -20, -20, -8, 'DOU'),
+        new UomOrderExpectedValues('1232', 8, 8, 4, 'Bx'),
+        new UomOrderExpectedValues('1231', 48, 48, 16, 'SIN'),
     ];
 
     //#region Upgrade cpi-node & UOM
