@@ -48,17 +48,17 @@ export async function UomTests(email: string, password: string, varPass: string,
     //4. expected response from server data of item config order - second phase
     const expectedResultItemCondfig: UomOrderExpectedValues[] = [
         new UomOrderExpectedValues('1233', -20, -20, -20, 'DOU'),
-        new UomOrderExpectedValues('1232', 8, 8, 4, 'Bx'),
+        new UomOrderExpectedValues('1232', 8, 8, 8, 'Bx'),
         new UomOrderExpectedValues('1231', 48, 48, 48, 'SIN'),
     ];
 
     //#region Upgrade cpi-node & UOM
     const testData = {
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
-        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.251'],
+        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''],
     };
 
-    // await upgradeDependenciesTests(generalService, varPass);
+    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM
