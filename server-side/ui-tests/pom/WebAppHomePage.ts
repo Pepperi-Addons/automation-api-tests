@@ -41,7 +41,7 @@ export class WebAppHomePage extends Page {
         this.browser.sleep(5005);
         syncResponse = await webAppAPI.getSyncResponse(accessToken);
         console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
-        expect(syncResponse.Status).to.equal('UpToDate');
+        expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         return;
     }
 
