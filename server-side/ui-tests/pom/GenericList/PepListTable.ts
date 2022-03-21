@@ -2,6 +2,8 @@ import { By } from 'selenium-webdriver';
 import { Browser } from '../../utilities/browser';
 import { Page } from '../base/Page';
 import { TableObjectData } from '../../model/TableObjectData';
+import config from '../../../config';
+import { WebAppPage } from '../base/WebAppPage';
 
 export type TableRowData = TableObjectData<string, string | null>;
 //TODO: Create abstract class 'PepList' and have 'PepListTable' inherit it.
@@ -65,15 +67,8 @@ export class PepListTable extends Page {
      * @returns The count of displayed headers.
      */
     public async displayedHeadersCount(): Promise<number> {
-        return this.browser.findElements(PepListTable.Headers).then(
-            (elements) =>
-                elements.filter(async function (element) {
-                    const isVisible: boolean = await element.isDisplayed();
-                    if (isVisible) {
-                        return element;
-                    }
-                }).length,
-        );
+        const headerElements = await this.browser.findElements(PepListTable.Headers);
+        return headerElements.filter(async (element) => await element.isDisplayed()).length;
     }
 
     /**
@@ -81,15 +76,8 @@ export class PepListTable extends Page {
      * @returns The count of displayed rows.
      */
     public async displayedRowsCount(): Promise<number> {
-        return this.browser.findElements(PepListTable.Rows).then(
-            (elements) =>
-                elements.filter(async function (element) {
-                    const isVisible: boolean = await element.isDisplayed();
-                    if (isVisible) {
-                        return element;
-                    }
-                }).length,
-        );
+        const rowElements = await this.browser.findElements(PepListTable.Rows);
+        return rowElements.filter(async (element) => await element.isDisplayed()).length;
     }
 
     /**
@@ -154,7 +142,7 @@ export class PepListTable extends Page {
      */
     public async enterRowLinkByValue(cellValue: string, headerId?: string): Promise<void> {
         return this.browser.click(PepListTable.getRowCellByValue(cellValue, headerId)).then(() => {
-            this.isSpinnerDone();
+            this.browser.waitForLoading(WebAppPage.LoadingSpinner);
         });
     }
 

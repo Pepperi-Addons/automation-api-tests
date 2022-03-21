@@ -3,7 +3,7 @@ import { PepListTable } from '../../GenericList/PepListTable';
 import { TableObjectData } from '../../../model/TableObjectData';
 import { AddonPage } from '../base/AddonPage';
 import { PageEditor } from './PageEditor';
-import { PageListColumnHeaders, PageListHeaders } from './PageListColumnHeaders';
+import { PageListHeaders } from './PageListColumnHeaders';
 
 // export type PageRowData = TableObjectData & {[headerId in PageListColumnHeaders]: string | null | undefined}
 

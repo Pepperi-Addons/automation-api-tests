@@ -9,21 +9,21 @@ export class StaticTester extends AddonPage {
 
     public static readonly BlockContainer = By.css('static-tester');
 
-    public static readonly TestText = By.css(`${StaticTester.BlockContainer.value} #testText`);
+    public static readonly TestText = By.css(`${StaticTester.BlockContainer.value} #testText textarea`);
 
     public static readonly BlockLoadBtn = By.css(`${StaticTester.BlockContainer.value} #blockLoadBtn`);
 
     public static readonly ApiCallBtn = By.css(`${StaticTester.BlockContainer.value} #apiCallBtn`);
 
     public async getTestText(): Promise<string | null> {
-        return this.browser.getElementAttribute(StaticTester.TestText, 'title');
+        return await this.browser.getElementAttribute(StaticTester.TestText, 'title');
     }
 
     public async clickBlockLoadBtn(): Promise<void> {
-        return this.browser.click(StaticTester.BlockLoadBtn);
+        return await this.browser.click(StaticTester.BlockLoadBtn);
     }
 
     public async clickApiCallBtn(): Promise<void> {
-        return this.browser.click(StaticTester.BlockLoadBtn);
+        return await this.browser.click(StaticTester.ApiCallBtn);
     }
 }

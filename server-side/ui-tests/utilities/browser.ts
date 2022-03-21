@@ -266,26 +266,55 @@ export class Browser {
         timeOutToDisplay = 1000,
         errorOnNoLoad = false,
     ): Promise<void> {
-        const notVisibleMsg = `%cLoading element ${
+        const notVisibleMsg = `Loading element ${
             loadingLocator.valueOf()['value']
         } not visible after ${timeOutToDisplay}MS`;
-        const loadTimeoutMsg = `%cLoading (${loadingLocator.valueOf()['value']}) timeout reached after ${timeOut}MS`;
+        const loadTimeoutMsg = `Loading (${loadingLocator.valueOf()['value']}) timeout reached after ${timeOut}MS`;
+        console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Start`);
         return this.driver
             .wait(until.elementIsVisible(this.findSingleElement(loadingLocator)), timeOutToDisplay, notVisibleMsg)
+            .then(async () => {
+                console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Loading found`);
+                await this.driver.wait(
+                    until.elementIsNotVisible(this.findSingleElement(loadingLocator, timeOut + 1)),
+                    timeOut,
+                    loadTimeoutMsg,
+                );
+                console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Loading finished`);
+            })
             .catch((error) => {
                 if (errorOnNoLoad) {
                     throw <Error>error;
                 } else {
                     console.log(notVisibleMsg);
                 }
-            })
-            .then(() => {
-                this.driver.wait(
-                    until.elementIsNotVisible(this.findSingleElement(loadingLocator, timeOut + 1)),
-                    timeOut,
-                    loadTimeoutMsg,
-                );
             });
+    }
+
+    /**
+     * Check if an element is located within the DOM
+     * @param selector Element locator.
+     * @param timeOut Timeout, in MS, to poll for element located until 'false' is returned.
+     * @param suppressLog Suppress writing error to log in case the function returns 'false'.
+     */
+    public async isElementLocated(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
+        await this.driver.manage().setTimeouts({ implicit: timeOut });
+        const isLocated = this.driver
+            .wait(
+                until.elementLocated(selector),
+                timeOut,
+                `%cElement ${selector.valueOf()['value']} was not located in DOM`,
+            )
+            .then(() => {
+                return true;
+            })
+            .catch((error) => {
+                if (!suppressLog) {
+                    console.log(error.message);
+                }
+                return false;
+            });
+        return isLocated;
     }
 
     /**
