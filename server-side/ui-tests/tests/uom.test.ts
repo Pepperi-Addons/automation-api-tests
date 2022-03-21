@@ -33,9 +33,9 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
     //2. expected order data of second phase - using item config
     const expectedOrderConfigItems: OrderPageItem[] = [
-        new OrderPageItem('1233', '-8', '$-8.00'),
+        new OrderPageItem('1233', '-20', '$-20.00'),
         new OrderPageItem('1232', '8', '$8.00'),
-        new OrderPageItem('1231', '12', '$12.00'),
+        new OrderPageItem('1231', '48', '$48.00'),
     ];
 
     //3. expected response from server data of non item config order - first phase
@@ -47,18 +47,18 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
     //4. expected response from server data of item config order - second phase
     const expectedResultItemCondfig: UomOrderExpectedValues[] = [
-        new UomOrderExpectedValues('1233', -8, -8, -8, 'DOU'),
+        new UomOrderExpectedValues('1233', -20, -20, -20, 'DOU'),
         new UomOrderExpectedValues('1232', 8, 8, 4, 'Bx'),
-        new UomOrderExpectedValues('1231', 12, 12, 4, 'SIN'),
+        new UomOrderExpectedValues('1231', 48, 48, 48, 'SIN'),
     ];
 
     //#region Upgrade cpi-node & UOM
     const testData = {
-        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.5'], //because '0.3.7' which is the most progresive cannot be installed at the moment
-        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.240'],
+        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
+        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', '1.2.251'],
     };
 
-    await upgradeDependenciesTests(generalService, varPass);
+    // await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM
@@ -231,14 +231,14 @@ export async function UomTests(email: string, password: string, varPass: string,
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.login(email, password);
                     const uom = new Uom(driver);
-                    await uom.editItemConfigFeld(_TEST_DATA_ATD_NAME);
+                    await uom.editItemConfigField(_TEST_DATA_ATD_NAME);
                     let webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.returnToHomePage();
                     await webAppHomePage.manualResync(client);
                     await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                     await uom.testUomAtdUIWithItemConfig();
                     const addonPage = new AddonPage(driver);
-                    await addonPage.testCartItems('$12.00', ...expectedOrderConfigItems);
+                    await addonPage.testCartItems('$36.00', ...expectedOrderConfigItems);
                     await addonPage.submitOrder();
                     webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.manualResync(client);
@@ -267,7 +267,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                     await objectTypeEditor.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
                 });
                 it('Reset Existing Items', async function () {
-                    //Remove all items
+                    // Remove all items
                     const itemsArr: Item[] = await generalService.papiClient.items.find({ page_size: -1 });
                     for (let i = 0; i < itemsArr.length; i++) {
                         const deleted: boolean = await generalService.papiClient.items.delete(

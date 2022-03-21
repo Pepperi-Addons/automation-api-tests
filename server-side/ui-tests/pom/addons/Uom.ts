@@ -140,7 +140,7 @@ export class Uom extends AddonPage {
         this.browser.sleep(3500);
     }
 
-    public async editItemConfigFeld(nameOfATD: string): Promise<void> {
+    public async editItemConfigField(nameOfATD: string): Promise<void> {
         const webAppHeader = new WebAppHeader(this.browser);
         await this.browser.click(webAppHeader.Settings);
         this.browser.sleep(1500);
@@ -169,8 +169,8 @@ export class Uom extends AddonPage {
 
                     res.push(
                       {"UOMKey": "SIN", "Factor": 3, "Min": 2, "Case": 1, "Decimal": 0, "Negative":true},
-                      {"UOMKey": "Bx", "Factor": 2, "Min": 1, "Case": 2, "Decimal": 3, "Negative":false},
-                      {"UOMKey": "DOU", "Factor": 1, "Min": 10, "Case": 5, "Decimal": 1, "Negative":true}
+                      {"UOMKey": "Bx", "Factor": 2, "Min": 1, "Case": 2, "Decimal": 1, "Negative":false},
+                      {"UOMKey": "DOU", "Factor": 2.5, "Min": 5, "Case": 4, "Decimal": 1, "Negative":true}
                     );
                   
                   return JSON.stringify(res);`,
@@ -221,7 +221,7 @@ export class Uom extends AddonPage {
             );
         if (wholeItemQty !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
-                wholeItemQty.toString(),
+                wholeItemQty.toString().includes(".") ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}` : wholeItemQty.toString(),
             );
         if (itemGrandTotal !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
@@ -511,7 +511,7 @@ export class Uom extends AddonPage {
             this,
         );
         this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 4, 0, 12, 12, 12);
+        await this.testQtysOfItem(workingUomObject, 16, 0, 48, 48, 48);
 
         //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
         workingUomObject = new UomUIObject('1232');
@@ -522,12 +522,12 @@ export class Uom extends AddonPage {
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         this.browser.sleep(1500);
         await this.isSpinnerDone();
-        await this.testQtysOfItem(workingUomObject, 2, 0, 4, 16, 16);
+        await this.testQtysOfItem(workingUomObject, 2, 0, 4, 52, 52);
         //2.2 click on plus again - to see how many qtys of box are added
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         this.browser.sleep(1500);
         await this.isSpinnerDone();
-        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
+        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
         //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
         await this.browser.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
@@ -538,12 +538,12 @@ export class Uom extends AddonPage {
             this,
         );
         this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 12, 12);
+        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
         for (let i = 1; i < 4; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            await this.testQtysOfItem(workingUomObject, 0, 0, 0, 12, 12);
+            await this.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
         }
         //2.4 set qty of single items to '3.5'
         await this.browser.activateTextInputFieldAndWaitUntillFunction(
@@ -555,8 +555,8 @@ export class Uom extends AddonPage {
             this,
         );
         this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 20, 20);
-        //3. Double -> factor:1, min:10, case:5, negative:true, decimal:1
+        await this.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
+        //3. Double -> factor:2.5, min:10, case:5, negative:true, decimal:1
         workingUomObject = new UomUIObject('1233');
         //set uom type to double
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
@@ -565,11 +565,11 @@ export class Uom extends AddonPage {
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         this.browser.sleep(1500);
         await this.isSpinnerDone();
-        await this.testQtysOfItem(workingUomObject, 10, 0, 10, 30, 30);
+        await this.testQtysOfItem(workingUomObject, 8, 0, 20, 76, 76);
         await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
         this.browser.sleep(1500);
         await this.isSpinnerDone();
-        await this.testQtysOfItem(workingUomObject, 15, 0, 15, 35, 35);
+        await this.testQtysOfItem(workingUomObject, 12, 0, 30, 86, 86);
         //3.3 zero qty of double and set it to '-8'
         await this.browser.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
@@ -580,12 +580,12 @@ export class Uom extends AddonPage {
             this,
         );
         this.browser.sleep(2500);
-        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 20, 20);
+        await this.testQtysOfItem(workingUomObject, 0, 0, 0, 56, 56);
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             this.browser.sleep(1500);
             await this.isSpinnerDone();
-            await this.testQtysOfItem(workingUomObject, -i, 0, -i, 20 + i * -1, 20 + i * -1);
+            await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 2.5), 56 + (i * -2.5), 56 + (i * -2.5));
         }
 
         //set lower uom type to Box
@@ -596,14 +596,14 @@ export class Uom extends AddonPage {
             await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
             await this.browser.sleep(1500);
             await this.isSpinnerDone();
-            await this.testQtysOfItem(workingUomObject, -8, i * 2, -8 + i * 4, 12 + i * 4, 12 + i * 4);
+            await this.testQtysOfItem(workingUomObject, -8, i * 2, -20 + i * 4, 36 + i * 4, 36 + i * 4);
         }
         //3.5. click minus untill there are no more boxes
         for (let i = 1; i < 3; i++) {
             await this.browser.click(workingUomObject.aoqmUom2MinusQtyButton);
             this.browser.sleep(1500);
             await this.isSpinnerDone();
-            await this.testQtysOfItem(workingUomObject, -8, 4 - i * 2, -(i * 4), 20 - i * 4, 20 - i * 4);
+            await this.testQtysOfItem(workingUomObject, -8, 4 - i * 2, -12 - (i * 4), 44 - i * 4, 44 - i * 4);
         }
 
         //3. UOM order test ended - submiting to cart
@@ -665,43 +665,43 @@ class UomUIObject {
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1.valueOf()['value'] = this.aoqmUom1
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2.valueOf()['value'] = this.aoqmUom2
             .valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
     }
 }

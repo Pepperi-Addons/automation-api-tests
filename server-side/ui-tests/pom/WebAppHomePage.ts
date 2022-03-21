@@ -41,7 +41,7 @@ export class WebAppHomePage extends Page {
         this.browser.sleep(5005);
         syncResponse = await webAppAPI.getSyncResponse(accessToken);
         console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
-        expect(syncResponse.Status).to.equal('UpToDate');
+        expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         return;
     }
 
@@ -143,7 +143,7 @@ export class WebAppHomePage extends Page {
 
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
