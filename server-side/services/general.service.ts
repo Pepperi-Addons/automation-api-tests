@@ -203,6 +203,12 @@ export default class GeneralService {
     }
 
     async initiateTester(email, pass): Promise<Client> {
+        const getToken = await this.getToken(email, pass);
+
+        return this.createClient(getToken.access_token);
+    }
+
+    private async getToken(email: any, pass: any) {
         const urlencoded = new URLSearchParams();
         urlencoded.append('username', email);
         urlencoded.append('password', pass);
@@ -224,7 +230,13 @@ export default class GeneralService {
             .then((res) => res.text())
             .then((res) => (res ? JSON.parse(res) : ''));
 
-        return this.createClient(getToken.access_token);
+        if (!getToken?.access_token) {
+            throw new Error(
+                `Error unauthorized\nError: ${getToken.error}\nError description: ${getToken.error_description}`,
+            );
+        }
+
+        return getToken;
     }
 
     createClient(authorization) {

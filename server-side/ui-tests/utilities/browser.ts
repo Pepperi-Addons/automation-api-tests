@@ -1,5 +1,14 @@
 import 'chromedriver';
-import { Builder, ThenableWebDriver, WebElement, until, Locator, Key } from 'selenium-webdriver';
+import {
+    Builder,
+    ThenableWebDriver,
+    WebElement,
+    until,
+    Locator,
+    Key,
+    WebElementPromise,
+    ILocation,
+} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import GeneralService, { ConsoleColors } from '../../services/general.service';
 
@@ -241,6 +250,116 @@ export class Browser {
     public async findElement(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, isVisible).then((webElement) =>
             webElement ? webElement[0] : webElement,
+        );
+    }
+
+    /**
+     * Function to wait for loading element to appear and then disappear.
+     * @param loadingLocator Locator of the loading element.
+     * @param timeOut Timeout, in MS, until loading has ended (loading element no longer visible).
+     * @param timeOutToDisplay Timeout, in MS, until loading first appears.
+     * @param errorOnNoLoad Should an error be thrown when loading element is not displayed until defined threshold is reached.
+     */
+    public async waitForLoading(
+        loadingLocator: Locator,
+        timeOut = 30000,
+        timeOutToDisplay = 1000,
+        errorOnNoLoad = false,
+    ): Promise<void> {
+        const notVisibleMsg = `Loading element ${
+            loadingLocator.valueOf()['value']
+        } not visible after ${timeOutToDisplay}MS`;
+        const loadTimeoutMsg = `Loading (${loadingLocator.valueOf()['value']}) timeout reached after ${timeOut}MS`;
+        console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Start`);
+        return this.driver
+            .wait(until.elementIsVisible(this.findSingleElement(loadingLocator)), timeOutToDisplay, notVisibleMsg)
+            .then(async () => {
+                console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Loading found`);
+                await this.driver.wait(
+                    until.elementIsNotVisible(this.findSingleElement(loadingLocator, timeOut + 1)),
+                    timeOut,
+                    loadTimeoutMsg,
+                );
+                console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Loading finished`);
+            })
+            .catch((error) => {
+                if (errorOnNoLoad) {
+                    throw <Error>error;
+                } else {
+                    console.log(notVisibleMsg);
+                }
+            });
+    }
+
+    /**
+     * Check if an element is located within the DOM
+     * @param selector Element locator.
+     * @param timeOut Timeout, in MS, to poll for element located until 'false' is returned.
+     * @param suppressLog Suppress writing error to log in case the function returns 'false'.
+     */
+    public async isElementLocated(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
+        await this.driver.manage().setTimeouts({ implicit: timeOut });
+        const isLocated = this.driver
+            .wait(
+                until.elementLocated(selector),
+                timeOut,
+                `%cElement ${selector.valueOf()['value']} was not located in DOM`,
+            )
+            .then(() => {
+                return true;
+            })
+            .catch((error) => {
+                if (!suppressLog) {
+                    console.log(error.message);
+                }
+                return false;
+            });
+        return isLocated;
+    }
+
+    /**
+     * Searches by selector and returns the first found element.
+     * @param selector The locator to use.
+     * @param waitUntil Implicit findElement timeout, in milliseconds.
+     * @returns {@link WebElementPromise}
+     */
+    public findSingleElement(selector: Locator, waitUntil = 15000): WebElementPromise {
+        const promise = this.driver.manage().setTimeouts({ implicit: waitUntil });
+        Promise.all([promise]);
+        return this.driver.findElement(selector);
+    }
+
+    /**
+     * Searches by selector and returns the first found element's attribute.
+     * @param selector The locator to use.
+     * @param attributeName Attribute name to retrieve.
+     * @param waitUntil Implicit findElement timeout, in milliseconds.
+     */
+    public async getElementAttribute(
+        selector: Locator,
+        attributeName: string,
+        waitUntil = 15000,
+    ): Promise<string | null> {
+        return this.findSingleElement(selector, waitUntil).getAttribute(attributeName);
+    }
+
+    //TODO:Possibly does not center the view on the element, needs testing.
+    /**
+     * Finds element by selector, moves the mouse to the middle of the element and scrolls it into view.
+     * @param selector The locator to use.
+     * @param offset Scrolling X and Y pixels relative to element found by selector
+     * @param duration How long, in milliseconds, should the action take. Default is 100ms.
+     */
+    public async scrollToElement(
+        selector: Locator,
+        offset?: ILocation,
+        duration?: number,
+        waitUntil = 15000,
+    ): Promise<void> {
+        const actions = this.driver.actions({ async: true });
+        this.findSingleElement(selector, waitUntil).then(
+            async (element) =>
+                await actions.move({ origin: element, x: offset?.x, y: offset?.y, duration: duration }).perform(),
         );
     }
 

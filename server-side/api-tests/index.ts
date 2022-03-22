@@ -58,7 +58,7 @@ import { DistributorTests } from './objects/distributor';
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
-import { DataVisualisationTests } from './data_visualisation';
+import { ChartManagerTests } from './chart_manager';
 //#endregion Evgenys's Tests
 
 import {
@@ -131,7 +131,7 @@ export {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
-    DataVisualisationTests,
+    ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,

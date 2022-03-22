@@ -1,7 +1,7 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { DataVisualisationService, Chart } from '../services/data-visualisation.service';
 
-export async function DataVisualisationTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function ChartManagerTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataVisualisationService = new DataVisualisationService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
@@ -30,8 +30,8 @@ export async function DataVisualisationTests(generalService: GeneralService, req
 
     //#region Upgrade Data Visualisation
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.194'], //hardcoded version to match dependency of PFS
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.86'], //hardcoded because there are a number of versions - this is the working one
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
     };
     let varKey;
@@ -50,7 +50,6 @@ export async function DataVisualisationTests(generalService: GeneralService, req
             //Test Data
             //Pepperi Notification Service
             it('Validate That All The Needed Addons Installed', async () => {
-                debugger;
                 isInstalledArr.forEach((isInstalled) => {
                     expect(isInstalled).to.be.true;
                 });

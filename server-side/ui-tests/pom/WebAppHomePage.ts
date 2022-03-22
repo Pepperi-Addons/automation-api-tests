@@ -1,5 +1,4 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/Page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
@@ -8,10 +7,11 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppAPI } from './WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
+import { WebAppPage } from './base/WebAppPage';
 
 chai.use(promised);
 
-export class WebAppHomePage extends Page {
+export class WebAppHomePage extends WebAppPage {
     constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}/HomePage`);
     }
@@ -41,7 +41,7 @@ export class WebAppHomePage extends Page {
         this.browser.sleep(5005);
         syncResponse = await webAppAPI.getSyncResponse(accessToken);
         console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
-        expect(syncResponse.Status).to.equal('UpToDate');
+        expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         return;
     }
 
@@ -141,6 +141,7 @@ export class WebAppHomePage extends Page {
         return;
     }
 
+    //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
             ['value'].slice()

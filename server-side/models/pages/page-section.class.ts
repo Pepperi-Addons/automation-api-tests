@@ -5,6 +5,7 @@ import {
     PageSectionColumn,
     SplitType,
 } from '@pepperi-addons/papi-sdk';
+import { v4 as newUuid } from 'uuid';
 
 export class PageSectionClass implements PageSection {
     Key: string;
@@ -18,8 +19,8 @@ export class PageSectionClass implements PageSection {
      * Initializes a new AutomationSection instance
      * @param sections elements to add to the array.
      */
-    constructor(key: string, split?: SplitType) {
-        this.Key = key;
+    constructor(key?: string, split?: SplitType) {
+        this.Key = key ?? newUuid();
         this.changeSplit(split);
     }
 

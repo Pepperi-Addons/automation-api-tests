@@ -4,14 +4,14 @@ import { PageLayoutClass } from './page-layout.class';
 
 export class PageClass implements Page {
     // [key: string]: any;
-    Name?: string | undefined;
-    Description?: string | undefined;
+    Name?: string;
+    Description?: string;
     Blocks: PageBlocksArray;
     Layout: PageLayoutClass;
-    Hidden?: boolean | undefined;
-    CreationDateTime?: string | undefined;
-    ModificationDateTime?: string | undefined;
-    Key?: string | undefined;
+    Hidden?: boolean;
+    CreationDateTime?: string;
+    ModificationDateTime?: string;
+    Key?: string;
 
     constructor(blocks?: PageBlocksArray, layout?: PageLayoutClass) {
         this.Blocks = blocks ?? new PageBlocksArray();

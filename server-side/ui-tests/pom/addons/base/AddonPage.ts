@@ -8,46 +8,9 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { OrderPageItem } from '../../OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
+import { PepperiStatus } from './PepperiStatus';
 
 chai.use(promised);
-
-export enum SelectOption {
-    InCreation = 1,
-    Submitted = 2,
-    InProgress = 3,
-    OnHold = 4,
-    Cancelled = 5,
-    Revised = 6,
-    Closed = 7,
-    WaitingForApproval = 9,
-    ERP = 12,
-    Invoice = 14,
-    InPlanning = 16,
-    Published = 17,
-    InPayment = 18,
-    Paid = 19,
-    New = 1000,
-}
-
-export enum SelectPostAction {
-    Alert = 15,
-    CaptureDateAndTime = 26,
-    CaptureGeolocation = 27,
-    ExportFileToFTP = 23,
-    ForceSync = 21,
-    Notification = 13,
-    OpenForm = 22,
-    SendEmail = 1,
-    CustomForm = 18,
-    UpdateInventory = 28,
-    Webhook = 2,
-    OpenCampaign = 40,
-    WebhookResultNotification = 9,
-    Duplicate = 43,
-    DuplicateForAnotherAccount = 48,
-    PushNotification = 37,
-    CalculateFieldFormula = 45,
-}
 
 export enum AddonLoadCondition {
     Footer,
@@ -55,8 +18,10 @@ export enum AddonLoadCondition {
 }
 
 export class AddonPage extends Page {
+    public Header: WebAppHeader;
     constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
+        this.Header = new WebAppHeader(browser);
     }
 
     public AddonContainerTopButton: Locator = By.css('.addon-page-container button');
@@ -132,7 +97,7 @@ export class AddonPage extends Page {
     public FirstLineInCodeInput: Locator = By.css('.CodeMirror  .CodeMirror-code > pre');
     public CodeInputSection: Locator = By.css('.CodeMirror  > div:nth-child(1) > textarea');
 
-    //activitys page --> has to be moved
+    //TODO:activitys page --> has to be moved
     public OrderIdTextElement: Locator = By.xpath(`//span[@id='Type' and text()='|textToFill|']/../../div//a//span`);
 
     public async selectTabByText(tabText: string): Promise<void> {
@@ -183,7 +148,7 @@ export class AddonPage extends Page {
         return true;
     }
 
-    public async selectDropBoxByOption(locator: Locator, option: SelectOption): Promise<void> {
+    public async selectDropBoxByOption(locator: Locator, option: PepperiStatus): Promise<void> {
         const selectedBox = Object.assign({}, locator);
         selectedBox['value'] += ` option[value='${option}']`;
         await this.browser.click(selectedBox);
