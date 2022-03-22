@@ -1962,6 +1962,193 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         });
                     }
                 });
+
+                describe(`Export Array Format In CSV (DI-19689)`, async () => {
+                    let dimxExport;
+                    it(`Reset Schema Before`, async () => {
+                        const adalService = new ADALService(generalService.papiClient);
+                        adalService.papiClient['options'].addonUUID = addonUUID;
+                        adalService.papiClient['options'].addonSecretKey = secretKey;
+                        let purgedSchema;
+                        try {
+                            purgedSchema = await adalService.deleteSchema(schemaName);
+                        } catch (error) {
+                            purgedSchema = '';
+                            expect(error)
+                                .to.have.property('message')
+                                .that.includes(
+                                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                );
+                        }
+                        const newSchema = await adalService.postSchema({
+                            Name: schemaName,
+                            Type: 'data',
+                            Fields: {
+                                Name: { Type: 'String' },
+                                Description: { Type: 'String' },
+                                Key: { Type: 'String' },
+                                Column1: {
+                                    Type: 'Array',
+                                    Items: {
+                                        Type: 'String',
+                                    },
+                                } as any,
+                                object: {
+                                    Type: 'Object',
+                                    Fields: {
+                                        Object: {
+                                            Type: 'Object',
+                                            Fields: {
+                                                Value1: { Type: 'Integer' },
+                                                Value2: { Type: 'Integer' },
+                                                Value3: { Type: 'Integer' },
+                                            },
+                                        },
+                                        String: { Type: 'String' },
+                                        Array: {
+                                            Type: 'Array',
+                                            Items: { Type: 'String' },
+                                        },
+                                    },
+                                } as any,
+                                Number: { Type: 'Integer' },
+                                ArrayOfNumbers: {
+                                    Type: 'Array',
+                                    Items: { Type: 'Integer' },
+                                } as any,
+                                ObjectOfNumbers: {
+                                    Type: 'Object',
+                                    Fields: {
+                                        a: { Type: 'Integer' },
+                                        b: { Type: 'Integer' },
+                                        c: { Type: 'Integer' },
+                                        d: { Type: 'Integer' },
+                                    },
+                                } as any,
+                                String: { Type: 'String' },
+                                ArrayOfStrings: {
+                                    Type: 'Array',
+                                    Items: { Type: 'String' },
+                                } as any,
+                                ObjectOfStrings: {
+                                    Type: 'Object',
+                                    Fields: {
+                                        a: { Type: 'String' },
+                                        b: { Type: 'String' },
+                                        c: { Type: 'String' },
+                                        d: { Type: 'String' },
+                                    },
+                                } as any,
+                            },
+                        });
+                        expect(purgedSchema).to.equal('');
+                        expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+                        expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
+                    });
+
+                    it(`Create Schema With Array, Object and Number`, async () => {
+                        const adalService = new ADALService(generalService.papiClient);
+                        adalService.papiClient['options'].addonUUID = addonUUID;
+                        adalService.papiClient['options'].addonSecretKey = secretKey;
+                        const dataArr: AddonData[] = [];
+                        for (let j = 0; j < 10; j++) {
+                            dataArr.push({
+                                Name: schemaName,
+                                Description: `DIMX Test ${j}`,
+                                Version: 'TestForObjectSchema',
+                                Key: `testKeyDIMX${j}`,
+                                Number: 5,
+                                String: '5',
+                                ArrayOfNumbers: [4, 33, 0, 11],
+                                ObjectOfNumbers: { a: 11, b: 0, c: 33, d: 4 },
+                                ArrayOfStrings: ['4', '33', '0', '11'],
+                                ObjectOfStrings: { a: '11', b: '0', c: '33', d: '4' },
+                            });
+                        }
+                        const adalResponse = await adalService.postBatchDataToSchema(addonUUID, schemaName, dataArr);
+                        expect(adalResponse[0], JSON.stringify(adalResponse)).to.deep.equal({
+                            Status: 'Insert',
+                            Key: `testKeyDIMX0`,
+                        });
+                        expect(adalResponse[9], JSON.stringify(adalResponse)).to.deep.equal({
+                            Status: 'Insert',
+                            Key: `testKeyDIMX9`,
+                        });
+                    });
+
+                    const delimiterArr = [',', ';', ':', '\t', '|', '&&&', '@', '#', '$', '&', ' '];
+                    const resultsFirstArr = [
+                        `11,0,33,4,DIMX Test 0,5,"['4','33','0','11']",5,"[4,33,0,11]",TestForObjectSchema,11,0,33,4,DIMX Test,testKeyDIMX0`,
+                        `11;0;33;4;DIMX Test 0;5;['4','33','0','11'];5;[4,33,0,11];TestForObjectSchema;11;0;33;4;DIMX Test;testKeyDIMX0`,
+                        `11:0:33:4:DIMX Test 0:5:['4','33','0','11']:5:[4,33,0,11]:TestForObjectSchema:11:0:33:4:DIMX Test:testKeyDIMX0`,
+                        `11\t0\t33\t4\tDIMX Test 0\t5\t['4','33','0','11']\t5\t[4,33,0,11]\tTestForObjectSchema\t11\t0\t33\t4\tDIMX Test\ttestKeyDIMX0`,
+                        `11|0|33|4|DIMX Test 0|5|['4','33','0','11']|5|[4,33,0,11]|TestForObjectSchema|11|0|33|4|DIMX Test|testKeyDIMX0`,
+                        `11&&&0&&&33&&&4&&&DIMX Test 0&&&5&&&['4','33','0','11']&&&5&&&[4,33,0,11]&&&TestForObjectSchema&&&11&&&0&&&33&&&4&&&DIMX Test&&&testKeyDIMX0`,
+                        `11@0@33@4@DIMX Test 0@5@['4','33','0','11']@5@[4,33,0,11]@TestForObjectSchema@11@0@33@4@DIMX Test@testKeyDIMX0`,
+                        `11#0#33#4#DIMX Test 0#5#['4','33','0','11']#5#[4,33,0,11]#TestForObjectSchema#11#0#33#4#DIMX Test#testKeyDIMX0`,
+                        `11$0$33$4$DIMX Test 0$5$['4','33','0','11']$5$[4,33,0,11]$TestForObjectSchema$11$0$33$4$DIMX Test$testKeyDIMX0`,
+                        `11&0&33&4&DIMX Test 0&5&['4','33','0','11']&5&[4,33,0,11]&TestForObjectSchema&11&0&33&4&DIMX Test&testKeyDIMX0`,
+                        `11 0 33 4 "DIMX Test 0" 5 ['4','33','0','11'] 5 [4,33,0,11] TestForObjectSchema 11 0 33 4 "DIMX Test" testKeyDIMX0`,
+                    ];
+                    const resultsLastArr = [
+                        `11,0,33,4,DIMX Test 9,5,"['4','33','0','11']",5,"[4,33,0,11]",TestForObjectSchema,11,0,33,4,DIMX Test,testKeyDIMX9`,
+                        `11;0;33;4;DIMX Test 9;5;['4','33','0','11'];5;[4,33,0,11];TestForObjectSchema;11;0;33;4;DIMX Test;testKeyDIMX9`,
+                        `11:0:33:4:DIMX Test 9:5:['4','33','0','11']:5:[4,33,0,11]:TestForObjectSchema:11:0:33:4:DIMX Test:testKeyDIMX9`,
+                        `11\t0\t33\t4\tDIMX Test 9\t5\t['4','33','0','11']\t5\t[4,33,0,11]\tTestForObjectSchema\t11\t0\t33\t4\tDIMX Test\ttestKeyDIMX9`,
+                        `11|0|33|4|DIMX Test 9|5|['4','33','0','11']|5|[4,33,0,11]|TestForObjectSchema|11|0|33|4|DIMX Test|testKeyDIMX9`,
+                        `11&&&0&&&33&&&4&&&DIMX Test 9&&&5&&&['4','33','0','11']&&&5&&&[4,33,0,11]&&&TestForObjectSchema&&&11&&&0&&&33&&&4&&&DIMX Test&&&testKeyDIMX9`,
+                        `11@0@33@4@DIMX Test 9@5@['4','33','0','11']@5@[4,33,0,11]@TestForObjectSchema@11@0@33@4@DIMX Test@testKeyDIMX9`,
+                        `11#0#33#4#DIMX Test 9#5#['4','33','0','11']#5#[4,33,0,11]#TestForObjectSchema#11#0#33#4#DIMX Test#testKeyDIMX9`,
+                        `11$0$33$4$DIMX Test 9$5$['4','33','0','11']$5$[4,33,0,11]$TestForObjectSchema$11$0$33$4$DIMX Test$testKeyDIMX9`,
+                        `11&0&33&4&DIMX Test 9&5&['4','33','0','11']&5&[4,33,0,11]&TestForObjectSchema&11&0&33&4&DIMX Test&testKeyDIMX9`,
+                        `11 0 33 4 "DIMX Test 9" 5 ['4','33','0','11'] 5 [4,33,0,11] TestForObjectSchema 11 0 33 4 "DIMX Test" testKeyDIMX9`,
+                    ];
+
+                    for (let i = 0; i < delimiterArr.length; i++) {
+                        it(`Export From Relation With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                            const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
+                                Format: 'csv',
+                                Delimiter: delimiterArr[i],
+                            });
+
+                            dimxExport = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
+
+                            expect(dimxExport.Status?.ID, JSON.stringify(dimxExport.AuditInfo.ResultObject)).to.equal(
+                                1,
+                            );
+                            const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                                ? 'pfs.staging.pepperi'
+                                : generalService['client'].BaseURL.includes('papi-eu')
+                                ? 'eupfs.pepperi'
+                                : 'pfs.pepperi';
+                            expect(
+                                dimxExport.AuditInfo.ResultObject,
+                                JSON.stringify(dimxExport.AuditInfo.ResultObject),
+                            ).to.include(`https://${testResponseEnvironment}`);
+                            expect(
+                                dimxExport.AuditInfo.ResultObject,
+                                JSON.stringify(dimxExport.AuditInfo.ResultObject),
+                            ).to.include(`.csv`);
+                        });
+
+                        it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                            const relationResponse = await generalService.fetchStatus(
+                                JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                            );
+                            console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject) });
+                            const NewRelationResponseArr =
+                                relationResponse.Body.Text.split('\n').sort(compareByDescription);
+                            expect(
+                                NewRelationResponseArr[1],
+                                JSON.stringify(dimxExport.AuditInfo.ResultObject),
+                            ).to.equal(resultsFirstArr[i]);
+                            expect(
+                                NewRelationResponseArr[10],
+                                JSON.stringify(dimxExport.AuditInfo.ResultObject),
+                            ).to.equal(resultsLastArr[i]);
+                        });
+                    }
+                });
             });
         }
 
@@ -2479,8 +2666,8 @@ const compareByDescription = (a, b) => {
             return 0;
         }
     } else {
-        const numA = Number(a.split(/\DIMX Test /)[1]?.split(',')[0]);
-        const numB = Number(b.split(/\DIMX Test /)[1]?.split(',')[0]);
+        const numA = Number(a.split(/\DIMX Test /)[1]?.split(/^([0-9]+)/)[1]);
+        const numB = Number(b.split(/\DIMX Test /)[1]?.split(/^([0-9]+)/)[1]);
         if (numA < numB) {
             return -1;
         } else if (numA > numB) {
