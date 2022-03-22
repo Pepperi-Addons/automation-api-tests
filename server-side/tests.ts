@@ -44,7 +44,7 @@ import {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
-    DataVisualisationTests,
+    ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,
@@ -762,14 +762,14 @@ export async function distributor(client: Client, request: Request, testerFuncti
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
-export async function data_visualisation(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function charts_manager(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Data_Visualisation';
+    testName = 'Charts_Manager';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        DataVisualisationTests(service, request, testerFunctions),
+        ChartManagerTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
