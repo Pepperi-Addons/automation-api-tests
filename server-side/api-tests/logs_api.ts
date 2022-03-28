@@ -1,32 +1,11 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data-visualisation.service';
+// import { DataVisualisationService } from '../services/data-visualisation.service';
 
 export async function ChartManagerTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataVisualisationService = new DataVisualisationService(generalService);
+    // const dataVisualisationService = new DataVisualisationService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-
-    //#region global variables and helper functions
-    const scriptURI =
-        'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
-
-    function createListOfRandCharts(): Chart[] {
-        const listOfCharts: Chart[] = [];
-        for (let i = 0; i < 5; i++) {
-            const chartToPush: Chart = {
-                Description: `chart-desc-${i}`,
-                Name: generalService.generateRandomString(7),
-                ReadOnly: false,
-                ScriptURI: scriptURI,
-            };
-            listOfCharts.push(chartToPush);
-        }
-        return listOfCharts;
-    }
-
-    const listOfChartsToUpsert: Chart[] = createListOfRandCharts(); // global chart list to use in test
-    //#endregion global variables and helper functions
 
     //#region Upgrade Data Visualisation
     const testData = {
@@ -76,9 +55,6 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             }
         });
 
-        describe('Endpoints', () => {
-            
-        });
-
+        // describe('Endpoints', () => {});
     });
 }
