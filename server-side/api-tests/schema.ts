@@ -1247,10 +1247,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     //Name: 'createSchemaWithTypeCPIMetadata ' + Date(),
                     Name: 'createSchemaWithTypeCPIMetadata' + new Date().getTime(),
                     Type: 'cpi_meta_data',
-                    // Fields: {
-                    //     testString: { Type: 'String' },
-                    //     TestInteger: { Type: 'Integer' },
-                    // },                                             // from build 1.0.119 create fields on cpi_meta_data not supported.
+                    Fields: {
+                        testString: { Type: 'String' },
+                        TestInteger: { Type: 'Integer' },
+                    }, // from build 1.0.119 create fields on cpi_meta_data not supported.from build 1.0.197 we can add fields to cpi_meta_data
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
                     ModificationDateTime: '2020-10-08T10:19:00.677Z',
                 }),
