@@ -31,8 +31,9 @@ export async function ChartManagerTests(generalService: GeneralService, request,
     //#region Upgrade Data Visualisation
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5','' ],
+        'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad','' ],
+        'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5','' ],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -110,8 +111,9 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const chart: Chart = {
                             Description: 'chart-desc-basic',
                             Name: generalService.generateRandomString(7),
-                            ReadOnly: true,
+                            ReadOnly: false,
                             ScriptURI: scriptURI,
+                            Type: "User defined"
                         } as Chart;
                         const chartResponse = await generalService.fetchStatus(`/charts`, {
                             method: 'POST',
@@ -136,6 +138,41 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         ]);
                         expect(chartResponse.Body.ScriptURI).to.include('.js');
                         expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
+                        expect(chartResponse.Body).to.have.own.property('ReadOnly');
+                        expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+                    });
+                    it('Updating An Existing Chart ', async () => {
+                        const allChartsFromServer = await dataVisualisationService.getCharts();
+                        const chartsPostedByMe = allChartsFromServer.filter(chart => chart.Description?.includes("chart-desc-basic") && chart.ReadOnly === false);
+                        const defaultStackedColumnChart = allChartsFromServer.filter(chart => chart.Description === 'Default stacked column');
+                        const chart: Chart = {
+                            Key: chartsPostedByMe[0].Key,
+                            Name: chartsPostedByMe[0].Name,
+                            ScriptURI: defaultStackedColumnChart[0].ScriptURI,
+                        } as Chart;
+                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                            method: 'POST',
+                            body: JSON.stringify(chart),
+                        });
+                        expect(chartResponse.Status).to.equal(200);
+                        expect(chartResponse.Ok).to.be.true;
+                        expect(chartResponse.Body).to.have.own.property('Key');
+                        expect(chartResponse.Body).to.have.own.property('Name');
+                        expect(chartResponse.Body.Name).to.equal(chartsPostedByMe[0].Name);
+                        expect(chartResponse.Body).to.have.own.property('Description');
+                        expect(chartResponse.Body.Description).to.equal(chartsPostedByMe[0].Description);
+                        expect(chartResponse.Body).to.have.own.property('ScriptURI');
+                        expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
+                        expect(chartResponse.Body.ScriptURI).to.not.equal(null);
+                        expect(chartResponse.Body.ScriptURI).to.not.equal('');
+                        expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                            'pfs.pepperi.com',
+                            'cdn.pepperi.com',
+                            'pfs.staging.pepperi.com',
+                            'cdn.staging.pepperi.com',
+                        ]);
+                        expect(chartResponse.Body.ScriptURI).to.include('.js');
+                        expect(chartResponse.Body.ScriptURI).to.include(chartsPostedByMe[0].Name);
                         expect(chartResponse.Body).to.have.own.property('ReadOnly');
                         expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     });
@@ -288,7 +325,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
 
-            // it('POST - upserting a chart with desc as empty string', async () => {
+            // it('POST - upserting a chart with desc as empty string', async () => {=>>>>PFS BUG cannot upsert with empty desc
             //     const chart: Chart = {
             //         Name: generalService.generateRandomString(7),
             //         Description: "",
@@ -319,6 +356,46 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             it('All The Charts Hidden', async () => {
                 await expect(TestCleanUp(dataVisualisationService)).eventually.to.be.above(0);
             });
+            it('Validate After Cleansing Only Deafult Charts Remain', async () => {
+                const jsonDataFromAuditLog = await dataVisualisationService.getCharts();
+                jsonDataFromAuditLog.forEach((jsonChartData) => {
+                    expect(jsonChartData).to.have.own.property('Key');
+                    expect(jsonChartData).to.have.own.property('Name');
+                    expect(jsonChartData.Name).to.be.oneOf([
+                        'Bar',
+                        'Column',
+                        'Line',
+                        'Pie',
+                        'Stacked_bar',
+                        'Stacked_column',
+                    ]);
+                    expect(jsonChartData).to.have.own.property('Description');
+                    expect(jsonChartData.Description).to.be.oneOf([
+                        'Default bar',
+                        'Default Column',
+                        'Default line',
+                        'Default pie',
+                        'Default stacked bar',
+                        'Default stacked column',
+                    ]);
+                    expect(jsonChartData).to.have.own.property('ScriptURI');
+                    expect(jsonChartData.ScriptURI).to.not.equal(undefined);
+                    expect(jsonChartData.ScriptURI).to.not.equal(null);
+                    expect(jsonChartData.ScriptURI).to.not.equal('');
+                    expect(jsonChartData.ScriptURI).to.include.oneOf([
+                        'pfs.pepperi.com',
+                        'cdn.pepperi.com',
+                        'pfs.staging.pepperi.com',
+                        'cdn.staging.pepperi.com',
+                    ]);
+                    expect(jsonChartData.ScriptURI).to.include('.js');
+                    expect(jsonChartData.ScriptURI).to.include(jsonChartData.Name);
+                    expect(jsonChartData).to.have.own.property('ReadOnly');
+                    expect(jsonChartData.ReadOnly).to.be.a('Boolean');
+                    expect(jsonChartData.ReadOnly).to.equal(true);
+
+                });
+            });
         });
     });
 }
@@ -342,3 +419,4 @@ async function TestCleanUp(service: DataVisualisationService) {
     console.log('Hidded Charts: ' + deletedCounter);
     return deletedCounter;
 }
+
