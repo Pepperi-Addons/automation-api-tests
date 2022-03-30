@@ -1260,10 +1260,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         if (
             logcash.createSchemaWithTypeCPIMetadata.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.createSchemaWithTypeCPIMetadata.Hidden == false &&
-            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' //&&
+            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' &&
 
-            // logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
-            // logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String'
+            logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
+            logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String'
         ) {
             logcash.createSchemaWithTypeCPIMetadataStatus = true;
         } else {
