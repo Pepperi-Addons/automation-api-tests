@@ -8,8 +8,8 @@ import {
     WebAppHomePage,
     WebAppList,
     WebAppTopBar,
-    AddonPage,
     WebAppSettingsSidePanel,
+    ObjectTypeEditor,
 } from '../pom/index';
 import addContext from 'mochawesome/addContext';
 import { Key } from 'selenium-webdriver';
@@ -25,7 +25,7 @@ export async function SecurityPolicyTests(email: string, password: string) {
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
@@ -35,7 +35,9 @@ export async function SecurityPolicyTests(email: string, password: string) {
         });
 
         function testDataGetFromFileAtPath(pathOfFileToReadFrom): string {
-            const file = fs.readFileSync(path.resolve(__dirname, pathOfFileToReadFrom));
+            const file = fs.readFileSync(
+                path.resolve(__dirname.replace('\\build\\server-side', ''), pathOfFileToReadFrom),
+            );
             return file.toString();
         }
 
@@ -86,8 +88,6 @@ export async function SecurityPolicyTests(email: string, password: string) {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
 
-                const addonPage = new AddonPage(driver);
-
                 //Remove the new ATD
                 const webAppHeader = new WebAppHeader(driver);
                 await driver.click(webAppHeader.Settings);
@@ -103,7 +103,8 @@ export async function SecurityPolicyTests(email: string, password: string) {
 
                 await webAppList.clickOnLinkFromListRowWebElement();
 
-                await addonPage.editATDField('Custom Transaction Fields', {
+                const cbjectTypeEditor = new ObjectTypeEditor(driver);
+                await cbjectTypeEditor.editATDField('Custom Transaction Fields', {
                     Label: 'Security Policy Fields Test',
                     CalculatedRuleEngine: { JSFormula: _TEST_DATA_TYPE_ARR[type] },
                 });
@@ -113,7 +114,9 @@ export async function SecurityPolicyTests(email: string, password: string) {
                     //Let the fields refresh before trying to find
                     console.log('Wait for fields list to refresh after edit fields');
                     await driver.sleep(6000);
-                    const isVisible = await driver.untilIsVisible(addonPage.AddonContainerATDEditorFieldsAddCustomArr);
+                    const isVisible = await driver.untilIsVisible(
+                        cbjectTypeEditor.AddonContainerATDEditorFieldsAddCustomArr,
+                    );
                     expect(isVisible).to.be.true;
                 } catch (error) {
                     addContext(this, {

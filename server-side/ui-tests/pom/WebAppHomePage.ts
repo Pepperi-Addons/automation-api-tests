@@ -1,46 +1,47 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
 import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import { WebAppAPI } from './WebAppAPI';
+import { Client } from '@pepperi-addons/debug-server/dist';
+import { WebAppPage } from './base/WebAppPage';
 
 chai.use(promised);
 
-export class WebAppHomePage extends Page {
-    constructor(browser: Browser) {
+export class WebAppHomePage extends WebAppPage {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}/HomePage`);
     }
 
     public Main: Locator = By.css('#mainButton');
     public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
+    public HomeScreenSpesificButton: Locator = By.xpath(`//button[@title='|textToFill|']`);
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
-        const buttonsArr = await this.browser.findElements(this.HomeScreenButtonArr);
-        for (let index = 0; index < buttonsArr.length; index++) {
-            const element = buttonsArr[index];
-            if ((await element.getText()) == btnTxt) {
-                await element.click();
-                break;
-            }
-        }
+        await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
         return;
     }
-    public async manualResync(): Promise<void> {
+    public async manualResync(client: Client): Promise<void> {
+        const webAppAPI = new WebAppAPI(this.browser, client);
+        const accessToken = await webAppAPI.getAccessToken();
+        let syncResponse = await webAppAPI.getSyncResponse(accessToken);
+        console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
+        expect(syncResponse.Status).to.equal('UpToDate');
         const webAppList = new WebAppList(this.browser);
-        const webAppHeader = new WebAppHeader(this.browser);
-
         //Resync - Going to Accounts and back to Home Page
         console.log('Wait Before Loading Accounts');
-        await this.browser.sleep(2002);
+        this.browser.sleep(2002);
         await this.clickOnBtn('Accounts');
         await webAppList.validateListRowElements();
-        await this.browser.click(webAppHeader.Home);
-        console.log('Wait On Home Page Before Starting New Transaction');
-        await this.browser.sleep(5005);
-        await this.isSpinnerDone();
+        this.browser.sleep(1500);
+        await this.returnToHomePage();
+        this.browser.sleep(5005);
+        syncResponse = await webAppAPI.getSyncResponse(accessToken);
+        console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
+        expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         return;
     }
 
@@ -53,7 +54,7 @@ export class WebAppHomePage extends Page {
         //Wait 5 seconds and validate there are no dialogs opening up after placing order
         try {
             await expect(this.browser.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
-                'After wait time of: 5000, for selector of pep-dialog .dialog-title, The test must end',
+                `After wait time of: 5000, for selector of 'pep-dialog .dialog-title', The test must end`,
             );
         } catch (error) {
             const base64Image = await this.browser.saveScreenshots();
@@ -76,10 +77,10 @@ export class WebAppHomePage extends Page {
      * This can only be used from HomePage and when HomePage include button that lead to Transaction ATD
      * This will nevigate to the scope_items of a new transaction, deep link "/transactions/scope_items/${newUUID}"
      */
-    public async initiateSalesActivity(name?: string): Promise<void> {
+    public async initiateSalesActivity(nameOfATD?: string, nameOfAccount?: string): Promise<void> {
         //Start New Workflow
-        if (name) {
-            await this.clickOnBtn(name);
+        if (nameOfATD) {
+            await this.clickOnBtn(nameOfATD);
         } else {
             await this.click(this.Main);
         }
@@ -87,14 +88,15 @@ export class WebAppHomePage extends Page {
         //Get to Items
         const webAppList = new WebAppList(this.browser);
         try {
-            await webAppList.clickOnFromListRowWebElement(); //Accounts
+            if (nameOfAccount) await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
+            else await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(this.browser);
             await webAppTopBar.click(webAppTopBar.DoneBtn);
         } catch (error) {
             if (error instanceof Error) {
                 if (
                     !error.message.includes(
-                        'pep-list .table-row-fieldset, The test must end, The element is: undefined',
+                        `'pep-list .table-row-fieldset', The test must end, The element is: undefined`,
                     )
                 ) {
                     throw error;
@@ -119,6 +121,13 @@ export class WebAppHomePage extends Page {
             }
         }
 
+        //This sleep is mandaroy while pop up message of existing order is calculated
+        console.log('Wait for existing orders');
+        this.browser.sleep(2500);
+
+        //Validate nothing is loading before clicking on dialog box
+        await webAppList.isSpinnerDone();
+
         //Validating new order
         const webAppDialog = new WebAppDialog(this.browser);
         await webAppDialog.selectDialogBoxBeforeNewOrder();
@@ -129,6 +138,23 @@ export class WebAppHomePage extends Page {
 
         //Validate nothing is loading before starting to add items to cart
         await webAppList.isSpinnerDone();
+        return;
+    }
+
+    //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
+    public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
+        const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', ATDname);
+        await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
+    }
+
+    public async returnToHomePage(): Promise<void> {
+        //Go To HomePage
+        await this.browser.switchToDefaultContent();
+        const webAppHeader = new WebAppHeader(this.browser);
+        await this.browser.click(webAppHeader.Home);
+        await this.isSpinnerDone();
         return;
     }
 }

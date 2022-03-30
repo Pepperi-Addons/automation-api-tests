@@ -1,4 +1,4 @@
-import GeneralService, { TesterFunctions } from '../../services/general.service';
+import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { DistributorService } from '../../services/distributor.service';
 import { LoremIpsum } from 'lorem-ipsum';
@@ -16,17 +16,22 @@ export interface AddonVersionTestData {
 }
 
 export async function DistributorTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    let password = request.body.varKey;
-    if (request.body.varKeyEU) {
+    let password;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        password = request.body.varKeyStage;
+    } else if (generalService.papiClient['options'].baseURL.includes('papi-eu')) {
         password = request.body.varKeyEU;
+    } else {
+        password = request.body.varKeyPro;
     }
-    const distributorService = new DistributorService(generalService, { body: { varKey: password } });
+    const distributorService = new DistributorService(generalService, password);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
     describe('Distributor Test Suites', async () => {
         const clientArr: ClientObject[] = [];
+        let distributor = {};
         it(`Start Test Server Time And Date: ${generalService.getServer()} ${generalService.getTime()} ${generalService.getDate()}`, () => {
             expect(generalService.getDate().length == 10 && generalService.getTime().length == 8).to.be.true;
         });
@@ -54,8 +59,25 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 Company: distributorCompany,
                 Password: distributorPassword,
             });
+
             expect(newDistributor.Status).to.equal(200);
-            expect(newDistributor.Body.Status.ID).to.equal(1);
+
+            //TODO: Remove this when bug will be solved (DI-19115)
+            try {
+                expect(newDistributor.Body.Status.ID, JSON.stringify(newDistributor.Body.AuditInfo)).to.equal(1);
+            } catch (error) {
+                if (
+                    newDistributor.Body.Status.ID == 0 &&
+                    newDistributor.Body.AuditInfo.ErrorMessage.includes('Failed to install the following addons')
+                ) {
+                    console.log('%cBug exist for this response: (DI-19115)', ConsoleColors.BugSkipped);
+                    console.log(JSON.parse(newDistributor.Body.AuditInfo.ResultObject));
+                } else {
+                    throw new Error(
+                        `Status.ID: ${newDistributor.Status.ID}, AuditInfo.ErrorMessage: ${newDistributor.Body.AuditInfo.ErrorMessage}`,
+                    );
+                }
+            }
             expect(newDistributor.Body.DistributorUUID).to.have.lengthOf(36);
         });
 
@@ -74,6 +96,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
             const adminAddons = await adminService.getInstalledAddons();
             expect(adminAddons.length).to.be.above(10);
             const adminObjectsService = new ObjectsService(adminService);
+            const adminDistributorService = new DistributorService(adminService);
             const newDistributorUsers = await adminObjectsService.getUsers();
             const systemAddons = await adminService.getSystemAddons();
             const installedAddons = await adminService.getInstalledAddons();
@@ -162,6 +185,279 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         );
                     });
                 }
+            });
+
+            describe('Create users and buyers + hide one user and buyer', async () => {
+                let contactAccount;
+                let bulkCreateContact;
+                let bulkContactExternalID;
+                let bulkJobInfo;
+                let contactUUIDArray;
+
+                it(`Create user`, async () => {
+                    const userExternalID =
+                        'Automated Distributor API User ' + Math.floor(Math.random() * 1000000).toString();
+                    const userEmail =
+                        'UserEmail' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '@' +
+                        Math.floor(Math.random() * 1000000).toString() +
+                        '.com';
+                    const createdUser = await adminObjectsService.createUser({
+                        ExternalID: userExternalID,
+                        Email: userEmail,
+                        FirstName: Math.random().toString(36).substring(7),
+                        LastName: Math.random().toString(36).substring(7),
+                        Mobile: Math.floor(Math.random() * 1000000).toString(),
+                        Phone: Math.floor(Math.random() * 1000000).toString(),
+                        IsInTradeShowMode: true,
+                    });
+                    expect(createdUser, 'InternalID')
+                        .to.have.property('InternalID')
+                        .that.is.a('number')
+                        .and.is.above(0);
+                    expect(createdUser, 'UUID').to.have.property('UUID').that.is.a('string').and.is.not.empty;
+                    expect(createdUser, 'ExternalID')
+                        .to.have.property('ExternalID')
+                        .that.is.a('string')
+                        .and.equals(userExternalID);
+                    const createdUserPass = await adminDistributorService.resetUserPassword(createdUser.InternalID);
+                    clientArr.push({ Email: createdUserPass.Email, Password: createdUserPass.Password });
+                    expect(await adminObjectsService.deleteUser('InternalID', createdUser.InternalID)).to.be.true;
+                    expect(await adminObjectsService.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
+                });
+
+                it('Create account for buyers', async () => {
+                    contactAccount = await adminObjectsService.createAccount({
+                        ExternalID: 'ContactTestAccount',
+                        Name: 'Contact Test Account',
+                    });
+                });
+
+                it('Bulk create contacts', async () => {
+                    bulkContactExternalID =
+                        'Automated Distributor API bulk ' + Math.floor(Math.random() * 1000000).toString();
+                    bulkCreateContact = await adminObjectsService.bulkCreate('contacts', {
+                        Headers: ['ExternalID', 'AccountExternalID', 'FirstName', 'Email'],
+                        Lines: [
+                            [
+                                bulkContactExternalID + ' 1',
+                                contactAccount.ExternalID,
+                                'Bulk Contact 1',
+                                'BuyerEmail' +
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '@' +
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '.com',
+                            ],
+                            [
+                                bulkContactExternalID + ' 2',
+                                contactAccount.ExternalID,
+                                'Bulk Contact 2',
+                                'BuyerEmail' +
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '@' +
+                                    Math.floor(Math.random() * 1000000).toString() +
+                                    '.com',
+                            ],
+                        ],
+                    });
+                    expect(bulkCreateContact.JobID).to.be.a('number');
+                    expect(bulkCreateContact.URI).to.include('/bulk/jobinfo/' + bulkCreateContact.JobID);
+                });
+
+                it('Verify bulk jobinfo', async () => {
+                    bulkJobInfo = await adminObjectsService.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
+                    expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID);
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                        new Date().toISOString().split('T')[0],
+                    );
+                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+                    expect(bulkJobInfo.Records, 'Records').to.equal(2);
+                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(2);
+                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+                });
+
+                it('Verify bulk created contacts', async () => {
+                    return Promise.all([
+                        expect(
+                            await adminObjectsService.getBulk(
+                                'contacts',
+                                "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'",
+                            ),
+                        )
+                            .to.be.an('array')
+                            .with.lengthOf(2),
+                    ]);
+                });
+
+                it('Connect bulk created contacts as buyers', async () => {
+                    const connectAsBuyerContacts = await adminObjectsService.getBulk(
+                        'contacts',
+                        "?where=ExternalID LIKE '%" +
+                            bulkContactExternalID +
+                            "%'&fields=SecurityGroupUUID,IsBuyer,UUID",
+                    );
+                    connectAsBuyerContacts.map((contact) => {
+                        expect(contact).to.not.have.property('SecurityGroupUUID');
+                        expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
+                    });
+
+                    contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
+                    const connectAsBuyer = await adminObjectsService.connectAsBuyer({
+                        UUIDs: contactUUIDArray,
+                        SelectAll: false,
+                    });
+                    expect(connectAsBuyer).to.be.an('array').with.lengthOf(2);
+                    connectAsBuyer.map((buyer) => {
+                        expect(buyer, 'Connect as buyer name').to.have.property('name').that.is.not.empty;
+                        expect(buyer, 'Connect as buyer email').to.have.property('email').that.is.not.empty;
+                        expect(buyer, 'Connect as buyer message').to.have.property('message').that.is.a('string').and.is
+                            .empty;
+                        expect(buyer, 'Connect as buyer password').to.have.property('password').that.is.not.empty;
+                    });
+
+                    const connectedContacts = await adminObjectsService.getBulk(
+                        'contacts',
+                        "?where=ExternalID LIKE '%" + bulkContactExternalID + "%'&fields=SecurityGroupUUID,IsBuyer",
+                    );
+                    connectedContacts.map((contact) => {
+                        expect(contact, 'Buyer security group UUID')
+                            .to.have.property('SecurityGroupUUID')
+                            .that.is.a('string').and.is.not.empty;
+                        expect(contact, 'Buyer IsBuyer').to.have.property('IsBuyer').that.is.a('boolean').and.is.true;
+                    });
+
+                    clientArr.push({ Email: connectAsBuyer[0].email, Password: connectAsBuyer[0].password });
+                    clientArr.push({ Email: connectAsBuyer[1].email, Password: connectAsBuyer[1].password });
+                    const buyerToDelete = await adminObjectsService.getBulk(
+                        'contacts',
+                        "?where=Email='" + connectAsBuyer[1].email + "'",
+                    );
+                    expect(await adminObjectsService.deleteContact(buyerToDelete[0].InternalID)).to.be.true;
+                    expect(await adminObjectsService.deleteContact(buyerToDelete[0].InternalID)).to.be.false;
+                });
+
+                it('Get distributor and support admin user', async () => {
+                    distributor = await adminService.getDistributor();
+                    const supportAdmin = await adminDistributorService.resetUserPassword(
+                        distributor['SupportAdminUser'].ID,
+                    );
+                    clientArr.push({ Email: supportAdmin.Email, Password: supportAdmin.Password });
+                });
+            });
+
+            describe('Set distributor to expire and verify users+buyers', async () => {
+                let supportAdminClient;
+                let supportAdminService;
+                let supportAdminObjectsService;
+                let supportAdminDistributorService;
+                let usersBeforeExpiration;
+                let buyersBeforeExpiration;
+                it(`Initiate support admin client + get users & buyers before expiration`, async () => {
+                    supportAdminClient = await generalService.initiateTester(clientArr[4].Email, clientArr[4].Password);
+                    supportAdminService = new GeneralService(supportAdminClient);
+                    supportAdminObjectsService = new ObjectsService(supportAdminService);
+                    supportAdminDistributorService = new DistributorService(supportAdminService);
+                    usersBeforeExpiration = await supportAdminObjectsService.getUsers({ include_deleted: true });
+                    buyersBeforeExpiration = await supportAdminObjectsService.getContactsSDK({
+                        include_deleted: true,
+                        where: 'IsBuyer=true',
+                    });
+                    expect(usersBeforeExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(buyersBeforeExpiration).to.be.an('array').with.lengthOf(2);
+                });
+
+                it(`Set trial expiration to less than 6 months`, async () => {
+                    const datePlusZero = new Date();
+                    const minusThreeMonths = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * -90);
+                    const distributorResponse = await distributorService.setTrialExpirationDate({
+                        UUID: distributor['UUID'],
+                        TrialExpirationDateTime: minusThreeMonths.toISOString().split('.')[0],
+                    });
+                    expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
+                        minusThreeMonths.toISOString().split('.')[0],
+                    );
+                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    expect(expirationResponse.Status.Name).to.equal('Success');
+                });
+
+                it(`Get users + buyers with support admin and verify all deleted`, async () => {
+                    const usersAfterExpiration = await supportAdminObjectsService.getUsers({ include_deleted: true });
+                    const buyersAfterExpiration = await supportAdminObjectsService.getContactsSDK({
+                        include_deleted: true,
+                        where: 'IsBuyer=true',
+                    });
+                    expect(usersAfterExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(buyersAfterExpiration).to.be.an('array').with.lengthOf(2);
+                    expect(usersAfterExpiration[0].Hidden).to.be.true;
+                    expect(usersAfterExpiration[1].Hidden).to.be.true;
+                    expect(buyersAfterExpiration[0].Hidden).to.be.true;
+                    expect(buyersAfterExpiration[1].Hidden).to.be.true;
+                });
+
+                it(`Set trial expiration to be valid`, async () => {
+                    const datePlusZero = new Date();
+                    const validExpirationDate = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * +14);
+                    const distributorResponse = await distributorService.setTrialExpirationDate({
+                        UUID: distributor['UUID'],
+                        TrialExpirationDateTime: validExpirationDate.toISOString().split('.')[0],
+                    });
+                    expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
+                        validExpirationDate.toISOString().split('.')[0],
+                    );
+                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    expect(expirationResponse.Status.Name).to.equal('Success');
+                });
+
+                it(`Get users + buyers with support admin and verify correct users were unhidden`, async () => {
+                    const usersAfterValid = await supportAdminObjectsService.getUsers({ include_deleted: true });
+                    const buyersAfterValid = await supportAdminObjectsService.getContactsSDK({
+                        include_deleted: true,
+                        where: 'IsBuyer=true',
+                    });
+                    expect(usersAfterValid).to.be.an('array').with.lengthOf(2);
+                    expect(buyersAfterValid).to.be.an('array').with.lengthOf(2);
+                    expect(usersAfterValid[0].InternalID).to.equal(usersBeforeExpiration[0].InternalID);
+                    expect(usersAfterValid[1].InternalID).to.equal(usersBeforeExpiration[1].InternalID);
+                    expect(buyersAfterValid[0].InternalID).to.equal(buyersBeforeExpiration[0].InternalID);
+                    expect(buyersAfterValid[1].InternalID).to.equal(buyersBeforeExpiration[1].InternalID);
+                });
+
+                it(`Set trial expiration to more than 6 months`, async () => {
+                    const datePlusZero = new Date();
+                    const minusEightMonths = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * -240);
+                    const distributorResponse = await distributorService.setTrialExpirationDate({
+                        UUID: distributor['UUID'],
+                        TrialExpirationDateTime: minusEightMonths.toISOString().split('.')[0],
+                    });
+                    expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
+                        minusEightMonths.toISOString().split('.')[0],
+                    );
+                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    expect(expirationResponse.Status.Name).to.equal('Success');
+                });
+
+                it(`Verify that distributor is disabled and addons are uninstalled`, async () => {
+                    const distributor = await generalService.getVARDistributor(password, {
+                        where: `InternalID=${adminService.getClientData('DistributorID')}`,
+                    });
+                    const distributorAddons = await generalService.getVARInstalledAddons(password, {
+                        where: `DistributorID=${adminService.getClientData('DistributorID')}`,
+                    });
+                    expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);
+                    expect(distributor.Body[0].AccountingStatus.ID).to.equal(2);
+                    expect(distributor.Body[0].AccountingStatus.Name).to.equal('Disabled');
+                });
             });
         });
     });

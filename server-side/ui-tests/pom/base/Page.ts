@@ -1,6 +1,9 @@
 import { Browser } from '../../utilities/browser';
 import { Locator, By, WebElement } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
+import fs from 'fs';
+import path from 'path';
+import { ConsoleColors } from '../../../services/general.service';
 
 export abstract class Page {
     private url: string;
@@ -33,7 +36,7 @@ export abstract class Page {
 
     public async isSpinnerDone(): Promise<boolean> {
         const isHidden = [false, false];
-        console.log('Verify Spinner Status');
+        console.log('%cVerify Spinner Status', ConsoleColors.PageMessage);
         let loadingCounter = 0;
         do {
             const hiddenEl_1 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000, false);
@@ -56,12 +59,29 @@ export abstract class Page {
      */
     public async collectEndTestData(that): Promise<void> {
         if (that.currentTest.state != 'passed') {
-            const base64Image = await this.browser.saveScreenshots();
-            const url = await this.browser.getCurrentUrl();
-            //Wait for all the logs to be printed (this usually take more then 3 seconds)
-            console.log('Test Failed');
-            this.browser.sleep(6006);
-            const consoleLogs = await this.browser.getConsoleLogs();
+            console.log('%cTest Failed', ConsoleColors.Error);
+            const imagePath = `${__dirname.split('server-side')[0]}server-side\\api-tests\\test-data\\Error_Image.jpg`;
+            const file = fs.readFileSync(path.resolve(imagePath));
+            let base64Image = file.toString('base64');
+            let url = 'Error In Getting URL';
+            let consoleLogs = ['Error In Console Logs'];
+            try {
+                base64Image = await this.browser.saveScreenshots();
+            } catch (error) {
+                console.log(`%cError in collectEndTestData saveScreenshots: ${error}`, ConsoleColors.Error);
+            }
+            try {
+                url = await this.browser.getCurrentUrl();
+            } catch (error) {
+                console.log(`%cError in collectEndTestData getCurrentUrl: ${error}`, ConsoleColors.Error);
+            }
+            try {
+                //Wait for all the logs to be printed (this usually take more then 3 seconds)
+                this.browser.sleep(6006);
+                consoleLogs = await this.browser.getConsoleLogs();
+            } catch (error) {
+                console.log(`%cError in collectEndTestData getConsoleLogs: ${error}`, ConsoleColors.Error);
+            }
             addContext(that, {
                 title: 'URL',
                 value: url,
@@ -74,6 +94,10 @@ export abstract class Page {
                 title: 'Console Logs',
                 value: consoleLogs,
             });
+        } else if (that.currentTest.state == 'passed') {
+            console.log('%cTest Passed', ConsoleColors.Success);
+        } else {
+            console.log(`%cTest Ended With State: ${that.currentTest.state}`, ConsoleColors.Information);
         }
         return;
     }

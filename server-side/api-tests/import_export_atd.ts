@@ -18,6 +18,7 @@ let isTransactionsTestsOverrideWinzerFirst = false;
 let isTransactionsTestsOverrideWinzerSecond = false;
 let isTransactionsTestsOverrideWinzerTheird = false;
 let isLocalFilesComparison = false;
+let isTransactionsTestsBugReproduce = false;
 
 // All Import Export ATD Tests
 export async function ImportExportATDActivitiesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -31,6 +32,7 @@ export async function ImportExportATDActivitiesTests(generalService: GeneralServ
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -49,6 +51,7 @@ export async function ImportExportATDTransactionsTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -67,6 +70,7 @@ export async function ImportExportATDActivitiesBoxTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -85,6 +89,7 @@ export async function ImportExportATDTransactionsBoxTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -103,6 +108,7 @@ export async function ImportExportATDActivitiesOverrideTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -121,6 +127,7 @@ export async function ImportExportATDTransactionsOverrideTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -139,6 +146,7 @@ export async function ImportExportATDTransactionsOverrideWinzerTests(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -157,6 +165,7 @@ export async function ImportExportATDTransactionsOverrideWinzerTestsTwo(
     isTransactionsTestsOverrideWinzerSecond = true;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -175,6 +184,26 @@ export async function ImportExportATDTransactionsOverrideWinzerTestsThree(
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = true;
     isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = false;
+    await ImportExportATDTests(generalService, request, tester);
+}
+
+export async function ImportExportATDTransactionsOverridBugReproductionTests(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    isActivitiesTests = false;
+    isTransactionsTests = false;
+    isActivitiesTestsBox = false;
+    isTransactionsTestsBox = false;
+    isActivitiesTestsOverride = false;
+    isTransactionsTestsOverrideBase = false;
+    isTransactionsTestsOverrideWinzerFirst = false;
+    isTransactionsTestsOverrideWinzerSecond = false;
+    isTransactionsTestsOverrideWinzerTheird = false;
+    isLocalFilesComparison = false;
+    isTransactionsTestsBugReproduce = true;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -189,6 +218,7 @@ export async function ImportExportATDLocalTests(generalService: GeneralService, 
     isTransactionsTestsOverrideWinzerSecond = false;
     isTransactionsTestsOverrideWinzerTheird = false;
     isLocalFilesComparison = true;
+    isTransactionsTestsBugReproduce = false;
     await ImportExportATDTests(generalService, request, tester);
 }
 
@@ -214,13 +244,19 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     //#region Upgrade ImportExportATD and Data Views API
     const testData = {
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
-        ImportExportATD: ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
+        'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
         'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //This changed to run only on Phased version at 28-06-2021 since Version 1.1.180 won't pass tests without known reason.
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false); // false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false); // false);
     //#endregion Upgrade ImportExportATD and Data Views API
 
     //Clean the ATD and UDT from failed tests before starting a new test
@@ -273,7 +309,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
         !isLocalFilesComparison &&
         !isTransactionsTestsOverrideWinzerFirst &&
         !isTransactionsTestsOverrideWinzerSecond &&
-        !isTransactionsTestsOverrideWinzerTheird
+        !isTransactionsTestsOverrideWinzerTheird &&
+        !isTransactionsTestsBugReproduce
     ) {
         testDataPostUDT = await importExportATDService.postUDT({
             TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
@@ -465,9 +502,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             'Description of Test ATD',
                         );
                         tempATD.Icon = 'icon1';
-                        return expect(
-                            importExportATDService.postTransactionsATD(tempATD),
-                        ).eventually.to.be.rejectedWith(
+                        await expect(importExportATDService.postTransactionsATD(tempATD)).eventually.to.be.rejectedWith(
                             'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Icon for activity type definition must be with the following format: `icon(number between 2-25)`',
                         );
                     });
@@ -617,17 +652,17 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                     it('Get Deleted UDT (DI-17251)', async () => {
                         await importExportATDService.deleteUDT(testDataPostUDT.TableID);
-                        return expect(
+                        await expect(
                             importExportATDService.getUDT(testDataPostUDT.TableID),
                         ).eventually.to.have.property('TableID');
                     });
 
                     it('Delete Deleted UDT (DI-17265)', async () => {
-                        return expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be.false;
+                        await expect(importExportATDService.deleteUDT(testDataPostUDT.TableID)).eventually.to.be.false;
                     });
 
                     it('Delete Non Existing UDT (DI-17265)', async () => {
-                        return expect(
+                        await expect(
                             importExportATDService.deleteUDT('Non Existing UDT 1234'),
                         ).eventually.to.be.rejectedWith(
                             `failed with status: 404 - Not Found error: {"fault":{"faultstring":"User defined table: Non Existing UDT 1234 doesn't exist.`,
@@ -641,7 +676,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             TableID: testDataPostUDT.TableID,
                             Hidden: false,
                         });
-                        return expect(importExportATDService.getUDT(testDataPostUDT.TableID))
+                        await expect(importExportATDService.getUDT(testDataPostUDT.TableID))
                             .eventually.to.have.property('Hidden')
                             .a('boolean').that.is.false;
                     });
@@ -671,7 +706,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     });
 
                     it('Correct Error Message for MainKeyType (DI-17269)', async () => {
-                        return expect(
+                        await expect(
                             importExportATDService.postUDT({
                                 TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
                                 MainKeyType: { ID: 1, Name: '' },
@@ -684,7 +719,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     });
 
                     it('Correct Error Message for SecondaryKeyType (DI-17332)', async () => {
-                        return expect(
+                        await expect(
                             importExportATDService.postUDT({
                                 TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
                                 MainKeyType: { ID: 35, Name: '' },
@@ -697,7 +732,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                     });
 
                     it('Correct Error Message for Same MemoryMode Types true (DI-17271)', async () => {
-                        return expect(
+                        await expect(
                             importExportATDService.postUDT({
                                 TableID: `Test UDT ${Math.floor(Math.random() * 1000000).toString()}`,
                                 MainKeyType: { ID: 0, Name: '' },
@@ -1911,17 +1946,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             !isLocalFilesComparison &&
             !isTransactionsTestsOverrideWinzerFirst &&
             !isTransactionsTestsOverrideWinzerSecond &&
-            !isTransactionsTestsOverrideWinzerTheird
+            !isTransactionsTestsOverrideWinzerTheird &&
+            !isTransactionsTestsBugReproduce
         ) {
             describe('Test Clean up', () => {
                 it('Make sure an ATD removed in the end of the tests', async () => {
                     //Make sure an ATD removed in the end of the tests
-                    return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
+                    await expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
                 });
 
                 it('Make sure an UDT removed in the end of the tests', async () => {
                     //Make sure an ATD removed in the end of the tests
-                    return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
+                    await expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
                 });
             });
         }
@@ -1930,7 +1966,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             isTransactionsTestsOverrideBase ||
             isTransactionsTestsOverrideWinzerFirst ||
             isTransactionsTestsOverrideWinzerSecond ||
-            isTransactionsTestsOverrideWinzerTheird
+            isTransactionsTestsOverrideWinzerTheird ||
+            isTransactionsTestsBugReproduce
         ) {
             let TransactionsATDArr;
             if (isTransactionsTestsOverrideBase) {
@@ -2100,6 +2137,19 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         MimeType: 'application/json',
                         Title: 'Sales Order DEV V3',
                         URL: 'https://eucdn.pepperi.com/30010075/CustomizationFile/bfd1b6c1-62a1-4b5f-958f-bbc95991a087/Sales_Order_DEV_V3_1_1_176.json',
+                    },
+                ];
+            }
+            if (isTransactionsTestsBugReproduce) {
+                TransactionsATDArr = [
+                    //Production - S3
+                    {
+                        InternalID: 369260,
+                        Description: 'Exported from Sandbox (DI-18750) in 27.12.2021',
+                        FileName: 'Test Email ATD_1_1_214.json',
+                        MimeType: 'application/json',
+                        Title: 'Test Email ATD - 1.1.214 (DI-18750)',
+                        URL: 'https://cdn.pepperi.com/30013064/CustomizationFile/7e104198-7bee-4fa5-989a-0957402c2442/Test Email ATD_1_1_214.json',
                     },
                 ];
             }
@@ -3049,11 +3099,11 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
             // describe('Test Activities Override', () => {
             //     it('Make sure an ATD removed in the end of the tests', async () => {
             //         //Make sure an ATD removed in the end of the tests
-            //         return expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
+            //         await expect(TestCleanUpATD(importExportATDService)).eventually.to.be.above(0);
             //     });
             //     it('Make sure an UDT removed in the end of the tests', async () => {
             //         //Make sure an ATD removed in the end of the tests
-            //         return expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
+            //         await expect(TestCleanUpUDT(importExportATDService)).eventually.to.be.above(0);
             //     });
             // });
         }
@@ -3221,6 +3271,17 @@ function RemoveUntestedMembers(testedObject) {
                 if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue.HTML_FILE_ID) {
                     delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
                         .HTML_FILE_ID;
+                }
+                if (
+                    testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailSubjectFileID
+                ) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailSubjectFileID;
+                }
+                if (testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue.EmailBodyID) {
+                    delete testedObject.Workflow.WorkflowObject.WorkflowTransitions[j].Actions[index].KeyValue
+                        .EmailBodyID;
                 }
             }
         }

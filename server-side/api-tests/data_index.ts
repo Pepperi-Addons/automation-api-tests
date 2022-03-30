@@ -177,11 +177,17 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //#region Upgrade Data Index
     const testData = {
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-        'Pepperi Elastic Search': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Index
 
     // var date = new Date();

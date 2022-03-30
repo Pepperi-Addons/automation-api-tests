@@ -15,6 +15,10 @@ export class ADALService {
         return this.papiClient.addons.data.uuid(addonUUID).table(tableName).upsert(addonData);
     }
 
+    postBatchDataToSchema(addonUUID: string, tableName: string, addonData: AddonData[]) {
+        return this.papiClient.post(`/addons/data/batch/${addonUUID}/${tableName}`, { Objects: addonData });
+    }
+
     deleteSchema(tableName: string) {
         return this.papiClient.post(`/addons/data/schemes/${tableName}/purge`);
     }

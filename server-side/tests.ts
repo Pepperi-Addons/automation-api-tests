@@ -1,60 +1,50 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import tester from './tester';
 import GeneralService, { TesterFunctions } from './services/general.service';
-
-//#region Service Tests
-import { TestDataTests } from './api-tests/test-service/test_data';
-import { UpgradeDependenciesTests } from './api-tests/test-service/upgrade_dependencies';
-//#endregion Service Tests
-
-//#region All Tests
-import { FileStorageTests } from './api-tests/objects/file_storage';
-import { DataViewsTestsBase, DataViewsTestsPositive, DataViewsTestsNegative } from './api-tests/objects/data_views';
-import { FieldsTests } from './api-tests/objects/fields';
-import { SyncLongTests, SyncTests, SyncWithBigDataTests, SyncCleanTests } from './api-tests/sync';
-//#endregion All Tests
-
-//#region Old Framwork Tests
 import {
+    TestDataTests,
+    UpgradeDependenciesTests,
+    LocalAddonFileCreatorTests,
+    FileStorageTests,
+    DataViewsTestsBase,
+    DataViewsTestsPositive,
+    DataViewsTestsNegative,
+    FieldsTests,
+    SyncLongTests,
+    SyncTests,
+    SyncWithBigDataTests,
+    SyncCleanTests,
+    PagesTestSuite,
     BaseAddonsTests,
     UninstallAddonsTests,
     SingleMaintenanceAndDependenciesAddonsTests,
     MaintenanceFullTests,
-} from './api-tests/addons';
-import { VarTests, CreateTestDataAddon } from './api-tests/var';
-import { AuditLogsTests } from './api-tests/audit_logs';
-//#endregion Old Framwork Tests
-
-//#region Oleg's Framwork Tests
-import { DBSchemaTests } from './api-tests/schema';
-import { BatchUpsertTests } from './api-tests/batch_upsert';
-import { SchedulerTests } from './api-tests/code-jobs/scheduler';
-import { CodeJobsTests } from './api-tests/code-jobs/code_jobs';
-import { InstallTests } from './api-tests/code-jobs/install';
-import { CodeJobsRetryTests } from './api-tests/code-jobs/code_jobs_retry';
-import { CodeJobsAddonTests } from './api-tests/code-jobs/code_jobs_addon';
-import { AddonRelationTests } from './api-tests/addon_relation';
-import { UsageMonitorTests } from './api-tests/usage_monitor';
-//#endregion Oleg's Framwork Tests
-
-//#region Yoni's Tests
-import { UDTTests } from './api-tests/objects/udt';
-import { UsersTests } from './api-tests/objects/users';
-import { AccountsTests } from './api-tests/objects/accounts';
-import { BulkBigDataTests } from './api-tests/objects/bulk_big_data';
-import { ContactsTests } from './api-tests/objects/contacts';
-import { GeneralActivitiesTests } from './api-tests/objects/general_activities';
-import { TransactionTests } from './api-tests/objects/transactions';
-import { ElasticSearchTests } from './api-tests/elastic_search';
-import { OpenCatalogTests } from './api-tests/open_catalog';
-import { DistributorTests } from './api-tests/objects/distributor';
-//#endregion Yoni's Tests
-
-//#region Evgeny's Tests
-import { ChartsManagerTests } from './api-tests/charts_manager';
-//#endregion Evgenys's Tests
-
-import {
+    VarTests,
+    CreateTestDataAddon,
+    AuditLogsTests,
+    AddonAuditLogsTests,
+    AddonAsyncExecutionTests,
+    DBSchemaTests,
+    BatchUpsertTests,
+    DimxDataImportTests,
+    SchedulerTests,
+    TimeOutAddonJobsTests,
+    AddonJobsTests,
+    InstallTests,
+    CodeJobsRetryTests,
+    CodeJobsAddonTests,
+    AddonRelationTests,
+    UsageMonitorTests,
+    UDTTests,
+    UsersTests,
+    AccountsTests,
+    BulkBigDataTests,
+    ContactsTests,
+    GeneralActivitiesTests,
+    TransactionTests,
+    ElasticSearchTests,
+    OpenCatalogTests,
+    DistributorTests,
+    ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,
@@ -65,17 +55,23 @@ import {
     ImportExportATDTransactionsOverrideWinzerTestsTwo,
     ImportExportATDTransactionsOverrideWinzerTestsThree,
     ImportExportATDLocalTests,
-} from './api-tests/import_export_atd';
-import { ADALTests } from './api-tests/adal';
-import { PepperiNotificationServiceTests } from './api-tests/pepperi_notification_service';
-import { NucRecoveryTests, NucRecoverySDKTests, NucRecoveryWACDTests } from './api-tests/nuc_recovery';
-import { DataIndexTests } from './api-tests/data_index';
-import { CPINodeTests } from './api-tests/cpi_node';
-import { CodeJobsCleanTests } from './api-tests/code-jobs/code_jobs_clean';
-import { VarSystemAddonsTests } from './api-tests/var_system_addons';
+    ImportExportATDTransactionsOverridBugReproductionTests,
+    ADALTests,
+    PepperiNotificationServiceTests,
+    NucRecoveryTests,
+    NucRecoverySDKTests,
+    NucRecoveryWACDTests,
+    CPINodeTests,
+    DataIndexTests,
+    MaintenanceJobTests,
+    CodeJobsCleanTests,
+    VarSystemAddonsTests,
+    AddonDataImportExportTests,
+    AddonDataImportExportPerformanceTests,
+    ADALStressTests,
+} from './api-tests/index';
 
 let testName = '';
-let testEnvironment = '';
 
 //#region Service Tests
 export async function test_data(client: Client, testerFunctions: TesterFunctions) {
@@ -83,18 +79,7 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
     if (testName == '') {
         testName = 'Test_Data';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([await test_data(client, testerFunctions)]).then(() =>
             testerFunctions.run(),
         );
@@ -110,21 +95,23 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     const service = new GeneralService(client);
     testName = 'Upgrade_Dependencies';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UpgradeDependenciesTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function upload_local_file(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Local_Addon_File_Creator_Tests';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        LocalAddonFileCreatorTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -134,13 +121,8 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
 //#region All Tests
 export async function all(client: Client, testerFunctions: TesterFunctions) {
     testName = 'All';
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = { describe, expect, it, run };
+    const service = new GeneralService(client);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         sync(client, testerFunctions),
@@ -156,18 +138,7 @@ export async function file_storage(client: Client, testerFunctions: TesterFuncti
     if (testName != 'File_Storage' && testName != 'All') {
         testName = 'File_Storage';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             FileStorageTests(service, testerFunctions),
@@ -185,18 +156,7 @@ export async function data_views(client: Client, testerFunctions: TesterFunction
     if (testName != 'Data_Views' && testName != 'All' && testName != 'Sanity') {
         testName = 'Data_Views';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             DataViewsTestsBase(service, testerFunctions),
@@ -214,18 +174,7 @@ export async function data_views_positive(client: Client, testerFunctions: Teste
     if (testName != 'Data_Views_Positive' && testName != 'All' && testName != 'Sanity') {
         testName = 'Data_Views_Positive';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             DataViewsTestsPositive(service, testerFunctions),
@@ -243,18 +192,7 @@ export async function data_views_negative(client: Client, testerFunctions: Teste
     if (testName != 'Data_Views_Negative' && testName != 'All' && testName != 'Sanity') {
         testName = 'Data_Views_Negative';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             DataViewsTestsNegative(service, testerFunctions),
@@ -272,18 +210,7 @@ export async function fields(client: Client, testerFunctions: TesterFunctions) {
     if (testName != 'Fields' && testName != 'All' && testName != 'Sanity') {
         testName = 'Fields';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             FieldsTests(service, testerFunctions),
@@ -301,18 +228,7 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
     if (testName != 'Sync' && testName != 'All' && testName != 'Sanity') {
         testName = 'Sync';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             SyncLongTests(service, testerFunctions),
@@ -329,18 +245,7 @@ export async function sync_big_data(client: Client, testerFunctions: TesterFunct
     const service = new GeneralService(client);
     testName = 'Sync_Big_Data';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         SyncWithBigDataTests(service, testerFunctions),
@@ -354,18 +259,7 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     const service = new GeneralService(client);
     testName = 'Sync_Clean';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         SyncCleanTests(service, testerFunctions),
@@ -375,6 +269,25 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     return testResult;
 }
 //#endregion All Tests
+export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    // service.papiClient = new PapiClient({
+    //     baseURL: client.BaseURL,
+    //     token: client.OAuthAccessToken,
+    //     addonUUID: client.AddonUUID.length > 10 ? client.AddonUUID : 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+    //     addonSecretKey: client.AddonSecretKey,
+    //     suppressLogging: true
+    // });
+    testName = 'Pages_Api';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        PagesTestSuite(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
 
 //#region Old Framwork Tests
 export async function audit_logs(client: Client, testerFunctions: TesterFunctions) {
@@ -382,25 +295,8 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
     if (testName != 'Audit_Logs' && testName != 'Sanity') {
         testName = 'Audit_Logs';
         service.PrintMemoryUseToLog('Start', testName);
-        testEnvironment = client.BaseURL.includes('staging')
-            ? 'Sandbox'
-            : client.BaseURL.includes('papi-eu')
-            ? 'Production-EU'
-            : 'Production';
-        const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-            client,
-            testName,
-            testEnvironment,
-        );
-        testerFunctions = {
-            describe,
-            expect,
-            it,
-            run,
-            setNewTestHeadline,
-            addTestResultUnderHeadline,
-            printTestResults,
-        };
+        testerFunctions = service.initiateTesterFunctions(client, testName);
+
         const testResult = await Promise.all([
             await test_data(client, testerFunctions),
             AuditLogsTests(service, testerFunctions),
@@ -413,29 +309,44 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
     }
 }
 
+export async function addon_audit_logs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    if (testName != 'Addon_Audit_Logs' && testName != 'Sanity') {
+        testName = 'Addon_Audit_Logs';
+        service.PrintMemoryUseToLog('Start', testName);
+        testerFunctions = service.initiateTesterFunctions(client, testName);
+
+        const testResult = await Promise.all([
+            await test_data(client, testerFunctions),
+            AddonAuditLogsTests(service, testerFunctions),
+        ]).then(() => testerFunctions.run());
+        service.PrintMemoryUseToLog('End', testName);
+        testName = '';
+        return testResult;
+    } else {
+        return AddonAuditLogsTests(service, testerFunctions);
+    }
+}
+
+export async function addon_async_execution(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Async_Execution';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonAsyncExecutionTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    testName = '';
+    return testResult;
+}
+
 export async function var_api(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Var';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-        setNewTestHeadline,
-        addTestResultUnderHeadline,
-        printTestResults,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         VarTests(service, request, testerFunctions),
@@ -448,13 +359,7 @@ export async function var_system_addons(client: Client, request: Request, tester
     const service = new GeneralService(client);
     testName = 'Var System Addons';
     service.PrintMemoryUseToLog('Start', testName);
-    const { describe, expect, it, run } = tester(client, testName, 'Production/Stage');
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([VarSystemAddonsTests(service, request, testerFunctions)]).then(() =>
         testerFunctions.run(),
     );
@@ -466,25 +371,7 @@ export async function create_test_data_addon(client: Client, request: Request, t
     const service = new GeneralService(client);
     testName = 'Create_Test_Data_Addon';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-        setNewTestHeadline,
-        addTestResultUnderHeadline,
-        printTestResults,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CreateTestDataAddon(service, request, testerFunctions),
@@ -497,25 +384,7 @@ export async function addons(client: Client, request: Request, testerFunctions: 
     const service = new GeneralService(client);
     testName = 'Addons';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-        setNewTestHeadline,
-        addTestResultUnderHeadline,
-        printTestResults,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         BaseAddonsTests(service, request, testerFunctions),
@@ -528,25 +397,7 @@ export async function addons_uninstall(client: Client, request: Request, testerF
     const service = new GeneralService(client);
     testName = 'Addons_Uninstall';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-        setNewTestHeadline,
-        addTestResultUnderHeadline,
-        printTestResults,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UninstallAddonsTests(service, request, testerFunctions),
@@ -559,25 +410,7 @@ export async function maintenance(client: Client, request: Request, testerFuncti
     const service = new GeneralService(client);
     testName = 'Maintenance_and_Dependencies';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-        setNewTestHeadline,
-        addTestResultUnderHeadline,
-        printTestResults,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         SingleMaintenanceAndDependenciesAddonsTests(service, request, testerFunctions),
@@ -590,25 +423,7 @@ export async function maintenance_full(client: Client, request: Request, testerF
     const service = new GeneralService(client);
     testName = 'Maintenance_Full';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } = tester(
-        client,
-        testName,
-        testEnvironment,
-    );
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-        setNewTestHeadline,
-        addTestResultUnderHeadline,
-        printTestResults,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         MaintenanceFullTests(service, request, testerFunctions),
@@ -623,19 +438,7 @@ export async function schema(client: Client, request: Request, testerFunctions: 
     const service = new GeneralService(client);
     testName = 'Schema';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         DBSchemaTests(service, request, testerFunctions),
@@ -648,22 +451,23 @@ export async function batch_upsert(client: Client, request: Request, testerFunct
     const service = new GeneralService(client);
     testName = 'Batch_Upsert';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         BatchUpsertTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function dimx_data_import(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Batch_Upsert';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DimxDataImportTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -673,23 +477,21 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
     const service = new GeneralService(client);
     testName = 'Scheduler';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    // let testResult;
+    //TODO: Run new SchedulerTests on Stage and old SchedulerTests on other
+    //TODO: If tests pass on 13/03/2022 remove these comments
+    // if (client.BaseURL.includes('staging')) {
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         SchedulerTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
+    // } else {
+    //     testResult = await Promise.all([
+    //         await test_data(client, testerFunctions),
+    //         SchedulerTestsOld(service, testerFunctions),
+    //     ]).then(() => testerFunctions.run());
+    // }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -698,22 +500,46 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
     const service = new GeneralService(client);
     testName = 'Code_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    // let testResult;
+    //TODO: Remove the code_jobs endpoint from Jenkins, This test was removed from Stage: "CodeJobsTests", This test was added for now: "AddonJobsTests"
+    //TODO: If tests pass on 13/03/2022 remove these comments
+    // if (client.BaseURL.includes('staging')) {
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        CodeJobsTests(service, testerFunctions),
+        AddonJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    // } else {
+    //     testResult = await Promise.all([
+    //         await test_data(client, testerFunctions),
+    //         CodeJobsTests(service, testerFunctions),
+    //     ]).then(() => testerFunctions.run());
+    // }
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Jobs';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function timeout_addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'TimeOut_Addon_Jobs';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        TimeOutAddonJobsTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -723,19 +549,7 @@ export async function install(client: Client, testerFunctions: TesterFunctions) 
     const service = new GeneralService(client);
     testName = 'Install';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         InstallTests(service, testerFunctions),
@@ -748,19 +562,7 @@ export async function code_jobs_addon(client: Client, testerFunctions: TesterFun
     const service = new GeneralService(client);
     testName = 'Code_Jobs_Addon';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsAddonTests(service, testerFunctions),
@@ -773,19 +575,7 @@ export async function code_jobs_retry(client: Client, testerFunctions: TesterFun
     const service = new GeneralService(client);
     testName = 'Code_Jobs_Retry';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsRetryTests(service, testerFunctions),
@@ -798,18 +588,7 @@ export async function addon_relations(client: Client, request: Request, testerFu
     const service = new GeneralService(client);
     testName = 'Relations';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonRelationTests(service, request, testerFunctions),
@@ -822,18 +601,7 @@ export async function usage_monitor(client: Client, request: Request, testerFunc
     const service = new GeneralService(client);
     testName = 'Usage_Monitor';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UsageMonitorTests(service, request, testerFunctions),
@@ -848,18 +616,7 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
     const service = new GeneralService(client);
     testName = 'Objects';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UDTTests(service, testerFunctions),
@@ -877,18 +634,7 @@ export async function udt(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'UDT';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UDTTests(service, testerFunctions),
@@ -901,18 +647,7 @@ export async function users(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Users';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         UsersTests(service, testerFunctions),
@@ -925,18 +660,7 @@ export async function accounts(client: Client, testerFunctions: TesterFunctions)
     const service = new GeneralService(client);
     testName = 'Accounts';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AccountsTests(service, testerFunctions),
@@ -949,18 +673,7 @@ export async function bulk_big_data(client: Client, testerFunctions: TesterFunct
     const service = new GeneralService(client);
     testName = 'Bulk_Big_Data';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         BulkBigDataTests(service, testerFunctions),
@@ -973,18 +686,7 @@ export async function contacts(client: Client, testerFunctions: TesterFunctions)
     const service = new GeneralService(client);
     testName = 'Contacts';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ContactsTests(service, testerFunctions),
@@ -997,18 +699,7 @@ export async function general_activities(client: Client, testerFunctions: Tester
     const service = new GeneralService(client);
     testName = 'General_Activities';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         GeneralActivitiesTests(service, testerFunctions),
@@ -1021,18 +712,7 @@ export async function transactions(client: Client, testerFunctions: TesterFuncti
     const service = new GeneralService(client);
     testName = 'Transactions';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         TransactionTests(service, testerFunctions),
@@ -1045,18 +725,7 @@ export async function elastic_search(client: Client, request: Request, testerFun
     const service = new GeneralService(client);
     testName = 'Elastic_Search';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ElasticSearchTests(service, request, testerFunctions),
@@ -1069,18 +738,7 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     const service = new GeneralService(client);
     testName = 'Open_Catalog';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         OpenCatalogTests(service, testerFunctions),
@@ -1094,18 +752,7 @@ export async function distributor(client: Client, request: Request, testerFuncti
     const service = new GeneralService(client);
     testName = 'Distributor';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([DistributorTests(service, request, testerFunctions)]).then(() =>
         testerFunctions.run(),
     );
@@ -1119,21 +766,10 @@ export async function charts_manager(client: Client, request: Request, testerFun
     const service = new GeneralService(client);
     testName = 'Charts_Manager';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        ChartsManagerTests(service, request, testerFunctions),
+        ChartManagerTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1145,18 +781,7 @@ export async function import_export_atd_activities(client: Client, request: Requ
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Activities';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDActivitiesTests(service, request, testerFunctions),
@@ -1173,18 +798,7 @@ export async function import_export_atd_transactions(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Transactions';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsTests(service, request, testerFunctions),
@@ -1201,18 +815,7 @@ export async function import_export_atd_activities_box(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Activities_Box';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDActivitiesBoxTests(service, request, testerFunctions),
@@ -1229,18 +832,7 @@ export async function import_export_atd_transactions_box(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Transactions_Box';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsBoxTests(service, request, testerFunctions),
@@ -1257,18 +849,7 @@ export async function import_export_atd_activities_override(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Activities_Override';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDActivitiesOverrideTests(service, request, testerFunctions),
@@ -1285,18 +866,7 @@ export async function import_export_atd_transactions_override(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Transactions_Override';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsOverrideTests(service, request, testerFunctions),
@@ -1313,18 +883,7 @@ export async function import_export_atd_transactions_override_winzer(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Transactions_Override_Winzer';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsOverrideWinzerTests(service, request, testerFunctions),
@@ -1341,18 +900,7 @@ export async function import_export_atd_transactions_override_winzer_two(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Transactions_Override_Winzer_Two';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsOverrideWinzerTestsTwo(service, request, testerFunctions),
@@ -1369,18 +917,7 @@ export async function import_export_atd_transactions_override_winzer_three(
     const service = new GeneralService(client);
     testName = 'Import_Export_ATD_Transactions_Override_Winzer_Three';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDTransactionsOverrideWinzerTestsThree(service, request, testerFunctions),
@@ -1394,21 +931,27 @@ export async function import_export_atd_local(client: Client, request: Request, 
     testName = 'Import_Export_ATD_Local';
     ImportExportATDLocalTests;
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ImportExportATDLocalTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function import_export_atd_bug_reproduction(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Import_Export_ATD_Bug_Reproduction';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ImportExportATDTransactionsOverridBugReproductionTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1419,21 +962,23 @@ export async function adal(client: Client, request: Request, testerFunctions: Te
     const service = new GeneralService(client);
     testName = 'ADAL';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         ADALTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function adal_stress(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'ADAL_Stress';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ADALStressTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1443,18 +988,7 @@ export async function pepperi_notification_service(client: Client, request: Requ
     const service = new GeneralService(client);
     testName = 'Pepperi_Notification_Service';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         PepperiNotificationServiceTests(service, request, testerFunctions),
@@ -1467,18 +1001,7 @@ export async function nuc_recovery(client: Client, request: Request, testerFunct
     const service = new GeneralService(client);
     testName = 'NUC_Recovery';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         NucRecoveryTests(service, request, testerFunctions),
@@ -1491,18 +1014,7 @@ export async function nuc_recovery_sdk(client: Client, request: Request, testerF
     const service = new GeneralService(client);
     testName = 'NUC_Recovery_SDK';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         NucRecoverySDKTests(service, request, testerFunctions),
@@ -1515,18 +1027,7 @@ export async function nuc_recovery_wacd(client: Client, request: Request, tester
     const service = new GeneralService(client);
     testName = 'NUC_Recovery_WACD';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         NucRecoveryWACDTests(service, request, testerFunctions),
@@ -1539,21 +1040,23 @@ export async function data_index(client: Client, request: Request, testerFunctio
     const service = new GeneralService(client);
     testName = 'Data_Index';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         DataIndexTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function maintenance_job(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Maintenance_Job';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        MaintenanceJobTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1563,18 +1066,7 @@ export async function cpi_node(client: Client, testerFunctions: TesterFunctions)
     const service = new GeneralService(client);
     testName = 'CPI_Node';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CPINodeTests(service, testerFunctions),
@@ -1587,22 +1079,40 @@ export async function code_jobs_clean(client: Client, testerFunctions: TesterFun
     const service = new GeneralService(client);
     testName = 'Code_Jobs_Clean';
     service.PrintMemoryUseToLog('Start', testName);
-    testEnvironment = client.BaseURL.includes('staging')
-        ? 'Sandbox'
-        : client.BaseURL.includes('papi-eu')
-        ? 'Production-EU'
-        : 'Production';
-    const { describe, expect, assert, it, run } = tester(client, testName, testEnvironment);
-    testerFunctions = {
-        describe,
-        expect,
-        assert,
-        it,
-        run,
-    };
+    testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         CodeJobsCleanTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export_performanc(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export_Performanc';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportPerformanceTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

@@ -35,8 +35,14 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
     const testData = {
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
@@ -1117,15 +1123,15 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
             describe('Delete', () => {
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
 
                 it('Delete transaction lines', async () => {

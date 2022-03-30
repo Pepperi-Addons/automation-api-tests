@@ -37,6 +37,15 @@ export class AddonRelationService {
             .then((res) => res.Body);
     }
 
+    async getRelationByRelationType(headers: { [key: string]: string }, relationtype: string) {
+        return this.generalService
+            .fetchStatus(`/addons/data/relations?where=RelationName='${relationtype}'`, {
+                method: 'GET',
+                headers: headers,
+            })
+            .then((res) => res.Body);
+    }
+
     async postRelation(headers?: { [key: string]: string }, body?: any) {
         return this.generalService
             .fetchStatus('/addons/data/relations', {

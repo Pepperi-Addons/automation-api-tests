@@ -29,8 +29,14 @@ export async function PepperiNotificationServiceTests(
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Pepperi Notification Service
 
     describe('Pepperi Notification Service Tests Suites', () => {
@@ -322,15 +328,15 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
             });
 
@@ -407,7 +413,7 @@ export async function PepperiNotificationServiceTests(
                         {
                             method: `POST`,
                             headers: {
-                                Authorization: request.body.varKey,
+                                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                             },
                             body: JSON.stringify(testAddon),
                         },
@@ -426,7 +432,7 @@ export async function PepperiNotificationServiceTests(
                                 {
                                     method: `POST`,
                                     headers: {
-                                        Authorization: request.body.varKey,
+                                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                                     },
                                     body: JSON.stringify(versiontestAddon),
                                 },
@@ -826,7 +832,7 @@ export async function PepperiNotificationServiceTests(
                             {
                                 method: `DELETE`,
                                 headers: {
-                                    Authorization: request.body.varKey,
+                                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                                 },
                             },
                         );
@@ -846,7 +852,7 @@ export async function PepperiNotificationServiceTests(
                         {
                             method: `DELETE`,
                             headers: {
-                                Authorization: request.body.varKey,
+                                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                             },
                         },
                     );
@@ -1280,15 +1286,15 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it('Delete transaction', async () => {
-                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true,
-                        expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false,
-                        expect(
-                            await objectsService.getTransaction({
-                                where: `InternalID=${createdTransaction.InternalID}`,
-                            }),
-                        )
-                            .to.be.an('array')
-                            .with.lengthOf(0);
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.true;
+                    expect(await objectsService.deleteTransaction(createdTransaction.InternalID)).to.be.false;
+                    expect(
+                        await objectsService.getTransaction({
+                            where: `InternalID=${createdTransaction.InternalID}`,
+                        }),
+                    )
+                        .to.be.an('array')
+                        .with.lengthOf(0);
                 });
             });
         });

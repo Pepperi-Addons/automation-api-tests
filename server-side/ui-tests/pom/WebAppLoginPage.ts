@@ -1,15 +1,15 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './base/Page';
 import config from '../../config';
 import { By, Locator } from 'selenium-webdriver';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader } from './index';
+import { WebAppHeader, WebAppHomePage } from './index';
 
 chai.use(promised);
 
 export class WebAppLoginPage extends Page {
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 
@@ -40,14 +40,15 @@ export class WebAppLoginPage extends Page {
     }
 
     /**
-     * This function will nevigate to login page and login to home page
+     * This function will navigate to login page and login to home page
+     * @returns A new instance of {@link WebAppHomePage}.
      */
-    public async login(email: string, password: string): Promise<void> {
+    public async login(email: string, password: string): Promise<WebAppHomePage> {
         await this.navigate();
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
         await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
-        return;
+        return new WebAppHomePage(this.browser);
     }
 
     public async loginDeepLink(url: string, email: string, password: string): Promise<void> {

@@ -1,61 +1,14 @@
-import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
-import config from '../../config';
-import { Locator, By, WebElement, Key } from 'selenium-webdriver';
-import { WebAppHeader } from './WebAppHeader';
-import { WebAppDialog, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from './index';
+import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
-import GeneralService from '../../services/general.service';
-import { ObjectsService } from '../../services/objects.service';
-import { ImportExportATDService } from '../../services/import-export-atd.service';
+import { By, Key, Locator } from 'selenium-webdriver';
+import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
+import GeneralService, { ConsoleColors } from '../../../services/general.service';
+import { ImportExportATDService } from '../../../services/import-export-atd.service';
+import { ObjectsService } from '../../../services/objects.service';
+import { AddonLoadCondition } from './base/AddonPage';
+import { PepperiStatus } from './base/PepperiStatus';
+import { WorkflowAction } from './base/WorkflowAction';
 import { v4 as uuidv4 } from 'uuid';
-import chai, { expect } from 'chai';
-import promised from 'chai-as-promised';
-
-chai.use(promised);
-
-export enum SelectOption {
-    InCreation = 1,
-    Submitted = 2,
-    InProgress = 3,
-    OnHold = 4,
-    Cancelled = 5,
-    Revised = 6,
-    Closed = 7,
-    WaitingForApproval = 9,
-    ERP = 12,
-    Invoice = 14,
-    InPlanning = 16,
-    Published = 17,
-    InPayment = 18,
-    Paid = 19,
-    New = 1000,
-}
-
-export enum SelectPostAction {
-    Alert = 15,
-    CaptureDateAndTime = 26,
-    CaptureGeolocation = 27,
-    ExportFileToFTP = 23,
-    ForceSync = 21,
-    Notification = 13,
-    OpenForm = 22,
-    SendEmail = 1,
-    CustomForm = 18,
-    UpdateInventory = 28,
-    Webhook = 2,
-    OpenCampaign = 40,
-    WebhookResultNotification = 9,
-    Duplicate = 43,
-    DuplicateForAnotherAccount = 48,
-    PushNotification = 37,
-    CalculateFieldFormula = 45,
-}
-
-export enum AddonLoadCondition {
-    Footer,
-    Content,
-}
 
 interface Field {
     CalculatedRuleEngine?: {
@@ -78,23 +31,7 @@ interface Field {
     [key: string]: any;
 }
 
-export class AddonPage extends Page {
-    constructor(browser: Browser) {
-        super(browser, `${config.baseUrl}`);
-    }
-
-    public AddonContainerTopButton: Locator = By.css('.addon-page-container button');
-    public AddonContainerTitle: Locator = By.css('.addon-page-container [title]');
-    public AddonContainerTabs: Locator = By.css('.pep-main-area [role="tablist"] [role="tab"]');
-    public AddonContainerTablistXpath: Locator = By.xpath(
-        './/div[@class="pep-main-area"] //div[@role="tablist"] //div[@role="tab"]',
-    );
-    public AddonContainerTabsContent: Locator = By.css('#addNewOrderTypesCont');
-    public AddonContainerIframe: Locator = By.css('iframe#myFrame');
-    public AddonContainerHiddenTabs: Locator = By.css('.ui-tabs-hide');
-    public AddonContainerFooterDisplay: Locator = By.css('#FotterCont[style="display: block;"]');
-    public AddonContainerContentDisplay: Locator = By.css('#content [style*="display: block"]');
-
+export class ObjectTypeEditor extends AddonPage {
     //Object Types Editor Locators
     public AddonContainerATDEditorWorkflowFlowchartIndicator: Locator = By.css('span[name="flowchart"].disabled');
     public AddonContainerATDEditorWorkflowFlowchartEl: Locator = By.css('#mainFlowchart .flowchart-element');
@@ -105,7 +42,6 @@ export class AddonPage extends Page {
         '#mainFlowchart div[style*="display: block;"] .editProgram',
     );
     public AddonContainerATDEditorWorkflowFlowchartAddAction: Locator = By.css('.addAction');
-    public AddonContainerActionsRadioBtn: Locator = By.xpath('//div[contains(@class,"choose")] //input[@type="radio"]');
     public AddonContainerATDEditorWorkflowFlowchartAddActionsSaveBtn: Locator = By.css(
         '#workflowV2 [name="chooseAction"] .save',
     );
@@ -146,72 +82,15 @@ export class AddonPage extends Page {
     public AddonContainerATDEditorTransactionViewsArr: Locator = By.css('#formContTemplate .ui-accordion-header');
     public AddonContainerATDEditorAddViewBtn: Locator = By.xpath(`//div[contains(text(),"VIEW_PLACE_HOLDER")]`);
 
-    //Settings Framework Locators
-    public SettingsFrameworkEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
-    public SettingsFrameworkEditorSearch: Locator = By.css('#txtSearchBankFields');
-    public SettingsFrameworkEditorSave: Locator = By.css('.save');
-    public SettingsFrameworkEditorTrashBtn: Locator = By.xpath(
-        `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
+    //evgeny::field editing btn
+    public FieldEditingBtn: Locator = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
+    //evgeny::view arrow icon
+    public viewArrowIcon: Locator = By.xpath(
+        "//div[@id='formContTemplate']//h3[contains(@class,'ui-accordion-header')]//span[contains(@class,'ui-icon')]",
     );
 
-    //Branded App Locators
-    public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
-    public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
-
-    public async selectTabByText(tabText: string): Promise<void> {
-        const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
-        selectedTab['value'] += ` [contains(., '${tabText}')]`;
-        await this.browser.click(selectedTab);
-        return;
-    }
-
-    public async isEditorTabVisible(tabID: string, waitUntil = 15000): Promise<boolean> {
-        const selectedTab = Object.assign({}, this.AddonContainerTabsContent);
-        selectedTab['value'] += ` #${tabID}`;
-        return await this.browser.untilIsVisible(selectedTab, waitUntil);
-    }
-
-    public async isEditorHiddenTabExist(tabID: string, waitUntil = 15000): Promise<boolean> {
-        const selectedTab = Object.assign({}, this.AddonContainerHiddenTabs);
-        selectedTab['value'] += `#${tabID}`;
-        const hiddenEl = await this.browser.findElement(selectedTab, waitUntil, false);
-        if (hiddenEl instanceof WebElement) {
-            return true;
-        }
-        return false;
-    }
-
-    public async isAddonFullyLoaded(addonLoadCondition: AddonLoadCondition): Promise<boolean> {
-        if (addonLoadCondition == AddonLoadCondition.Footer) {
-            await this.browser.untilIsVisible(this.AddonContainerFooterDisplay, 45000);
-        } else {
-            await this.browser.untilIsVisible(this.AddonContainerContentDisplay, 45000);
-        }
-        console.log('Validate Addon Loaded');
-        let bodySize = 0;
-        let loadingCounter = 0;
-        do {
-            let htmlBody = await this.browser.findElement(this.HtmlBody);
-            bodySize = (await htmlBody.getAttribute('innerHTML')).length;
-            this.browser.sleep(1000 + loadingCounter);
-            htmlBody = await this.browser.findElement(this.HtmlBody);
-            if ((await htmlBody.getAttribute('innerHTML')).length == bodySize) {
-                bodySize = -1;
-            } else {
-                loadingCounter++;
-            }
-        } while (bodySize != -1);
-        return true;
-    }
-
-    public async selectDropBoxByOption(locator: Locator, option: SelectOption): Promise<void> {
-        const selectedBox = Object.assign({}, locator);
-        selectedBox['value'] += ` option[value='${option}']`;
-        await this.browser.click(selectedBox);
-        return;
-    }
-
-    public async selectPostAction(actionName: SelectPostAction): Promise<void> {
+    public async selectPostAction(actionName: WorkflowAction): Promise<void> {
+        //?
         const selectedTab = Object.assign({}, this.AddonContainerActionsRadioBtn);
         selectedTab['value'] = `.//li[@data-type='${actionName}'] ${selectedTab['value']}`;
         await this.browser.click(selectedTab);
@@ -226,6 +105,7 @@ export class AddonPage extends Page {
      * @param description Description of the new ATD
      */
     public async createNewATD(that, generalService: GeneralService, name: string, description: string): Promise<void> {
+        //remain
         const objectsService = new ObjectsService(generalService);
         const importExportATDService = new ImportExportATDService(generalService.papiClient);
         const webAppHeader = new WebAppHeader(this.browser);
@@ -241,6 +121,7 @@ export class AddonPage extends Page {
 
         const webAppDialog = new WebAppDialog(this.browser);
         await this.browser.sendKeys(webAppDialog.EditorTextBoxInput, name);
+        this.browser.sleep(2500);
         await this.browser.sendKeys(webAppDialog.EditorTextAreaInput, description + Key.TAB);
         await webAppDialog.selectDialogBoxByText('Save');
 
@@ -248,6 +129,7 @@ export class AddonPage extends Page {
 
         //If not in new ATD, try to remove ATD and recreate new ATD
         try {
+            //TODO: fix this for stage new behavior of error popup and refresh after
             //Make sure the page finish to load after creating new ATD
             await this.isSpinnerDone();
             await this.browser.switchTo(this.AddonContainerIframe);
@@ -357,9 +239,10 @@ export class AddonPage extends Page {
      *
      * @param postAction Enum that can be used like this in a test: SelectPostAction.UpdateInventory;
      */
-    public async editATDWorkflow(postAction: SelectPostAction): Promise<void> {
+    public async editATDWorkflow(postAction: WorkflowAction): Promise<void> {
+        //remain
         switch (postAction) {
-            case SelectPostAction.UpdateInventory:
+            case WorkflowAction.UpdateInventory:
                 const webAppDialog = new WebAppDialog(this.browser);
 
                 //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
@@ -397,11 +280,11 @@ export class AddonPage extends Page {
                 await this.browser.sendKeys(this.AddonContainerATDEditorWorkflowFlowchartransitionNameBtn, 'Create');
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartFromStatusBtn,
-                    SelectOption.New,
+                    PepperiStatus.New,
                 );
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartoStatusBtn,
-                    SelectOption.InCreation,
+                    PepperiStatus.InCreation,
                 );
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartSaveBtn);
 
@@ -409,11 +292,11 @@ export class AddonPage extends Page {
                 await this.browser.sendKeys(this.AddonContainerATDEditorWorkflowFlowchartransitionNameBtn, 'Submit');
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartFromStatusBtn,
-                    SelectOption.InCreation,
+                    PepperiStatus.InCreation,
                 );
                 await this.selectDropBoxByOption(
                     this.AddonContainerATDEditorWorkflowFlowchartoStatusBtn,
-                    SelectOption.Submitted,
+                    PepperiStatus.Submitted,
                 );
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartSaveBtn);
 
@@ -425,7 +308,7 @@ export class AddonPage extends Page {
                 //Add Update Inventory
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartElEditBtn);
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartAddAction, 1);
-                await this.selectPostAction(SelectPostAction.UpdateInventory);
+                await this.selectPostAction(WorkflowAction.UpdateInventory);
                 await this.browser.click(this.AddonContainerATDEditorWorkflowFlowchartAddActionsSaveBtn);
 
                 //Config Update Inventory
@@ -447,10 +330,12 @@ export class AddonPage extends Page {
     /**
      *
      * @param fieldType The name of the fields group
-     * @param fieldObj Type that contain the field Label and Js formula if needed
+     * @param fieldObj Type that contain the field Label and JS formula if needed
+     * @param isTransLine Optional variable to indicate whether the field about to be edited is a transaction line field
      * @returns
      */
-    public async editATDField(fieldType: string, fieldObj: Field): Promise<void> {
+    public async editATDField(fieldType: string, fieldObj: Field, isTransLine = false): Promise<void> {
+        //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -466,15 +351,17 @@ export class AddonPage extends Page {
         //Validate Editor Page Loaded
         expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
 
-        const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionFieldArr);
+        const locator: Locator = isTransLine
+            ? this.AddonContainerATDEditorTransactionLineFieldArr
+            : this.AddonContainerATDEditorTransactionFieldArr;
+        const buttonsArr = await this.browser.findElements(locator);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
             if ((await element.getText()).includes(fieldType)) {
-                await element.click();
+                await this.browser.click(locator, index);
                 break;
             }
         }
-
         const selectedBtn = Object.assign({}, this.AddonContainerATDEditorEditFieldArr);
         selectedBtn['value'] = `//td[@title='${fieldObj.Label}']/${selectedBtn['value']}`;
         await this.browser.click(selectedBtn);
@@ -486,10 +373,149 @@ export class AddonPage extends Page {
             0,
             6000,
         );
-
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldFormulaEditorSave);
         await this.browser.click(this.AddonContainerATDEditorTransactionLineFieldSave);
+        return;
+    }
 
+    /**
+     *
+     * @param fieldType The name of the fields group
+     * @param fieldObj Type that contains the field Label and optional JS formula
+     * @param scriptParam Optional variable which indicates which script sys param should be added - if it is needed
+     * @param fieldType what is the added script param type on 'Add Custom Field' page
+     * @returns
+     */
+    public async addATDCalculatedField(
+        //remain
+        fieldObj: Field,
+        isTransLine = false,
+        scriptParam?: string,
+        fieldType?: string,
+    ): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Fields');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
+
+        //Validate Editor Page Loaded
+        await this.browser.sleep(7500);
+        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 125000)).to.be.true;
+        if (isTransLine) {
+            await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 1);
+        } else {
+            await this.browser.click(this.AddonContainerATDEditorFieldsAddCustomArr, 0);
+        }
+        expect(await this.browser.untilIsVisible(this.FieldAddingTitle, 45000)).to.be.true;
+
+        if (fieldType) {
+            const xpathQueryForFieldTypeBtn: string = this.FeildTypeButton.valueOf()['value'].replace(
+                '|textToFill|',
+                fieldType,
+            );
+            await this.browser.click(By.xpath(xpathQueryForFieldTypeBtn));
+        }
+
+        await this.browser.click(this.CalculatedFieldCheckBox);
+        await this.browser.sendKeys(this.TextInputElements, fieldObj.Label, 0);
+        await this.browser.click(this.EditScriptBtn);
+        await this.browser.sleep(7800);
+        expect(await this.browser.untilIsVisible(this.ScriptEditingTitle, 85000)).to.be.true;
+
+        if (scriptParam) {
+            await this.browser.click(this.AvailibaleFieldsBtn);
+            expect(await this.browser.untilIsVisible(this.ItemFieldsSection, 15000)).to.be.true;
+            await this.browser.click(this.ItemFieldsSection);
+            const xpathQueryForParamCheckBox: string = this.ScriptParamCheckBox.valueOf()['value'].replace(
+                '|textToFill|',
+                scriptParam,
+            );
+            await this.browser.click(By.xpath(xpathQueryForParamCheckBox));
+            await this.browser.click(this.SaveParamBtn);
+            const xpathQueryForParamSpan: string = this.ScriptParamSpan.valueOf()['value'].replace(
+                '|textToFill|',
+                scriptParam,
+            );
+            expect(await this.browser.untilIsVisible(By.xpath(xpathQueryForParamSpan), 15000)).to.be.true;
+        }
+
+        await this.browser.click(this.FirstLineInCodeInput);
+        await this.browser.sendKeys(this.CodeInputSection, fieldObj.CalculatedRuleEngine?.JSFormula as string, 0, 6000);
+        await this.browser.click(this.SubmitScriptBtn);
+        await this.browser.click(this.SaveFieldBtn);
+        expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
+        return;
+    }
+
+    /**
+     *
+     * @param fieldObj Type that contains the field Label and optional JS formula
+     * @param scriptParam Optional variable which indicates which script sys param should be added - if any
+     * @returns
+     */
+    public async editATDCalculatedFieldScript(
+        //remain
+        fieldObj: Field,
+        locatorForFieldType: Locator,
+        nameOfFieldToEdit: string,
+        scriptParam?: string,
+    ): Promise<void> {
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+
+        await this.selectTabByText('Fields');
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        await this.browser.sleep(2000);
+        expect(await this.isEditorTabVisible('DataCustomization')).to.be.true;
+
+        //Validate Editor Page Loaded
+        await this.browser.sleep(7500);
+        expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
+        await this.browser.click(locatorForFieldType);
+        const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', nameOfFieldToEdit);
+        await this.browser.click(By.xpath(injectedFieldEditingBtn));
+        await this.browser.sleep(2000);
+        await this.browser.click(this.EditScriptBtn);
+        await this.browser.sleep(6800);
+        expect(await this.browser.untilIsVisible(this.ScriptEditingTitle, 55000)).to.be.true;
+
+        if (scriptParam) {
+            await this.browser.click(this.AvailibaleFieldsBtn);
+            expect(await this.browser.untilIsVisible(this.ItemFieldsSection, 15000)).to.be.true;
+            await this.browser.click(this.ItemFieldsSection);
+            const xpathQueryForParamCheckBox: string = this.ScriptParamCheckBox.valueOf()['value'].replace(
+                '|textToFill|',
+                scriptParam,
+            );
+            await this.browser.click(By.xpath(xpathQueryForParamCheckBox));
+            await this.browser.click(this.SaveParamBtn);
+            const xpathQueryForParamSpan: string = this.ScriptParamSpan.valueOf()['value'].replace(
+                '|textToFill|',
+                scriptParam,
+            );
+            expect(await this.browser.untilIsVisible(By.xpath(xpathQueryForParamSpan), 15000)).to.be.true;
+        }
+
+        await this.browser.click(this.FirstLineInCodeInput);
+        await this.browser.sendKeys(this.CodeInputSection, fieldObj.CalculatedRuleEngine?.JSFormula as string, 0, 6000);
+        await this.browser.click(this.SubmitScriptBtn);
+        await this.browser.click(this.SaveFieldBtn);
+        await this.browser.sleep(10500);
+        expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
         return;
     }
 
@@ -499,14 +525,42 @@ export class AddonPage extends Page {
      * @param viewType The name of the view
      * @returns
      */
-    public async editATDView(viewType: string, viewName: string): Promise<void> {
+    public async addViewToATD(viewType: string, viewName: string): Promise<void> {
+        //remain
         //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
         expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
         expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
         await this.browser.switchToDefaultContent();
+        try {
+            await this.gotoViewAndClickElement(viewType, viewName, 'plusIcon');
+        } catch (Error) {
+            console.log(`%c${viewName} is already added and has no '+' button`, ConsoleColors.PageMessage);
+        }
+        await this.browser.switchToDefaultContent();
+        await this.selectTabByText('General');
+        return;
+    }
 
+    /**
+     *
+     * @param viewName The name of the view group
+     * @param viewType The name of the view
+     * @returns
+     */
+    public async enterATDView(viewType: string, viewName: string): Promise<void> {
+        //remain
+        //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
+        await this.browser.switchTo(this.AddonContainerIframe);
+        await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+        expect(await this.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+        expect(await this.isEditorTabVisible('GeneralInfo')).to.be.true;
+        await this.browser.switchToDefaultContent();
+        await this.gotoViewAndClickElement(viewType, viewName, 'editPenIcon');
+    }
+
+    private async gotoViewAndClickElement(viewType: string, viewName: string, buttonName: string) {
         await this.selectTabByText('Views');
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -516,81 +570,22 @@ export class AddonPage extends Page {
         expect(await this.browser.findElement(this.AddonContainerATDEditorViewsOrderCenterViews));
 
         const buttonsArr = await this.browser.findElements(this.AddonContainerATDEditorTransactionViewsArr);
+        const arrowsArr = await this.browser.findElements(this.viewArrowIcon);
         for (let index = 0; index < buttonsArr.length; index++) {
             const element = buttonsArr[index];
-            if ((await element.getText()).includes(viewType)) {
+            const childElementSpan = arrowsArr[index];
+            const spanClasses = await childElementSpan.getAttribute('class');
+            if ((await element.getText()).includes(viewType) && spanClasses.includes('downArrowIcon')) {
                 await element.click();
                 break;
             }
         }
-
         const selectedBtn = Object.assign({}, this.AddonContainerATDEditorAddViewBtn);
         selectedBtn['value'] = `${selectedBtn['value'].replace(
             'VIEW_PLACE_HOLDER',
             viewName,
-        )}/..//div[contains(@class, "plusIcon")]`;
+        )}/..//div[contains(@class, "${buttonName}")]`;
         await this.browser.click(selectedBtn);
-        return;
-    }
-
-    public async addAdminHomePageButtons(activtiyName: string): Promise<void> {
-        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
-        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
-
-        await this.isSpinnerDone();
-        await this.browser.switchTo(this.AddonContainerIframe);
-        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
-
-        await this.browser.click(this.SettingsFrameworkEditAdmin);
-        await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
-        await this.browser.click(this.SettingsFrameworkEditorSave);
-
-        //Go To HomePage
-        await this.browser.switchToDefaultContent();
-        const webAppHeader = new WebAppHeader(this.browser);
-        await this.browser.click(webAppHeader.Home);
-
-        const webAppHomePage = new WebAppHomePage(this.browser);
-        await webAppHomePage.isSpinnerDone();
-        return;
-    }
-
-    public async removeAdminHomePageButtons(activtiyName: string): Promise<void> {
-        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
-        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
-
-        await this.isSpinnerDone();
-        await this.browser.switchTo(this.AddonContainerIframe);
-        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
-
-        await this.browser.click(this.SettingsFrameworkEditAdmin);
-
-        const buttonsLocator = Object.assign({}, this.SettingsFrameworkEditorTrashBtn);
-        buttonsLocator['value'] = buttonsLocator['value'].replace('ATD_PLACE_HOLDER', activtiyName);
-
-        let isRemovable;
-        try {
-            isRemovable = await this.browser.untilIsVisible(buttonsLocator);
-        } catch (error) {
-            console.log('No Button To Remove, Test Continue');
-        }
-        if (isRemovable) {
-            const buttonsToRemove = await this.browser.findElements(buttonsLocator);
-            for (let i = 0; i < buttonsToRemove.length; i++) {
-                await this.browser.click(buttonsLocator);
-            }
-            await this.browser.click(this.SettingsFrameworkEditorSave);
-        }
-
-        //Go To HomePage
-        await this.browser.switchToDefaultContent();
-        const webAppHeader = new WebAppHeader(this.browser);
-        await this.browser.click(webAppHeader.Home);
-
-        const webAppHomePage = new WebAppHomePage(this.browser);
-        await webAppHomePage.isSpinnerDone();
         return;
     }
 
@@ -603,6 +598,7 @@ export class AddonPage extends Page {
      * @param description Description of the new ATD
      */
     public async removeATD(generalService: GeneralService, name: string, description: string): Promise<void> {
+        //keep for now
         const objectsService = new ObjectsService(generalService);
         const importExportATDService = new ImportExportATDService(generalService.papiClient);
 

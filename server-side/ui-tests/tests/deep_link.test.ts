@@ -15,7 +15,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
         this.retries(1);
 
         beforeEach(async function () {
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
         });
 
         afterEach(async function () {
@@ -105,7 +105,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
             const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
 
             await driver.quit();
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
 
@@ -115,7 +115,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 if (
                     error instanceof Error &&
                     error.message ==
-                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                        `After wait time of: 30000, for selector of '[data-qa="orgLogo"]', The test must end, The element is not visible`
                 ) {
                     const base64ImageNoIcon = await driver.saveScreenshots();
                     addContext(this, {
@@ -167,7 +167,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
             });
 
             await driver.quit();
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
 
@@ -177,7 +177,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 if (
                     error instanceof Error &&
                     error.message ==
-                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                        `After wait time of: 30000, for selector of '[data-qa="orgLogo"]', The test must end, The element is not visible`
                 ) {
                     const base64ImageNoIcon = await driver.saveScreenshots();
                     addContext(this, {
@@ -227,7 +227,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
             });
 
             await driver.quit();
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
 
@@ -237,7 +237,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 if (
                     error instanceof Error &&
                     error.message ==
-                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                        `After wait time of: 30000, for selector of '[data-qa="orgLogo"]', The test must end, The element is not visible`
                 ) {
                     const base64ImageNoIcon = await driver.saveScreenshots();
                     addContext(this, {
@@ -288,7 +288,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
             });
 
             await driver.quit();
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
 
@@ -298,7 +298,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 if (
                     error instanceof Error &&
                     error.message ==
-                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                        `After wait time of: 30000, for selector of '[data-qa="orgLogo"]', The test must end, The element is not visible`
                 ) {
                     const base64ImageNoIcon = await driver.saveScreenshots();
                     addContext(this, {
@@ -351,7 +351,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
             });
 
             await driver.quit();
-            driver = new Browser('chrome');
+            driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
             const webAppListAfter = new WebAppList(driver);
 
@@ -361,7 +361,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 if (
                     error instanceof Error &&
                     error.message ==
-                        'After wait time of: 30000, for selector of [data-qa="orgLogo"], The test must end, The element is not visible'
+                        `After wait time of: 30000, for selector of '[data-qa="orgLogo"]', The test must end, The element is not visible`
                 ) {
                     const base64ImageNoIcon = await driver.saveScreenshots();
                     addContext(this, {

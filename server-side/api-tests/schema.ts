@@ -29,11 +29,17 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
     };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
     //debugger;
-    //const chnageVersionResponseArr1 = await generalService.chnageVersion(request.body.varKey, testData, false);
+    //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
     //#region Mocha
     describe('ADAL Tests Suites', () => {
         describe('Prerequisites Addon for ADAL Tests', () => {
@@ -1241,10 +1247,10 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                     //Name: 'createSchemaWithTypeCPIMetadata ' + Date(),
                     Name: 'createSchemaWithTypeCPIMetadata' + new Date().getTime(),
                     Type: 'cpi_meta_data',
-                    // Fields: {
-                    //     testString: { Type: 'String' },
-                    //     TestInteger: { Type: 'Integer' },
-                    // },                                             // from build 1.0.119 create fields on cpi_meta_data not supported.
+                    Fields: {
+                        testString: { Type: 'String' },
+                        TestInteger: { Type: 'Integer' },
+                    }, // from build 1.0.119 create fields on cpi_meta_data not supported.from build 1.0.197 we can add fields to cpi_meta_data
                     CreationDateTime: '2020-10-08T10:19:00.677Z',
                     ModificationDateTime: '2020-10-08T10:19:00.677Z',
                 }),
@@ -1254,10 +1260,9 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         if (
             logcash.createSchemaWithTypeCPIMetadata.ModificationDateTime != '2020-10-08T10:19:00.677Z' &&
             logcash.createSchemaWithTypeCPIMetadata.Hidden == false &&
-            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' //&&
-
-            // logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
-            // logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String'
+            logcash.createSchemaWithTypeCPIMetadata.Type == 'cpi_meta_data' &&
+            logcash.createSchemaWithTypeCPIMetadata.Fields.TestInteger.Type == 'Integer' &&
+            logcash.createSchemaWithTypeCPIMetadata.Fields.testString.Type == 'String'
         ) {
             logcash.createSchemaWithTypeCPIMetadataStatus = true;
         } else {

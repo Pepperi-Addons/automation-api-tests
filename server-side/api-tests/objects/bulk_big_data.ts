@@ -37,28 +37,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         //         Headers: ['ExternalID', 'Name', 'Hidden'],
         //         Lines: bulkAccountArray,
         //     });
-        //     expect(bulkCreateAccount.JobID).to.be.a('number'),
+        //     expect(bulkCreateAccount.JobID).to.be.a('number');
         //         expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         // });
 
         // it('Verify bulk 60,000 accounts jobinfo', async () => {
         //     bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 300000);
-        //     expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-        //         expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-        //         expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
+        //     expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+        //         expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+        //         expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
         //         expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
         //             new Date().toISOString().split('T')[0],
-        //         ),
-        //         expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-        //         expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-        //         expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-        //         expect(bulkJobInfo.Records, 'Records').to.equal(60000),
-        //         expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(60000),
-        //         expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-        //         expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0),
-        //         expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-        //         expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-        //         expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
+        //         );
+        //         expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+        //         expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+        //         expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+        //         expect(bulkJobInfo.Records, 'Records').to.equal(60000);
+        //         expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(60000);
+        //         expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+        //         expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(0);
+        //         expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+        //         expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+        //         expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
         //         expect(bulkJobInfo.Error, 'Error').to.equal('');
         // });
 
@@ -67,10 +67,10 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
         //         expect(
         //             await service.countAccounts({
         //                 where: "ExternalID LIKE '%API bulk 60K%'",
-        //             }),
+        //             });
         //         )
         //             .to.be.a('number')
-        //             .and.equals(60000),
+        //             .and.equals(60000);
         //     ]);
         // });
 
@@ -94,30 +94,30 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     Headers: ['ExternalID', 'Name', 'Hidden'],
                     Lines: bulkAccountArray,
                 });
-                expect(bulkCreateAccount.JobID).to.be.a('number'),
-                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+                expect(bulkCreateAccount.JobID).to.be.a('number');
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
             });
 
             it('Verify bulk 60,000 accounts remove hidden jobinfo', async () => {
                 bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
                 generalService.sleep(2000); //DI-18235
-                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                    expect(bulkJobInfo.Records, 'Records').to.equal(60000),
-                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(60000),
-                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                );
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+                expect(bulkJobInfo.Records, 'Records').to.equal(60000);
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(60000);
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk 60,000 accounts remove hidden', async () => {
@@ -138,30 +138,30 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     Headers: ['ExternalID', 'Name', 'Hidden'],
                     Lines: bulkAccountArray,
                 });
-                expect(bulkCreateAccount.JobID).to.be.a('number'),
-                    expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+                expect(bulkCreateAccount.JobID).to.be.a('number');
+                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
             });
 
             it('Verify bulk 60,000 accounts delete jobinfo', async () => {
                 bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
                 generalService.sleep(2000); //DI-18235
-                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                    expect(bulkJobInfo.Records, 'Records').to.equal(60000),
-                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(60000),
-                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+                expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                );
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+                expect(bulkJobInfo.Records, 'Records').to.equal(60000);
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(60000);
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify bulk 60,000 accounts delete', async () => {
@@ -183,30 +183,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 Headers: ['ExternalID', 'Name', 'Hidden'],
                 Lines: bulkAccountArray,
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
             generalService.sleep(5000); //DI-18235
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed 10,000 accounts update', async () => {
@@ -242,30 +240,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 Headers: ['ExternalID', 'Name', 'Hidden'],
                 Lines: bulkAccountArray,
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
             generalService.sleep(2000); //DI-18235
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed 10,000 accounts delete', async () => {
@@ -309,30 +305,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 Headers: ['ExternalID', 'Name', 'Hidden'],
                 Lines: bulkAccountArray,
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
             generalService.sleep(5000); //DI-18235
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed 10,000 accounts update (beginning of csv)', async () => {
@@ -368,30 +362,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 Headers: ['ExternalID', 'Name', 'Hidden'],
                 Lines: bulkAccountArray,
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
             generalService.sleep(2000); //DI-18235
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed 10,000 accounts delete (beginning of csv)', async () => {
@@ -435,30 +427,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 Headers: ['ExternalID', 'Name', 'Hidden'],
                 Lines: bulkAccountArray,
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
             generalService.sleep(5000); //DI-18235
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed 10,000 accounts update (ending of csv)', async () => {
@@ -494,30 +484,28 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                 Headers: ['ExternalID', 'Name', 'Hidden'],
                 Lines: bulkAccountArray,
             });
-            expect(bulkCreateAccount.JobID).to.be.a('number'),
-                expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
+            expect(bulkCreateAccount.JobID).to.be.a('number');
+            expect(bulkCreateAccount.URI).to.include('/bulk/jobinfo/' + bulkCreateAccount.JobID);
         });
 
         it('Verify Bulk mixed 10,000 accounts jobinfo', async () => {
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 600000);
             generalService.sleep(5000); //DI-18235
-            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                    new Date().toISOString().split('T')[0],
-                ),
-                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000),
-                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000),
-                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                expect(bulkJobInfo.Error, 'Error').to.equal('');
+            expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(new Date().toISOString().split('T')[0]);
+            expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+            expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+            expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+            expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+            expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+            expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(5000);
+            expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(5000);
+            expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+            expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+            expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+            expect(bulkJobInfo.Error, 'Error').to.equal('');
         });
 
         it('Verify bulk mixed 10,000 accounts delete (ending of csv)', async () => {
@@ -589,29 +577,29 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     Headers: ['MapDataExternalID', 'MainKey', 'SecondaryKey', 'Values', 'Hidden'],
                     Lines: bulkUDTArray,
                 });
-                expect(bulkUpdateUDT.JobID).to.be.a('number'),
-                    expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
+                expect(bulkUpdateUDT.JobID).to.be.a('number');
+                expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
             });
 
             it('Verify bulk jobinfo', async () => {
                 bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 60000);
-                expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                    expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(10000),
-                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+                expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                );
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(10000);
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify 10,000 bulk UDT remove hidden', async () => {
@@ -633,29 +621,29 @@ export async function BulkBigDataTests(generalService: GeneralService, tester: T
                     Headers: ['MapDataExternalID', 'MainKey', 'SecondaryKey', 'Values', 'Hidden'],
                     Lines: bulkUDTArray,
                 });
-                expect(bulkUpdateUDT.JobID).to.be.a('number'),
-                    expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
+                expect(bulkUpdateUDT.JobID).to.be.a('number');
+                expect(bulkUpdateUDT.URI).to.include('/bulk/jobinfo/' + bulkUpdateUDT.JobID);
             });
 
             it('Verify bulk jobinfo', async () => {
                 bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 60000);
-                expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]),
-                    expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z'),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
-                        new Date().toISOString().split('T')[0],
-                    ),
-                    expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z'),
-                    expect(bulkJobInfo.Status, 'Status').to.equal('Ok'),
-                    expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3),
-                    expect(bulkJobInfo.Records, 'Records').to.equal(10000),
-                    expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0),
-                    expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0),
-                    expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(10000),
-                    expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0),
-                    expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0),
-                    expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0),
-                    expect(bulkJobInfo.Error, 'Error').to.equal('');
+                expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
+                expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain('Z');
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain(
+                    new Date().toISOString().split('T')[0],
+                );
+                expect(bulkJobInfo.ModificationDate, 'ModificationDate').to.contain('Z');
+                expect(bulkJobInfo.Status, 'Status').to.equal('Ok');
+                expect(bulkJobInfo.StatusCode, 'StatusCode').to.equal(3);
+                expect(bulkJobInfo.Records, 'Records').to.equal(10000);
+                expect(bulkJobInfo.RecordsInserted, 'RecordsInserted').to.equal(0);
+                expect(bulkJobInfo.RecordsIgnored, 'RecordsIgnored').to.equal(0);
+                expect(bulkJobInfo.RecordsUpdated, 'RecordsUpdated').to.equal(10000);
+                expect(bulkJobInfo.RecordsFailed, 'RecordsFailed').to.equal(0);
+                expect(bulkJobInfo.TotalProcessingTime, 'TotalProcessingTime').to.be.above(0);
+                expect(bulkJobInfo.OverwriteType, 'OverwriteType').to.equal(0);
+                expect(bulkJobInfo.Error, 'Error').to.equal('');
             });
 
             it('Verify 10,000 bulk UDT delete', async () => {

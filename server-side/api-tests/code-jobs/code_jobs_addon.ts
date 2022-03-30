@@ -51,11 +51,24 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
         });
     });
 
+    // async function installAddonToDist() {
+    //     CallbackCash.installAddonToDist = await generalService.fetchStatus(
+    //         '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
+    //         { method: 'POST' },
+    //     );
+    //     await createNewAddonJob();
+    // }
     async function installAddonToDist() {
-        CallbackCash.installAddonToDist = await generalService.fetchStatus(
-            '/addons/installed_addons/' + addonUUID + '/install' + '/' + version,
-            { method: 'POST' },
-        );
+        await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
+            method: 'POST',
+        });
+        //#region Upgrade Pepperitest (Jenkins Special Addon)
+        const testData = {
+            'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
+        };
+        CallbackCash.installAddonToDist = await generalService.changeToAnyAvailableVersion(testData);
+        //#endregion Upgrade Pepperitest (Jenkins Special Addon)
+        //debugger;
         await createNewAddonJob();
     }
 
@@ -236,18 +249,13 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
         });
         //debugger;
         if (
-            CallbackCash.insertNewCJWithoutType.Status == 200 &&
-            CallbackCash.insertNewCJWithoutType.Body.Type == 'UserCodeJob' &&
-            CallbackCash.insertNewCJWithoutType.Body.FunctionName == 'main'
+            CallbackCash.insertNewCJWithoutType.Status == 400 &&
+            CallbackCash.insertNewCJWithoutType.Body.fault.faultstring == 'Requested job type is not valid'
         ) {
             logcash.insertNewCJWithoutType = true;
         } else {
             logcash.insertNewCJWithoutType = false;
-            logcash.insertNewCJWithoutTypeError =
-                'The type value or FunctionName is wrong.Type will be UserCodeJob, actual is : ' +
-                CallbackCash.insertNewCJWithoutType.Body.Type +
-                '. and Function name will be main, actual :  ' +
-                CallbackCash.insertNewCJWithoutType.Body.FunctionName;
+            logcash.insertNewCJWithoutTypeError = 'Insert will faill with error : Requested job type is not valid';
         }
         //updateAddonUUIDValueNegative();
     }

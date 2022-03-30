@@ -1,12 +1,37 @@
 import 'chromedriver';
-import { Builder, ThenableWebDriver, WebElement, until, Locator, Key } from 'selenium-webdriver';
+import {
+    Builder,
+    ThenableWebDriver,
+    WebElement,
+    until,
+    Locator,
+    Key,
+    WebElementPromise,
+    ILocation,
+} from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import GeneralService, { ConsoleColors } from '../../services/general.service';
 
 export class Browser {
     private driver: ThenableWebDriver;
     private options: chrome.Options;
     private TIMEOUT = 15000;
-    public constructor(private browserName: string) {
+    private tempGeneralService = new GeneralService({
+        AddonUUID: '',
+        AddonSecretKey: '',
+        BaseURL: '',
+        OAuthAccessToken: '',
+        AssetsBaseUrl: '',
+        Retry: function () {
+            return;
+        },
+    });
+
+    /**
+     * Chrome driver should only be initiate by using initiateChrome
+     * @param browserName
+     */
+    private constructor(private browserName: string) {
         this.options = new chrome.Options();
         if (process.env.npm_config_chrome_headless == 'true') {
             this.options.addArguments('--headless');
@@ -21,12 +46,34 @@ export class Browser {
             driver: 'ALL',
             performance: 'ALL',
         });
-
-        this.driver = new Builder().forBrowser(browserName).withCapabilities(this.options).build();
+        this.driver = new Builder().forBrowser(browserName).setChromeOptions(this.options).build();
         this.driver.manage().window().maximize();
         this.driver
             .manage()
             .setTimeouts({ implicit: this.TIMEOUT, pageLoad: this.TIMEOUT * 4, script: this.TIMEOUT * 4 });
+    }
+
+    /**
+     * This is the correct function to use for starting new chrome browser
+     * @returns
+     */
+    public static async initiateChrome(): Promise<Browser> {
+        let chromeDriver: Browser;
+        let isNevigated = false;
+        let maxLoopsCounter = 4;
+        do {
+            chromeDriver = new Browser('chrome');
+            try {
+                await chromeDriver.navigate('https://www.google.com');
+                isNevigated = true;
+            } catch (error) {
+                isNevigated = false;
+                console.log(`%cError in initiation of Chrome: ${error}`, ConsoleColors.Error);
+                await chromeDriver.sleepTimeout(4000);
+            }
+            maxLoopsCounter--;
+        } while (!isNevigated && maxLoopsCounter > 0);
+        return chromeDriver;
     }
 
     public async getCurrentUrl(): Promise<string> {
@@ -34,6 +81,7 @@ export class Browser {
     }
 
     public async navigate(url: string): Promise<void> {
+        console.log(`%cNevigate To: ${url}`, ConsoleColors.NevigationMessage);
         return await this.driver.navigate().to(url);
     }
 
@@ -53,6 +101,10 @@ export class Browser {
     public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
+            console.log(
+                `%cClicked with defult selector: '${selector.valueOf()['value']}', on element with index of: ${index}`,
+                ConsoleColors.ClickedMessage,
+            );
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -65,9 +117,21 @@ export class Browser {
                         await this.driver.executeScript(
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
+                        console.log(
+                            `%cClicked with xpath selector: '${
+                                selector.valueOf()['value']
+                            }', on element with index of: ${index}`,
+                            ConsoleColors.ClickedMessage,
+                        );
                     } else {
                         await this.driver.executeScript(
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
+                        );
+                        console.log(
+                            `%cClicked with css selector: '${
+                                selector.valueOf()['value']
+                            }', on element with index of: ${index}`,
+                            ConsoleColors.ClickedMessage,
                         );
                     }
                 } else {
@@ -80,12 +144,56 @@ export class Browser {
         return;
     }
 
+    public async ClickByText(selector: Locator, btnTxt: string, waitUntil = 1500) {
+        const buttonsArr: WebElement[] = await this.findElements(selector, waitUntil);
+        for (let i = 0; i < buttonsArr.length; i++) {
+            const elementsText = (await buttonsArr[i].getText()).trim();
+            if (elementsText.includes(btnTxt)) {
+                await this.click(selector, i, waitUntil);
+                return;
+            }
+        }
+        console.log(`element with selector: '${selector}' and text:'${btnTxt}' isn't found`);
+        return;
+    }
+
+    /**
+     * Used for clicking on element, sending keys to an element and clicking after on other element, waiting with given function
+     * @param clickOnLocator Locator of element to click on
+     * @param sendToLocator Locator of element to send the keys to
+     * @param txtToSend The keys to send
+     * @param afterClickLocator Optional locator for elemnt to click on after the keys sent
+     * @param waitFunction Function to call to wait until
+     * @param that This value of the class in which the wait function is found
+     */
+    public async activateTextInputFieldAndWaitUntillFunction(
+        clickOnLocator: Locator,
+        sendToLocator: Locator,
+        txtToSend: string,
+        afterClickLocator?: Locator,
+        waitFunction?: () => Promise<boolean>,
+        that?: any,
+    ) {
+        await this.click(clickOnLocator);
+        await this.sendKeys(sendToLocator, txtToSend);
+        this.sleep(1000);
+        if (afterClickLocator) await this.click(afterClickLocator);
+        if (waitFunction && that) await waitFunction.call(that);
+    }
+
     public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
+        const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {
             await (await this.findElements(selector, waitUntil))[index].clear();
             console.log('Wait after clear, beofre send keys');
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
+            console.log(
+                `%cSentKeys with defult selector: '${
+                    selector.valueOf()['value']
+                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                ConsoleColors.SentKeysMessage,
+            );
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === 'StaleElementReferenceError') {
@@ -100,10 +208,34 @@ export class Browser {
                         const el = await this.driver.findElements(selector);
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
-                    } catch (error) {
-                        await this.driver.executeScript(
-                            `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                        console.log(
+                            `%cSentKeys with actions and defult selector: '${
+                                selector.valueOf()['value']
+                            }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                            ConsoleColors.SentKeysMessage,
                         );
+                    } catch (error) {
+                        if (selector['using'] == 'xpath') {
+                            await this.driver.executeScript(
+                                `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
+                            );
+                            console.log(
+                                `%cSet value with xpath selector: '${
+                                    selector.valueOf()['value']
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                                ConsoleColors.SentKeysMessage,
+                            );
+                        } else {
+                            await this.driver.executeScript(
+                                `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                            );
+                            console.log(
+                                `%cSet value with css selector: '${
+                                    selector.valueOf()['value']
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                                ConsoleColors.SentKeysMessage,
+                            );
+                        }
                     }
                 } else {
                     throw error;
@@ -118,6 +250,116 @@ export class Browser {
     public async findElement(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, isVisible).then((webElement) =>
             webElement ? webElement[0] : webElement,
+        );
+    }
+
+    /**
+     * Function to wait for loading element to appear and then disappear.
+     * @param loadingLocator Locator of the loading element.
+     * @param timeOut Timeout, in MS, until loading has ended (loading element no longer visible).
+     * @param timeOutToDisplay Timeout, in MS, until loading first appears.
+     * @param errorOnNoLoad Should an error be thrown when loading element is not displayed until defined threshold is reached.
+     */
+    public async waitForLoading(
+        loadingLocator: Locator,
+        timeOut = 30000,
+        timeOutToDisplay = 1000,
+        errorOnNoLoad = false,
+    ): Promise<void> {
+        const notVisibleMsg = `Loading element ${
+            loadingLocator.valueOf()['value']
+        } not visible after ${timeOutToDisplay}MS`;
+        const loadTimeoutMsg = `Loading (${loadingLocator.valueOf()['value']}) timeout reached after ${timeOut}MS`;
+        console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Start`);
+        return this.driver
+            .wait(until.elementIsVisible(this.findSingleElement(loadingLocator)), timeOutToDisplay, notVisibleMsg)
+            .then(async () => {
+                console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Loading found`);
+                await this.driver.wait(
+                    until.elementIsNotVisible(this.findSingleElement(loadingLocator, timeOut + 1)),
+                    timeOut,
+                    loadTimeoutMsg,
+                );
+                console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Loading finished`);
+            })
+            .catch((error) => {
+                if (errorOnNoLoad) {
+                    throw <Error>error;
+                } else {
+                    console.log(notVisibleMsg);
+                }
+            });
+    }
+
+    /**
+     * Check if an element is located within the DOM
+     * @param selector Element locator.
+     * @param timeOut Timeout, in MS, to poll for element located until 'false' is returned.
+     * @param suppressLog Suppress writing error to log in case the function returns 'false'.
+     */
+    public async isElementLocated(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
+        await this.driver.manage().setTimeouts({ implicit: timeOut });
+        const isLocated = this.driver
+            .wait(
+                until.elementLocated(selector),
+                timeOut,
+                `%cElement ${selector.valueOf()['value']} was not located in DOM`,
+            )
+            .then(() => {
+                return true;
+            })
+            .catch((error) => {
+                if (!suppressLog) {
+                    console.log(error.message);
+                }
+                return false;
+            });
+        return isLocated;
+    }
+
+    /**
+     * Searches by selector and returns the first found element.
+     * @param selector The locator to use.
+     * @param waitUntil Implicit findElement timeout, in milliseconds.
+     * @returns {@link WebElementPromise}
+     */
+    public findSingleElement(selector: Locator, waitUntil = 15000): WebElementPromise {
+        const promise = this.driver.manage().setTimeouts({ implicit: waitUntil });
+        Promise.all([promise]);
+        return this.driver.findElement(selector);
+    }
+
+    /**
+     * Searches by selector and returns the first found element's attribute.
+     * @param selector The locator to use.
+     * @param attributeName Attribute name to retrieve.
+     * @param waitUntil Implicit findElement timeout, in milliseconds.
+     */
+    public async getElementAttribute(
+        selector: Locator,
+        attributeName: string,
+        waitUntil = 15000,
+    ): Promise<string | null> {
+        return this.findSingleElement(selector, waitUntil).getAttribute(attributeName);
+    }
+
+    //TODO:Possibly does not center the view on the element, needs testing.
+    /**
+     * Finds element by selector, moves the mouse to the middle of the element and scrolls it into view.
+     * @param selector The locator to use.
+     * @param offset Scrolling X and Y pixels relative to element found by selector
+     * @param duration How long, in milliseconds, should the action take. Default is 100ms.
+     */
+    public async scrollToElement(
+        selector: Locator,
+        offset?: ILocation,
+        duration?: number,
+        waitUntil = 15000,
+    ): Promise<void> {
+        const actions = this.driver.actions({ async: true });
+        this.findSingleElement(selector, waitUntil).then(
+            async (element) =>
+                await actions.move({ origin: element, x: offset?.x, y: offset?.y, duration: duration }).perform(),
         );
     }
 
@@ -151,12 +393,16 @@ export class Browser {
         await this.driver.manage().setTimeouts({ implicit: this.TIMEOUT });
         if (elArr === undefined) {
             throw new Error(
-                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is: ${elArr}`,
+                `After wait time of: ${waitUntil}, for selector of '${selector['value']}', The test must end, The element is: ${elArr}`,
             );
-        }
-        if (isElVisible === false) {
+        } else if (isElVisible === false) {
             throw new Error(
-                `After wait time of: ${waitUntil}, for selector of ${selector['value']}, The test must end, The element is not visible`,
+                `After wait time of: ${waitUntil}, for selector of '${selector['value']}', The test must end, The element is not visible`,
+            );
+        } else {
+            console.log(
+                `%cElement with selector: '${selector.valueOf()['value']}' is successfully found `,
+                ConsoleColors.ElementFoundMessage,
             );
         }
         return elArr;
@@ -166,6 +412,7 @@ export class Browser {
         if ((await this.findElement(selector, waitUntil)) === undefined) {
             return false;
         }
+        console.log(`%cElement '${selector.valueOf()['value']}' is visibale`, ConsoleColors.ElementFoundMessage);
         return true;
     }
 
@@ -173,12 +420,23 @@ export class Browser {
         return this.driver.takeScreenshot();
     }
 
+    /**
+     * This is Async/Non-Blocking sleep
+     * @param ms
+     * @returns
+     */
+    public sleepTimeout(ms: number) {
+        return this.tempGeneralService.sleepAsync(ms);
+    }
+
+    /**
+     * This is Synchronic/Blocking sleep
+     * This should be used in most cases
+     * @param ms
+     * @returns
+     */
     public sleep(ms: number) {
-        console.debug(`%cSleep: ${ms} milliseconds`, 'color: #f7df1e');
-        const start = new Date().getTime(),
-            expire = start + ms;
-        while (new Date().getTime() < expire) {}
-        return;
+        this.tempGeneralService.sleep(ms);
     }
 
     public async clearCookies(url?: string): Promise<void> {
@@ -259,7 +517,7 @@ export class Browser {
     public async close(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
         const windowTitle = await this.driver.getTitle();
-        console.log(`Close Window With Title: ${windowTitle}`);
+        console.log(`%cClose Window With Title: '${windowTitle}'`, ConsoleColors.Success);
         return await this.driver.close();
     }
 
@@ -269,21 +527,45 @@ export class Browser {
      */
     public async quit(): Promise<void> {
         //This line is needed, to not remove! (this wait to driver before trying to close it)
-        const windowTitle = await this.driver.getTitle();
-        console.log(`Quit Window With Title: ${windowTitle}`);
+        try {
+            const windowTitle = await this.driver.getTitle();
+            console.log(`%cQuit Window With Title: '${windowTitle}'`, ConsoleColors.SystemInformation);
+        } catch (error) {
+            console.log(`%cQuit Window With Title Error: ${error}`, ConsoleColors.Error);
+        }
 
         //Print Driver Info Before Quit
         const driverInfo = await this.driver.getCapabilities();
         const browserName = driverInfo.get('browserName');
         const browserVersion = driverInfo.get('browserVersion');
         const browserInfo = driverInfo.get(browserName);
-        console.log(`Browser Name: ${browserName}, Version: ${browserVersion}`);
-        console.log(`Browser Info: ${JSON.stringify(browserInfo)}`);
+        console.log(`%cBrowser Name: ${browserName}, Version: ${browserVersion}`, ConsoleColors.SystemInformation);
+        console.log(`%cBrowser Info: ${JSON.stringify(browserInfo)}`, ConsoleColors.SystemInformation);
 
         try {
-            await this.driver.quit();
+            await this.driver
+                .quit()
+                .then(
+                    async (res) => {
+                        console.log(
+                            `%cBrowser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`,
+                            ConsoleColors.Success,
+                        );
+                        await this.sleepTimeout(2000);
+                        console.log(
+                            '%cWaited 2 seconds for browser closing process will be done',
+                            ConsoleColors.Success,
+                        );
+                    },
+                    (error) => {
+                        console.log(`%cBrowser Quit Error In Response: ${error}`, ConsoleColors.Error);
+                    },
+                )
+                .catch((error) => {
+                    console.log(`%cBrowser Quit Error In Catch: ${error}`, ConsoleColors.Error);
+                });
         } catch (error) {
-            console.log(`Browser Error: ${error}`);
+            console.log(`%cBrowser Error: ${error}`, ConsoleColors.Error);
         }
         return;
     }
