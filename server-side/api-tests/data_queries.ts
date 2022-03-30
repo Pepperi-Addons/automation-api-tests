@@ -7,30 +7,12 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const expect = tester.expect;
     const it = tester.it;
 
-    //#region global variables and helper functions
-    // const scriptURI =
-    //     'https://cdn.pepperi.com/7786003/CustomizationFile/7bdc82bd-0e6f-4fe4-8134-5e820829ebb8/test%20chart';
-
-    // function createListOfRandCharts(): Chart[] {
-    //     const listOfCharts: Chart[] = [];
-    //     for (let i = 0; i < 5; i++) {
-    //         const chartToPush: Chart = {
-    //             Description: `chart-desc-${i}`,
-    //             Name: generalService.generateRandomString(7),
-    //             ReadOnly: false,
-    //             ScriptURI: scriptURI,
-    //         };
-    //         listOfCharts.push(chartToPush);
-    //     }
-    //     return listOfCharts;
-    // }
-
-    // const listOfChartsToUpsert: Chart[] = createListOfRandCharts(); // global chart list to use in test
-    //#endregion global variables and helper functions
-
     //#region Upgrade Data Visualisation
     const testData = {
-        // 'Training Template': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
+        'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
