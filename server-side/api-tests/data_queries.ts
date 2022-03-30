@@ -1,4 +1,4 @@
-import { DataQueriesService } from '../services/data-queries.service';
+import { DataQuerie, DataQueriesService } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -71,12 +71,63 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
         });
         describe('Endpoints', () => {
             describe('GET', () => {
-                it('Get Charts - Retriving all chart data and validating its format', async () => {
+                it('Get Queries - Retriving all Queries data and validating its format', async () => {
                     //test goes here//
-                    const jsonDataFromAuditLog = await dataQueriesService.getQueries();
-                    debugger;
+                    const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
+                    jsonDataFromAuditLog.forEach((jsonDataQuery) => {
+                        expect(jsonDataQuery).to.have.own.property('ModificationDateTime');
+                        expect(jsonDataQuery).to.have.own.property('Hidden');
+                        expect(jsonDataQuery.Hidden).to.be.a('Boolean');
+                        expect(jsonDataQuery).to.have.own.property('CreationDateTime');
+                        expect(jsonDataQuery).to.have.own.property('Name');
+                        expect(jsonDataQuery).to.have.own.property('Key');
+                        jsonDataQuery.Series.forEach((jsonSeriresData) => {//tests each Series list
+                            expect(jsonSeriresData).to.have.own.property('Key');
+                            expect(jsonSeriresData).to.have.own.property('Name');
+                            expect(jsonSeriresData).to.have.own.property('Resource');
+                            expect(jsonSeriresData).to.have.own.property('Label');
+                            expect(jsonSeriresData).to.have.own.property('Top');
+                            expect(jsonSeriresData.Top).to.have.own.property('Max');
+                            expect(jsonSeriresData.Top.Max).to.be.a('Number');
+                            expect(jsonSeriresData.Top).to.have.own.property('Ascending');
+                            expect(jsonSeriresData.Top.Ascending).to.be.a('Boolean');
+                            expect(jsonSeriresData).to.have.own.property('AggregatedFields');
+                            jsonSeriresData.AggregatedFields.forEach((jsonAggregatedFields) => {//tests each element in the AggregatedFields list
+                                expect(jsonAggregatedFields).to.have.own.property('Aggregator');
+                                expect(jsonAggregatedFields).to.have.own.property('FieldID');
+                                expect(jsonAggregatedFields).to.have.own.property('Alias');
+                                expect(jsonAggregatedFields).to.have.own.property('Script');
+                            });
+                            expect(jsonSeriresData).to.have.own.property('AggregatedParams');
+                            jsonSeriresData.AggregatedParams.forEach((jsonAggregatedParams) => {//tests each element in the AggregatedParams list
+                                expect(jsonAggregatedParams).to.have.own.property('FieldID');
+                                expect(jsonAggregatedParams).to.have.own.property('Aggregator');
+                                expect(jsonAggregatedParams).to.have.own.property('Name');
+                            });
+                            expect(jsonSeriresData).to.have.own.property('BreakBy');
+                            expect(jsonSeriresData.BreakBy).to.have.own.property('FieldID');
+                            expect(jsonSeriresData.BreakBy).to.have.own.property('Interval');
+                            expect(jsonSeriresData.BreakBy).to.have.own.property('Format');
+                            expect(jsonSeriresData).to.have.own.property('Filter');
+                            expect(jsonSeriresData).to.have.own.property('Scope');
+                            expect(jsonSeriresData.Scope).to.have.own.property('User');
+                            expect(jsonSeriresData.Scope.User).to.be.oneOf(['AllUsers','CurrentUser']);
+                            expect(jsonSeriresData.Scope).to.have.own.property('Account');
+                            expect(jsonSeriresData.Scope.Account).to.be.oneOf(['AllAccounts','AccountsAssignedToCurrentUser']);
+                            expect(jsonSeriresData).to.have.own.property('DynamicFilterFields');
+                            expect(jsonSeriresData).to.have.own.property('GroupBy');
+                            jsonSeriresData.GroupBy.forEach((jsonGroupBy) => {//tests each GroupBy element in the list
+                                expect(jsonGroupBy).to.have.own.property('FieldID');
+                                expect(jsonGroupBy).to.have.own.property('Interval');
+                                expect(jsonGroupBy).to.have.own.property('Format');
+                                expect(jsonGroupBy).to.have.own.property('Alias');
+                            });
+                        });
+
+                    });
                 });
             });
         });
     });
 }
+

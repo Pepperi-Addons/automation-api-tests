@@ -72,6 +72,6 @@ export class DataQueriesService {
     }
 
     postChart(dataQuerie: DataQuerie): Promise<DataQuerie> {
-        return this.papiClient.post('/charts', dataQuerie);
+        return this.papiClient.post('/data_queries', dataQuerie);
     }
 }
