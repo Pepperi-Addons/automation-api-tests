@@ -1,7 +1,8 @@
+import { DataQueriesService } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    // const dataVisualisationService = new DataVisualisationService(generalService);
+    const dataQueriesService = new DataQueriesService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -29,7 +30,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
 
     //#region Upgrade Data Visualisation
     const testData = {
-        'Training Template': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
+        // 'Training Template': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(request.body.varKey, testData, false);
@@ -68,8 +69,14 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                 });
             }
         });
-        // describe('Endpoints', () => {});
+        describe('Endpoints', () => {
+            describe('GET', () => {
+                it('Get Charts - Retriving all chart data and validating its format', async () => {
+                    //test goes here//
+                    const jsonDataFromAuditLog = await dataQueriesService.getQueries();
+                    debugger;
+                });
+            });
+        });
     });
-
-    //test goes here//
 }
