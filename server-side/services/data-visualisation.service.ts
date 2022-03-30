@@ -2,6 +2,7 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface Chart {
+    Type?: string;
     CreationDateTime?: string;
     Hidden?: boolean;
     ModificationDateTime?: string;
@@ -11,6 +12,7 @@ export interface Chart {
     Name: string;
     ReadOnly: boolean;
     ScriptURI: any;
+    UID?: string;
 }
 
 export class DataVisualisationService {
