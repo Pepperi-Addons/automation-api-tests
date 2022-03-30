@@ -1,5 +1,4 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data-visualisation.service';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     // const dataVisualisationService = new DataVisualisationService(generalService);
@@ -69,13 +68,8 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                 });
             }
         });
-        describe('Endpoints', () => {
-            
-         });
+        // describe('Endpoints', () => {});
     });
 
     //test goes here//
 }
-
-
-
