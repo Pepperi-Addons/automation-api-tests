@@ -31,9 +31,9 @@ export async function ChartManagerTests(generalService: GeneralService, request,
     //#region Upgrade Data Visualisation
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5','' ],
-        'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad','' ],
-        'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5','' ],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
+        'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -113,7 +113,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             Name: generalService.generateRandomString(7),
                             ReadOnly: false,
                             ScriptURI: scriptURI,
-                            Type: "User defined"
+                            Type: 'User defined',
                         } as Chart;
                         const chartResponse = await generalService.fetchStatus(`/charts`, {
                             method: 'POST',
@@ -143,8 +143,12 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     });
                     it('Updating An Existing Chart ', async () => {
                         const allChartsFromServer = await dataVisualisationService.getCharts();
-                        const chartsPostedByMe = allChartsFromServer.filter(chart => chart.Description?.includes("chart-desc-basic") && chart.ReadOnly === false);
-                        const defaultStackedColumnChart = allChartsFromServer.filter(chart => chart.Description === 'Default stacked column');
+                        const chartsPostedByMe = allChartsFromServer.filter(
+                            (chart) => chart.Description?.includes('chart-desc-basic') && chart.ReadOnly === false,
+                        );
+                        const defaultStackedColumnChart = allChartsFromServer.filter(
+                            (chart) => chart.Description === 'Default stacked column',
+                        );
                         const chart: Chart = {
                             Key: chartsPostedByMe[0].Key,
                             Name: chartsPostedByMe[0].Name,
@@ -393,7 +397,6 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     expect(jsonChartData).to.have.own.property('ReadOnly');
                     expect(jsonChartData.ReadOnly).to.be.a('Boolean');
                     expect(jsonChartData.ReadOnly).to.equal(true);
-
                 });
             });
         });
@@ -419,4 +422,3 @@ async function TestCleanUp(service: DataVisualisationService) {
     console.log('Hidded Charts: ' + deletedCounter);
     return deletedCounter;
 }
-
