@@ -69,6 +69,9 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                 });
             }
         });
+        describe('Endpoints', () => {
+            
+         });
     });
 
     //test goes here//
