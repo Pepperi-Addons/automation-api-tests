@@ -63,7 +63,8 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         expect(jsonDataQuery).to.have.own.property('CreationDateTime');
                         expect(jsonDataQuery).to.have.own.property('Name');
                         expect(jsonDataQuery).to.have.own.property('Key');
-                        jsonDataQuery.Series.forEach((jsonSeriresData) => {//tests each Series list
+                        jsonDataQuery.Series.forEach((jsonSeriresData) => {
+                            //tests each Series list
                             expect(jsonSeriresData).to.have.own.property('Key');
                             expect(jsonSeriresData).to.have.own.property('Name');
                             expect(jsonSeriresData).to.have.own.property('Resource');
@@ -74,14 +75,16 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                             expect(jsonSeriresData.Top).to.have.own.property('Ascending');
                             expect(jsonSeriresData.Top.Ascending).to.be.a('Boolean');
                             expect(jsonSeriresData).to.have.own.property('AggregatedFields');
-                            jsonSeriresData.AggregatedFields.forEach((jsonAggregatedFields) => {//tests each element in the AggregatedFields list
+                            jsonSeriresData.AggregatedFields.forEach((jsonAggregatedFields) => {
+                                //tests each element in the AggregatedFields list
                                 expect(jsonAggregatedFields).to.have.own.property('Aggregator');
                                 expect(jsonAggregatedFields).to.have.own.property('FieldID');
                                 expect(jsonAggregatedFields).to.have.own.property('Alias');
                                 expect(jsonAggregatedFields).to.have.own.property('Script');
                             });
                             expect(jsonSeriresData).to.have.own.property('AggregatedParams');
-                            jsonSeriresData.AggregatedParams.forEach((jsonAggregatedParams) => {//tests each element in the AggregatedParams list
+                            jsonSeriresData.AggregatedParams.forEach((jsonAggregatedParams) => {
+                                //tests each element in the AggregatedParams list
                                 expect(jsonAggregatedParams).to.have.own.property('FieldID');
                                 expect(jsonAggregatedParams).to.have.own.property('Aggregator');
                                 expect(jsonAggregatedParams).to.have.own.property('Name');
@@ -93,23 +96,25 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                             expect(jsonSeriresData).to.have.own.property('Filter');
                             expect(jsonSeriresData).to.have.own.property('Scope');
                             expect(jsonSeriresData.Scope).to.have.own.property('User');
-                            expect(jsonSeriresData.Scope.User).to.be.oneOf(['AllUsers','CurrentUser']);
+                            expect(jsonSeriresData.Scope.User).to.be.oneOf(['AllUsers', 'CurrentUser']);
                             expect(jsonSeriresData.Scope).to.have.own.property('Account');
-                            expect(jsonSeriresData.Scope.Account).to.be.oneOf(['AllAccounts','AccountsAssignedToCurrentUser']);
+                            expect(jsonSeriresData.Scope.Account).to.be.oneOf([
+                                'AllAccounts',
+                                'AccountsAssignedToCurrentUser',
+                            ]);
                             expect(jsonSeriresData).to.have.own.property('DynamicFilterFields');
                             expect(jsonSeriresData).to.have.own.property('GroupBy');
-                            jsonSeriresData.GroupBy.forEach((jsonGroupBy) => {//tests each GroupBy element in the list
+                            jsonSeriresData.GroupBy.forEach((jsonGroupBy) => {
+                                //tests each GroupBy element in the list
                                 expect(jsonGroupBy).to.have.own.property('FieldID');
                                 expect(jsonGroupBy).to.have.own.property('Interval');
                                 expect(jsonGroupBy).to.have.own.property('Format');
                                 expect(jsonGroupBy).to.have.own.property('Alias');
                             });
                         });
-
                     });
                 });
             });
         });
     });
 }
-

@@ -37,7 +37,7 @@ interface AggregatedFields {
 }
 interface AggregatedParams {
     FieldID: string;
-    Aggregator: String;
+    Aggregator: string;
     Name: string;
 }
 interface BreakBy {
