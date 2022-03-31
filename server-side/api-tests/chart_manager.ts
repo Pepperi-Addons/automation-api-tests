@@ -105,10 +105,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 });
                 it('Get Chart By Key', async () => {
                     const allChartsJsonDataFromAuditLog = await dataVisualisationService.getCharts();
-                    const keyChartJsonDataFromAuditLog = await dataVisualisationService.getChartByKey(allChartsJsonDataFromAuditLog[0].Key!);
+                    const chartsKey: string = allChartsJsonDataFromAuditLog[0].Key
+                        ? allChartsJsonDataFromAuditLog[0].Key
+                        : ''; //wont happen - for the linter
+                    const keyChartJsonDataFromAuditLog = await dataVisualisationService.getChartByKey(chartsKey);
                     const keyChart = keyChartJsonDataFromAuditLog[0];
                     expect(keyChart).to.have.own.property('Key');
-                    expect(keyChart.Key).to.equal(allChartsJsonDataFromAuditLog[0].Key!);
+                    expect(keyChart.Key).to.equal(chartsKey);
                     expect(keyChart).to.have.own.property('Name');
                     expect(keyChart.Name).to.equal(allChartsJsonDataFromAuditLog[0].Name);
                     if (keyChart.Description) {
@@ -438,7 +441,11 @@ async function TestCleanUp(service: DataVisualisationService) {
     let deletedCounter = 0;
 
     for (let index = 0; index < allChartsObjects.length; index++) {
-        if (allChartsObjects[index].Hidden == false && (allChartsObjects[index].Description === undefined || allChartsObjects[index].Description?.startsWith('chart-desc'))) {
+        if (
+            allChartsObjects[index].Hidden == false &&
+            (allChartsObjects[index].Description === undefined ||
+                allChartsObjects[index].Description?.startsWith('chart-desc'))
+        ) {
             allChartsObjects[index].Hidden = true;
             await service.postChart(allChartsObjects[index]);
             deletedCounter++;
