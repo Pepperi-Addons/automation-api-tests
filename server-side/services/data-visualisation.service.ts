@@ -15,7 +15,7 @@ export interface Chart {
     UID?: string;
 }
 
-export class DataVisualisationService {
+export class ChartsManagerService {
     papiClient: PapiClient;
     generalService: GeneralService;
 
