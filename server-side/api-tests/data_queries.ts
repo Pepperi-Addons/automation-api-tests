@@ -69,7 +69,8 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         expect(jsonDataQuery).to.have.own.property('CreationDateTime');
                         expect(jsonDataQuery).to.have.own.property('Name');
                         expect(jsonDataQuery).to.have.own.property('Key');
-                        if (jsonDataQuery.Series) {//not every data query has to have a series 
+                        if (jsonDataQuery.Series) {
+                            //not every data query has to have a series
                             expect(jsonDataQuery).to.have.own.property('Series');
                             expect(jsonDataQuery.Series).to.be.an('Array');
                             jsonDataQuery.Series.forEach((jsonSeriresData) => {
