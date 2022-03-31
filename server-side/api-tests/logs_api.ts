@@ -2,7 +2,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { LogsPayload, LogsService } from '../services/logas_api.service';
 // import { DataVisualisationService } from '../services/data-visualisation.service';
 
-export async function ChartManagerTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function AWSLogsTest(generalService: GeneralService, request, tester: TesterFunctions) {
     const logsService = new LogsService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
