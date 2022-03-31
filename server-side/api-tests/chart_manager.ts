@@ -86,7 +86,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     jsonDataFromAuditLog.forEach((jsonChartData) => {
                         expect(jsonChartData).to.have.own.property('Key');
                         expect(jsonChartData).to.have.own.property('Name');
-                        expect(jsonChartData).to.have.own.property('Description');
+                        if (jsonChartData.Description) expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('ScriptURI');
                         expect(jsonChartData.ScriptURI).to.not.equal(undefined);
                         expect(jsonChartData.ScriptURI).to.not.equal(null);
@@ -102,6 +102,38 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         expect(jsonChartData).to.have.own.property('ReadOnly');
                         expect(jsonChartData.ReadOnly).to.be.a('Boolean');
                     });
+                });
+                it('Get Chart By Key', async () => {
+                    const allChartsJsonDataFromAuditLog = await dataVisualisationService.getCharts();
+                    const chartsKey: string = allChartsJsonDataFromAuditLog[0].Key
+                        ? allChartsJsonDataFromAuditLog[0].Key
+                        : ''; //wont happen - for the linter
+                    const keyChartJsonDataFromAuditLog = await dataVisualisationService.getChartByKey(chartsKey);
+                    const keyChart = keyChartJsonDataFromAuditLog[0];
+                    expect(keyChart).to.have.own.property('Key');
+                    expect(keyChart.Key).to.equal(chartsKey);
+                    expect(keyChart).to.have.own.property('Name');
+                    expect(keyChart.Name).to.equal(allChartsJsonDataFromAuditLog[0].Name);
+                    if (keyChart.Description) {
+                        expect(keyChart).to.have.own.property('Description');
+                        expect(keyChart.Description).to.equal(allChartsJsonDataFromAuditLog[0].Description);
+                    }
+                    expect(keyChart).to.have.own.property('ScriptURI');
+                    expect(keyChart.ScriptURI).to.not.equal(undefined);
+                    expect(keyChart.ScriptURI).to.not.equal(null);
+                    expect(keyChart.ScriptURI).to.not.equal('');
+                    expect(keyChart.ScriptURI).to.include.oneOf([
+                        'pfs.pepperi.com',
+                        'cdn.pepperi.com',
+                        'pfs.staging.pepperi.com',
+                        'cdn.staging.pepperi.com',
+                    ]);
+                    expect(keyChart.ScriptURI).to.include('.js');
+                    expect(keyChart.ScriptURI).to.include(keyChartJsonDataFromAuditLog[0].Name);
+                    expect(keyChart.ScriptURI).to.equal(allChartsJsonDataFromAuditLog[0].ScriptURI);
+                    expect(keyChart).to.have.own.property('ReadOnly');
+                    expect(keyChart.ReadOnly).to.be.a('Boolean');
+                    expect(keyChart.ReadOnly).to.equal(allChartsJsonDataFromAuditLog[0].ReadOnly);
                 });
             });
 
@@ -187,7 +219,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const chart: Chart = {
                             Description: 'desc',
                             Name: generalService.generateRandomString(7),
-                            ReadOnly: true,
+                            ReadOnly: false,
                             ScriptURI: scriptURI,
                         } as Chart;
                         const headers = {
@@ -218,7 +250,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const chart: Chart = {
                             Name: generalService.generateRandomString(7),
                             Description: 'desc',
-                            ReadOnly: true,
+                            ReadOnly: false,
                         } as Chart;
 
                         const chartResponse = await generalService.fetchStatus(`/charts`, {
@@ -297,7 +329,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
                     Description: 'desc',
-                    ReadOnly: true,
+                    ReadOnly: false,
                     ScriptURI: 721346,
                 };
                 const chartResponse = await generalService.fetchStatus(`/charts`, {
@@ -315,7 +347,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
                     Description: 'desc',
-                    ReadOnly: true,
+                    ReadOnly: false,
                     ScriptURI: 'https:fsdjkfd',
                 };
                 const chartResponse = await generalService.fetchStatus(`/charts`, {
@@ -328,33 +360,32 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 );
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
-
-            // it('POST - upserting a chart with desc as empty string', async () => {=>>>>PFS BUG cannot upsert with empty desc
-            //     const chart: Chart = {
-            //         Name: generalService.generateRandomString(7),
-            //         Description: "",
-            //         ReadOnly: true,
-            //         ScriptURI: scriptURI,
-            //     };
-            //     const chartResponse = await generalService.fetchStatus(`/charts`, {
-            //         method: 'POST',
-            //         body: JSON.stringify(chart),
-            //     });
-            //     expect(chartResponse.Status).to.equal(200);
-            //     expect(chartResponse.Ok).to.be.true;
-            //     expect(chartResponse.Body).to.have.own.property('Key');
-            //     expect(chartResponse.Body).to.have.own.property('Name');
-            //     expect(chartResponse.Body.Name).to.equal(chart.Name);
-            //     expect(chartResponse.Body).to.have.own.property('ScriptURI');
-            //     expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
-            //     expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-            //     expect(chartResponse.Body.ScriptURI).to.not.equal('');
-            //     expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
-            //     expect(chartResponse.Body.ScriptURI).to.include('.js');
-            //     expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
-            //     expect(chartResponse.Body).to.have.own.property('ReadOnly');
-            //     expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
-            // });
+            it('POST - upserting a chart with desc as empty string', async () => {
+                //=>>>>PFS BUG cannot upsert with empty desc
+                const chart: Chart = {
+                    Name: generalService.generateRandomString(7),
+                    ReadOnly: false,
+                    ScriptURI: scriptURI,
+                };
+                const chartResponse = await generalService.fetchStatus(`/charts`, {
+                    method: 'POST',
+                    body: JSON.stringify(chart),
+                });
+                expect(chartResponse.Status).to.equal(200);
+                expect(chartResponse.Ok).to.be.true;
+                expect(chartResponse.Body).to.have.own.property('Key');
+                expect(chartResponse.Body).to.have.own.property('Name');
+                expect(chartResponse.Body.Name).to.equal(chart.Name);
+                expect(chartResponse.Body).to.have.own.property('ScriptURI');
+                expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
+                expect(chartResponse.Body.ScriptURI).to.not.equal(null);
+                expect(chartResponse.Body.ScriptURI).to.not.equal('');
+                expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                expect(chartResponse.Body.ScriptURI).to.include('.js');
+                expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
+                expect(chartResponse.Body).to.have.own.property('ReadOnly');
+                expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+            });
         });
         describe('Test Clean Up (Hidden = true)', () => {
             it('All The Charts Hidden', async () => {
@@ -411,8 +442,9 @@ async function TestCleanUp(service: DataVisualisationService) {
 
     for (let index = 0; index < allChartsObjects.length; index++) {
         if (
-            allChartsObjects[index].Description?.startsWith('chart-desc') && //as all the charts im upserting to api start with this description -- wont delete templates
-            allChartsObjects[index].Hidden == false
+            allChartsObjects[index].Hidden == false &&
+            (allChartsObjects[index].Description === undefined ||
+                allChartsObjects[index].Description?.startsWith('chart-desc'))
         ) {
             allChartsObjects[index].Hidden = true;
             await service.postChart(allChartsObjects[index]);
