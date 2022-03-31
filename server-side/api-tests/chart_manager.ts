@@ -380,7 +380,12 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
                 expect(chartResponse.Body.ScriptURI).to.not.equal(null);
                 expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                expect(chartResponse.Body.ScriptURI).to.include.oneOf(['pfs.pepperi.com', 'cdn.pepperi.com']);
+                expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                    'pfs.pepperi.com',
+                    'cdn.pepperi.com',
+                    'pfs.staging.pepperi.com',
+                    'cdn.staging.pepperi.com',
+                ]);
                 expect(chartResponse.Body.ScriptURI).to.include('.js');
                 expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
                 expect(chartResponse.Body).to.have.own.property('ReadOnly');
