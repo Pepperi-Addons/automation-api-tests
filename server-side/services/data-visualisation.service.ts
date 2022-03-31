@@ -30,6 +30,11 @@ export class DataVisualisationService {
         return chartResponse;
     }
 
+    async getChartByKey(key: string): Promise<Chart> {
+        const chartResponse = await this.papiClient.get(`/charts?where=Key='${key}'`);
+        return chartResponse;
+    }
+
     postChart(chart: Chart): Promise<Chart> {
         return this.papiClient.post('/charts', chart);
     }
