@@ -2,6 +2,7 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface Chart {
+    Type?: string;
     CreationDateTime?: string;
     Hidden?: boolean;
     ModificationDateTime?: string;
@@ -11,6 +12,7 @@ export interface Chart {
     Name: string;
     ReadOnly: boolean;
     ScriptURI: any;
+    UID?: string;
 }
 
 export class DataVisualisationService {
@@ -25,6 +27,11 @@ export class DataVisualisationService {
     //This should be replace with return this.papiClient.charts.find(); once SDK is developed
     async getCharts(): Promise<Chart[]> {
         const chartResponse = await this.papiClient.get('/charts?page_size=-1');
+        return chartResponse;
+    }
+
+    async getChartByKey(key: string): Promise<Chart> {
+        const chartResponse = await this.papiClient.get(`/charts?where=Key='${key}'`);
         return chartResponse;
     }
 

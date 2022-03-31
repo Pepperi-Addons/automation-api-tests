@@ -59,6 +59,8 @@ import { DistributorTests } from './objects/distributor';
 
 //#region Evgeny's Tests
 import { ChartManagerTests } from './chart_manager';
+import { DataQueriesTests } from './data_queries';
+
 //#endregion Evgenys's Tests
 
 import {
@@ -156,4 +158,5 @@ export {
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
     ADALStressTests,
+    DataQueriesTests,
 };
