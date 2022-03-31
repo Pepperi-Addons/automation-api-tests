@@ -1,15 +1,16 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
+import { LogsPayload, LogsService } from '../services/logas_api.service';
 // import { DataVisualisationService } from '../services/data-visualisation.service';
 
 export async function ChartManagerTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    // const dataVisualisationService = new DataVisualisationService(generalService);
+    const logsService = new LogsService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
     //#region Upgrade Data Visualisation
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.56'], //hardcoded version -- no phased one yet
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.83'], //hardcoded version -- no phased one yet
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -55,6 +56,14 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             }
         });
 
-        // describe('Endpoints', () => {});
+        describe('Endpoints', () => {
+            describe('GET - Negative Payload Test', async () => {
+                const payload: LogsPayload = {
+                    Groups:["PAPI"],
+                };
+                const jsonDataFromAuditLog = await logsService.getLogsByPayload(payload);
+                debugger;
+            });
+        });
     });
 }
