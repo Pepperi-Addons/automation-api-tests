@@ -62,7 +62,6 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                 it('Get Queries - Retriving all Queries data and validating its format', async () => {
                     //test goes here//
                     const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
-                    debugger;
                     jsonDataFromAuditLog.forEach((jsonDataQuery) => {
                         expect(jsonDataQuery).to.have.own.property('ModificationDateTime');
                         expect(jsonDataQuery).to.have.own.property('Hidden');
