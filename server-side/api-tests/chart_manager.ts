@@ -1,8 +1,8 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { DataVisualisationService, Chart } from '../services/data-visualisation.service';
+import { ChartsManagerService, Chart } from '../services/chart-manager.service';
 
 export async function ChartManagerTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataVisualisationService = new DataVisualisationService(generalService);
+    const dataVisualisationService = new ChartsManagerService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -441,7 +441,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
 
 //Service Functions
 //Remove all test Charts (Hidden = true)
-async function TestCleanUp(service: DataVisualisationService) {
+async function TestCleanUp(service: ChartsManagerService) {
     const allChartsObjects: Chart[] = await service.getCharts();
     let deletedCounter = 0;
 
