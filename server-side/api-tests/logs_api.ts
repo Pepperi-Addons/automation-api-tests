@@ -9,7 +9,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
 
     //#region Upgrade Data Visualisation
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.56'], //hardcoded version -- no phased one
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.56'], //hardcoded version -- no phased one yet
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
