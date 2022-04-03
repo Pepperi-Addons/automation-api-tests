@@ -22,3 +22,24 @@ exports.RemoveColumn1 = async (Client, Request) => {
     }
     return Request.body;
 };
+
+exports.ImportArrayManipulation = async (Client, Request) => {
+    for (let i = 0; i < Request.body.DIMXObjects.length; i++) {
+        if (i % 2 == 0) {
+            Request.body.DIMXObjects[i].Object.ObjectOfArrayOfNumbersAndStrings.a[1] = 200;
+            Request.body.DIMXObjects[i].Object.ObjectOfArrayOfNumbersAndStrings.b = ['This', 'Is', 'Test'];
+        }
+    }
+    return Request.body;
+};
+
+exports.ExportArrayManipulation = async (Client, Request) => {
+    for (let i = 0; i < Request.body.DIMXObjects.length; i++) {
+        if (i % 2 == 0) {
+            Request.body.DIMXObjects[i].Object.ObjectOfArrayOfNumbersAndStrings.a[0] = 100;
+            Request.body.DIMXObjects[i].Object.ObjectOfArrayOfNumbersAndStrings.c.a = 'This_Is_Test';
+            Request.body.DIMXObjects[i].Object.ObjectOfArrayOfNumbersAndStrings.c.b = 100;
+        }
+    }
+    return Request.body;
+};
