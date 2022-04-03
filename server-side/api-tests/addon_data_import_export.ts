@@ -32,7 +32,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const schemaName = 'DIMX Test';
     const importJSONFileName = 'import3.json';
     const importCSVFileName = 'import2.csv';
-    const addonFunctionsFileName = 'dimx11.js';
+    const addonFunctionsFileName = 'dimx24.js';
     const addonExportFunctionName = 'RemoveObject';
     const addonImportFunctionName = 'RemoveColumn1';
 
@@ -2620,6 +2620,557 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Status: 'Update',
                                     Key: `testKey${delimiterArr[i]}DIMX9`,
                                 });
+                            });
+                        });
+                    }
+                });
+
+                describe(`Enable only one char as delimiter (DI-19790) (Negative)`, async () => {
+                    const delimiterArr = ['&&&'];
+                    let dimxExport;
+                    let relationOriginalResponse;
+                    for (let i = 0; i < delimiterArr.length; i++) {
+                        it(`Reset Schema Before`, async () => {
+                            const adalService = new ADALService(generalService.papiClient);
+                            adalService.papiClient['options'].addonUUID = addonUUID;
+                            adalService.papiClient['options'].addonSecretKey = secretKey;
+                            let purgedSchema;
+                            try {
+                                purgedSchema = await adalService.deleteSchema(schemaName);
+                            } catch (error) {
+                                purgedSchema = '';
+                                expect(error)
+                                    .to.have.property('message')
+                                    .that.includes(
+                                        `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                    );
+                            }
+                            const newSchema = await adalService.postSchema({
+                                Name: schemaName,
+                                Type: 'data',
+                                Fields: {
+                                    Name: { Type: 'String' },
+                                    Description: { Type: 'String' },
+                                    Key: { Type: 'String' },
+                                },
+                            });
+                            expect(purgedSchema).to.equal('');
+                            expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+                            expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
+                        });
+
+                        it(`Create Schema With Delimieter: "${delimiterArr[i]}"`, async () => {
+                            const adalService = new ADALService(generalService.papiClient);
+                            adalService.papiClient['options'].addonUUID = addonUUID;
+                            adalService.papiClient['options'].addonSecretKey = secretKey;
+                            const dataArr: AddonData[] = [];
+                            for (let j = 0; j < 10; j++) {
+                                dataArr.push({
+                                    Name: schemaName,
+                                    Description: `DIMX Test ${j}`,
+                                    Key: `testKey${delimiterArr[i]}DIMX${j}`,
+                                });
+                            }
+                            const adalResponse = await adalService.postBatchDataToSchema(
+                                addonUUID,
+                                schemaName,
+                                dataArr,
+                            );
+                            expect(adalResponse[0], JSON.stringify(adalResponse)).to.deep.equal({
+                                Status: 'Insert',
+                                Key: `testKey${delimiterArr[i]}DIMX0`,
+                            });
+                            expect(adalResponse[9], JSON.stringify(adalResponse)).to.deep.equal({
+                                Status: 'Insert',
+                                Key: `testKey${delimiterArr[i]}DIMX9`,
+                            });
+                        });
+
+                        it(`Export From Relation With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                            relationOriginalResponse = await dimxService.dataExport(addonUUID, schemaName, {
+                                Format: 'csv',
+                                Delimiter: delimiterArr[i],
+                            });
+
+                            dimxExport = await generalService.getAuditLogResultObjectIfValid(
+                                relationOriginalResponse.URI,
+                                90,
+                            );
+                            expect(dimxExport.AuditInfo.ErrorMessage).to.equal(
+                                'Failed due to exception: Delimiter length must be 1. Given delimiter:&&&',
+                            );
+                        });
+                    }
+                });
+
+                describe(`Import And Export Complext Data With Deep Relation Function (DI-19791)`, async () => {
+                    const delimiterArr = [',', ' ', ';', ':' /*, '\t'*/, '|' /*, '&&&'*/, '@', '#', '$', '&'];
+                    let dimxExportBefore;
+                    let dimxImportAfterNoChange;
+                    let dimxExportAfterChange;
+                    for (let i = 0; i < delimiterArr.length; i++) {
+                        describe(`With Delimieter Of: "${delimiterArr[i]}"`, async () => {
+                            const resultsFirstArr = [
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['Value1','Value2','Value3']"${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}"[100,2,3]"${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}'${delimiterArr[i]}'2'${delimiterArr[i]}'${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}"[4,33,0,11]"${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}"DIMX${delimiterArr[i]}Test${delimiterArr[i]}0"${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}"DIMX${delimiterArr[i]}Test"${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                            ];
+
+                            const resultsLastArr = [
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['Value1','Value2','Value3']"${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}"[1,2,3]"${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}'${delimiterArr[i]}'2'${delimiterArr[i]}'${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"[4,33,0,11]"${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}"DIMX${delimiterArr[i]}Test${delimiterArr[i]}9"${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}"DIMX${delimiterArr[i]}Test"${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}['Value1','Value2','Value3']${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                            ];
+
+                            const resultsFirstAfterArr = [
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}"[100,200,3]"${delimiterArr[i]}"['This'${delimiterArr[i]}'Is'${delimiterArr[i]}'Test']"${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}"[4,33,0,11]"${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}"DIMX${delimiterArr[i]}Test${delimiterArr[i]}0"${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}"DIMX${delimiterArr[i]}Test"${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 0${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[100,200,3]${delimiterArr[i]}['This','Is','Test']${delimiterArr[i]}This_Is_Test${delimiterArr[i]}100${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX0"`,
+                            ];
+
+                            const resultsLastAfterArr = [
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}"[1,2,3]"${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"[4,33,0,11]"${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}"DIMX${delimiterArr[i]}Test${delimiterArr[i]}9"${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}"DIMX${delimiterArr[i]}Test"${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                                `"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}"11${delimiterArr[i]}"${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}"${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}DIMX Test 9${delimiterArr[i]}5${delimiterArr[i]}"['4','33${delimiterArr[i]}','0','${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}']"${delimiterArr[i]}"${delimiterArr[i]}5${delimiterArr[i]}"${delimiterArr[i]}[1,2,3]${delimiterArr[i]}"['1${delimiterArr[i]}${delimiterArr[i]}','2','${delimiterArr[i]}${delimiterArr[i]}3']"${delimiterArr[i]}"This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}"${delimiterArr[i]}1${delimiterArr[i]}[4,33,0,11]${delimiterArr[i]}"TestFor${delimiterArr[i]}ObjectSchema"${delimiterArr[i]}11${delimiterArr[i]}0${delimiterArr[i]}33${delimiterArr[i]}4${delimiterArr[i]}DIMX Test${delimiterArr[i]}"testKey${delimiterArr[i]}DIMX9"`,
+                            ];
+
+                            it(`Post Export Relation`, async () => {
+                                const relationResponse = await relationService.postRelationStatus(
+                                    {
+                                        'X-Pepperi-OwnerID': addonUUID,
+                                        'X-Pepperi-SecretKey': secretKey,
+                                    },
+                                    {
+                                        Name: 'Get Export From DIMX', // mandatory
+                                        AddonUUID: addonUUID, // mandatory
+                                        RelationName: 'DataExportResource', // mandatory
+                                        Type: 'AddonAPI', // mandatory on create
+                                        Description: 'DIMX Export',
+                                        AddonRelativeURL: `/${addonFunctionsFileName}/ExportArrayManipulation`, // mandatory on create
+                                    },
+                                );
+                                expect(relationResponse).to.equal(200);
+                            });
+
+                            it(`Get Export Relation`, async () => {
+                                const relationBody = {
+                                    Name: 'Get Export From DIMX', // mandatory
+                                    AddonUUID: addonUUID, // mandatory
+                                    RelationName: 'DataExportResource', // mandatory
+                                    Type: 'AddonAPI', // mandatory on create
+                                    Description: 'DIMX Export',
+                                    AddonRelativeURL: `/${addonFunctionsFileName}/ExportArrayManipulation`, // mandatory on create
+                                };
+                                const relationResponse = await relationService.getRelationWithName(
+                                    {
+                                        'X-Pepperi-OwnerID': addonUUID,
+                                        'X-Pepperi-SecretKey': secretKey,
+                                    },
+                                    relationBody.Name,
+                                );
+                                expect(relationResponse[0]).to.include({
+                                    ...relationBody,
+                                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                                    Hidden: false,
+                                });
+                            });
+
+                            it(`Post Import Relation`, async () => {
+                                const relationResponse = await relationService.postRelationStatus(
+                                    {
+                                        'X-Pepperi-OwnerID': addonUUID,
+                                        'X-Pepperi-SecretKey': secretKey,
+                                    },
+                                    {
+                                        Name: 'Import With DIMX', // mandatory
+                                        AddonUUID: addonUUID, // mandatory
+                                        RelationName: 'DataImportResource', // mandatory
+                                        Type: 'AddonAPI', // mandatory on create
+                                        Description: 'DIMX Import',
+                                        AddonRelativeURL: `/${addonFunctionsFileName}/ImportArrayManipulation`, // mandatory on create
+                                    },
+                                );
+                                expect(relationResponse).to.equal(200);
+                            });
+
+                            it(`Get Import Relation`, async () => {
+                                const relationBody = {
+                                    Name: 'Import With DIMX', // mandatory
+                                    AddonUUID: addonUUID, // mandatory
+                                    RelationName: 'DataImportResource', // mandatory
+                                    Type: 'AddonAPI', // mandatory on create
+                                    Description: 'DIMX Import',
+                                    AddonRelativeURL: `/${addonFunctionsFileName}/ImportArrayManipulation`, // mandatory on create
+                                };
+                                const relationResponse = await relationService.getRelationWithName(
+                                    {
+                                        'X-Pepperi-OwnerID': addonUUID,
+                                        'X-Pepperi-SecretKey': secretKey,
+                                    },
+                                    relationBody.Name,
+                                );
+                                expect(relationResponse[0]).to.include({
+                                    ...relationBody,
+                                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                                    Hidden: false,
+                                });
+                            });
+
+                            it(`Reset Schema Before`, async () => {
+                                const adalService = new ADALService(generalService.papiClient);
+                                adalService.papiClient['options'].addonUUID = addonUUID;
+                                adalService.papiClient['options'].addonSecretKey = secretKey;
+                                let purgedSchema;
+                                try {
+                                    purgedSchema = await adalService.deleteSchema(schemaName);
+                                } catch (error) {
+                                    purgedSchema = '';
+                                    expect(error)
+                                        .to.have.property('message')
+                                        .that.includes(
+                                            `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+                                        );
+                                }
+                                const newSchema = await adalService.postSchema({
+                                    Name: schemaName,
+                                    Type: 'data',
+                                    Fields: {
+                                        Name: { Type: 'String' },
+                                        Description: { Type: 'String' },
+                                        Key: { Type: 'String' },
+                                        Column1: {
+                                            Type: 'Array',
+                                            Items: {
+                                                Type: 'String',
+                                            },
+                                        } as any,
+                                        object: {
+                                            Type: 'Object',
+                                            Fields: {
+                                                Object: {
+                                                    Type: 'Object',
+                                                    Fields: {
+                                                        Value1: { Type: 'Integer' },
+                                                        Value2: { Type: 'Integer' },
+                                                        Value3: { Type: 'Integer' },
+                                                    },
+                                                },
+                                                String: { Type: 'String' },
+                                                Array: {
+                                                    Type: 'Array',
+                                                    Items: { Type: 'String' },
+                                                },
+                                            },
+                                        } as any,
+                                        Number: { Type: 'Integer' },
+                                        ArrayOfNumbers: {
+                                            Type: 'Array',
+                                            Items: { Type: 'Integer' },
+                                        } as any,
+                                        ObjectOfNumbers: {
+                                            Type: 'Object',
+                                            Fields: {
+                                                a: { Type: 'Integer' },
+                                                b: { Type: 'Integer' },
+                                                c: { Type: 'Integer' },
+                                                d: { Type: 'Integer' },
+                                            },
+                                        } as any,
+                                        String: { Type: 'String' },
+                                        ArrayOfStrings: {
+                                            Type: 'Array',
+                                            Items: { Type: 'String' },
+                                        } as any,
+                                        ObjectOfStrings: {
+                                            Type: 'Object',
+                                            Fields: {
+                                                a: { Type: 'String' },
+                                                b: { Type: 'String' },
+                                                c: { Type: 'String' },
+                                                d: { Type: 'String' },
+                                            },
+                                        } as any,
+                                        ObjectOfArrayOfNumbersAndStrings: {
+                                            Type: 'Object',
+                                            Fields: {
+                                                a: {
+                                                    Type: 'Array',
+                                                    Items: { Type: 'Integer' },
+                                                },
+                                                b: {
+                                                    Type: 'Array',
+                                                    Items: { Type: 'String' },
+                                                },
+                                                c: {
+                                                    Type: 'Object',
+                                                    Fields: {
+                                                        a: { Type: 'String' },
+                                                        b: { Type: 'Integer' },
+                                                    },
+                                                },
+                                            },
+                                        } as any,
+                                        b: {
+                                            Type: 'Array',
+                                            Items: { Type: 'String' },
+                                        } as any,
+                                        c: {
+                                            Type: 'Object',
+                                            Fields: {
+                                                a: { Type: 'String' },
+                                                b: { Type: 'Integer' },
+                                            },
+                                        } as any,
+                                    },
+                                });
+                                expect(purgedSchema).to.equal('');
+                                expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+                                expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
+                            });
+
+                            it(`Create Schema With Array, Object and Number Mixed With Delimieter: "${delimiterArr[i]}"`, async () => {
+                                const adalService = new ADALService(generalService.papiClient);
+                                adalService.papiClient['options'].addonUUID = addonUUID;
+                                adalService.papiClient['options'].addonSecretKey = secretKey;
+                                const dataArr: AddonData[] = [];
+                                for (let j = 0; j < 10; j++) {
+                                    dataArr.push({
+                                        Name: schemaName,
+                                        Description: `DIMX Test ${j}`,
+                                        Version: `TestFor${delimiterArr[i]}ObjectSchema`,
+                                        Key: `testKey${delimiterArr[i]}DIMX${j}`,
+                                        Column1: ['Value1', 'Value2', 'Value3'],
+                                        Number: 5,
+                                        String: `${delimiterArr[i]}5${delimiterArr[i]}`,
+                                        ArrayOfNumbers: [4, 33, 0, 11],
+                                        ObjectOfNumbers: { a: 11, b: 0, c: 33, d: 4 },
+                                        ArrayOfStrings: [
+                                            '4',
+                                            `33${delimiterArr[i]}`,
+                                            '0',
+                                            `${delimiterArr[i]}${delimiterArr[i]}11${delimiterArr[i]}`,
+                                        ],
+                                        ObjectOfStrings: {
+                                            a: `11${delimiterArr[i]}`,
+                                            b: '0',
+                                            c: '33',
+                                            d: `${delimiterArr[i]}4${delimiterArr[i]}${delimiterArr[i]}`,
+                                        },
+                                        ObjectOfArrayOfNumbersAndStrings: {
+                                            a: [1, 2, 3],
+                                            b: [
+                                                `1${delimiterArr[i]}${delimiterArr[i]}`,
+                                                '2',
+                                                `${delimiterArr[i]}${delimiterArr[i]}3`,
+                                            ],
+                                            c: {
+                                                a: `This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}`,
+                                                b: 1,
+                                            },
+                                        },
+                                        b: [
+                                            `1${delimiterArr[i]}${delimiterArr[i]}`,
+                                            '2',
+                                            `${delimiterArr[i]}${delimiterArr[i]}3`,
+                                        ],
+                                        c: {
+                                            a: `This${delimiterArr[i]}Is${delimiterArr[i]}Test${delimiterArr[i]}${delimiterArr[i]}`,
+                                            b: 1,
+                                        },
+                                    });
+                                }
+                                const adalResponse = await adalService.postBatchDataToSchema(
+                                    addonUUID,
+                                    schemaName,
+                                    dataArr,
+                                );
+                                expect(adalResponse[0], JSON.stringify(adalResponse)).to.deep.equal({
+                                    Status: 'Insert',
+                                    Key: `testKey${delimiterArr[i]}DIMX0`,
+                                });
+                                expect(adalResponse[9], JSON.stringify(adalResponse)).to.deep.equal({
+                                    Status: 'Insert',
+                                    Key: `testKey${delimiterArr[i]}DIMX9`,
+                                });
+                            });
+
+                            it(`Export From Relation With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                                const dimxExportURL = await dimxService.dataExport(addonUUID, schemaName, {
+                                    Format: 'csv',
+                                    Delimiter: delimiterArr[i],
+                                });
+
+                                dimxExportBefore = await generalService.getAuditLogResultObjectIfValid(
+                                    dimxExportURL.URI,
+                                    90,
+                                );
+                                expect(
+                                    dimxExportBefore.Status?.ID,
+                                    JSON.stringify(dimxExportBefore.AuditInfo.ResultObject),
+                                ).to.equal(1);
+                                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                                    ? 'pfs.staging.pepperi'
+                                    : generalService['client'].BaseURL.includes('papi-eu')
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
+                                expect(
+                                    dimxExportBefore.AuditInfo.ResultObject,
+                                    JSON.stringify(dimxExportBefore.AuditInfo.ResultObject),
+                                ).to.include(`https://${testResponseEnvironment}`);
+                                expect(
+                                    dimxExportBefore.AuditInfo.ResultObject,
+                                    JSON.stringify(dimxExportBefore.AuditInfo.ResultObject),
+                                ).to.include(`.csv`);
+                            });
+
+                            it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                                const relationResponse = await generalService.fetchStatus(
+                                    JSON.parse(dimxExportBefore.AuditInfo.ResultObject).DownloadURL,
+                                );
+                                console.log({ URL: JSON.parse(dimxExportBefore.AuditInfo.ResultObject) });
+                                const NewRelationResponseArr =
+                                    relationResponse.Body.Text.split('\n').sort(compareByDescription);
+                                expect(
+                                    NewRelationResponseArr[1],
+                                    JSON.stringify(dimxExportBefore.AuditInfo.ResultObject),
+                                ).to.equal(resultsFirstArr[i]);
+                                expect(
+                                    NewRelationResponseArr[10],
+                                    JSON.stringify(dimxExportBefore.AuditInfo.ResultObject),
+                                ).to.equal(resultsLastArr[i]);
+                            });
+
+                            it(`Import With Relation Same Content With Diffrent Delimiter`, async () => {
+                                const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
+                                    URI: JSON.parse(dimxExportBefore.AuditInfo.ResultObject).DownloadURL,
+                                    OverwriteObject: true,
+                                    Delimiter: delimiterArr[i],
+                                });
+                                dimxImportAfterNoChange = await generalService.getAuditLogResultObjectIfValid(
+                                    relationResponse.URI,
+                                    90,
+                                );
+                                expect(
+                                    dimxImportAfterNoChange.Status?.ID,
+                                    JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
+                                ).to.equal(1);
+                                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                                    ? 'cdn.staging.pepperi'
+                                    : generalService['client'].BaseURL.includes('papi-eu')
+                                    ? 'eucdn.pepperi'
+                                    : 'cdn.pepperi';
+                                expect(
+                                    dimxImportAfterNoChange.AuditInfo.ResultObject,
+                                    JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
+                                ).to.include(`https://${testResponseEnvironment}`);
+                            });
+
+                            it(`Import Content That Was Just Exported`, async () => {
+                                const relationResponse = await generalService.fetchStatus(
+                                    JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).DownloadURL,
+                                );
+
+                                relationResponse.Body.sort(compareByKey);
+                                expect(
+                                    relationResponse.Body[0],
+                                    JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
+                                ).to.deep.equal({
+                                    Status: 'Insert',
+                                    Key: `testKey${delimiterArr[i]}DIMX0`,
+                                });
+                                expect(
+                                    relationResponse.Body[9],
+                                    JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
+                                ).to.deep.equal({
+                                    Status: 'Insert',
+                                    Key: `testKey${delimiterArr[i]}DIMX9`,
+                                });
+                            });
+
+                            it(`Export From Relation After Overwrire Import With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                                const dimxExportURL = await dimxService.dataExport(addonUUID, schemaName, {
+                                    Format: 'csv',
+                                    Delimiter: delimiterArr[i],
+                                });
+
+                                dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
+                                    dimxExportURL.URI,
+                                    90,
+                                );
+
+                                console.log({
+                                    URL_Before: JSON.parse(dimxExportBefore.AuditInfo.ResultObject).DownloadURL,
+                                    URL_After: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                    URL_Expected_Diff: JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject)
+                                        .DownloadURL,
+                                });
+
+                                expect(
+                                    dimxExportAfterChange.Status?.ID,
+                                    JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
+                                ).to.equal(1);
+                                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                                    ? 'pfs.staging.pepperi'
+                                    : generalService['client'].BaseURL.includes('papi-eu')
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
+                                expect(
+                                    dimxExportAfterChange.AuditInfo.ResultObject,
+                                    JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
+                                ).to.include(`https://${testResponseEnvironment}`);
+                                expect(
+                                    dimxExportAfterChange.AuditInfo.ResultObject,
+                                    JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
+                                ).to.include(`.csv`);
+                            });
+
+                            it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
+                                const relationResponse = await generalService.fetchStatus(
+                                    JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                );
+                                console.log({ URL: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject) });
+                                const NewRelationResponseArr =
+                                    relationResponse.Body.Text.split('\n').sort(compareByDescription);
+                                expect(
+                                    NewRelationResponseArr[1],
+                                    JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
+                                ).to.equal(resultsFirstAfterArr[i]);
+                                expect(
+                                    NewRelationResponseArr[10],
+                                    JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
+                                ).to.equal(resultsLastAfterArr[i]);
                             });
                         });
                     }
