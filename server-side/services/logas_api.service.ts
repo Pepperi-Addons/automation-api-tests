@@ -2,19 +2,60 @@ import { PapiClient } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 
 export interface LogsPayload {
-    Groups: string[];
+    Groups: AwsCloudwatchGroups[];
     Filter?: string;
-    Fields?: string[];
+    Fields?: AwsCloudwatchFields[];
     DateTimeStamp?: DateTimeStamp;
     PageSize?: number;
     Page?: number;
     OrderBy?: string;
 }
 
-interface DateTimeStamp {
-    Start: string;
-    End: string;
+export interface LogsResponse {
+    DistributorUUID?: string;
+    DateTimeStamp?: string;
+    Level?: string;
+    Message?: string;
+    UserUUID?: string;
+    Source?: string;
+    ActionUUID?: string;
+    DistributorID?: string;
+    UserID?: string;
+    Version?: string;
 }
+
+interface DateTimeStamp {
+    Start?: string;
+    End?: string;
+}
+
+type AwsCloudwatchFields =
+    "Level" |
+    "Source" |
+    "Message" |
+    "ActionUUID" |
+    "UserUUID" |
+    "DateTimeStamp" |
+    "DistributorID" |
+    "UserID" |
+    "Version";
+
+type AwsCloudwatchGroups =
+    "AsyncAddon" |
+    "CodeJobs" |
+    "Addon" |
+    "SyncOperation" |
+    "CustomDomain" |
+    "LogFetcher" |
+    "PAPI" |
+    "CPAPI" |
+    "PFS" |
+    "PNS" |
+    "FileIntegration" |
+    "CPAS" |
+    "OperationInvoker";
+
+
 
 export class LogsService {
     papiClient: PapiClient;
@@ -36,14 +77,8 @@ export class LogsService {
     //     return chartResponse;
     // }
 
-    getLogsByPayload(logsPayload: LogsPayload): Promise<LogsPayload[]> {
+    getLogsByPayload(logsPayload: LogsPayload): Promise<LogsResponse[]> {
         return this.papiClient.post('/logs', logsPayload);
     }
 }
-//TODO : response interface:
 
-// DateTimeStamp:'2022-03-31 14:08:37.365'
-// DistributorUUID:'3b490454-4a84-42c8-b8c7-f8a5855d217e'
-// Level:'INFO'
-// Message:'"NotifyEndJobExecution: Finish function for action UUID = 26187b9f-193b-4b69-a6e1-2c537878cce1"'
-// UserUUID:'e67cdb90-70e1-40bf-90fb-85e5543a4b8c'
