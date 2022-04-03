@@ -30,32 +30,30 @@ interface DateTimeStamp {
 }
 
 type AwsCloudwatchFields =
-    "Level" |
-    "Source" |
-    "Message" |
-    "ActionUUID" |
-    "UserUUID" |
-    "DateTimeStamp" |
-    "DistributorID" |
-    "UserID" |
-    "Version";
+    | 'Level'
+    | 'Source'
+    | 'Message'
+    | 'ActionUUID'
+    | 'UserUUID'
+    | 'DateTimeStamp'
+    | 'DistributorID'
+    | 'UserID'
+    | 'Version';
 
 type AwsCloudwatchGroups =
-    "AsyncAddon" |
-    "CodeJobs" |
-    "Addon" |
-    "SyncOperation" |
-    "CustomDomain" |
-    "LogFetcher" |
-    "PAPI" |
-    "CPAPI" |
-    "PFS" |
-    "PNS" |
-    "FileIntegration" |
-    "CPAS" |
-    "OperationInvoker";
-
-
+    | 'AsyncAddon'
+    | 'CodeJobs'
+    | 'Addon'
+    | 'SyncOperation'
+    | 'CustomDomain'
+    | 'LogFetcher'
+    | 'PAPI'
+    | 'CPAPI'
+    | 'PFS'
+    | 'PNS'
+    | 'FileIntegration'
+    | 'CPAS'
+    | 'OperationInvoker';
 
 export class LogsService {
     papiClient: PapiClient;
@@ -81,4 +79,3 @@ export class LogsService {
         return this.papiClient.post('/logs', logsPayload);
     }
 }
-
