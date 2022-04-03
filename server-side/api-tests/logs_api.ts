@@ -6,7 +6,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-    //#region Upgrade Data Visualisation
+    //#region Upgrade Cloudwatch Addon
     const testData = {
         CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.83'], //hardcoded version -- no phased one yet
     };
@@ -19,7 +19,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
 
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    //#endregion Upgrade Data Visualisation
+    //#endregion Upgrade Cloudwatch Addon
 
     describe('Chart Manager Tests Suites', () => {
         describe('Prerequisites Addon for Chart Manager Tests', () => {
@@ -105,8 +105,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         jsonDataFromAuditLog = await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: Groups does not meet minimum length of 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: Groups does not meet minimum length of 1');
                     }
                     expect(jsonDataFromAuditLog).to.be.undefined;
                 });
@@ -117,8 +118,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: Filter does not meet minimum length of 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: Filter does not meet minimum length of 1');
                     }
                 });
                 it('Negative PageSize', async () => {
@@ -129,8 +131,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: PageSize must be greater than or equal to 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: PageSize must be greater than or equal to 1');
                     }
                 });
                 it('String PageSize', async () => {
@@ -158,8 +161,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: Page must be greater than or equal to 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: Page must be greater than or equal to 1');
                     }
                 });
                 it('String Page', async () => {
@@ -189,8 +193,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: Fields does not meet minimum length of 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: Fields does not meet minimum length of 1');
                     }
                 });
                 it('Empty DateTimeStamp', async () => {
@@ -262,8 +267,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: OrderBy does not meet minimum length of 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: OrderBy does not meet minimum length of 1');
                     }
                 });
                 it('All Payload Errors Stacked', async () => {
@@ -278,14 +284,15 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     };
                     try {
                         await logsService.getLogsByPayload(payload);
-                    } catch (e: any) {
-                        expect(e.message).to.include('Bad Request: Groups does not meet minimum length of 1');
-                        expect(e.message).to.include('Filter does not meet minimum length of 1');
-                        expect(e.message).to.include('Fields does not meet minimum length of 1');
-                        expect(e.message).to.include('OrderBy does not meet minimum length of 1');
-                        expect(e.message).to.include('DateTimeStamp.End is required');
-                        expect(e.message).to.include('PageSize must be greater than or equal to 1');
-                        expect(e.message).to.include('Page must be greater than or equal to 1');
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect(errorMessage).to.include('Bad Request: Groups does not meet minimum length of 1');
+                        expect(errorMessage).to.include('Filter does not meet minimum length of 1');
+                        expect(errorMessage).to.include('Fields does not meet minimum length of 1');
+                        expect(errorMessage).to.include('OrderBy does not meet minimum length of 1');
+                        expect(errorMessage).to.include('DateTimeStamp.End is required');
+                        expect(errorMessage).to.include('PageSize must be greater than or equal to 1');
+                        expect(errorMessage).to.include('Page must be greater than or equal to 1');
                     }
                 });
             });
