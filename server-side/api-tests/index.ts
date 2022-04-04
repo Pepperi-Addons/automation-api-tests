@@ -55,6 +55,7 @@ import { TransactionTests } from './objects/transactions';
 import { ElasticSearchTests } from './elastic_search';
 import { OpenCatalogTests } from './open_catalog';
 import { DistributorTests } from './objects/distributor';
+import { UDCTests } from './user_defined_collections';
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
@@ -87,6 +88,7 @@ import { CodeJobsCleanTests } from './code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './var_system_addons';
 import { AddonDataImportExportTests, AddonDataImportExportPerformanceTests } from './addon_data_import_export';
 import { ADALStressTests } from './adal_stress';
+import { PFSTests } from './pepperi_file_service';
 
 export {
     TestDataTests,
@@ -134,6 +136,8 @@ export {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
+    PFSTests,
+    UDCTests,
     ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
