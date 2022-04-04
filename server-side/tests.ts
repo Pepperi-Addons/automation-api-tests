@@ -46,6 +46,8 @@ import {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
+    PFSTests,
+    UDCTests,
     DataVisualisationTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
@@ -755,6 +757,32 @@ export async function distributor(client: Client, request: Request, testerFuncti
     const testResult = await Promise.all([DistributorTests(service, request, testerFunctions)]).then(() =>
         testerFunctions.run(),
     );
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function pfs(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'PFS';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        PFSTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function udc(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'UDC';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        UDCTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
