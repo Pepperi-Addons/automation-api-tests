@@ -21,7 +21,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Cloudwatch Addon
 
-    describe('Chart Manager Tests Suites', () => {
+    describe('Logs API Tests Suites', () => {
         describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
             //Pepperi Notification Service
@@ -55,7 +55,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
         });
 
         describe('Endpoints', () => {
-            it('GET - Basic Get Functionality - Validating Format Of Deafult Payload', async () => {
+            it('POST - Basic Get Logs Functionality - Validating Format Of Deafult Payload', async () => {
                 const distUUID = generalService.getClientData('DistributorUUID');
                 const userUUID = generalService.getClientData('UserUUID');
                 const todaysDate = new Date().toJSON().slice(0, 10);
@@ -81,7 +81,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                     let dateTimeFromJson;
                     if (jsonLogResponse.DateTimeStamp) {
-                        //should always be true
+                        //should always be true - done for the linter
                         dateTimeFromJson = jsonLogResponse.DateTimeStamp;
                     }
                     expect(lessThanOneHourAgo(Date.parse(dateTimeFromJson))).to.be.true;
