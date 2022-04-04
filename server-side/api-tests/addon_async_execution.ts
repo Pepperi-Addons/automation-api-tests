@@ -31,7 +31,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
         describe('Prerequisites Addon for Addon Async Execution Tests', () => {
             //Test Data
             isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

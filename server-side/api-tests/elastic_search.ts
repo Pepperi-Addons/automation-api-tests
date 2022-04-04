@@ -149,7 +149,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
             //Test Data
             //Pepperi Elastic Search
             isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

@@ -249,7 +249,7 @@ export async function upgradeDependenciesTests(generalService: GeneralService, v
         this.retries(1);
 
         isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+            it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });
