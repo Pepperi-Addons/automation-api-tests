@@ -81,8 +81,13 @@ export class Browser {
     }
 
     public async navigate(url: string): Promise<void> {
-        console.log(`%cNevigate To: ${url}`, ConsoleColors.NevigationMessage);
+        console.log(`%cNavigate To: ${url}`, ConsoleColors.NevigationMessage);
         return await this.driver.navigate().to(url);
+    }
+
+    public async refresh(): Promise<void> {
+        console.log(`%cRefreshing page`, ConsoleColors.NevigationMessage);
+        return await this.driver.navigate().refresh();
     }
 
     public async switchTo(iframeLocator: Locator): Promise<void> {
@@ -294,8 +299,9 @@ export class Browser {
     /**
      * Check if an element is located within the DOM
      * @param selector Element locator.
-     * @param timeOut Timeout, in MS, to poll for element located until 'false' is returned.
+     * @param timeOut Timeout, in MS, to poll for element located until 'false' is returned. Default is 1000ms.
      * @param suppressLog Suppress writing error to log in case the function returns 'false'.
+     * @returns Whether the element is located in the DOM.
      */
     public async isElementLocated(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
         await this.driver.manage().setTimeouts({ implicit: timeOut });
@@ -303,14 +309,14 @@ export class Browser {
             .wait(
                 until.elementLocated(selector),
                 timeOut,
-                `%cElement ${selector.valueOf()['value']} was not located in DOM`,
+                `Element ${selector.valueOf()['value']} was not located in DOM`
             )
             .then(() => {
                 return true;
             })
             .catch((error) => {
                 if (!suppressLog) {
-                    console.log(error.message);
+                    console.log(`%c${error.message}`, ConsoleColors.PageMessage);
                 }
                 return false;
             });
@@ -325,8 +331,15 @@ export class Browser {
      */
     public findSingleElement(selector: Locator, waitUntil = 15000): WebElementPromise {
         const promise = this.driver.manage().setTimeouts({ implicit: waitUntil });
+        
         Promise.all([promise]);
-        return this.driver.findElement(selector);
+        const element = this.driver.findElement(selector);
+        console.log(
+            `%cElement with selector: '${selector.valueOf()['value']}' was successfully found `,
+            ConsoleColors.ElementFoundMessage,
+        );
+        return element;
+        
     }
 
     /**
@@ -340,7 +353,12 @@ export class Browser {
         attributeName: string,
         waitUntil = 15000,
     ): Promise<string | null> {
-        return this.findSingleElement(selector, waitUntil).getAttribute(attributeName);
+        const attributeValue = this.findSingleElement(selector, waitUntil).getAttribute(attributeName);
+        console.log(
+            `%cSuccessfully retrieved the attribute '${attributeName}'`,
+            ConsoleColors.PageMessage,
+        );
+        return attributeValue;
     }
 
     //TODO:Possibly does not center the view on the element, needs testing.
