@@ -24,7 +24,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Visualisation
 
-    describe('Data Visualisation Tests Suites', () => {
+    describe('Data Queries Tests Suites', () => {
         describe('Prerequisites Addon for Data Visualisation Tests', () => {
             //Test Data
             //Pepperi Notification Service
