@@ -8,54 +8,54 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const it = tester.it;
 
     const savedSeries: QuerySeries = {
-        Key: "fc4f2b0a-2f2f-43a8-bb44-6977a1217bee",
-        Name: "Series 1",
-        Resource: "transaction_lines",
-        Label: "${label}",
+        Key: 'fc4f2b0a-2f2f-43a8-bb44-6977a1217bee',
+        Name: 'Series 1',
+        Resource: 'transaction_lines',
+        Label: '${label}',
         Top: {
             Max: 20,
-            Ascending: true
+            Ascending: true,
         },
         AggregatedFields: [
             {
-                Aggregator: "Sum",
-                Script: "params.Var1",
-                Alias: "",
-                FieldID: "InternalID"
-            }
+                Aggregator: 'Sum',
+                Script: 'params.Var1',
+                Alias: '',
+                FieldID: 'InternalID',
+            },
         ],
         AggregatedParams: [
             {
-                Aggregator: "Sum",
-                FieldID: "",
-                Name: "Var1"
-            }
+                Aggregator: 'Sum',
+                FieldID: '',
+                Name: 'Var1',
+            },
         ],
         BreakBy: {
-            FieldID: "Transaction.Type",
-            Interval: "None",
-            Format: ""
+            FieldID: 'Transaction.Type',
+            Interval: 'None',
+            Format: '',
         },
         Filter: null,
         Scope: {
-            Account: "AllAccounts",
-            User: "AllUsers"
+            Account: 'AllAccounts',
+            User: 'AllUsers',
         },
         DynamicFilterFields: [],
         GroupBy: [
             {
-                Format: "",
-                Alias: "ExternalID",
-                FieldID: "Transaction.Account.ExternalID",
-                Interval: "None"
-            }
+                Format: '',
+                Alias: 'ExternalID',
+                FieldID: 'Transaction.Account.ExternalID',
+                Interval: 'None',
+            },
         ],
     };
     const savedDateQueries: DataQuerie = {
         Hidden: false,
-        Name: "evgenys data query 22",
+        Name: 'evgenys data query 22',
         Series: [savedSeries],
-    }
+    };
 
     //#region Upgrade Data Visualisation
     const testData = {
