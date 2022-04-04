@@ -59,7 +59,10 @@ import { UDCTests } from './user_defined_collections';
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
-import { DataVisualisationTests } from './data_visualisation';
+import { ChartManagerTests } from './chart_manager';
+import { DataQueriesTests } from './data_queries';
+import { AWSLogsTest } from './logs_api';
+
 //#endregion Evgenys's Tests
 
 import {
@@ -83,7 +86,7 @@ import { MaintenanceJobTests } from './maintenance_job';
 import { CPINodeTests } from './cpi_node';
 import { CodeJobsCleanTests } from './code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './var_system_addons';
-import { AddonDataImportExportTests } from './addon_data_import_export';
+import { AddonDataImportExportTests, AddonDataImportExportPerformanceTests } from './addon_data_import_export';
 import { ADALStressTests } from './adal_stress';
 import { PFSTests } from './pepperi_file_service';
 
@@ -135,7 +138,7 @@ export {
     DistributorTests,
     PFSTests,
     UDCTests,
-    DataVisualisationTests,
+    ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,
@@ -158,5 +161,8 @@ export {
     CodeJobsCleanTests,
     VarSystemAddonsTests,
     AddonDataImportExportTests,
+    AddonDataImportExportPerformanceTests,
     ADALStressTests,
+    DataQueriesTests,
+    AWSLogsTest,
 };

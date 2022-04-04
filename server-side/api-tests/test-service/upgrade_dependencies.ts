@@ -13,7 +13,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'Services Framework': [
             '00000000-0000-0000-0000-000000000a91',
-            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5.479', //'9.5',
+            request.body.servicesFramework ? `${request.body.servicesFramework}` : '9.5', //'9.5',
         ],
         'Cross Platforms API': [
             '00000000-0000-0000-0000-000000abcdef',
@@ -21,11 +21,11 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'WebApp API Framework': [
             '00000000-0000-0000-0000-0000003eba91',
-            request.body.webAppApiFramework ? `${request.body.webAppApiFramework}` : '16.70',
+            request.body.webAppApiFramework ? `${request.body.webAppApiFramework}` : '16.80.4', //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
         ],
         'WebApp Platform': [
             '00000000-0000-0000-1234-000000000b2b',
-            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.60',
+            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.65.',
         ],
         'Settings Framework': [
             '354c5123-a7d0-4f52-8fce-3cf1ebc95314',

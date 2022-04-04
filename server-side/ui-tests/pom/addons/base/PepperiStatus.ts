@@ -1,0 +1,17 @@
+export enum PepperiStatus {
+    InCreation = 1,
+    Submitted = 2,
+    InProgress = 3,
+    OnHold = 4,
+    Cancelled = 5,
+    Revised = 6,
+    Closed = 7,
+    WaitingForApproval = 9,
+    ERP = 12,
+    Invoice = 14,
+    InPlanning = 16,
+    Published = 17,
+    InPayment = 18,
+    Paid = 19,
+    New = 1000,
+}

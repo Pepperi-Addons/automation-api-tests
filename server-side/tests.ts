@@ -27,8 +27,6 @@ import {
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
-    SchedulerTestsOld,
-    CodeJobsTests,
     TimeOutAddonJobsTests,
     AddonJobsTests,
     InstallTests,
@@ -48,7 +46,7 @@ import {
     DistributorTests,
     PFSTests,
     UDCTests,
-    DataVisualisationTests,
+    ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,
@@ -71,7 +69,10 @@ import {
     CodeJobsCleanTests,
     VarSystemAddonsTests,
     AddonDataImportExportTests,
+    AddonDataImportExportPerformanceTests,
     ADALStressTests,
+    DataQueriesTests,
+    AWSLogsTest,
 } from './api-tests/index';
 
 let testName = '';
@@ -481,19 +482,20 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
     testName = 'Scheduler';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    let testResult;
+    // let testResult;
     //TODO: Run new SchedulerTests on Stage and old SchedulerTests on other
-    if (client.BaseURL.includes('staging')) {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            SchedulerTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    } else {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            SchedulerTestsOld(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    }
+    //TODO: If tests pass on 13/03/2022 remove these comments
+    // if (client.BaseURL.includes('staging')) {
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SchedulerTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    // } else {
+    //     testResult = await Promise.all([
+    //         await test_data(client, testerFunctions),
+    //         SchedulerTestsOld(service, testerFunctions),
+    //     ]).then(() => testerFunctions.run());
+    // }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -503,19 +505,20 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
     testName = 'Code_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    let testResult;
+    // let testResult;
     //TODO: Remove the code_jobs endpoint from Jenkins, This test was removed from Stage: "CodeJobsTests", This test was added for now: "AddonJobsTests"
-    if (client.BaseURL.includes('staging')) {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            AddonJobsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    } else {
-        testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            CodeJobsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
-    }
+    //TODO: If tests pass on 13/03/2022 remove these comments
+    // if (client.BaseURL.includes('staging')) {
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonJobsTests(service, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    // } else {
+    //     testResult = await Promise.all([
+    //         await test_data(client, testerFunctions),
+    //         CodeJobsTests(service, testerFunctions),
+    //     ]).then(() => testerFunctions.run());
+    // }
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
@@ -789,14 +792,40 @@ export async function udc(client: Client, request: Request, testerFunctions: Tes
 //#endregion Yoni's Tests
 
 //#region Evgeny's Tests
-export async function data_visualisation(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function charts_manager(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Data_Visualisation';
+    testName = 'Charts_Manager';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        DataVisualisationTests(service, request, testerFunctions),
+        ChartManagerTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function data_queries(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Queries';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DataQueriesTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function aws_logs(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Queries';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AWSLogsTest(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
@@ -1123,6 +1152,23 @@ export async function addon_data_import_export(client: Client, request: Request,
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonDataImportExportTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export_performanc(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export_Performanc';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportPerformanceTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

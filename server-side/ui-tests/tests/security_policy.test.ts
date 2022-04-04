@@ -35,7 +35,9 @@ export async function SecurityPolicyTests(email: string, password: string) {
         });
 
         function testDataGetFromFileAtPath(pathOfFileToReadFrom): string {
-            const file = fs.readFileSync(path.resolve(__dirname, pathOfFileToReadFrom));
+            const file = fs.readFileSync(
+                path.resolve(__dirname.replace('\\build\\server-side', ''), pathOfFileToReadFrom),
+            );
             return file.toString();
         }
 

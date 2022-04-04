@@ -203,6 +203,12 @@ export default class GeneralService {
     }
 
     async initiateTester(email, pass): Promise<Client> {
+        const getToken = await this.getToken(email, pass);
+
+        return this.createClient(getToken.access_token);
+    }
+
+    private async getToken(email: any, pass: any) {
         const urlencoded = new URLSearchParams();
         urlencoded.append('username', email);
         urlencoded.append('password', pass);
@@ -224,7 +230,13 @@ export default class GeneralService {
             .then((res) => res.text())
             .then((res) => (res ? JSON.parse(res) : ''));
 
-        return this.createClient(getToken.access_token);
+        if (!getToken?.access_token) {
+            throw new Error(
+                `Error unauthorized\nError: ${getToken.error}\nError description: ${getToken.error_description}`,
+            );
+        }
+
+        return getToken;
     }
 
     createClient(authorization) {
@@ -499,6 +511,7 @@ export default class GeneralService {
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
                     isInstalledArr.push(false);
+                    continue;
                 }
             }
             isInstalledArr.push(true);
@@ -529,6 +542,9 @@ export default class GeneralService {
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
+            if (addonName == 'ADAL' && this.papiClient['options'].baseURL.includes('staging')) {
+                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',
@@ -554,7 +570,7 @@ export default class GeneralService {
                 }
             } else if (fetchVarResponse.Status == 401) {
                 throw new Error(
-                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.Header.title}`,
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
                 );
             } else {
                 throw new Error(

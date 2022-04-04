@@ -2,6 +2,7 @@ import { Browser } from '../utilities/browser';
 import { Page } from './base/Page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
+import { WebAppPage } from './base/WebAppPage';
 
 export class WebAppSettingsSidePanel extends Page {
     constructor(protected browser: Browser) {
@@ -12,7 +13,23 @@ export class WebAppSettingsSidePanel extends Page {
     //WebApp Platform | Version: 16.60.38 = settings-bar-container
     //WebApp Platform | Version: 16.65.30/16.65.34 = pep-side-bar-container
     //public SettingsBarContainer: Locator = By.xpath('.//*[@class="settings-bar-container"]//*[@role="button"]');
-    public SettingsBarContainer: Locator = By.xpath('.//*[@class="pep-side-bar-container"]//*[@role="button"]');
+    public SettingsBarContainer: By = By.xpath('//*[@class="pep-side-bar-container"]//*[@role="button"]');
+
+    public static readonly PepSideBarContainer = By.xpath('//pep-side-bar');
+
+    public static getCategoryBtn(categoryId: string): By {
+        return By.xpath(
+            `${WebAppSettingsSidePanel.PepSideBarContainer.value}//*[@id='${categoryId}']/ancestor::mat-expansion-panel-header[@role="button"]`,
+        );
+    }
+
+    public static getSubCategoryBtn(subCategoryId: string, categoryId: string): By {
+        return By.xpath(
+            `${
+                WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
+            }/parent::mat-expansion-panel//li[contains(@id,'${subCategoryId}')]`,
+        );
+    }
 
     //Object Types Editor Locators
     public ObjectEditorAccounts: Locator = By.id('settings/04de9428-8658-4bf7-8171-b59f6327bbf1/accounts/types');
@@ -38,9 +55,34 @@ export class WebAppSettingsSidePanel extends Page {
     public PackageTPEditor: Locator = By.id('custom_plugin/90b11a55-b36d-48f1-88dc-6d8e06d08286/default_editor');
 
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
-        const selectedSettings = Object.assign({}, this.SettingsBarContainer);
-        selectedSettings['value'] += `//*[contains(@id,"${settingsButtonID}")]/../../..`;
-        await this.browser.click(selectedSettings);
+        await this.browser.click(
+            By.xpath(`${this.SettingsBarContainer.value}//*[contains(@id,"${settingsButtonID}")]/../../..`),
+        );
+
         return;
+    }
+    public async isCategoryExpanded(categoryId: string): Promise<boolean> {
+        const ariaExpanded = await this.browser.getElementAttribute(
+            WebAppSettingsSidePanel.getCategoryBtn(categoryId),
+            'aria-expanded',
+        );
+        return ariaExpanded === 'true';
+    }
+
+    public async expandSettingsCategory(categoryId: string): Promise<void> {
+        const isExpanded: boolean = await this.isCategoryExpanded(categoryId);
+        if (!isExpanded) {
+            return await this.browser.click(WebAppSettingsSidePanel.getCategoryBtn(categoryId));
+        }
+    }
+
+    public async clickSettingsSubCategory(subCategoryId: string, categoryId: string): Promise<void> {
+        await this.browser.click(WebAppSettingsSidePanel.getSubCategoryBtn(subCategoryId, categoryId));
+        return await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
+    }
+
+    public async enterSettingsPage(categoryId: string, subCategoryId: string): Promise<void> {
+        await this.expandSettingsCategory(categoryId);
+        return await this.clickSettingsSubCategory(subCategoryId, categoryId);
     }
 }

@@ -35,7 +35,7 @@ export class WebAppAPI extends Page {
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (syncStatusReposnse.Status == 'Processing') {
                 await this.browser.sleep(5000);
-                console.log(`UpToDate: Retry ${loopsAmount} Times.`);
+                console.log(`Processing: Retry ${loopsAmount} Times.`);
             }
             loopsAmount--;
         } while ((syncStatusReposnse === null || syncStatusReposnse.Status == 'Processing') && loopsAmount > 0);
@@ -129,12 +129,12 @@ export class WebAppAPI extends Page {
     public async getCart(accessToken: string, catalogUUID: string) {
         const generalService = new GeneralService(this._CLIENT);
         let searchResponse;
-        let maxLoopsCounter = 90;
+        let maxLoopsCounter = 60;
+        const URL = `${
+            this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
+        }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
         do {
             generalService.sleep(2000);
-            const URL = `${
-                this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL
-            }/Service1.svc/v1/Cart/Transaction/${catalogUUID}`;
             searchResponse = await generalService.fetchStatus(URL, {
                 method: 'GET',
                 headers: {
@@ -151,6 +151,8 @@ export class WebAppAPI extends Page {
         const generalService = new GeneralService(this._CLIENT);
         console.log("performing GET call to 'base_url' to recive correct URL to use as base in all API calls");
         this._BASE_URL = await (await generalService.papiClient.get('/webapi/base_url')).BaseURL;
+        //TODO: 07/03/2022: Improve this to also be able to work with EU when there will be time
+        this._BASE_URL = this._BASE_URL.replace('euwebapi', 'webapi');
         return this._BASE_URL;
     }
 }

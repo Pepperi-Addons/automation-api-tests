@@ -61,7 +61,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     value: 'data:image/png;base64,' + base64Image,
                 });
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -162,7 +162,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     value: 'data:image/png;base64,' + base64Image,
                 });
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -409,7 +409,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     }
                 }
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -668,7 +668,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     }
                 }
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -903,7 +903,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     }
                 }
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -921,7 +921,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                     value: 'data:image/png;base64,' + base64ImageSecondTransaction,
                 });
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartDoneBtn);
 
@@ -1040,7 +1040,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                 const webAppTopBar = new WebAppTopBar(driver);
 
-                console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                console.log('Mandatory 0.5 sec wait before submitting promotion');
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartDoneBtn);
 
@@ -1069,7 +1069,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                 for (let index = 0; index < promotionsArr.length; index++) {
                     await webAppTransaction.addItemToCart(this, 'Frag011', promotionsArr[index], true);
 
-                    console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                    console.log('Mandatory 0.5 sec wait before submitting promotion');
                     generalService.sleep(500);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
 
@@ -1181,7 +1181,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                     const webAppTopBar = new WebAppTopBar(driver);
 
-                    console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                    console.log('Mandatory 0.5 sec wait before submitting promotion');
                     generalService.sleep(500);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
 
@@ -1200,7 +1200,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
                     await webAppTransaction.addItemToCart(this, 'Frag011', promotionsArr[index], true);
 
-                    console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                    console.log('Mandatory 0.5 sec wait before submitting promotion');
                     generalService.sleep(500);
                     await webAppList.click(webAppTopBar.CartDoneBtn);
 
@@ -1220,7 +1220,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             value: 'data:image/png;base64,' + base64ImageInCart,
                         });
 
-                        console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                        console.log('Mandatory 0.5 sec wait before submitting promotion');
                         generalService.sleep(500);
                         await webAppList.click(webAppTopBar.CartSumbitBtn);
                     } else if (promotionsArr[index] == 10) {
@@ -1234,9 +1234,11 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             value: 'data:image/png;base64,' + base64ImageSecondTransaction,
                         });
 
-                        console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                        console.log('Mandatory 0.5 sec wait before submitting promotion');
                         generalService.sleep(500);
                         await webAppList.click(webAppTopBar.CartDoneBtn);
+
+                        await webAppList.isSpinnerDone();
                         await webAppList.click(webAppTopBar.CartViewBtn);
 
                         await webAppList.isSpinnerDone();
@@ -1247,7 +1249,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                             value: 'data:image/png;base64,' + base64ImageInCart,
                         });
 
-                        console.log('Mandatory 0.5 sec wait before submitting  promotion');
+                        console.log('Mandatory 0.5 sec wait before submitting promotion');
                         generalService.sleep(500);
                         await webAppList.click(webAppTopBar.CartSumbitBtn);
                     }
@@ -1416,9 +1418,19 @@ export async function PromotionTests(email: string, password: string, client: Cl
 16:TSAPPIOrderPromotionPromotionCode, 17:TSAPPIOrderPromotionReason, 18:TSAPPIOrderPromotionReasonReference,
 19:SubTotalAfterItemsDiscount.
  */
-async function GetDataFromCartWebAPI(webAPI, accessToken, catalogUUID) {
+async function GetDataFromCartWebAPI(webAPI: WebAppAPI, accessToken: string, catalogUUID: string) {
     const cart = await webAPI.getCart(accessToken, catalogUUID);
     const cartSmartSerch = await webAPI.getCartItemSearch(accessToken, catalogUUID);
+    if (cart.AccountUID == null) {
+        throw new Error(
+            `The cart have account of: NULL, With Error code: ${cart.ErrorCode}, and Error Message: ${cart.ErrorMessage}`,
+        );
+    }
+    if (!cartSmartSerch.Rows) {
+        throw new Error(
+            `The cartSmartSerch have Rows of: NULL, With Error code: ${cart.ErrorCode}, and Error Message: ${cart.ErrorMessage}`,
+        );
+    }
     const dataFromCartArr: string[][] = [];
     for (let j = 0; j < cartSmartSerch.Rows.length; j++) {
         for (let i = 0; i < cartSmartSerch.Rows[j].Fields.length; i++) {

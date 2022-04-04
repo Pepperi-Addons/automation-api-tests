@@ -15,7 +15,7 @@ import {
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { InventoryService } from '../../services/inventory.service';
-import { SelectPostAction } from '../pom/addons/base/AddonPage';
+import { WorkflowAction } from '../pom/addons/base/WorkflowAction';
 import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
@@ -79,7 +79,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
             await objectTypeEditor.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
 
-            await objectTypeEditor.editATDWorkflow(SelectPostAction.UpdateInventory);
+            await objectTypeEditor.editATDWorkflow(WorkflowAction.UpdateInventory);
 
             const brandedApp = new BrandedApp(driver);
             await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);

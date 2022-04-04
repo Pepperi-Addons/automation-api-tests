@@ -40,22 +40,15 @@ export class WebAppLoginPage extends Page {
     }
 
     /**
-     * This function will nevigate to login page and login to home page
+     * This function will navigate to login page and login to home page
+     * @returns A new instance of {@link WebAppHomePage}.
      */
-    public async login(email: string, password: string): Promise<void> {
+    public async login(email: string, password: string): Promise<WebAppHomePage> {
         await this.navigate();
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
         await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
-        return;
-    }
-
-    public async loginNoCompanyLogo(email: string, password: string): Promise<void> {
-        await this.navigate();
-        await this.signIn(email, password);
-        const homePage = new WebAppHomePage(this.browser);
-        await expect(homePage.untilIsVisible(homePage.Main, 90000)).eventually.to.be.true;
-        return;
+        return new WebAppHomePage(this.browser);
     }
 
     public async loginDeepLink(url: string, email: string, password: string): Promise<void> {
