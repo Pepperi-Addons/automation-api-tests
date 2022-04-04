@@ -4,8 +4,8 @@ import GeneralService, { ResourceTypes } from './general.service';
 export interface DataQuerie {
     CreationDateTime?: string;
     Hidden: boolean;
-    Key: string;
-    ModificationDateTime: string;
+    Key?: string;
+    ModificationDateTime?: string;
     Name: string;
     Series: QuerySeries[];
 }
@@ -71,7 +71,7 @@ export class DataQueriesService {
         return queriesResponse;
     }
 
-    postChart(dataQuerie: DataQuerie): Promise<DataQuerie> {
+    postQuerie(dataQuerie: DataQuerie): Promise<DataQuerie> {
         return this.papiClient.post('/data_queries', dataQuerie);
     }
 }

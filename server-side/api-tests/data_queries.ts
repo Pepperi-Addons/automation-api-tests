@@ -1,4 +1,4 @@
-import { DataQuerie, DataQueriesService } from '../services/data-queries.service';
+import { DataQuerie, DataQueriesService, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -7,9 +7,59 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const expect = tester.expect;
     const it = tester.it;
 
+    const savedSeries: QuerySeries = {
+        Key: "fc4f2b0a-2f2f-43a8-bb44-6977a1217bee",
+        Name: "Series 1",
+        Resource: "transaction_lines",
+        Label: "${label}",
+        Top: {
+            Max: 20,
+            Ascending: true
+        },
+        AggregatedFields: [
+            {
+                Aggregator: "Sum",
+                Script: "params.Var1",
+                Alias: "",
+                FieldID: "InternalID"
+            }
+        ],
+        AggregatedParams: [
+            {
+                Aggregator: "Sum",
+                FieldID: "",
+                Name: "Var1"
+            }
+        ],
+        BreakBy: {
+            FieldID: "Transaction.Type",
+            Interval: "None",
+            Format: ""
+        },
+        Filter: null,
+        Scope: {
+            Account: "AllAccounts",
+            User: "AllUsers"
+        },
+        DynamicFilterFields: [],
+        GroupBy: [
+            {
+                Format: "",
+                Alias: "ExternalID",
+                FieldID: "Transaction.Account.ExternalID",
+                Interval: "None"
+            }
+        ],
+    };
+    const savedDateQueries: DataQuerie = {
+        Hidden: false,
+        Name: "evgenys data query",
+        Series: [savedSeries],
+    }
+
     //#region Upgrade Data Visualisation
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
@@ -58,74 +108,112 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             }
         });
         describe('Endpoints', () => {
-            describe('GET', () => {
-                it('Get Queries - Retriving all Queries data and validating its format', async () => {
-                    //test goes here//
-                    const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
-                    jsonDataFromAuditLog.forEach((jsonDataQuery) => {
-                        expect(jsonDataQuery).to.have.own.property('ModificationDateTime');
-                        expect(jsonDataQuery).to.have.own.property('Hidden');
-                        expect(jsonDataQuery.Hidden).to.be.a('Boolean');
-                        expect(jsonDataQuery).to.have.own.property('CreationDateTime');
-                        expect(jsonDataQuery).to.have.own.property('Name');
-                        expect(jsonDataQuery).to.have.own.property('Key');
-                        if (jsonDataQuery.Series) {
-                            //not every data query has to have a series
-                            expect(jsonDataQuery).to.have.own.property('Series');
-                            expect(jsonDataQuery.Series).to.be.an('Array');
-                            jsonDataQuery.Series.forEach((jsonSeriresData) => {
-                                //tests each Series list
-                                expect(jsonSeriresData).to.have.own.property('Key');
-                                expect(jsonSeriresData).to.have.own.property('Name');
-                                expect(jsonSeriresData).to.have.own.property('Resource');
-                                expect(jsonSeriresData).to.have.own.property('Label');
-                                expect(jsonSeriresData).to.have.own.property('Top');
-                                expect(jsonSeriresData.Top).to.have.own.property('Max');
-                                expect(jsonSeriresData.Top.Max).to.be.a('Number');
-                                expect(jsonSeriresData.Top).to.have.own.property('Ascending');
-                                expect(jsonSeriresData.Top.Ascending).to.be.a('Boolean');
-                                expect(jsonSeriresData).to.have.own.property('AggregatedFields');
-                                jsonSeriresData.AggregatedFields.forEach((jsonAggregatedFields) => {
-                                    //tests each element in the AggregatedFields list
-                                    expect(jsonAggregatedFields).to.have.own.property('Aggregator');
-                                    expect(jsonAggregatedFields).to.have.own.property('FieldID');
-                                    expect(jsonAggregatedFields).to.have.own.property('Alias');
-                                    expect(jsonAggregatedFields).to.have.own.property('Script');
+            describe('POST', () => {
+                it('Post A New Querie And Test The Response', async () => {
+                    const todaysDate = new Date().toJSON().slice(0, 10);
+                    const jsonDataFromAuditLog: DataQuerie = await dataQueriesService.postQuerie(savedDateQueries);
+                    expect(jsonDataFromAuditLog).to.have.own.property('CreationDateTime');
+                    expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
+                    expect(lessThanOneHourAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    debugger;
+                });
+                describe('GET', () => {
+                    it('Get Queries - Retriving all Queries data and validating its format', async () => {
+                        //test goes here//
+                        const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
+                        jsonDataFromAuditLog.forEach((jsonDataQuery) => {
+                            expect(jsonDataQuery).to.have.own.property('ModificationDateTime');
+                            expect(jsonDataQuery).to.have.own.property('Hidden');
+                            expect(jsonDataQuery.Hidden).to.be.a('Boolean');
+                            expect(jsonDataQuery).to.have.own.property('CreationDateTime');
+                            expect(jsonDataQuery).to.have.own.property('Name');
+                            expect(jsonDataQuery).to.have.own.property('Key');
+                            if (jsonDataQuery.Series) {
+                                //not every data query has to have a series
+                                expect(jsonDataQuery).to.have.own.property('Series');
+                                expect(jsonDataQuery.Series).to.be.an('Array');
+                                jsonDataQuery.Series.forEach((jsonSeriresData) => {
+                                    //tests each Series list
+                                    expect(jsonSeriresData).to.have.own.property('Key');
+                                    expect(jsonSeriresData).to.have.own.property('Name');
+                                    expect(jsonSeriresData).to.have.own.property('Resource');
+                                    expect(jsonSeriresData).to.have.own.property('Label');
+                                    expect(jsonSeriresData).to.have.own.property('Top');
+                                    expect(jsonSeriresData.Top).to.have.own.property('Max');
+                                    expect(jsonSeriresData.Top.Max).to.be.a('Number');
+                                    expect(jsonSeriresData.Top).to.have.own.property('Ascending');
+                                    expect(jsonSeriresData.Top.Ascending).to.be.a('Boolean');
+                                    expect(jsonSeriresData).to.have.own.property('AggregatedFields');
+                                    jsonSeriresData.AggregatedFields.forEach((jsonAggregatedFields) => {
+                                        //tests each element in the AggregatedFields list
+                                        expect(jsonAggregatedFields).to.have.own.property('Aggregator');
+                                        expect(jsonAggregatedFields).to.have.own.property('FieldID');
+                                        expect(jsonAggregatedFields).to.have.own.property('Alias');
+                                        expect(jsonAggregatedFields).to.have.own.property('Script');
+                                    });
+                                    expect(jsonSeriresData).to.have.own.property('AggregatedParams');
+                                    jsonSeriresData.AggregatedParams.forEach((jsonAggregatedParams) => {
+                                        //tests each element in the AggregatedParams list
+                                        expect(jsonAggregatedParams).to.have.own.property('FieldID');
+                                        expect(jsonAggregatedParams).to.have.own.property('Aggregator');
+                                        expect(jsonAggregatedParams).to.have.own.property('Name');
+                                    });
+                                    expect(jsonSeriresData).to.have.own.property('BreakBy');
+                                    expect(jsonSeriresData.BreakBy).to.have.own.property('FieldID');
+                                    expect(jsonSeriresData.BreakBy).to.have.own.property('Interval');
+                                    expect(jsonSeriresData.BreakBy).to.have.own.property('Format');
+                                    expect(jsonSeriresData).to.have.own.property('Filter');
+                                    expect(jsonSeriresData).to.have.own.property('Scope');
+                                    expect(jsonSeriresData.Scope).to.have.own.property('User');
+                                    expect(jsonSeriresData.Scope.User).to.be.oneOf(['AllUsers', 'CurrentUser']);
+                                    expect(jsonSeriresData.Scope).to.have.own.property('Account');
+                                    expect(jsonSeriresData.Scope.Account).to.be.oneOf([
+                                        'AllAccounts',
+                                        'AccountsAssignedToCurrentUser',
+                                    ]);
+                                    expect(jsonSeriresData).to.have.own.property('DynamicFilterFields');
+                                    expect(jsonSeriresData).to.have.own.property('GroupBy');
+                                    jsonSeriresData.GroupBy.forEach((jsonGroupBy) => {
+                                        //tests each GroupBy element in the list
+                                        expect(jsonGroupBy).to.have.own.property('FieldID');
+                                        expect(jsonGroupBy).to.have.own.property('Interval');
+                                        expect(jsonGroupBy).to.have.own.property('Format');
+                                        expect(jsonGroupBy).to.have.own.property('Alias');
+                                    });
                                 });
-                                expect(jsonSeriresData).to.have.own.property('AggregatedParams');
-                                jsonSeriresData.AggregatedParams.forEach((jsonAggregatedParams) => {
-                                    //tests each element in the AggregatedParams list
-                                    expect(jsonAggregatedParams).to.have.own.property('FieldID');
-                                    expect(jsonAggregatedParams).to.have.own.property('Aggregator');
-                                    expect(jsonAggregatedParams).to.have.own.property('Name');
-                                });
-                                expect(jsonSeriresData).to.have.own.property('BreakBy');
-                                expect(jsonSeriresData.BreakBy).to.have.own.property('FieldID');
-                                expect(jsonSeriresData.BreakBy).to.have.own.property('Interval');
-                                expect(jsonSeriresData.BreakBy).to.have.own.property('Format');
-                                expect(jsonSeriresData).to.have.own.property('Filter');
-                                expect(jsonSeriresData).to.have.own.property('Scope');
-                                expect(jsonSeriresData.Scope).to.have.own.property('User');
-                                expect(jsonSeriresData.Scope.User).to.be.oneOf(['AllUsers', 'CurrentUser']);
-                                expect(jsonSeriresData.Scope).to.have.own.property('Account');
-                                expect(jsonSeriresData.Scope.Account).to.be.oneOf([
-                                    'AllAccounts',
-                                    'AccountsAssignedToCurrentUser',
-                                ]);
-                                expect(jsonSeriresData).to.have.own.property('DynamicFilterFields');
-                                expect(jsonSeriresData).to.have.own.property('GroupBy');
-                                jsonSeriresData.GroupBy.forEach((jsonGroupBy) => {
-                                    //tests each GroupBy element in the list
-                                    expect(jsonGroupBy).to.have.own.property('FieldID');
-                                    expect(jsonGroupBy).to.have.own.property('Interval');
-                                    expect(jsonGroupBy).to.have.own.property('Format');
-                                    expect(jsonGroupBy).to.have.own.property('Alias');
-                                });
-                            });
-                        }
+                            }
+                        });
                     });
+                });
+                it('Delete All Queries', async () => {
+                    await expect(TestCleanUp(dataQueriesService)).eventually.to.be.above(0);
+                    const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
+                    expect(jsonDataFromAuditLog.length).to.equal(0);
                 });
             });
         });
     });
 }
+
+async function TestCleanUp(service: DataQueriesService) {
+    const allChartsObjects: DataQuerie[] = await service.getQueries();
+    let deletedCounter = 0;
+
+    for (let index = 0; index < allChartsObjects.length; index++) {
+        if (allChartsObjects[index].Hidden == false) {
+            allChartsObjects[index].Hidden = true;
+            await service.postQuerie(allChartsObjects[index]);
+            deletedCounter++;
+        }
+    }
+    console.log('Hidded Charts: ' + deletedCounter);
+    return deletedCounter;
+}
+
+const lessThanOneHourAgo = (date) => {
+    const timeDiffWithAWS = 1000 * 60 * 60 * 3; //based on the formula (HOUR = (1000 * 60 * 60)) which is 3 hours
+    const tenMins = 1000 * 60 * 10;
+    const an10MinsAgo = Date.now() - tenMins;
+
+    return date + timeDiffWithAWS > an10MinsAgo;
+};
