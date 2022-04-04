@@ -24,7 +24,7 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
             //Test Datas
             //Maintenance
             isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

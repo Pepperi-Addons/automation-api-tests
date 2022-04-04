@@ -4,35 +4,37 @@ import GeneralService from './general.service';
 export class UDCService {
     papiClient: PapiClient;
     generalService: GeneralService;
+    uuid: string;
 
-    constructor(public service: GeneralService) {
+    constructor(public service: GeneralService, uuid) {
         this.papiClient = service.papiClient;
         this.generalService = service;
+        this.uuid = uuid;
     }
 
-    postCollection(body: any) {
-        return this.papiClient.post('/user_defined_collections/schemes', body);
+    postCollectionschemes(body: any) {
+        return this.papiClient.userDefinedCollections.schemes.upsert(body);
     }
 
-    getCollections() {
-        return this.papiClient.get('/user_defined_collections/schemes');
+    getCollectionschemes() {
+        return this.papiClient.userDefinedCollections.schemes.find();
     }
 
-    postDocument(collection, body: any) {
-        return this.papiClient.post('/user_defined_collections/' + collection, body);
+    postDocument(collectionName, body) {
+        return this.papiClient.userDefinedCollections.documents(collectionName).upsert(body);
     }
 
-    getDocuments(collection) {
-        return this.papiClient.get('/user_defined_collections/' + collection);
+    getDocuments(collectionName) {
+        return this.papiClient.userDefinedCollections.documents(collectionName).find();
     }
 
-    async getDIMX(udcUUID, collection) {
+    async getCollectionFromADAL(collection) {
         return await this.generalService
-            .fetchStatus('/addons/data/' + udcUUID + '/' + collection, {
+            .fetchStatus(`/addons/data/${this.uuid}/${collection}`, {
                 method: 'GET',
                 headers: {
-                    'X-Pepperi-OwnerID': udcUUID,
-                    'X-Pepperi-SecretKey': await this.generalService.getSecretKey(udcUUID),
+                    'X-Pepperi-OwnerID': this.uuid,
+                    'X-Pepperi-SecretKey': await this.generalService.getSecretKey(this.uuid),
                 },
             })
             .then((res) => res.Body);
