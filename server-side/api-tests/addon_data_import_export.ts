@@ -58,8 +58,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     describe('Addon Data Import Export Tests Suites', () => {
         describe('Prerequisites Addon Data Import Export Tests', () => {
             //Test Data
-            it('Validate that all the needed addons are installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
