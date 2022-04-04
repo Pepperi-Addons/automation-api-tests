@@ -45,8 +45,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         describe('Prerequisites Addon for ADAL Tests', () => {
             //Test Data
             //ADAL
-            it('Validate that all the needed addons are installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

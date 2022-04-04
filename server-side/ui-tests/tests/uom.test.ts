@@ -68,8 +68,8 @@ export async function UomTests(email: string, password: string, varPass: string,
         describe('Prerequisites Addons for UOM Tests', () => {
             //Test Data
             //UOM
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
