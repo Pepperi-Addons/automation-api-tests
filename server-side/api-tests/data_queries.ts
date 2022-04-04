@@ -114,7 +114,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                     const jsonDataFromAuditLog: DataQuerie = await dataQueriesService.postQuerie(savedDateQueries);
                     expect(jsonDataFromAuditLog).to.have.own.property('CreationDateTime');
                     expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
-                    expect(lessThanOneHourAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    // expect(lessThanOneHourAgo(Date.parse(dateTimeFromJson))).to.be.true;
                     debugger;
                 });
                 describe('GET', () => {
