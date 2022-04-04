@@ -8,7 +8,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const it = tester.it;
     //#region Upgrade Cloudwatch Addon
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.83'], //hardcoded version -- no phased one yet
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.87'], //hardcoded version -- no phased one yet
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
