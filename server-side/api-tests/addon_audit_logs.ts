@@ -82,8 +82,8 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
     describe('Addon Audit Logs Tests Suites', async () => {
         describe('Prerequisites Addon for Addon Audit Logs Tests', () => {
             //Test Data
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

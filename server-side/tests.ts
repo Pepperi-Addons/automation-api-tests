@@ -44,7 +44,9 @@ import {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
-    DataVisualisationTests,
+    PFSTests,
+    UDCTests,
+    ChartManagerTests,
     ImportExportATDActivitiesTests,
     ImportExportATDTransactionsTests,
     ImportExportATDActivitiesBoxTests,
@@ -69,6 +71,8 @@ import {
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
     ADALStressTests,
+    DataQueriesTests,
+    AWSLogsTest,
 } from './api-tests/index';
 
 let testName = '';
@@ -759,17 +763,69 @@ export async function distributor(client: Client, request: Request, testerFuncti
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
-//#endregion Yoni's Tests
 
-//#region Evgeny's Tests
-export async function data_visualisation(client: Client, request: Request, testerFunctions: TesterFunctions) {
+export async function pfs(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Data_Visualisation';
+    testName = 'PFS';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        DataVisualisationTests(service, request, testerFunctions),
+        PFSTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function udc(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'UDC';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        UDCTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+//#endregion Yoni's Tests
+
+//#region Evgeny's Tests
+export async function charts_manager(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Charts_Manager';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        ChartManagerTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function data_queries(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Queries';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DataQueriesTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function aws_logs(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Queries';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AWSLogsTest(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

@@ -36,8 +36,8 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
     describe('Pages API Tests Suite', function () {
         describe('Prerequisites Addon for Pages API Tests', () => {
             //Test Data
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

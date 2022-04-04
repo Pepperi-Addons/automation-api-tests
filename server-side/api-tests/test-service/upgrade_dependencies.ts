@@ -25,7 +25,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
         ],
         'WebApp Platform': [
             '00000000-0000-0000-1234-000000000b2b',
-            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.65.37',
+            request.body.webAppPlatform ? `${request.body.webAppPlatform}` : '16.65.',
         ],
         'Settings Framework': [
             '354c5123-a7d0-4f52-8fce-3cf1ebc95314',
@@ -70,8 +70,8 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', () => {
-        it('Validate That All The Needed Addons Installed', async () => {
-            isInstalledArr.forEach((isInstalled) => {
+        isInstalledArr.forEach((isInstalled, index) => {
+            it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });

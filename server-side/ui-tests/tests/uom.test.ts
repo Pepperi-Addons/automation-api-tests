@@ -47,15 +47,16 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
     //4. expected response from server data of item config order - second phase
     const expectedResultItemCondfig: UomOrderExpectedValues[] = [
-        new UomOrderExpectedValues('1233', -20, -20, -20, 'DOU'),
-        new UomOrderExpectedValues('1232', 8, 8, 8, 'Bx'),
-        new UomOrderExpectedValues('1231', 48, 48, 48, 'SIN'),
+        new UomOrderExpectedValues('1233', -20, -20, -8, 'DOU'),
+        new UomOrderExpectedValues('1232', 8, 8, 4, 'Bx'),
+        new UomOrderExpectedValues('1231', 48, 48, 16, 'SIN'),
     ];
 
     //#region Upgrade cpi-node & UOM
     const testData = {
+        'WebApp API Framework': ['00000000-0000-0000-1234-000000000b2b', '16.65.38'], //has to be hardcoded because upgrade dependencies cant handle this
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
-        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''],
+        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
     };
 
     await upgradeDependenciesTests(generalService, varPass);
@@ -67,8 +68,8 @@ export async function UomTests(email: string, password: string, varPass: string,
         describe('Prerequisites Addons for UOM Tests', () => {
             //Test Data
             //UOM
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

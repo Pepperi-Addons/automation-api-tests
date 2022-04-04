@@ -82,8 +82,8 @@ function initAndVerifyAddonVersions(
     chnageVersionResponseArr: AddonVersionData,
     generalService: GeneralService,
 ) {
-    it('Validate That All The Needed Addons Installed', function() {
-        isInstalledArr.forEach((isInstalled) => {
+    isInstalledArr.forEach((isInstalled, index) => {
+        it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
             expect(isInstalled).to.be.true;
         });
     });

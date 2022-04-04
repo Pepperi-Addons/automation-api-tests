@@ -537,6 +537,9 @@ export default class GeneralService {
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
+            if (addonName == 'ADAL' && this.papiClient['options'].baseURL.includes('staging')) {
+                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',
