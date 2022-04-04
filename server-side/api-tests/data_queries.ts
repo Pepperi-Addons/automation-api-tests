@@ -1,4 +1,4 @@
-import { DataQuerie, DataQueriesService } from '../services/data-queries.service';
+import { DataQuerie, DataQueriesService, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -7,9 +7,59 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const expect = tester.expect;
     const it = tester.it;
 
+    const savedSeries: QuerySeries = {
+        Key: 'fc4f2b0a-2f2f-43a8-bb44-6977a1217bee',
+        Name: 'Series 1',
+        Resource: 'transaction_lines',
+        Label: '${label}',
+        Top: {
+            Max: 20,
+            Ascending: true,
+        },
+        AggregatedFields: [
+            {
+                Aggregator: 'Sum',
+                Script: 'params.Var1',
+                Alias: '',
+                FieldID: 'InternalID',
+            },
+        ],
+        AggregatedParams: [
+            {
+                Aggregator: 'Sum',
+                FieldID: '',
+                Name: 'Var1',
+            },
+        ],
+        BreakBy: {
+            FieldID: 'Transaction.Type',
+            Interval: 'None',
+            Format: '',
+        },
+        Filter: null,
+        Scope: {
+            Account: 'AllAccounts',
+            User: 'AllUsers',
+        },
+        DynamicFilterFields: [],
+        GroupBy: [
+            {
+                Format: '',
+                Alias: 'ExternalID',
+                FieldID: 'Transaction.Account.ExternalID',
+                Interval: 'None',
+            },
+        ],
+    };
+    const savedDateQueries: DataQuerie = {
+        Hidden: false,
+        Name: 'evgenys data query 22',
+        Series: [savedSeries],
+    };
+
     //#region Upgrade Data Visualisation
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
@@ -58,9 +108,35 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             }
         });
         describe('Endpoints', () => {
+            describe('POST', () => {
+                it('Post A New Querie And Test The Response', async () => {
+                    const todaysDate = new Date().toJSON().slice(0, 10);
+                    const jsonDataFromAuditLog: DataQuerie = await dataQueriesService.postQuerie(savedDateQueries);
+                    expect(jsonDataFromAuditLog).to.have.own.property('CreationDateTime');
+                    expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
+                    let dateTimeFromJson;
+                    if (jsonDataFromAuditLog.CreationDateTime) {
+                        //should always be true - done for the linter
+                        dateTimeFromJson = jsonDataFromAuditLog.CreationDateTime;
+                    }
+                    expect(lessThan10MinsAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    expect(jsonDataFromAuditLog).to.have.own.property('ModificationDateTime');
+                    expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
+                    if (jsonDataFromAuditLog.ModificationDateTime) {
+                        //should always be true - done for the linter
+                        dateTimeFromJson = jsonDataFromAuditLog.ModificationDateTime;
+                    }
+                    expect(lessThan10MinsAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    expect(jsonDataFromAuditLog).to.have.own.property('Key');
+                    expect(jsonDataFromAuditLog).to.have.own.property('Name');
+                    expect(jsonDataFromAuditLog.Name).to.equal(savedDateQueries.Name);
+                    expect(jsonDataFromAuditLog).to.have.own.property('Series');
+                    expect(jsonDataFromAuditLog.Series).to.be.a('Array');
+                    expect(jsonDataFromAuditLog.Series).to.deep.equal(savedDateQueries.Series);
+                });
+            });
             describe('GET', () => {
-                it('Get Queries - Retriving all Queries data and validating its format', async () => {
-                    //test goes here//
+                it('Get Queries - Retriving all Queries and validating their format', async () => {
                     const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
                     jsonDataFromAuditLog.forEach((jsonDataQuery) => {
                         expect(jsonDataQuery).to.have.own.property('ModificationDateTime');
@@ -126,6 +202,36 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                     });
                 });
             });
+            describe('Data Cleansing', () => {
+                it('Delete All Queries And Validate Nothing Left', async () => {
+                    await expect(TestCleanUp(dataQueriesService)).eventually.to.be.above(0);
+                    const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
+                    expect(jsonDataFromAuditLog.length).to.equal(0);
+                });
+            });
         });
     });
 }
+
+async function TestCleanUp(service: DataQueriesService) {
+    const allChartsObjects: DataQuerie[] = await service.getQueries();
+    let deletedCounter = 0;
+
+    for (let index = 0; index < allChartsObjects.length; index++) {
+        if (allChartsObjects[index].Hidden == false) {
+            allChartsObjects[index].Hidden = true;
+            await service.postQuerie(allChartsObjects[index]);
+            deletedCounter++;
+        }
+    }
+    console.log('Hidded Charts: ' + deletedCounter);
+    return deletedCounter;
+}
+
+const lessThan10MinsAgo = (date) => {
+    const timeDiffWithAWS = 1000 * 60 * 60 * 3; //based on the formula (HOUR = (1000 * 60 * 60)) which is 3 hours
+    const tenMins = 1000 * 60 * 10;
+    const an10MinsAgo = Date.now() - tenMins;
+
+    return date + timeDiffWithAWS > an10MinsAgo;
+};
