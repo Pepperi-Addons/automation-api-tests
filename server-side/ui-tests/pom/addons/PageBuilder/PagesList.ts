@@ -44,6 +44,8 @@ export class PagesList extends AddonPage {
      * @returns A new instance of {@link PageEditor}.
      */
     public async editPage(pageName: string): Promise<PageEditor> {
-        return this.pagesList.enterRowLinkByValue(pageName, 'Name').then(() => new PageEditor(this.browser));
+        
+        await this.pagesList.enterRowLinkByValue(pageName, 'Name');
+        return new PageEditor(this.browser);
     }
 }

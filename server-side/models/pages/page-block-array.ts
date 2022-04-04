@@ -7,8 +7,9 @@ export class PageBlocksArray extends Array<PageBlock> {
     }
 
     /**
-     * Creates a new PageBlock and appends it to the end of an array. Returns a reference to the created PageBlock.
+     * Creates a new PageBlock and appends it to the end of an array.
      * @param blockRelation PageBlock relation from which to create the PageBlock.
+     * @returns Reference to the created PageBlock
      */
     createAndAdd(blockRelation: NgComponentRelation): PageBlock {
         const pageBlock = PageFactory.defaultPageBlock(blockRelation);
