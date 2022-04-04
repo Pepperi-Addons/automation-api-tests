@@ -28,8 +28,8 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
-            it('Validate that all the needed addons are installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
