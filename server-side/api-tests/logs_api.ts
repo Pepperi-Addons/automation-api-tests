@@ -59,7 +59,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 const distUUID = generalService.getClientData('DistributorUUID');
                 const userUUID = generalService.getClientData('UserUUID');
                 const todaysDate = new Date().toJSON().slice(0, 10);
-                // debugger;
+                const HOUR = 1000 * 60 * 60;
+                const threeHoursTimeZoneDiffWithAWS =  1000 * 60 * 60 * 3;//1000 * 60 * 60 is an hour
                 const payload: LogsPayload = {
                     Groups: ['PAPI'],
                 };
@@ -84,7 +85,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonLogResponse.DateTimeStamp;
                     }
-                    expect(lessThanOneHourAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    expect(generalService.isLessThanGivenTimeAgo(Date.parse(dateTimeFromJson), HOUR, threeHoursTimeZoneDiffWithAWS)).to.be.true;
+
                 });
             });
             describe('POST - Negative Payload Testing', () => {
@@ -299,11 +301,3 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
         });
     });
 }
-
-const lessThanOneHourAgo = (date) => {
-    const timeDiffWithAWS = 1000 * 60 * 60 * 3; //based on the formula (HOUR = (1000 * 60 * 60)) which is 3 hours
-    const HOUR = 1000 * 60 * 60;
-    const anHourAgo = Date.now() - HOUR;
-
-    return date + timeDiffWithAWS > anHourAgo;
-};
