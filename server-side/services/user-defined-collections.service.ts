@@ -13,11 +13,11 @@ export class UDCService {
         this.uuid = uuid;
     }
 
-    postCollectionschemes(body: any) {
+    postScheme(body: any) {
         return this.papiClient.userDefinedCollections.schemes.upsert(body);
     }
 
-    getCollectionschemes(options?: FindOptions) {
+    getSchemes(options?: FindOptions) {
         return this.papiClient.userDefinedCollections.schemes.find(options);
     }
 
@@ -35,6 +35,21 @@ export class UDCService {
         }
         return await this.generalService
             .fetchStatus(`/addons/data/${this.uuid}/${collection}`, {
+                method: 'GET',
+                headers: {
+                    'X-Pepperi-OwnerID': this.uuid,
+                    'X-Pepperi-SecretKey': this.sk,
+                },
+            })
+            .then((res) => res.Body);
+    }
+
+    async removeCollectionFromADAL(collection) {
+        if (!this.sk) {
+            this.sk = await this.generalService.getSecretKey(this.uuid);
+        }
+        return await this.generalService
+            .fetchStatus(`/addons/data/${this.uuid}/${collection}/purge`, {
                 method: 'GET',
                 headers: {
                     'X-Pepperi-OwnerID': this.uuid,
