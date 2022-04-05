@@ -46,7 +46,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
             //Test Data
             //ADAL
             isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
