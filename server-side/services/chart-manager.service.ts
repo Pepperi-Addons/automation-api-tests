@@ -38,4 +38,24 @@ export class ChartsManagerService {
     postChart(chart: Chart): Promise<Chart> {
         return this.papiClient.post('/charts', chart);
     }
+
+    //Remove all test Charts (Hidden = true)
+    async TestCleanUp() {
+        const allChartsObjects: Chart[] = await this.getCharts();
+        let deletedCounter = 0;
+
+        for (let index = 0; index < allChartsObjects.length; index++) {
+            if (
+                allChartsObjects[index].Hidden == false &&
+                (allChartsObjects[index].Description === undefined ||
+                    allChartsObjects[index].Description?.startsWith('chart-desc'))
+            ) {
+                allChartsObjects[index].Hidden = true;
+                await this.postChart(allChartsObjects[index]);
+                deletedCounter++;
+            }
+        }
+        console.log('Hidded Charts: ' + deletedCounter);
+        return deletedCounter;
+    }
 }

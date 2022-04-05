@@ -204,7 +204,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             });
             describe('Data Cleansing', () => {
                 it('Delete All Queries And Validate Nothing Left', async () => {
-                    await expect(TestCleanUp(dataQueriesService)).eventually.to.be.above(0);
+                    await expect(dataQueriesService.TestCleanUp()).eventually.to.be.above(0);
                     const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
                     expect(jsonDataFromAuditLog.length).to.equal(0);
                 });
@@ -213,20 +213,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     });
 }
 
-async function TestCleanUp(service: DataQueriesService) {
-    const allChartsObjects: DataQuerie[] = await service.getQueries();
-    let deletedCounter = 0;
 
-    for (let index = 0; index < allChartsObjects.length; index++) {
-        if (allChartsObjects[index].Hidden == false) {
-            allChartsObjects[index].Hidden = true;
-            await service.postQuerie(allChartsObjects[index]);
-            deletedCounter++;
-        }
-    }
-    console.log('Hidded Charts: ' + deletedCounter);
-    return deletedCounter;
-}
 
 const lessThan10MinsAgo = (date) => {
     //to validate the resource was just created
