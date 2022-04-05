@@ -42,7 +42,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.105'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.106'],
     };
 
     let varKey;

@@ -56,18 +56,18 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             }
         });
 
-        describe('POST/GET metadata', () => {
+        describe('CRUD Collection', () => {
             const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
             const collectionName = 'Collection Name' + Math.floor(Math.random() * 1000000).toString();
             let collectionBeforeArr;
             let collectionAfterArr;
 
-            it(`Get collections length`, async () => {
+            it(`Get Collections Before`, async () => {
                 collectionBeforeArr = await udcService.getCollectionschemes();
                 expect(collectionBeforeArr).to.be.an('array');
             });
 
-            it(`Post collection and verify`, async () => {
+            it(`Create`, async () => {
                 const postCollectionResponse = await udcService.postCollectionschemes({
                     Name: collectionName,
                     Description: tempDescription,
@@ -164,14 +164,77 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(collectionAfterPostArr.length).to.equal(collectionBeforeArr.length + 1);
             });
 
+            it(`Validate Plus One`, async () => {
+                const collectionAfterPostArr = await udcService.getCollectionschemes();
+                expect(collectionAfterPostArr.length).to.equal(collectionBeforeArr.length + 1);
+            });
+
+            it(`Read`, async () => {
+                const collectionAfterPostArr = await udcService.getCollectionschemes({
+                    where: `Name='${collectionName}'`,
+                });
+                expect(collectionAfterPostArr.length).to.equal(1);
+                const readCollectionResponse = collectionAfterPostArr[0];
+                expect(readCollectionResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(readCollectionResponse.CreationDateTime).to.include('Z');
+                expect(readCollectionResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(readCollectionResponse.ModificationDateTime).to.include('Z');
+                expect(readCollectionResponse['CompositeKeyFields'])
+                    .to.be.an('array')
+                    .that.deep.equals(['Field1', 'Field2']);
+                expect(readCollectionResponse['CompositeKeyType']).to.equal('Key');
+                expect(readCollectionResponse.Description).to.equal(tempDescription);
+                expect(readCollectionResponse.Name).to.equal(collectionName);
+                expect(readCollectionResponse.Type).to.equal('meta_data');
+                expect(readCollectionResponse.Hidden).to.be.false;
+                expect(readCollectionResponse.Fields).to.deep.equal({
+                    OptionalValuesField: {
+                        Type: 'Integer',
+                        OptionalValues: ['1', '2', '3'],
+                        Mandatory: false,
+                    },
+                    StringField2: {
+                        Type: 'String',
+                        Mandatory: true,
+                    },
+                    StringArray: {
+                        Type: 'Array',
+                        Items: {
+                            Type: 'String',
+                        },
+                        Mandatory: false,
+                    },
+                    StringField1: {
+                        Type: 'String',
+                        Mandatory: true,
+                    },
+                    IntegerField1: {
+                        Type: 'Integer',
+                        Mandatory: false,
+                    },
+                    IntegerField2: {
+                        Type: 'Integer',
+                        Mandatory: false,
+                    },
+                    IntegerArray: {
+                        Type: 'Array',
+                        Items: {
+                            Type: 'Integer',
+                        },
+                        Mandatory: false,
+                    },
+                });
+            });
+
             it(`Get documents length`, async () => {
                 collectionAfterArr = await udcService.getDocuments(collectionName);
+                debugger;
                 expect(collectionAfterArr).to.be.an('array');
             });
 
-            it(`Post document and verify`, async () => {
+            it(`Update`, async () => {
                 const postDocumentResponse = await udcService.postDocument(collectionName, {
-                    Key: collectionName + 'Key',
+                    Key: collectionName,
                     StringField1: 'String 1 Test',
                     StringField2: 'String 2 Test',
                     IntegerField1: '1',
@@ -180,6 +243,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     StringArray: ['String array 1', 'String array 2', 'String array 3'],
                     IntegerArray: ['1', '2', '3'],
                 });
+                debugger;
                 expect(postDocumentResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postDocumentResponse.CreationDateTime).to.include('Z');
                 expect(postDocumentResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
