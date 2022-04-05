@@ -111,6 +111,8 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             describe('POST', () => {
                 it('Post A New Querie And Test The Response', async () => {
                     const todaysDate = new Date().toJSON().slice(0, 10);
+                    const tenMinutes = 1000 * 60 * 10; //1000 * 60 is  a minute
+                    const threeHoursTimeZoneDiffWithAWS = 1000 * 60 * 60 * 3; //1000 * 60 * 60 is an hour
                     const jsonDataFromAuditLog: DataQuerie = await dataQueriesService.postQuerie(savedDateQueries);
                     expect(jsonDataFromAuditLog).to.have.own.property('CreationDateTime');
                     expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
@@ -119,14 +121,26 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonDataFromAuditLog.CreationDateTime;
                     }
-                    expect(lessThan10MinsAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    expect(
+                        generalService.isLessThanGivenTimeAgo(
+                            Date.parse(dateTimeFromJson),
+                            tenMinutes,
+                            threeHoursTimeZoneDiffWithAWS,
+                        ),
+                    ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('ModificationDateTime');
                     expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
                     if (jsonDataFromAuditLog.ModificationDateTime) {
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonDataFromAuditLog.ModificationDateTime;
                     }
-                    expect(lessThan10MinsAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    expect(
+                        generalService.isLessThanGivenTimeAgo(
+                            Date.parse(dateTimeFromJson),
+                            tenMinutes,
+                            threeHoursTimeZoneDiffWithAWS,
+                        ),
+                    ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('Key');
                     expect(jsonDataFromAuditLog).to.have.own.property('Name');
                     expect(jsonDataFromAuditLog.Name).to.equal(savedDateQueries.Name);
@@ -204,7 +218,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             });
             describe('Data Cleansing', () => {
                 it('Delete All Queries And Validate Nothing Left', async () => {
-                    await expect(TestCleanUp(dataQueriesService)).eventually.to.be.above(0);
+                    await expect(dataQueriesService.TestCleanUp()).eventually.to.be.above(0);
                     const jsonDataFromAuditLog: DataQuerie[] = await dataQueriesService.getQueries();
                     expect(jsonDataFromAuditLog.length).to.equal(0);
                 });
@@ -212,26 +226,3 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
         });
     });
 }
-
-async function TestCleanUp(service: DataQueriesService) {
-    const allChartsObjects: DataQuerie[] = await service.getQueries();
-    let deletedCounter = 0;
-
-    for (let index = 0; index < allChartsObjects.length; index++) {
-        if (allChartsObjects[index].Hidden == false) {
-            allChartsObjects[index].Hidden = true;
-            await service.postQuerie(allChartsObjects[index]);
-            deletedCounter++;
-        }
-    }
-    console.log('Hidded Charts: ' + deletedCounter);
-    return deletedCounter;
-}
-
-const lessThan10MinsAgo = (date) => {
-    const timeDiffWithAWS = 1000 * 60 * 60 * 3; //based on the formula (HOUR = (1000 * 60 * 60)) which is 3 hours
-    const tenMins = 1000 * 60 * 10;
-    const an10MinsAgo = Date.now() - tenMins;
-
-    return date + timeDiffWithAWS > an10MinsAgo;
-};

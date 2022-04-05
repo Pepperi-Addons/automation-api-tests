@@ -859,6 +859,19 @@ export default class GeneralService {
         await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
         return;
     }
+
+    /**
+     * will return true if dateToTest param is indicating a time point which happened less than howLongAgo milliseconds ago
+     * @param dateToTest tested date in millisecods
+     * @param howLongAgo less than how many milliseconds should pass
+     * @param timeDiff time diff between the time zone which the machine running the code is in and time zone tested date taken from
+     * @returns
+     */
+    isLessThanGivenTimeAgo(dateToTest, howLongAgo, timeDiff?) {
+        if (timeDiff) dateToTest += timeDiff;
+        const timeAgo = Date.now() - howLongAgo;
+        return dateToTest > timeAgo;
+    }
 }
 
 function msSleep(ms: number) {
