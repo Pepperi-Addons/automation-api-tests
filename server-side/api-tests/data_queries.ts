@@ -1,5 +1,7 @@
-import { DataQuerie, DataQueriesService, QuerySeries } from '../services/data-queries.service';
+import { DataQuerie, DataQueriesService, DataQueryExecuteRespons, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
+
+let dataQuerysKey = '';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataQueriesService = new DataQueriesService(generalService);
@@ -8,9 +10,8 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const it = tester.it;
 
     const savedSeries: QuerySeries = {
-        Key: 'fc4f2b0a-2f2f-43a8-bb44-6977a1217bee',
         Name: 'Series 1',
-        Resource: 'transaction_lines',
+        Resource: 'all_activities',
         Label: '${label}',
         Top: {
             Max: 20,
@@ -32,7 +33,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             },
         ],
         BreakBy: {
-            FieldID: 'Transaction.Type',
+            FieldID: 'Type',
             Interval: 'None',
             Format: '',
         },
@@ -45,16 +46,31 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
         GroupBy: [
             {
                 Format: '',
-                Alias: 'ExternalID',
-                FieldID: 'Transaction.Account.ExternalID',
+                Alias: 'Type',
+                FieldID: 'Type',
                 Interval: 'None',
             },
         ],
     };
     const savedDateQueries: DataQuerie = {
         Hidden: false,
-        Name: 'evgenys data query 22',
+        Name: generalService.generateRandomString(7),
         Series: [savedSeries],
+    };
+    const expectedDataSet: DataQueryExecuteRespons = {
+        DataQueries: [
+            {
+                Name: 'Series 1',
+                Groups: ['Type'],
+                Series: ['Sales Order'],
+            },
+        ],
+        DataSet: [
+            {
+                Type: 'Sales Order',
+                'Sales Order': 285026917,
+            },
+        ],
     };
 
     //#region Upgrade Data Visualisation
@@ -111,7 +127,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             describe('POST', () => {
                 it('Post A New Querie And Test The Response', async () => {
                     const todaysDate = new Date().toJSON().slice(0, 10);
-                    const tenMinutes = 1000 * 60 * 10; //1000 * 60 is  a minute
+                    const tenMinutes = 1000 * 60 * 10; //1000 * 60 is a minute
                     const threeHoursTimeZoneDiffWithAWS = 1000 * 60 * 60 * 3; //1000 * 60 * 60 is an hour
                     const jsonDataFromAuditLog: DataQuerie = await dataQueriesService.postQuerie(savedDateQueries);
                     expect(jsonDataFromAuditLog).to.have.own.property('CreationDateTime');
@@ -129,7 +145,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         ),
                     ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('ModificationDateTime');
-                    expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
+                    expect(jsonDataFromAuditLog.ModificationDateTime).to.include(todaysDate);
                     if (jsonDataFromAuditLog.ModificationDateTime) {
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonDataFromAuditLog.ModificationDateTime;
@@ -142,10 +158,13 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         ),
                     ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('Key');
+                    dataQuerysKey = jsonDataFromAuditLog.Key!;
                     expect(jsonDataFromAuditLog).to.have.own.property('Name');
                     expect(jsonDataFromAuditLog.Name).to.equal(savedDateQueries.Name);
                     expect(jsonDataFromAuditLog).to.have.own.property('Series');
-                    expect(jsonDataFromAuditLog.Series).to.be.a('Array');
+                    expect(jsonDataFromAuditLog.Series).to.be.an('Array');
+                    expect(jsonDataFromAuditLog.Series[0]).to.have.own.property('Key');
+                    savedDateQueries.Series[0].Key = jsonDataFromAuditLog.Series[0].Key!;
                     expect(jsonDataFromAuditLog.Series).to.deep.equal(savedDateQueries.Series);
                 });
             });
@@ -213,6 +232,47 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                                 });
                             });
                         }
+                        if (jsonDataQuery.Key! === savedDateQueries.Key) {
+                            expect(jsonDataQuery).to.deep.equal(savedDateQueries);
+                        }
+                    });
+                });
+            });
+            describe('EXECUTE', () => {
+                it('Executing The Query Inserted And Testing The Response', async () => {
+                    const jsonDataFromAuditLog: DataQueryExecuteRespons = await dataQueriesService.executeQuery(
+                        dataQuerysKey,
+                    );
+                    expect(jsonDataFromAuditLog).to.have.own.property('DataQueries');
+                    expect(jsonDataFromAuditLog.DataQueries).to.be.an('Array');
+                    let i = 0;
+                    jsonDataFromAuditLog.DataQueries.forEach((dataQuery) => {
+                        expect(dataQuery).to.have.own.property('Name');
+                        expect(dataQuery.Name).to.equal(expectedDataSet.DataQueries[i].Name);
+                        expect(dataQuery).to.have.own.property('Groups');
+                        expect(dataQuery.Groups).to.be.an('Array');
+                        let j = 0;
+                        dataQuery.Groups.forEach((group) => {
+                            expect(group).to.equal(expectedDataSet.DataQueries[i].Groups[j]);
+                            j++;
+                        });
+                        expect(dataQuery).to.have.own.property('Series');
+                        expect(dataQuery.Series).to.be.an('Array');
+                        j = 0;
+                        dataQuery.Series.forEach((series) => {
+                            expect(series).to.equal(expectedDataSet.DataQueries[i].Series[j]);
+                            j++;
+                        });
+                        i++;
+                    });
+                    expect(jsonDataFromAuditLog).to.have.own.property('DataSet');
+                    expect(jsonDataFromAuditLog.DataSet).to.be.an('Array');
+                    i = 0;
+                    jsonDataFromAuditLog.DataSet.forEach((dataSet) => {
+                        expect(dataSet).to.have.own.property('Type');
+                        expect(dataSet.Type).to.equal(expectedDataSet.DataSet[i].Type);
+                        expect(dataSet).to.have.own.property('Sales Order');
+                        expect(dataSet['Sales Order']).to.equal(expectedDataSet.DataSet[i]['Sales Order']);
                     });
                 });
             });

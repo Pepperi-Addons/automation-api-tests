@@ -11,7 +11,7 @@ export interface DataQuerie {
 }
 
 export interface QuerySeries {
-    Key: string;
+    Key?: string;
     Name: string;
     Resource: ResourceTypes;
     Label: string;
@@ -23,6 +23,17 @@ export interface QuerySeries {
     Scope: Scope;
     DynamicFilterFields: any[];
     GroupBy: GroupBy[];
+}
+
+export interface DataQueryExecuteRespons {
+    DataQueries: DataQuerieResponse[];
+    DataSet: any[];
+}
+
+interface DataQuerieResponse {
+    Name: string;
+    Groups: string[];
+    Series: string[];
 }
 
 interface Top {
@@ -73,6 +84,10 @@ export class DataQueriesService {
 
     postQuerie(dataQuerie: DataQuerie): Promise<DataQuerie> {
         return this.papiClient.post('/data_queries', dataQuerie);
+    }
+
+    executeQuery(key: string): Promise<DataQueryExecuteRespons> {
+        return this.papiClient.post(`/data_queries/${key}/execute`);
     }
 
     async TestCleanUp() {
