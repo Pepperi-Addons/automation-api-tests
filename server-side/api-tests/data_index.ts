@@ -218,7 +218,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             //Test Datas
             //Data Index, Pepperi Notification Service
             isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
