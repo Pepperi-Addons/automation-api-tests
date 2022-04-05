@@ -1,7 +1,7 @@
 import { DataQuerie, DataQueriesService, DataQueryExecuteRespons, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-let dataQuerysKey = "";
+let dataQuerysKey = '';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataQueriesService = new DataQueriesService(generalService);
@@ -60,17 +60,17 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     const expectedDataSet: DataQueryExecuteRespons = {
         DataQueries: [
             {
-                Name: "Series 1",
-                Groups: ["Type"],
-                Series: ["Sales Order"]
-            }
+                Name: 'Series 1',
+                Groups: ['Type'],
+                Series: ['Sales Order'],
+            },
         ],
         DataSet: [
             {
-                Type: "Sales Order",
-                "Sales Order": 285026917
-            }
-        ]
+                Type: 'Sales Order',
+                'Sales Order': 285026917,
+            },
+        ],
     };
 
     //#region Upgrade Data Visualisation
@@ -240,7 +240,9 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             });
             describe('EXECUTE', () => {
                 it('Executing The Query Inserted And Testing The Response', async () => {
-                    const jsonDataFromAuditLog: DataQueryExecuteRespons = await dataQueriesService.executeQuery(dataQuerysKey);
+                    const jsonDataFromAuditLog: DataQueryExecuteRespons = await dataQueriesService.executeQuery(
+                        dataQuerysKey,
+                    );
                     expect(jsonDataFromAuditLog).to.have.own.property('DataQueries');
                     expect(jsonDataFromAuditLog.DataQueries).to.be.an('Array');
                     let i = 0;
@@ -270,7 +272,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         expect(dataSet).to.have.own.property('Type');
                         expect(dataSet.Type).to.equal(expectedDataSet.DataSet[i].Type);
                         expect(dataSet).to.have.own.property('Sales Order');
-                        expect(dataSet['Sales Order']).to.equal(expectedDataSet.DataSet[i]["Sales Order"]);
+                        expect(dataSet['Sales Order']).to.equal(expectedDataSet.DataSet[i]['Sales Order']);
                     });
                 });
             });

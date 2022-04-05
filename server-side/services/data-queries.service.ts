@@ -26,8 +26,8 @@ export interface QuerySeries {
 }
 
 export interface DataQueryExecuteRespons {
-    DataQueries: DataQuerieResponse[],
-    DataSet: any[],
+    DataQueries: DataQuerieResponse[];
+    DataSet: any[];
 }
 
 interface DataQuerieResponse {
