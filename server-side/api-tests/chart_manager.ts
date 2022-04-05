@@ -437,4 +437,3 @@ export async function ChartManagerTests(generalService: GeneralService, request,
         });
     });
 }
-

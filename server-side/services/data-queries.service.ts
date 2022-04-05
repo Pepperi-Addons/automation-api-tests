@@ -78,7 +78,7 @@ export class DataQueriesService {
     async TestCleanUp() {
         const allChartsObjects: DataQuerie[] = await this.getQueries();
         let deletedCounter = 0;
-    
+
         for (let index = 0; index < allChartsObjects.length; index++) {
             if (allChartsObjects[index].Hidden == false) {
                 allChartsObjects[index].Hidden = true;

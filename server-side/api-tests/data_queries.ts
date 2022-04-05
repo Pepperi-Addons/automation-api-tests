@@ -111,8 +111,8 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
             describe('POST', () => {
                 it('Post A New Querie And Test The Response', async () => {
                     const todaysDate = new Date().toJSON().slice(0, 10);
-                    const tenMinutes = 1000 * 60 * 10;//1000 * 60 is  a minute
-                    const threeHoursTimeZoneDiffWithAWS =  1000 * 60 * 60 * 3;//1000 * 60 * 60 is an hour
+                    const tenMinutes = 1000 * 60 * 10; //1000 * 60 is  a minute
+                    const threeHoursTimeZoneDiffWithAWS = 1000 * 60 * 60 * 3; //1000 * 60 * 60 is an hour
                     const jsonDataFromAuditLog: DataQuerie = await dataQueriesService.postQuerie(savedDateQueries);
                     expect(jsonDataFromAuditLog).to.have.own.property('CreationDateTime');
                     expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
@@ -121,14 +121,26 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonDataFromAuditLog.CreationDateTime;
                     }
-                    expect(generalService.isLessThanGivenTimeAgo(Date.parse(dateTimeFromJson), tenMinutes, threeHoursTimeZoneDiffWithAWS)).to.be.true;
+                    expect(
+                        generalService.isLessThanGivenTimeAgo(
+                            Date.parse(dateTimeFromJson),
+                            tenMinutes,
+                            threeHoursTimeZoneDiffWithAWS,
+                        ),
+                    ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('ModificationDateTime');
                     expect(jsonDataFromAuditLog.CreationDateTime).to.include(todaysDate);
                     if (jsonDataFromAuditLog.ModificationDateTime) {
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonDataFromAuditLog.ModificationDateTime;
                     }
-                    expect(generalService.isLessThanGivenTimeAgo(Date.parse(dateTimeFromJson), tenMinutes, threeHoursTimeZoneDiffWithAWS)).to.be.true;
+                    expect(
+                        generalService.isLessThanGivenTimeAgo(
+                            Date.parse(dateTimeFromJson),
+                            tenMinutes,
+                            threeHoursTimeZoneDiffWithAWS,
+                        ),
+                    ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('Key');
                     expect(jsonDataFromAuditLog).to.have.own.property('Name');
                     expect(jsonDataFromAuditLog.Name).to.equal(savedDateQueries.Name);

@@ -60,7 +60,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 const userUUID = generalService.getClientData('UserUUID');
                 const todaysDate = new Date().toJSON().slice(0, 10);
                 const HOUR = 1000 * 60 * 60;
-                const threeHoursTimeZoneDiffWithAWS =  1000 * 60 * 60 * 3;//1000 * 60 * 60 is an hour
+                const threeHoursTimeZoneDiffWithAWS = 1000 * 60 * 60 * 3; //1000 * 60 * 60 is an hour
                 const payload: LogsPayload = {
                     Groups: ['PAPI'],
                 };
@@ -85,8 +85,13 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonLogResponse.DateTimeStamp;
                     }
-                    expect(generalService.isLessThanGivenTimeAgo(Date.parse(dateTimeFromJson), HOUR, threeHoursTimeZoneDiffWithAWS)).to.be.true;
-
+                    expect(
+                        generalService.isLessThanGivenTimeAgo(
+                            Date.parse(dateTimeFromJson),
+                            HOUR,
+                            threeHoursTimeZoneDiffWithAWS,
+                        ),
+                    ).to.be.true;
                 });
             });
             describe('POST - Negative Payload Testing', () => {
