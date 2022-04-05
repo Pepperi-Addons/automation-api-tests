@@ -229,6 +229,7 @@ async function TestCleanUp(service: DataQueriesService) {
 }
 
 const lessThan10MinsAgo = (date) => {
+    //to validate the resource was just created
     const timeDiffWithAWS = 1000 * 60 * 60 * 3; //based on the formula (HOUR = (1000 * 60 * 60)) which is 3 hours
     const tenMins = 1000 * 60 * 10;
     const an10MinsAgo = Date.now() - tenMins;
