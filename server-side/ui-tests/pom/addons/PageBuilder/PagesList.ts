@@ -19,7 +19,7 @@ export class PagesList extends AddonPage {
         super(browser);
         this.pagesList = new PepListTable(this.browser);
         this.search = new PepSearch(this.browser);
-        this.search.setSearchContainer(By.xpath('//pep-page-layout//pep-generic-list'));
+        this.search.setParentContainer(By.xpath('//pep-page-layout//pep-generic-list'));
     }
 
     /**

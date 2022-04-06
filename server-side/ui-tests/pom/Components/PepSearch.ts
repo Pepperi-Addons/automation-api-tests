@@ -19,7 +19,11 @@ export class PepSearch extends Component {
     public readonly SearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_search']`);
     public readonly ClearSearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_close']`);
 
-    public setSearchContainer(xpathLocator: By): void {
+    /**
+     * Sets the component's parent container to narrow the locators. Important when the component appears multiple times.
+     * @param xpathLocator The parent container's XPath locator.
+     */
+    public setParentContainer(xpathLocator: By): void {
         if (!xpathLocator.using.includes('xpath')) {
             throw new Error(`'${xpathLocator.using}' is not a supported locator mechanism`);
         }
@@ -38,6 +42,10 @@ export class PepSearch extends Component {
         return await this.browser.findSingleElement(this.ClearSearchButton).click();
     }
 
+    /**
+     * Enters search text and clicks the search button.
+     * @param searchText The text to search for.
+     */
     public async performSearch(searchText: string) {
         await this.enterSearch(searchText);
         return await this.clickSearchButton();
