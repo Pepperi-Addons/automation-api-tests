@@ -34,7 +34,6 @@ export async function PageBuilderTests(
     const changeVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
     describe('Page Builder Hybrid Tests Suite', function () {
-        let pagesList: PagesList;
         let browser: Browser;
         const pagesReq: PageTestRequirements = { browser: undefined, pagesList: undefined } as any;
 
@@ -55,7 +54,6 @@ export async function PageBuilderTests(
                     settingSidePanel.enterSettingsPage('Pages', 'pages'),
                 );
                 pagesReq.pagesList = new PagesList(browser);
-                pagesList = pagesReq.pagesList;
             });
 
             after(async function () {
