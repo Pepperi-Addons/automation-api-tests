@@ -23,8 +23,8 @@ export interface IFilter {
 }
 
 export interface TestConfiguration {
-    Parameters: Array<IBlockStringParameter | IBlockFilterParameter>,
-    BlockId: string
+    Parameters: Array<IBlockStringParameter | IBlockFilterParameter>;
+    BlockId: string;
 }
 
 export class BlockParamConfig extends Array<IBlockFilterParameter | IBlockStringParameter> {}

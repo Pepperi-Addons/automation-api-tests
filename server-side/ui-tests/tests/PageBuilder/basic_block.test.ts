@@ -16,11 +16,7 @@ import { TestConfiguration } from '../../../models/pages/parameter-config.class'
 
 chai.use(promised);
 
-export function BasicBlockTests(
-    pagesService: PagesService,
-    pagesReq: PageTestRequirements
-) {
-
+export function BasicBlockTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
     let browser: Browser;
     let pagesList: PagesList;
 
@@ -45,7 +41,7 @@ export function BasicBlockTests(
                 throw new Error(`Page does not have a name. Page Key: ${basicPage.Key}`);
             }
             await pageEditor.enterPreviewMode();
-            staticTester = new StaticTester(basicPage.Blocks[0].Configuration.Data.BlockId,browser);
+            staticTester = new StaticTester(basicPage.Blocks[0].Configuration.Data.BlockId, browser);
         } catch (error) {
             const beforeError = await browser.saveScreenshots();
             addContext(this, {
@@ -90,27 +86,24 @@ export function BasicBlockTests(
         }
         expect(testText).equals(JSON.stringify(apiResult));
     });
-    
 
     async function apiCreateBasicPage() {
         const staticBlockRelation = await pagesService.getBlockRelation('Static Tester');
         const staticTesterBlock: PageBlock = basicPage.Blocks.createAndAdd(staticBlockRelation);
         const section = new PageSectionClass(newUuid());
-        
-        
 
         const testConfig: TestConfiguration = {
             Parameters: [],
-            BlockId: 'basicStaticBlock'
+            BlockId: 'basicStaticBlock',
         };
         // config.push(stringParam, filterParam);
         staticTesterBlock.Configuration.Data = testConfig;
-        
+
         section.addBlock(staticTesterBlock.Key);
 
         basicPage.Layout.Sections.add(section);
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(basicPage).catch(error => { 
+        const pageResult: Page = await pagesService.createOrUpdatePage(basicPage).catch((error) => {
             console.log((error as Error).message);
             throw error;
         });

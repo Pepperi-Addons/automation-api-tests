@@ -552,7 +552,13 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const errorCounter: Array<{ message: string; count: number }> = [];
                 const pagesFromApi = await pagesService.getPages({ page_size: -1 });
                 for (const page of pagesFromApi) {
-                    await deletePageIncluding(page, pagesService, ['PagesApiTest','Remove Slideshow Test','SamplePage', 'Produce Consume Tests'], addToErrorCounter, errorCounter);
+                    await deletePageIncluding(
+                        page,
+                        pagesService,
+                        ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests'],
+                        addToErrorCounter,
+                        errorCounter,
+                    );
                     //
                 }
                 expect(
@@ -571,12 +577,17 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         }
     });
 }
-async function deletePageIncluding(page: Page, pagesService: PagesService, pageNamesToDelete: string[] , addToErrorCounter: (errorCounter: Array<{ message: string; count: number; }>, errorMessage: string) => void, errorCounter: { message: string; count: number; }[]) {
+async function deletePageIncluding(
+    page: Page,
+    pagesService: PagesService,
+    pageNamesToDelete: string[],
+    addToErrorCounter: (errorCounter: Array<{ message: string; count: number }>, errorMessage: string) => void,
+    errorCounter: { message: string; count: number }[],
+) {
     if (page?.Name) {
-        if (pageNamesToDelete.length == 0 ||
-            pageNamesToDelete.find(name => page.Name?.includes(name))){
+        if (pageNamesToDelete.length == 0 || pageNamesToDelete.find((name) => page.Name?.includes(name))) {
             page.Blocks.filter((block) => !block.Configuration?.Data).forEach(
-                (block) => (block.Configuration.Data = {})
+                (block) => (block.Configuration.Data = {}),
             );
 
             await pagesService
@@ -585,4 +596,3 @@ async function deletePageIncluding(page: Page, pagesService: PagesService, pageN
         }
     }
 }
-

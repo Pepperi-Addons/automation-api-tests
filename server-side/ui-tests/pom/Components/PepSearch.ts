@@ -1,9 +1,8 @@
-import { By } from "selenium-webdriver";
-import { Browser } from "../../utilities/browser";
-import { WebAppPage } from "../base/WebAppPage";
-import { Component } from "./Base/Component";
+import { By } from 'selenium-webdriver';
+import { Browser } from '../../utilities/browser';
+import { Component } from './Base/Component';
 
-export class PepSearch extends Component{
+export class PepSearch extends Component {
     /**
      *
      */
@@ -12,17 +11,16 @@ export class PepSearch extends Component{
     }
     private _searchContainer: By = By.xpath('//pep-search');
 
-    public get SearchContainer(): By{
+    public get SearchContainer(): By {
         return this._searchContainer;
     }
 
     public readonly Input: By = By.xpath(`${this.SearchContainer.value}//input`);
     public readonly SearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_search']`);
-    public readonly ClearSearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_close']`); 
+    public readonly ClearSearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_close']`);
 
-    public setSearchContainer(xpathLocator: By): void
-    {
-        if(!xpathLocator.using.includes('xpath')){
+    public setSearchContainer(xpathLocator: By): void {
+        if (!xpathLocator.using.includes('xpath')) {
             throw new Error(`'${xpathLocator.using}' is not a supported locator mechanism`);
         }
         this._searchContainer = By.xpath(`${xpathLocator.value}//pep-search`);
@@ -40,10 +38,8 @@ export class PepSearch extends Component{
         return await this.browser.findSingleElement(this.ClearSearchButton).click();
     }
 
-    public async performSearch(searchText: string){
+    public async performSearch(searchText: string) {
         await this.enterSearch(searchText);
         return await this.clickSearchButton();
     }
-
-
 }

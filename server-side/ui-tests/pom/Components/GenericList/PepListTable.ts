@@ -8,7 +8,6 @@ import { WebAppPage } from '../../base/WebAppPage';
 export type TableRowData = TableObjectData<string, string | null>;
 //TODO: Create abstract class 'PepList' and have 'PepListTable' inherit it.
 export class PepListTable extends Page {
-    
     constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }

@@ -477,7 +477,7 @@ export default class GeneralService {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
 
-            let isInstalled = installedAddonsArr.find(addon => addon.Addon.Name == addonName) ? true : false;
+            const isInstalled = installedAddonsArr.find((addon) => addon.Addon.Name == addonName) ? true : false;
 
             if (!isInstalled) {
                 //API Testing Framework AddonUUID

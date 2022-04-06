@@ -1,11 +1,10 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
-import { AddonPage } from '../base/AddonPage';
 import { SectionBlock } from './SectionBlock';
 
 export class StaticTester extends SectionBlock {
     constructor(blockId: string, browser: Browser) {
-        super("Static Tester", blockId, browser);
+        super('Static Tester', blockId, browser);
     }
 
     public readonly BlockContainer = By.css(`static-tester[block-id='${this.blockId}']`);

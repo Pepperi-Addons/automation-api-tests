@@ -309,7 +309,7 @@ export class Browser {
             .wait(
                 until.elementLocated(selector),
                 timeOut,
-                `Element ${selector.valueOf()['value']} was not located in DOM`
+                `Element ${selector.valueOf()['value']} was not located in DOM`,
             )
             .then(() => {
                 return true;
@@ -331,7 +331,7 @@ export class Browser {
      */
     public findSingleElement(selector: Locator, waitUntil = 15000): WebElementPromise {
         const promise = this.driver.manage().setTimeouts({ implicit: waitUntil });
-        
+
         Promise.all([promise]);
         const element = this.driver.findElement(selector);
         console.log(
@@ -339,7 +339,6 @@ export class Browser {
             ConsoleColors.ElementFoundMessage,
         );
         return element;
-        
     }
 
     /**
@@ -354,10 +353,7 @@ export class Browser {
         waitUntil = 15000,
     ): Promise<string | null> {
         const attributeValue = this.findSingleElement(selector, waitUntil).getAttribute(attributeName);
-        console.log(
-            `%cSuccessfully retrieved the attribute '${attributeName}'`,
-            ConsoleColors.PageMessage,
-        );
+        console.log(`%cSuccessfully retrieved the attribute '${attributeName}'`, ConsoleColors.PageMessage);
         return attributeValue;
     }
 

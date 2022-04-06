@@ -46,75 +46,70 @@ const filterParam: IBlockFilterParameter = {
         },
     ],
 };
-export function ProduceConsumeTests(
-    pagesService: PagesService,
-    pagesReq: PageTestRequirements
-) {
+export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
     let browser: Browser;
     let pagesList: PagesList;
     // describe('Dynamic Block Tests', function () {
-        const prodConsPage: PageClass = new PageClass();
-        prodConsPage.Key = newUuid();
-        prodConsPage.Name = `Produce Consume Tests - ${prodConsPage.Key}`;
-        let pageEditor: PageEditor;
-        let dynamicTester: DynamicTester;
-        // const stringParam: IBlockStringParameter = stringParam;
+    const prodConsPage: PageClass = new PageClass();
+    prodConsPage.Key = newUuid();
+    prodConsPage.Name = `Produce Consume Tests - ${prodConsPage.Key}`;
+    let pageEditor: PageEditor;
+    let dynamicTester: DynamicTester;
+    // const stringParam: IBlockStringParameter = stringParam;
 
-        // const filterParam: IBlockFilterParameter = filterParam;
-        before(async function () {
-            
-            await apiCreateProduceConsumePage();
+    // const filterParam: IBlockFilterParameter = filterParam;
+    before(async function () {
+        await apiCreateProduceConsumePage();
 
-            browser = pagesReq.browser;
-            pagesList = pagesReq.pagesList;
-            
-            try {
-                if (prodConsPage?.Name) {
-                    await browser.refresh();
-                    pageEditor = await pagesList.searchAndEditPage(prodConsPage.Name);
-                } else {
-                    throw new Error(`Page does not have a name. Page Key: ${prodConsPage.Key}`);
-                }
-                dynamicTester = new DynamicTester(prodConsPage.Blocks[0].Configuration.Data.BlockId,browser);
-                
-                await dynamicTester.editBlock();
-                
-                await pageEditor.goBack();
-                await pageEditor.enterPreviewMode();
-                
-            } catch (error) {
-                const beforeError = await browser.saveScreenshots();
-                await addContext(this, {
-                    title: `Image Before`,
-                    value: 'data:image/png;base64,' + beforeError,
-                });
-                throw error;
+        browser = pagesReq.browser;
+        pagesList = pagesReq.pagesList;
+
+        try {
+            if (prodConsPage?.Name) {
+                await browser.refresh();
+                pageEditor = await pagesList.searchAndEditPage(prodConsPage.Name);
+            } else {
+                throw new Error(`Page does not have a name. Page Key: ${prodConsPage.Key}`);
             }
-        });
+            dynamicTester = new DynamicTester(prodConsPage.Blocks[0].Configuration.Data.BlockId, browser);
 
-        after(async function () {
-            const result = await pagesService.deletePage(prodConsPage);
-            expect(result?.Hidden).is.equal(true);
-            await pageEditor.enterEditMode();
+            await dynamicTester.editBlock();
+
             await pageEditor.goBack();
-            pagesList = new PagesList(browser);
-        });
+            await pageEditor.enterPreviewMode();
+        } catch (error) {
+            const beforeError = await browser.saveScreenshots();
+            await addContext(this, {
+                title: `Image Before`,
+                value: 'data:image/png;base64,' + beforeError,
+            });
+            throw error;
+        }
+    });
 
-        afterEach(async function () {
-            await pageEditor.collectEndTestData(this);
-        });
+    after(async function () {
+        const result = await pagesService.deletePage(prodConsPage);
+        expect(result?.Hidden).is.equal(true);
+        await pageEditor.enterEditMode();
+        await pageEditor.goBack();
+        pagesList = new PagesList(browser);
+    });
 
-        it('Produce String Param', async function () {
-            await dynamicTester.clickSetParamBtn(stringParam.Key);
-            expect(await dynamicTester.getConsumesText()).to.include(stringParam.Value);
-        });
+    afterEach(async function () {
+        await pageEditor.collectEndTestData(this);
+    });
 
-        it('Produce Filter Param', async function () {
-            await dynamicTester.clickSetParamBtn(filterParam.Key);
-            const consumeText = await dynamicTester.getConsumesText();
+    it('Produce String Param', async function () {
+        await dynamicTester.clickSetParamBtn(stringParam.Key);
+        expect(await dynamicTester.getConsumesText()).to.include(stringParam.Value);
+    });
 
-            expect(consumeText).to.include(JSON.stringify(filterParam?.Value[0]?.filter));
-        });
+    it('Produce Filter Param', async function () {
+        await dynamicTester.clickSetParamBtn(filterParam.Key);
+        const consumeText = await dynamicTester.getConsumesText();
+
+        expect(consumeText).to.include(JSON.stringify(filterParam?.Value[0]?.filter));
+    });
 
     async function apiCreateProduceConsumePage() {
         const dynamicBlockRelation = await pagesService.getBlockRelation('Dynamic Tester');
@@ -122,7 +117,7 @@ export function ProduceConsumeTests(
         const config: BlockParamConfig = new BlockParamConfig(stringParam, filterParam);
         const testConfig: TestConfiguration = {
             Parameters: config,
-            BlockId: 'basicDynamicBlock'
+            BlockId: 'basicDynamicBlock',
         };
 
         dynamicTesterBlock.Configuration.Data = testConfig;
@@ -133,7 +128,7 @@ export function ProduceConsumeTests(
 
         prodConsPage.Layout.Sections.add(section);
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(prodConsPage).catch(error => { 
+        const pageResult: Page = await pagesService.createOrUpdatePage(prodConsPage).catch((error) => {
             console.log((error as Error).message);
             throw error;
         });

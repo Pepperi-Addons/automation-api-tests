@@ -28,5 +28,4 @@ export class DynamicTester extends SectionBlock {
     public async clickSetParamBtn(paramKey: string): Promise<void> {
         return await this.browser.click(this.getSetParamBtn(paramKey));
     }
-
 }

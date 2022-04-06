@@ -58,6 +58,4 @@ export class PagesList extends AddonPage {
         await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
         return this.editPage(pageName);
     }
-
-   
 }
