@@ -35,7 +35,7 @@ export async function LocalAddonFileCreatorTests(generalService: GeneralService,
         describe('Prerequisites Addon Data Import Export Tests', () => {
             //Test Data
             isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addons Is Installed: ${Object.keys(testData)[index]}`, () => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
