@@ -1,29 +1,29 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
-import { AddonPage } from '../base/AddonPage';
+import { SectionBlock } from './SectionBlock';
 
-export class StaticTester extends AddonPage {
-    constructor(browser: Browser) {
-        super(browser);
+export class StaticTester extends SectionBlock {
+    constructor(blockId: string, browser: Browser) {
+        super('Static Tester', blockId, browser);
     }
 
-    public static readonly BlockContainer = By.css('static-tester');
+    public readonly BlockContainer = By.css(`static-tester[block-id='${this.blockId}']`);
 
-    public static readonly TestText = By.css(`${StaticTester.BlockContainer.value} #testText textarea`);
+    public readonly TestText = By.css(`${this.BlockContainer.value} #testText textarea`);
 
-    public static readonly BlockLoadBtn = By.css(`${StaticTester.BlockContainer.value} #blockLoadBtn`);
+    public readonly BlockLoadBtn = By.css(`${this.BlockContainer.value} #blockLoadBtn`);
 
-    public static readonly ApiCallBtn = By.css(`${StaticTester.BlockContainer.value} #apiCallBtn`);
+    public readonly ApiCallBtn = By.css(`${this.BlockContainer.value} #apiCallBtn`);
 
     public async getTestText(): Promise<string | null> {
-        return await this.browser.getElementAttribute(StaticTester.TestText, 'title');
+        return await this.browser.getElementAttribute(this.TestText, 'title');
     }
 
     public async clickBlockLoadBtn(): Promise<void> {
-        return await this.browser.click(StaticTester.BlockLoadBtn);
+        return await this.browser.click(this.BlockLoadBtn);
     }
 
     public async clickApiCallBtn(): Promise<void> {
-        return await this.browser.click(StaticTester.ApiCallBtn);
+        return await this.browser.click(this.ApiCallBtn);
     }
 }

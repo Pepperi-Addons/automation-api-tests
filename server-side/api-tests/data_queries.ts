@@ -1,7 +1,7 @@
 import { DataQuerie, DataQueriesService, DataQueryExecuteRespons, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-let dataQuerysKey = '';
+let dataQuerysKey: any = '';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataQueriesService = new DataQueriesService(generalService);
@@ -158,13 +158,13 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                         ),
                     ).to.be.true;
                     expect(jsonDataFromAuditLog).to.have.own.property('Key');
-                    dataQuerysKey = jsonDataFromAuditLog.Key!;
+                    dataQuerysKey = jsonDataFromAuditLog.Key;
                     expect(jsonDataFromAuditLog).to.have.own.property('Name');
                     expect(jsonDataFromAuditLog.Name).to.equal(savedDateQueries.Name);
                     expect(jsonDataFromAuditLog).to.have.own.property('Series');
                     expect(jsonDataFromAuditLog.Series).to.be.an('Array');
                     expect(jsonDataFromAuditLog.Series[0]).to.have.own.property('Key');
-                    savedDateQueries.Series[0].Key = jsonDataFromAuditLog.Series[0].Key!;
+                    savedDateQueries.Series[0].Key = jsonDataFromAuditLog.Series[0].Key;
                     expect(jsonDataFromAuditLog.Series).to.deep.equal(savedDateQueries.Series);
                 });
             });
@@ -232,7 +232,7 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
                                 });
                             });
                         }
-                        if (jsonDataQuery.Key! === savedDateQueries.Key) {
+                        if (jsonDataQuery.Key === savedDateQueries.Key) {
                             expect(jsonDataQuery).to.deep.equal(savedDateQueries);
                         }
                     });

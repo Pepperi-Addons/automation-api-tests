@@ -12,12 +12,14 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
     //#region Upgrade Addon requirements
     const testData = {
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
-        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
+        // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.81
-        PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
+        // PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
+        'Page Tester': ['3da3c1d7-6aa9-4938-bcdb-b8b4acbf8535', ''],
+
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.38'], //Slideshow Addon 0.0.36
     };
 
@@ -138,50 +140,76 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             //     pagesService.deepCompareObjects(testPage.page, resultPage, expect);
             //     basePage = testPage.page;
             // });
+
+            it("Add PageBlock without mandatory 'Relation' fields", async function () {
+                const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
+                const pageClass = new PageClass(basePage);
+
+                for (const prop of properties) {
+                    const pageRelation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
+                    const pageBlock: PageBlock = {
+                        Key: basePageBlock.Key,
+                        Relation: pageRelation,
+                        Configuration: basePageBlock.Configuration,
+                    };
+                    pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
+
+                    if (prop == 'Name' || prop == 'AddonUUID') {
+                        const expectedError =
+                            prop == 'AddonUUID'
+                                ? `${prop} is missing`
+                                : `Resource should be the same as Block -> Relation -> ${prop}`;
+
+                        await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                            expectedError,
+                        );
+                    } else {
+                        const postResult = await pagesService.createOrUpdatePage(pageClass.page);
+                        pagesService.deepCompareObjects(basePage, postResult, expect);
+                    }
+                }
+            });
+
             it('Add PageBlock with Incorrect Relation Fields', async function () {
                 const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
                 const pageClass = new PageClass(basePage);
-                const pageBlock: PageBlock = {
-                    Key: basePageBlock.Key,
-                    Configuration: basePageBlock.Configuration,
-                } as any;
+
                 for (const prop of properties) {
-                    pageBlock.Relation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
-                    pageBlock.Relation[prop] = 'FillerProp';
+                    const pageRelation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
+                    pageRelation[prop] = 'FillterProp';
+                    const pageBlock: PageBlock = {
+                        Key: basePageBlock.Key,
+                        Configuration: basePageBlock.Configuration,
+                        Relation: pageRelation,
+                    };
                     pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
 
-                    // await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
-                    //     `${prop} is missing`,
-                    // );
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejected;
+                    if (prop == 'Name' || prop == 'AddonUUID') {
+                        const expectedError =
+                            prop == 'AddonUUID'
+                                ? `Block with ${prop} ${pageRelation[prop]} doesn\'t exist as available page block`
+                                : `Resource should be the same as Block -> Relation -> ${prop}`;
+                        await expect(
+                            pagesService.createOrUpdatePage(pageClass.page).then((page) => JSON.stringify(page)),
+                            `Relation field '${prop}'`,
+                        ).to.eventually.be.rejectedWith(expectedError);
+                    } else {
+                        const postResult = await pagesService.createOrUpdatePage(pageClass.page);
+                        pagesService.deepCompareObjects(basePage, postResult, expect);
+                    }
                 }
             });
             it('Add PageBlock without mandatory field', async function () {
                 const blockProps = Object.getOwnPropertyNames(basePageBlock).filter((prop) => prop !== 'length');
                 for (const prop of blockProps) {
                     const pageClass = new PageClass(basePage);
-                    let pageBlock: PageBlock = {} as any;
-                    pageBlock = pagesService.objectWithoutTargetProp(basePageBlock, blockProps, prop);
+                    const pageBlock: PageBlock = pagesService.objectWithoutTargetProp(basePageBlock, blockProps, prop);
+                    // pageBlock = pagesService.objectWithoutTargetProp(basePageBlock, blockProps, prop);
 
                     pageClass.addNewBlock(pageBlock);
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
-                        `${prop} is missing`,
-                    );
-                }
-            });
-
-            it("Add PageBlock without mandatory 'Relation' fields", async function () {
-                const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
-                const pageClass = new PageClass(basePage);
-                const pageBlock: PageBlock = { Key: basePageBlock.Key } as any;
-                for (const prop of properties) {
-                    pageBlock.Relation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
-
-                    pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
-
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
-                        `${prop} is missing`,
-                    );
+                    await expect(
+                        pagesService.createOrUpdatePage(pageClass.page).then((page) => JSON.stringify(page)),
+                    ).to.eventually.be.rejectedWith(`${prop} is missing`);
                 }
             });
 
@@ -387,7 +415,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
         // describe('Load Testing', function () {
         //     const pagesArray: Array<Page> = [];
-        //     const objectsToCreate = 1000;
+        //     const objectsToCreate = 101;
 
         //     it(`Create ${objectsToCreate} pages`, async function () {
         //         const errorCounter: Array<{ message: string; count: number }> = [];
@@ -400,14 +428,13 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         //             promises[i] = pagesService.createOrUpdatePage(page).catch((error) => {
         //                 addToErrorCounter(errorCounter, (error as Error).message);
         //             });
-        //             await generalService.sleepAsync(25);
+        //             await generalService.sleepAsync(100);
         //         }
 
         //         time = new Date();
         //         console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
 
         //         const postResults = await Promise.all(promises);
-
         //         time = new Date();
         //         console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
         //         postResults.map((postResult, index) => {
@@ -468,7 +495,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         //         const promises: Array<Promise<Page | void>> = [];
         //         for (const [index, page] of pagesArray.entries()) {
         //             if (page) {
-        //                 await generalService.sleepAsync(25);
+        //                 await generalService.sleepAsync(100);
         //                 promises[index] = pagesService.deletePage(page).catch((error) => {
         //                     addToErrorCounter(errorCounter, (error as Error).message);
         //                 });
@@ -512,30 +539,27 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
         describe('Page Tests Suite Cleanup', function () {
             it('Delete created page', async function () {
-                await pagesService.deletePage(basePage);
-                const result = await pagesService.getPages({ where: `Key='${basePage.Key}'`, include_deleted: true });
-                expect(result[0]?.Hidden).is.equal(true);
+                const deleteResult = await pagesService.deletePage(basePage);
+                pagesService.deepCompareObjects(basePage, deleteResult, expect);
+                // const result = await pagesService.getPages({ where: `Key='${basePage.Key}'`, include_deleted: true });
+                const result = await pagesService.getPage(basePage.Key as string);
+
+                // console.log(`%cBug in Pages API FindOptions - DI-19747`, ConsoleColors.BugSkipped);
+                expect(result?.Hidden).is.equal(true);
             });
 
             it('Cleanup of all PagesApiTest pages', async function () {
                 const errorCounter: Array<{ message: string; count: number }> = [];
                 const pagesFromApi = await pagesService.getPages({ page_size: -1 });
                 for (const page of pagesFromApi) {
-                    if (page?.Name) {
-                        if (
-                            page.Name.includes('PagesApiTest') ||
-                            page.Name.includes('Remove Slideshow Test') ||
-                            page.Name.includes('SamplePage')
-                        ) {
-                            page.Blocks.filter((block) => !block.Configuration?.Data).forEach(
-                                (block) => (block.Configuration.Data = {}),
-                            );
-
-                            await pagesService
-                                .deletePage(page)
-                                .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
-                        }
-                    }
+                    await deletePageIncluding(
+                        page,
+                        pagesService,
+                        ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests'],
+                        addToErrorCounter,
+                        errorCounter,
+                    );
+                    //
                 }
                 expect(
                     errorCounter,
@@ -552,4 +576,23 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             index > -1 ? errorCounter[index].count++ : errorCounter.push({ message: errorMessage, count: 1 });
         }
     });
+}
+async function deletePageIncluding(
+    page: Page,
+    pagesService: PagesService,
+    pageNamesToDelete: string[],
+    addToErrorCounter: (errorCounter: Array<{ message: string; count: number }>, errorMessage: string) => void,
+    errorCounter: { message: string; count: number }[],
+) {
+    if (page?.Name) {
+        if (pageNamesToDelete.length == 0 || pageNamesToDelete.find((name) => page.Name?.includes(name))) {
+            page.Blocks.filter((block) => !block.Configuration?.Data).forEach(
+                (block) => (block.Configuration.Data = {}),
+            );
+
+            await pagesService
+                .deletePage(page)
+                .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
+        }
+    }
 }

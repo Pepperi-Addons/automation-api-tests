@@ -1,14 +1,16 @@
 import { NgComponentRelation, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PageFactory } from '../page.factory';
+import { PageBlockExt } from './page-block.ext';
 
-export class PageBlocksArray extends Array<PageBlock> {
+export class PageBlocksArray extends Array<PageBlockExt> {
     constructor(pageBlocks?: Array<PageBlock>) {
         super(...(pageBlocks || []));
     }
 
     /**
-     * Creates a new PageBlock and appends it to the end of an array. Returns a reference to the created PageBlock.
+     * Creates a new PageBlock and appends it to the end of an array.
      * @param blockRelation PageBlock relation from which to create the PageBlock.
+     * @returns Reference to the created PageBlock
      */
     createAndAdd(blockRelation: NgComponentRelation): PageBlock {
         const pageBlock = PageFactory.defaultPageBlock(blockRelation);

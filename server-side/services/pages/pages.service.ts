@@ -31,8 +31,8 @@ export class PagesService {
         });
         const fullRelation: NgComponentRelation = apiResponse[0];
 
-        if (fullRelation.Name != blockName) {
-            throw new Error(`Unexpected PageBlock name: ${fullRelation.Name}`);
+        if (fullRelation?.Name != blockName) {
+            throw new Error(`Unexpected PageBlock name: ${fullRelation?.Name}`);
         }
         //Only the mandatory fields as specified by API design.
         const blockRelation: any = {};
@@ -51,8 +51,10 @@ export class PagesService {
         return this.papiClient.pages.upsert(page);
     }
     async getPage(pageUuid: string): Promise<Page> {
-        return this.papiClient.pages.uuid(pageUuid).get();
+        return this.papiClient.pages.get(pageUuid as any);
+        // return this.papiClient.pages.uuid(pageUuid).get();
     }
+
     async getPages(findOptions?: FindOptions): Promise<Array<Page>> {
         return this.papiClient.pages.find(findOptions);
     }

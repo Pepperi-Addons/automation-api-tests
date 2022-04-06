@@ -476,16 +476,11 @@ export default class GeneralService {
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
-            let isInstalled = false;
-            for (let i = 0; i < installedAddonsArr.length; i++) {
-                if (installedAddonsArr[i].Addon !== null) {
-                    if (installedAddonsArr[i].Addon.Name == addonName) {
-                        isInstalled = true;
-                        break;
-                    }
-                }
-            }
+
+            const isInstalled = installedAddonsArr.find((addon) => addon.Addon.Name == addonName) ? true : false;
+
             if (!isInstalled) {
+                //API Testing Framework AddonUUID
                 if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)

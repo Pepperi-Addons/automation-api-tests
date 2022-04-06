@@ -8,8 +8,8 @@ export class PageEditor extends WebAppPage {
     public static PreviewButton: By = By.xpath("//*[@title='Preview']/ancestor::pep-button");
     public static PreviewModeContainer: By = By.css('.header-container-preview');
     public static EditButton: By = By.xpath(`//a[text()='Click here to edit']`);
-
     public static PublishButton: By = By.css('button[data-qa=Preview]');
+    public static BackButton: By = By.css('pep-button.back-button');
 
     //TODO: Figure how to incorporate custom blocks
     constructor(protected browser: Browser) {
@@ -25,7 +25,6 @@ export class PageEditor extends WebAppPage {
 
     public async enterPreviewMode(): Promise<void | undefined> {
         const isPreviewMode: boolean = await this.browser.isElementLocated(PageEditor.PreviewModeContainer);
-        debugger;
 
         if (!isPreviewMode) {
             return await this.clickPreviewButton();
@@ -34,10 +33,14 @@ export class PageEditor extends WebAppPage {
 
     public async enterEditMode(): Promise<void | undefined> {
         const isPreviewMode: boolean = await this.browser.isElementLocated(PageEditor.PreviewModeContainer);
-        debugger;
 
         if (isPreviewMode) {
             return await this.clickEditButton();
         }
+    }
+
+    public async goBack(): Promise<void> {
+        await this.browser.click(PageEditor.BackButton);
+        await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
     }
 }
