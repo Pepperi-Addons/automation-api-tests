@@ -1,25 +1,26 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
-import { Component } from '../../base/Component';
+import { Component } from '../../Components/Base/Component';
 import { WebAppPage } from '../../base/WebAppPage';
 
 export abstract class SectionBlock extends Component {
 
     public readonly BlockName: string;
-
-    protected constructor(private blockName: string, browser: Browser) {
+    public readonly BlockId: string;
+    protected constructor(private blockName: string, protected blockId: string, browser: Browser) {
         super(browser);
         this.BlockName = blockName;
+        this.BlockId = blockId;
     }
 
-    public static readonly ParentContainer = By.xpath('//section-block');
+    public readonly ParentContainer = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
     // public getBlockDraggable(): By {
     //     return By.xpath(`${SectionBlock.ParentContainer.value}//*[@title='${this.blockName}']`);
     // }
 
     public readonly getBlockDraggable: By =
-        By.xpath(`${SectionBlock.ParentContainer.value}//*[@title='${this.blockName}']`);
+        By.xpath(`${this.ParentContainer.value}//*[@title='${this.blockName}']`);
     
 
     public getEditBlockBtn(): By {
@@ -38,11 +39,12 @@ export abstract class SectionBlock extends Component {
         );
     }
 
+
     public async editBlock(): Promise<void> {
-        const blockLoadTimeOut = 5000;
+        const blockLoadTimeOut = 30000;
         const blockLoaded = await this.isBlockLoaded(blockLoadTimeOut, true);
         if(!blockLoaded){
-            throw new Error(`${this.BlockName} block was not loaded in the alotted time: ${blockLoadTimeOut}ms`);
+            throw new Error(`${this.getLoadedBlockElement().value} was not loaded in the alotted time ${blockLoadTimeOut}ms`);
         }
         await this.browser.click(this.getEditBlockBtn());
         await this.browser.waitForLoading(WebAppPage.LoadingSpinner);

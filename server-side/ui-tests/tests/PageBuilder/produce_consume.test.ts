@@ -58,7 +58,6 @@ export function ProduceConsumeTests(
         prodConsPage.Name = `Produce Consume Tests - ${prodConsPage.Key}`;
         let pageEditor: PageEditor;
         let dynamicTester: DynamicTester;
-
         // const stringParam: IBlockStringParameter = stringParam;
 
         // const filterParam: IBlockFilterParameter = filterParam;
@@ -72,19 +71,20 @@ export function ProduceConsumeTests(
             try {
                 if (prodConsPage?.Name) {
                     await browser.refresh();
-                    pageEditor = await pagesList.editPage(prodConsPage.Name);
+                    pageEditor = await pagesList.searchAndEditPage(prodConsPage.Name);
                 } else {
                     throw new Error(`Page does not have a name. Page Key: ${prodConsPage.Key}`);
                 }
-                dynamicTester = new DynamicTester(browser);
+                dynamicTester = new DynamicTester(prodConsPage.Blocks[0].Configuration.Data.BlockId,browser);
+                
                 await dynamicTester.editBlock();
                 
                 await pageEditor.goBack();
                 await pageEditor.enterPreviewMode();
                 
             } catch (error) {
-                const beforeError = browser.saveScreenshots();
-                addContext(this, {
+                const beforeError = await browser.saveScreenshots();
+                await addContext(this, {
                     title: `Image Before`,
                     value: 'data:image/png;base64,' + beforeError,
                 });
@@ -93,7 +93,6 @@ export function ProduceConsumeTests(
         });
 
         after(async function () {
-            debugger;
             const result = await pagesService.deletePage(prodConsPage);
             expect(result?.Hidden).is.equal(true);
             await pageEditor.enterEditMode();
@@ -125,7 +124,7 @@ export function ProduceConsumeTests(
             Parameters: config,
             BlockId: 'basicDynamicBlock'
         };
-        // config.push(stringParam, filterParam);
+
         dynamicTesterBlock.Configuration.Data = testConfig;
 
         const section = new PageSectionClass(newUuid());
@@ -134,8 +133,10 @@ export function ProduceConsumeTests(
 
         prodConsPage.Layout.Sections.add(section);
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(prodConsPage);
-
+        const pageResult: Page = await pagesService.createOrUpdatePage(prodConsPage).catch(error => { 
+            console.log((error as Error).message);
+            throw error;
+        });
         pagesService.deepCompareObjects(prodConsPage, pageResult, expect);
     }
     // });

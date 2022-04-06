@@ -415,7 +415,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
         // describe('Load Testing', function () {
         //     const pagesArray: Array<Page> = [];
-        //     const objectsToCreate = 1000;
+        //     const objectsToCreate = 101;
 
         //     it(`Create ${objectsToCreate} pages`, async function () {
         //         const errorCounter: Array<{ message: string; count: number }> = [];
@@ -428,14 +428,13 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         //             promises[i] = pagesService.createOrUpdatePage(page).catch((error) => {
         //                 addToErrorCounter(errorCounter, (error as Error).message);
         //             });
-        //             await generalService.sleepAsync(25);
+        //             await generalService.sleepAsync(100);
         //         }
 
         //         time = new Date();
         //         console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
 
         //         const postResults = await Promise.all(promises);
-
         //         time = new Date();
         //         console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
         //         postResults.map((postResult, index) => {
@@ -496,7 +495,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         //         const promises: Array<Promise<Page | void>> = [];
         //         for (const [index, page] of pagesArray.entries()) {
         //             if (page) {
-        //                 await generalService.sleepAsync(25);
+        //                 await generalService.sleepAsync(100);
         //                 promises[index] = pagesService.deletePage(page).catch((error) => {
         //                     addToErrorCounter(errorCounter, (error as Error).message);
         //                 });

@@ -1,8 +1,8 @@
-import { Browser } from '../../utilities/browser';
+import { Browser } from '../../../utilities/browser';
 import addContext from 'mochawesome/addContext';
 import fs from 'fs';
 import path from 'path';
-import { ConsoleColors } from '../../../services/general.service';
+import { ConsoleColors } from '../../../../services/general.service';
 
 export abstract class Component {
     public constructor(protected browser: Browser) {}

@@ -3,30 +3,30 @@ import { Browser } from '../../../utilities/browser';
 import { SectionBlock } from './SectionBlock';
 
 export class DynamicTester extends SectionBlock {
-    constructor(browser: Browser) {
-        super('Dynamic Tester', browser);
+    constructor(blockId: string, browser: Browser) {
+        super('Dynamic Tester', blockId, browser);
     }
 
-    public static readonly BlockContainer = By.css('dynamic-tester');
+    public readonly BlockContainer = By.css(`dynamic-tester[block-id='${this.blockId}']`);
 
-    public static readonly HostObjectText = By.css(`${DynamicTester.BlockContainer.value} #hostObject textarea`);
+    public readonly HostObjectText = By.css(`${this.BlockContainer.value} #hostObject textarea`);
 
-    public static readonly ConsumesText = By.css(`${DynamicTester.BlockContainer.value} #receivedConsumes textarea`);
+    public readonly ConsumesText = By.css(`${this.BlockContainer.value} #receivedConsumes textarea`);
 
-    public static getSetParamBtn(paramKey: string) {
-        return By.css(`${DynamicTester.BlockContainer.value} button[data-qa='${paramKey}']`);
+    public getSetParamBtn(paramKey: string) {
+        return By.css(`${this.BlockContainer.value} button[data-qa='${paramKey}']`);
     }
 
     public async getHostObjectText(): Promise<string | null> {
-        return await this.browser.getElementAttribute(DynamicTester.HostObjectText, 'title');
+        return await this.browser.getElementAttribute(this.HostObjectText, 'title');
     }
 
     public async getConsumesText(): Promise<string | null> {
-        return await this.browser.getElementAttribute(DynamicTester.ConsumesText, 'title');
+        return await this.browser.getElementAttribute(this.ConsumesText, 'title');
     }
 
     public async clickSetParamBtn(paramKey: string): Promise<void> {
-        return await this.browser.click(DynamicTester.getSetParamBtn(paramKey));
+        return await this.browser.click(this.getSetParamBtn(paramKey));
     }
 
 }

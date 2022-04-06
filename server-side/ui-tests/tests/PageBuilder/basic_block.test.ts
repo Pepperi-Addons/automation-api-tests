@@ -40,14 +40,14 @@ export function BasicBlockTests(
         try {
             if (basicPage?.Name) {
                 await browser.refresh();
-                pageEditor = await pagesList.editPage(basicPage.Name);
+                pageEditor = await pagesList.searchAndEditPage(basicPage.Name);
             } else {
                 throw new Error(`Page does not have a name. Page Key: ${basicPage.Key}`);
             }
             await pageEditor.enterPreviewMode();
-            staticTester = new StaticTester(browser);
+            staticTester = new StaticTester(basicPage.Blocks[0].Configuration.Data.BlockId,browser);
         } catch (error) {
-            const beforeError = browser.saveScreenshots();
+            const beforeError = await browser.saveScreenshots();
             addContext(this, {
                 title: `Image Before`,
                 value: 'data:image/png;base64,' + beforeError,
@@ -57,7 +57,6 @@ export function BasicBlockTests(
     });
 
     after(async function () {
-        debugger;
         const result = await pagesService.deletePage(basicPage);
         expect(result?.Hidden).is.equal(true);
         await pageEditor.enterEditMode();
@@ -106,14 +105,15 @@ export function BasicBlockTests(
         };
         // config.push(stringParam, filterParam);
         staticTesterBlock.Configuration.Data = testConfig;
-
+        
         section.addBlock(staticTesterBlock.Key);
 
         basicPage.Layout.Sections.add(section);
-        
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(basicPage);
-
+        const pageResult: Page = await pagesService.createOrUpdatePage(basicPage).catch(error => { 
+            console.log((error as Error).message);
+            throw error;
+        });
         pagesService.deepCompareObjects(basicPage, pageResult, expect);
     }
 }
