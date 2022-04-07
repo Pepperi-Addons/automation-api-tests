@@ -20,7 +20,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
     //#region Upgrade Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', '1.0.51'],
+        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', '1.0.93'],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeToAnyAvailableVersion(testData);
