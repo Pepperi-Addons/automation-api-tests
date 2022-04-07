@@ -312,8 +312,11 @@ export class Browser {
                 `Element ${selector.valueOf()['value']} was not located in DOM`,
             )
             .then(() => {
-                if(!suppressLog){
-                    console.log(`Element ${selector.valueOf()['value']} is located in DOM`, ConsoleColors.ElementFoundMessage);
+                if (!suppressLog) {
+                    console.log(
+                        `Element ${selector.valueOf()['value']} is located in DOM`,
+                        ConsoleColors.ElementFoundMessage,
+                    );
                 }
                 return true;
             })
@@ -333,7 +336,7 @@ export class Browser {
      * @param suppressLog Suppress writing error to log in case the function returns 'false'.
      * @returns Whether the element is located in the DOM.
      */
-     public async isElementVisible(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
+    public async isElementVisible(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
         await this.driver.manage().setTimeouts({ implicit: timeOut });
         const isLocated = this.driver
             .wait(
@@ -342,7 +345,7 @@ export class Browser {
                 `Element ${selector.valueOf()['value']} is not visible`,
             )
             .then(() => {
-                if(!suppressLog){
+                if (!suppressLog) {
                     console.log(`Element ${selector.valueOf()['value']} is visible`, ConsoleColors.ElementFoundMessage);
                 }
                 return true;
