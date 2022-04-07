@@ -3,6 +3,7 @@ import { Browser } from '../../../utilities/browser';
 import { WebAppPage } from '../../Pages/base/WebAppPage';
 import config from '../../../../config';
 import { PageLayoutSideBar } from './PageLayoutSideBar';
+import { SectionBlocksMap } from '../Blocks/SectionBlocksMap';
 
 export class PageEditor extends WebAppPage {
     //TODO: Add basic Page Editor functionality (as additional components?)
@@ -12,6 +13,8 @@ export class PageEditor extends WebAppPage {
     public static readonly PublishButton: By = By.css('button[data-qa=Preview]');
 
     protected readonly SideBar: PageLayoutSideBar;
+
+    public PageBlocks: SectionBlocksMap = new SectionBlocksMap();
     //TODO: Figure how to incorporate custom blocks
     constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);

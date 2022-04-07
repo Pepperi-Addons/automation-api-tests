@@ -1,4 +1,3 @@
-
 export const PageListColumnHeaders = {
     Name: 'Name',
     Description: 'Description',

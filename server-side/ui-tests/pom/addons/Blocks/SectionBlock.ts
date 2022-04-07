@@ -3,10 +3,8 @@ import { Browser } from '../../../utilities/browser';
 import { Component } from '../../Components/Base/Component';
 import { WebAppPage } from '../../Pages/base/WebAppPage';
 import { PageBlockEditorSideBar } from '../PageBuilder/PageBlockEditorSideBar';
-import { PageLayoutSideBar } from '../PageBuilder/PageLayoutSideBar';
 
 export abstract class SectionBlock extends Component {
-    
     protected constructor(private blockName: string, protected blockId: string, browser: Browser) {
         super(browser);
         this.BlockName = blockName;

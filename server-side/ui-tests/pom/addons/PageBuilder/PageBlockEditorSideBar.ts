@@ -1,8 +1,8 @@
-import { By } from "selenium-webdriver";
-import { Browser } from "../../../utilities/browser";
-import { PageLayoutSideBar } from "./PageLayoutSideBar";
+import { By } from 'selenium-webdriver';
+import { Browser } from '../../../utilities/browser';
+import { PageLayoutSideBar } from './PageLayoutSideBar';
 
-export class PageBlockEditorSideBar extends PageLayoutSideBar{
+export class PageBlockEditorSideBar extends PageLayoutSideBar {
     /**
      *
      */
@@ -12,17 +12,17 @@ export class PageBlockEditorSideBar extends PageLayoutSideBar{
     }
 
     public readonly Title: string;
-    public readonly SideBarTitle: By = By.css(`${PageLayoutSideBar.BackButton.value} ~ ['${this.sideBarTitle}']`);
+    public readonly SideBarTitle: By = By.css(`${PageLayoutSideBar.BackButton.value} ~ [title='${this.sideBarTitle}']`);
 
-    public async exitBlockEditorMode(){
+    public async exitBlockEditorMode() {
         const titleDisplayed = await this.isTitleDisplayed(true);
-        if(!titleDisplayed){
+        if (!titleDisplayed) {
             throw new Error(`PageBlock Editor's title ${this.SideBarTitle.value} was not visible`);
         }
         return await this.goBack();
     }
 
-    public async isTitleDisplayed(suppressLog: boolean = false): Promise<boolean>{
-        return await this.browser.isElementVisible(this.SideBarTitle);
+    public async isTitleDisplayed(suppressLog = false): Promise<boolean> {
+        return await this.browser.isElementVisible(this.SideBarTitle, undefined, suppressLog);
     }
 }
