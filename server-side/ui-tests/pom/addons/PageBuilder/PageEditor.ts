@@ -2,6 +2,7 @@ import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
 import { WebAppPage } from '../../Pages/base/WebAppPage';
 import config from '../../../../config';
+import { PageLayoutSideBar } from './PageLayoutSideBar';
 
 export class PageEditor extends WebAppPage {
     //TODO: Add basic Page Editor functionality (as additional components?)
@@ -9,11 +10,12 @@ export class PageEditor extends WebAppPage {
     public static readonly PreviewModeContainer: By = By.css('.header-container-preview');
     public static readonly EditButton: By = By.xpath(`//a[text()='Click here to edit']`);
     public static readonly PublishButton: By = By.css('button[data-qa=Preview]');
-    public static readonly BackButton: By = By.css('pep-button.back-button');
 
+    protected readonly SideBar: PageLayoutSideBar;
     //TODO: Figure how to incorporate custom blocks
     constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
+        this.SideBar = new PageLayoutSideBar(browser);
     }
 
     public async clickPreviewButton(): Promise<void> {
@@ -40,7 +42,6 @@ export class PageEditor extends WebAppPage {
     }
 
     public async goBack(): Promise<void> {
-        await this.browser.click(PageEditor.BackButton);
-        await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
+        return await this.SideBar.goBack();
     }
 }

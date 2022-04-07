@@ -28,4 +28,11 @@ export class DynamicTester extends SectionBlock {
     public async clickSetParamBtn(paramKey: string): Promise<void> {
         return await this.browser.click(this.getSetParamBtn(paramKey));
     }
+    /**
+     * Initializes block configuration by entering block edit mode. Exits edit block mode after loading animation has finished.
+     */
+    public async initBlockConfig(): Promise<void>{
+        await this.editBlock();
+        return await this.SideBar.exitBlockEditorMode();
+    }
 }

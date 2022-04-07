@@ -42,9 +42,10 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
             }
             dynamicTester = new DynamicTester(prodConsPage.Blocks[0].Configuration.Data.BlockId, browser);
 
-            await dynamicTester.editBlock();
+            await dynamicTester.initBlockConfig();
+            // await dynamicTester.editBlock();
 
-            await pageEditor.goBack();
+            // await pageEditor.goBack();
             await pageEditor.enterPreviewMode();
         } catch (error) {
             const beforeError = await browser.saveScreenshots();
