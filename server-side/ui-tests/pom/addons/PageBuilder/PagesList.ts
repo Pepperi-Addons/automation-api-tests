@@ -8,9 +8,7 @@ import { PepSearch } from '../../Components/PepSearch';
 import { By } from 'selenium-webdriver';
 import { WebAppPage } from '../../Pages/base/WebAppPage';
 
-// export type PageRowData = TableObjectData & {[headerId in PageListColumnHeaders]: string | null | undefined}
-
-export type PageRowData = TableObjectData<PageListHeaders, string | null | undefined>; // & {[headerId in PageListColumnHeaders]: string | null | undefined}
+export type PageRowData = TableObjectData<PageListHeaders, string | null | undefined>;
 
 export class PagesList extends AddonPage {
     private pagesList: PepListTable;
