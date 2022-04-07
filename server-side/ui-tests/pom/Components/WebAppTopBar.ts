@@ -1,11 +1,10 @@
-import { Browser } from '../utilities/browser';
-import { Page } from './Pages/base/Page';
-import config from '../../config';
+import { Browser } from '../../utilities/browser';
 import { Locator, By } from 'selenium-webdriver';
+import { Component } from './Base/Component';
 
-export class WebAppTopBar extends Page {
+export class WebAppTopBar extends Component {
     constructor(protected browser: Browser) {
-        super(browser, `${config.baseUrl}`);
+        super(browser);
     }
 
     public Header: Locator = By.css('[data-qa="firstMenu"]');

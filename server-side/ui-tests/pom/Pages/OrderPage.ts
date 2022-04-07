@@ -1,5 +1,5 @@
 import { By, Locator } from 'selenium-webdriver';
-import { WebAppList } from '.';
+import { WebAppList } from '..';
 
 export class OrderPage extends WebAppList {
     public pageGrandTotal: Locator = By.xpath("//span[@class='value']"); //order page

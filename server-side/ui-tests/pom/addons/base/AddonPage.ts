@@ -6,7 +6,7 @@ import { WebAppHeader } from '../../WebAppHeader';
 import { WebAppHomePage, WebAppList, WebAppSettingsSidePanel } from '../../index';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { OrderPageItem } from '../../OrderPage';
+import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
 import { PepperiStatus } from '../../Enumerations/PepperiStatus';
 

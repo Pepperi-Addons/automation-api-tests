@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { Page } from './Pages/base/Page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
-import { WebAppSettingsSidePanel } from './WebAppSettingsSidePanel';
+import { WebAppSettingsSidePanel } from './Components/WebAppSettingsSidePanel';
 
 export class WebAppHeader extends Page {
     constructor(protected browser: Browser) {

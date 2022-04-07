@@ -11,9 +11,7 @@ import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { DynamicTester } from '../../pom/addons/Blocks/DynamicTester';
-import {
-    TestConfiguration,
-} from '../../../models/pages/parameter-config.class';
+import { TestConfiguration } from '../../../models/pages/parameter-config.class';
 import { PageTestRequirements } from './page_builder.test';
 import { PageBlockExt } from '../../../models/pages/page-block.ext';
 import { PageFactory } from '../../../models/page.factory';
@@ -86,13 +84,13 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
 
     async function apiCreatePage(): Promise<PageClass> {
         const dynamicBlockRelation = await pagesService.getBlockRelation('Dynamic Tester');
-        
+
         const stringProducer = getStringProducerBlock(dynamicBlockRelation);
         const filterProducer = getFilterProducerBlock(dynamicBlockRelation);
 
         testPage.Blocks.add(stringProducer, filterProducer);
 
-        const section = new PageSectionClass(newUuid(), "1/2 1/2");
+        const section = new PageSectionClass(newUuid(), '1/2 1/2');
 
         section.addBlock(stringProducer.Key, 0);
         section.addBlock(filterProducer.Key, 1);
@@ -107,24 +105,27 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
     }
 }
 
-function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockExt{
+function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
     const testConfig: TestConfiguration = {
-        Parameters: [{
-            Key: stringParam.Key,
-            Consume: false,
-            Produce: true,
-            Type: stringParam.Type,
-            Value: stringParam.Value,
-            }, {
+        Parameters: [
+            {
+                Key: stringParam.Key,
+                Consume: false,
+                Produce: true,
+                Type: stringParam.Type,
+                Value: stringParam.Value,
+            },
+            {
                 Key: filterParam.Key,
                 Consume: true,
                 Produce: false,
                 Type: filterParam.Type,
                 Value: [],
                 Resource: filterParam.Resource,
-                Fields: filterParam.Fields
-            }],
+                Fields: filterParam.Fields,
+            },
+        ],
         BlockId: 'stringProduceFilterConsume',
     };
     pageBlock.Configuration.Data = testConfig;
@@ -132,25 +133,28 @@ function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockEx
     return pageBlock;
 }
 
-function getFilterProducerBlock(blockRelation: NgComponentRelation): PageBlockExt{
+function getFilterProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
 
     const testConfig: TestConfiguration = {
-        Parameters: [{
-            Key: stringParam.Key,
-            Consume: true,
-            Produce: false,
-            Type: stringParam.Type,
-            Value: stringParam.Value,
-            }, {
+        Parameters: [
+            {
+                Key: stringParam.Key,
+                Consume: true,
+                Produce: false,
+                Type: stringParam.Type,
+                Value: stringParam.Value,
+            },
+            {
                 Key: filterParam.Key,
                 Consume: false,
                 Produce: true,
                 Type: filterParam.Type,
                 Value: filterParam.Value,
                 Resource: filterParam.Resource,
-                Fields: filterParam.Fields
-            }],
+                Fields: filterParam.Fields,
+            },
+        ],
         BlockId: 'filterProduceStringConsume',
     };
 

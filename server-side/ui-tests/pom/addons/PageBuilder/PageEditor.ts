@@ -5,11 +5,11 @@ import config from '../../../../config';
 
 export class PageEditor extends WebAppPage {
     //TODO: Add basic Page Editor functionality (as additional components?)
-    public static PreviewButton: By = By.xpath("//*[@title='Preview']/ancestor::pep-button");
-    public static PreviewModeContainer: By = By.css('.header-container-preview');
-    public static EditButton: By = By.xpath(`//a[text()='Click here to edit']`);
-    public static PublishButton: By = By.css('button[data-qa=Preview]');
-    public static BackButton: By = By.css('pep-button.back-button');
+    public static readonly PreviewButton: By = By.xpath("//*[@title='Preview']/ancestor::pep-button");
+    public static readonly PreviewModeContainer: By = By.css('.header-container-preview');
+    public static readonly EditButton: By = By.xpath(`//a[text()='Click here to edit']`);
+    public static readonly PublishButton: By = By.css('button[data-qa=Preview]');
+    public static readonly BackButton: By = By.css('pep-button.back-button');
 
     //TODO: Figure how to incorporate custom blocks
     constructor(protected browser: Browser) {

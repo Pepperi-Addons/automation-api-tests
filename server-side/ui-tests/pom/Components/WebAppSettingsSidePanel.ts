@@ -1,12 +1,11 @@
-import { Browser } from '../utilities/browser';
-import { Page } from './Pages/base/Page';
-import config from '../../config';
+import { Browser } from '../../utilities/browser';
 import { Locator, By } from 'selenium-webdriver';
-import { WebAppPage } from './Pages/base/WebAppPage';
+import { WebAppPage } from '../Pages/base/WebAppPage';
+import { Component } from './Base/Component';
 
-export class WebAppSettingsSidePanel extends Page {
+export class WebAppSettingsSidePanel extends Component {
     constructor(protected browser: Browser) {
-        super(browser, `${config.baseUrl}`);
+        super(browser);
     }
 
     //TODO: Replace SettingsBarContainer for:

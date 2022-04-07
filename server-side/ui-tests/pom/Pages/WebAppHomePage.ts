@@ -1,13 +1,13 @@
-import { Browser } from '../utilities/browser';
-import config from '../../config';
+import { Browser } from '../../utilities/browser';
+import config from '../../../config';
 import { Locator, By } from 'selenium-webdriver';
-import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
+import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from '../index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppAPI } from './WebAppAPI';
+import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { WebAppPage } from './Pages/base/WebAppPage';
+import { WebAppPage } from './base/WebAppPage';
 
 chai.use(promised);
 
@@ -91,7 +91,7 @@ export class WebAppHomePage extends WebAppPage {
             if (nameOfAccount) await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
             else await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(this.browser);
-            await webAppTopBar.click(webAppTopBar.DoneBtn);
+            await this.click(webAppTopBar.DoneBtn);
         } catch (error) {
             if (error instanceof Error) {
                 if (
@@ -122,6 +122,7 @@ export class WebAppHomePage extends WebAppPage {
         }
 
         //This sleep is mandaroy while pop up message of existing order is calculated
+        //TODO: Replace with explicit wait.
         console.log('Wait for existing orders');
         this.browser.sleep(2500);
 

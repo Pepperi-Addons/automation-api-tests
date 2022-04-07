@@ -1,10 +1,10 @@
-import { Browser } from '../utilities/browser';
-import { Page } from './Pages/base/Page';
-import config from '../../config';
+import { Browser } from '../../utilities/browser';
+import { Page } from './base/Page';
+import config from '../../../config';
 import { By, Locator } from 'selenium-webdriver';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader, WebAppHomePage } from './index';
+import { WebAppHeader, WebAppHomePage } from '../index';
 
 chai.use(promised);
 
