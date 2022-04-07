@@ -10,7 +10,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade UDC
     const testData = {
-        'User Defined Collections': [UserDefinedCollectionsUUID, '0.0.13'],
+        'User Defined Collections': [UserDefinedCollectionsUUID, ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
     let varKey;
@@ -58,7 +59,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
         describe('CRUD Collection Scheme', () => {
             const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-            const collectionName = 'Collection Name' + Math.floor(Math.random() * 1000000).toString();
+            const collectionName = 'Collection_Name_' + Math.floor(Math.random() * 1000000).toString();
             const schemaTestData = {
                 Name: collectionName,
                 Description: tempDescription,
@@ -163,7 +164,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     Mandatory: false,
                 };
                 schemaTestData.Fields.OptionalValuesField = {
-                    OptionalValues: [1, 2, 3] as any,
+                    OptionalValues: ['1', '2', '3'],
                     Type: 'Integer',
                     Mandatory: false,
                 };
@@ -229,7 +230,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
         describe('CRUD Collection Document', () => {
             const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-            const collectionName = 'Collection Name' + Math.floor(Math.random() * 1000000).toString();
+            const collectionName = 'Collection_Name_' + Math.floor(Math.random() * 1000000).toString();
             const schemaTestData = {
                 Name: collectionName,
                 Description: tempDescription,
@@ -254,7 +255,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     },
                     OptionalValuesField: {
                         OptionalValues: ['1', '2', '3'],
-                        Type: 'Integer',
+                        Type: 'String',
                         Mandatory: false,
                     },
                     StringArray: {
@@ -277,11 +278,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 Key: collectionName + 'Key',
                 StringField1: 'String 1 Test',
                 StringField2: 'String 2 Test',
-                IntegerField1: '1',
-                IntegerField2: '2',
+                IntegerField1: 1,
+                IntegerField2: 2,
                 OptionalValuesField: '1',
                 StringArray: ['String array 1', 'String array 2', 'String array 3'],
-                IntegerArray: ['1', '2', '3'],
+                IntegerArray: [1, 2, 3],
             };
             let schemeBeforeArr;
 
@@ -377,9 +378,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             it(`Update`, async () => {
                 documentTestData.StringField1 = 'String 3 Test';
                 documentTestData.StringField2 = 'String 3 Test';
-                documentTestData.OptionalValuesField = 9 as any;
+                documentTestData.OptionalValuesField = '3';
                 documentTestData.StringArray = ['String array 1', 'String array 2', 'String array 4'];
-                documentTestData.IntegerArray = [1, 2, 3] as any;
+                documentTestData.IntegerArray = [1, 2, 3];
 
                 const getDocumentAfterUpdate = await udcService.postDocument(collectionName, documentTestData);
                 expect(getDocumentAfterUpdate.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
