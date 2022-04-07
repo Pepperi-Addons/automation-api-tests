@@ -7,7 +7,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppAPI } from './WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { WebAppPage } from './base/WebAppPage';
+import { WebAppPage } from './Pages/base/WebAppPage';
 
 chai.use(promised);
 

@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/Page';
+import { Page } from './Pages/base/Page';
 import config from '../../config';
 import { By, Locator } from 'selenium-webdriver';
 import chai, { expect } from 'chai';
@@ -47,7 +47,7 @@ export class WebAppLoginPage extends Page {
         await this.navigate();
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
-        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
         return new WebAppHomePage(this.browser);
     }
 
@@ -55,7 +55,7 @@ export class WebAppLoginPage extends Page {
         await this.browser.navigate(url);
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
-        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
         return;
     }
 }

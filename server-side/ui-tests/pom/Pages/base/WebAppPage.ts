@@ -1,6 +1,6 @@
 import { By } from 'selenium-webdriver';
-import { Browser } from '../../utilities/browser';
-import { WebAppHeader } from '../WebAppHeader';
+import { Browser } from '../../../utilities/browser';
+import { WebAppHeader } from '../../WebAppHeader';
 import { Page } from './Page';
 
 export abstract class WebAppPage extends Page {

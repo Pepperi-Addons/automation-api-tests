@@ -1,7 +1,7 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
 import { Component } from '../../Components/Base/Component';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 
 export abstract class SectionBlock extends Component {
     public readonly BlockName: string;

@@ -6,7 +6,7 @@ import { PageEditor } from './PageEditor';
 import { PageListHeaders } from './PageListColumnHeaders';
 import { PepSearch } from '../../Components/PepSearch';
 import { By } from 'selenium-webdriver';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 
 // export type PageRowData = TableObjectData & {[headerId in PageListColumnHeaders]: string | null | undefined}
 

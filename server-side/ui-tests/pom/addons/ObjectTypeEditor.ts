@@ -6,8 +6,8 @@ import GeneralService, { ConsoleColors } from '../../../services/general.service
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
 import { ObjectsService } from '../../../services/objects.service';
 import { AddonLoadCondition } from './base/AddonPage';
-import { PepperiStatus } from './base/PepperiStatus';
-import { WorkflowAction } from './base/WorkflowAction';
+import { PepperiStatus } from '../Enumerations/PepperiStatus';
+import { WorkflowAction } from '../Enumerations/WorkflowAction';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Field {

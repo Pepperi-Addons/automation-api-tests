@@ -1,9 +1,9 @@
-import { Browser } from '../../utilities/browser';
+import { Browser } from '../../../utilities/browser';
 import { Locator, By, WebElement } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import fs from 'fs';
 import path from 'path';
-import { ConsoleColors } from '../../../services/general.service';
+import { ConsoleColors } from '../../../../services/general.service';
 
 export abstract class Page {
     private url: string;

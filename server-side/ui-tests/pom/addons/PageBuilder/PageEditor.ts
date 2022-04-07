@@ -1,6 +1,6 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 import config from '../../../../config';
 
 export class PageEditor extends WebAppPage {

@@ -1,8 +1,8 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/Page';
+import { Page } from './Pages/base/Page';
 import config from '../../config';
 import { Locator, By } from 'selenium-webdriver';
-import { WebAppPage } from './base/WebAppPage';
+import { WebAppPage } from './Pages/base/WebAppPage';
 
 export class WebAppSettingsSidePanel extends Page {
     constructor(protected browser: Browser) {
