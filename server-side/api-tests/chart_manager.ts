@@ -30,7 +30,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
 
     //#region Upgrade Data Visualisation
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
