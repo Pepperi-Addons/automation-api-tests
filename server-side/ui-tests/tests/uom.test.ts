@@ -55,7 +55,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     //#region Upgrade cpi-node & UOM
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.6'], //has to be hardcoded because upgrade dependencies cant handle this
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.60.38'], //has to be hardcoded because upgrade dependencies cant handle this
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.38'], //has to be hardcoded because upgrade dependencies cant handle this
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
     };
