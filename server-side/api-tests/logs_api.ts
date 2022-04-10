@@ -1,6 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
-import { WebAppAPI } from '../ui-tests/pom';
 
 let _startTime;
 export async function AWSLogsTest(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -14,11 +13,11 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const fiveMins = 1000 * 60 * 5;
     const HOUR = 1000 * 60 * 60;
     const threeHoursTimeZoneDiffWithAWS = 1000 * 60 * 60 * 3; //1000 * 60 * 60 is an hour
-    const tenMins = 1000 * 60 * 10;
+    // const tenMins = 1000 * 60 * 10;
 
     //#region Upgrade Cloudwatch Addon
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''], 
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -378,67 +377,72 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
             //     });
             //     expect(isCorrectDataMessageFound).to.be.true;
             // });
-            it('performing SyncOperation call', async () => {
-                _startTime = new Date().toISOString();
-                let createSessionResponse;
-                let numOfTries = 0;
-                do {
-                    createSessionResponse = await generalService.fetchStatus('https://webapi.pepperi.com/16.80.4/webapi/Service1.svc/v1/CreateSession', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            accessToken: generalService['client'].OAuthAccessToken,
-                            culture: 'en-US',
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                } while (!createSessionResponse.Body.AccessToken && numOfTries < 10);
-                expect(numOfTries).to.be.lessThan(10);
-                expect(createSessionResponse.Ok).to.equal(true);
-                expect(createSessionResponse.Status).to.equal(200);
-                const URL = `https://webapi.pepperi.com/16.80.4/webapi/Service1.svc/v1/GetSyncStatus`;
-                const syncStatusReposnse = await generalService.fetchStatus(URL, {
-                    method: 'GET',
-                    headers: {
-                        PepperiSessionToken: createSessionResponse.Body.AccessToken,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                expect(syncStatusReposnse.Ok).to.equal(true);
-                expect(syncStatusReposnse.Status).to.equal(200);
-                console.log(`SyncOperation call performed at:${_startTime}`);
-            });
-            it('SyncOperation group', async () => {
-                generalService.sleep(1000 * 60 * 3);//3 min sleep
-                const endTime = new Date().toISOString();
-                const payload: LogsPayload = {
-                    Groups: ['SyncOperation'],
-                    DateTimeStamp: { Start: _startTime, End: endTime },
-                };
-                const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
-                let isCorrectDataMessageFound: Boolean = false;
-                jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
-                        if (cloudwatchDataPoint.Message?.includes('\"Process GET data completed.\"')
-                            && cloudwatchDataPoint.UserUUID === userUUID) {
-                            isCorrectDataMessageFound = true;
-                            expect(cloudwatchDataPoint).to.have.own.property('DistributorUUID');
-                            expect(cloudwatchDataPoint.DistributorUUID).to.equal(distUUID);
-                            expect(cloudwatchDataPoint).to.have.own.property('DateTimeStamp');
-                            expect(cloudwatchDataPoint.DateTimeStamp).to.include(todaysDate);
-                            expect(cloudwatchDataPoint).to.have.own.property('Level');
-                            expect(cloudwatchDataPoint.Level).to.equal('INFO');
-                            expect(
-                                generalService.isLessThanGivenTimeAgo(
-                                    Date.parse(cloudwatchDataPoint.DateTimeStamp!),
-                                    fiveMins,
-                                    threeHoursTimeZoneDiffWithAWS,
-                                ),
-                            ).to.be.true;
-                        }
-                });
-                expect(isCorrectDataMessageFound).to.be.true;
-            });
+    //         it('performing SyncOperation call', async () => {
+    //             _startTime = new Date().toISOString();
+    //             let createSessionResponse;
+    //             const numOfTries = 0;
+    //             do {
+    //                 createSessionResponse = await generalService.fetchStatus(
+    //                     'https://webapi.pepperi.com/16.80.4/webapi/Service1.svc/v1/CreateSession',
+    //                     {
+    //                         method: 'POST',
+    //                         body: JSON.stringify({
+    //                             accessToken: generalService['client'].OAuthAccessToken,
+    //                             culture: 'en-US',
+    //                         }),
+    //                         headers: {
+    //                             'Content-Type': 'application/json',
+    //                         },
+    //                     },
+    //                 );
+    //             } while (!createSessionResponse.Body.AccessToken && numOfTries < 10);
+    //             expect(numOfTries).to.be.lessThan(10);
+    //             expect(createSessionResponse.Ok).to.equal(true);
+    //             expect(createSessionResponse.Status).to.equal(200);
+    //             const URL = `https://webapi.pepperi.com/16.80.4/webapi/Service1.svc/v1/GetSyncStatus`;
+    //             const syncStatusReposnse = await generalService.fetchStatus(URL, {
+    //                 method: 'GET',
+    //                 headers: {
+    //                     PepperiSessionToken: createSessionResponse.Body.AccessToken,
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //             });
+    //             expect(syncStatusReposnse.Ok).to.equal(true);
+    //             expect(syncStatusReposnse.Status).to.equal(200);
+    //             console.log(`SyncOperation call performed at:${_startTime}`);
+    //         });
+    //         it('SyncOperation group', async () => {
+    //             generalService.sleep(1000 * 60 * 3); //3 min sleep
+    //             const endTime = new Date().toISOString();
+    //             const payload: LogsPayload = {
+    //                 Groups: ['SyncOperation'],
+    //                 DateTimeStamp: { Start: _startTime, End: endTime },
+    //             };
+    //             const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
+    //             let isCorrectDataMessageFound = false;
+    //             jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
+    //                 if (
+    //                     cloudwatchDataPoint.Message?.includes('"Process GET data completed."') &&
+    //                     cloudwatchDataPoint.UserUUID === userUUID
+    //                 ) {
+    //                     isCorrectDataMessageFound = true;
+    //                     expect(cloudwatchDataPoint).to.have.own.property('DistributorUUID');
+    //                     expect(cloudwatchDataPoint.DistributorUUID).to.equal(distUUID);
+    //                     expect(cloudwatchDataPoint).to.have.own.property('DateTimeStamp');
+    //                     expect(cloudwatchDataPoint.DateTimeStamp).to.include(todaysDate);
+    //                     expect(cloudwatchDataPoint).to.have.own.property('Level');
+    //                     expect(cloudwatchDataPoint.Level).to.equal('INFO');
+    //                     expect(
+    //                         generalService.isLessThanGivenTimeAgo(
+    //                             Date.parse(cloudwatchDataPoint.DateTimeStamp!),
+    //                             fiveMins,
+    //                             threeHoursTimeZoneDiffWithAWS,
+    //                         ),
+    //                     ).to.be.true;
+    //                 }
+    //             });
+    //             expect(isCorrectDataMessageFound).to.be.true;
+    //         });
         });
     });
 }
