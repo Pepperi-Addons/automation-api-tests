@@ -1,13 +1,13 @@
 import { DataQuerie, DataQueriesService, DataQueryExecuteRespons, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-let dataQuerysKey: any = '';
 
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataQueriesService = new DataQueriesService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+    let dataQuerysKey: any = '';
 
     const savedSeries: QuerySeries = {
         Name: 'Series 1',
