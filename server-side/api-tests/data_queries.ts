@@ -73,13 +73,14 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
         ],
     };
 
-    //#region Upgrade Data Visualisation
+    //#region Upgrade Data Queries
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.0.100'], //hardcoded because no version is phased yet
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '0.0.125'], //hardcoded because phased version is OLD
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
-        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '0.0.151'], //hardcoded because no version is phased yet
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //papi index
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
     let varKey;
@@ -88,12 +89,13 @@ export async function DataQueriesTests(generalService: GeneralService, request, 
     } else {
         varKey = request.body.varKeyPro;
     }
+
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    //#endregion Upgrade Data Visualisation
+    //#endregion Upgrade Data Queries
 
     describe('Data Queries Tests Suites', () => {
-        describe('Prerequisites Addon for Data Visualisation Tests', () => {
+        describe('Prerequisites Addon for Data Queries Tests', () => {
             //Test Data
             //Pepperi Notification Service
             isInstalledArr.forEach((isInstalled, index) => {
