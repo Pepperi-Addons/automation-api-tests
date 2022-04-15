@@ -19,6 +19,7 @@ import {
     CreateDistributorTests,
     UomTests,
     PageBuilderTests,
+    UDCTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
@@ -217,6 +218,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+    }
+
+    if (tests.includes('UDC')) {
+        await UDCTests(email, pass, varPass, client);
     }
 
     run();

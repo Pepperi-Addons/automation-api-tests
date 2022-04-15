@@ -25,6 +25,10 @@ export class WebAppList extends Page {
     public TotalResultsText: Locator = By.css('.total-items .number');
     public LinksInListArr: Locator = By.css('pep-internal-button a');
 
+    //Addon Page
+    public AddonCells: Locator = By.css('pep-list .table-row-fieldset');
+    public AddonAddButton: Locator = By.css('[data-qa] [title="Add"]');
+
     //Card List
     public CardListElements: Locator = By.css('pep-list .scrollable-content > div pep-form');
 
@@ -111,6 +115,23 @@ export class WebAppList extends Page {
                     this.table[j].push(await cells[headrs.length * (j - 1) + i].getText());
                 }
             }
+        }
+        return this.table;
+    }
+
+    public async getAddonListAsTable(): Promise<string[][]> {
+        await this.validateListRowElements();
+        const headrs = await this.browser.findElements(this.Headers);
+        const cells = await this.browser.findElements(this.AddonCells);
+        this.table = [];
+        this.table.push([]);
+        for (let i = 0; i < headrs.length; i++) {
+            this.table[0].push(await headrs[i].getText());
+        }
+        for (let j = 0; j < cells.length; j++) {
+            this.table.push([]);
+            const tableRow = (await cells[j].getText()).split('\n');
+            this.table[j + 1].push(tableRow[0], tableRow[1]);
         }
         return this.table;
     }

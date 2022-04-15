@@ -54,6 +54,9 @@ export class WebAppSettingsSidePanel extends Page {
     public OrderTPEditor: Locator = By.id('custom_plugin/375425f5-cd2f-4372-bb88-6ff878f40630/default_editor');
     public PackageTPEditor: Locator = By.id('custom_plugin/90b11a55-b36d-48f1-88dc-6d8e06d08286/default_editor');
 
+    //UDC Selectors
+    public UDCEditor: By = By.id('settings/122c0e9d-c240-4865-b446-f37ece866c22/udc')
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         await this.browser.click(
             By.xpath(`${this.SettingsBarContainer.value}//*[contains(@id,"${settingsButtonID}")]/../../..`),
