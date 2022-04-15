@@ -12,7 +12,7 @@ import {
     WebAppSettingsSidePanel,
     Udc,
 } from '../pom/index';
-import {CollectionField} from '../pom/addons/udc';
+import { CollectionField } from '../pom/addons/udc';
 
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
@@ -125,7 +125,7 @@ export async function UDCTests(email: string, password: string, varPass: string,
                         Key: 'StringTest',
                         Description: 'DescriptionTest',
                         Type: 'String',
-                        OptionalValues: "Oren,Boren,Popcorn",
+                        OptionalValues: 'Oren,Boren,Popcorn',
                         Mandatory: false,
                     },
                 ];
@@ -145,8 +145,8 @@ export async function UDCTests(email: string, password: string, varPass: string,
                     const udcCreateCollectionTitle = await driver.findElements(udc.createCollectionHeaderTitle);
                     const udcAddonPageTitleText = await udcCreateCollectionTitle[0].getText();
                     expect(udcAddonPageTitleText).to.equal('Create Collection');
-                     udc.createCollection({Key:"oren", Description: "test"});
-                     debugger;
+                    udc.createCollection({ Key: 'oren', Description: 'test' });
+                    debugger;
                 });
 
                 for (let i = 0; i < collectionFieldsArr.length; i++) {
@@ -159,7 +159,7 @@ export async function UDCTests(email: string, password: string, varPass: string,
                         const udcAddonPageTitleText = await udcAddonPageTitle[0].getText();
                         expect(udcAddonPageTitleText).to.equal('Fields');
 
-                        udc.createField(collectionFieldsArr[i])
+                        udc.createField(collectionFieldsArr[i]);
                         await (await driver.findElement(udc.DialogSaveBtn)).click();
                     });
                 }

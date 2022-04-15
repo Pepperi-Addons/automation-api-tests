@@ -31,19 +31,18 @@ export class Udc extends AddonPage {
     public DialogSaveBtn: Locator = By.css(".pep-dialog [data-qa='Save']");
 
     //UDC locators
-    public UDCKeyInputField: Locator = By.css("#mat-input-0");
-    public UDCDescriptionInputField: Locator = By.css("#mat-input-1");
-    public UDCOfflinecheckboxButton: Locator = By.css("#mat-checkbox-2");
+    public UDCKeyInputField: Locator = By.css('#mat-input-0');
+    public UDCDescriptionInputField: Locator = By.css('#mat-input-1');
+    public UDCOfflinecheckboxButton: Locator = By.css('#mat-checkbox-2');
 
     /**
      *
      * configuration of UDC Collection
      */
     public async createCollection(CollectionMain: CollectionMain): Promise<void> {
-
         this.sendKeys(this.UDCKeyInputField, CollectionMain.Key);
         this.sendKeys(this.UDCKeyInputField, CollectionMain.Description);
-debugger
+        debugger;
 
         return;
     }
