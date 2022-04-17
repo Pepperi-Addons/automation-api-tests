@@ -1,7 +1,6 @@
 import { DataQuerie, DataQueriesService, DataQueryExecuteRespons, QuerySeries } from '../services/data-queries.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-
 export async function DataQueriesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataQueriesService = new DataQueriesService(generalService);
     const describe = tester.describe;
