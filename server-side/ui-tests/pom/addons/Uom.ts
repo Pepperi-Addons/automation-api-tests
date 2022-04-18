@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { By, Key, Locator, WebElement } from 'selenium-webdriver';
+import { By, Key, WebElement } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
 import { OrderPage } from '../OrderPage';
@@ -8,16 +8,14 @@ import { ObjectTypeEditor } from './ObjectTypeEditor';
 
 export class Uom extends AddonPage {
     //UOM Addon Locators
-    public UomHeader: Locator = By.xpath("//h1[contains(text(),'UOM')]");
-    public UomInstalledHeader: Locator = By.xpath("//b[contains(text(),'Configuration Field')]");
-    public UomInstallBtn: Locator = By.css("[data-qa='install']");
-    public UomDropDownFields: Locator = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
-    public UomSaveBtn: Locator = By.css("[data-qa='Save']");
-    public NonUomTypeItemInOrder: Locator = By.xpath('//fieldset');
-    public UomTypeItemInOrder: Locator = By.xpath(
-        "//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']",
-    );
-    public TransLineField: Locator = By.xpath("//div[text()='Custom Transaction line-item Fields']");
+    public UomHeader: By = By.xpath("//h1[contains(text(),'UOM')]");
+    public UomInstalledHeader: By = By.xpath("//b[contains(text(),'Configuration Field')]");
+    public UomInstallBtn: By = By.css("[data-qa='install']");
+    public UomDropDownFields: By = By.xpath("(//div[contains(@class,'mat-select-arrow-wrapper')])");
+    public UomSaveBtn: By = By.css("[data-qa='Save']");
+    public NonUomTypeItemInOrder: By = By.xpath('//fieldset');
+    public UomTypeItemInOrder: By = By.xpath("//pep-select[@class='ng-star-inserted']//div//span[@title='AOQM_UOM2']");
+    public TransLineField: By = By.xpath("//div[text()='Custom Transaction line-item Fields']");
 
     /**
      *
@@ -648,21 +646,17 @@ export class Uom extends AddonPage {
 
 class UomUIObject {
     public readonly everyItemXpathPrefix: string = "//span[@title='|textToFill|']/../../../../../../..";
-    public aoqmUom1: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@title='AOQM_UOM1']`);
-    public aoqmUom1PlusQtyButton: Locator = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_plus']`);
-    public aoqmUom1MinusQtyButton: Locator = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_minus']`);
-    public aoqmUom1Qty: Locator = By.xpath(`${this.everyItemXpathPrefix}//input[@name='TSAAOQMQuantity1']`);
-    public aoqmUom2: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@title='AOQM_UOM2']`);
-    public aoqmUom2PlusQtyButton: Locator = By.xpath(
-        `(${this.everyItemXpathPrefix}//pep-icon[@name='number_plus'])[2]`,
-    );
-    public aoqmUom2MinusQtyButton: Locator = By.xpath(
-        `(${this.everyItemXpathPrefix}//pep-icon[@name='number_minus'])[2]`,
-    );
-    public aoqmUom2Qty: Locator = By.xpath(`${this.everyItemXpathPrefix}//input[@name='TSAAOQMQuantity2']`);
-    public wholeItemQty: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@class='ellipsis']`);
-    public itemGrandTotal: Locator = By.xpath(`${this.everyItemXpathPrefix}//span[@id='TransactionGrandTotal']`);
-    public SubmitToCart: Locator = By.css('[data-qa=cartButton]');
+    public aoqmUom1: By = By.xpath(`${this.everyItemXpathPrefix}//span[@title='AOQM_UOM1']`);
+    public aoqmUom1PlusQtyButton: By = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_plus']`);
+    public aoqmUom1MinusQtyButton: By = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_minus']`);
+    public aoqmUom1Qty: By = By.xpath(`${this.everyItemXpathPrefix}//input[@name='TSAAOQMQuantity1']`);
+    public aoqmUom2: By = By.xpath(`${this.everyItemXpathPrefix}//span[@title='AOQM_UOM2']`);
+    public aoqmUom2PlusQtyButton: By = By.xpath(`(${this.everyItemXpathPrefix}//pep-icon[@name='number_plus'])[2]`);
+    public aoqmUom2MinusQtyButton: By = By.xpath(`(${this.everyItemXpathPrefix}//pep-icon[@name='number_minus'])[2]`);
+    public aoqmUom2Qty: By = By.xpath(`${this.everyItemXpathPrefix}//input[@name='TSAAOQMQuantity2']`);
+    public wholeItemQty: By = By.xpath(`${this.everyItemXpathPrefix}//span[@class='ellipsis']`);
+    public itemGrandTotal: By = By.xpath(`${this.everyItemXpathPrefix}//span[@id='TransactionGrandTotal']`);
+    public SubmitToCart: By = By.css('[data-qa=cartButton]');
 
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton

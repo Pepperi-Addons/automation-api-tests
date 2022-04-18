@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
-import { By, Key, Locator } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
 import GeneralService, { ConsoleColors } from '../../../services/general.service';
 import { ImportExportATDService } from '../../../services/import-export-atd.service';
@@ -33,59 +33,59 @@ interface Field {
 
 export class ObjectTypeEditor extends AddonPage {
     //Object Types Editor Locators
-    public AddonContainerATDEditorWorkflowFlowchartIndicator: Locator = By.css('span[name="flowchart"].disabled');
-    public AddonContainerATDEditorWorkflowFlowchartEl: Locator = By.css('#mainFlowchart .flowchart-element');
-    public AddonContainerATDEditorWorkflowFlowchartElDeleteBtn: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartIndicator: By = By.css('span[name="flowchart"].disabled');
+    public AddonContainerATDEditorWorkflowFlowchartEl: By = By.css('#mainFlowchart .flowchart-element');
+    public AddonContainerATDEditorWorkflowFlowchartElDeleteBtn: By = By.css(
         '#mainFlowchart div[style*="display: block;"] .deleteProgram',
     );
-    public AddonContainerATDEditorWorkflowFlowchartElEditBtn: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartElEditBtn: By = By.css(
         '#mainFlowchart div[style*="display: block;"] .editProgram',
     );
-    public AddonContainerATDEditorWorkflowFlowchartAddAction: Locator = By.css('.addAction');
-    public AddonContainerATDEditorWorkflowFlowchartAddActionsSaveBtn: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartAddAction: By = By.css('.addAction');
+    public AddonContainerATDEditorWorkflowFlowchartAddActionsSaveBtn: By = By.css(
         '#workflowV2 [name="chooseAction"] .save',
     );
-    public AddonContainerATDEditorWorkflowFlowchartNewStepBtn: Locator = By.css('#newStep');
-    public AddonContainerATDEditorWorkflowFlowchartransitionNameBtn: Locator = By.css('#transitionName');
-    public AddonContainerATDEditorWorkflowFlowchartFromStatusBtn: Locator = By.css('#fromStatus');
-    public AddonContainerATDEditorWorkflowFlowchartoStatusBtn: Locator = By.css('#toStatus');
-    public AddonContainerATDEditorWorkflowFlowchartSaveBtn: Locator = By.css('#workflowV2 .add .save');
-    public AddonContainerATDEditorWorkflowFlowchartCancelBtn: Locator = By.css('#workflowV2 .add .cancel');
-    public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryOriginInventoryCB: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartNewStepBtn: By = By.css('#newStep');
+    public AddonContainerATDEditorWorkflowFlowchartransitionNameBtn: By = By.css('#transitionName');
+    public AddonContainerATDEditorWorkflowFlowchartFromStatusBtn: By = By.css('#fromStatus');
+    public AddonContainerATDEditorWorkflowFlowchartoStatusBtn: By = By.css('#toStatus');
+    public AddonContainerATDEditorWorkflowFlowchartSaveBtn: By = By.css('#workflowV2 .add .save');
+    public AddonContainerATDEditorWorkflowFlowchartCancelBtn: By = By.css('#workflowV2 .add .cancel');
+    public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryOriginInventoryCB: By = By.css(
         '#originInventory input[type="checkbox"]',
     );
-    public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryDestinationAccountCB: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryDestinationAccountCB: By = By.css(
         '#destinationAccount input[type="checkbox"]',
     );
-    public AddonContainerATDEditorWorkflowFlowchartUpdateInventorySaveBtn: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartUpdateInventorySaveBtn: By = By.css(
         '#workflowV2 #updateInventoryAction .save',
     );
-    public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryEditSaveBtn: Locator = By.css(
+    public AddonContainerATDEditorWorkflowFlowchartUpdateInventoryEditSaveBtn: By = By.css(
         '#workflowV2 [name="editStack"] .save',
     );
 
     //Editor Fields
-    public AddonContainerATDEditorFieldsAddCustomArr: Locator = By.css('.allButtons.grnbtn.roundCorner.dc-add');
-    public AddonContainerATDEditorTransactionFieldArr: Locator = By.css('[name="0"]');
-    public AddonContainerATDEditorTransactionLineFieldArr: Locator = By.css('[name="1"]');
-    public AddonContainerATDEditorEditFieldArr: Locator = By.xpath(`..//span[contains(@class, 'editPenIcon')]`);
-    public AddonContainerATDEditorTransactionLineFieldEditFormula: Locator = By.css('[name="edit"]');
-    public AddonContainerATDEditorTransactionLineFieldFormula: Locator = By.css('#formula textarea');
-    public AddonContainerATDEditorTransactionLineFieldFormulaEditorSave: Locator = By.css('#footer .save');
-    public AddonContainerATDEditorTransactionLineFieldSave: Locator = By.css('.footerSection [name="save"]');
+    public AddonContainerATDEditorFieldsAddCustomArr: By = By.css('.allButtons.grnbtn.roundCorner.dc-add');
+    public AddonContainerATDEditorTransactionFieldArr: By = By.css('[name="0"]');
+    public AddonContainerATDEditorTransactionLineFieldArr: By = By.css('[name="1"]');
+    public AddonContainerATDEditorEditFieldArr: By = By.xpath(`..//span[contains(@class, 'editPenIcon')]`);
+    public AddonContainerATDEditorTransactionLineFieldEditFormula: By = By.css('[name="edit"]');
+    public AddonContainerATDEditorTransactionLineFieldFormula: By = By.css('#formula textarea');
+    public AddonContainerATDEditorTransactionLineFieldFormulaEditorSave: By = By.css('#footer .save');
+    public AddonContainerATDEditorTransactionLineFieldSave: By = By.css('.footerSection [name="save"]');
 
     //Editor Views
-    public AddonContainerATDEditorViewsAddCustom: Locator = By.css('.add-view.allButtons.grnbtn.roundCorner'); //No avilable in Stage - BO Config
-    public AddonContainerATDEditorViewsOrderCenterViews: Locator = By.xpath(
+    public AddonContainerATDEditorViewsAddCustom: By = By.css('.add-view.allButtons.grnbtn.roundCorner'); //No avilable in Stage - BO Config
+    public AddonContainerATDEditorViewsOrderCenterViews: By = By.xpath(
         '//div[@id="formContTemplate"]//h3[contains(., "Order Center Views")]',
     );
-    public AddonContainerATDEditorTransactionViewsArr: Locator = By.css('#formContTemplate .ui-accordion-header');
-    public AddonContainerATDEditorAddViewBtn: Locator = By.xpath(`//div[contains(text(),"VIEW_PLACE_HOLDER")]`);
+    public AddonContainerATDEditorTransactionViewsArr: By = By.css('#formContTemplate .ui-accordion-header');
+    public AddonContainerATDEditorAddViewBtn: By = By.xpath(`//div[contains(text(),"VIEW_PLACE_HOLDER")]`);
 
     //evgeny::field editing btn
-    public FieldEditingBtn: Locator = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
+    public FieldEditingBtn: By = By.xpath("//td[@title='|textToFill|']/..//span[contains(@class,'editPenIcon')]");
     //evgeny::view arrow icon
-    public viewArrowIcon: Locator = By.xpath(
+    public viewArrowIcon: By = By.xpath(
         "//div[@id='formContTemplate']//h3[contains(@class,'ui-accordion-header')]//span[contains(@class,'ui-icon')]",
     );
 
@@ -351,7 +351,7 @@ export class ObjectTypeEditor extends AddonPage {
         //Validate Editor Page Loaded
         expect(await this.browser.findElement(this.AddonContainerATDEditorFieldsAddCustomArr));
 
-        const locator: Locator = isTransLine
+        const locator: By = isTransLine
             ? this.AddonContainerATDEditorTransactionLineFieldArr
             : this.AddonContainerATDEditorTransactionFieldArr;
         const buttonsArr = await this.browser.findElements(locator);
@@ -463,7 +463,7 @@ export class ObjectTypeEditor extends AddonPage {
     public async editATDCalculatedFieldScript(
         //remain
         fieldObj: Field,
-        locatorForFieldType: Locator,
+        locatorForFieldType: By,
         nameOfFieldToEdit: string,
         scriptParam?: string,
     ): Promise<void> {

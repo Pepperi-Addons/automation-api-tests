@@ -12,7 +12,7 @@ import {
     WebAppSettingsSidePanel,
     Udc,
 } from '../pom/index';
-import { CollectionField } from '../pom/addons/udc';
+import { CollectionField, CollectionMain } from '../pom/addons/udc';
 
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
@@ -114,18 +114,51 @@ export async function UDCTests(email: string, password: string, varPass: string,
                 let totalItemsBefore: number;
                 let totalItemsAfter: number;
 
+                const collectionTestData: CollectionMain = {
+                    Key: `CollectionTest_${generalService.generateRandomString(7)}`,
+                    Description: `CollectionDescriptionTest_${generalService.generateRandomString(7)}`,
+                };
+
                 const collectionFieldsArr: CollectionField[] = [
                     {
                         Key: 'StringTest',
-                        Description: 'DescriptionTest',
+                        Description: 'DescriptionStringTest',
                         Type: 'String',
                         Mandatory: false,
                     },
                     {
-                        Key: 'StringTest',
-                        Description: 'DescriptionTest',
+                        Key: 'StringTestWithOptions',
+                        Description: 'DescriptionStringTest',
                         Type: 'String',
-                        OptionalValues: 'Oren,Boren,Popcorn',
+                        OptionalValues: 'Option1,Option2,Option3',
+                        Mandatory: false,
+                    },
+                    {
+                        Key: 'ArrayTest',
+                        Description: 'DescriptionArrayTest',
+                        Type: 'Array',
+                        Mandatory: false,
+                    },
+                    {
+                        Key: 'ArrayTestWithOptions',
+                        Description: 'DescriptionArrayTest',
+                        Type: 'Array',
+                        OptionalValues: 'Option1,Option2,Option3',
+                        Mandatory: false,
+                    },
+                    {
+                        Key: 'ArrayOfIntegerTest',
+                        Description: 'DescriptionArrayTest',
+                        Type: 'Array',
+                        ArrayInnerType: 'Integer',
+                        Mandatory: false,
+                    },
+                    {
+                        Key: 'ArrayOfIntegerTestWithOptions',
+                        Description: 'DescriptionArrayTest',
+                        Type: 'Array',
+                        ArrayInnerType: 'Integer',
+                        OptionalValues: '1,2,3',
                         Mandatory: false,
                     },
                 ];
@@ -145,22 +178,20 @@ export async function UDCTests(email: string, password: string, varPass: string,
                     const udcCreateCollectionTitle = await driver.findElements(udc.createCollectionHeaderTitle);
                     const udcAddonPageTitleText = await udcCreateCollectionTitle[0].getText();
                     expect(udcAddonPageTitleText).to.equal('Create Collection');
-                    udc.createCollection({ Key: 'oren', Description: 'test' });
-                    debugger;
+                    await udc.createCollection({
+                        Key: collectionTestData.Key,
+                        Description: collectionTestData.Description,
+                    });
                 });
 
                 for (let i = 0; i < collectionFieldsArr.length; i++) {
-                    it('Add UDC Fields', async function () {
+                    it(`Add UDC Fields, Key: ${collectionFieldsArr[i].Key}`, async function () {
                         const udc = new Udc(driver);
-                        const webAppList = new WebAppList(driver);
-                        await (await driver.findElement(webAppList.AddonAddButton)).click();
-
                         const udcAddonPageTitle = await driver.findElements(udc.pageListHeaderTitle);
                         const udcAddonPageTitleText = await udcAddonPageTitle[0].getText();
                         expect(udcAddonPageTitleText).to.equal('Fields');
-
-                        udc.createField(collectionFieldsArr[i]);
-                        await (await driver.findElement(udc.DialogSaveBtn)).click();
+                        await udc.createField(collectionFieldsArr[i]);
+                        await generalService.sleepAsync(500);
                     });
                 }
 

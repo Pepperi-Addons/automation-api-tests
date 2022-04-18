@@ -1,12 +1,12 @@
-import { By, Locator } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
 import { WebAppList } from '.';
 
 export class OrderPage extends WebAppList {
-    public pageGrandTotal: Locator = By.xpath("//span[@class='value']"); //order page
-    public blankSpaceOnScreenToClick: Locator = By.xpath("//div[contains(@class,'total-items-container')]"); //order page
-    public SubmitToCart: Locator = By.css('[data-qa=cartButton]'); //order
-    public ChangeViewButton: Locator = By.xpath("//mat-icon[@title='Change View']");
-    public ViewTypeOption: Locator = By.xpath(`//span[text()='|textToFill|']`);
+    public pageGrandTotal: By = By.xpath("//span[@class='value']"); //order page
+    public blankSpaceOnScreenToClick: By = By.xpath("//div[contains(@class,'total-items-container')]"); //order page
+    public SubmitToCart: By = By.css('[data-qa=cartButton]'); //order
+    public ChangeViewButton: By = By.xpath("//mat-icon[@title='Change View']");
+    public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
 
     public async changeOrderCenterPageView(viewType: string) {
         //switch to medium view:
@@ -25,10 +25,8 @@ export class OrderPage extends WebAppList {
 }
 
 export class OrderPageItem {
-    public qty: Locator = By.xpath(
-        "//span[@title='|textToFill|']/../../../../..//fieldset//pep-quantity-selector//input",
-    );
-    public totalUnitPrice: Locator = By.xpath(
+    public qty: By = By.xpath("//span[@title='|textToFill|']/../../../../..//fieldset//pep-quantity-selector//input");
+    public totalUnitPrice: By = By.xpath(
         "//span[@title='|textToFill|']/../../../../..//fieldset//span[@id='TotalUnitsPriceAfterDiscount']",
     );
 
