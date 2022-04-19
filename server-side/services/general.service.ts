@@ -892,6 +892,11 @@ export default class GeneralService {
         const timeAgo = Date.now() - howLongAgo;
         return dateToTest > timeAgo;
     }
+
+    replaceAll(string: string, searchValue: string, replaceValue: string) {
+        const regex = new RegExp(searchValue, 'g');
+        return string.replace(regex, replaceValue);
+    }
 }
 
 function msSleep(ms: number) {

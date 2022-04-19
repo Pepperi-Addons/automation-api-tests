@@ -101,7 +101,11 @@ export async function UDCTests(email: string, password: string, varPass: string,
                 let totalItemsAfter: number;
 
                 const collectionTestData: CollectionMain = {
-                    Key: `CollectionTest_${generalService.generateRandomString(7)}`,
+                    Key: generalService.replaceAll(
+                        `CollectionTest_${generalService.getTime()}_${generalService.getDate()}`,
+                        ':|/',
+                        '-',
+                    ),
                     Description: `CollectionDescriptionTest_${generalService.generateRandomString(7)}`,
                 };
 
@@ -116,7 +120,20 @@ export async function UDCTests(email: string, password: string, varPass: string,
                         Key: 'StringTestWithOptions',
                         Description: 'DescriptionStringTest',
                         Type: 'String',
-                        OptionalValues: 'Option1,Option2,Option3',
+                        OptionalValues: 'Option1\nOption2\nOption3',
+                        Mandatory: false,
+                    },
+                    {
+                        Key: 'IntegerTest',
+                        Description: 'DescriptionIntegerTest',
+                        Type: 'Integer',
+                        Mandatory: false,
+                    },
+                    {
+                        Key: 'IntegerTestWithOptions',
+                        Description: 'DescriptionIntegerTest',
+                        Type: 'Integer',
+                        OptionalValues: '1\n2\n3',
                         Mandatory: false,
                     },
                     {
@@ -129,7 +146,7 @@ export async function UDCTests(email: string, password: string, varPass: string,
                         Key: 'ArrayTestWithOptions',
                         Description: 'DescriptionArrayTest',
                         Type: 'Array',
-                        OptionalValues: 'Option1,Option2,Option3',
+                        OptionalValues: 'Option1\nOption2\nOption3',
                         Mandatory: false,
                     },
                     {
@@ -144,7 +161,7 @@ export async function UDCTests(email: string, password: string, varPass: string,
                         Description: 'DescriptionArrayTest',
                         Type: 'Array',
                         ArrayInnerType: 'Integer',
-                        OptionalValues: '1,2,3',
+                        OptionalValues: '1\n2\n3',
                         Mandatory: false,
                     },
                 ];
