@@ -1,5 +1,5 @@
 import { Browser } from '../../../utilities/browser';
-import { Locator, By, WebElement } from 'selenium-webdriver';
+import { By, WebElement } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import fs from 'fs';
 import path from 'path';
@@ -11,8 +11,8 @@ export abstract class Page {
         this.url = url;
     }
 
-    public PepperiHiddenLoadingSpinner: Locator = By.css('#loadingSpinnerModal[hidden]');
-    public HtmlBody: Locator = By.css('html body');
+    public PepperiHiddenLoadingSpinner: By = By.css('#loadingSpinnerModal[hidden]');
+    public HtmlBody: By = By.css('html body');
 
     protected setUrl(url: string) {
         this.url = url;
@@ -22,15 +22,15 @@ export abstract class Page {
         return await this.browser.navigate(this.url);
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
+    public async click(selector: By, index = 0, waitUntil = 15000): Promise<void> {
         return await this.browser.click(selector, index, waitUntil);
     }
 
-    public async sendKeys(selector: Locator, keys: string | number, index = 0): Promise<void> {
+    public async sendKeys(selector: By, keys: string | number, index = 0): Promise<void> {
         return await this.browser.sendKeys(selector, keys, index);
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 15000): Promise<boolean> {
+    public async untilIsVisible(selector: By, waitUntil = 15000): Promise<boolean> {
         return await this.browser.untilIsVisible(selector, waitUntil);
     }
 

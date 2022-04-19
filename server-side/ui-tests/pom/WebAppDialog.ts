@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './Pages/base/Page';
 import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
 import { ConsoleColors } from '../../services/general.service';
 
 export class WebAppDialog extends Page {
@@ -9,25 +9,25 @@ export class WebAppDialog extends Page {
         super(browser, `${config.baseUrl}`);
     }
 
-    public Dialog: Locator = By.css('pep-dialog');
-    public Title: Locator = By.css('pep-dialog .dialog-title');
-    public Content: Locator = By.css('div [pep-dialog-content]');
-    public ButtonArr: Locator = By.css('pep-dialog button');
+    public Dialog: By = By.css('pep-dialog');
+    public Title: By = By.css('pep-dialog .dialog-title');
+    public Content: By = By.css('div [pep-dialog-content]');
+    public ButtonArr: By = By.css('pep-dialog button');
 
     ///Object Types Editor Locators
-    public EditorContent: Locator = By.css('pep-dialog .mat-dialog-content');
-    public EditorTextBoxInput: Locator = By.css('pep-dialog .mat-dialog-content pep-textbox input');
-    public EditorTextAreaInput: Locator = By.css('pep-dialog .mat-dialog-content pep-textarea [matinput]');
-    public EditorInput: Locator = By.css('pep-dialog .mat-dialog-content .pep-field input');
-    public EditorMatInput: Locator = By.css('pep-dialog .mat-dialog-content .pep-field [matinput]');
+    public EditorContent: By = By.css('pep-dialog .mat-dialog-content');
+    public EditorTextBoxInput: By = By.css('pep-dialog .mat-dialog-content pep-textbox input');
+    public EditorTextAreaInput: By = By.css('pep-dialog .mat-dialog-content pep-textarea [matinput]');
+    public EditorInput: By = By.css('pep-dialog .mat-dialog-content .pep-field input');
+    public EditorMatInput: By = By.css('pep-dialog .mat-dialog-content .pep-field [matinput]');
 
-    public DialogXpath: Locator = By.xpath('.//pep-dialog');
+    public DialogXpath: By = By.xpath('.//pep-dialog');
 
     //Iframe Dialogs
-    public IframeDialog: Locator = By.css('.warning-dialog');
-    public IframeDialogMessage: Locator = By.css('.warning-dialog #msgModalTextContent');
-    public IframeDialogCancelBtn: Locator = By.css('.warning-dialog #msgModalLeftBtn');
-    public IframeDialogApproveBtn: Locator = By.css('.warning-dialog #msgModalRightBtn');
+    public IframeDialog: By = By.css('.warning-dialog');
+    public IframeDialogMessage: By = By.css('.warning-dialog #msgModalTextContent');
+    public IframeDialogCancelBtn: By = By.css('.warning-dialog #msgModalLeftBtn');
+    public IframeDialogApproveBtn: By = By.css('.warning-dialog #msgModalRightBtn');
 
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
         /**

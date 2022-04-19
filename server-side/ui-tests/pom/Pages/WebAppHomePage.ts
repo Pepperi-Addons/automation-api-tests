@@ -1,6 +1,6 @@
 import { Browser } from '../../utilities/browser';
 import config from '../../../config';
-import { Locator, By } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
 import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from '../index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
@@ -16,9 +16,9 @@ export class WebAppHomePage extends WebAppPage {
         super(browser, `${config.baseUrl}/HomePage`);
     }
 
-    public Main: Locator = By.css('#mainButton');
-    public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
-    public HomeScreenSpesificButton: Locator = By.xpath(`//button[@title='|textToFill|']`);
+    public Main: By = By.css('#mainButton');
+    public HomeScreenButtonArr: By = By.css('#homepage-footer-btns button');
+    public HomeScreenSpesificButton: By = By.xpath(`//button[@title='|textToFill|']`);
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);

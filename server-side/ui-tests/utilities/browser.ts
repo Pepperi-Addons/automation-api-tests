@@ -4,7 +4,7 @@ import {
     ThenableWebDriver,
     WebElement,
     until,
-    Locator,
+    By,
     Key,
     WebElementPromise,
     ILocation,
@@ -90,7 +90,7 @@ export class Browser {
         return await this.driver.navigate().refresh();
     }
 
-    public async switchTo(iframeLocator: Locator): Promise<void> {
+    public async switchTo(iframeLocator: By): Promise<void> {
         const iframe = await this.findElement(iframeLocator, 45000);
         return await this.driver.switchTo().frame(iframe);
     }
@@ -103,7 +103,7 @@ export class Browser {
         return await this.driver.switchTo().activeElement();
     }
 
-    public async click(selector: Locator, index = 0, waitUntil = 15000): Promise<void> {
+    public async click(selector: By, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
             console.log(
@@ -149,7 +149,7 @@ export class Browser {
         return;
     }
 
-    public async ClickByText(selector: Locator, btnTxt: string, waitUntil = 1500) {
+    public async ClickByText(selector: By, btnTxt: string, waitUntil = 1500) {
         const buttonsArr: WebElement[] = await this.findElements(selector, waitUntil);
         for (let i = 0; i < buttonsArr.length; i++) {
             const elementsText = (await buttonsArr[i].getText()).trim();
@@ -172,10 +172,10 @@ export class Browser {
      * @param that This value of the class in which the wait function is found
      */
     public async activateTextInputFieldAndWaitUntillFunction(
-        clickOnLocator: Locator,
-        sendToLocator: Locator,
+        clickOnLocator: By,
+        sendToLocator: By,
         txtToSend: string,
-        afterClickLocator?: Locator,
+        afterClickLocator?: By,
         waitFunction?: () => Promise<boolean>,
         that?: any,
     ) {
@@ -186,7 +186,7 @@ export class Browser {
         if (waitFunction && that) await waitFunction.call(that);
     }
 
-    public async sendKeys(selector: Locator, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
+    public async sendKeys(selector: By, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {
             await (await this.findElements(selector, waitUntil))[index].clear();
@@ -252,7 +252,7 @@ export class Browser {
         return;
     }
 
-    public async findElement(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement> {
+    public async findElement(selector: By, waitUntil = 15000, isVisible = true): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, isVisible).then((webElement) =>
             webElement ? webElement[0] : webElement,
         );
@@ -266,7 +266,7 @@ export class Browser {
      * @param errorOnNoLoad Should an error be thrown when loading element is not displayed until defined threshold is reached.
      */
     public async waitForLoading(
-        loadingLocator: Locator,
+        loadingLocator: By,
         timeOut = 30000,
         timeOutToDisplay = 1000,
         errorOnNoLoad = false,
@@ -303,7 +303,7 @@ export class Browser {
      * @param suppressLog Suppress writing error to log in case the function returns 'false'.
      * @returns Whether the element is located in the DOM.
      */
-    public async isElementLocated(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
+    public async isElementLocated(selector: By, timeOut = 1000, suppressLog = false): Promise<boolean> {
         await this.driver.manage().setTimeouts({ implicit: timeOut });
         const isLocated = this.driver
             .wait(
@@ -336,7 +336,7 @@ export class Browser {
      * @param suppressLog Suppress writing error to log in case the function returns 'false'.
      * @returns Whether the element is located in the DOM.
      */
-    public async isElementVisible(selector: Locator, timeOut = 1000, suppressLog = false): Promise<boolean> {
+    public async isElementVisible(selector: By, timeOut = 1000, suppressLog = false): Promise<boolean> {
         await this.driver.manage().setTimeouts({ implicit: timeOut });
         const isLocated = this.driver
             .wait(
@@ -365,7 +365,7 @@ export class Browser {
      * @param waitUntil Implicit findElement timeout, in milliseconds.
      * @returns {@link WebElementPromise}
      */
-    public findSingleElement(selector: Locator, waitUntil = 15000): WebElementPromise {
+    public findSingleElement(selector: By, waitUntil = 15000): WebElementPromise {
         const promise = this.driver.manage().setTimeouts({ implicit: waitUntil });
 
         Promise.all([promise]);
@@ -383,11 +383,7 @@ export class Browser {
      * @param attributeName Attribute name to retrieve.
      * @param waitUntil Implicit findElement timeout, in milliseconds.
      */
-    public async getElementAttribute(
-        selector: Locator,
-        attributeName: string,
-        waitUntil = 15000,
-    ): Promise<string | null> {
+    public async getElementAttribute(selector: By, attributeName: string, waitUntil = 15000): Promise<string | null> {
         const attributeValue = this.findSingleElement(selector, waitUntil).getAttribute(attributeName);
         console.log(`%cSuccessfully retrieved the attribute '${attributeName}'`, ConsoleColors.PageMessage);
         return attributeValue;
@@ -401,7 +397,7 @@ export class Browser {
      * @param duration How long, in milliseconds, should the action take. Default is 100ms.
      */
     public async scrollToElement(
-        selector: Locator,
+        selector: By,
         offset?: ILocation,
         duration?: number,
         waitUntil = 15000,
@@ -413,7 +409,7 @@ export class Browser {
         );
     }
 
-    public async findElements(selector: Locator, waitUntil = 15000, isVisible = true): Promise<WebElement[]> {
+    public async findElements(selector: By, waitUntil = 15000, isVisible = true): Promise<WebElement[]> {
         await this.driver.manage().setTimeouts({ implicit: waitUntil });
         let isElVisible = false;
         const elArr = await this.driver.wait(until.elementsLocated(selector), waitUntil).then(
@@ -458,7 +454,7 @@ export class Browser {
         return elArr;
     }
 
-    public async untilIsVisible(selector: Locator, waitUntil = 15000): Promise<boolean> {
+    public async untilIsVisible(selector: By, waitUntil = 15000): Promise<boolean> {
         if ((await this.findElement(selector, waitUntil)) === undefined) {
             return false;
         }

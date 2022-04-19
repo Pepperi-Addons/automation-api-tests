@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './Pages/base/Page';
 import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
 import { WebAppSettingsSidePanel } from './Components/WebAppSettingsSidePanel';
 
 export class WebAppHeader extends Page {
@@ -9,11 +9,11 @@ export class WebAppHeader extends Page {
         super(browser, `${config.baseUrl}`);
     }
 
-    public CompanyLogo: Locator = By.css('[data-qa="orgLogo"]'); //'app-root header pepperi-header #header'
-    public Settings: Locator = By.css('[data-qa="systemSettings"]');
-    public Help: Locator = By.css('[data-qa="systemSuppot"]');
-    public UserBtn: Locator = By.css('[data-qa="systemAvatar"]');
-    public Home: Locator = By.css('[data-qa="systemHome"]');
+    public CompanyLogo: By = By.css('[data-qa="orgLogo"]'); //'app-root header pepperi-header #header'
+    public Settings: By = By.css('[data-qa="systemSettings"]');
+    public Help: By = By.css('[data-qa="systemSuppot"]');
+    public UserBtn: By = By.css('[data-qa="systemAvatar"]');
+    public Home: By = By.css('[data-qa="systemHome"]');
 
     public async openSettings() {
         await this.browser.click(this.Settings);
@@ -31,7 +31,7 @@ export class WebAppHeader extends Page {
      * @returns An instance of {@link WebAppSettingsSidePanel} to continue navigation.
      */
     public async openSettingsAndLoad(
-        loadingLocator: Locator = By.css('#loadingSpinnerModal'),
+        loadingLocator: By = By.css('#loadingSpinnerModal'),
         timeOut = 30000,
         timeOutToDisplay = 1000,
         errorOnNoLoad = false,

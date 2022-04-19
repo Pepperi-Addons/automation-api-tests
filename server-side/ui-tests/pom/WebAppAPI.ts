@@ -151,7 +151,7 @@ export class WebAppAPI extends Page {
         const generalService = new GeneralService(this._CLIENT);
         console.log("performing GET call to 'base_url' to recive correct URL to use as base in all API calls");
         this._BASE_URL = await (await generalService.papiClient.get('/webapi/base_url')).BaseURL;
-        //TODO: 07/03/2022: Improve this to also be able to work with EU when there will be time
+        //06/04/2022: after we talked with benny: the wrapper knows by itself whether we work with EU or prod so we can ALWAYS call the prod
         this._BASE_URL = this._BASE_URL.replace('euwebapi', 'webapi');
         return this._BASE_URL;
     }
