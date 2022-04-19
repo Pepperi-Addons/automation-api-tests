@@ -1,10 +1,11 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
+import { SectionBlockName } from './BlockNameEnums';
 import { SectionBlock } from './SectionBlock';
 
 export class DynamicTester extends SectionBlock {
     constructor(blockId: string, browser: Browser) {
-        super('Dynamic Tester', blockId, browser);
+        super(SectionBlockName.DynamicTester, blockId, browser);
     }
 
     public readonly BlockContainer = By.css(`dynamic-tester[block-id='${this.blockId}']`);

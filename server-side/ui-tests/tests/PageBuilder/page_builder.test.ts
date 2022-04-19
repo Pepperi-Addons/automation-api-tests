@@ -8,6 +8,7 @@ import { PagesService } from '../../../services/pages/pages.service';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { BasicBlockTests } from './basic_block.test';
 import { ProduceConsumeTests } from './produce_consume.test';
+import { AdvSetParamTests } from './adv_set_param.test';
 
 chai.use(promised);
 type AddonVersionData = { [AddonName: string]: string[] };
@@ -26,7 +27,7 @@ export async function PageBuilderTests(
     const pagesService = new PagesService(generalService);
 
     const testData: AddonVersionData = {
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.81
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.105
         'Page Tester': ['3da3c1d7-6aa9-4938-bcdb-b8b4acbf8535', ''],
     };
 
@@ -58,6 +59,9 @@ export async function PageBuilderTests(
 
             after(async function () {
                 await browser.quit();
+            });
+            describe('Adv Prod Cons Tests', function () {
+                AdvSetParamTests(pagesService, pagesReq);
             });
 
             describe('Basic Block Tests', function () {
