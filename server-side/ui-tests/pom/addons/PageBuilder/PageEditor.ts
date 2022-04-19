@@ -6,16 +6,14 @@ import { PageLayoutSideBar } from './PageLayoutSideBar';
 import { SectionBlocksMap } from '../Blocks/SectionBlocksMap';
 
 export class PageEditor extends WebAppPage {
-    //TODO: Add basic Page Editor functionality (as additional components?)
     public static readonly PreviewButton: By = By.xpath("//*[@title='Preview']/ancestor::pep-button");
     public static readonly PreviewModeContainer: By = By.css('.header-container-preview');
     public static readonly EditButton: By = By.xpath(`//a[text()='Click here to edit']`);
     public static readonly PublishButton: By = By.css('button[data-qa=Preview]');
 
     protected readonly SideBar: PageLayoutSideBar;
-
     public PageBlocks: SectionBlocksMap = new SectionBlocksMap();
-    //TODO: Figure how to incorporate custom blocks
+
     constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
         this.SideBar = new PageLayoutSideBar(browser);

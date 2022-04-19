@@ -53,11 +53,12 @@ export function BasicBlockTests(pagesService: PagesService, pagesReq: PageTestRe
     });
 
     after(async function () {
-        const result = await pagesService.deletePage(basicPage);
-        expect(result?.Hidden).is.equal(true);
         await pageEditor.enterEditMode();
         await pageEditor.goBack();
         pagesList = new PagesList(browser);
+
+        const result = await pagesService.deletePage(basicPage);
+        expect(result?.Hidden).is.equal(true);
     });
 
     afterEach(async function () {

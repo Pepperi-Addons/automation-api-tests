@@ -58,11 +58,12 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
     });
 
     after(async function () {
-        const result = await pagesService.deletePage(prodConsPage);
-        expect(result?.Hidden).is.equal(true);
         await pageEditor.enterEditMode();
         await pageEditor.goBack();
         pagesList = new PagesList(browser);
+
+        const result = await pagesService.deletePage(prodConsPage);
+        expect(result?.Hidden).is.equal(true);
     });
 
     afterEach(async function () {

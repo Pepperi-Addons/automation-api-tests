@@ -418,14 +418,14 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             const pagesLimit = 100;
 
             it(`Exceed create limit of ${pagesLimit} pages`, async function () {
-                const currentPages = (await pagesService.getPages({page_size:-1})).length;
+                const currentPages = (await pagesService.getPages({ page_size: -1 })).length;
                 const errorCounter: Array<{ message: string; count: number }> = [];
-                const promises: Array<Promise<Page | void>> = [];
+                // const promises: Array<Promise<Page | void>> = [];
                 const postResults: Array<Page | void> = [];
                 let time = new Date();
                 const pagesToCreate = pagesLimit - currentPages;
                 console.log(`Page creation start: ${generalService.getTime()};${time.getMilliseconds()}`);
-                for (let i = 0; i <pagesToCreate; i++) {
+                for (let i = 0; i < pagesToCreate; i++) {
                     const page: Page = PageFactory.defaultPage();
                     pagesArray[i] = page;
                     postResults[i] = await pagesService.createOrUpdatePage(page).catch((error) => {
@@ -452,7 +452,13 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                             : addToErrorCounter(errorCounter, 'Result of POST returned empty');
                     }
                 });
-                await expect(pagesService.createOrUpdatePage(PageFactory.defaultPage()).then((pageResult: void | Page) => postResults[pagesToCreate] = pageResult)).to.eventually.be.rejectedWith(`You exceeded your pages number limit (${pagesLimit}) - please contact your administrator`);
+                await expect(
+                    pagesService
+                        .createOrUpdatePage(PageFactory.defaultPage())
+                        .then((pageResult: void | Page) => (postResults[pagesToCreate] = pageResult)),
+                ).to.eventually.be.rejectedWith(
+                    `You exceeded your pages number limit (${pagesLimit}) - please contact your administrator`,
+                );
                 for (const page of pagesArray.filter((x) => x?.Key)) {
                     const actual = postResults.filter((_page) => _page && _page.Key === page.Key);
 
@@ -559,8 +565,8 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                         pagesService,
                         // ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests'],
                     ).catch((error) => {
-                            addToErrorCounter(errorCounter, (error as Error).message);
-                        });
+                        addToErrorCounter(errorCounter, (error as Error).message);
+                    });
                 }
                 expect(
                     errorCounter,
@@ -578,28 +584,23 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         }
     });
 }
-async function deletePageIncluding(
-    page: Page,
-    pagesService: PagesService,
-    pageNamesToDelete: string[] = [],
-) {
+async function deletePageIncluding(page: Page, pagesService: PagesService, pageNamesToDelete: string[] = []) {
     if (page?.Name) {
         if (pageNamesToDelete.length == 0 || pageNamesToDelete.find((name) => page.Name?.includes(name))) {
             page.Blocks.forEach((block) => {
-                if(!block.Configuration?.Data){
+                if (!block.Configuration?.Data) {
                     block.Configuration.Data = {};
                 }
-                if(block.Configuration?.Resource != block.Relation.Name){
+                if (block.Configuration?.Resource != block.Relation.Name) {
                     block.Configuration.Resource = block.Relation.Name;
                 }
-                if(block.Configuration?.AddonUUID != block.Relation.AddonUUID){
+                if (block.Configuration?.AddonUUID != block.Relation.AddonUUID) {
                     block.Configuration.AddonUUID = block.Relation.AddonUUID;
                 }
             });
 
-            await pagesService
-                .deletePage(page);
-                // .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
+            await pagesService.deletePage(page);
+            // .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
         }
     }
 }
