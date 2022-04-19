@@ -1,14 +1,14 @@
 import { Browser } from '../../../utilities/browser';
-import { Page } from '../../base/Page';
+import { Page } from '../../Pages/base/Page';
 import config from '../../../../config';
 import { By, WebElement, Key } from 'selenium-webdriver';
 import { WebAppHeader } from '../../WebAppHeader';
 import { WebAppHomePage, WebAppList, WebAppSettingsSidePanel } from '../../index';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { OrderPageItem } from '../../OrderPage';
+import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
-import { PepperiStatus } from './PepperiStatus';
+import { PepperiStatus } from '../../Enumerations/PepperiStatus';
 
 chai.use(promised);
 

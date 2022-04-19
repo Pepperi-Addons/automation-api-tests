@@ -1,17 +1,19 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
 import { Component } from '../../Components/Base/Component';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
+import { PageBlockEditorSideBar } from '../PageBuilder/PageBlockEditorSideBar';
 
 export abstract class SectionBlock extends Component {
-    public readonly BlockName: string;
-    public readonly BlockId: string;
     protected constructor(private blockName: string, protected blockId: string, browser: Browser) {
         super(browser);
         this.BlockName = blockName;
         this.BlockId = blockId;
+        this.SideBar = new PageBlockEditorSideBar(blockName, this.browser);
     }
-
+    public readonly BlockName: string;
+    public readonly BlockId: string;
+    protected readonly SideBar: PageBlockEditorSideBar;
     public readonly ParentContainer = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
     // public getBlockDraggable(): By {
