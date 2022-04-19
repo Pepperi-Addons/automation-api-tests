@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { By, Key, WebElement } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
-import { OrderPage } from '../OrderPage';
+import { OrderPage } from '../Pages/OrderPage';
 import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
 

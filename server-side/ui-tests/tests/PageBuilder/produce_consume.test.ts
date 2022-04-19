@@ -11,53 +11,22 @@ import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { DynamicTester } from '../../pom/addons/Blocks/DynamicTester';
-import {
-    BlockParamConfig,
-    IBlockFilterParameter,
-    IBlockStringParameter,
-    TestConfiguration,
-} from '../../../models/pages/parameter-config.class';
+import { BlockParamsConfig, TestConfiguration } from '../../../models/pages/parameter-config.class';
 import { PageTestRequirements } from './page_builder.test';
+import { filterParam } from './PreConfigBlockParams/filter_param.const';
+import { stringParam } from './PreConfigBlockParams/string_param.const';
 
 chai.use(promised);
-const stringParam: IBlockStringParameter = {
-    Key: 'stringParam',
-    Consume: true,
-    Produce: true,
-    Type: 'String',
-    Value: 'This is a string param',
-};
-const filterParam: IBlockFilterParameter = {
-    Key: 'filterParam',
-    Consume: true,
-    Produce: true,
-    Type: 'Filter',
-    Resource: 'accounts',
-    Fields: ['paramAccount'],
-    Value: [
-        {
-            resource: 'accounts',
-            filter: {
-                ApiName: 'paramAccount',
-                FieldType: 'boolean',
-                Operation: 'IsEqual',
-                Values: ['true'],
-            },
-        },
-    ],
-};
+
 export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
     let browser: Browser;
     let pagesList: PagesList;
-    // describe('Dynamic Block Tests', function () {
     const prodConsPage: PageClass = new PageClass();
     prodConsPage.Key = newUuid();
     prodConsPage.Name = `Produce Consume Tests - ${prodConsPage.Key}`;
     let pageEditor: PageEditor;
     let dynamicTester: DynamicTester;
-    // const stringParam: IBlockStringParameter = stringParam;
 
-    // const filterParam: IBlockFilterParameter = filterParam;
     before(async function () {
         await apiCreateProduceConsumePage();
 
@@ -73,9 +42,10 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
             }
             dynamicTester = new DynamicTester(prodConsPage.Blocks[0].Configuration.Data.BlockId, browser);
 
-            await dynamicTester.editBlock();
+            await dynamicTester.initBlockConfig();
+            // await dynamicTester.editBlock();
 
-            await pageEditor.goBack();
+            // await pageEditor.goBack();
             await pageEditor.enterPreviewMode();
         } catch (error) {
             const beforeError = await browser.saveScreenshots();
@@ -88,11 +58,12 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
     });
 
     after(async function () {
-        const result = await pagesService.deletePage(prodConsPage);
-        expect(result?.Hidden).is.equal(true);
         await pageEditor.enterEditMode();
         await pageEditor.goBack();
         pagesList = new PagesList(browser);
+
+        const result = await pagesService.deletePage(prodConsPage);
+        expect(result?.Hidden).is.equal(true);
     });
 
     afterEach(async function () {
@@ -114,7 +85,7 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
     async function apiCreateProduceConsumePage() {
         const dynamicBlockRelation = await pagesService.getBlockRelation('Dynamic Tester');
         const dynamicTesterBlock: PageBlock = prodConsPage.Blocks.createAndAdd(dynamicBlockRelation);
-        const config: BlockParamConfig = new BlockParamConfig(stringParam, filterParam);
+        const config: BlockParamsConfig = new BlockParamsConfig(stringParam, filterParam);
         const testConfig: TestConfiguration = {
             Parameters: config,
             BlockId: 'basicDynamicBlock',
@@ -134,5 +105,4 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
         });
         pagesService.deepCompareObjects(prodConsPage, pageResult, expect);
     }
-    // });
 }

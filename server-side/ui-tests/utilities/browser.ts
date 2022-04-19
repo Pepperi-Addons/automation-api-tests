@@ -371,11 +371,47 @@ export class Browser {
                 `Element ${selector.valueOf()['value']} was not located in DOM`,
             )
             .then(() => {
+                if (!suppressLog) {
+                    console.log(
+                        `Element ${selector.valueOf()['value']} is located in DOM`,
+                        ConsoleColors.ElementFoundMessage,
+                    );
+                }
                 return true;
             })
             .catch((error) => {
                 if (!suppressLog) {
-                    console.log(`%c${error.message}`, ConsoleColors.PageMessage);
+                    console.log(`%c${error.message}`, ConsoleColors.Error);
+                }
+                return false;
+            });
+        return isLocated;
+    }
+
+    /**
+     * Check if an element is located within the DOM
+     * @param selector Element locator.
+     * @param timeOut Timeout, in MS, to poll for element located until 'false' is returned. Default is 1000ms.
+     * @param suppressLog Suppress writing error to log in case the function returns 'false'.
+     * @returns Whether the element is located in the DOM.
+     */
+    public async isElementVisible(selector: By, timeOut = 1000, suppressLog = false): Promise<boolean> {
+        await this.driver.manage().setTimeouts({ implicit: timeOut });
+        const isLocated = this.driver
+            .wait(
+                until.elementIsVisible(this.findSingleElement(selector)),
+                timeOut,
+                `Element ${selector.valueOf()['value']} is not visible`,
+            )
+            .then(() => {
+                if (!suppressLog) {
+                    console.log(`Element ${selector.valueOf()['value']} is visible`, ConsoleColors.ElementFoundMessage);
+                }
+                return true;
+            })
+            .catch((error) => {
+                if (!suppressLog) {
+                    console.log(`%c${error.message}`, ConsoleColors.Error);
                 }
                 return false;
             });

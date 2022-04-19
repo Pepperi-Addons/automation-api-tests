@@ -1,7 +1,7 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { Page } from './base/Page';
-import config from '../../config';
-import { WebAppList, WebAppTopBar, WebAppDialog } from './index';
+import config from '../../../config';
+import { WebAppList, WebAppTopBar, WebAppDialog } from '../index';
 import { Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 
