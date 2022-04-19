@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './base/Page';
 import config from '../../config';
-import { By, Locator } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppHeader, WebAppHomePage } from './index';
@@ -13,10 +13,10 @@ export class WebAppLoginPage extends Page {
         super(browser, `${config.baseUrl}`);
     }
 
-    public Email: Locator = By.css('#email');
-    public Password: Locator = By.css('input[type="password"]');
-    public Next: Locator = By.css('#nextBtn');
-    public LoginBtn: Locator = By.css('#loginBtn');
+    public Email: By = By.css('#email');
+    public Password: By = By.css('input[type="password"]');
+    public Next: By = By.css('#nextBtn');
+    public LoginBtn: By = By.css('#loginBtn');
 
     /**
      * This function should be used after nevigation to LoginPage was validate

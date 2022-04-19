@@ -1,15 +1,15 @@
-import { By, Key, Locator } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import { AddonPage, WebAppHomePage, WebAppSettingsSidePanel } from '..';
 import { ConsoleColors } from '../../../services/general.service';
 import { AddonLoadCondition } from './base/AddonPage';
 
 export class BrandedApp extends AddonPage {
     //Branded App Locators
-    public BrandedAppChangeCompanyLogo: Locator = By.id('btnChangeCompLogo');
-    public BrandedAppUploadInputArr: Locator = By.css("input[type='file']");
+    public BrandedAppChangeCompanyLogo: By = By.id('btnChangeCompLogo');
+    public BrandedAppUploadInputArr: By = By.css("input[type='file']");
 
     //Settings Framework Locators
-    public SettingsFrameworkEditorSearch: Locator = By.css('#txtSearchBankFields');
+    public SettingsFrameworkEditorSearch: By = By.css('#txtSearchBankFields');
 
     /**
      *

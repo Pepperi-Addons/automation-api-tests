@@ -13,6 +13,7 @@ import { Uom } from './addons/Uom';
 import { BrandedApp } from './addons/BrandedApp';
 import { ObjectTypeEditor } from './addons/ObjectTypeEditor';
 import { Promotion } from './addons/Promotion';
+import { Udc } from './addons/Udc';
 
 export {
     WebAppLoginPage,
@@ -30,4 +31,5 @@ export {
     BrandedApp,
     ObjectTypeEditor,
     Promotion,
+    Udc,
 };
