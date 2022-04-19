@@ -103,6 +103,65 @@ export class Browser {
         return await this.driver.switchTo().activeElement();
     }
 
+    //TODO: 19/04 By Oren:
+    //Try with this code:
+    // const draggable = await driver.findElement(By.css('[title="Chart"]'));
+    // const droppable = await driver.findElement(By.css('.cdk-drop-list.section-column.horizontal.ng-star-inserted'));
+    // await driver.dragAndDrop(draggable, droppable);
+    public async dragAndDrop(draggable: WebElement, droppable?: WebElement, x?: number, y?: number) {
+        return await this.driver
+            .actions()
+            .dragAndDrop(draggable, droppable ? droppable : { x, y })
+            .perform();
+    }
+
+    //TODO: 19/04 By Oren:
+    //Try with this code:
+    // const draggable = await driver.findElement(By.css('[title="Chart"]'));
+    // const droppable = await driver.findElement(By.css('.cdk-drop-list.section-column.horizontal.ng-star-inserted'));
+    // const draggablePoint = await draggable.getRect();
+    // const droppablePoint = await droppable.getRect();
+    // await driver.dragAndDropByLocation(
+    //     { x: draggablePoint.x + draggablePoint.width / 2, y: draggablePoint.y + draggablePoint.height / 2 },
+    //     { x: droppablePoint.x + droppablePoint.width / 2, y: droppablePoint.y + droppablePoint.height / 2 }
+    // );
+    public async dragAndDropByLocation(draggablePoint: ILocation, droppablePoint: ILocation) {
+        console.log(draggablePoint, droppablePoint);
+        await this.driver.actions().move(draggablePoint).press().move(droppablePoint).release().perform();
+        return;
+    }
+
+    //TODO: 19/04 By Oren:
+    //Try with this code:
+    // const draggable = await driver.findElement(By.css('[title="Chart"]'));
+    // const droppable = await driver.findElement(By.css('.cdk-drop-list.section-column.horizontal.ng-star-inserted'));
+    // const droppablePoint = await droppable.getRect();
+    // await driver.dragAndDropByJS(draggable, droppablePoint)
+    public async dragAndDropByJS(draggable: WebElement, droppablePoint: ILocation) {
+        await this.driver.executeScript(
+            `function simulate(f, c, d, e) {
+                var b, a = null;
+                for (b in eventMatchers)
+                    if (eventMatchers[b].test(c)) {
+                        a = b;
+                        break
+                    } if (!a) return !1;
+                document.createEvent ? (b = document.createEvent(a), a == "HTMLEvents" ? b.initEvent(c, !0, !0) : b.initMouseEvent(c, !0, !0, document.defaultView, 0, d, e, d, e, !1, !1, !1, !1, 0, null), f.dispatchEvent(b)) : (a = document.createEventObject(), a.detail = 0, a.screenX = d, a.screenY = e, a.clientX = d, a.clientY = e, a.ctrlKey = !1, a.altKey = !1, a.shiftKey = !1, a.metaKey = !1, a.button = 1, f.fireEvent("on" + c, a));
+                return !0
+            }
+            var eventMatchers = {
+                HTMLEvents: /^(?:load|unload|abort|error|select|change|submit|reset|focus|blur|resize|scroll)$/,
+                MouseEvents: /^(?:click|dblclick|mouse(?:down|up|over|move|out))$/
+            };
+            simulate(arguments[0],"mousedown",0,0);
+            simulate(arguments[0],"mousemove",arguments[1],arguments[2]);
+            simulate(arguments[0],"mouseup",arguments[1],arguments[2]);`,
+            draggable,
+            droppablePoint.x,
+            droppablePoint.y,
+        );
+    }
+
     public async click(selector: By, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
