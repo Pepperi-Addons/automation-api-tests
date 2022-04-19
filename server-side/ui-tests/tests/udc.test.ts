@@ -1,30 +1,16 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
+import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import {
-    WebAppLoginPage,
-    WebAppHeader,
-    WebAppHomePage,
-    WebAppList,
-    WebAppTopBar,
-    WebAppTransaction,
-    WebAppSettingsSidePanel,
-    Udc,
-} from '../pom/index';
+import { WebAppLoginPage, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, Udc } from '../pom/index';
 import { CollectionField, CollectionMain } from '../pom/addons/udc';
-
-import addContext from 'mochawesome/addContext';
 import GeneralService from '../../services/general.service';
-import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
-import { upgradeDependenciesTests } from './test.index';
 
 chai.use(promised);
 
 export async function UDCTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -35,41 +21,41 @@ export async function UDCTests(email: string, password: string, varPass: string,
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade UDC
 
     describe('UDC UI Tests Suit', async function () {
-        // describe('Prerequisites Addons for UOM Tests', () => {
-        //     //Test Data
-        //     //UOM
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     for (const addonName in testData) {
-        //         const addonUUID = testData[addonName][0];
-        //         const version = testData[addonName][1];
-        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         const changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
+        describe('Prerequisites Addons for UOM Tests', () => {
+            //Test Data
+            //UOM
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
 
         describe('Scenarios', async function () {
             // this.retries(1);
@@ -191,7 +177,6 @@ export async function UDCTests(email: string, password: string, varPass: string,
                         const udcAddonPageTitleText = await udcAddonPageTitle[0].getText();
                         expect(udcAddonPageTitleText).to.equal('Fields');
                         await udc.createField(collectionFieldsArr[i]);
-                        await generalService.sleepAsync(500);
                     });
                 }
 
@@ -201,8 +186,11 @@ export async function UDCTests(email: string, password: string, varPass: string,
 
                     const webAppList = new WebAppList(driver);
                     collaectionTableAfter = await webAppList.getAddonListAsTable();
-                    console.table(collaectionTableBefore);
                     totalItemsAfter = Number(await (await driver.findElement(webAppList.TotalResultsText)).getText());
+                    console.table(collaectionTableBefore);
+                    console.table(collaectionTableAfter);
+                    console.table(totalItemsBefore);
+                    console.table(totalItemsAfter);
                 });
             });
         });

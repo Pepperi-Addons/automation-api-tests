@@ -1,10 +1,6 @@
-import { expect } from 'chai';
-import { By, Key, WebElement } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
+import { WebAppList } from '..';
 import { AddonPage } from './base/AddonPage';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
-import { OrderPage } from '../OrderPage';
-import { AddonLoadCondition } from './base/AddonPage';
-import { ObjectTypeEditor } from './ObjectTypeEditor';
 
 export interface CollectionField {
     Key: string;
@@ -88,10 +84,13 @@ export class Udc extends AddonPage {
         await this.sendKeysToField('Key', collectionField.Key);
         await this.sendKeysToField('Description', collectionField.Description);
         await this.clickOnSelect();
+        await this.browser.sleepTimeout(500);
         await this.click(this.UDCFieldTypeSelectOption(collectionField.Type));
         if (collectionField.Type == 'Array' && collectionField.ArrayInnerType) {
             await this.clickOnArrayTypeSelect();
+            await this.browser.sleepTimeout(500);
             await this.click(this.UDCFieldTypeSelectOption(collectionField.ArrayInnerType));
+            debugger;
         }
         if (collectionField.OptionalValues) {
             await this.sendKeysToField('Optional Values', collectionField.OptionalValues);
