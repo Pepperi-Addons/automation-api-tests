@@ -1,13 +1,11 @@
 import { expect } from 'chai';
 import addContext from 'mochawesome/addContext';
 import { By, Key } from 'selenium-webdriver';
-import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
-import GeneralService, { ConsoleColors } from '../../../services/general.service';
-import { ImportExportATDService } from '../../../services/import-export-atd.service';
-import { ObjectsService } from '../../../services/objects.service';
+import { AddonPage, WebAppDialog, WebAppHeader, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '../index';
+import { ConsoleColors } from '../../../services/general.service';
+import { ImportExportATDService, ObjectsService, GeneralService } from '../../../services/index';
 import { AddonLoadCondition } from './base/AddonPage';
-import { PepperiStatus } from '../Enumerations/PepperiStatus';
-import { WorkflowAction } from '../Enumerations/WorkflowAction';
+import { PepperiStatus, WorkflowAction } from '../Enumerations/index';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Field {
