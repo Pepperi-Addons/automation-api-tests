@@ -32,8 +32,8 @@ export class Udc extends AddonPage {
     public UDCDescriptionInputField: By = By.css('#mat-input-1');
     public UDCOfflinecheckboxButton: By = By.css('#mat-checkbox-2');
 
+    //UDC Fields Locators
     public UDCFieldKeyInputFieldArr: By = By.css('.pep-dialog [id^="mat-input"]');
-
     public UDCFieldTypeSelect = () => By.css(`.pep-dialog [id^="mat-select"]`);
     public UDCFieldTypeSelectOption = (type: CollectionField['Type']) => By.css(`[id^='mat-select'] [title="${type}"]`);
     public UDCFieldMandatorySelect: By = By.css('#mat-select-6');
