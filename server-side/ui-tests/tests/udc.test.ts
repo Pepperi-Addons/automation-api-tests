@@ -3,7 +3,7 @@ import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppLoginPage, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, Udc } from '../pom/index';
-import { CollectionField, CollectionMain } from '../pom/addons/udc';
+import { CollectionField, CollectionMain } from '../pom/addons/Udc';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server';
 
