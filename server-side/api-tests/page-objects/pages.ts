@@ -413,129 +413,131 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             });
         });
 
-        // describe('Load Testing', function () {
-        //     const pagesArray: Array<Page> = [];
-        //     const objectsToCreate = 101;
+        describe('Page Creation Limit Test', function () {
+            const pagesArray: Array<Page> = [];
+            const pagesLimit = 100;
 
-        //     it(`Create ${objectsToCreate} pages`, async function () {
-        //         const errorCounter: Array<{ message: string; count: number }> = [];
-        //         const promises: Array<Promise<Page | void>> = [];
-        //         let time = new Date();
-        //         console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
-        //         for (let i = 0; i < objectsToCreate; i++) {
-        //             const page: Page = PageFactory.defaultPage();
-        //             pagesArray[i] = page;
-        //             promises[i] = pagesService.createOrUpdatePage(page).catch((error) => {
-        //                 addToErrorCounter(errorCounter, (error as Error).message);
-        //             });
-        //             await generalService.sleepAsync(100);
-        //         }
+            it(`Exceed create limit of ${pagesLimit} pages`, async function () {
+                const currentPages = (await pagesService.getPages({page_size:-1})).length;
+                const errorCounter: Array<{ message: string; count: number }> = [];
+                const promises: Array<Promise<Page | void>> = [];
+                const postResults: Array<Page | void> = [];
+                let time = new Date();
+                const pagesToCreate = pagesLimit - currentPages;
+                console.log(`Page creation start: ${generalService.getTime()};${time.getMilliseconds()}`);
+                for (let i = 0; i <pagesToCreate; i++) {
+                    const page: Page = PageFactory.defaultPage();
+                    pagesArray[i] = page;
+                    postResults[i] = await pagesService.createOrUpdatePage(page).catch((error) => {
+                        addToErrorCounter(errorCounter, (error as Error).message);
+                    });
+                    // await generalService.sleepAsync(200);
+                }
 
-        //         time = new Date();
-        //         console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+                time = new Date();
+                console.log(`Page creation end: ${generalService.getTime()};${time.getMilliseconds()}`);
 
-        //         const postResults = await Promise.all(promises);
-        //         time = new Date();
-        //         console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
-        //         postResults.map((postResult, index) => {
-        //             if (postResult && postResult?.Key) {
-        //                 pagesArray[index].Key = postResult.Key;
-        //             } else {
-        //                 if (pagesArray[index]) {
-        //                     delete pagesArray[index];
-        //                 }
-        //                 postResult
-        //                     ? addToErrorCounter(errorCounter, 'Result of POST returned an undefined page key')
-        //                     : addToErrorCounter(errorCounter, 'Result of POST returned empty');
-        //             }
-        //         });
+                // const postResults = await Promise.all(promises);
+                // time = new Date();
+                // console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
+                postResults.map((postResult, index) => {
+                    if (postResult && postResult?.Key) {
+                        pagesArray[index].Key = postResult.Key;
+                    } else {
+                        if (pagesArray[index]) {
+                            delete pagesArray[index];
+                        }
+                        postResult
+                            ? addToErrorCounter(errorCounter, 'Result of POST returned an undefined page key')
+                            : addToErrorCounter(errorCounter, 'Result of POST returned empty');
+                    }
+                });
+                await expect(pagesService.createOrUpdatePage(PageFactory.defaultPage()).then((pageResult: void | Page) => postResults[pagesToCreate] = pageResult)).to.eventually.be.rejectedWith(`You exceeded your pages number limit (${pagesLimit}) - please contact your administrator`);
+                for (const page of pagesArray.filter((x) => x?.Key)) {
+                    const actual = postResults.filter((_page) => _page && _page.Key === page.Key);
 
-        //         for (const page of pagesArray.filter((x) => x?.Key)) {
-        //             // let actual: void | Page | undefined;
-        //             const actual = postResults.filter((_page) => _page && _page.Key === page.Key);
+                    try {
+                        expect(
+                            actual,
+                            `${actual.length} pages found with the assigned key: '${
+                                page.Key
+                            }'\nPOST index: ${pagesArray.findIndex((_page) => _page === page)}\nFound pages: ${actual
+                                .map((_page) => JSON.stringify(_page))
+                                .join('\n')}`,
+                        ).to.be.of.length(1);
+                        pagesService.deepCompareObjects(page, actual[0], expect);
+                    } catch (error) {
+                        addToErrorCounter(errorCounter, (error as Error).message);
+                        console.log(`Expected: ${JSON.stringify(page)}`);
+                        console.log(`Actual: ${JSON.stringify(actual)}`);
+                        throw error;
+                    }
+                }
 
-        //             try {
-        //                 expect(
-        //                     actual,
-        //                     `${actual.length} pages found with the assigned key: '${
-        //                         page.Key
-        //                     }'\nPOST index: ${pagesArray.findIndex((_page) => _page === page)}\nFound pages: ${actual
-        //                         .map((_page) => JSON.stringify(_page))
-        //                         .join('\n')}`,
-        //                 ).to.be.of.length(1);
-        //                 pagesService.deepCompareObjects(page, actual[0], expect);
-        //             } catch (error) {
-        //                 addToErrorCounter(errorCounter, (error as Error).message);
-        //                 console.log(`Expected: ${JSON.stringify(page)}`);
-        //                 console.log(`Actual: ${JSON.stringify(actual)}`);
-        //                 throw error;
-        //             }
-        //         }
+                expect(
+                    errorCounter,
+                    errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
+                ).to.be.empty;
 
-        //         expect(
-        //             errorCounter,
-        //             errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
-        //         ).to.be.empty;
+                const result = await pagesService.getPages({ page_size: -1 });
+                pagesArray.map((page) =>
+                    pagesService.deepCompareObjects(
+                        page,
+                        result.find((x) => x.Key === page.Key),
+                        expect,
+                    ),
+                );
+            });
 
-        //         const result = await pagesService.getPages({ page_size: -1 });
-        //         pagesArray.map((page) =>
-        //             pagesService.deepCompareObjects(
-        //                 page,
-        //                 result.find((x) => x.Key === page.Key),
-        //                 expect,
-        //             ),
-        //         );
-        //     });
+            // it(`Delete ${pagesLimit} pages`, async function () {
+            //     const errorCounter: Array<{ message: string; count: number }> = [];
 
-        //     it(`Delete ${objectsToCreate} pages`, async function () {
-        //         const errorCounter: Array<{ message: string; count: number }> = [];
+            //     let time = new Date();
+            //     console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+            //     const promises: Array<Promise<Page | void>> = [];
+            //     for (const [index, page] of pagesArray.entries()) {
+            //         if (page) {
+            //             await generalService.sleepAsync(100);
+            //             promises[index] = pagesService.deletePage(page).catch((error) => {
+            //                 addToErrorCounter(errorCounter, (error as Error).message);
+            //             });
+            //         }
+            //     }
 
-        //         let time = new Date();
-        //         console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
-        //         const promises: Array<Promise<Page | void>> = [];
-        //         for (const [index, page] of pagesArray.entries()) {
-        //             if (page) {
-        //                 await generalService.sleepAsync(100);
-        //                 promises[index] = pagesService.deletePage(page).catch((error) => {
-        //                     addToErrorCounter(errorCounter, (error as Error).message);
-        //                 });
-        //             }
-        //         }
+            //     time = new Date();
+            //     console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
 
-        //         time = new Date();
-        //         console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+            //     await Promise.all(promises);
 
-        //         await Promise.all(promises);
+            //     time = new Date();
+            //     console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
 
-        //         time = new Date();
-        //         console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
+            //     expect(
+            //         errorCounter,
+            //         errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
+            //     ).to.be.empty;
 
-        //         expect(
-        //             errorCounter,
-        //             errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
-        //         ).to.be.empty;
+            //     const resultKeys = (await pagesService.getPages({ page_size: -1 }))
+            //         .map((page) => page.Key)
+            //         .filter((key): key is string => !!key);
+            //     const pageKeys = pagesArray.map((page) => page.Key).filter((key): key is string => !!key);
 
-        //         const resultKeys = (await pagesService.getPages({ page_size: -1 }))
-        //             .map((page) => page.Key)
-        //             .filter((key): key is string => !!key);
-        //         const pageKeys = pagesArray.map((page) => page.Key).filter((key): key is string => !!key);
+            //     expect(
+            //         resultKeys,
+            //         `Retrieved page keys: ${resultKeys}\nPage keys that were deleted: ${pageKeys}`,
+            //     ).to.not.include.members(pageKeys);
 
-        //         expect(
-        //             resultKeys,
-        //             `Retrieved page keys: ${resultKeys}\nPage keys that were deleted: ${pageKeys}`,
-        //         ).to.not.include.members(pageKeys);
+            //     pagesArray.map(function (page) {
+            //         if (page?.Key) {
+            //             return expect(
+            //                 page.Key,
+            //                 `Expected ${page.Key} to not be one of: ${resultKeys.join(', ')}`,
+            //             ).to.not.be.oneOf(resultKeys);
+            //         }
+            //     });
 
-        //         pagesArray.map(function (page) {
-        //             if (page?.Key) {
-        //                 return expect(
-        //                     page.Key,
-        //                     `Expected ${page.Key} to not be one of: ${resultKeys.join(', ')}`,
-        //                 ).to.not.be.oneOf(resultKeys);
-        //             }
-        //         });
-
-        //     });
-        // });
+            // });
+        });
 
         describe('Page Tests Suite Cleanup', function () {
             it('Delete created page', async function () {
@@ -555,11 +557,10 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     await deletePageIncluding(
                         page,
                         pagesService,
-                        ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests'],
-                        addToErrorCounter,
-                        errorCounter,
-                    );
-                    //
+                        // ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests'],
+                    ).catch((error) => {
+                            addToErrorCounter(errorCounter, (error as Error).message);
+                        });
                 }
                 expect(
                     errorCounter,
@@ -580,19 +581,25 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 async function deletePageIncluding(
     page: Page,
     pagesService: PagesService,
-    pageNamesToDelete: string[],
-    addToErrorCounter: (errorCounter: Array<{ message: string; count: number }>, errorMessage: string) => void,
-    errorCounter: { message: string; count: number }[],
+    pageNamesToDelete: string[] = [],
 ) {
     if (page?.Name) {
         if (pageNamesToDelete.length == 0 || pageNamesToDelete.find((name) => page.Name?.includes(name))) {
-            page.Blocks.filter((block) => !block.Configuration?.Data).forEach(
-                (block) => (block.Configuration.Data = {}),
-            );
+            page.Blocks.forEach((block) => {
+                if(!block.Configuration?.Data){
+                    block.Configuration.Data = {};
+                }
+                if(block.Configuration?.Resource != block.Relation.Name){
+                    block.Configuration.Resource = block.Relation.Name;
+                }
+                if(block.Configuration?.AddonUUID != block.Relation.AddonUUID){
+                    block.Configuration.AddonUUID = block.Relation.AddonUUID;
+                }
+            });
 
             await pagesService
-                .deletePage(page)
-                .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
+                .deletePage(page);
+                // .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
         }
     }
 }
