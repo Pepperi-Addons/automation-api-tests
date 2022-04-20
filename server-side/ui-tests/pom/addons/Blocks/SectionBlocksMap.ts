@@ -24,6 +24,7 @@ export class SectionBlocksMap extends Map<string, SectionBlock> {
             super(arr);
         }
     }
+
     public getBlock<T extends SectionBlock>(pageBlock: PageBlock): T | never;
     public getBlock<T extends SectionBlock>(pageBlockKey: string): T | never;
     public getBlock<T extends SectionBlock>(pageBlockOrKey: string | PageBlock): T | never {
@@ -32,7 +33,6 @@ export class SectionBlocksMap extends Map<string, SectionBlock> {
         if (!block) {
             throw new Error(`Key '${blockKey}' does not exist in the map`);
         }
-
         return block as T;
     }
 

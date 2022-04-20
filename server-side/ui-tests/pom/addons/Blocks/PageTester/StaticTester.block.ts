@@ -1,11 +1,11 @@
 import { By } from 'selenium-webdriver';
-import { Browser } from '../../../utilities/browser';
-import { SectionBlockName } from './BlockNameEnums';
-import { SectionBlock } from './SectionBlock';
+import { Browser } from '../../../../utilities/browser';
+import { PageTesterBlockName } from './PageTesterBlockName.enum';
+import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
 
-export class StaticTester extends SectionBlock {
+export class StaticTester extends PageTesterSectionBlock {
     constructor(blockId: string, browser: Browser) {
-        super(SectionBlockName.StaticTester, blockId, browser);
+        super(PageTesterBlockName.StaticTester, blockId, browser);
     }
 
     public readonly BlockContainer = By.css(`static-tester[block-id='${this.blockId}']`);
