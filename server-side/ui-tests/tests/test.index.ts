@@ -18,6 +18,7 @@ import {
     SecurityPolicyTests,
     CreateDistributorTests,
     UomTests,
+    AWSLogsTester,
     PageBuilderTests,
     UDCTests,
 } from './index';
@@ -224,6 +225,19 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     if (tests.includes('Udc')) {
         await UDCTests(email, pass, varPass, client);
     }
+    if (tests.includes('aws_logs')) {
+        await AWSLogsTester(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+    }
 
     run();
 })();
@@ -336,8 +350,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));

@@ -8,6 +8,7 @@ import { CreateDistributorTests } from './create_distributor.test';
 import { UomTests } from './uom.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
 import { UDCTests } from './udc.test';
+import {AWSLogsTester} from './../../api-tests/logs_api';
 
 export {
     LoginTests,
@@ -19,5 +20,6 @@ export {
     CreateDistributorTests,
     UomTests,
     PageBuilderTests,
+    AWSLogsTester,
     UDCTests,
 };
