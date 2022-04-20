@@ -20,6 +20,10 @@ import { filterParam } from './PreConfigBlockParams/filter_param.const';
 import { SectionBlockFactory } from '../../../services/pages/section-block.factory';
 
 chai.use(promised);
+enum TestBlockId {
+    StringProducer = 'stringProduceFilterConsume',
+    FilterProducer = 'filterProduceStringConsume'
+};
 
 export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
     let browser: Browser;
@@ -30,14 +34,14 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
     let pageEditor: PageEditor;
     // let dynamicTester: DynamicTester;
 
-    let stringProducer: PageBlockExt;
-    let filterProducer: PageBlockExt;
+    // let stringProducer: PageBlockExt;
+    // let filterProducer: PageBlockExt;
 
     before(async function () {
         const dynamicBlockRelation = await pagesService.getBlockRelation('Dynamic Tester');
 
-        stringProducer = getStringProducerBlock(dynamicBlockRelation);
-        filterProducer = getFilterProducerBlock(dynamicBlockRelation);
+        const stringProducer = getStringProducerBlock(dynamicBlockRelation);
+        const filterProducer = getFilterProducerBlock(dynamicBlockRelation);
 
         await apiCreatePage(stringProducer, filterProducer);
 
@@ -90,29 +94,29 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
 
     it('Produce String Param', async function () {
         const stringProducerBlock = pageEditor.PageBlocks.getBlock<DynamicTester>(
-            stringProducer.Configuration.Data.BlockId,
+            TestBlockId.StringProducer,
         );
         await stringProducerBlock.clickSetParamBtn(stringParam.Key);
         expect(await stringProducerBlock.getConsumesText()).to.not.include(stringParam.Value);
         expect(
             await pageEditor.PageBlocks.getBlock<DynamicTester>(
-                filterProducer.Configuration.Data.BlockId,
+                TestBlockId.FilterProducer,
             ).getConsumesText(),
         ).to.include(stringParam.Value);
     });
 
     it('Produce Filter Param', async function () {
         const filterProducerBlock = pageEditor.PageBlocks.getBlock<DynamicTester>(
-            filterProducer.Configuration.Data.BlockId,
+            TestBlockId.FilterProducer,
         );
         await filterProducerBlock.clickSetParamBtn(filterParam.Key);
 
         const stringProducerText = await pageEditor.PageBlocks.getBlock<DynamicTester>(
-            stringProducer.Configuration.Data.BlockId,
+            TestBlockId.StringProducer,
         ).getConsumesText();
         expect(stringProducerText).to.include(JSON.stringify(filterParam?.Value[0]?.filter));
         const filterProducerText = await pageEditor.PageBlocks.getBlock<DynamicTester>(
-            filterProducer.Configuration.Data.BlockId,
+            TestBlockId.FilterProducer,
         ).getConsumesText();
         expect(filterProducerText).to.not.include(JSON.stringify(filterParam?.Value[0]?.filter));
     });
@@ -162,7 +166,7 @@ function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockEx
                 Fields: filterParam.Fields,
             },
         ],
-        BlockId: 'stringProduceFilterConsume',
+        BlockId: TestBlockId.StringProducer,
     };
     pageBlock.Configuration.Data = testConfig;
 
@@ -191,7 +195,7 @@ function getFilterProducerBlock(blockRelation: NgComponentRelation): PageBlockEx
                 Fields: filterParam.Fields,
             },
         ],
-        BlockId: 'filterProduceStringConsume',
+        BlockId: TestBlockId.FilterProducer,
     };
 
     pageBlock.Configuration.Data = testConfig;
