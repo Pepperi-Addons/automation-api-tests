@@ -15,7 +15,7 @@ import {
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { InventoryService } from '../../services/inventory.service';
-import { WorkflowAction } from '../pom/addons/base/WorkflowAction';
+import { WorkflowAction } from '../pom/Enumerations/WorkflowAction';
 import { Key } from 'selenium-webdriver';
 
 chai.use(promised);

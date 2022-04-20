@@ -8,6 +8,7 @@ import { CreateDistributorTests } from './create_distributor.test';
 import { UomTests } from './uom.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
 import { ChartBlockTest } from './Blocks/chart.test';
+import { UDCTests } from './udc.test';
 
 export {
     LoginTests,
@@ -20,4 +21,5 @@ export {
     UomTests,
     ChartBlockTest,
     PageBuilderTests,
+    UDCTests,
 };

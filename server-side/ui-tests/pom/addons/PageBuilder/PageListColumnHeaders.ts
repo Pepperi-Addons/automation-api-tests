@@ -1,11 +1,3 @@
-// export enum PageListColumnHeaders {
-//     Name = 'Name',
-//     Description = 'Description',
-//     CreationDate = 'CreationDate',
-//     ModificationDate = 'ModificationDate',
-//     Status = 'Status',
-// }
-
 export const PageListColumnHeaders = {
     Name: 'Name',
     Description: 'Description',

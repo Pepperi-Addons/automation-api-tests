@@ -8,7 +8,7 @@ import { v4 as newUuid } from 'uuid';
 import { PageSectionClass } from '../../../models/pages/page-section.class';
 import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
-import { StaticTester } from '../../pom/addons/Blocks/StaticTester.block';
+import { StaticTester } from '../../pom/addons/Blocks/PageTester/StaticTester.block';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { PageTestRequirements } from './page_builder.test';
@@ -53,11 +53,12 @@ export function BasicBlockTests(pagesService: PagesService, pagesReq: PageTestRe
     });
 
     after(async function () {
-        const result = await pagesService.deletePage(basicPage);
-        expect(result?.Hidden).is.equal(true);
         await pageEditor.enterEditMode();
         await pageEditor.goBack();
         pagesList = new PagesList(browser);
+
+        const result = await pagesService.deletePage(basicPage);
+        expect(result?.Hidden).is.equal(true);
     });
 
     afterEach(async function () {

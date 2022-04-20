@@ -1,24 +1,33 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
 import { Component } from '../../Components/Base/Component';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
+import { PageBlockEditorSideBar } from '../PageBuilder/PageBlockEditorSideBar';
 
+/**
+ * Abstract class for all displayed blocks in a page's Section.
+ */
 export abstract class SectionBlock extends Component {
+
     public readonly BlockName: string;//TODO: make sure its possibale to diffrenciate between multipale blocks
     public readonly BlockId: string;
+
     protected constructor(private blockName: string, protected blockId: string, browser: Browser) {
         super(browser);
         this.BlockName = blockName;
+        this.SideBar = new PageBlockEditorSideBar(blockName, this.browser);
         this.BlockId = blockId;
     }
+    public readonly BlockId: string;
+    public readonly BlockName: string;
+    protected readonly SideBar: PageBlockEditorSideBar;
 
-    public readonly ParentContainer = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
+    protected XPathParentContainer: By = By.xpath(`//section-block`);
+    // protected _XPathParentContainer: By = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
-    // public getBlockDraggable(): By {
-    //     return By.xpath(`${SectionBlock.ParentContainer.value}//*[@title='${this.blockName}']`);
-    // }
-
-    public readonly getBlockDraggable: By = By.xpath(`${this.ParentContainer.value}//*[@title='${this.blockName}']`);
+    public readonly getBlockDraggable: By = By.xpath(
+        `${this.XPathParentContainer.value}//*[@title='${this.blockName}']`,
+    );
 
     public getEditBlockBtn(): By {
         return By.xpath(

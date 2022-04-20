@@ -6,11 +6,9 @@ import { PageEditor } from './PageEditor';
 import { PageListHeaders } from './PageListColumnHeaders';
 import { PepSearch } from '../../Components/PepSearch';
 import { By } from 'selenium-webdriver';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 
-// export type PageRowData = TableObjectData & {[headerId in PageListColumnHeaders]: string | null | undefined}
-
-export type PageRowData = TableObjectData<PageListHeaders, string | null | undefined>; // & {[headerId in PageListColumnHeaders]: string | null | undefined}
+export type PageRowData = TableObjectData<PageListHeaders, string | null | undefined>;
 
 export class PagesList extends AddonPage {
     private pagesList: PepListTable;
@@ -19,7 +17,7 @@ export class PagesList extends AddonPage {
         super(browser);
         this.pagesList = new PepListTable(this.browser);
         this.search = new PepSearch(this.browser);
-        this.search.setSearchContainer(By.xpath('//pep-page-layout//pep-generic-list'));
+        this.search.setParentContainer(By.xpath('//pep-page-layout//pep-generic-list'));
     }
 
     /**

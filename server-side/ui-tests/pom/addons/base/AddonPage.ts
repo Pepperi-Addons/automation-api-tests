@@ -1,14 +1,14 @@
 import { Browser } from '../../../utilities/browser';
-import { Page } from '../../base/Page';
+import { Page } from '../../Pages/base/Page';
 import config from '../../../../config';
-import { Locator, By, WebElement, Key } from 'selenium-webdriver';
+import { By, WebElement, Key } from 'selenium-webdriver';
 import { WebAppHeader } from '../../WebAppHeader';
 import { WebAppHomePage, WebAppList, WebAppSettingsSidePanel } from '../../index';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { OrderPageItem } from '../../OrderPage';
+import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
-import { PepperiStatus } from './PepperiStatus';
+import { PepperiStatus } from '../../Enumerations/PepperiStatus';
 
 chai.use(promised);
 
@@ -24,81 +24,81 @@ export class AddonPage extends Page {
         this.Header = new WebAppHeader(browser);
     }
 
-    public AddonContainerTopButton: Locator = By.css('.addon-page-container button');
-    public AddonContainerTitle: Locator = By.css('.addon-page-container [title]');
-    public AddonContainerTabs: Locator = By.css('.pep-main-area [role="tablist"] [role="tab"]');
-    public AddonContainerTablistXpath: Locator = By.xpath(
+    public AddonContainerTopButton: By = By.css('.addon-page-container button');
+    public AddonContainerTitle: By = By.css('.addon-page-container [title]');
+    public AddonContainerTabs: By = By.css('.pep-main-area [role="tablist"] [role="tab"]');
+    public AddonContainerTablistXpath: By = By.xpath(
         './/div[@class="pep-main-area"] //div[@role="tablist"] //div[@role="tab"]',
     );
-    public AddonContainerTabsContent: Locator = By.css('#addNewOrderTypesCont');
-    public AddonContainerIframe: Locator = By.css('iframe#myFrame');
-    public AddonContainerHiddenTabs: Locator = By.css('.ui-tabs-hide');
-    public AddonContainerFooterDisplay: Locator = By.css('#FotterCont[style="display: block;"]');
-    public AddonContainerContentDisplay: Locator = By.css('#content [style*="display: block"]');
+    public AddonContainerTabsContent: By = By.css('#addNewOrderTypesCont');
+    public AddonContainerIframe: By = By.css('iframe#myFrame');
+    public AddonContainerHiddenTabs: By = By.css('.ui-tabs-hide');
+    public AddonContainerFooterDisplay: By = By.css('#FotterCont[style="display: block;"]');
+    public AddonContainerContentDisplay: By = By.css('#content [style*="display: block"]');
 
-    public AddonContainerActionsRadioBtn: Locator = By.xpath('//div[contains(@class,"choose")] //input[@type="radio"]');
-    public AddonContainerEditorTrashBtn: Locator = By.xpath(
+    public AddonContainerActionsRadioBtn: By = By.xpath('//div[contains(@class,"choose")] //input[@type="radio"]');
+    public AddonContainerEditorTrashBtn: By = By.xpath(
         `//div[@class="lb-title "][contains(@title,"ATD_PLACE_HOLDER")]/../*[contains(@class, 'trashCanIcon')]`,
     );
-    public MatOptionDropBox: Locator = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
+    public MatOptionDropBox: By = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
 
-    public AddonContainerEditAdmin: Locator = By.css('span[title="Admin"]+.editPenIcon');
-    public AddonContainerEditorSave: Locator = By.css('.save');
+    public AddonContainerEditAdmin: By = By.css('span[title="Admin"]+.editPenIcon');
+    public AddonContainerEditorSave: By = By.css('.save');
 
     //Catalog Section Locators
-    public EditCatalogBtn: Locator = By.css('.editPenIcon');
-    public ItemsTitleBtn: Locator = By.xpath("//li[@title='Items']");
-    public CategoryExpender: Locator = By.xpath("//span[@class='dynatree-expander']");
-    public CategoryListItem: Locator = By.xpath(
+    public EditCatalogBtn: By = By.css('.editPenIcon');
+    public ItemsTitleBtn: By = By.xpath("//li[@title='Items']");
+    public CategoryExpender: By = By.xpath("//span[@class='dynatree-expander']");
+    public CategoryListItem: By = By.xpath(
         "//ul//li[@class='dynatree-lastsib']//ul//li//span//a[text()='|textToFill|']/preceding-sibling::span[@class='dynatree-checkbox']",
     );
-    public CategoryListItemCheckBox: Locator = By.xpath("//a[text()='|textToFill|']/..");
-    public CategoryListOKBtn: Locator = By.xpath("//div[contains(text(),'OK')]");
+    public CategoryListItemCheckBox: By = By.xpath("//a[text()='|textToFill|']/..");
+    public CategoryListOKBtn: By = By.xpath("//div[contains(text(),'OK')]");
 
     //cart page --->>> may have to be moved
-    public WholeOrderPrice: Locator = By.xpath("//span[@id='GrandTotal']");
-    public ItemQtyBtItemCode: Locator = By.xpath(
+    public WholeOrderPrice: By = By.xpath("//span[@id='GrandTotal']");
+    public ItemQtyBtItemCode: By = By.xpath(
         "//span[@title='|textToFill|']/../../../../..//fieldset//pep-quantity-selector//input",
     );
-    public TotalUnitPrice: Locator = By.xpath(
+    public TotalUnitPrice: By = By.xpath(
         "//span[@title='|textToFill|']/../../../../..//fieldset//span[@id='TotalUnitsPriceAfterDiscount']",
     );
-    public OrderDeatilsMenu: Locator = By.css("[data-qa='firstMenu']");
-    public SubmitOrderCartBtn: Locator = By.css("[data-qa='Submit']");
-    public OrderDetailsBtn: Locator = By.xpath("//span[text()=' Order Details ']");
-    public IdElementOfOrder: Locator = By.xpath("//input[@name='WrntyID']");
+    public OrderDeatilsMenu: By = By.css("[data-qa='firstMenu']");
+    public SubmitOrderCartBtn: By = By.css("[data-qa='Submit']");
+    public OrderDetailsBtn: By = By.xpath("//span[text()=' Order Details ']");
+    public IdElementOfOrder: By = By.xpath("//input[@name='WrntyID']");
 
     //views page
-    public RepViewEditIcon: Locator = By.xpath("//span[contains(@class,'editPenIcon')]");
+    public RepViewEditIcon: By = By.xpath("//span[contains(@class,'editPenIcon')]");
 
     //UI control page
-    public SaveUIControlBtn: Locator = By.xpath("//div[contains(@class,'save') and text()='Save']");
-    public TrashIconListOfAllUIElements: Locator = By.xpath("//span[contains(@class,'lb-close trashCanIcon')]");
-    public TextSearchBox: Locator = By.xpath("//input[@id='txtSearchBankFields']");
+    public SaveUIControlBtn: By = By.xpath("//div[contains(@class,'save') and text()='Save']");
+    public TrashIconListOfAllUIElements: By = By.xpath("//span[contains(@class,'lb-close trashCanIcon')]");
+    public TextSearchBox: By = By.xpath("//input[@id='txtSearchBankFields']");
 
     //custom field adding page
-    public FieldAddingTitle: Locator = By.xpath("//h3[text()='Add Custom Field']");
-    public CalculatedFieldCheckBox: Locator = By.xpath("//input[@value='CalculatedField']");
-    public TextInputElements: Locator = By.xpath("//input[@type='text' and @class='field textbox long roundCorner']");
-    public EditScriptBtn: Locator = By.xpath("//a[@name='edit']");
-    public SaveFieldBtn: Locator = By.xpath("//div[@name='save']");
-    public FeildTypeButton: Locator = By.xpath("//h3[@title='|textToFill|']//..");
+    public FieldAddingTitle: By = By.xpath("//h3[text()='Add Custom Field']");
+    public CalculatedFieldCheckBox: By = By.xpath("//input[@value='CalculatedField']");
+    public TextInputElements: By = By.xpath("//input[@type='text' and @class='field textbox long roundCorner']");
+    public EditScriptBtn: By = By.xpath("//a[@name='edit']");
+    public SaveFieldBtn: By = By.xpath("//div[@name='save']");
+    public FeildTypeButton: By = By.xpath("//h3[@title='|textToFill|']//..");
 
     //script adding page
-    public ScriptEditingTitle: Locator = By.xpath("//span[contains(text(),'Available Fields')]");
-    public AvailibaleFieldsBtn: Locator = By.xpath(
+    public ScriptEditingTitle: By = By.xpath("//span[contains(text(),'Available Fields')]");
+    public AvailibaleFieldsBtn: By = By.xpath(
         "//button[@class='fr md-primary md-fab md-mini default-color md-button md-ink-ripple']",
     );
-    public ScriptParamSpan: Locator = By.xpath("//span[text()='|textToFill|']/../..");
-    public SubmitScriptBtn: Locator = By.xpath("//div[@class='save allButtons grnbtn roundCorner  fl ng-binding']");
-    public ItemFieldsSection: Locator = By.xpath("(//div[@class='dc-header' and text()='Item Fields'])[2]");
-    public ScriptParamCheckBox: Locator = By.xpath("(//td[@title='|textToFill|'])[2]/preceding-sibling::td");
-    public SaveParamBtn: Locator = By.xpath("//div[text()='Save' and @tabindex=0]");
-    public FirstLineInCodeInput: Locator = By.css('.CodeMirror  .CodeMirror-code > pre');
-    public CodeInputSection: Locator = By.css('.CodeMirror  > div:nth-child(1) > textarea');
+    public ScriptParamSpan: By = By.xpath("//span[text()='|textToFill|']/../..");
+    public SubmitScriptBtn: By = By.xpath("//div[@class='save allButtons grnbtn roundCorner  fl ng-binding']");
+    public ItemFieldsSection: By = By.xpath("(//div[@class='dc-header' and text()='Item Fields'])[2]");
+    public ScriptParamCheckBox: By = By.xpath("(//td[@title='|textToFill|'])[2]/preceding-sibling::td");
+    public SaveParamBtn: By = By.xpath("//div[text()='Save' and @tabindex=0]");
+    public FirstLineInCodeInput: By = By.css('.CodeMirror  .CodeMirror-code > pre');
+    public CodeInputSection: By = By.css('.CodeMirror  > div:nth-child(1) > textarea');
 
     //TODO:activitys page --> has to be moved
-    public OrderIdTextElement: Locator = By.xpath(`//span[@id='Type' and text()='|textToFill|']/../../div//a//span`);
+    public OrderIdTextElement: By = By.xpath(`//span[@id='Type' and text()='|textToFill|']/../../div//a//span`);
 
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
@@ -148,14 +148,14 @@ export class AddonPage extends Page {
         return true;
     }
 
-    public async selectDropBoxByOption(locator: Locator, option: PepperiStatus): Promise<void> {
+    public async selectDropBoxByOption(locator: By, option: PepperiStatus): Promise<void> {
         const selectedBox = Object.assign({}, locator);
         selectedBox['value'] += ` option[value='${option}']`;
         await this.browser.click(selectedBox);
         return;
     }
 
-    public async selectDropBoxByString(locator: Locator, option: string, index?: number): Promise<void> {
+    public async selectDropBoxByString(locator: By, option: string, index?: number): Promise<void> {
         await this.browser.sleep(3000);
         if (index !== undefined) {
             await this.browser.click(locator, index);

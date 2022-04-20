@@ -1,9 +1,9 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../utilities/browser';
-import { Page } from '../../base/Page';
+import { Page } from '../../Pages/base/Page';
 import { TableObjectData } from '../../../model/TableObjectData';
 import config from '../../../../config';
-import { WebAppPage } from '../../base/WebAppPage';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 
 export type TableRowData = TableObjectData<string, string | null>;
 //TODO: Create abstract class 'PepList' and have 'PepListTable' inherit it.
