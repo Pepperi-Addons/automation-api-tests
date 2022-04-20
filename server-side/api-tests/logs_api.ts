@@ -17,7 +17,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
 
     //#region Upgrade Cloudwatch Addon
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''], //newest version of logsAPI
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''], //alway take the newest version of 'logsAPI' addon
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -26,6 +26,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
         varKey = request.body.varKeyPro;
     }
 
+    const assonVersions = await generalService.baseAddonVersionsInstallation(varKey);
+    const webAPIVersion = assonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Cloudwatch Addon
@@ -115,9 +117,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         jsonDataFromAuditLog = await logsService.getLogsByPayload(payload);
                     } catch (e) {
                         const errorMessage = (e as Error).message;
-                        expect(errorMessage).to.include(
-                            'Failed due to exception: Valid logGroupName or logGroupNames is required',
-                        );
+                        expect(errorMessage).to.include('Bad Request: Groups does not meet minimum length of 1');
                     }
                     expect(jsonDataFromAuditLog).to.be.undefined;
                 });
@@ -143,9 +143,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         await logsService.getLogsByPayload(payload);
                     } catch (e) {
                         const errorMessage = (e as Error).message;
-                        expect(errorMessage).to.include(
-                            "Failed due to exception: 1 validation error detected: Value '-5' at 'limit' failed to satisfy constraint: Member must have value greater than or equal to 1",
-                        );
+                        expect(errorMessage).to.include('Bad Request: PageSize must be greater than or equal to 1');
                     }
                 });
                 it('String PageSize', async () => {
@@ -176,9 +174,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         await logsService.getLogsByPayload(payload);
                     } catch (e) {
                         const errorMessage = (e as Error).message;
-                        expect(errorMessage).to.include(
-                            "Failed due to exception: 1 validation error detected: Value '-10000' at 'limit' failed to satisfy constraint: Member must have value greater than or equal to 1",
-                        );
+                        expect(errorMessage).to.include('Bad Request: Page must be greater than or equal to 1');
                     }
                 });
                 it('String Page', async () => {
@@ -230,7 +226,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     expect(jsonDataFromAuditLog.Ok).to.equal(false);
                     expect(jsonDataFromAuditLog.Status).to.equal(400);
                     expect(jsonDataFromAuditLog.Body.fault.faultstring).to.include(
-                        " 2 validation errors detected: Value null at 'startTime' failed to satisfy constraint: Member must not be null; Value null at 'endTime' failed to satisfy constraint: Member must not be null",
+                        'Bad Request: DateTimeStamp.Start is required, DateTimeStamp.End is required',
                     );
                 });
                 it('Partial DateTimeStamp: start only', async () => {
@@ -249,7 +245,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     expect(jsonDataFromAuditLog.Ok).to.equal(false);
                     expect(jsonDataFromAuditLog.Status).to.equal(400);
                     expect(jsonDataFromAuditLog.Body.fault.faultstring).to.include(
-                        "Failed due to exception: 1 validation error detected: Value null at 'endTime' failed to satisfy constraint: Member must not be null",
+                        ' Bad Request: DateTimeStamp.End is required',
                     );
                 });
                 it('Partial DateTimeStamp: end only', async () => {
@@ -268,7 +264,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     expect(jsonDataFromAuditLog.Ok).to.equal(false);
                     expect(jsonDataFromAuditLog.Status).to.equal(400);
                     expect(jsonDataFromAuditLog.Body.fault.faultstring).to.include(
-                        "1 validation error detected: Value null at 'startTime' failed to satisfy constraint: Member must not be null",
+                        'Bad Request: DateTimeStamp.Start is required',
                     );
                 });
                 it('Empty OrderBy', async () => {
@@ -335,7 +331,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
                     if (
                         cloudwatchDataPoint.Message?.includes(
-                            'End of the api call to URL: http://papi.pepperi.com/restapi/9.5.486/pepperiapint.addon.svc/v1.0/addons/installed_addons?page_size=-1 Method: GET',
+                            '/pepperiapint.addon.svc/v1.0/addons/installed_addons?page_size=-1 Method: GET',
                         ) &&
                         cloudwatchDataPoint.UserUUID === userUUID
                     ) {
@@ -365,7 +361,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
                     if (
                         cloudwatchDataPoint.Message?.includes(
-                            'End of the api call to URL: http://papi.pepperi.com/restapi/9.5.486/pepperiapint.addon.svc/v1.0/addons/installed_addons?page_size=-1 Method: GET',
+                            '/pepperiapint.addon.svc/v1.0/addons/installed_addons?page_size=-1 Method: GET',
                         ) &&
                         cloudwatchDataPoint.UserUUID === userUUID
                     ) {
@@ -389,7 +385,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 const numOfTries = 0;
                 do {
                     createSessionResponse = await generalService.fetchStatus(
-                        'https://webapi.pepperi.com/16.80.4/webapi/Service1.svc/v1/CreateSession',
+                        `https://webapi.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/CreateSession`,
                         {
                             method: 'POST',
                             body: JSON.stringify({
@@ -405,7 +401,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 expect(numOfTries).to.be.lessThan(10);
                 expect(createSessionResponse.Ok).to.equal(true);
                 expect(createSessionResponse.Status).to.equal(200);
-                const URL = `https://webapi.pepperi.com/16.80.4/webapi/Service1.svc/v1/GetSyncStatus`;
+                const URL = `https://webapi.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/GetSyncStatus`;
                 const syncStatusReposnse = await generalService.fetchStatus(URL, {
                     method: 'GET',
                     headers: {
