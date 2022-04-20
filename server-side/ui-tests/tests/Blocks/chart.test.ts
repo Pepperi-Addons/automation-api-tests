@@ -1,21 +1,28 @@
-import { Client } from "@pepperi-addons/debug-server/dist";
+import { Client } from '@pepperi-addons/debug-server/dist';
 import { describe, it, afterEach, beforeEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import GeneralService from "../../../services/general.service";
-import { ObjectsService } from "../../../services/objects.service";
-import { Browser } from "../../utilities/browser";
-import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel, WebAppTopBar, WebAppTransaction, WebAppDialog } from "../../pom";
-import { PageTestRequirements } from "../PageBuilder/page_builder.test";
-import { PagesList } from "../../pom/addons/PageBuilder/PagesList";
-import { PageBuilderSettings, pageOptions } from "./pageSettings.POM";
-import { PageClass } from "../../../models/pages/page.class";
-import { PagesService } from "c:/automation/api/automation-api-tests/server-side/services/pages/pages.service";
-import { PageSectionClass } from "../../../models/pages/page-section.class";
-import { Page, PageBlock } from "@pepperi-addons/papi-sdk";
+import GeneralService from '../../../services/general.service';
+import { ObjectsService } from '../../../services/objects.service';
+import { Browser } from '../../utilities/browser';
+import {
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppSettingsSidePanel,
+    WebAppTopBar,
+    WebAppTransaction,
+    WebAppDialog,
+} from '../../pom';
+import { PageTestRequirements } from '../PageBuilder/page_builder.test';
+import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
+import { PageBuilderSettings, pageOptions } from './pageSettings.POM';
+import { PageClass } from '../../../models/pages/page.class';
+import { PagesService } from 'c:/automation/api/automation-api-tests/server-side/services/pages/pages.service';
+import { PageSectionClass } from '../../../models/pages/page-section.class';
+import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { v4 as newUuid } from 'uuid';
-
-
 
 chai.use(promised);
 
@@ -72,7 +79,6 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
             }
         });
 
-
         describe('Chart Block UI Related', () => {
             this.retries(1);
 
@@ -119,12 +125,13 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 //has to be moved to the class
                 await driver.click(pageBuilderSettings.newPageBtn);
                 await pageBuilderSettings.choosePageBuilderOptipn(pageOptions.Blank);
-                await expect(pageBuilderSettings.untilIsVisible(pageBuilderSettings.pageSections, 5000)).eventually.to.be.true;
+                await expect(pageBuilderSettings.untilIsVisible(pageBuilderSettings.pageSections, 5000)).eventually.to
+                    .be.true;
                 const workingPage: PageClass = new PageClass();
                 const pageURL = (await driver.getCurrentUrl()).split('/');
                 const pageUUID = pageURL[pageURL.length - 1];
                 workingPage.Key = pageUUID;
-                const pageName = "EVGENY 66.66";//generalService.generateRandomString(7);
+                const pageName = 'EVGENY 66.66'; //generalService.generateRandomString(7);
                 await pageBuilderSettings.changePageName(pageName);
                 workingPage.Name = pageName;
                 await pageBuilderSettings.backToPageList();
@@ -172,6 +179,3 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
         });
     });
 }
-
-
-

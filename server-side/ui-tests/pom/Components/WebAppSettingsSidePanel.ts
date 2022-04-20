@@ -24,7 +24,8 @@ export class WebAppSettingsSidePanel extends Component {
 
     public static getSubCategoryBtn(subCategoryId: string, categoryId: string): By {
         return By.xpath(
-            `${WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
+            `${
+                WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
             }/parent::mat-expansion-panel//li[contains(@id,'${subCategoryId}')]`,
         );
     }
@@ -38,9 +39,7 @@ export class WebAppSettingsSidePanel extends Component {
     public SettingsFrameworkHomeButtons: By = By.id(
         'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_webapp_homebuttons',
     );
-    public PageBuilderSection: By = By.id(
-        'settings/50062e0c-9967-4ed4-9102-f2bc50602d41/pages',
-    );
+    public PageBuilderSection: By = By.id('settings/50062e0c-9967-4ed4-9102-f2bc50602d41/pages');
 
     public BrandedAppBranding: By = By.id('settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_branding');
     public CatalogsSection: By = By.id('settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=catalogs_manage');

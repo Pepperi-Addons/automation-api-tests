@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { Page } from "../pom/Pages/base/Page";
+import { Page } from '../pom/Pages/base/Page';
 import config from '../../config';
 import { By, Locator } from 'selenium-webdriver';
 import chai, { expect } from 'chai';

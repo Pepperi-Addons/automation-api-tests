@@ -8,8 +8,7 @@ import { PageBlockEditorSideBar } from '../PageBuilder/PageBlockEditorSideBar';
  * Abstract class for all displayed blocks in a page's Section.
  */
 export abstract class SectionBlock extends Component {
-
-    public readonly BlockName: string;//TODO: make sure its possibale to diffrenciate between multipale blocks
+    public readonly BlockName: string; //TODO: make sure its possibale to diffrenciate between multipale blocks
     public readonly BlockId: string;
 
     protected constructor(private blockName: string, protected blockId: string, browser: Browser) {

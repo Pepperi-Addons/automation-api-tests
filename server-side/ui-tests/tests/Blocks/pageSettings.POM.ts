@@ -1,14 +1,14 @@
-import { Actions, By, Key, Locator, WebElement } from "selenium-webdriver";
-import { Page } from "../../pom/Pages/base/Page";
-import { Browser } from "../../utilities/browser";
+import { Actions, By, Key, Locator, WebElement } from 'selenium-webdriver';
+import { Page } from '../../pom/Pages/base/Page';
+import { Browser } from '../../utilities/browser';
 import config from '../../../config';
-import { Executor } from "selenium-webdriver/http";
-import { WebAppDialog, WebAppHeader, WebAppSettingsSidePanel } from "../../pom";
+import { Executor } from 'selenium-webdriver/http';
+import { WebAppDialog, WebAppHeader, WebAppSettingsSidePanel } from '../../pom';
 export enum pageOptions {
     'Blank' = 'Blank',
     'Gridy' = 'Gridy',
     'Simplistic' = 'Simplistic',
-    'Branded' = 'Branded'
+    'Branded' = 'Branded',
 }
 export class PageBuilderSettings extends Page {
     constructor(protected browser: Browser) {
@@ -17,22 +17,16 @@ export class PageBuilderSettings extends Page {
 
     public newPageBtn: By = By.css("[data-qa='PAGES_MANAGER.A_PAGE']");
     public pageBuilderOption: By = By.xpath("//div[@class='logo']");
-    public arrayOfBlocks: By = By.className("pep-draggable-item-container");
+    public arrayOfBlocks: By = By.className('pep-draggable-item-container');
     public pageBlock: By = By.css("[title='Chart']");
     //By.xpath("//div[@class='pep-draggable-item-container']//div//span[@title='|placeholder|']//..//..");
     public pageSections: By = By.xpath("//div[contains(@class,'cdk-drop-list') and contains(@id,'drop-list')]");
-    public pageInputs: By = By.xpath("//input");
+    public pageInputs: By = By.xpath('//input');
     public saveBtn: By = By.xpath("//span[@title='Save']/ancestor::button");
     public publishBtn: By = By.xpath("//span[@title='Publish']/ancestor::button");
     public backToListBtn: By = By.xpath("//pep-button[@iconname='arrow_left_alt']");
-    public searchBar: By = By.xpath("//mat-form-field/descendant::input");
+    public searchBar: By = By.xpath('//mat-form-field/descendant::input');
     public homeScreen: By = By.css('[data-qa="systemHome"]');
-
-
-
-
-
-
 
     public async choosePageBuilderOptipn(option: pageOptions) {
         switch (option) {
@@ -53,7 +47,7 @@ export class PageBuilderSettings extends Page {
 
     public async getBlockFromPage(titleName: string) {
         const certainBlockLocator = this.pageBlock.valueOf()['value'].slice().replace('|placeholder|', titleName);
-        return (await (await this.browser.findElement(By.xpath(certainBlockLocator))).getText());
+        return await (await this.browser.findElement(By.xpath(certainBlockLocator))).getText();
     }
 
     public async changePageName(newPageName: string) {
@@ -76,21 +70,19 @@ export class PageBuilderSettings extends Page {
         await this.browser.click(this.searchBar);
         await this.browser.sendKeys(this.searchBar, name + Key.ENTER);
         await this.browser.click(By.xpath(`//a[text()='${name}']`));
-
-
     }
 
     public async publishPage() {
         await this.browser.click(this.publishBtn);
         const webAppDialog = new WebAppDialog(this.browser);
-        await (webAppDialog.untilIsVisible(webAppDialog.Content, 8000));
+        await webAppDialog.untilIsVisible(webAppDialog.Content, 8000);
         await webAppDialog.selectDialogBox('Close');
     }
 
     public async savePage() {
         await this.browser.click(this.saveBtn);
         const webAppDialog = new WebAppDialog(this.browser);
-        await (webAppDialog.untilIsVisible(webAppDialog.Content, 8000));
+        await webAppDialog.untilIsVisible(webAppDialog.Content, 8000);
         await webAppDialog.selectDialogBox('Close');
     }
 
