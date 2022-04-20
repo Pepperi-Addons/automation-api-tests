@@ -1,14 +1,9 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
 
-export async function AWSLogsTester(
-    generalService: GeneralService,
-    request,
-    tester: TesterFunctions,
-) {
+export async function AWSLogsTester(generalService: GeneralService, request, tester: TesterFunctions) {
     await AWSLogsTest(generalService, request, tester);
 }
-
 
 export async function AWSLogsTest(generalService: GeneralService, request, tester: TesterFunctions) {
     const logsService = new LogsService(generalService);
@@ -36,7 +31,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     }
 
     // const assonVersions = await generalService.baseAddonVersionsInstallation(varKey);
-    const webAPIVersion = '16.80.6';//assonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
+    const webAPIVersion = '16.80.6'; //assonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Cloudwatch Addon
