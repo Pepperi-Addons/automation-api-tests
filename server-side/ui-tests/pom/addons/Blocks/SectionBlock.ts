@@ -18,8 +18,6 @@ export abstract class SectionBlock extends Component {
         this.SideBar = new PageBlockEditorSideBar(blockName, this.browser);
         this.BlockId = blockId;
     }
-    public readonly BlockId: string;
-    public readonly BlockName: string;
     protected readonly SideBar: PageBlockEditorSideBar;
 
     protected XPathParentContainer: By = By.xpath(`//section-block`);
