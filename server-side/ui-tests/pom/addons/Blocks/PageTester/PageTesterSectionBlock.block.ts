@@ -2,7 +2,6 @@ import { By } from 'selenium-webdriver';
 import { Browser } from '../../../../utilities/browser';
 import { SectionBlock } from '../SectionBlock';
 
-
 /**
  * Abstract class for displayed Page Tester blocks in a page's Section.
  */

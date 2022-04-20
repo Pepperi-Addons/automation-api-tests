@@ -21,7 +21,9 @@ export abstract class SectionBlock extends Component {
     protected XPathParentContainer: By = By.xpath(`//section-block`);
     // protected _XPathParentContainer: By = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
-    public readonly getBlockDraggable: By = By.xpath(`${this.XPathParentContainer.value}//*[@title='${this.blockName}']`);
+    public readonly getBlockDraggable: By = By.xpath(
+        `${this.XPathParentContainer.value}//*[@title='${this.blockName}']`,
+    );
 
     public getEditBlockBtn(): By {
         return By.xpath(
