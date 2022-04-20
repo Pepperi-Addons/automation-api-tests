@@ -30,8 +30,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
         varKey = request.body.varKeyPro;
     }
 
-    // const assonVersions = await generalService.baseAddonVersionsInstallation(varKey);
-    const webAPIVersion = '16.80.6'; //assonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
+    const addonVersions = await generalService.baseAddonVersionsInstallation(varKey);
+    const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Cloudwatch Addon
