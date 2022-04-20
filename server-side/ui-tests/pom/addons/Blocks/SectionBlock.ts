@@ -4,23 +4,24 @@ import { Component } from '../../Components/Base/Component';
 import { WebAppPage } from '../../Pages/base/WebAppPage';
 import { PageBlockEditorSideBar } from '../PageBuilder/PageBlockEditorSideBar';
 
+/**
+ * Abstract class for all displayed blocks in a page's Section.
+ */
 export abstract class SectionBlock extends Component {
     protected constructor(private blockName: string, protected blockId: string, browser: Browser) {
         super(browser);
         this.BlockName = blockName;
-        this.BlockId = blockId;
         this.SideBar = new PageBlockEditorSideBar(blockName, this.browser);
+        this.BlockId = blockId;
     }
-    public readonly BlockName: string;
     public readonly BlockId: string;
+    public readonly BlockName: string;
     protected readonly SideBar: PageBlockEditorSideBar;
-    public readonly ParentContainer = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
-    // public getBlockDraggable(): By {
-    //     return By.xpath(`${SectionBlock.ParentContainer.value}//*[@title='${this.blockName}']`);
-    // }
+    protected XPathParentContainer: By = By.xpath(`//section-block`);
+    // protected _XPathParentContainer: By = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
-    public readonly getBlockDraggable: By = By.xpath(`${this.ParentContainer.value}//*[@title='${this.blockName}']`);
+    public readonly getBlockDraggable: By = By.xpath(`${this.XPathParentContainer.value}//*[@title='${this.blockName}']`);
 
     public getEditBlockBtn(): By {
         return By.xpath(

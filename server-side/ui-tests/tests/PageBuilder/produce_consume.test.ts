@@ -10,7 +10,7 @@ import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
-import { DynamicTester } from '../../pom/addons/Blocks/DynamicTester';
+import { DynamicTester } from '../../pom/addons/Blocks/PageTester/DynamicTester.block';
 import { BlockParamsConfig, TestConfiguration } from '../../../models/pages/parameter-config.class';
 import { PageTestRequirements } from './page_builder.test';
 import { filterParam } from './PreConfigBlockParams/filter_param.const';
