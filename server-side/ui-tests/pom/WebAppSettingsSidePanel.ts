@@ -48,6 +48,9 @@ export class WebAppSettingsSidePanel extends Page {
     public CatalogsSection: Locator = By.id(
         'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=catalogs_manage',
     );
+    public PageBuilderSection: Locator = By.id(
+        'settings/50062e0c-9967-4ed4-9102-f2bc50602d41/pages',
+    );
 
     //Promotion Locators
     public ItemTPEditor: Locator = By.id('custom_plugin/b5c00007-0941-44ab-9f0e-5da2773f2f04/default_editor');

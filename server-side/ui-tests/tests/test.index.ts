@@ -18,6 +18,7 @@ import {
     SecurityPolicyTests,
     CreateDistributorTests,
     UomTests,
+    ChartBlockTest,
     PageBuilderTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
@@ -172,6 +173,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Uom')) {
         await UomTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('Chart-Block')) {
+        await ChartBlockTest(email, pass, varPass, client);
     }
 
     if (tests.includes('PageBuilder')) {

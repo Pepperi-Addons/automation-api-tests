@@ -7,6 +7,7 @@ import { SecurityPolicyTests } from './security_policy.test';
 import { CreateDistributorTests } from './create_distributor.test';
 import { UomTests } from './uom.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
+import { ChartBlockTest } from './Blocks/chart.test';
 
 export {
     LoginTests,
@@ -17,5 +18,6 @@ export {
     SecurityPolicyTests,
     CreateDistributorTests,
     UomTests,
+    ChartBlockTest,
     PageBuilderTests,
 };
