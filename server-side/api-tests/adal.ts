@@ -28,8 +28,8 @@ export async function ADALTests(generalService: GeneralService, request, tester:
         describe('Prerequisites Addon for ADAL Tests', () => {
             //Test Data
             //ADAL
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

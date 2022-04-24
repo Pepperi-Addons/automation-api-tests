@@ -1,20 +1,23 @@
 import { Browser } from '../../../utilities/browser';
-import { PepListTable } from '../../GenericList/PepListTable';
+import { PepListTable } from '../../Components/GenericList/PepListTable';
 import { TableObjectData } from '../../../model/TableObjectData';
 import { AddonPage } from '../base/AddonPage';
 import { PageEditor } from './PageEditor';
 import { PageListHeaders } from './PageListColumnHeaders';
+import { PepSearch } from '../../Components/PepSearch';
+import { By } from 'selenium-webdriver';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 
-// export type PageRowData = TableObjectData & {[headerId in PageListColumnHeaders]: string | null | undefined}
-
-export type PageRowData = TableObjectData<PageListHeaders, string | null | undefined>; // & {[headerId in PageListColumnHeaders]: string | null | undefined}
+export type PageRowData = TableObjectData<PageListHeaders, string | null | undefined>;
 
 export class PagesList extends AddonPage {
     private pagesList: PepListTable;
-
+    private search: PepSearch;
     constructor(browser: Browser) {
         super(browser);
         this.pagesList = new PepListTable(this.browser);
+        this.search = new PepSearch(this.browser);
+        this.search.setParentContainer(By.xpath('//pep-page-layout//pep-generic-list'));
     }
 
     /**
@@ -44,6 +47,13 @@ export class PagesList extends AddonPage {
      * @returns A new instance of {@link PageEditor}.
      */
     public async editPage(pageName: string): Promise<PageEditor> {
-        return this.pagesList.enterRowLinkByValue(pageName, 'Name').then(() => new PageEditor(this.browser));
+        await this.pagesList.enterRowLinkByValue(pageName, 'Name');
+        return new PageEditor(this.browser);
+    }
+
+    public async searchAndEditPage(pageName: string): Promise<PageEditor> {
+        await this.search.performSearch(pageName);
+        await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
+        return this.editPage(pageName);
     }
 }

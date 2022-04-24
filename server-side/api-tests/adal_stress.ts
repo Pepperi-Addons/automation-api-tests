@@ -30,8 +30,8 @@ export async function ADALStressTests(generalService: GeneralService, request, t
         describe('Prerequisites Addon for ADAL Stress Tests', () => {
             //Test Data
             //ADAL
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

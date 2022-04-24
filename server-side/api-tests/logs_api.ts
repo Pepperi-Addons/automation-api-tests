@@ -1,14 +1,27 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
 
+export async function AWSLogsTester(generalService: GeneralService, request, tester: TesterFunctions) {
+    await AWSLogsTest(generalService, request, tester);
+}
+
 export async function AWSLogsTest(generalService: GeneralService, request, tester: TesterFunctions) {
     const logsService = new LogsService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+    let _startTime;
+    const distUUID = generalService.getClientData('DistributorUUID');
+    const userUUID = generalService.getClientData('UserUUID');
+    const todaysDate = new Date().toJSON().slice(0, 10);
+    const FIVE_MINS = 1000 * 60 * 5;
+    const TEN_MINS = 1000 * 60 * 10;
+    const HOUR = 1000 * 60 * 60; //1000 * 60 * 60 milliseconds is an hour
+    const TimeZoneDiffWithAWS = HOUR * 3;
+
     //#region Upgrade Cloudwatch Addon
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', '0.0.87'], //hardcoded version -- no phased one yet
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''], //alway take the newest version of 'logsAPI' addon
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -17,6 +30,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
         varKey = request.body.varKeyPro;
     }
 
+    const addonVersions = await generalService.baseAddonVersionsInstallation(varKey);
+    const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Cloudwatch Addon
@@ -25,8 +40,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
         describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
             //Pepperi Notification Service
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
@@ -56,10 +71,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
 
         describe('Endpoints', () => {
             it('POST - Basic Get Logs Functionality - Validating Format Of Deafult Payload', async () => {
-                const distUUID = generalService.getClientData('DistributorUUID');
-                const userUUID = generalService.getClientData('UserUUID');
-                const todaysDate = new Date().toJSON().slice(0, 10);
-                // debugger;
                 const payload: LogsPayload = {
                     Groups: ['PAPI'],
                 };
@@ -84,11 +95,14 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         //should always be true - done for the linter
                         dateTimeFromJson = jsonLogResponse.DateTimeStamp;
                     }
-                    expect(lessThanOneHourAgo(Date.parse(dateTimeFromJson))).to.be.true;
+                    expect(
+                        generalService.isLessThanGivenTimeAgo(Date.parse(dateTimeFromJson), HOUR, TimeZoneDiffWithAWS),
+                    ).to.be.true;
                 });
             });
             describe('POST - Negative Payload Testing', () => {
                 it('No Payload', async () => {
+                    //bug reporting no payload
                     const emptyPayload = {};
                     const jsonDataFromAuditLog = await generalService.fetchStatus('/logs', {
                         method: 'POST',
@@ -137,6 +151,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('String PageSize', async () => {
+                    //bug in sending string page size
                     const payload: any = {
                         Groups: ['PAPI'],
                         Filter: "Level = 'ERROR'",
@@ -167,6 +182,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('String Page', async () => {
+                    //bug in sending string page
                     const payload: any = {
                         Groups: ['PAPI'],
                         Filter: "Level = 'ERROR'",
@@ -233,7 +249,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     expect(jsonDataFromAuditLog.Ok).to.equal(false);
                     expect(jsonDataFromAuditLog.Status).to.equal(400);
                     expect(jsonDataFromAuditLog.Body.fault.faultstring).to.include(
-                        'Bad Request: DateTimeStamp.End is required',
+                        ' Bad Request: DateTimeStamp.End is required',
                     );
                 });
                 it('Partial DateTimeStamp: end only', async () => {
@@ -273,6 +289,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('All Payload Errors Stacked', async () => {
+                    //bug in stacking payload errors
                     const payload: LogsPayload = {
                         Groups: [],
                         Filter: '',
@@ -297,13 +314,139 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 });
             });
         });
+        describe('Verifying Data Validity', () => {
+            it('performing PAPI call', async () => {
+                _startTime = new Date().toISOString();
+                const PAPIcall = await generalService.fetchStatus('/addons/installed_addons?page_size=-1');
+                expect(PAPIcall.Ok).to.equal(true);
+                expect(PAPIcall.Status).to.equal(200);
+                console.log(`PAPI call performed at:${_startTime}`);
+            });
+            it('PAPI group', async () => {
+                generalService.sleep(1000 * 60 * 3); //3 min sleep
+                const endTime = new Date().toISOString();
+                const payload: LogsPayload = {
+                    Groups: ['PAPI'],
+                    DateTimeStamp: { Start: _startTime, End: endTime },
+                };
+                _startTime = new Date().toISOString();
+                const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
+                let isCorrectDataMessageFound = false;
+                jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
+                    if (
+                        cloudwatchDataPoint.Message?.includes(
+                            '/pepperiapint.addon.svc/v1.0/addons/installed_addons?page_size=-1 Method: GET',
+                        ) &&
+                        cloudwatchDataPoint.UserUUID === userUUID
+                    ) {
+                        isCorrectDataMessageFound = true;
+                        expect(cloudwatchDataPoint).to.have.own.property('DistributorUUID');
+                        expect(cloudwatchDataPoint.DistributorUUID).to.equal(distUUID);
+                        expect(cloudwatchDataPoint).to.have.own.property('DateTimeStamp');
+                        expect(cloudwatchDataPoint.DateTimeStamp).to.include(todaysDate);
+                        expect(cloudwatchDataPoint).to.have.own.property('Level');
+                        expect(cloudwatchDataPoint.Level).to.equal('DEBUG');
+                        const time = cloudwatchDataPoint.DateTimeStamp ? cloudwatchDataPoint.DateTimeStamp : ''; //done for the linter - shouldnt be empty
+                        expect(generalService.isLessThanGivenTimeAgo(Date.parse(time), TEN_MINS, TimeZoneDiffWithAWS))
+                            .to.be.true;
+                    }
+                });
+                expect(isCorrectDataMessageFound).to.be.true;
+            });
+            it('LogFetcher group', async () => {
+                generalService.sleep(1000 * 60 * 3); //3 min sleep
+                const endTime = new Date().toISOString();
+                const payload: LogsPayload = {
+                    Groups: ['LogFetcher'],
+                    DateTimeStamp: { Start: _startTime, End: endTime },
+                };
+                const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
+                let isCorrectDataMessageFound = false;
+                jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
+                    if (
+                        cloudwatchDataPoint.Message?.includes(
+                            '/pepperiapint.addon.svc/v1.0/addons/installed_addons?page_size=-1 Method: GET',
+                        ) &&
+                        cloudwatchDataPoint.UserUUID === userUUID
+                    ) {
+                        isCorrectDataMessageFound = true;
+                        expect(cloudwatchDataPoint).to.have.own.property('DistributorUUID');
+                        expect(cloudwatchDataPoint.DistributorUUID).to.equal(distUUID);
+                        expect(cloudwatchDataPoint).to.have.own.property('DateTimeStamp');
+                        expect(cloudwatchDataPoint.DateTimeStamp).to.include(todaysDate);
+                        expect(cloudwatchDataPoint).to.have.own.property('Level');
+                        expect(cloudwatchDataPoint.Level).to.equal('INFO');
+                        const time = cloudwatchDataPoint.DateTimeStamp ? cloudwatchDataPoint.DateTimeStamp : ''; //done for the linter - shouldnt be empty
+                        expect(generalService.isLessThanGivenTimeAgo(Date.parse(time), FIVE_MINS, TimeZoneDiffWithAWS))
+                            .to.be.true;
+                    }
+                });
+                expect(isCorrectDataMessageFound).to.be.true;
+            });
+            it('performing SyncOperation call', async () => {
+                _startTime = new Date().toISOString();
+                let createSessionResponse;
+                const numOfTries = 0;
+                do {
+                    createSessionResponse = await generalService.fetchStatus(
+                        `https://webapi.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/CreateSession`,
+                        {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                accessToken: generalService['client'].OAuthAccessToken,
+                                culture: 'en-US',
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        },
+                    );
+                } while (!createSessionResponse.Body.AccessToken && numOfTries < 10);
+                expect(numOfTries).to.be.lessThan(10);
+                expect(createSessionResponse.Ok).to.equal(true);
+                expect(createSessionResponse.Status).to.equal(200);
+                const URL = `https://webapi.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/GetSyncStatus`;
+                const syncStatusReposnse = await generalService.fetchStatus(URL, {
+                    method: 'GET',
+                    headers: {
+                        PepperiSessionToken: createSessionResponse.Body.AccessToken,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                expect(syncStatusReposnse.Ok).to.equal(true);
+                expect(syncStatusReposnse.Status).to.equal(200);
+                console.log(`SyncOperation call performed at:${_startTime}`);
+            });
+            it('SyncOperation group', async () => {
+                generalService.sleep(1000 * 60 * 3); //3 min sleep
+                const endTime = new Date().toISOString();
+                const payload: LogsPayload = {
+                    Groups: ['SyncOperation'],
+                    DateTimeStamp: { Start: _startTime, End: endTime },
+                };
+                const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
+                let isCorrectDataMessageFound = false;
+                jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
+                    if (
+                        cloudwatchDataPoint.Message?.includes(
+                            'Authorization request granted to: 12144332 action:  to contract: IScheduler',
+                        ) &&
+                        cloudwatchDataPoint.UserUUID === userUUID
+                    ) {
+                        isCorrectDataMessageFound = true;
+                        expect(cloudwatchDataPoint).to.have.own.property('DistributorUUID');
+                        expect(cloudwatchDataPoint.DistributorUUID).to.equal(distUUID);
+                        expect(cloudwatchDataPoint).to.have.own.property('DateTimeStamp');
+                        expect(cloudwatchDataPoint.DateTimeStamp).to.include(todaysDate);
+                        expect(cloudwatchDataPoint).to.have.own.property('Level');
+                        expect(cloudwatchDataPoint.Level).to.equal('INFO');
+                        const time = cloudwatchDataPoint.DateTimeStamp ? cloudwatchDataPoint.DateTimeStamp : ''; //done for the linter - shouldnt be empty
+                        expect(generalService.isLessThanGivenTimeAgo(Date.parse(time), FIVE_MINS, TimeZoneDiffWithAWS))
+                            .to.be.true;
+                    }
+                });
+                expect(isCorrectDataMessageFound).to.be.true;
+            });
+        });
     });
 }
-
-const lessThanOneHourAgo = (date) => {
-    const timeDiffWithAWS = 1000 * 60 * 60 * 3; //based on the formula (HOUR = (1000 * 60 * 60)) which is 3 hours
-    const HOUR = 1000 * 60 * 60;
-    const anHourAgo = Date.now() - HOUR;
-
-    return date + timeDiffWithAWS > anHourAgo;
-};

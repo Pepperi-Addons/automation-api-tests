@@ -58,8 +58,8 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
         describe('Prerequisites Addon for PepperiNotificationService Tests', () => {
             //Test Data
             //Pepperi Notification Service
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });

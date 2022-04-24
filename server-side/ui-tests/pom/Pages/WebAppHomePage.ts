@@ -1,11 +1,11 @@
-import { Browser } from '../utilities/browser';
-import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
-import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
+import { Browser } from '../../utilities/browser';
+import config from '../../../config';
+import { By } from 'selenium-webdriver';
+import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from '../index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppAPI } from './WebAppAPI';
+import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { WebAppPage } from './base/WebAppPage';
 
@@ -16,9 +16,9 @@ export class WebAppHomePage extends WebAppPage {
         super(browser, `${config.baseUrl}/HomePage`);
     }
 
-    public Main: Locator = By.css('#mainButton');
-    public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
-    public HomeScreenSpesificButton: Locator = By.xpath(`//button[@title='|textToFill|']`);
+    public Main: By = By.css('#mainButton');
+    public HomeScreenButtonArr: By = By.css('#homepage-footer-btns button');
+    public HomeScreenSpesificButton: By = By.xpath(`//button[@title='|textToFill|']`);
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
@@ -91,7 +91,7 @@ export class WebAppHomePage extends WebAppPage {
             if (nameOfAccount) await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
             else await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(this.browser);
-            await webAppTopBar.click(webAppTopBar.DoneBtn);
+            await this.click(webAppTopBar.DoneBtn);
         } catch (error) {
             if (error instanceof Error) {
                 if (
@@ -122,6 +122,7 @@ export class WebAppHomePage extends WebAppPage {
         }
 
         //This sleep is mandaroy while pop up message of existing order is calculated
+        //TODO: Replace with explicit wait.
         console.log('Wait for existing orders');
         this.browser.sleep(2500);
 

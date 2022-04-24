@@ -1,9 +1,9 @@
 import { By } from 'selenium-webdriver';
-import { Browser } from '../../utilities/browser';
-import { Page } from '../base/Page';
-import { TableObjectData } from '../../model/TableObjectData';
-import config from '../../../config';
-import { WebAppPage } from '../base/WebAppPage';
+import { Browser } from '../../../utilities/browser';
+import { Page } from '../../Pages/base/Page';
+import { TableObjectData } from '../../../model/TableObjectData';
+import config from '../../../../config';
+import { WebAppPage } from '../../Pages/base/WebAppPage';
 
 export type TableRowData = TableObjectData<string, string | null>;
 //TODO: Create abstract class 'PepList' and have 'PepListTable' inherit it.
@@ -141,9 +141,9 @@ export class PepListTable extends Page {
      * @param headerId An optional parameter to limit the clicking to a specific header id.
      */
     public async enterRowLinkByValue(cellValue: string, headerId?: string): Promise<void> {
-        return this.browser.click(PepListTable.getRowCellByValue(cellValue, headerId)).then(() => {
-            this.browser.waitForLoading(WebAppPage.LoadingSpinner);
-        });
+        await this.browser.click(PepListTable.getRowCellByValue(cellValue, headerId));
+        await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
+        return;
     }
 
     //TODO: Method to extract the complete table data, not just the currently loaded one.

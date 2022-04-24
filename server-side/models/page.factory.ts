@@ -1,6 +1,7 @@
-import { NgComponentRelation, Page, PageBlock, SplitType } from '@pepperi-addons/papi-sdk';
+import { NgComponentRelation, Page, SplitType } from '@pepperi-addons/papi-sdk';
 import { v4 as newUuid } from 'uuid';
 import { PageClass } from './page.class';
+import { PageBlockExt } from './pages/page-block.ext';
 import { PageSectionClass } from './pages/page-section.class';
 
 export class PageFactory {
@@ -21,15 +22,18 @@ export class PageFactory {
         return new PageClass(this.defaultPage(pageName));
     }
 
-    public static defaultPageBlock(blockRelation: NgComponentRelation, blockKey?: string): PageBlock {
+    public static defaultPageBlock(blockRelation: NgComponentRelation, blockKey?: string): PageBlockExt {
         blockKey = blockKey ?? newUuid();
-        const pageBlock: PageBlock = {
+        const pageBlock: PageBlockExt = {
             Relation: blockRelation,
             Key: blockKey,
             Configuration: {
                 AddonUUID: blockRelation.AddonUUID,
                 Resource: blockRelation.Name,
-                Data: {},
+                Data: {
+                    BlockId: '',
+                    Parameters: [],
+                },
             },
         };
         return pageBlock;

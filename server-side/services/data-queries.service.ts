@@ -4,14 +4,14 @@ import GeneralService, { ResourceTypes } from './general.service';
 export interface DataQuerie {
     CreationDateTime?: string;
     Hidden: boolean;
-    Key: string;
-    ModificationDateTime: string;
+    Key?: string;
+    ModificationDateTime?: string;
     Name: string;
     Series: QuerySeries[];
 }
 
 export interface QuerySeries {
-    Key: string;
+    Key?: string;
     Name: string;
     Resource: ResourceTypes;
     Label: string;
@@ -23,6 +23,17 @@ export interface QuerySeries {
     Scope: Scope;
     DynamicFilterFields: any[];
     GroupBy: GroupBy[];
+}
+
+export interface DataQueryExecuteRespons {
+    DataQueries: DataQuerieResponse[];
+    DataSet: any[];
+}
+
+interface DataQuerieResponse {
+    Name: string;
+    Groups: string[];
+    Series: string[];
 }
 
 interface Top {
@@ -71,7 +82,26 @@ export class DataQueriesService {
         return queriesResponse;
     }
 
-    postChart(dataQuerie: DataQuerie): Promise<DataQuerie> {
+    postQuerie(dataQuerie: DataQuerie): Promise<DataQuerie> {
         return this.papiClient.post('/data_queries', dataQuerie);
+    }
+
+    executeQuery(key: string): Promise<DataQueryExecuteRespons> {
+        return this.papiClient.post(`/data_queries/${key}/execute`);
+    }
+
+    async TestCleanUp() {
+        const allChartsObjects: DataQuerie[] = await this.getQueries();
+        let deletedCounter = 0;
+
+        for (let index = 0; index < allChartsObjects.length; index++) {
+            if (allChartsObjects[index].Hidden == false) {
+                allChartsObjects[index].Hidden = true;
+                await this.postQuerie(allChartsObjects[index]);
+                deletedCounter++;
+            }
+        }
+        console.log('Hidded Charts: ' + deletedCounter);
+        return deletedCounter;
     }
 }

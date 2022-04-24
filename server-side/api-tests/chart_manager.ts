@@ -2,7 +2,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ChartsManagerService, Chart } from '../services/chart-manager.service';
 
 export async function ChartManagerTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataVisualisationService = new ChartsManagerService(generalService);
+    const chartManagerService = new ChartsManagerService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -30,9 +30,12 @@ export async function ChartManagerTests(generalService: GeneralService, request,
 
     //#region Upgrade Data Visualisation
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.196'], //hardcoded version to match dependency of PFS
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '0.0.134'], //hardcoded because phased version is OLD
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //papi index
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
     let varKey;
@@ -50,8 +53,8 @@ export async function ChartManagerTests(generalService: GeneralService, request,
         describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
             //Pepperi Notification Service
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
@@ -82,7 +85,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
         describe('Endpoints', () => {
             describe('GET', () => {
                 it('Get Charts - Retriving all chart data and validating its format', async () => {
-                    const jsonDataFromAuditLog = await dataVisualisationService.getCharts();
+                    const jsonDataFromAuditLog = await chartManagerService.getCharts();
                     jsonDataFromAuditLog.forEach((jsonChartData) => {
                         expect(jsonChartData).to.have.own.property('Key');
                         expect(jsonChartData).to.have.own.property('Name');
@@ -104,11 +107,11 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     });
                 });
                 it('Get Chart By Key', async () => {
-                    const allChartsJsonDataFromAuditLog = await dataVisualisationService.getCharts();
+                    const allChartsJsonDataFromAuditLog = await chartManagerService.getCharts();
                     const chartsKey: string = allChartsJsonDataFromAuditLog[0].Key
                         ? allChartsJsonDataFromAuditLog[0].Key
                         : ''; //wont happen - for the linter
-                    const keyChartJsonDataFromAuditLog = await dataVisualisationService.getChartByKey(chartsKey);
+                    const keyChartJsonDataFromAuditLog = await chartManagerService.getChartByKey(chartsKey);
                     const keyChart = keyChartJsonDataFromAuditLog[0];
                     expect(keyChart).to.have.own.property('Key');
                     expect(keyChart.Key).to.equal(chartsKey);
@@ -174,7 +177,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
                     });
                     it('Updating An Existing Chart ', async () => {
-                        const allChartsFromServer = await dataVisualisationService.getCharts();
+                        const allChartsFromServer = await chartManagerService.getCharts();
                         const chartsPostedByMe = allChartsFromServer.filter(
                             (chart) => chart.Description?.includes('chart-desc-basic') && chart.ReadOnly === false,
                         );
@@ -305,7 +308,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             });
 
             it('GET all charts and test we can find all 5 valid upserted charts', async () => {
-                const chartResponse: Chart[] = await dataVisualisationService.getCharts();
+                const chartResponse: Chart[] = await chartManagerService.getCharts();
                 expect(chartResponse).to.not.equal(null);
                 expect(chartResponse.length).to.be.above(0);
                 let upsertedChartFound = 0;
@@ -361,7 +364,6 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
             });
             it('POST - upserting a chart with desc as empty string', async () => {
-                //=>>>>PFS BUG cannot upsert with empty desc
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
                     ReadOnly: false,
@@ -394,10 +396,10 @@ export async function ChartManagerTests(generalService: GeneralService, request,
         });
         describe('Test Clean Up (Hidden = true)', () => {
             it('All The Charts Hidden', async () => {
-                await expect(TestCleanUp(dataVisualisationService)).eventually.to.be.above(0);
+                await expect(chartManagerService.TestCleanUp()).eventually.to.be.above(0);
             });
             it('Validate After Cleansing Only Deafult Charts Remain', async () => {
-                const jsonDataFromAuditLog = await dataVisualisationService.getCharts();
+                const jsonDataFromAuditLog = await chartManagerService.getCharts();
                 jsonDataFromAuditLog.forEach((jsonChartData) => {
                     expect(jsonChartData).to.have.own.property('Key');
                     expect(jsonChartData).to.have.own.property('Name');
@@ -437,25 +439,4 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             });
         });
     });
-}
-
-//Service Functions
-//Remove all test Charts (Hidden = true)
-async function TestCleanUp(service: ChartsManagerService) {
-    const allChartsObjects: Chart[] = await service.getCharts();
-    let deletedCounter = 0;
-
-    for (let index = 0; index < allChartsObjects.length; index++) {
-        if (
-            allChartsObjects[index].Hidden == false &&
-            (allChartsObjects[index].Description === undefined ||
-                allChartsObjects[index].Description?.startsWith('chart-desc'))
-        ) {
-            allChartsObjects[index].Hidden = true;
-            await service.postChart(allChartsObjects[index]);
-            deletedCounter++;
-        }
-    }
-    console.log('Hidded Charts: ' + deletedCounter);
-    return deletedCounter;
 }
