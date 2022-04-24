@@ -84,13 +84,12 @@ export class Udc extends AddonPage {
         await this.sendKeysToField('Key', collectionField.Key);
         await this.sendKeysToField('Description', collectionField.Description);
         await this.clickOnSelect();
-        await this.browser.sleepTimeout(500);
+        await this.browser.sleepAsync(500);
         await this.click(this.UDCFieldTypeSelectOption(collectionField.Type));
         if (collectionField.Type == 'Array' && collectionField.ArrayInnerType) {
             await this.clickOnArrayTypeSelect();
-            await this.browser.sleepTimeout(500);
+            await this.browser.sleepAsync(500);
             await this.click(this.UDCFieldTypeSelectOption(collectionField.ArrayInnerType));
-            debugger;
         }
         if (collectionField.OptionalValues) {
             await this.sendKeysToField('Optional Values', collectionField.OptionalValues);

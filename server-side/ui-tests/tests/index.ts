@@ -9,6 +9,7 @@ import { UomTests } from './uom.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
 import { ChartBlockTest } from './Blocks/chart.test';
 import { UDCTests } from './udc.test';
+import { AWSLogsTester } from './../../api-tests/logs_api';
 
 export {
     LoginTests,
@@ -21,5 +22,6 @@ export {
     UomTests,
     ChartBlockTest,
     PageBuilderTests,
+    AWSLogsTester,
     UDCTests,
 };

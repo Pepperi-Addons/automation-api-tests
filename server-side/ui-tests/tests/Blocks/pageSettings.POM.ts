@@ -1,9 +1,16 @@
 import { Actions, By, Key, Locator, WebElement } from 'selenium-webdriver';
-import { Page } from '../../pom/Pages/base/Page';
 import { Browser } from '../../utilities/browser';
 import config from '../../../config';
 import { Executor } from 'selenium-webdriver/http';
 import { WebAppDialog, WebAppHeader, WebAppSettingsSidePanel } from '../../pom';
+import { Page as PageBuilder, PageBlock } from '@pepperi-addons/papi-sdk';
+import { PagesService } from '../../../services/pages/pages.service';
+import { PageSectionClass } from '../../../models/pages/page-section.class';
+import { v4 as newUuid } from 'uuid';
+import { PageClass } from '../../../models/pages/page.class';
+import { TestConfiguration } from '../../../models/pages/parameter-config.class';
+import { Page } from '../../pom/Pages/base/Page';
+
 export enum pageOptions {
     'Blank' = 'Blank',
     'Gridy' = 'Gridy',
@@ -96,4 +103,28 @@ export class PageBuilderSettings extends Page {
     //     await this.browser.dragAndDrop(draggable[0], dragTo[0]);
     //     debugger;
     // }
+
+    public async apiCreatePage(expect, pagesService: PagesService, blockName: string, basicPage: PageClass) {
+        const newBlockRelation = await pagesService.getBlockRelation(blockName);
+        const newBlock: PageBlock = basicPage.Blocks.createAndAdd(newBlockRelation);
+        const section = new PageSectionClass(newUuid());
+
+        // const testConfig: TestConfiguration = {
+        //     Parameters: [],
+        //     BlockId: 'basicStaticBlock',
+        // };
+        // config.push(stringParam, filterParam);
+        // newBlock.Configuration.Data = testConfig;
+
+        section.addBlock(newBlock.Key);
+
+        basicPage.Layout.Sections.add(section);
+
+        const pageResult: PageBuilder = await pagesService.createOrUpdatePage(basicPage).catch((error) => {
+            console.log((error as Error).message);
+            throw error;
+        });
+        pagesService.deepCompareObjects(basicPage, pageResult, expect);
+        return pageResult;
+    }
 }

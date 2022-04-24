@@ -16,9 +16,16 @@ export class PageLayoutSideBar extends Component {
     public static readonly BackButton: By = By.css(
         `${PageLayoutSideBar.SideBarContainer.value} pep-button.back-button`,
     );
+    public static readonly SideBarTabs: By = By.xpath('//div[@role="tab"]');//first is 'General' second is 'Content'
+
 
     public async goBack(): Promise<void> {
         await this.browser.click(PageLayoutSideBar.BackButton);
         await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
+    }
+
+    public async goToContent(elementToWaitFor): Promise<void> {
+        await this.browser.click(PageLayoutSideBar.SideBarTabs, 1);
+        await this.browser.untilIsVisible(elementToWaitFor);
     }
 }

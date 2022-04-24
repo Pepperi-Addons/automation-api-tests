@@ -21,6 +21,7 @@ import {
     ChartBlockTest,
     PageBuilderTests,
     UDCTests,
+    AWSLogsTester,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
@@ -228,6 +229,19 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Udc')) {
         await UDCTests(email, pass, varPass, client);
+    }
+    if (tests.includes('aws_logs')) {
+        await AWSLogsTester(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
     }
 
     run();
