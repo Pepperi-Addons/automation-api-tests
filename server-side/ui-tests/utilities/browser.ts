@@ -69,7 +69,7 @@ export class Browser {
             } catch (error) {
                 isNevigated = false;
                 console.log(`%cError in initiation of Chrome: ${error}`, ConsoleColors.Error);
-                await chromeDriver.sleepTimeout(4000);
+                await chromeDriver.sleepAsync(4000);
             }
             maxLoopsCounter--;
         } while (!isNevigated && maxLoopsCounter > 0);
@@ -530,7 +530,7 @@ export class Browser {
      * @param ms
      * @returns
      */
-    public sleepTimeout(ms: number) {
+    public sleepAsync(ms: number) {
         return this.tempGeneralService.sleepAsync(ms);
     }
 
@@ -656,7 +656,7 @@ export class Browser {
                             `%cBrowser Quit Response: ${res === undefined ? 'As Expected' : `Error: ${res}`}`,
                             ConsoleColors.Success,
                         );
-                        await this.sleepTimeout(2000);
+                        await this.sleepAsync(2000);
                         console.log(
                             '%cWaited 2 seconds for browser closing process will be done',
                             ConsoleColors.Success,
