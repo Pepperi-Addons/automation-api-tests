@@ -81,7 +81,7 @@ export function BasicBlockTests(pagesService: PagesService, pagesReq: PageTestRe
             if (textPollCount >= maxCount) {
                 throw new Error('Timed out while polling test text');
             }
-            await browser.sleepTimeout(2500);
+            await browser.sleepAsync(2500);
             testText = await staticTester.getTestText();
             textPollCount++;
         }
