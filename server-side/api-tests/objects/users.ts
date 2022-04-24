@@ -526,13 +526,12 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
             expect(getUpdatedUserInternalID, 'Profile').to.have.property('Profile').that.is.an('object');
         });
 
-        // Test removed because delete doesn't work and won't work
-        // it('Delete Users', async () => {
-        //     expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true;
-        //         expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
-        //         expect(await service.getUsers())
-        //             .to.be.an('array')
-        //             .with.lengthOf(currentUserQuantity);
-        // });
+        it('Delete Users', async () => {
+            expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true;
+                expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
+                expect(await service.getUsers())
+                    .to.be.an('array')
+                    .with.lengthOf(currentUserQuantity);
+        });
     });
 }

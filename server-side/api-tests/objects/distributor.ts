@@ -311,7 +311,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         expect(contact).to.not.have.property('SecurityGroupUUID');
                         expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
                     });
-
+                    debugger;
                     contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
                     const connectAsBuyer = await adminObjectsService.connectAsBuyer({
                         UUIDs: contactUUIDArray,
