@@ -147,6 +147,8 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
     });
 }
 
+
+//private helpers - WIP
 async function loginAndNavigateToPages(driver, email, password) {
     const webAppLoginPage = new WebAppLoginPage(driver);
     await webAppLoginPage.login(email, password);
