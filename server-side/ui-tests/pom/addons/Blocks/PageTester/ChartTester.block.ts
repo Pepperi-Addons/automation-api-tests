@@ -95,6 +95,7 @@ export class ChartTester extends PageTesterSectionBlock {
     // }
 }
 
+//should be taken from SDK
 export interface query {
     Name: string;
     Resource: "all_activities" | "transaction_lines";
