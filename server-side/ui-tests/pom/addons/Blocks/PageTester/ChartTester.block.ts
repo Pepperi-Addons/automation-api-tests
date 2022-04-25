@@ -62,7 +62,7 @@ export class ChartTester extends PageTesterSectionBlock {
     }
 
     public async getDataPresentedInBlock(that: any) {
-        this.browser.sleep(5000);
+        this.browser.sleep(5000);//TODO: what should i wait for
         const valueElem = await this.browser.findElement(this.queryValueElement);
         const valueData = await valueElem.getAttribute("val");
         const base64Image = await this.browser.saveScreenshots();
