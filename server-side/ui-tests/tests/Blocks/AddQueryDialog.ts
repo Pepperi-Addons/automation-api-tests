@@ -19,7 +19,7 @@ export class AddQueryDialog extends Page {
         let inputElemClass = "";
         let tries = 0;
         do {
-            this.browser.sleep(1000);
+            this.browser.sleep(1000);//polling 
             const inputElem = await this.browser.findElement(this.inputElements);
             inputElemClass = await inputElem.getAttribute("class");
             tries++;
@@ -29,7 +29,7 @@ export class AddQueryDialog extends Page {
         }
     }
 
-    public async setQuery(queryToUse: query, data?: string) {
+    public async setQuery(queryToUse: query) {
         await this.setName(queryToUse.Name);
         await this.setResource(queryToUse.Resource);
         await this.setMetric(queryToUse.Metric);
@@ -84,7 +84,7 @@ export class AddQueryDialog extends Page {
             await this.browser.click(this.formFields, isCount ? 12 : 13);
             const filterOptSelector: By = By.xpath(`//mat-option[@title="${filter.PepFilter.second}"]`);
             this.browser.sleep(200);
-            if(filter.PepFilter.third){
+            if (filter.PepFilter.third) {
                 await this.browser.click(filterOptSelector);
                 await this.browser.click(this.inputElements, 4);
                 await this.browser.sendKeys(this.inputElements, filter.PepFilter.third, 4);

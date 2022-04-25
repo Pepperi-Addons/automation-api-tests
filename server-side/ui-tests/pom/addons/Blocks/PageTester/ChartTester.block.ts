@@ -4,6 +4,8 @@ import { Browser } from '../../../../utilities/browser';
 import { PageEditor } from '../../PageBuilder/PageEditor';
 import { PageTesterBlockName } from './PageTesterBlockName.enum';
 import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
+import addContext from 'mochawesome/addContext';
+
 
 export class ChartTester extends PageTesterSectionBlock {
     constructor(blockId: string, browser: Browser) {
@@ -59,10 +61,16 @@ export class ChartTester extends PageTesterSectionBlock {
         await queryDialog.setQuery(queryToUse);
     }
 
-    public async getDataPresentedInBlock() {
+    public async getDataPresentedInBlock(that: any) {
         this.browser.sleep(5000);
         const valueElem = await this.browser.findElement(this.queryValueElement);
         const valueData = await valueElem.getAttribute("val");
+        const base64Image = await this.browser.saveScreenshots();
+        addContext(that, {
+            title: `data presented inside the chart`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+
         return valueData;
     }
 

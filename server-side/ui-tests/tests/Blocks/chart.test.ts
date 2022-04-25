@@ -87,14 +87,14 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
             });
 
             it('Set Up - Creating A Page With Chart Block Inside And Configuring Its Query To Return Number Of Activities', async function () {
-                const returnedData = await createPageWithChartBlock(driver, generalService, pagesService, expect);
+                const returnedData = await createPageWithChartBlockUsingTheAPI(driver, generalService, pagesService, expect);
                 _nameOfPage = returnedData.name;
                 _currentBlock = returnedData.block;
                 const pageResult = returnedData.page;
                 await loginAndNavigateToPages(driver, email, password);
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
-                const chartBlock = await getBlock(driver, pageEditor, _currentBlock);
+                const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
                 await chartBlock.loadBlock(pageEditor);
                 await chartBlock.editBlock();
                 expect(await chartBlock.isTitlePresented()).to.be.false;
@@ -110,7 +110,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                     Filter: { AccountFilter: "All accounts", UserFilter: "All users" },
                 };
                 await chartBlock.addQuery(queryToUse);
-                _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock());
+                _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock(this));
             });
             it('Set up - Performe A Basic Transaction Using The UI And Record Its ID', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -134,16 +134,14 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 _id = lastTransFromAPI.InternalID;
                 _itemQty = lastTransFromAPI.QuantitiesTotal;
             });
-            it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction: Num Of Activities Should Be Increased By One', async function () {
+            it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction: Num Of Activities Presented Should Be Increased By One', async function () {
                 await loginAndNavigateToPages(driver, email, password);
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
-                const createBlockFactory = new SectionBlockFactory(driver);
-                pageEditor.PageBlocks.setBlock(createBlockFactory.fromPageBlock(_currentBlock));
-                const chartBlock = await getBlock(driver, pageEditor, _currentBlock);
+                const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
                 await chartBlock.editBlock();
-                driver.sleep(5000);
-                const updatedData = await chartBlock.getDataPresentedInBlock();
+                driver.sleep(5000);//what should i wait for
+                const updatedData = await chartBlock.getDataPresentedInBlock(this);
                 expect(parseInt(updatedData)).to.equal(_initialValueOfQuery + 1);
             });
         });
@@ -160,7 +158,7 @@ async function loginAndNavigateToPages(driver, email, password) {
     await driver.click(webAppSettingsSidePanel.PageBuilderSection);
 }
 
-async function createPageWithChartBlock(driver, generalService, pagesService, expect) {
+async function createPageWithChartBlockUsingTheAPI(driver, generalService, pagesService, expect) {
     const pageBuilderSettings = new PageBuilderSettings(driver);
     const workingPage: PageClass = new PageClass();
     workingPage.Key = newUuid();
@@ -171,7 +169,7 @@ async function createPageWithChartBlock(driver, generalService, pagesService, ex
     return { name: nameOfPage, block: currentBlock, page: pageResult };
 }
 
-async function getBlock(driver, pageEditor, block) {
+async function getChartBlock(driver, pageEditor, block) {
     const createBlockFactory = new SectionBlockFactory(driver);
     pageEditor.PageBlocks.setBlock(createBlockFactory.fromPageBlock(block));
     return pageEditor.PageBlocks.getBlock(block) as ChartTester;
