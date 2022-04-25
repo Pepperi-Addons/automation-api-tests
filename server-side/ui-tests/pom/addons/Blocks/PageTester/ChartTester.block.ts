@@ -73,29 +73,9 @@ export class ChartTester extends PageTesterSectionBlock {
 
         return valueData;
     }
-
-    // public readonly BlockContainer = By.css(`static-tester[block-id='${this.blockId}']`);
-
-    // public readonly TestText = By.css(`${this.BlockContainer.value} #testText textarea`);
-
-    // public readonly BlockLoadBtn = By.css(`${this.BlockContainer.value} #blockLoadBtn`);
-
-    // public readonly ApiCallBtn = By.css(`${this.BlockContainer.value} #apiCallBtn`);
-
-    // public async getTestText(): Promise<string | null> {
-    //     return await this.browser.getElementAttribute(this.TestText, 'title');
-    // }
-
-    // public async clickBlockLoadBtn(): Promise<void> {
-    //     return await this.browser.click(this.BlockLoadBtn);
-    // }
-
-    // public async clickApiCallBtn(): Promise<void> {
-    //     return await this.browser.click(this.ApiCallBtn);
-    // }
 }
 
-//should be taken from SDK
+//TODO:should be taken from SDK
 export interface query {
     Name: string;
     Resource: "all_activities" | "transaction_lines";
@@ -120,3 +100,26 @@ interface PepFilter {
     second: any;
     third?: any;
 }
+
+
+
+//TODO: should i have these?
+    // public readonly BlockContainer = By.css(`static-tester[block-id='${this.blockId}']`);
+
+    // public readonly TestText = By.css(`${this.BlockContainer.value} #testText textarea`);
+
+    // public readonly BlockLoadBtn = By.css(`${this.BlockContainer.value} #blockLoadBtn`);
+
+    // public readonly ApiCallBtn = By.css(`${this.BlockContainer.value} #apiCallBtn`);
+
+    // public async getTestText(): Promise<string | null> {
+    //     return await this.browser.getElementAttribute(this.TestText, 'title');
+    // }
+
+    // public async clickBlockLoadBtn(): Promise<void> {
+    //     return await this.browser.click(this.BlockLoadBtn);
+    // }
+
+    // public async clickApiCallBtn(): Promise<void> {
+    //     return await this.browser.click(this.ApiCallBtn);
+    // }

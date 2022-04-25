@@ -139,7 +139,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
                 const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
                 await chartBlock.editBlock();
-                driver.sleep(5000);//what should i wait for
+                driver.sleep(5000);//TODO:what should i wait for
                 const updatedData = await chartBlock.getDataPresentedInBlock(this);
                 expect(parseInt(updatedData)).to.equal(_initialValueOfQuery + 1);
             });
