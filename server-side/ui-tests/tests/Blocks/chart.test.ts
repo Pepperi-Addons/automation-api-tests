@@ -90,7 +90,6 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 const returnedData = await createPageWithChartBlockUsingTheAPI(driver, generalService, pagesService, expect);
                 _nameOfPage = returnedData.name;
                 _currentBlock = returnedData.block;
-                const pageResult = returnedData.page;
                 await loginAndNavigateToPages(driver, email, password);
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
@@ -150,7 +149,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
 
 async function loginAndNavigateToPages(driver, email, password) {
     const webAppLoginPage = new WebAppLoginPage(driver);
-    const homePage = await webAppLoginPage.login(email, password);
+    await webAppLoginPage.login(email, password);
     const webAppHeader = new WebAppHeader(driver);
     await driver.click(webAppHeader.Settings);
     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
