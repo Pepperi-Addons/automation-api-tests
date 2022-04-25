@@ -1,7 +1,6 @@
 import { By } from 'selenium-webdriver';
 import { AddQueryDialog } from '../../../../tests/Blocks/AddQueryDialog';
 import { Browser } from '../../../../utilities/browser';
-import { WebAppDialog } from '../../../WebAppDialog';
 import { PageEditor } from '../../PageBuilder/PageEditor';
 import { PageTesterBlockName } from './PageTesterBlockName.enum';
 import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
@@ -104,5 +103,11 @@ export interface Metric {
 export interface Filter {
     AccountFilter: "All accounts" | "Accounts assigned to current user";
     UserFilter: "All users" | "Current user";
-    PepFilter?: any;
+    PepFilter?: PepFilter;
+}
+
+interface PepFilter {
+    first: any;
+    second: any;
+    third?: any;
 }

@@ -3,7 +3,6 @@ import { describe, it, afterEach, beforeEach } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import GeneralService from '../../../services/general.service';
-import { ObjectsService } from '../../../services/objects.service';
 import { Browser } from '../../utilities/browser';
 import {
     WebAppHeader,
@@ -13,15 +12,11 @@ import {
     WebAppSettingsSidePanel,
     WebAppTopBar,
     WebAppTransaction,
-    WebAppDialog,
 } from '../../pom';
-import { PageTestRequirements } from '../PageBuilder/page_builder.test';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
-import { PageBuilderSettings, pageOptions } from './pageSettings.POM';
+import { PageBuilderSettings } from './pageSettings.POM';
 import { PageClass } from '../../../models/pages/page.class';
 import { PagesService } from 'c:/automation/api/automation-api-tests/server-side/services/pages/pages.service';
-import { PageSectionClass } from '../../../models/pages/page-section.class';
-import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { v4 as newUuid } from 'uuid';
 import { SectionBlockFactory } from '../../../services/pages/section-block.factory';
 import { ChartTester, query } from '../../pom/addons/Blocks/PageTester/ChartTester.block';
@@ -30,7 +25,6 @@ chai.use(promised);
 
 export async function ChartBlockTest(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
     const pagesService = new PagesService(generalService);
     let driver: Browser;
     let _id;
@@ -153,33 +147,6 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 const updatedData = await chartBlock.getDataPresentedInBlock();
                 expect(parseInt(updatedData)).to.equal(_initialValueOfQuery + 1);
             });
-            it('Set Up - Creating A Page With Chart Block Inside And Configuring Its Query', async function () {
-                const returnedData = await createPageWithChartBlock(driver, generalService, pagesService, expect);
-                _nameOfPage = returnedData.name;
-                _currentBlock = returnedData.block;
-                const pageResult = returnedData.page;
-                await loginAndNavigateToPages(driver, email, password);
-                const pagesList = new PagesList(driver);
-                const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
-                const chartBlock = await getBlock(driver, pageEditor, _currentBlock);
-                await chartBlock.loadBlock(pageEditor);
-                await chartBlock.editBlock();
-                expect(await chartBlock.isTitlePresented()).to.be.false;
-                await chartBlock.setTitle(pageEditor, "testing");
-                const blockTitle = await chartBlock.getTitle();
-                expect(blockTitle).to.equal("testing");
-                await pageEditor.goBack();
-                await pageEditor.goToContent(chartBlock.addQueryBtn);
-                const queryToUse: query = {
-                    Name: "evgeny test",
-                    Resource: "all_activities",
-                    Metric: { Aggregator: "Sum", AggregatedField: "QuantitiesTotal" },
-                    Filter: { AccountFilter: "All accounts", UserFilter: "All users", PepFilter: { action: "InternalID", opt: "Equal", timeSpan: `${_id}` } },
-                };
-                await chartBlock.addQuery(queryToUse);
-                const sumOfQtys = parseInt(await chartBlock.getDataPresentedInBlock());
-                expect(sumOfQtys).to.equal(parseInt(_itemQty));
-            });
         });
     });
 }
@@ -198,7 +165,7 @@ async function createPageWithChartBlock(driver, generalService, pagesService, ex
     const pageBuilderSettings = new PageBuilderSettings(driver);
     const workingPage: PageClass = new PageClass();
     workingPage.Key = newUuid();
-    workingPage.Name = `EVGENY CHART TESTING ${generalService.generateRandomString(4)}`;
+    workingPage.Name = `EVGENY CHART TESTING ${generalService.generateRandomString(6)}`;
     const nameOfPage = workingPage.Name;
     const pageResult = await pageBuilderSettings.apiCreatePage(expect, pagesService, "Chart", workingPage);
     const currentBlock = pageResult.Blocks[0];

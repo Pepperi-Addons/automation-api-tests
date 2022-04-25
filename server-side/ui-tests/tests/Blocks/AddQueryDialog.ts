@@ -29,7 +29,7 @@ export class AddQueryDialog extends Page {
         }
     }
 
-    public async setQuery(queryToUse: query) {
+    public async setQuery(queryToUse: query, data?: string) {
         await this.setName(queryToUse.Name);
         await this.setResource(queryToUse.Resource);
         await this.setMetric(queryToUse.Metric);
@@ -78,19 +78,17 @@ export class AddQueryDialog extends Page {
         if (filter.PepFilter) {
             await this.browser.click(this.addFilterBtn);
             await this.browser.click(this.formFields, isCount ? 11 : 12);
-            const filterBySelector: By = By.xpath(`//mat-option[@title="${filter.PepFilter.action}"]`);
+            const filterBySelector: By = By.xpath(`//mat-option[@title="${filter.PepFilter.first}"]`);
             this.browser.sleep(200);
             await this.browser.click(filterBySelector);
             await this.browser.click(this.formFields, isCount ? 12 : 13);
-            const filterOptSelector: By = By.xpath(`//mat-option[@title="${filter.PepFilter.opt}"]`);
+            const filterOptSelector: By = By.xpath(`//mat-option[@title="${filter.PepFilter.second}"]`);
             this.browser.sleep(200);
-            await this.browser.click(filterOptSelector);
-            await this.browser.click(this.inputElements, 4);
-            await this.browser.sendKeys(this.inputElements, filter.PepFilter.number, 4);
-            await this.browser.click(this.formFields, isCount ? 14 : 15);
-            const timeSpanSelector: By = By.xpath(`//mat-option[@title="${filter.PepFilter.timeSpan}"]`);
-            this.browser.sleep(200);
-            await this.browser.click(timeSpanSelector);
+            if(filter.PepFilter.third){
+                await this.browser.click(filterOptSelector);
+                await this.browser.click(this.inputElements, 4);
+                await this.browser.sendKeys(this.inputElements, filter.PepFilter.third, 4);
+            }
         }
         await this.browser.click(this.addQueryBtn);
     }
