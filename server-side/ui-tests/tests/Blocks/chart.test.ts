@@ -40,12 +40,11 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
 
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    //#endregion Upgrade cpi-node & UOM
+    //#endregion Upgrade 
 
     describe('Chart Block Tests Suit', async function () {
         describe('Prerequisites Addons for Chart Block Tests', () => {
             //Test Data
-            //UOM
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
@@ -87,7 +86,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 await driver.quit();
             });
 
-            it('Set Up - Creating A Page With Chart Block Inside And Configuring Its Query', async function () {
+            it('Set Up - Creating A Page With Chart Block Inside And Configuring Its Query To Return Number Of Activities', async function () {
                 const returnedData = await createPageWithChartBlock(driver, generalService, pagesService, expect);
                 _nameOfPage = returnedData.name;
                 _currentBlock = returnedData.block;
@@ -113,7 +112,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 await chartBlock.addQuery(queryToUse);
                 _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock());
             });
-            it('Set up - performe a basic transaction usgin the UI and record the ID', async function () {
+            it('Set up - Performe A Basic Transaction Using The UI And Record Its ID', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -135,7 +134,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 _id = lastTransFromAPI.InternalID;
                 _itemQty = lastTransFromAPI.QuantitiesTotal;
             });
-            it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction', async function () {
+            it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction: Num Of Activities Should Be Increased By One', async function () {
                 await loginAndNavigateToPages(driver, email, password);
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
