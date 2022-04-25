@@ -18,6 +18,9 @@ import { PageFactory } from '../../../models/page.factory';
 import { stringParam } from './PreConfigBlockParams/string_param.const';
 import { filterParam } from './PreConfigBlockParams/filter_param.const';
 import { SectionBlockFactory } from '../../../services/pages/section-block.factory';
+import { SectionBlock } from '../../pom/addons/Blocks/SectionBlock';
+import { InitTester } from '../../pom/addons/Blocks/PageTester/InitTester.block';
+import { ConfigurablePageTesterBlock } from '../../pom/addons/Blocks/PageTester/base/ConfigurablePageTester.block';
 
 chai.use(promised);
 enum TestBlockId {
@@ -32,10 +35,6 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
     testPage.Key = newUuid();
     testPage.Name = `Advanced SetParams Tests - ${testPage.Key}`;
     let pageEditor: PageEditor;
-    // let dynamicTester: DynamicTester;
-
-    // let stringProducer: PageBlockExt;
-    // let filterProducer: PageBlockExt;
 
     before(async function () {
         const dynamicBlockRelation = await pagesService.getBlockRelation('Dynamic Tester');
@@ -59,8 +58,9 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
             for (const block of testPage.Blocks) {
                 pageEditor.PageBlocks.setBlock(createBlock.fromPageBlock(block));
                 const tempBlock = pageEditor.PageBlocks.getBlock(block);
-                await tempBlock.editBlock();
-                await pageEditor.goBack();
+                if(isConfigurablePageTester(tempBlock)){
+                    await tempBlock.initBlockConfig();
+                }
             }
             // dynamicTester = new DynamicTester(testPage.Blocks[0].Configuration.Data.BlockId, browser);
 
@@ -110,6 +110,7 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
             TestBlockId.FilterProducer,
         );
         await filterProducerBlock.clickSetParamBtn(filterParam.Key);
+        
 
         const stringProducerText = await pageEditor.PageBlocks.getBlock<DynamicTester>(
             TestBlockId.StringProducer,
@@ -201,4 +202,8 @@ function getFilterProducerBlock(blockRelation: NgComponentRelation): PageBlockEx
     pageBlock.Configuration.Data = testConfig;
 
     return pageBlock;
+}
+
+function isConfigurablePageTester(sectionBlock: SectionBlock): sectionBlock is ConfigurablePageTesterBlock{
+    return (sectionBlock as ConfigurablePageTesterBlock).initBlockConfig !== undefined;
 }

@@ -18,21 +18,24 @@ export abstract class SectionBlock extends Component {
     public readonly BlockName: string;
     protected readonly SideBar: PageBlockEditorSideBar;
 
+    /**
+     * Can be overwritten in inherited classes to narrow locators for basic {@link SectionBlock} functions.
+     */
     protected XPathParentContainer: By = By.xpath(`//section-block`);
-    // protected _XPathParentContainer: By = By.xpath(`//*[@block-id='${this.blockId}']/ancestor::section-block`);
 
-    public readonly getBlockDraggable: By = By.xpath(
-        `${this.XPathParentContainer.value}//*[@title='${this.blockName}']`,
-    );
+    public getBlockDraggable(): By {
+        return By.xpath(
+         `${this.XPathParentContainer.value}//*[@title='${this.blockName}']`);
+    }
 
     public getEditBlockBtn(): By {
         return By.xpath(
-            `${this.getBlockDraggable.value}/ancestor::pep-draggable-item//pep-button[@iconname='system_edit']`,
+            `${this.getBlockDraggable().value}/ancestor::pep-draggable-item//pep-button[@iconname='system_edit']`,
         );
     }
 
     public getLoadedBlockElement(): By {
-        return By.xpath(`${this.getBlockDraggable.value}/ancestor::pep-draggable-item/parent::*//pep-remote-loader/*`);
+        return By.xpath(`${this.getBlockDraggable().value}/ancestor::pep-draggable-item/parent::*//pep-remote-loader/*`);
     }
 
     public async editBlock(): Promise<void> {
