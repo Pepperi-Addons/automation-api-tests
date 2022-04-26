@@ -1,5 +1,5 @@
 import { By } from 'selenium-webdriver';
-import { WebAppList } from '..';
+import { WebAppDialog, WebAppList } from '..';
 import { AddonPage } from './base/AddonPage';
 
 export interface CollectionField {
@@ -28,17 +28,32 @@ export class Udc extends AddonPage {
     public DialogSaveBtn: By = By.css(".pep-dialog [data-qa='Save']");
 
     //UDC locators
-    public UDCKeyInputField: By = By.css('#mat-input-0');
-    public UDCDescriptionInputField: By = By.css('#mat-input-1');
-    public UDCOfflinecheckboxButton: By = By.css('#mat-checkbox-2');
+    public UDCFieldKeyInputFieldArr: By = By.css('[id^="mat-input"]');
+    public UDCOfflinecheckboxButton: By = By.css('[id^="mat-checkbox"]');
 
     //UDC Fields Locators
-    public UDCFieldKeyInputFieldArr: By = By.css('.pep-dialog [id^="mat-input"]');
+    public UDCDialogFieldKeyInputFieldArr: By = By.css('.pep-dialog [id^="mat-input"]');
     public UDCFieldTypeSelect = () => By.css(`.pep-dialog [id^="mat-select"]`);
     public UDCFieldTypeSelectOption = (type: CollectionField['Type']) => By.css(`[id^='mat-select'] [title="${type}"]`);
     public UDCFieldMandatorySelect: By = By.css('#mat-select-6');
 
-    public async sendKeysToField(id: 'Key' | 'Description' | 'Optional Values', data: string) {
+    public async sendKeysToDialogField(id: 'Key' | 'Description' | 'Optional Values', data: string) {
+        switch (id) {
+            case 'Key':
+                await this.browser.sendKeys(this.UDCDialogFieldKeyInputFieldArr, data, 0);
+                break;
+            case 'Description':
+                await this.browser.sendKeys(this.UDCDialogFieldKeyInputFieldArr, data, 1);
+                break;
+            case 'Optional Values':
+                await this.browser.sendKeys(this.UDCDialogFieldKeyInputFieldArr, data, 2);
+            default:
+                break;
+        }
+        return;
+    }
+
+    public async sendKeysToField(id: 'Key' | 'Description', data: string) {
         switch (id) {
             case 'Key':
                 await this.browser.sendKeys(this.UDCFieldKeyInputFieldArr, data, 0);
@@ -46,8 +61,6 @@ export class Udc extends AddonPage {
             case 'Description':
                 await this.browser.sendKeys(this.UDCFieldKeyInputFieldArr, data, 1);
                 break;
-            case 'Optional Values':
-                await this.browser.sendKeys(this.UDCFieldKeyInputFieldArr, data, 2);
             default:
                 break;
         }
@@ -69,8 +82,8 @@ export class Udc extends AddonPage {
      * configuration of UDC Collection
      */
     public async createCollection(CollectionMain: CollectionMain): Promise<void> {
-        await this.sendKeys(this.UDCKeyInputField, CollectionMain.Key);
-        await this.sendKeys(this.UDCDescriptionInputField, CollectionMain.Description);
+        await this.sendKeysToField('Key', CollectionMain.Key);
+        await this.sendKeysToField('Description', CollectionMain.Description);
         return;
     }
 
@@ -81,8 +94,8 @@ export class Udc extends AddonPage {
     public async createField(collectionField: CollectionField): Promise<void> {
         const webAppList = new WebAppList(this.browser);
         await this.browser.click(webAppList.AddonAddButton);
-        await this.sendKeysToField('Key', collectionField.Key);
-        await this.sendKeysToField('Description', collectionField.Description);
+        await this.sendKeysToDialogField('Key', collectionField.Key);
+        await this.sendKeysToDialogField('Description', collectionField.Description);
         await this.clickOnSelect();
         await this.browser.sleepAsync(500);
         await this.click(this.UDCFieldTypeSelectOption(collectionField.Type));
@@ -92,7 +105,7 @@ export class Udc extends AddonPage {
             await this.click(this.UDCFieldTypeSelectOption(collectionField.ArrayInnerType));
         }
         if (collectionField.OptionalValues) {
-            await this.sendKeysToField('Optional Values', collectionField.OptionalValues);
+            await this.sendKeysToDialogField('Optional Values', collectionField.OptionalValues);
         }
         if (collectionField.Mandatory) {
             //Select
@@ -100,5 +113,19 @@ export class Udc extends AddonPage {
         }
         await this.browser.click(this.DialogSaveBtn);
         return;
+    }
+
+    public async closeEditDialogsAndSave() {
+        //Let the collection updae after creation of first collection field
+        await this.browser.sleepAsync(500);
+        await (await this.browser.findElement(this.AddonPageSaveBtn)).click();
+        //Let the page update after creation of new collection field
+        await this.browser.sleepAsync(500);
+        const webAppDialog = new WebAppDialog(this.browser);
+        await webAppDialog.untilIsVisible(webAppDialog.Dialog);
+        await this.browser.sleepAsync(500);
+        await webAppDialog.selectDialogBox('Close');
+        //Let the page updae after saving new collection
+        await this.browser.sleepAsync(1500);
     }
 }
