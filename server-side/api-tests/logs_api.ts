@@ -18,6 +18,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const TEN_MINS = 1000 * 60 * 10;
     const HOUR = 1000 * 60 * 60; //1000 * 60 * 60 milliseconds is an hour
     const TimeZoneDiffWithAWS = HOUR * 3;
+    let _envUrlBase;
 
     //#region Upgrade Cloudwatch Addon
     const testData = {
@@ -26,8 +27,10 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
+        _envUrlBase = 'webapi.sandbox';
     } else {
         varKey = request.body.varKeyPro;
+        _envUrlBase = 'webapi';
     }
 
     const addonVersions = await generalService.baseAddonVersionsInstallation(varKey);
@@ -289,7 +292,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('All Payload Errors Stacked', async () => {
-                    //bug in stacking payload errors
                     const payload: LogsPayload = {
                         Groups: [],
                         Filter: '',
@@ -386,10 +388,10 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
             it('performing SyncOperation call', async () => {
                 _startTime = new Date().toISOString();
                 let createSessionResponse;
-                const numOfTries = 0;
+                let numOfTries = 0;
                 do {
                     createSessionResponse = await generalService.fetchStatus(
-                        `https://webapi.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/CreateSession`,
+                        `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/CreateSession`,
                         {
                             method: 'POST',
                             body: JSON.stringify({
@@ -401,11 +403,12 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                             },
                         },
                     );
-                } while (!createSessionResponse.Body.AccessToken && numOfTries < 10);
-                expect(numOfTries).to.be.lessThan(10);
+                    numOfTries++;
+                } while (!createSessionResponse.Body.AccessToken && numOfTries < 30);
+                expect(numOfTries).to.be.lessThan(30);
                 expect(createSessionResponse.Ok).to.equal(true);
                 expect(createSessionResponse.Status).to.equal(200);
-                const URL = `https://webapi.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/GetSyncStatus`;
+                const URL = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/GetSyncStatus`;
                 const syncStatusReposnse = await generalService.fetchStatus(URL, {
                     method: 'GET',
                     headers: {
@@ -429,7 +432,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
                     if (
                         cloudwatchDataPoint.Message?.includes(
-                            'Authorization request granted to: 12144332 action:  to contract: IScheduler',
+                            'Authorization request granted to:'
                         ) &&
                         cloudwatchDataPoint.UserUUID === userUUID
                     ) {
@@ -440,7 +443,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         expect(cloudwatchDataPoint.DateTimeStamp).to.include(todaysDate);
                         expect(cloudwatchDataPoint).to.have.own.property('Level');
                         expect(cloudwatchDataPoint.Level).to.equal('INFO');
-                        const time = cloudwatchDataPoint.DateTimeStamp ? cloudwatchDataPoint.DateTimeStamp : ''; //done for the linter - shouldnt be empty
+                        const time = cloudwatchDataPoint.DateTimeStamp ? cloudwatchDataPoint.DateTimeStamp : ''; //done for the linter - shouldnt be empty in any state
                         expect(generalService.isLessThanGivenTimeAgo(Date.parse(time), FIVE_MINS, TimeZoneDiffWithAWS))
                             .to.be.true;
                     }
