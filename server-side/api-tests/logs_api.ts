@@ -431,9 +431,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 let isCorrectDataMessageFound = false;
                 jsonDataFromAuditLog.forEach((cloudwatchDataPoint) => {
                     if (
-                        cloudwatchDataPoint.Message?.includes(
-                            'Authorization request granted to:'
-                        ) &&
+                        cloudwatchDataPoint.Message?.includes('Authorization request granted to:') &&
                         cloudwatchDataPoint.UserUUID === userUUID
                     ) {
                         isCorrectDataMessageFound = true;
