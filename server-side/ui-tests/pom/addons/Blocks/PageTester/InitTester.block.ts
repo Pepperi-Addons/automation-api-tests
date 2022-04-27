@@ -14,9 +14,7 @@ export class InitTester extends ConfigurablePageTesterBlock {
 
     public readonly ConsumesText = By.css(`${this.BlockContainer.value} #receivedConsumes textarea`);
 
-    public getSetParamBtn(paramKey: string) {
-        return By.css(`${this.BlockContainer.value} button[data-qa='${paramKey}']`);
-    }
+    public readonly BlockLoadingTime = By.css(`${this.BlockContainer.value} [label="Block loading time"] input`);
 
     public async getHostObjectText(): Promise<string | null> {
         return await this.browser.getElementAttribute(this.HostObjectText, 'title');
@@ -26,11 +24,7 @@ export class InitTester extends ConfigurablePageTesterBlock {
         return await this.browser.getElementAttribute(this.ConsumesText, 'title');
     }
 
-    // /**
-    //  * Initializes block configuration by entering block edit mode. Exits edit block mode after loading animation has finished.
-    //  */
-    // public async initBlockConfig(): Promise<void> {
-    //     await this.editBlock();
-    //     return await this.SideBar.exitBlockEditorMode();
-    // }
+    public async getBlockLoadingTime(): Promise<string | null>{
+        return await this.browser.getElementAttribute(this.BlockLoadingTime, 'title');
+    }
 }
