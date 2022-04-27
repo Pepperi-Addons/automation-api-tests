@@ -404,8 +404,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         },
                     );
                     numOfTries++;
-                } while (!createSessionResponse.Body.AccessToken && numOfTries < 30);
-                expect(numOfTries).to.be.lessThan(30);
+                } while (!createSessionResponse.Body.AccessToken && numOfTries < 50);
+                expect(numOfTries).to.be.lessThan(50);
                 expect(createSessionResponse.Ok).to.equal(true);
                 expect(createSessionResponse.Status).to.equal(200);
                 const URL = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/GetSyncStatus`;
