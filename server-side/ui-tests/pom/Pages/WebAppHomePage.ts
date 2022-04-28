@@ -77,7 +77,11 @@ export class WebAppHomePage extends WebAppPage {
      * This can only be used from HomePage and when HomePage include button that lead to Transaction ATD
      * This will nevigate to the scope_items of a new transaction, deep link "/transactions/scope_items/${newUUID}"
      */
-    public async initiateSalesActivity(nameOfATD?: string, nameOfAccount?: string, shouldSelectCatalog?: boolean): Promise<void> {
+    public async initiateSalesActivity(
+        nameOfATD?: string,
+        nameOfAccount?: string,
+        shouldSelectCatalog?: boolean,
+    ): Promise<void> {
         //Start New Workflow
         if (nameOfATD) {
             await this.clickOnBtn(nameOfATD);
@@ -119,8 +123,7 @@ export class WebAppHomePage extends WebAppPage {
                     await webAppList.click(webAppList.CardListElements);
                     return;
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 if (error instanceof Error) {
                     if (!error.message.includes('The test must end, The element is: undefined')) {
                         throw error;
@@ -152,7 +155,7 @@ export class WebAppHomePage extends WebAppPage {
     //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }

@@ -1,17 +1,16 @@
-import { Client } from "@pepperi-addons/debug-server/dist";
-import { GeneralService } from "../../services";
-import { Browser } from "../utilities/browser";
+import { Client } from '@pepperi-addons/debug-server/dist';
+import { GeneralService } from '../../services';
+import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { WebAppLoginPage } from "../pom";
-import { By } from "selenium-webdriver";
-import { expect } from "chai";
-
+import { WebAppLoginPage } from '../pom';
+import { By } from 'selenium-webdriver';
+import { expect } from 'chai';
 
 export async function CloseCatalogTest(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     let driver: Browser;
 
-    // await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     describe('Basic UI Tests Suit', async function () {
         this.retries(0);
 
@@ -32,13 +31,13 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
             await driver.click(WebAppHomePage.MainHomePageBtn);
             driver.sleep(2000);
             try {
-                const erroDialog = await driver.findElement(By.css("pep-dialog > div > span"));
+                const erroDialog = await driver.findElement(By.css('pep-dialog > div > span'));
                 const errorText = await erroDialog.getText();
-                expect(errorText).to.include("Error");
-                expect.fail("general error message recived after closgin catalog and returning to order center");
+                expect(errorText).to.include('Error');
+                expect.fail('general error message recived after closgin catalog and returning to order center');
             } catch (e: any) {
                 if (e.message === 'general error message recived after closgin catalog and returning to order center') {
-                    expect.fail("general error message recived after closgin catalog and returning to order center");
+                    expect.fail('general error message recived after closgin catalog and returning to order center');
                 } else {
                     return;
                 }
