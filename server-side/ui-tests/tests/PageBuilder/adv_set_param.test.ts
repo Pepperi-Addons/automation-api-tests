@@ -10,7 +10,7 @@ import { NgComponentRelation, Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
-import { DynamicTester } from '../../pom/addons/Blocks/PageTester/DynamicTester.block';
+import { DynamicTester } from '../../pom/addons/Blocks/PageTester/index';
 import { TestConfiguration } from '../../../models/pages/parameter-config.class';
 import { PageTestRequirements } from './page_builder.test';
 import { PageBlockExt } from '../../../models/pages/page-block.ext';
@@ -19,13 +19,13 @@ import { stringParam } from './PreConfigBlockParams/string_param.const';
 import { filterParam } from './PreConfigBlockParams/filter_param.const';
 import { SectionBlockFactory } from '../../../services/pages/section-block.factory';
 import { SectionBlock } from '../../pom/addons/Blocks/SectionBlock';
-import { InitTester } from '../../pom/addons/Blocks/PageTester/InitTester.block';
-import { ConfigurablePageTesterBlock } from '../../pom/addons/Blocks/PageTester/base/ConfigurablePageTester.block';
+import { ConfigurablePageTesterBlock } from '../../pom/addons/Blocks/PageTester/base/index';
 
 chai.use(promised);
 enum TestBlockId {
     StringProducer = 'stringProduceFilterConsume',
-    FilterProducer = 'filterProduceStringConsume'
+    FilterProducer = 'filterProduceStringConsume',
+    InitConsumer = 'filterConsumeStringConsume'
 };
 
 export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
@@ -41,9 +41,9 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
 
         const stringProducer = getStringProducerBlock(dynamicBlockRelation);
         const filterProducer = getFilterProducerBlock(dynamicBlockRelation);
+        const initConsumer = getInitBlock(await pagesService.getBlockRelation('Init Tester'));
 
-        await apiCreatePage(stringProducer, filterProducer);
-
+        await apiCreatePage(stringProducer, filterProducer, initConsumer);
         browser = pagesReq.browser;
         pagesList = pagesReq.pagesList;
 
@@ -62,12 +62,6 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
                     await tempBlock.initBlockConfig();
                 }
             }
-            // dynamicTester = new DynamicTester(testPage.Blocks[0].Configuration.Data.BlockId, browser);
-
-            // await dynamicTester.editBlock();
-
-            // await pageEditor.goBack();
-
             await pageEditor.enterPreviewMode();
         } catch (error) {
             const beforeError = await browser.saveScreenshots();
@@ -98,8 +92,7 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
         );
         await stringProducerBlock.clickSetParamBtn(stringParam.Key);
         expect(await stringProducerBlock.getConsumesText()).to.not.include(stringParam.Value);
-        expect(
-            await pageEditor.PageBlocks.getBlock<DynamicTester>(
+        expect(await pageEditor.PageBlocks.getBlock<DynamicTester>(
                 TestBlockId.FilterProducer,
             ).getConsumesText(),
         ).to.include(stringParam.Value);
@@ -116,6 +109,7 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
             TestBlockId.StringProducer,
         ).getConsumesText();
         expect(stringProducerText).to.include(JSON.stringify(filterParam?.Value[0]?.filter));
+
         const filterProducerText = await pageEditor.PageBlocks.getBlock<DynamicTester>(
             TestBlockId.FilterProducer,
         ).getConsumesText();
@@ -129,13 +123,6 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
             section.addBlock(pageBlock.Key);
             testPage.Layout.Sections.add(section);
         }
-        // testPage.Blocks.add(stringProducer, filterProducer);
-
-        // const section = new PageSectionClass(newUuid(), '1/2 1/2');
-
-        // section.addBlock(stringProducer.Key, 0);
-        // section.addBlock(filterProducer.Key, 1);
-        // testPage.Layout.Sections.add(section);
 
         const pageResult: Page = await pagesService.createOrUpdatePage(testPage).catch((error) => {
             console.log((error as Error).message);
@@ -168,6 +155,34 @@ function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockEx
             },
         ],
         BlockId: TestBlockId.StringProducer,
+    };
+    pageBlock.Configuration.Data = testConfig;
+
+    return pageBlock;
+}
+
+function getInitBlock(blockRelation: NgComponentRelation): PageBlockExt {
+    const pageBlock = PageFactory.defaultPageBlock(blockRelation);
+    const testConfig: TestConfiguration = {
+        Parameters: [
+            {
+                Key: stringParam.Key,
+                Consume: true,
+                Produce: false,
+                Type: stringParam.Type,
+                Value: stringParam.Value,
+            },
+            {
+                Key: filterParam.Key,
+                Consume: true,
+                Produce: false,
+                Type: filterParam.Type,
+                Value: filterParam.Value,
+                Resource: filterParam.Resource,
+                Fields: filterParam.Fields,
+            },
+        ],
+        BlockId: TestBlockId.InitConsumer,
     };
     pageBlock.Configuration.Data = testConfig;
 

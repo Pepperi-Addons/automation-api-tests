@@ -9,6 +9,7 @@ import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { BasicBlockTests } from './basic_block.test';
 import { ProduceConsumeTests } from './produce_consume.test';
 import { AdvSetParamTests } from './adv_set_param.test';
+import { BlockLoadTests } from './block_load.test';
 
 chai.use(promised);
 type AddonVersionData = { [AddonName: string]: string[] };
@@ -44,8 +45,6 @@ export async function PageBuilderTests(
         });
 
         describe('Page Builder Tests', function () {
-            this.retries(1);
-
             before(async function () {
                 pagesReq.browser = await Browser.initiateChrome();
                 browser = pagesReq.browser;
@@ -60,8 +59,8 @@ export async function PageBuilderTests(
             after(async function () {
                 await browser.quit();
             });
-            describe('Adv Prod Cons Tests', function () {
-                AdvSetParamTests(pagesService, pagesReq);
+            describe('Load Order Tests', function () {
+                BlockLoadTests(pagesService, pagesReq);
             });
 
             describe('Basic Block Tests', function () {
@@ -71,6 +70,13 @@ export async function PageBuilderTests(
             describe('Produce Consume Tests', function () {
                 ProduceConsumeTests(pagesService, pagesReq);
             });
+
+            describe('Adv Prod Cons Tests', function () {
+                AdvSetParamTests(pagesService, pagesReq);
+            });
+            
+
+            
         });
     });
 }

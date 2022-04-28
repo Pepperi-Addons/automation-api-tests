@@ -20,7 +20,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         // PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
         'Page Tester': ['3da3c1d7-6aa9-4938-bcdb-b8b4acbf8535', ''],
 
-        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.38'], //Slideshow Addon 0.0.36
+        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.52'], //Slideshow Addon 0.0.36
     };
 
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
@@ -563,7 +563,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                     await deletePageIncluding(
                         page,
                         pagesService,
-                        // ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests'],
+                        ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests', 'Advanced SetParams Tests', 'Load Order Tests'],
                     ).catch((error) => {
                         addToErrorCounter(errorCounter, (error as Error).message);
                     });
