@@ -1,4 +1,3 @@
-import { ObjectsService } from '../services/objects.service';
 import { DataIndexService } from '../services/data-index.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
