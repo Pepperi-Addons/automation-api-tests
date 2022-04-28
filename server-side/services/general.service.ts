@@ -264,7 +264,8 @@ export default class GeneralService {
         }
         const token = authorization.replace('Bearer ', '') || '';
         const parsedToken = jwt_decode(token);
-        const [sk, AddonUUID] = this.getSecret();
+        const [AddonUUID, sk] = this.getSecret();
+
         return {
             AddonUUID: AddonUUID,
             AddonSecretKey: sk,

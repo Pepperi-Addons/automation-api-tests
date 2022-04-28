@@ -403,7 +403,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                     Description: 'test1',
                     AddonRelativeURL: '/api/test1', // mandatory on create
                 };
-                const relationResponse = await relationService.getRelationWithName(
+                const relationResponse = await relationService.getRelationWithNameAndUUID(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
                         'X-Pepperi-SecretKey': secretKey,
