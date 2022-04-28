@@ -36,7 +36,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const dimxService = new DIMXService(generalService.papiClient);
 
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
-    if (!generalService['client'].AddonSecretKey) {
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
         generalService['client'].AddonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID);
     }
 
