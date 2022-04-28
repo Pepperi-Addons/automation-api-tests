@@ -35,6 +35,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const relationService = new AddonRelationService(generalService);
     const dimxService = new DIMXService(generalService.papiClient);
 
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (!generalService['client'].AddonSecretKey) {
+        generalService['client'].AddonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID);
+    }
+
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
