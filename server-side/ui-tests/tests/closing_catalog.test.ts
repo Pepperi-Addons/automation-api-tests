@@ -35,8 +35,9 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
                 const errorText = await erroDialog.getText();
                 expect(errorText).to.include('Error');
                 expect.fail('general error message recived after closgin catalog and returning to order center');
-            } catch (e: any) {
-                if (e.message === 'general error message recived after closgin catalog and returning to order center') {
+            } catch (e) {
+                const errorMessage = (e as Error).message;
+                if (errorMessage === 'general error message recived after closgin catalog and returning to order center') {
                     expect.fail('general error message recived after closgin catalog and returning to order center');
                 } else {
                     return;
