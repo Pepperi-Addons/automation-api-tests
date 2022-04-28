@@ -86,7 +86,11 @@ import { MaintenanceJobTests } from './maintenance_job';
 import { CPINodeTests } from './cpi_node';
 import { CodeJobsCleanTests } from './code-jobs/code_jobs_clean';
 import { VarSystemAddonsTests } from './var_system_addons';
-import { AddonDataImportExportTests, AddonDataImportExportPerformanceTests } from './addon_data_import_export';
+import {
+    AddonDataImportExportTests,
+    AddonDataImportExportPerformanceTests,
+    AddonDataImportExportReferenceTests,
+} from './addon_data_import_export';
 import { ADALStressTests } from './adal_stress';
 import { PFSTests } from './pepperi_file_service';
 
@@ -162,6 +166,7 @@ export {
     VarSystemAddonsTests,
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
+    AddonDataImportExportReferenceTests,
     ADALStressTests,
     DataQueriesTests,
     AWSLogsTest,
