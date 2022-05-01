@@ -6,6 +6,10 @@ import { WebAppLoginPage } from '../pom';
 import { By } from 'selenium-webdriver';
 import { expect } from 'chai';
 
+/*/
+this test is part of 'Bug Verification' group - created to verify specific bug scenarion found by users which havent been found by other tests
+https://pepperi.atlassian.net/browse/DI-20093
+/*/
 export async function CloseCatalogTest(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     let driver: Browser;
@@ -24,7 +28,7 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
             await driver.quit();
         });
 
-        it('Login - Goto Sales Order And Test If Closing Catalog Create A General Error', async function () {
+        it('Login - Goto Sales Order And Test If Closing Catalog Create A General Error: DI-20093', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             const WebAppHomePage = await webAppLoginPage.login(email, password);
             await WebAppHomePage.initiateSalesActivity(undefined, undefined, false);
