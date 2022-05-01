@@ -28,9 +28,15 @@ export class AddonRelationService {
         return this.papiClient.addons.data.relations.upsert(body);
     }
 
-    async getRelationWithName(headers: { [key: string]: string }, name: string) {
+    async getRelationWithNameAndUUID(headers: { [key: string]: string }, name: string, AddonUUID?: string) {
+        let url;
+        if (AddonUUID) {
+            url = `/addons/data/relations?where=Name='${name}' AND AddonUUID='${AddonUUID}'&include_deleted=true`;
+        } else {
+            url = `/addons/data/relations?where=Name='${name}'&include_deleted=true`;
+        }
         return this.generalService
-            .fetchStatus(`/addons/data/relations?where=Name='${name}'&include_deleted=true`, {
+            .fetchStatus(url, {
                 method: 'GET',
                 headers: headers,
             })

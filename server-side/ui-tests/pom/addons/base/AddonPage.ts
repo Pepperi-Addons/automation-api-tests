@@ -260,6 +260,6 @@ export class AddonPage extends Page {
         await this.browser.click(this.SubmitOrderCartBtn);
         await this.isSpinnerDone();
         const homePage = new WebAppHomePage(this.browser);
-        await expect(homePage.untilIsVisible(homePage.Main, 90000)).eventually.to.be.true;
+        await expect(homePage.untilIsVisible(homePage.MainHomePageBtn, 90000)).eventually.to.be.true;
     }
 }

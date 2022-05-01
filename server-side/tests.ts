@@ -70,6 +70,7 @@ import {
     VarSystemAddonsTests,
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
+    AddonDataImportExportReferenceTests,
     ADALStressTests,
     DataQueriesTests,
     AWSLogsTest,
@@ -1169,6 +1170,23 @@ export async function addon_data_import_export_performanc(
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonDataImportExportPerformanceTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function addon_data_import_export_reference(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export_Reference';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        AddonDataImportExportReferenceTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
