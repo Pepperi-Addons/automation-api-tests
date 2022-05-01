@@ -489,7 +489,6 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                 schemaName,
                 filter,
             );
-
             if (!Array.isArray(schema)) {
                 await adalService.postDataToSchema(PepperiOwnerID, schemaName, {
                     Key: schema.Key,
@@ -585,6 +584,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     'Mobile',
                     'FirstName',
                     'LastName',
+                    'Name',
                     'TSACheckboxAPI',
                     'TSACurrencyAPI',
                     'TSADateAPI',
@@ -720,6 +720,11 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     NewValue: 'Random Updated text',
                     OldValue: 'Random text',
                 },
+                {
+                    FieldID: 'Name',
+                    NewValue: 'Contact Update Test Update',
+                    OldValue: 'Contact Test',
+                },
             ]);
             expect(schema.Message.FilterAttributes.Resource).to.include('contacts');
             expect(schema.Message.FilterAttributes.Action).to.include('update');
@@ -729,6 +734,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                 'Mobile',
                 'FirstName',
                 'LastName',
+                'Name',
                 'TSACheckboxAPI',
                 'TSACurrencyAPI',
                 'TSADateAPI',
