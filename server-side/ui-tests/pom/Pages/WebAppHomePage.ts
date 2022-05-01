@@ -108,9 +108,9 @@ export class WebAppHomePage extends WebAppPage {
             }
         }
 
-        if (shouldSelectCatalog === false) {
+        if (shouldSelectCatalog === false) {//if shouldnt select catalog from dialog - click 'x' button and return to homepage
             const webAppDialog = new WebAppDialog(this.browser);
-            await this.browser.click(webAppDialog.ButtonArr, 0);
+            await this.browser.click(webAppDialog.ButtonArr, 0);//in this scenario first indexed button in dialog is the 'x' button
             this.browser.sleep(2500);
         } else {
             try {
@@ -121,7 +121,6 @@ export class WebAppHomePage extends WebAppPage {
                 const webAppTopBar = new WebAppTopBar(this.browser);
                 if (await this.browser.untilIsVisible(webAppTopBar.CatalogSelectHeader)) {
                     await webAppList.click(webAppList.CardListElements);
-                    return;
                 }
             } catch (error) {
                 if (error instanceof Error) {
