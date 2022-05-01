@@ -528,10 +528,10 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
 
         it('Delete Users', async () => {
             expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.true;
-                expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
-                expect(await service.getUsers())
-                    .to.be.an('array')
-                    .with.lengthOf(currentUserQuantity);
+            expect(await service.deleteUser('InternalID', createdUser.InternalID)).to.be.false;
+            expect(await service.getUsers())
+                .to.be.an('array')
+                .with.lengthOf(currentUserQuantity);
         });
     });
 }
