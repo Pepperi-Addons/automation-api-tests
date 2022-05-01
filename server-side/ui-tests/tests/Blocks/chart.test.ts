@@ -33,6 +33,7 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
     let _nameOfPage;
     let _priceOfTrans;
     let _currentBlock;
+    let _pagesKey;
 
 
     const testData = {
@@ -90,59 +91,69 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 const returnedData = await createPageWithChartBlockUsingTheAPI(driver, generalService, pagesService, expect);
                 _nameOfPage = returnedData.name;
                 _currentBlock = returnedData.block;
+                _pagesKey = returnedData.key;
                 await loginAndNavigateToPages(driver, email, password);
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
                 const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
                 await chartBlock.loadBlock(pageEditor);
-                await chartBlock.editBlock();
-                expect(await chartBlock.isTitlePresented()).to.be.false;
-                await chartBlock.setTitle(pageEditor, "testing");
-                const blockTitle = await chartBlock.getTitle();
-                expect(blockTitle).to.equal("testing");
-                await pageEditor.goBack();
-                await pageEditor.goToContent(chartBlock.addQueryBtn);
-                const queryToUse: query = {
-                    Name: "evgeny test",
-                    Resource: "all_activities",
-                    Metric: { Aggregator: "Count" },
-                    Filter: { AccountFilter: "All accounts", UserFilter: "All users" },
-                };
-                await chartBlock.addQuery(queryToUse);
-                _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock(this));
-            });
-            it('Set up - Performe A Basic Transaction Using The UI And Record Its ID', async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.initiateSalesActivity(undefined, 'Best Buy #163');
-                const itemsScopeURL = await driver.getCurrentUrl();
-                const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
-                const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
-                const webAppList = new WebAppList(driver);
-                const webAppTopBar = new WebAppTopBar(driver);
-                await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Medium');
-                await webAppTransaction.addItemToCart(this, 'SA4', 5, true);
-                await webAppList.click(webAppTopBar.CartViewBtn);
-                await webAppList.click(webAppTopBar.CartSumbitBtn);
-                await webAppHomePage.isDialogOnHomePAge(this);
-                const lastTransFromAPI = await (await generalService.fetchStatus(
-                    `/transactions?page_size=-1&order_by=CreationDateTime DESC`
-                )).Body[0];
-                _priceOfTrans = lastTransFromAPI.SubTotalAfterItemsDiscount;
-                _id = lastTransFromAPI.InternalID;
-                _itemQty = lastTransFromAPI.QuantitiesTotal;
+                await webAppHomePage.returnToHomePage();
+                let responseObjForCreatedPage = await generalService.papiClient.pages.get(_pagesKey);
+                responseObjForCreatedPage.Blocks[0].Configuration.Data.Label = "testing";
+                const responseObjForUpdatedPage = await generalService.papiClient.pages.upsert(responseObjForCreatedPage);
+                pagesService.deepCompareObjectsNOMOIF(responseObjForUpdatedPage, responseObjForCreatedPage, expect);
+                debugger;
             });
-            it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction: Num Of Activities Presented Should Be Increased By One', async function () {
-                await loginAndNavigateToPages(driver, email, password);
-                const pagesList = new PagesList(driver);
-                const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
-                const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
-                await chartBlock.editBlock();
-                driver.sleep(5000);//TODO:what should i wait for
-                const updatedData = await chartBlock.getDataPresentedInBlock(this);
-                expect(parseInt(updatedData)).to.equal(_initialValueOfQuery + 1);
-            });
+            //     await chartBlock.editBlock();
+            //     expect(await chartBlock.isTitlePresented()).to.be.false;
+            //     await chartBlock.setTitle(pageEditor, "testing");
+            //     const blockTitle = await chartBlock.getTitle();
+            //     expect(blockTitle).to.equal("testing");
+            //     debugger;
+            //     await pageEditor.goBack();
+            //     await pageEditor.goToContent(chartBlock.addQueryBtn);
+            //     const queryToUse: query = {
+            //         Name: "evgeny test",
+            //         Resource: "all_activities",
+            //         Metric: { Aggregator: "Count" },
+            //         Filter: { AccountFilter: "All accounts", UserFilter: "All users" },
+            //     };
+            //     await chartBlock.addQuery(queryToUse);
+            //     _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock(this));
+            // });
+            // it('Set up - Performe A Basic Transaction Using The UI And Record Its ID', async function () {
+            //     const webAppLoginPage = new WebAppLoginPage(driver);
+            //     await webAppLoginPage.login(email, password);
+            //     const webAppHomePage = new WebAppHomePage(driver);
+            //     await webAppHomePage.initiateSalesActivity(undefined, 'Best Buy #163');
+            //     const itemsScopeURL = await driver.getCurrentUrl();
+            //     const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
+            //     const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
+            //     const webAppList = new WebAppList(driver);
+            //     const webAppTopBar = new WebAppTopBar(driver);
+            //     await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Medium');
+            //     await webAppTransaction.addItemToCart(this, 'SA4', 5, true);
+            //     await webAppList.click(webAppTopBar.CartViewBtn);
+            //     await webAppList.click(webAppTopBar.CartSumbitBtn);
+            //     await webAppHomePage.isDialogOnHomePAge(this);
+            //     const lastTransFromAPI = await (await generalService.fetchStatus(
+            //         `/transactions?page_size=-1&order_by=CreationDateTime DESC`
+            //     )).Body[0];
+            //     _priceOfTrans = lastTransFromAPI.SubTotalAfterItemsDiscount;
+            //     _id = lastTransFromAPI.InternalID;
+            //     _itemQty = lastTransFromAPI.QuantitiesTotal;
+            // });
+            // it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction: Num Of Activities Presented Should Be Increased By One', async function () {
+            //     await loginAndNavigateToPages(driver, email, password);
+            //     const pagesList = new PagesList(driver);
+            //     const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
+            //     const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
+            //     await chartBlock.editBlock();
+            //     driver.sleep(5000);//TODO:what should i wait for
+            //     const updatedData = await chartBlock.getDataPresentedInBlock(this);
+            //     expect(parseInt(updatedData)).to.equal(_initialValueOfQuery + 1);
+            // });
         });
     });
 }
@@ -167,7 +178,7 @@ async function createPageWithChartBlockUsingTheAPI(driver, generalService, pages
     const nameOfPage = workingPage.Name;
     const pageResult = await pageBuilderSettings.apiCreatePage(expect, pagesService, "Chart", workingPage);
     const currentBlock = pageResult.Blocks[0];
-    return { name: nameOfPage, block: currentBlock, page: pageResult };
+    return { name: nameOfPage, block: currentBlock, page: pageResult, key: workingPage.Key };
 }
 
 async function getChartBlock(driver, pageEditor, block) {

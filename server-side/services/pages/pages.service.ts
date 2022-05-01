@@ -103,13 +103,51 @@ export class PagesService {
             }
         } catch (error) {
             console.log(
-                `Expected ${parentProp ? parentProp : ''}: ${
-                    typeof expected === 'object' ? JSON.stringify(expected) : expected
+                `Expected ${parentProp ? parentProp : ''}: ${typeof expected === 'object' ? JSON.stringify(expected) : expected
                 }`,
             );
             console.log(
-                `Actual ${parentProp ? parentProp : ''}: ${
-                    typeof actual === 'object' ? JSON.stringify(actual) : actual
+                `Actual ${parentProp ? parentProp : ''}: ${typeof actual === 'object' ? JSON.stringify(actual) : actual
+                }`,
+            );
+            throw error;
+        }
+    }
+
+    deepCompareObjectsNOMOIF<Type>(
+        expected: Type,
+        actual: Type,
+        expect: Chai.ExpectStatic,
+        excludedProperties: Array<string> = ['length'],
+        parentProp?: string,
+    ) {
+        try {
+            if (typeof expected === 'object') {
+                const properties = Object.getOwnPropertyNames(expected).filter((prop) =>
+                    excludedProperties && excludedProperties.length > 0 ? !excludedProperties.includes(prop) : prop,
+                );
+
+                properties.forEach((prop) => {
+                    debugger;
+                    if (prop !== 'ModificationDateTime') {
+                        if (typeof expected[prop] === 'object') {
+                            parentProp = parentProp ? parentProp + '.' + prop : prop;
+                            this.deepCompareObjects(expected[prop], actual[prop], expect, excludedProperties, parentProp);
+                        } else {
+                            this.assertAndLog(expected[prop], actual[prop], expect);
+                        }
+                    }
+                });
+            } else {
+                this.assertAndLog(expected, actual, expect);
+            }
+        } catch (error) {
+            console.log(
+                `Expected ${parentProp ? parentProp : ''}: ${typeof expected === 'object' ? JSON.stringify(expected) : expected
+                }`,
+            );
+            console.log(
+                `Actual ${parentProp ? parentProp : ''}: ${typeof actual === 'object' ? JSON.stringify(actual) : actual
                 }`,
             );
             throw error;
