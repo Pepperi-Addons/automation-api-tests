@@ -6,7 +6,6 @@ import { WebAppLoginPage } from '../pom';
 import { By } from 'selenium-webdriver';
 import { expect } from 'chai';
 
-
 /*/
 this test is part of 'Bug Verification' group - created to verify specific bug scenarion found by users which havent been found by other tests
 https://pepperi.atlassian.net/browse/DI-20093
