@@ -7,11 +7,11 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
 import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
-import { OrderPageItem } from '../pom/OrderPage';
+import { OrderPageItem } from '../pom/Pages/OrderPage';
 import { Uom } from '../pom/addons/Uom';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
-import { replaceUIControls, upgradeDependenciesTests } from './test.index';
+import { replaceUIControls } from './test.index';
 
 chai.use(promised);
 
@@ -52,6 +52,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         new UomOrderExpectedValues('1231', 48, 48, 16, 'SIN'),
     ];
 
+    await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade cpi-node & UOM
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.6'], //has to be hardcoded because upgrade dependencies cant handle this
@@ -60,7 +61,6 @@ export async function UomTests(email: string, password: string, varPass: string,
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
     };
 
-    await upgradeDependenciesTests(generalService, varPass);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     //#endregion Upgrade cpi-node & UOM

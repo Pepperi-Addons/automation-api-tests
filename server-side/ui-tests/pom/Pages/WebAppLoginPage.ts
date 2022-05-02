@@ -1,10 +1,10 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { Page } from './base/Page';
-import config from '../../config';
-import { By, Locator } from 'selenium-webdriver';
+import config from '../../../config';
+import { By } from 'selenium-webdriver';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader, WebAppHomePage } from './index';
+import { WebAppHeader, WebAppHomePage } from '../index';
 
 chai.use(promised);
 
@@ -13,10 +13,10 @@ export class WebAppLoginPage extends Page {
         super(browser, `${config.baseUrl}`);
     }
 
-    public Email: Locator = By.css('#email');
-    public Password: Locator = By.css('input[type="password"]');
-    public Next: Locator = By.css('#nextBtn');
-    public LoginBtn: Locator = By.css('#loginBtn');
+    public Email: By = By.css('#email');
+    public Password: By = By.css('input[type="password"]');
+    public Next: By = By.css('#nextBtn');
+    public LoginBtn: By = By.css('#loginBtn');
 
     /**
      * This function should be used after nevigation to LoginPage was validate
@@ -47,7 +47,7 @@ export class WebAppLoginPage extends Page {
         await this.navigate();
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
-        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(webAppHeader.CompanyLogo, 90000)).eventually.to.be.true;
         return new WebAppHomePage(this.browser);
     }
 
@@ -55,7 +55,7 @@ export class WebAppLoginPage extends Page {
         await this.browser.navigate(url);
         await this.signIn(email, password);
         const webAppHeader = new WebAppHeader(this.browser);
-        await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
         return;
     }
 }

@@ -1,11 +1,11 @@
-import { Browser } from '../utilities/browser';
-import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
-import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from './index';
+import { Browser } from '../../utilities/browser';
+import config from '../../../config';
+import { By } from 'selenium-webdriver';
+import { WebAppDialog, WebAppHeader, WebAppList, WebAppTopBar } from '../index';
 import addContext from 'mochawesome/addContext';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppAPI } from './WebAppAPI';
+import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { WebAppPage } from './base/WebAppPage';
 
@@ -16,9 +16,9 @@ export class WebAppHomePage extends WebAppPage {
         super(browser, `${config.baseUrl}/HomePage`);
     }
 
-    public Main: Locator = By.css('#mainButton');
-    public HomeScreenButtonArr: Locator = By.css('#homepage-footer-btns button');
-    public HomeScreenSpesificButton: Locator = By.xpath(`//button[@title='|textToFill|']`);
+    public MainHomePageBtn: By = By.css('#mainButton');
+    public HomeScreenButtonArr: By = By.css('#homepage-footer-btns button');
+    public HomeScreenSpesificButton: By = By.xpath(`//button[@title='|textToFill|']`);
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
@@ -77,12 +77,16 @@ export class WebAppHomePage extends WebAppPage {
      * This can only be used from HomePage and when HomePage include button that lead to Transaction ATD
      * This will nevigate to the scope_items of a new transaction, deep link "/transactions/scope_items/${newUUID}"
      */
-    public async initiateSalesActivity(nameOfATD?: string, nameOfAccount?: string): Promise<void> {
+    public async initiateSalesActivity(
+        nameOfATD?: string,
+        nameOfAccount?: string,
+        shouldSelectCatalog?: boolean,
+    ): Promise<void> {
         //Start New Workflow
         if (nameOfATD) {
             await this.clickOnBtn(nameOfATD);
         } else {
-            await this.click(this.Main);
+            await this.click(this.MainHomePageBtn);
         }
 
         //Get to Items
@@ -91,7 +95,7 @@ export class WebAppHomePage extends WebAppPage {
             if (nameOfAccount) await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
             else await webAppList.clickOnFromListRowWebElement();
             const webAppTopBar = new WebAppTopBar(this.browser);
-            await webAppTopBar.click(webAppTopBar.DoneBtn);
+            await this.click(webAppTopBar.DoneBtn);
         } catch (error) {
             if (error instanceof Error) {
                 if (
@@ -104,41 +108,48 @@ export class WebAppHomePage extends WebAppPage {
             }
         }
 
-        try {
-            //wait one sec before cliking on catalog, to prevent click on other screen
-            console.log('Change to Catalog Cards List');
-            this.browser.sleep(1000);
-            await this.isSpinnerDone();
-            const webAppTopBar = new WebAppTopBar(this.browser);
-            if (await this.browser.untilIsVisible(webAppTopBar.CatalogSelectHeader)) {
-                await webAppList.click(webAppList.CardListElements);
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                if (!error.message.includes('The test must end, The element is: undefined')) {
-                    throw error;
+        if (shouldSelectCatalog === false) {
+            //if shouldnt select catalog from dialog - click 'x' button and return to homepage
+            const webAppDialog = new WebAppDialog(this.browser);
+            await this.browser.click(webAppDialog.ButtonArr, 0); //in this scenario first indexed button in dialog is the 'x' button
+            this.browser.sleep(2500);
+        } else {
+            try {
+                //wait one sec before cliking on catalog, to prevent click on other screen
+                console.log('Change to Catalog Cards List');
+                this.browser.sleep(1000);
+                await this.isSpinnerDone();
+                const webAppTopBar = new WebAppTopBar(this.browser);
+                if (await this.browser.untilIsVisible(webAppTopBar.CatalogSelectHeader)) {
+                    await webAppList.click(webAppList.CardListElements);
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    if (!error.message.includes('The test must end, The element is: undefined')) {
+                        throw error;
+                    }
                 }
             }
+            //This sleep is mandaroy while pop up message of existing order is calculated
+            //TODO: Replace with explicit wait.
+            console.log('Wait for existing orders');
+            this.browser.sleep(2500);
+
+            //Validate nothing is loading before clicking on dialog box
+            await webAppList.isSpinnerDone();
+
+            //Validating new order
+            const webAppDialog = new WebAppDialog(this.browser);
+            await webAppDialog.selectDialogBoxBeforeNewOrder();
+
+            //This sleep is mandaroy while the list is loading
+            console.log('Loading List');
+            this.browser.sleep(3000);
+
+            //Validate nothing is loading before starting to add items to cart
+            await webAppList.isSpinnerDone();
+            return;
         }
-
-        //This sleep is mandaroy while pop up message of existing order is calculated
-        console.log('Wait for existing orders');
-        this.browser.sleep(2500);
-
-        //Validate nothing is loading before clicking on dialog box
-        await webAppList.isSpinnerDone();
-
-        //Validating new order
-        const webAppDialog = new WebAppDialog(this.browser);
-        await webAppDialog.selectDialogBoxBeforeNewOrder();
-
-        //This sleep is mandaroy while the list is loading
-        console.log('Loading List');
-        this.browser.sleep(3000);
-
-        //Validate nothing is loading before starting to add items to cart
-        await webAppList.isSpinnerDone();
-        return;
     }
 
     //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.

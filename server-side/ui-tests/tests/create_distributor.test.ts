@@ -123,7 +123,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppLoginPage.signIn(clientArr[0].Email, clientArr[0].Password);
 
                 const webAppHomePage = new WebAppHomePage(driver);
-                await expect(webAppHomePage.untilIsVisible(webAppHomePage.Main, 90000)).eventually.to.be.true;
+                await expect(webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn, 90000)).eventually.to.be
+                    .true;
             });
         });
 
@@ -171,7 +172,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await webAppLoginPage.signIn(clientArr[0].Email, clientArr[0].Password);
 
                 const webAppHomePage = new WebAppHomePage(driver);
-                await expect(webAppHomePage.untilIsVisible(webAppHomePage.Main, 90000)).eventually.to.be.true;
+                await expect(webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn, 90000)).eventually.to.be
+                    .true;
 
                 //Change image
                 const webAppHeader = new WebAppHeader(driver);

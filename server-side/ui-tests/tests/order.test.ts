@@ -42,6 +42,7 @@ export async function OrderTests(email: string, password: string, client: Client
             await webAppLoginPage.login(email, password);
 
             const webAppHomePage = new WebAppHomePage(driver);
+            debugger;
             await webAppHomePage.initiateSalesActivity();
 
             //Create new transaction from the UI
