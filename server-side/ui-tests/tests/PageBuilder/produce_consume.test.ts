@@ -3,15 +3,13 @@ import { it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
-import { PageClass } from '../../../models/pages/page.class';
 import { v4 as newUuid } from 'uuid';
-import { PageSectionClass } from '../../../models/pages/page-section.class';
 import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { DynamicTester } from '../../pom/addons/Blocks/PageTester/DynamicTester.block';
-import { BlockParamsConfig, TestConfiguration } from '../../../models/pages/parameter-config.class';
+import { BlockParamsConfig, PageTesterConfig, PageSectionClass, PageClass } from "../../../models/pages/index";
 import { PageTestRequirements } from './page_builder.test';
 import { filterParam } from './PreConfigBlockParams/filter_param.const';
 import { stringParam } from './PreConfigBlockParams/string_param.const';
@@ -86,7 +84,7 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
         const dynamicBlockRelation = await pagesService.getBlockRelation('Dynamic Tester');
         const dynamicTesterBlock: PageBlock = prodConsPage.Blocks.createAndAdd(dynamicBlockRelation);
         const config: BlockParamsConfig = new BlockParamsConfig(stringParam, filterParam);
-        const testConfig: TestConfiguration = {
+        const testConfig: PageTesterConfig = {
             Parameters: config,
             BlockId: 'basicDynamicBlock',
         };

@@ -6,7 +6,7 @@ import {
     PageBlockContainer,
     PageLayout,
 } from '@pepperi-addons/papi-sdk';
-export class PageClass implements Partial<Page> {
+export class PageApiClass implements Partial<Page> {
     /**
      *
      */
@@ -27,14 +27,14 @@ export class PageClass implements Partial<Page> {
         }
     }
     [key: string]: any;
-    Name?: string | undefined;
-    Description?: string | undefined;
+    Name?: string;
+    Description?: string;
     Blocks?: PageBlock[];
     Layout?: PageLayout;
-    Hidden?: boolean | undefined;
-    CreationDateTime?: string | undefined;
-    ModificationDateTime?: string | undefined;
-    Key?: string | undefined;
+    Hidden?: boolean;
+    CreationDateTime?: string;
+    ModificationDateTime?: string;
+    Key?: string;
 
     private shallowCopyPage(page: Page): Page {
         return JSON.parse(JSON.stringify(page));

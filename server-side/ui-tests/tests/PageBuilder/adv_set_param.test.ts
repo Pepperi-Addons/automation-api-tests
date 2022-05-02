@@ -3,17 +3,14 @@ import { it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
-import { PageClass } from '../../../models/pages/page.class';
 import { v4 as newUuid } from 'uuid';
-import { PageSectionClass } from '../../../models/pages/page-section.class';
 import { NgComponentRelation, Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { DynamicTester } from '../../pom/addons/Blocks/PageTester/index';
-import { TestConfiguration } from '../../../models/pages/parameter-config.class';
+import { PageTesterConfig, PageTesterPageBlock, PageClass, PageSectionClass } from '../../../models/pages/index';
 import { PageTestRequirements } from './page_builder.test';
-import { PageBlockExt } from '../../../models/pages/page-block.ext';
 import { PageFactory } from '../../../models/page.factory';
 import { stringParam } from './PreConfigBlockParams/string_param.const';
 import { filterParam } from './PreConfigBlockParams/filter_param.const';
@@ -133,9 +130,9 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
     }
 }
 
-function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getStringProducerBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [
             {
                 Key: stringParam.Key,
@@ -161,9 +158,9 @@ function getStringProducerBlock(blockRelation: NgComponentRelation): PageBlockEx
     return pageBlock;
 }
 
-function getInitBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getInitBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [
             {
                 Key: stringParam.Key,
@@ -189,10 +186,10 @@ function getInitBlock(blockRelation: NgComponentRelation): PageBlockExt {
     return pageBlock;
 }
 
-function getFilterProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getFilterProducerBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
 
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [
             {
                 Key: stringParam.Key,

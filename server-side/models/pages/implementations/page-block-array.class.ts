@@ -1,8 +1,8 @@
 import { NgComponentRelation, PageBlock } from '@pepperi-addons/papi-sdk';
-import { PageFactory } from '../page.factory';
-import { PageBlockExt } from './page-block.ext';
+import { PageFactory } from '../../page.factory';
+import { PageTesterPageBlock } from '../index';
 
-export class PageBlocksArray extends Array<PageBlockExt> {
+export class PageBlocksArray extends Array<PageTesterPageBlock> {
     constructor(pageBlocks?: Array<PageBlock>) {
         super(...(pageBlocks || []));
     }
