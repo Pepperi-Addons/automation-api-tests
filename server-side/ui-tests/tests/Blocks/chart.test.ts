@@ -121,52 +121,15 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
             });
             it('Set Up - Create New Transaction Via API', async function () {
                 //3. create new trans via API
-                const transactionArr: Transaction[] = await objectsService.getTransaction({
-                    where: `Type LIKE '%Sales Order%'`,
-                    page_size: 1,
-                    include_deleted: true,
-                });
-                const activityTypeId = transactionArr[0].ActivityTypeID as number;
-                const accountId = transactionArr[0].Account?.Data?.InternalID as number;
-                const catalogId = transactionArr[0].Catalog?.Data?.InternalID as number;
-                const testDataTransaction: Transaction = await objectsService.createTransaction({
-                    ActivityTypeID: activityTypeId,
-                    UUID: newUuid(),
-                    Status: 2,
-                    DiscountPercentage: 0,
-                    Account: {
-                        Data: {
-                            InternalID: accountId,
-                        },
-                    },
-                    Catalog: {
-                        Data: {
-                            InternalID: catalogId,
-                        },
-                    },
-                });
-                const itemArr = await objectsService.getItems({ page_size: 1 });
-                const createdTransactionLines = await objectsService.createTransactionLine({
-                    LineNumber: 0,
-                    UnitsQuantity: 25,
-                    UnitDiscountPercentage: 0,
-                    Item: {
-                        Data: {
-                            ExternalID: itemArr[0].ExternalID,
-                        },
-                    },
-                    Transaction: {
-                        Data: {
-                            InternalID: testDataTransaction.InternalID,
-                        },
-                    },
-                });
+                await createNewTransactionViaAPI(objectsService);
             });
             it('UI Test - Validate Chart Presents Valid Data After New Trans Created', async function () {
                 //4. see charts output changed via UI
                 await navToPages(driver);
+                //pages UI bug
                 driver.sleep(1500);
                 await driver.refresh();
+                //pages UI bug
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
                 const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
@@ -211,3 +174,45 @@ async function getChartBlock(driver: Browser, pageEditor: PageEditor, block: Pag
     return pageEditor.PageBlocks.getBlock(block) as ChartTester;//error
 }
 
+async function createNewTransactionViaAPI(objectsService) {
+    const transactionArr: Transaction[] = await objectsService.getTransaction({
+        where: `Type LIKE '%Sales Order%'`,
+        page_size: 1,
+        include_deleted: true,
+    });
+    const activityTypeId = transactionArr[0].ActivityTypeID as number;
+    const accountId = transactionArr[0].Account?.Data?.InternalID as number;
+    const catalogId = transactionArr[0].Catalog?.Data?.InternalID as number;
+    const testDataTransaction: Transaction = await objectsService.createTransaction({
+        ActivityTypeID: activityTypeId,
+        UUID: newUuid(),
+        Status: 2,
+        DiscountPercentage: 0,
+        Account: {
+            Data: {
+                InternalID: accountId,
+            },
+        },
+        Catalog: {
+            Data: {
+                InternalID: catalogId,
+            },
+        },
+    });
+    const itemArr = await objectsService.getItems({ page_size: 1 });
+    const createdTransactionLines = await objectsService.createTransactionLine({
+        LineNumber: 0,
+        UnitsQuantity: 25,
+        UnitDiscountPercentage: 0,
+        Item: {
+            Data: {
+                ExternalID: itemArr[0].ExternalID,
+            },
+        },
+        Transaction: {
+            Data: {
+                InternalID: testDataTransaction.InternalID,
+            },
+        },
+    });
+}
