@@ -49,6 +49,7 @@ export class WebAppSettingsSidePanel extends Component {
 
     //UDC Selectors
     public UDCEditor: By = By.id('settings/122c0e9d-c240-4865-b446-f37ece866c22/udc');
+    public AddonManagerEditor: By = By.id('settings/bd629d5f-a7b4-4d03-9e7c-67865a6d82a9/addons_manager');
 
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         await this.browser.click(

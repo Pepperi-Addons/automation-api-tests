@@ -8,6 +8,7 @@ import {
     DistributorTests,
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
+    AddonDataImportExportReferenceTests,
 } from '../../api-tests/index';
 import {
     LoginTests,
@@ -21,6 +22,7 @@ import {
     AWSLogsTester,
     PageBuilderTests,
     UDCTests,
+    CloseCatalogTest,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import addContext from 'mochawesome/addContext';
@@ -176,6 +178,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         await UomTests(email, pass, varPass, client);
     }
 
+    if (tests.includes('CloseCatalog')) {
+        await CloseCatalogTest(email, pass, varPass, client);
+    }
+
     if (tests.includes('PageBuilder')) {
         await PageBuilderTests(email, pass, varPass, generalService);
     }
@@ -210,6 +216,20 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('DimxPerformance')) {
         await AddonDataImportExportPerformanceTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+    }
+
+    if (tests.includes('DimxReference')) {
+        await AddonDataImportExportReferenceTests(
             generalService,
             {
                 body: {

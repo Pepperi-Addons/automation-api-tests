@@ -22,4 +22,10 @@ export class DIMXService {
     ) {
         return this.papiClient.post(`/addons/data/import/file/${addonUUID}/${tableName}`, data);
     }
+
+    dataRecursiveExport(addonUUID: string, tableName: string) {
+        return this.papiClient.post(
+            `/addons/api/async/44c97115-6d14-4626-91dc-83f176e9a0fc/api/recursive_export?addon_uuid=${addonUUID}&table=${tableName}`,
+        );
+    }
 }
