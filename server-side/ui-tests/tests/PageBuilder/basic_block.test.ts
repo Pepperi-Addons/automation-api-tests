@@ -3,16 +3,14 @@ import { it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
-import { PageClass } from '../../../models/pages/page.class';
 import { v4 as newUuid } from 'uuid';
-import { PageSectionClass } from '../../../models/pages/page-section.class';
 import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { StaticTester } from '../../pom/addons/Blocks/PageTester/StaticTester.block';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { PageTestRequirements } from './page_builder.test';
-import { TestConfiguration } from '../../../models/pages/parameter-config.class';
+import { PageTesterConfig, PageSectionClass, PageClass } from '../../../models/pages/index';
 
 chai.use(promised);
 
@@ -93,7 +91,7 @@ export function BasicBlockTests(pagesService: PagesService, pagesReq: PageTestRe
         const staticTesterBlock: PageBlock = basicPage.Blocks.createAndAdd(staticBlockRelation);
         const section = new PageSectionClass(newUuid());
 
-        const testConfig: TestConfiguration = {
+        const testConfig: PageTesterConfig = {
             Parameters: [],
             BlockId: 'basicStaticBlock',
         };

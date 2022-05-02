@@ -1,6 +1,5 @@
 import { DataViewScreenSize, Page, PageBlock } from '@pepperi-addons/papi-sdk';
-import { PageBlocksArray } from './page-block-array';
-import { PageLayoutClass } from './page-layout.class';
+import { PageBlocksArray, PageLayoutClass } from '../index';
 
 export class PageClass implements Page {
     // [key: string]: any;

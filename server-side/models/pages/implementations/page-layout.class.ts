@@ -1,5 +1,5 @@
 import { PageLayout, PageSizeType } from '@pepperi-addons/papi-sdk';
-import { PageSectionClassArray } from './page-section-array.class';
+import { PageSectionClassArray } from '../index';
 
 export class PageLayoutClass implements PageLayout {
     Sections: PageSectionClassArray;
