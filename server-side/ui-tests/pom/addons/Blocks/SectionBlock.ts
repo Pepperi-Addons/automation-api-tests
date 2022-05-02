@@ -24,8 +24,7 @@ export abstract class SectionBlock extends Component {
     protected XPathParentContainer: By = By.xpath(`//section-block`);
 
     public getBlockDraggable(): By {
-        return By.xpath(
-         `${this.XPathParentContainer.value}//*[@title='${this.blockName}']`);
+        return By.xpath(`${this.XPathParentContainer.value}//*[@title='${this.blockName}']`);
     }
 
     public getEditBlockBtn(): By {
@@ -35,7 +34,9 @@ export abstract class SectionBlock extends Component {
     }
 
     public getLoadedBlockElement(): By {
-        return By.xpath(`${this.getBlockDraggable().value}/ancestor::pep-draggable-item/parent::*//pep-remote-loader/*`);
+        return By.xpath(
+            `${this.getBlockDraggable().value}/ancestor::pep-draggable-item/parent::*//pep-remote-loader/*`,
+        );
     }
 
     public async editBlock(): Promise<void> {

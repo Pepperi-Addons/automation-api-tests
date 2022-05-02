@@ -2,7 +2,6 @@ import { By } from 'selenium-webdriver';
 import { Browser } from '../../../../utilities/browser';
 import { ConfigurablePageTesterBlock, PageTesterBlockName } from './base/index';
 
-
 export class InitTester extends ConfigurablePageTesterBlock {
     constructor(blockId: string, browser: Browser) {
         super(PageTesterBlockName.InitTester, blockId, browser);
@@ -24,7 +23,7 @@ export class InitTester extends ConfigurablePageTesterBlock {
         return await this.browser.getElementAttribute(this.ConsumesText, 'title');
     }
 
-    public async getBlockLoadingTime(): Promise<string | null>{
+    public async getBlockLoadingTime(): Promise<string | null> {
         return await this.browser.getElementAttribute(this.BlockLoadingTime, 'title');
     }
 }

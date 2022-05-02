@@ -1,4 +1,3 @@
 import { IBlockFilterParameter, IBlockStringParameter } from '../index';
 
-
-export class BlockParamsConfig extends Array<IBlockFilterParameter | IBlockStringParameter> { }
+export class BlockParamsConfig extends Array<IBlockFilterParameter | IBlockStringParameter> {}

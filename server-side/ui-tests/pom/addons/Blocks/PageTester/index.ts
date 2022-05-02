@@ -1,9 +1,5 @@
-import { DynamicTester } from "./DynamicTester.block";
-import { InitTester } from "./InitTester.block";
-import { StaticTester } from "./StaticTester.block";
+import { DynamicTester } from './DynamicTester.block';
+import { InitTester } from './InitTester.block';
+import { StaticTester } from './StaticTester.block';
 
-export{
-    DynamicTester,
-    InitTester,
-    StaticTester
-}
+export { DynamicTester, InitTester, StaticTester };

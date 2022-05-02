@@ -2,7 +2,7 @@ import { Browser } from '../../../../../utilities/browser';
 import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
 
 /**
- * Abstract class of PageTester blocks that contain configurations. 
+ * Abstract class of PageTester blocks that contain configurations.
  */
 export abstract class ConfigurablePageTesterBlock extends PageTesterSectionBlock {
     protected constructor(blockName: string, protected blockId: string, browser: Browser) {

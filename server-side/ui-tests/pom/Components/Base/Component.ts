@@ -5,7 +5,7 @@ import { Browser } from '../../../utilities/browser';
 // import { ConsoleColors } from '../../../../services/general.service';
 import { BasePomObject } from '../../base/BasePomObject';
 
-export abstract class Component extends BasePomObject{
+export abstract class Component extends BasePomObject {
     public constructor(protected browser: Browser) {
         super(browser);
     }

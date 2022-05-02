@@ -2,7 +2,6 @@ import { By } from 'selenium-webdriver';
 import { Browser } from '../../../../utilities/browser';
 import { PageTesterBlockName, ConfigurablePageTesterBlock } from './base/index';
 
-
 export class DynamicTester extends ConfigurablePageTesterBlock {
     constructor(blockId: string, browser: Browser) {
         super(PageTesterBlockName.DynamicTester, blockId, browser);

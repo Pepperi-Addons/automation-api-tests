@@ -9,7 +9,7 @@ import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
 import { DynamicTester } from '../../pom/addons/Blocks/PageTester/DynamicTester.block';
-import { BlockParamsConfig, PageTesterConfig, PageSectionClass, PageClass } from "../../../models/pages/index";
+import { BlockParamsConfig, PageTesterConfig, PageSectionClass, PageClass } from '../../../models/pages/index';
 import { PageTestRequirements } from './page_builder.test';
 import { filterParam } from './PreConfigBlockParams/filter_param.const';
 import { stringParam } from './PreConfigBlockParams/string_param.const';

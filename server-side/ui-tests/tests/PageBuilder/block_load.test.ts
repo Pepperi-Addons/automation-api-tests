@@ -22,14 +22,14 @@ enum TestBlockId {
     Consumer = 'consumerBlock',
     Producer = 'producerBlock',
     ConsumerProducer = 'consumerProducerBlock',
-    Static = 'staticBlock'
-};
+    Static = 'staticBlock',
+}
 //Loading block order: Producer blocks, Producer and Consumer blocks, Consumer blocks. Non-producer and Non-consumer blocks are not enforced to be loaded in specific order.
 enum BlockType {
     Producer = 0,
     ProducerConsumer = 1,
     Consumer = 2,
-    Static = 3 // Neither producer nor consumer.
+    Static = 3, // Neither producer nor consumer.
 }
 
 export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
@@ -62,10 +62,9 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
             for (const block of testPage.Blocks) {
                 pageEditor.PageBlocks.setBlock(createBlock.fromPageBlock(block));
                 const tempBlock = pageEditor.PageBlocks.getBlock(block);
-                if(isConfigurablePageTester(tempBlock)){
+                if (isConfigurablePageTester(tempBlock)) {
                     await tempBlock.initBlockConfig();
                 }
-                
             }
             await (await pageEditor.publishPage()).selectDialogBoxByText('Close');
             await browser.refresh();
@@ -94,36 +93,44 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
         await pageEditor.collectEndTestData(this);
     });
 
-
     it('Basic Load Order Test', async function () {
-        const loadTimes: Map<string,number> = new Map<string,number>();
-        for(const blockName of Object.values(TestBlockId)){
+        const loadTimes: Map<string, number> = new Map<string, number>();
+        for (const blockName of Object.values(TestBlockId)) {
             const block = pageEditor.PageBlocks.getBlock<InitTester>(blockName);
             const timeString = await block.getBlockLoadingTime();
             expect(timeString, `Load time of ${blockName} is null`).to.not.be.null;
-            loadTimes.set(blockName, parseFloat(timeString as string))
+            loadTimes.set(blockName, parseFloat(timeString as string));
         }
 
-        for(const loadTimeMap of loadTimes){
-            const testedBlockType = getBlockType(testPage?.Blocks?.find( pageBlock => pageBlock?.Configuration?.Data?.BlockId == loadTimeMap[0]));
-            if(testedBlockType == BlockType.Static){
+        for (const loadTimeMap of loadTimes) {
+            const testedBlockType = getBlockType(
+                testPage?.Blocks?.find((pageBlock) => pageBlock?.Configuration?.Data?.BlockId == loadTimeMap[0]),
+            );
+            if (testedBlockType == BlockType.Static) {
                 expect(loadTimeMap[1]).to.be.greaterThan(0);
-            }
-            else{
-                pageEditor.PageBlocks.forEach(function(_pageBlock){
-                    if(_pageBlock.BlockId != loadTimeMap[0]){
-                        const pageBlock = testPage?.Blocks?.find( pageBlock => pageBlock?.Configuration?.Data?.BlockId == _pageBlock.BlockId);
+            } else {
+                pageEditor.PageBlocks.forEach(function (_pageBlock) {
+                    if (_pageBlock.BlockId != loadTimeMap[0]) {
+                        const pageBlock = testPage?.Blocks?.find(
+                            (pageBlock) => pageBlock?.Configuration?.Data?.BlockId == _pageBlock.BlockId,
+                        );
                         const comparedBlockType = getBlockType(pageBlock);
-                        if(comparedBlockType != BlockType.Static){
-                            switch(true){
+                        if (comparedBlockType != BlockType.Static) {
+                            switch (true) {
                                 case testedBlockType < comparedBlockType:
-                                    expect(loadTimeMap[1]).to.be.lessThan(loadTimes.get(_pageBlock.BlockId) as number, `'${loadTimeMap[0]}' was loaded after '${_pageBlock.BlockId}'`);
+                                    expect(loadTimeMap[1]).to.be.lessThan(
+                                        loadTimes.get(_pageBlock.BlockId) as number,
+                                        `'${loadTimeMap[0]}' was loaded after '${_pageBlock.BlockId}'`,
+                                    );
                                     break;
                                 case testedBlockType == comparedBlockType:
                                     expect(loadTimeMap[1]).to.be.greaterThan(0);
                                     break;
                                 case testedBlockType > comparedBlockType:
-                                    expect(loadTimeMap[1]).to.be.greaterThan(loadTimes.get(_pageBlock.BlockId) as number, `'${loadTimeMap[0]}' was loaded before '${_pageBlock.BlockId}'`);
+                                    expect(loadTimeMap[1]).to.be.greaterThan(
+                                        loadTimes.get(_pageBlock.BlockId) as number,
+                                        `'${loadTimeMap[0]}' was loaded before '${_pageBlock.BlockId}'`,
+                                    );
                                     break;
                             }
                         }
@@ -133,22 +140,28 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
         }
     });
 
-    it('On Load Consume Test', async function(){
-        for(const blockName of Object.values(TestBlockId)){
+    it('On Load Consume Test', async function () {
+        for (const blockName of Object.values(TestBlockId)) {
             const block = pageEditor.PageBlocks.getBlock<InitTester>(blockName);
             const consumedText = await block.getConsumesText();
 
-            const pageBlock = testPage?.Blocks?.find( pageBlock => pageBlock?.Configuration?.Data?.BlockId == blockName);
-            if(!pageBlock){
+            const pageBlock = testPage?.Blocks?.find(
+                (pageBlock) => pageBlock?.Configuration?.Data?.BlockId == blockName,
+            );
+            if (!pageBlock) {
                 throw new Error(`BlockID '${blockName}' not found in the page`);
             }
             const blockType = getBlockType(pageBlock);
-            switch(blockType){
-                case BlockType.Static: case BlockType.Producer:
+            switch (blockType) {
+                case BlockType.Static:
+                case BlockType.Producer:
                     expect(consumedText).to.equal(`null`);
                     break;
-                case BlockType.Consumer: case BlockType.ProducerConsumer:
-                    expect(consumedText).to.equal(JSON.stringify({[stringParam.Key]:`This is ${TestBlockId.ConsumerProducer}`}));
+                case BlockType.Consumer:
+                case BlockType.ProducerConsumer:
+                    expect(consumedText).to.equal(
+                        JSON.stringify({ [stringParam.Key]: `This is ${TestBlockId.ConsumerProducer}` }),
+                    );
                     break;
                 default:
                     throw new Error(`Unsupported block type: '${blockType}'`);
@@ -183,7 +196,7 @@ function getProducerBlock(blockRelation: NgComponentRelation): PageTesterPageBlo
                 Produce: true,
                 Type: stringParam.Type,
                 Value: `This is ${TestBlockId.Producer}`,
-            }
+            },
         ],
         BlockId: TestBlockId.Producer,
     };
@@ -202,7 +215,7 @@ function getConsumerProducerBlock(blockRelation: NgComponentRelation): PageTeste
                 Produce: true,
                 Type: stringParam.Type,
                 Value: `This is ${TestBlockId.ConsumerProducer}`,
-            }
+            },
         ],
         BlockId: TestBlockId.ConsumerProducer,
     };
@@ -221,8 +234,8 @@ function getConsumerBlock(blockRelation: NgComponentRelation): PageTesterPageBlo
                 Consume: true,
                 Produce: false,
                 Type: stringParam.Type,
-                Value:  `This is ${TestBlockId.Consumer}`,
-            }
+                Value: `This is ${TestBlockId.Consumer}`,
+            },
         ],
         BlockId: TestBlockId.Consumer,
     };
@@ -245,25 +258,25 @@ function getStaticBlock(blockRelation: NgComponentRelation): PageTesterPageBlock
     return pageBlock;
 }
 
-function isConfigurablePageTester(sectionBlock: SectionBlock): sectionBlock is ConfigurablePageTesterBlock{
+function isConfigurablePageTester(sectionBlock: SectionBlock): sectionBlock is ConfigurablePageTesterBlock {
     return (sectionBlock as ConfigurablePageTesterBlock).initBlockConfig !== undefined;
 }
 
-function getBlockType(pageBlock: PageBlock | undefined): BlockType{
-    if(!pageBlock){
+function getBlockType(pageBlock: PageBlock | undefined): BlockType {
+    if (!pageBlock) {
         throw new Error();
     }
     const pageParameters = pageBlock?.Configuration.Data?.Parameters;
-    if(pageParameters?.find(pageParameter => pageParameter?.Produce == true)){
-        return pageParameters?.find(pageParameter => pageParameter?.Consume == true) ? BlockType.ProducerConsumer : BlockType.Producer;
-    }
-    else if(pageParameters?.find(pageParameter => pageParameter?.Consume == true)){
+    if (pageParameters?.find((pageParameter) => pageParameter?.Produce == true)) {
+        return pageParameters?.find((pageParameter) => pageParameter?.Consume == true)
+            ? BlockType.ProducerConsumer
+            : BlockType.Producer;
+    } else if (pageParameters?.find((pageParameter) => pageParameter?.Consume == true)) {
         return BlockType.Consumer;
-    }
-    else{
+    } else {
         return BlockType.Static;
     }
-    // return pageParameters?.find(pageParameter => pageParameter.Produce != true) ? 
+    // return pageParameters?.find(pageParameter => pageParameter.Produce != true) ?
     // (pageParameters?.find(pageParameter => pageParameter.Consume == true) ? BlockType.Consumer : BlockType.Static ) :
     // BlockType.Producer;
 }

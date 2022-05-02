@@ -22,8 +22,8 @@ chai.use(promised);
 enum TestBlockId {
     StringProducer = 'stringProduceFilterConsume',
     FilterProducer = 'filterProduceStringConsume',
-    InitConsumer = 'filterConsumeStringConsume'
-};
+    InitConsumer = 'filterConsumeStringConsume',
+}
 
 export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
     let browser: Browser;
@@ -55,7 +55,7 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
             for (const block of testPage.Blocks) {
                 pageEditor.PageBlocks.setBlock(createBlock.fromPageBlock(block));
                 const tempBlock = pageEditor.PageBlocks.getBlock(block);
-                if(isConfigurablePageTester(tempBlock)){
+                if (isConfigurablePageTester(tempBlock)) {
                     await tempBlock.initBlockConfig();
                 }
             }
@@ -84,23 +84,17 @@ export function AdvSetParamTests(pagesService: PagesService, pagesReq: PageTestR
     });
 
     it('Produce String Param', async function () {
-        const stringProducerBlock = pageEditor.PageBlocks.getBlock<DynamicTester>(
-            TestBlockId.StringProducer,
-        );
+        const stringProducerBlock = pageEditor.PageBlocks.getBlock<DynamicTester>(TestBlockId.StringProducer);
         await stringProducerBlock.clickSetParamBtn(stringParam.Key);
         expect(await stringProducerBlock.getConsumesText()).to.not.include(stringParam.Value);
-        expect(await pageEditor.PageBlocks.getBlock<DynamicTester>(
-                TestBlockId.FilterProducer,
-            ).getConsumesText(),
+        expect(
+            await pageEditor.PageBlocks.getBlock<DynamicTester>(TestBlockId.FilterProducer).getConsumesText(),
         ).to.include(stringParam.Value);
     });
 
     it('Produce Filter Param', async function () {
-        const filterProducerBlock = pageEditor.PageBlocks.getBlock<DynamicTester>(
-            TestBlockId.FilterProducer,
-        );
+        const filterProducerBlock = pageEditor.PageBlocks.getBlock<DynamicTester>(TestBlockId.FilterProducer);
         await filterProducerBlock.clickSetParamBtn(filterParam.Key);
-        
 
         const stringProducerText = await pageEditor.PageBlocks.getBlock<DynamicTester>(
             TestBlockId.StringProducer,
@@ -216,6 +210,6 @@ function getFilterProducerBlock(blockRelation: NgComponentRelation): PageTesterP
     return pageBlock;
 }
 
-function isConfigurablePageTester(sectionBlock: SectionBlock): sectionBlock is ConfigurablePageTesterBlock{
+function isConfigurablePageTester(sectionBlock: SectionBlock): sectionBlock is ConfigurablePageTesterBlock {
     return (sectionBlock as ConfigurablePageTesterBlock).initBlockConfig !== undefined;
 }

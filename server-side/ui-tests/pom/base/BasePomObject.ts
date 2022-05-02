@@ -11,15 +11,15 @@ export abstract class BasePomObject {
      *
      * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports
      */
-    public async collectEndTestData(that, overwriteConsoleLogs = true): Promise<void> {
+    public async collectEndTestData(that): Promise<void> {
         if (that.currentTest.state != 'passed') {
             console.log('%cTest Failed', ConsoleColors.Error);
             await this.addUrlToContext(that);
             await this.addScreenshotsToContext(that);
             // if(overwriteConsoleLogs || !that.currentTest.context.find(x => x.title == 'Console Logs')){
-                //Waiting for all the logs to be printed (this usually takes more than 3 seconds)
-                this.browser.sleep(6006);
-                await this.addConsoleLogsToContext(that);
+            //Waiting for all the logs to be printed (this usually takes more than 3 seconds)
+            this.browser.sleep(6006);
+            await this.addConsoleLogsToContext(that);
             // }
         } else if (that.currentTest.state == 'passed') {
             console.log('%cTest Passed', ConsoleColors.Success);
@@ -29,10 +29,10 @@ export abstract class BasePomObject {
         return;
     }
 
-    public async addConsoleLogsToContext(that){
+    public async addConsoleLogsToContext(that) {
         const contextTitle = 'Console Logs';
-        const existingLogs : string[] | undefined = that?.currentTest?.context?.find(x=> x.title == contextTitle);
-        const consoleLogs: string[] = existingLogs ? existingLogs : [];        
+        const existingLogs: string[] | undefined = that?.currentTest?.context?.find((x) => x.title == contextTitle);
+        const consoleLogs: string[] = existingLogs ? existingLogs : [];
         try {
             const logsFromBrowser = await this.browser.getConsoleLogs();
             consoleLogs.push(...logsFromBrowser);
@@ -46,8 +46,8 @@ export abstract class BasePomObject {
         });
     }
 
-    public async addUrlToContext(that){
-        let url = 'Error In Getting URL';            
+    public async addUrlToContext(that) {
+        let url = 'Error In Getting URL';
         try {
             url = await this.browser.getCurrentUrl();
         } catch (error) {
@@ -60,13 +60,12 @@ export abstract class BasePomObject {
     }
 
     //TODO: Modify method to add additional screenshots in case 'Image' context already contains an image.
-    public async addScreenshotsToContext(that){
+    public async addScreenshotsToContext(that) {
         const imagePath = `${__dirname.split('server-side')[0]}server-side\\api-tests\\test-data\\Error_Image.jpg`;
         const file = fs.readFileSync(path.resolve(imagePath));
         let base64Image = file.toString('base64');
         try {
             base64Image = await this.browser.saveScreenshots();
-            
         } catch (error) {
             console.log(`%cError in collectEndTestData saveScreenshots: ${error}`, ConsoleColors.Error);
         }

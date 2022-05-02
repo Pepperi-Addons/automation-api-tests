@@ -559,14 +559,17 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             it('Cleanup of all PagesApiTest pages', async function () {
                 const errorCounter: Array<{ message: string; count: number }> = [];
                 const pagesFromApi = await pagesService.getPages({ page_size: -1 });
-                const pageNamesToDelete = ['PagesApiTest', 'Remove Slideshow Test', 'SamplePage', 'Produce Consume Tests', 'Advanced SetParams Tests', 'Load Order Tests'];
+                const pageNamesToDelete = [
+                    'PagesApiTest',
+                    'Remove Slideshow Test',
+                    'SamplePage',
+                    'Produce Consume Tests',
+                    'Advanced SetParams Tests',
+                    'Load Order Tests',
+                ];
 
                 for (const page of pagesFromApi) {
-                    await deletePageIncluding(
-                        page,
-                        pagesService,
-                        pageNamesToDelete,
-                    ).catch((error) => {
+                    await deletePageIncluding(page, pagesService, pageNamesToDelete).catch((error) => {
                         addToErrorCounter(errorCounter, `Page ${page.Key} - ${(error as Error).message}`);
                     });
                 }

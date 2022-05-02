@@ -1,9 +1,5 @@
-import { ConfigurablePageTesterBlock } from "./ConfigurablePageTester.block";
-import { PageTesterBlockName } from "./PageTesterBlockName.enum";
-import { PageTesterSectionBlock } from "./PageTesterSectionBlock.block";
+import { ConfigurablePageTesterBlock } from './ConfigurablePageTester.block';
+import { PageTesterBlockName } from './PageTesterBlockName.enum';
+import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
 
-export{
-    PageTesterSectionBlock,
-    ConfigurablePageTesterBlock,
-    PageTesterBlockName
-}
+export { PageTesterSectionBlock, ConfigurablePageTesterBlock, PageTesterBlockName };

@@ -27,6 +27,3 @@ export interface PageTesterConfig {
     Parameters: BlockParamsConfig;
     BlockId: string;
 }
-
-
-
