@@ -10,6 +10,7 @@ import { v4 as newUuid } from 'uuid';
 import { PageClass } from '../../../models/pages/page.class';
 import { TestConfiguration } from '../../../models/pages/parameter-config.class';
 import { Page } from '../../pom/Pages/base/Page';
+import chai, { expect } from 'chai';
 
 export enum pageOptions {
     'Blank' = 'Blank',
@@ -106,7 +107,7 @@ export class PageBuilderSettings extends Page {
 
     public async apiCreatePage(expect, pagesService: PagesService, blockName: string, basicPage: PageClass) {
         const newBlockRelation = await pagesService.getBlockRelation(blockName);
-        const newBlock: PageBlock = basicPage.Blocks.createAndAdd(newBlockRelation);
+        const newBlock: PageBlock = basicPage.Blocks.createAndAddChart(newBlockRelation);
         const section = new PageSectionClass(newUuid());
 
         // const testConfig: TestConfiguration = {
@@ -124,7 +125,7 @@ export class PageBuilderSettings extends Page {
             console.log((error as Error).message);
             throw error;
         });
-        pagesService.deepCompareObjects(basicPage, pageResult, expect);
+        pagesService.deepCompareObjects(basicPage, pageResult, expect, ["Hidden", "CreationDateTime", "ModificationDateTime","query"]);
         return pageResult;
     }
 }

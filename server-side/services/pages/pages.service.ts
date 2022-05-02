@@ -114,7 +114,7 @@ export class PagesService {
         }
     }
 
-    deepCompareObjectsNOMOIF<Type>(
+    deepCompareObjectsNoModifDate<Type>(
         expected: Type,
         actual: Type,
         expect: Chai.ExpectStatic,
@@ -128,7 +128,6 @@ export class PagesService {
                 );
 
                 properties.forEach((prop) => {
-                    debugger;
                     if (prop !== 'ModificationDateTime') {
                         if (typeof expected[prop] === 'object') {
                             parentProp = parentProp ? parentProp + '.' + prop : prop;

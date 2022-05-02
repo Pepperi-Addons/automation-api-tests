@@ -27,4 +27,26 @@ export interface TestConfiguration {
     BlockId: string;
 }
 
-export class BlockParamsConfig extends Array<IBlockFilterParameter | IBlockStringParameter> {}
+export interface ChartData {
+    query: { Key: string } | null,
+    useDropShadow: boolean,
+    dropShadow: {
+        type: string,
+        intensity: number
+    },
+    useBorder: boolean,
+    border: {
+        color: string,
+        opacity: string
+    },
+    executeQuery: boolean,
+    chart: {
+        Key: string,
+        ScriptURI: string
+    },
+    useLabel: boolean,
+    label: string,
+    height: number
+}
+
+export class BlockParamsConfig extends Array<IBlockFilterParameter | IBlockStringParameter> { }

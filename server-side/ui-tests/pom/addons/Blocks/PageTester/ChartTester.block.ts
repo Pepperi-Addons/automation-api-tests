@@ -15,9 +15,10 @@ export class ChartTester extends PageTesterSectionBlock {
     public readonly titleCheckBoxToClick = By.xpath('//mat-checkbox[contains(@title,"Title")]//span');
     public readonly titleInput = By.xpath('//pep-textbox//mat-form-field//div//input');
     public readonly titleCompo = By.css('.pep-border-bottom > label');
-    public readonly addQueryBtn: By = By.xpath('//span[contains(text(),"Add")]');
+    public readonly addQueryBtn: By = By.xpath('//mat-form-field');
     public readonly insideChartTitle: By = By.css('.apexcharts-svg > g > g > g > text > title');
     public readonly queryValueElement: By = By.css('g > g > path');
+    public readonly querySelectorTitle: By = By.xpath('//mat-select//div//div//span//span');
 
     public async setTitle(pageEditor: PageEditor, titleName: string) {
         const titleCheckBoxElem = await this.browser.findElement(this.titleCheckBox);
@@ -27,7 +28,7 @@ export class ChartTester extends PageTesterSectionBlock {
         }
         await this.browser.click(this.titleInput);
         await this.browser.sendKeys(this.titleInput, titleName);
-        pageEditor.savePage();
+        await pageEditor.savePage();
     }
 
     public async isTitlePresented() {
@@ -51,14 +52,23 @@ export class ChartTester extends PageTesterSectionBlock {
 
     public async loadBlock(pageEditor: PageEditor) {
         await this.editBlock();
+        this.browser.sleep(3000);
         await pageEditor.goBack();
     }
 
-    public async addQuery(queryToUse: query) {
+    public async addQuery(queryName: string, pageEditor: PageEditor) {
+        this.browser.sleep(500);
         await this.browser.click(this.addQueryBtn);
-        const queryDialog = new AddQueryDialog(this.browser);
-        await queryDialog.waitUntilLoaded();
-        await queryDialog.setQuery(queryToUse);
+        this.browser.sleep(1500);
+        const queryStringForMatOption = `//mat-option//span[text()='${queryName}']`;
+        await this.browser.click(By.xpath(queryStringForMatOption));
+        await pageEditor.savePage();
+    }
+
+    public async getSelectedQuery() {
+        this.browser.sleep(500);
+        const queryElement = await this.browser.findElement(this.querySelectorTitle);
+        return await queryElement.getText();
     }
 
     public async getDataPresentedInBlock(that: any) {

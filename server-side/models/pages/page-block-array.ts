@@ -1,8 +1,8 @@
 import { NgComponentRelation, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PageFactory } from '../page.factory';
-import { PageBlockExt } from './page-block.ext';
+import { PageBlockChart, PageBlockExt } from './page-block.ext';
 
-export class PageBlocksArray extends Array<PageBlockExt> {
+export class PageBlocksArray extends Array<PageBlockExt | PageBlockChart> {
     constructor(pageBlocks?: Array<PageBlock>) {
         super(...(pageBlocks || []));
     }
@@ -14,6 +14,12 @@ export class PageBlocksArray extends Array<PageBlockExt> {
      */
     createAndAdd(blockRelation: NgComponentRelation): PageBlock {
         const pageBlock = PageFactory.defaultPageBlock(blockRelation);
+        const index = this.push(pageBlock);
+        return this[index - 1];
+    }
+
+    createAndAddChart(blockRelation: NgComponentRelation): PageBlock {
+        const pageBlock = PageFactory.chartPageBlock(blockRelation);
         const index = this.push(pageBlock);
         return this[index - 1];
     }
@@ -84,3 +90,4 @@ export class PageBlocksArray extends Array<PageBlockExt> {
         }
     }
 }
+

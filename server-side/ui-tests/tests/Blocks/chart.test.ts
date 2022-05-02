@@ -1,5 +1,5 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { describe, it, afterEach, beforeEach } from 'mocha';
+import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import GeneralService from '../../../services/general.service';
@@ -20,11 +20,15 @@ import { PagesService } from 'c:/automation/api/automation-api-tests/server-side
 import { v4 as newUuid } from 'uuid';
 import { SectionBlockFactory } from '../../../services/pages/section-block.factory';
 import { ChartTester, query } from '../../pom/addons/Blocks/PageTester/ChartTester.block';
+import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
+import { PageBlock, Transaction } from '@pepperi-addons/papi-sdk';
+import { ObjectsService } from '../../../services';
 
 chai.use(promised);
 
 export async function ChartBlockTest(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
+    const objectsService = new ObjectsService(generalService);
     const pagesService = new PagesService(generalService);
     let driver: Browser;
     let _id;
@@ -77,83 +81,99 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
         describe('Chart Block UI Related', () => {
             this.retries(1);
 
-            beforeEach(async function () {
+
+            before(async function () {
                 driver = await Browser.initiateChrome();
             });
 
-            afterEach(async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.collectEndTestData(this);
+            after(async function () {
                 await driver.quit();
             });
 
-            it('Set Up - Creating A Page With Chart Block Inside And Configuring Its Query To Return Number Of Activities', async function () {
+            afterEach(async function () {
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
+            it('Set Up - Create A Fully Configured Page With A Chart Block VIA API', async function () {
+                //1. create a complete page with all configured data via API
                 const returnedData = await createPageWithChartBlockUsingTheAPI(driver, generalService, pagesService, expect);
                 _nameOfPage = returnedData.name;
                 _currentBlock = returnedData.block;
                 _pagesKey = returnedData.key;
+            });
+            it('Set Up - UI Test All Data In Page Is Correctly Presented And Save Its Current Data Presented', async function () {
                 await loginAndNavigateToPages(driver, email, password);
+                //2. enter the page using UI and see all is there - caputre the output of the chart
+                let pagesList = new PagesList(driver);
+                let pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
+                let chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
+                await chartBlock.loadBlock(pageEditor);
+                await chartBlock.editBlock();
+                const blockTitle = await chartBlock.getTitle();
+                expect(blockTitle).to.equal("testing");
+                await pageEditor.goToContent(chartBlock.addQueryBtn);
+                const selectedQuery = await chartBlock.getSelectedQuery();
+                expect(selectedQuery).to.equal('count activities');
+                _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock(this));
+                let webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.returnToHomePage();
+            });
+            it('Set Up - Create New Transaction Via API', async function () {
+                //3. create new trans via API
+                const transactionArr: Transaction[] = await objectsService.getTransaction({
+                    where: `Type LIKE '%Sales Order%'`,
+                    page_size: 1,
+                    include_deleted: true,
+                });
+                const activityTypeId = transactionArr[0].ActivityTypeID as number;
+                const accountId = transactionArr[0].Account?.Data?.InternalID as number;
+                const catalogId = transactionArr[0].Catalog?.Data?.InternalID as number;
+                const testDataTransaction: Transaction = await objectsService.createTransaction({
+                    ActivityTypeID: activityTypeId,
+                    UUID: newUuid(),
+                    Status: 2,
+                    DiscountPercentage: 0,
+                    Account: {
+                        Data: {
+                            InternalID: accountId,
+                        },
+                    },
+                    Catalog: {
+                        Data: {
+                            InternalID: catalogId,
+                        },
+                    },
+                });
+                const itemArr = await objectsService.getItems({ page_size: 1 });
+                const createdTransactionLines = await objectsService.createTransactionLine({
+                    LineNumber: 0,
+                    UnitsQuantity: 25,
+                    UnitDiscountPercentage: 0,
+                    Item: {
+                        Data: {
+                            ExternalID: itemArr[0].ExternalID,
+                        },
+                    },
+                    Transaction: {
+                        Data: {
+                            InternalID: testDataTransaction.InternalID,
+                        },
+                    },
+                });
+            });
+            it('UI Test - Validate Chart Presents Valid Data After New Trans Created', async function () {
+                //4. see charts output changed via UI
+                await navToPages(driver);
+                driver.sleep(1500);
+                await driver.refresh();
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
                 const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
-                await chartBlock.loadBlock(pageEditor);
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.returnToHomePage();
-                let responseObjForCreatedPage = await generalService.papiClient.pages.get(_pagesKey);
-                responseObjForCreatedPage.Blocks[0].Configuration.Data.Label = "testing";
-                const responseObjForUpdatedPage = await generalService.papiClient.pages.upsert(responseObjForCreatedPage);
-                pagesService.deepCompareObjectsNOMOIF(responseObjForUpdatedPage, responseObjForCreatedPage, expect);
-                debugger;
+                await chartBlock.editBlock();
+                const newChartValue = parseInt(await chartBlock.getDataPresentedInBlock(this));
+                expect(newChartValue).to.equal(_initialValueOfQuery + 1);
             });
-            //     await chartBlock.editBlock();
-            //     expect(await chartBlock.isTitlePresented()).to.be.false;
-            //     await chartBlock.setTitle(pageEditor, "testing");
-            //     const blockTitle = await chartBlock.getTitle();
-            //     expect(blockTitle).to.equal("testing");
-            //     debugger;
-            //     await pageEditor.goBack();
-            //     await pageEditor.goToContent(chartBlock.addQueryBtn);
-            //     const queryToUse: query = {
-            //         Name: "evgeny test",
-            //         Resource: "all_activities",
-            //         Metric: { Aggregator: "Count" },
-            //         Filter: { AccountFilter: "All accounts", UserFilter: "All users" },
-            //     };
-            //     await chartBlock.addQuery(queryToUse);
-            //     _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock(this));
-            // });
-            // it('Set up - Performe A Basic Transaction Using The UI And Record Its ID', async function () {
-            //     const webAppLoginPage = new WebAppLoginPage(driver);
-            //     await webAppLoginPage.login(email, password);
-            //     const webAppHomePage = new WebAppHomePage(driver);
-            //     await webAppHomePage.initiateSalesActivity(undefined, 'Best Buy #163');
-            //     const itemsScopeURL = await driver.getCurrentUrl();
-            //     const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
-            //     const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
-            //     const webAppList = new WebAppList(driver);
-            //     const webAppTopBar = new WebAppTopBar(driver);
-            //     await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Medium');
-            //     await webAppTransaction.addItemToCart(this, 'SA4', 5, true);
-            //     await webAppList.click(webAppTopBar.CartViewBtn);
-            //     await webAppList.click(webAppTopBar.CartSumbitBtn);
-            //     await webAppHomePage.isDialogOnHomePAge(this);
-            //     const lastTransFromAPI = await (await generalService.fetchStatus(
-            //         `/transactions?page_size=-1&order_by=CreationDateTime DESC`
-            //     )).Body[0];
-            //     _priceOfTrans = lastTransFromAPI.SubTotalAfterItemsDiscount;
-            //     _id = lastTransFromAPI.InternalID;
-            //     _itemQty = lastTransFromAPI.QuantitiesTotal;
-            // });
-            // it('Chart Block Testing - Testing If The Chart Presents Correct Values After Adding The Transaction: Num Of Activities Presented Should Be Increased By One', async function () {
-            //     await loginAndNavigateToPages(driver, email, password);
-            //     const pagesList = new PagesList(driver);
-            //     const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
-            //     const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
-            //     await chartBlock.editBlock();
-            //     driver.sleep(5000);//TODO:what should i wait for
-            //     const updatedData = await chartBlock.getDataPresentedInBlock(this);
-            //     expect(parseInt(updatedData)).to.equal(_initialValueOfQuery + 1);
-            // });
         });
     });
 }
@@ -163,6 +183,10 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
 async function loginAndNavigateToPages(driver, email, password) {
     const webAppLoginPage = new WebAppLoginPage(driver);
     await webAppLoginPage.login(email, password);
+    await navToPages(driver);
+}
+
+async function navToPages(driver) {
     const webAppHeader = new WebAppHeader(driver);
     await driver.click(webAppHeader.Settings);
     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -181,8 +205,9 @@ async function createPageWithChartBlockUsingTheAPI(driver, generalService, pages
     return { name: nameOfPage, block: currentBlock, page: pageResult, key: workingPage.Key };
 }
 
-async function getChartBlock(driver, pageEditor, block) {
+async function getChartBlock(driver: Browser, pageEditor: PageEditor, block: PageBlock) {
     const createBlockFactory = new SectionBlockFactory(driver);
     pageEditor.PageBlocks.setBlock(createBlockFactory.fromPageBlock(block));
-    return pageEditor.PageBlocks.getBlock(block) as ChartTester;
+    return pageEditor.PageBlocks.getBlock(block) as ChartTester;//error
 }
+

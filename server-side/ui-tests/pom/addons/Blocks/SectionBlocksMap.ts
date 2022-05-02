@@ -28,7 +28,7 @@ export class SectionBlocksMap extends Map<string, SectionBlock> {
     public getBlock<T extends SectionBlock>(pageBlock: PageBlock): T | never;
     public getBlock<T extends SectionBlock>(pageBlockKey: string): T | never;
     public getBlock<T extends SectionBlock>(pageBlockOrKey: string | PageBlock): T | never {
-        const blockKey = typeof pageBlockOrKey == 'string' ? pageBlockOrKey : pageBlockOrKey.Configuration.Data.BlockId;
+        const blockKey = typeof pageBlockOrKey == 'string' ? pageBlockOrKey : pageBlockOrKey.Configuration.Data.BlockId ? pageBlockOrKey.Configuration.Data.BlockId : '';
         const block = this.get(blockKey);
         if (!block) {
             throw new Error(`Key '${blockKey}' does not exist in the map`);
