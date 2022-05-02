@@ -1,4 +1,4 @@
-import { IBlockStringParameter } from '../../../../models/pages/parameter-config.class';
+import { IBlockStringParameter } from '../../../../models/pages/index';
 
 export const stringParam: Readonly<IBlockStringParameter> = {
     Key: 'stringParam',

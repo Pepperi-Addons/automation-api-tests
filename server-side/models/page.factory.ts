@@ -1,8 +1,8 @@
 import { NgComponentRelation, Page, SplitType } from '@pepperi-addons/papi-sdk';
 import { v4 as newUuid } from 'uuid';
-import { PageClass } from './page.class';
-import { PageBlockExt } from './pages/page-block.ext';
-import { PageSectionClass } from './pages/page-section.class';
+import { PageApiClass } from './page-api.class';
+import { PageTesterPageBlock } from './pages/interfaces/page-tester-page-block.interface';
+import { PageSectionClass } from './pages/implementations/page-section.class';
 
 export class PageFactory {
     //Returns new Page object with all mandatory properties + Page name
@@ -18,13 +18,13 @@ export class PageFactory {
         return page;
     }
 
-    public static defaultPageClass(pageName?: string): PageClass {
-        return new PageClass(this.defaultPage(pageName));
+    public static defaultPageApiClass(pageName?: string): PageApiClass {
+        return new PageApiClass(this.defaultPage(pageName));
     }
 
-    public static defaultPageBlock(blockRelation: NgComponentRelation, blockKey?: string): PageBlockExt {
+    public static defaultPageBlock(blockRelation: NgComponentRelation, blockKey?: string): PageTesterPageBlock {
         blockKey = blockKey ?? newUuid();
-        const pageBlock: PageBlockExt = {
+        const pageBlock: PageTesterPageBlock = {
             Relation: blockRelation,
             Key: blockKey,
             Configuration: {

@@ -1,4 +1,4 @@
-import { IBlockFilterParameter } from '../../../../models/pages/parameter-config.class';
+import { IBlockFilterParameter } from '../../../../models/pages/index';
 
 export const filterParam: Readonly<IBlockFilterParameter> = {
     Key: 'filterParam',

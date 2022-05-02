@@ -1,5 +1,5 @@
 import { PageSection } from '@pepperi-addons/papi-sdk';
-import { PageSectionClass } from './page-section.class';
+import { PageSectionClass } from '../index';
 
 export class PageSectionClassArray extends Array<PageSectionClass> {
     constructor(sections?: Array<PageSectionClass>) {
