@@ -3,16 +3,13 @@ import { it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
-import { PageClass } from '../../../models/pages/page.class';
 import { v4 as newUuid } from 'uuid';
-import { PageSectionClass } from '../../../models/pages/page-section.class';
 import { NgComponentRelation, Page, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
-import { TestConfiguration } from '../../../models/pages/parameter-config.class';
+import { PageTesterConfig, PageSectionClass, PageClass, PageTesterPageBlock } from '../../../models/pages/index';
 import { PageTestRequirements } from './page_builder.test';
-import { PageBlockExt } from '../../../models/pages/page-block.ext';
 import { PageFactory } from '../../../models/page.factory';
 import { stringParam } from './PreConfigBlockParams/string_param.const';
 import { SectionBlockFactory } from '../../../services/pages/section-block.factory';
@@ -27,11 +24,12 @@ enum TestBlockId {
     ConsumerProducer = 'consumerProducerBlock',
     Static = 'staticBlock'
 };
-//Loading block order: Producer blocks, Consumer blocks, non-producer and non-consumer blocks.
+//Loading block order: Producer blocks, Producer and Consumer blocks, Consumer blocks. Non-producer and Non-consumer blocks are not enforced to be loaded in specific order.
 enum BlockType {
     Producer = 0,
-    Consumer = 1,
-    Static = 2
+    ProducerConsumer = 1,
+    Consumer = 2,
+    Static = 3 // Neither producer nor consumer.
 }
 
 export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestRequirements) {
@@ -96,7 +94,7 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
         await pageEditor.collectEndTestData(this);
     });
 
-    //TODO: Check what's supposed to be the complete order of the blocks and test them all.
+
     it('Basic Load Order Test', async function () {
         const loadTimes: Map<string,number> = new Map<string,number>();
         for(const blockName of Object.values(TestBlockId)){
@@ -116,7 +114,6 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
                     if(_pageBlock.BlockId != loadTimeMap[0]){
                         const pageBlock = testPage?.Blocks?.find( pageBlock => pageBlock?.Configuration?.Data?.BlockId == _pageBlock.BlockId);
                         const comparedBlockType = getBlockType(pageBlock);
-                        // debugger;
                         if(comparedBlockType != BlockType.Static){
                             switch(true){
                                 case testedBlockType < comparedBlockType:
@@ -133,7 +130,29 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
                     }
                 });
             }
-            
+        }
+    });
+
+    it('On Load Consume Test', async function(){
+        for(const blockName of Object.values(TestBlockId)){
+            const block = pageEditor.PageBlocks.getBlock<InitTester>(blockName);
+            const consumedText = await block.getConsumesText();
+
+            const pageBlock = testPage?.Blocks?.find( pageBlock => pageBlock?.Configuration?.Data?.BlockId == blockName);
+            if(!pageBlock){
+                throw new Error(`BlockID '${blockName}' not found in the page`);
+            }
+            const blockType = getBlockType(pageBlock);
+            switch(blockType){
+                case BlockType.Static: case BlockType.Producer:
+                    expect(consumedText).to.equal(`null`);
+                    break;
+                case BlockType.Consumer: case BlockType.ProducerConsumer:
+                    expect(consumedText).to.equal(JSON.stringify({[stringParam.Key]:`This is ${TestBlockId.ConsumerProducer}`}));
+                    break;
+                default:
+                    throw new Error(`Unsupported block type: '${blockType}'`);
+            }
         }
     });
 
@@ -154,9 +173,9 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
     }
 }
 
-function getProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getProducerBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [
             {
                 Key: stringParam.Key,
@@ -173,9 +192,9 @@ function getProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
     return pageBlock;
 }
 
-function getConsumerProducerBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getConsumerProducerBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [
             {
                 Key: stringParam.Key,
@@ -192,10 +211,10 @@ function getConsumerProducerBlock(blockRelation: NgComponentRelation): PageBlock
     return pageBlock;
 }
 
-function getConsumerBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getConsumerBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
 
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [
             {
                 Key: stringParam.Key,
@@ -213,10 +232,10 @@ function getConsumerBlock(blockRelation: NgComponentRelation): PageBlockExt {
     return pageBlock;
 }
 
-function getStaticBlock(blockRelation: NgComponentRelation): PageBlockExt {
+function getStaticBlock(blockRelation: NgComponentRelation): PageTesterPageBlock {
     const pageBlock = PageFactory.defaultPageBlock(blockRelation);
 
-    const testConfig: TestConfiguration = {
+    const testConfig: PageTesterConfig = {
         Parameters: [],
         BlockId: TestBlockId.Static,
     };
@@ -236,7 +255,7 @@ function getBlockType(pageBlock: PageBlock | undefined): BlockType{
     }
     const pageParameters = pageBlock?.Configuration.Data?.Parameters;
     if(pageParameters?.find(pageParameter => pageParameter?.Produce == true)){
-        return BlockType.Producer;
+        return pageParameters?.find(pageParameter => pageParameter?.Consume == true) ? BlockType.ProducerConsumer : BlockType.Producer;
     }
     else if(pageParameters?.find(pageParameter => pageParameter?.Consume == true)){
         return BlockType.Consumer;
