@@ -7,8 +7,8 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
     const it = tester.it;
     const usageMonitorService = new UsageMonitorService(generalService);
 
-    //const testBaseVersion = '1.0.58';
-    const testBaseVersion = '1.0.69';
+    //const testBaseVersion = '1.0.69';
+    const testBaseVersion = '1.0.154';
 
     //#region Upgrade ADAL
     const testData = {

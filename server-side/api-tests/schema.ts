@@ -1781,7 +1781,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         if (logcash.getDataFromIndexedDataNegative.fault != undefined) {
             if (
                 logcash.getDataFromIndexedDataNegative.fault.faultstring.includes(
-                    'Failed due to exception: Order by using non indexed parameter is invalid, requested index = undefined',
+                    'Failed due to exception: Order by using non indexed parameter is invalid, requested index = Field2',
                 )
             ) {
                 logcash.getDataFromIndexedDataNegativeStatus = true;
