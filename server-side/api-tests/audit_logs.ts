@@ -639,18 +639,18 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             let syncResponseLength;
             try {
                 syncResponseLength = JSON.stringify(syncResponse)
-                    .split('h:syncResponseLength')[1]
+                    .split('h:Length')[1]
                     .slice(-5, -2)
                     .replace(/[^0-9]/g, '');
                 addTestResultUnderHeadline(
                     testName,
-                    'Get Sync syncResponseLength',
-                    Number(syncResponseLength) == 1 ? true : 'syncResponseLength is: ' + syncResponseLength,
+                    'Get Sync Length',
+                    Number(syncResponseLength) == 1 ? true : 'Length is: ' + syncResponseLength,
                 );
             } catch (error) {
                 addTestResultUnderHeadline(
                     testName,
-                    'Get Sync syncResponseLength',
+                    'Get Sync Length',
                     `Error recived: ${JSON.stringify(syncResponse)}`,
                 );
             }
@@ -708,18 +708,18 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             let syncResponseLength;
             try {
                 syncResponseLength = JSON.stringify(syncResponse)
-                    .split('h:syncResponseLength')[1]
+                    .split('h:Length')[1]
                     .slice(-10, -2)
                     .replace(/[^0-9]/g, '');
                 addTestResultUnderHeadline(
                     testName,
-                    'Get Sync syncResponseLength',
-                    Number(syncResponseLength) > 200 ? true : 'syncResponseLength is: ' + syncResponseLength,
+                    'Get Sync Length',
+                    Number(syncResponseLength) > 200 ? true : 'Length is: ' + syncResponseLength,
                 );
             } catch (error) {
                 addTestResultUnderHeadline(
                     testName,
-                    'Get Sync syncResponseLength',
+                    'Get Sync Length',
                     `Error recived: ${JSON.stringify(syncResponse)}`,
                 );
             }
