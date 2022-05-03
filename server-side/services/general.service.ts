@@ -538,6 +538,13 @@ export default class GeneralService {
         return this.papiClient.addons.installedAddons.addonUUID(addonUuid).uninstall();
     }
 
+    /**
+     * changes the version of the already installed addons based on 'test data'
+     * @param varKey
+     * @param testData
+     * @param isPhased if true will query only for pahsed versions
+     * @returns
+     */
     async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
@@ -572,8 +579,9 @@ export default class GeneralService {
                     },
                 },
             );
+
             let varLatestVersion;
-            if (fetchVarResponse.Status == 200) {
+            if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 200) {
                 try {
                     varLatestVersion = fetchVarResponse.Body[0].Version;
                 } catch (error) {
@@ -583,11 +591,11 @@ export default class GeneralService {
                         }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                     );
                 }
-            } else if (fetchVarResponse.Status == 401) {
+            } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
                 throw new Error(
                     `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
                 );
-            } else {
+            } else if (fetchVarResponse.Body.length > 0) {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchVarResponse.Status
@@ -596,9 +604,13 @@ export default class GeneralService {
             }
             testData[addonName].push(varLatestVersion);
 
+            let varLatestValidVersion: string | undefined = varLatestVersion;
+            if (fetchVarResponse.Body.length === 0) {
+                varLatestValidVersion = undefined;
+            }
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
-                .upgrade(varLatestVersion);
+                .upgrade(varLatestValidVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
@@ -609,7 +621,7 @@ export default class GeneralService {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
-                        .downgrade(varLatestVersion);
+                        .downgrade(varLatestValidVersion as string);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(String(auditLogResponse.Status?.Name));
