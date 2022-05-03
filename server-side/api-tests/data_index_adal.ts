@@ -1,8 +1,8 @@
-import { DataIndexService } from '../services/data-index.service';
+import { DataIndexAdalService } from '../services/index';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
 export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataIndexService = new DataIndexService(generalService);
+    const dataIndexAdalService = new DataIndexAdalService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -59,7 +59,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
         describe('Export', () => {
             it('Clean Data Index', async () => {
-                const auditLogCreate = await dataIndexService.cleanDataIndex();
+                const auditLogCreate = await dataIndexAdalService.cleanDataIndex('');
                 expect(auditLogCreate).to.have.property('URI');
 
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
