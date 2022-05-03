@@ -65,6 +65,7 @@ import {
     NucRecoveryWACDTests,
     CPINodeTests,
     DataIndexTests,
+    DataIndexADALTests,
     MaintenanceJobTests,
     CodeJobsCleanTests,
     VarSystemAddonsTests,
@@ -1101,6 +1102,19 @@ export async function data_index(client: Client, request: Request, testerFunctio
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         DataIndexTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function data_index_adal(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Index_ADAL';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DataIndexADALTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;

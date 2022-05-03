@@ -98,7 +98,7 @@ export class PFSService {
             .then((res) => res.Body);
     }
 
-    async hardDelete(distUUID, addonUUID, fileKey) {
+    async hardDelete(distUUID, addonUUID, addonSecretKey, fileKey) {
         return await this.generalService.fetchStatus(
             '/addons/api/00000000-0000-0000-0000-00000000ada1/api/hard_delete?addon_uuid=00000000-0000-0000-0000-0000000f11e5&table=S3ObjectsMetadata&key=' +
                 distUUID +
@@ -111,23 +111,19 @@ export class PFSService {
                 body: JSON.stringify({ Force: true }),
                 headers: {
                     'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
-                    'X-Pepperi-SecretKey': await this.generalService.getSecretKey(
-                        '00000000-0000-0000-0000-0000000f11e5',
-                    ),
+                    'X-Pepperi-SecretKey': addonSecretKey,
                 },
             },
         );
     }
 
-    async getLockTable(key) {
+    async getLockTable(key, addonSecretKey) {
         return await this.generalService
             .fetchStatus(`/addons/data/00000000-0000-0000-0000-0000000f11e5/PfsLockTable?where=Key='` + key + `'`, {
                 method: 'GET',
                 headers: {
                     'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
-                    'X-Pepperi-SecretKey': await this.generalService.getSecretKey(
-                        '00000000-0000-0000-0000-0000000f11e5',
-                    ),
+                    'X-Pepperi-SecretKey': addonSecretKey,
                 },
             })
             .then((res) => res.Body);

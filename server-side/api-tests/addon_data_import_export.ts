@@ -35,15 +35,25 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const relationService = new AddonRelationService(generalService);
     const dimxService = new DIMXService(generalService.papiClient);
 
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
+
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
     if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
-        generalService['client'].AddonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID);
+        generalService['client'].AddonSecretKey = await generalService.getSecretKey(
+            generalService['client'].AddonUUID,
+            varKey,
+        );
     }
 
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const secretKey = await generalService.getSecretKey(addonUUID);
+    const secretKey = await generalService.getSecretKey(addonUUID, varKey);
     const version = '0.0.5';
     const schemaName = 'DIMX Test';
     const importJSONFileName = 'import3.json';
@@ -61,12 +71,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.106'],
     };
 
-    let varKey;
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        varKey = request.body.varKeyStage;
-    } else {
-        varKey = request.body.varKeyPro;
-    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // #endregion Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs

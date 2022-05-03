@@ -137,52 +137,9 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
 
     //get secret key
     async function getSecretKey() {
-        logcash.getAuditData = await generalService
-            .fetchStatus(baseURL + '/code_jobs/get_data_for_job_execution', {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                },
-                body: JSON.stringify({
-                    JobMessageData: {
-                        UUID: '14ca5951-06e6-4f4c-a8fd-92fa243a662c',
-                        MessageType: 'AddonMessage',
-                        SchemaVersion: 2,
-                        DistributorUUID: '547dc30b-bb56-46f7-8c89-864f54402cdb',
-                        FunctionPath: 'Addon/Public/fff02926-7aac-467f-8f1b-2ec2154a6bc7/0.0.3/test.js',
-                        ExecutionMemoryLevel: 4,
-                        UserUUID: '3e4d1f14-6760-4c2c-9977-4f438e591c56',
-                        NumberOfTry: 1,
-                        NumberOfTries: 1,
-                        FunctionName: 'ido',
-                        StartDateTime: '2020-11-03T11:34:15.916Z',
-                        EndDateTime: '2020-11-03T11:34:16.508Z',
-                        Request: {
-                            path: '/addons/api/async/fff02926-7aac-467f-8f1b-2ec2154a6bc7/test.js/ido',
-                            method: 'GET',
-                            originalUrl: '/pjobs/addons/api/async/fff02926-7aac-467f-8f1b-2ec2154a6bc7/test.js/ido',
-                            query: {},
-                            body: null,
-                            header: {},
-                        },
-                        CodeJobUUID: null,
-                        CodeJobName: null,
-                        CodeJobDescription: null,
-                        IsScheduled: false,
-                        IsPublished: false,
-                        AddonData: {
-                            AddonUUID: addonUUID, //"fff02926-7aac-467f-8f1b-2ec2154a6bc7",
-                            AddonPath: 'test.js',
-                            AddonVersion: null,
-                        },
-                        CallbackUUID: null,
-                    },
-                }),
-            })
-            .then((res) => res.Body);
         //Oren added this to improve logs of failed tests
         try {
-            logcash.secretKey = logcash.getAuditData.ClientObject.AddonSecretKey;
+            logcash.secretKey = await generalService.getSecretKey(addonUUID, varKey);
         } catch (error) {
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
