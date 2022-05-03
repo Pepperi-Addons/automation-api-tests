@@ -866,10 +866,10 @@ export default class GeneralService {
         );
         return !!pattern.test(s.replace(' ', '%20'));
     }
-
     /**
-     * The addon must be installed for this function to work
+     * This uses the var endpoint, this is why this have to get varKey
      * @param addonUUID
+     * @param varKey this have to from the api or the cli that trigger this process
      * @returns
      */
     async getSecretKey(addonUUID: string, varKey: string): Promise<string> {
