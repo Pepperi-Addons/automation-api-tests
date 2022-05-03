@@ -59,7 +59,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
         });
         describe(`Compare data from base and last versions`, () => {
             it(`Negative: AddonUUID not equale to OwnerID`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 // console.log(usageMonitorService.papiClient['options'].addonUUID,usageMonitorService.papiClient['options'].addonSecretKey )
                 // usageMonitorService.papiClient['options'].addonUUID = {}
                 // usageMonitorService.papiClient['options'].addonSecretKey = {}

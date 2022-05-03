@@ -872,19 +872,17 @@ export default class GeneralService {
      * @param addonUUID
      * @returns
      */
-    getSecretKey(addonUUID: string): Promise<string> {
-        return this.papiClient
-            .post('/code_jobs/get_data_for_job_execution', {
-                JobMessageData: {
-                    UUID: '00000000-0000-0000-0000-000000000000',
-                    MessageType: 'AddonMessage',
-                    AddonData: {
-                        AddonUUID: addonUUID,
-                        AddonPath: 0,
-                    },
+    async getSecretKey(addonUUID: string, varKey: string): Promise<any> {
+        const updateVersionResponse = await this.fetchStatus(
+            this['client'].BaseURL.replace('papi-eu', 'papi') + `/var/addons/${addonUUID}/secret_key`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                 },
-            })
-            .then((res) => res.ClientObject.AddonSecretKey);
+            },
+        );
+        return updateVersionResponse.Body.SecretKey;
     }
 
     generateRandomString(length: number): string {

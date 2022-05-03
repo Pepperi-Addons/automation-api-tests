@@ -29,9 +29,9 @@ export class UDCService {
         return this.papiClient.userDefinedCollections.documents(collectionName).find(options);
     }
 
-    async getCollectionFromADAL(collection) {
+    async getCollectionFromADAL(collection, varKey: string) {
         if (!this.sk) {
-            this.sk = await this.generalService.getSecretKey(this.uuid);
+            this.sk = await this.generalService.getSecretKey(this.uuid, varKey);
         }
         return await this.generalService
             .fetchStatus(`/addons/data/${this.uuid}/${collection}`, {
@@ -44,9 +44,9 @@ export class UDCService {
             .then((res) => res.Body);
     }
 
-    async removeCollectionFromADAL(collection) {
+    async removeCollectionFromADAL(collection, varKey: string) {
         if (!this.sk) {
-            this.sk = await this.generalService.getSecretKey(this.uuid);
+            this.sk = await this.generalService.getSecretKey(this.uuid, varKey);
         }
         return await this.generalService
             .fetchStatus(`/addons/data/${this.uuid}/${collection}/purge`, {

@@ -82,6 +82,7 @@ import { ADALTests } from './adal';
 import { PepperiNotificationServiceTests } from './pepperi_notification_service';
 import { NucRecoveryTests, NucRecoverySDKTests, NucRecoveryWACDTests } from './nuc_recovery';
 import { DataIndexTests } from './data_index';
+import { DataIndexADALTests } from './data_index_adal';
 import { MaintenanceJobTests } from './maintenance_job';
 import { CPINodeTests } from './cpi_node';
 import { CodeJobsCleanTests } from './code-jobs/code_jobs_clean';
@@ -161,6 +162,7 @@ export {
     NucRecoveryWACDTests,
     CPINodeTests,
     DataIndexTests,
+    DataIndexADALTests,
     MaintenanceJobTests,
     CodeJobsCleanTests,
     VarSystemAddonsTests,

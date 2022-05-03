@@ -1,7 +1,7 @@
 import { DataIndexAdalService } from '../services/index';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function DataIndexADALTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataIndexAdalService = new DataIndexAdalService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
@@ -12,13 +12,13 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
 
-    debugger;
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
     }
+
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Data Index

@@ -354,7 +354,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Verfiy Relation With ADAL`, async () => {
-                const getFromADALResponse = await udcService.getCollectionFromADAL(collectionName);
+                const getFromADALResponse = await udcService.getCollectionFromADAL(collectionName, varKey);
                 expect(getFromADALResponse).to.be.an('array').with.lengthOf(1);
                 expect(getFromADALResponse[0].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(getFromADALResponse[0].CreationDateTime).to.include('Z');
@@ -403,7 +403,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Verfiy Relation With ADAL After Update`, async () => {
-                const getFromADALAfterUpdateResponse = await udcService.getCollectionFromADAL(collectionName);
+                const getFromADALAfterUpdateResponse = await udcService.getCollectionFromADAL(collectionName, varKey);
                 expect(getFromADALAfterUpdateResponse).to.be.an('array').with.lengthOf(1);
                 expect(getFromADALAfterUpdateResponse[0].CreationDateTime).to.include(
                     new Date().toISOString().split('T')[0],
