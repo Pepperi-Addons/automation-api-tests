@@ -610,41 +610,80 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             .then((res) => res.Body);
 
         if (testName.includes('Negative')) {
-            addTestResultUnderHeadline(
-                testName,
-                'No Server Error',
-                JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
-            );
-
-            addTestResultUnderHeadline(
-                testName,
-                'No Sync FileName',
-                JSON.stringify(syncResponse).includes('/h:FileName') ? JSON.stringify(syncResponse) : true,
-            );
-
-            const Length = JSON.stringify(syncResponse)
-                .split('h:Length')[1]
-                .slice(-5, -2)
-                .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Length',
-                Number(Length) == 1 ? true : 'Length is: ' + Length,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Server Error',
+                    JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Server Error',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Sync FileName',
+                    JSON.stringify(syncResponse).includes('/h:FileName') ? JSON.stringify(syncResponse) : true,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Sync FileName',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
+            let syncResponseLength;
+            try {
+                syncResponseLength = JSON.stringify(syncResponse)
+                    .split('h:syncResponseLength')[1]
+                    .slice(-5, -2)
+                    .replace(/[^0-9]/g, '');
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync syncResponseLength',
+                    Number(syncResponseLength) == 1 ? true : 'syncResponseLength is: ' + syncResponseLength,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync syncResponseLength',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const Status = JSON.stringify(syncResponse).split('h:Status')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Status',
-                Status.includes('NoDataToSent') ? true : 'Status is: ' + Status,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    Status.includes('NoDataToSent') ? true : 'Status is: ' + Status,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync GetDataResponse',
-                GetDataResponse.includes('IA==') ? true : 'Status is: ' + GetDataResponse,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    GetDataResponse.includes('IA==') ? true : 'Status is: ' + GetDataResponse,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
         } else {
             addTestResultUnderHeadline(
                 testName,
@@ -653,35 +692,67 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             );
 
             const FileName = JSON.stringify(syncResponse).split('h:FileName')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync FileName',
-                FileName.includes('GetData.sqlite') ? true : 'FileName is: ' + FileName,
-            );
-
-            const Length = JSON.stringify(syncResponse)
-                .split('h:Length')[1]
-                .slice(-10, -2)
-                .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Length',
-                Number(Length) > 200 ? true : 'Length is: ' + Length,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync FileName',
+                    FileName.includes('GetData.sqlite') ? true : 'FileName is: ' + FileName,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync FileName',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
+            let syncResponseLength;
+            try {
+                syncResponseLength = JSON.stringify(syncResponse)
+                    .split('h:syncResponseLength')[1]
+                    .slice(-10, -2)
+                    .replace(/[^0-9]/g, '');
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync syncResponseLength',
+                    Number(syncResponseLength) > 200 ? true : 'syncResponseLength is: ' + syncResponseLength,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync syncResponseLength',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const Status = JSON.stringify(syncResponse).split('h:Status')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Status',
-                Status.includes('DataSent') ? true : 'Status is: ' + Status,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    Status.includes('DataSent') ? true : 'Status is: ' + Status,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync GetDataResponse',
-                GetDataResponse.length > 200 ? true : 'GetDataResponse is: ' + GetDataResponse,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    GetDataResponse.length > 200 ? true : 'GetDataResponse is: ' + GetDataResponse,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                );
+            }
         }
 
         //This can be use to easily extract the token to the console

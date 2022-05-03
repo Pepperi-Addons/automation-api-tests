@@ -25,7 +25,7 @@ export const testData = {
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.6'], //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.53'], //16.60.38 //16.60
-    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.305'], //9.5
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.'], //9.5
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
@@ -538,6 +538,13 @@ export default class GeneralService {
         return this.papiClient.addons.installedAddons.addonUUID(addonUuid).uninstall();
     }
 
+    /**
+     * changes the version of the already installed addons based on 'test data'
+     * @param varKey
+     * @param testData
+     * @param isPhased if true will query only for pahsed versions
+     * @returns
+     */
     async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
@@ -572,8 +579,9 @@ export default class GeneralService {
                     },
                 },
             );
+
             let varLatestVersion;
-            if (fetchVarResponse.Status == 200) {
+            if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 200) {
                 try {
                     varLatestVersion = fetchVarResponse.Body[0].Version;
                 } catch (error) {
@@ -583,23 +591,34 @@ export default class GeneralService {
                         }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                     );
                 }
-            } else if (fetchVarResponse.Status == 401) {
+            } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
                 throw new Error(
                     `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
                 );
-            } else {
+            } else if (fetchVarResponse.Body.length > 0) {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchVarResponse.Status
                     }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                 );
             }
-            testData[addonName].push(varLatestVersion);
+            if (varLatestVersion) {
+                testData[addonName].push(varLatestVersion);
+            } else {
+                testData[addonName].push(version);
+            }
 
+            let varLatestValidVersion: string | undefined = varLatestVersion;
+            if (fetchVarResponse.Body.length === 0) {
+                varLatestValidVersion = undefined;
+            }
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
-                .upgrade(varLatestVersion);
+                .upgrade(varLatestValidVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+            if (fetchVarResponse.Body.length === 0) {
+                varLatestValidVersion = auditLogResponse.AuditInfo.ToVersion;
+            }
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -609,7 +628,7 @@ export default class GeneralService {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
-                        .downgrade(varLatestVersion);
+                        .downgrade(varLatestValidVersion as string);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(String(auditLogResponse.Status?.Name));
