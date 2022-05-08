@@ -23,7 +23,7 @@ export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''],
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.6'], //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.53'], //16.60.38 //16.60
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.'], //9.5
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
