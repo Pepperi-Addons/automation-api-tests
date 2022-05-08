@@ -20,7 +20,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
     //#region Upgrade Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', '1.0.99'],
+        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeToAnyAvailableVersion(testData);
@@ -70,7 +70,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
 
             it(`Execute CodeJob with AddonJob`, async () => {
                 executeTestResults = await executeAddonJobCodeJobTest(addonUUID, 'PositiveTest');
-
+                //debugger;
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Post execute CodeJob with AddonJob') {
@@ -264,7 +264,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             } catch (error) {
                 executeAddonJobCodeApiResponse = error;
             }
-
+            //debugger;
             console.log({ executeAddonJobCodeApiResponse: executeAddonJobCodeApiResponse });
 
             executeResultData.push({
