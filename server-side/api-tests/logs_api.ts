@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
+import { AwsCloudwatchGroups, LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
 
 export async function AWSLogsTester(generalService: GeneralService, request, tester: TesterFunctions) {
     await AWSLogsTest(generalService, request, tester);
@@ -80,6 +80,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
                 //Default:
                 // ["DistributorUUID", "ActionUUID", "UserUUID", "Level", "Message", "DateTimeStamp"]
+                expect(jsonDataFromAuditLog.length).to.be.above(0);
                 jsonDataFromAuditLog.forEach((jsonLogResponse) => {
                     expect(jsonLogResponse).to.have.own.property('DistributorUUID');
                     expect(jsonLogResponse.DistributorUUID).to.equal(distUUID);
@@ -102,6 +103,36 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         generalService.isLessThanGivenTimeAgo(Date.parse(dateTimeFromJson), HOUR, TimeZoneDiffWithAWS),
                     ).to.be.true;
                 });
+            });
+            it('POST - Basic Get Logs Functionality - Validating All Groups Exist', async () => {
+                //current issues:
+                //"Addon" - isResourceNotFoundException
+                //"FileIntegration" - Failed due to exception: 1 validation error detected
+                const allExpectedGropus: AwsCloudwatchGroups[] = [
+                    'AsyncAddon',
+                    'CodeJobs',
+                    'SyncOperation',
+                    'CustomDomain',
+                    'LogFetcher',
+                    'CPAPI',
+                    'PFS',
+                    'PNS',
+                    'CPAS',
+                    'OperationInvoker',
+                ];
+
+                for (let index = 0; index < allExpectedGropus.length; index++) {
+                    const payload: LogsPayload = {
+                        Groups: [allExpectedGropus[index]],
+                    };
+
+                    try {
+                        await logsService.getLogsByPayload(payload);
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect.fail(`group: '${allExpectedGropus[index]}';   failed on:'${errorMessage}'`);
+                    }
+                }
             });
             describe('POST - Negative Payload Testing', () => {
                 it('No Payload', async () => {
