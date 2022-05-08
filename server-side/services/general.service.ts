@@ -559,7 +559,7 @@ export default class GeneralService {
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
-                // addonName == 'WebApp API Framework' || // 11/4: becuase CPAS versions are sometimes released just for dev tests - we cant just take the newest
+                addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
