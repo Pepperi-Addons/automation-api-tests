@@ -59,6 +59,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
         describe('Index CRUD', () => {
             const SchemeName = 'test_index';
+            const distributorUUID = generalService.getClientData('DistributorUUID');
+
             const createDocumentTestData = {
                 DocumentName: 'Dor',
                 DocumentBool: true,
@@ -120,13 +122,14 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                 );
 
-                expect(createSchemeResponse).to.have.property('acknowledged').to.be.true;
-                expect(createSchemeResponse)
+                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property('acknowledged').to
+                    .be.true;
+                expect(createSchemeResponse, JSON.stringify(createSchemeResponse))
                     .to.have.property('index')
-                    .to.equal(
-                        `6908b866-4690-4ee5-9ae4-8f004b5e1e5d_${generalService.papiClient['options'].addonUUID}_${SchemeName}`,
-                    );
-                expect(createSchemeResponse).to.have.property('shards_acknowledged').to.be.true;
+                    .to.equal(`${distributorUUID}_${generalService.papiClient['options'].addonUUID}_${SchemeName}`);
+                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property(
+                    'shards_acknowledged',
+                ).to.be.true;
             });
 
             it('Create Document', async () => {
