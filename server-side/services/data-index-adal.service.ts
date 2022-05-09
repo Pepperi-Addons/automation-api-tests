@@ -17,32 +17,12 @@ interface DataIndexQuery {
         match: {
             [key: string]: any;
         };
-        script?: {
-            lang: 'painless';
-            [key: string]: any;
-        };
+    };
+    script?: {
+        lang: 'painless';
+        [key: string]: any;
     };
 }
-
-// {
-//     "query": {
-//         "match": {
-//             "Key": "1"
-//         },
-//         "script": {
-//             "source": "ctx._source.Field3++",
-//             "lang": "painless"
-//         }
-//         // "script": {
-//         //     "Field1": "Dor - Updated",
-//         //     "Field2": true,
-//         //     "Field3": "5", //This will maybe change field 3 to be "6" need to test
-//         //     "Field4": 112.2,
-//         //     "Field5": "2021-03-27",
-//         //     "Key": 1
-//         // }
-//     }
-// }
 
 export class DataIndexAdalService {
     constructor(public generalService: GeneralService) {}
@@ -51,7 +31,7 @@ export class DataIndexAdalService {
         return this.generalService.papiClient.post(`/addons/data/index/schemes/${addonUUID}/create`, scheme);
     }
 
-    cleanScheme(addonUUID, schemeName: string) {
+    removeScheme(addonUUID, schemeName: string) {
         return this.generalService.papiClient.post(`/addons/data/index/schemes/${addonUUID}/purge`, {
             Name: schemeName,
         });
@@ -59,6 +39,10 @@ export class DataIndexAdalService {
 
     createDocument(addonUUID: string, schemeName: string, scheme: DataIndexDocument) {
         return this.generalService.papiClient.post(`/addons/data/index/${addonUUID}/${schemeName}`, scheme);
+    }
+
+    createBatchDocument(addonUUID: string, schemeName: string, schemeArr: DataIndexDocument[]) {
+        return this.generalService.papiClient.post(`/addons/data/index/batch/${addonUUID}/${schemeName}`, schemeArr);
     }
 
     updateDocument(addonUUID: string, schemeName: string, query: DataIndexQuery) {
@@ -69,7 +53,11 @@ export class DataIndexAdalService {
         return this.generalService.papiClient.get(`/addons/data/index/${addonUUID}/${indexName}`);
     }
 
-    getDocumentByKey(addonUUID, indexName: string, indexKey?: string | number) {
+    searchAllDocuments(addonUUID, indexName: string, query: DataIndexQuery) {
+        return this.generalService.papiClient.post(`/addons/data/index/search/${addonUUID}/${indexName}`, query);
+    }
+
+    getDocumentByNameAndOptionalKey(addonUUID, indexName: string, indexKey?: string | number) {
         let url;
         if (indexKey) {
             url = `/addons/data/index/${addonUUID}/${indexName}/${indexKey}`;
@@ -79,7 +67,7 @@ export class DataIndexAdalService {
         return this.generalService.papiClient.get(url);
     }
 
-    cleanDocument(addonUUID, indexName: string | number, query: DataIndexQuery) {
+    removeDocuments(addonUUID, indexName: string | number, query: DataIndexQuery) {
         return this.generalService.papiClient.post(`/addons/data/index/delete/${addonUUID}/${indexName}`, query);
     }
 }

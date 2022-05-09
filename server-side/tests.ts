@@ -75,6 +75,7 @@ import {
     ADALStressTests,
     DataQueriesTests,
     AWSLogsTest,
+    SecurityTests,
 } from './api-tests/index';
 
 let testName = '';
@@ -1201,6 +1202,19 @@ export async function addon_data_import_export_reference(
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AddonDataImportExportReferenceTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function security(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Addon_Data_Import_Export_Reference';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SecurityTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
