@@ -51,6 +51,9 @@ export class WebAppSettingsSidePanel extends Component {
     public UDCEditor: By = By.id('settings/122c0e9d-c240-4865-b446-f37ece866c22/udc');
     public AddonManagerEditor: By = By.id('settings/bd629d5f-a7b4-4d03-9e7c-67865a6d82a9/addons_manager');
 
+    //VAR Selectors
+    public VarDistsEditor: By = By.id('settings/2cabad50-2df0-4136-abda-03ab9c901953/editor?view=var_distributors&uri=grid/vardistributors');
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         await this.browser.click(
             By.xpath(`${this.SettingsBarContainer.value}//*[contains(@id,"${settingsButtonID}")]/../../..`),

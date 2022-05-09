@@ -10,6 +10,7 @@ import { CloseCatalogTest } from './closing_catalog.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
 import { UDCTests } from './udc.test';
 import { AWSLogsTester } from './../../api-tests/logs_api';
+import { LoginPerfTests } from './login_performance.test';
 
 export {
     LoginTests,
@@ -24,4 +25,5 @@ export {
     AWSLogsTester,
     UDCTests,
     CloseCatalogTest,
+    LoginPerfTests
 };

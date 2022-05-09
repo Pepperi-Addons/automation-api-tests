@@ -86,7 +86,7 @@ export async function SecurityPolicyTests(email: string, password: string) {
         for (const type in _TEST_DATA_TYPE_ARR) {
             it(`Validate Security Policy of ${type} argument (ITP-190)`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
 
                 //Remove the new ATD
                 const webAppHeader = new WebAppHeader(driver);

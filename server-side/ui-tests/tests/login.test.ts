@@ -20,7 +20,7 @@ export async function LoginTests(email: string, password: string) {
 
         it('Login', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
         });
     });
 }
