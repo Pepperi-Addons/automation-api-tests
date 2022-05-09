@@ -97,6 +97,36 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
 
             it('Set Up - Create A Fully Configured Page With A Chart Block VIA API', async function () {
                 //1. create a complete page with all configured data via API
+                //  {
+                //     Key: blockKey,
+                //     Relation: blockRelation,
+                //     Configuration: {
+                //         Resource: "Chart",
+                //         AddonUUID: "00000000-0000-0000-0000-0da1a0de41e5",
+                //         Data: {
+                //             query: {
+                //                 Key: "dcecaf3e-c4a5-43b3-877b-7a7f6690c068"
+                //             },
+                //             useDropShadow: true,
+                //             dropShadow: {
+                //                 type: "Regular",
+                //                 intensity: 5
+                //             },
+                //             useBorder: false,
+                //             border: {
+                //                 color: "hsl(0, 0%, 57%)",
+                //                 opacity: "50"
+                //             },
+                //             executeQuery: true,
+                //             chart: {
+                //                 Key: "2dd2b34e-ce0c-4d46-84bd-26fc9d6bb492",
+                //                 ScriptURI: "https://pfs.pepperi.com/35247bab-7e80-444c-8c55-d0f144fdc88e/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Bar.js"
+                //             },
+                //             useLabel: false,
+                //             label: "testing",
+                //             height: 22
+                //         }
+                //     }
                 const returnedData = await createPageWithChartBlockUsingTheAPI(driver, generalService, pagesService, expect);
                 _nameOfPage = returnedData.name;
                 _currentBlock = returnedData.block;
