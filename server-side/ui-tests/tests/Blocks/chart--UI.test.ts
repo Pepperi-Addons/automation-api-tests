@@ -23,7 +23,7 @@ import { ChartTester, query } from '../../pom/addons/Blocks/PageTester/ChartTest
 
 chai.use(promised);
 
-export async function ChartBlockTest(email: string, password: string, varPass: string, client: Client) {
+export async function ChartBlockTestUI(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const pagesService = new PagesService(generalService);
     let driver: Browser;
