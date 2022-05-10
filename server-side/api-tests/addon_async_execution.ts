@@ -156,15 +156,15 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             });
 
             it(`Validae Action And Adal Pass`, async () => {
-                expect(actionsBody.Status.Name).to.equal('Success');
-                expect(auditLogBody.Status).to.equal('Success');
+                expect(actionsBody.Status).to.equal('Success');
+                expect(auditLogBody.Status.Name).to.equal('Success');
             });
 
             it(`Validae Action And Adal Result Object`, async () => {
-                expect(actionsBody.AuditInfo.ResultObject).to.equal(
+                expect(actionsBody.ResultObject).to.equal(
                     '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
                 );
-                expect(auditLogBody.ResultObject).to.equal(
+                expect(auditLogBody.AuditInfo.ResultObject).to.equal(
                     '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
                 );
             });
@@ -230,7 +230,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                 auditLogBody = await generalService.papiClient.get(testAuditURI);
                 adalLogBody = await generalService.papiClient.addons.data
                     .uuid(testData.AsyncAddon[0])
-                    .table('actions')
+                    .table('jobs')
                     .key(testAuditUUID)
                     .get();
                 expect(auditLogBody.UUID == adalLogBody.Key);
