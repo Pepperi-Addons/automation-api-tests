@@ -42,7 +42,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     describe('Logs API Tests Suites', () => {
         describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
-            //Pepperi Notification Service
+            //Cloudwatch Addon Service
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
@@ -105,9 +105,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 });
             });
             it('POST - Basic Get Logs Functionality - Validating All Groups Exist', async () => {
-                //current issues:
-                //"Addon" - isResourceNotFoundException
-                //"FileIntegration" - Failed due to exception: 1 validation error detected
                 const allExpectedGropus: AwsCloudwatchGroups[] = [
                     'AsyncAddon',
                     'CodeJobs',
@@ -119,6 +116,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     'PNS',
                     'CPAS',
                     'OperationInvoker',
+                    'FileIntegration',
+                    'Addon',
                 ];
 
                 for (let index = 0; index < allExpectedGropus.length; index++) {
@@ -136,7 +135,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
             });
             describe('POST - Negative Payload Testing', () => {
                 it('No Payload', async () => {
-                    //bug reporting no payload
                     const emptyPayload = {};
                     const jsonDataFromAuditLog = await generalService.fetchStatus('/logs', {
                         method: 'POST',
@@ -185,7 +183,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('String PageSize', async () => {
-                    //bug in sending string page size
                     const payload: any = {
                         Groups: ['PAPI'],
                         Filter: "Level = 'ERROR'",
@@ -216,7 +213,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('String Page', async () => {
-                    //bug in sending string page
                     const payload: any = {
                         Groups: ['PAPI'],
                         Filter: "Level = 'ERROR'",
