@@ -117,7 +117,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     'CPAS',
                     'OperationInvoker',
                     'FileIntegration',
-                    'Addon'
+                    'Addon',
                 ];
 
                 for (let index = 0; index < allExpectedGropus.length; index++) {
