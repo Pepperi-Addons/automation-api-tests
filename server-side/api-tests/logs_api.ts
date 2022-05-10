@@ -105,9 +105,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 });
             });
             it('POST - Basic Get Logs Functionality - Validating All Groups Exist', async () => {
-                //current issues:
-                //"Addon" - isResourceNotFoundException
-                //"FileIntegration" - Failed due to exception: 1 validation error detected
                 const allExpectedGropus: AwsCloudwatchGroups[] = [
                     'AsyncAddon',
                     'CodeJobs',
@@ -119,6 +116,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     'PNS',
                     'CPAS',
                     'OperationInvoker',
+                    'FileIntegration',
+                    'Addon',
                 ];
 
                 for (let index = 0; index < allExpectedGropus.length; index++) {
