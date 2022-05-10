@@ -30,7 +30,7 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
 
         it('Login - Goto Sales Order And Test If Closing Catalog Create A General Error: DI-20093', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            const WebAppHomePage = await webAppLoginPage.login(email, password);
+            const WebAppHomePage = await webAppLoginPage.loginWithImage(email, password);
             await WebAppHomePage.initiateSalesActivity(undefined, undefined, false);
             await driver.click(WebAppHomePage.MainHomePageBtn);
             driver.sleep(2000);

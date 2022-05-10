@@ -170,7 +170,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
             it('Setting Up UOM ATD Using UI', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
                 //1. validating all items are added to the main catalog
                 const addonPage = new AddonPage(driver);
                 await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
@@ -205,7 +205,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 });
                 it('UI UOM Test: basic ATD order', async () => {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(email, password);
+                    await webAppLoginPage.loginWithImage(email, password);
                     let webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.manualResync(client);
                     const uom = new Uom(driver);
@@ -231,7 +231,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
                 it('UI UOM Test: item configuration field ATD order', async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(email, password);
+                    await webAppLoginPage.loginWithImage(email, password);
                     const uom = new Uom(driver);
                     await uom.editItemConfigField(_TEST_DATA_ATD_NAME);
                     let webAppHomePage = new WebAppHomePage(driver);
@@ -260,7 +260,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             describe('Data Cleansing', () => {
                 it('Delete test ATD from dist + home screen using UI', async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(email, password);
+                    await webAppLoginPage.loginWithImage(email, password);
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const brandedApp = new BrandedApp(driver);
