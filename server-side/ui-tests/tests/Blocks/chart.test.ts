@@ -141,10 +141,10 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 await chartBlock.loadBlock(pageEditor);
                 await chartBlock.editBlock();
                 const blockTitle = await chartBlock.getTitle();
-                expect(blockTitle).to.equal("testing");
+                expect(blockTitle).to.equal("testing");//test that the title is as configured via API
                 await pageEditor.goToContent(chartBlock.addQueryBtn);
                 const selectedQuery = await chartBlock.getSelectedQuery();
-                expect(selectedQuery).to.equal('count activities');
+                expect(selectedQuery).to.equal('count activities');//test querys name is as configured via API
                 _initialValueOfQuery = parseInt(await chartBlock.getDataPresentedInBlock(this));
                 let webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
@@ -157,9 +157,9 @@ export async function ChartBlockTest(email: string, password: string, varPass: s
                 //4. see charts output changed via UI
                 await navToPages(driver);
                 //pages UI bug
-                driver.sleep(1500);
-                await driver.refresh();
-                //pages UI bug
+                driver.sleep(1500);//pages UI bug
+                await driver.refresh();//pages UI bug
+                //after refreshing - will work
                 const pagesList = new PagesList(driver);
                 const pageEditor = await pagesList.searchAndEditPage(_nameOfPage);
                 const chartBlock = await getChartBlock(driver, pageEditor, _currentBlock);
