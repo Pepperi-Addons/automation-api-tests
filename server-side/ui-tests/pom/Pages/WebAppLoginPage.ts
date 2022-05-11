@@ -58,7 +58,6 @@ export class WebAppLoginPage extends Page {
         await expect(this.untilIsVisible(webAppHeader.Home, 50000)).eventually.to.be.true;
         console.log('Home Button Found -- HomePage Is Loaded');
         return new WebAppHomePage(this.browser);
-
     }
 
     public async loginDeepLink(url: string, email: string, password: string): Promise<void> {

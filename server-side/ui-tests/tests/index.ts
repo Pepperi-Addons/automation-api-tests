@@ -25,5 +25,5 @@ export {
     AWSLogsTester,
     UDCTests,
     CloseCatalogTest,
-    LoginPerfTests
+    LoginPerfTests,
 };

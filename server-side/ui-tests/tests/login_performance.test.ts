@@ -1,13 +1,12 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
-import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { WebAppHeader, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { expect } from 'chai';
 import { VarDistPage } from '../pom/addons/VarDistPage';
 import { Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 
-
-export async function LoginPerfTests(email: string, password: string, varPass, client) {
+export async function LoginPerfTests(email: string, password: string, varPass) {
     let driver: Browser;
 
     describe('Basic UI Tests Suit', async function () {
@@ -24,7 +23,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
         });
         it('Loggin With VAR User And Reset Nuc For The User About To Be Tested Using VAR UI', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(varPass.split(":")[0], varPass.split(":")[1]);
+            await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]);
             const webAppHeader = new WebAppHeader(driver);
             await webAppHeader.openSettings();
             const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -33,7 +32,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             const varListOfDistsPage = new VarDistPage(driver);
             await varListOfDistsPage.isSpinnerDone();
             await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
-            await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.list.IdRowTitle, 90000)).eventually.to.be.true;
+            await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.IdRowTitle, 90000)).eventually.to.be.true;
             await varListOfDistsPage.search.enterSearch(email + Key.ENTER);
             expect(await varListOfDistsPage.editPresentedDist()).to.be.true;
             expect(await varListOfDistsPage.enterSupportSettings()).to.be.true;
@@ -45,16 +44,20 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.navigate();
             await webAppLoginPage.signIn(email, password);
-            const webAppHeader = new WebAppHeader(driver);
-            // starting as soon as the btton was pressed 
-            const duration = await driver.queryNetworkLogsForCertainResponseAndReturnTiming('https://webapi.pepperi.com/16.80.7/webapi/Service1.svc/v1/HomePage');
+            // starting as soon as the btton was pressed
+            const duration = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
+                'https://webapi.pepperi.com/16.80.7/webapi/Service1.svc/v1/HomePage',
+            );
             addContext(this, {
                 title: `duration time is:`,
                 value: `local AVG: ${localAVG}, this run duration:${duration}`,
             });
-            expect(duration).to.be.lessThan(localAVG, `this run duration took ${(((duration - localAVG) / localAVG) * 100).toFixed(3)} present longer then the local AVG`);
+            expect(duration).to.be.lessThan(
+                localAVG,
+                `this run duration took ${(((duration - localAVG) / localAVG) * 100).toFixed(
+                    3,
+                )} present longer then the local AVG`,
+            );
         });
     });
 }
-
-

@@ -1,27 +1,19 @@
-import { expect } from 'chai';
-import { Actions, By, Key, WebElement } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsSidePanel, WebAppTopBar } from '..';
-import { OrderPage } from '../Pages/OrderPage';
-import { AddonLoadCondition } from './base/AddonPage';
-import { ObjectTypeEditor } from './ObjectTypeEditor';
 import { Browser } from '../../utilities/browser';
-import { VarList } from '../VarList';
 import { PepSearch } from '../Components/PepSearch';
 
 export class VarDistPage extends AddonPage {
-    public list: VarList;
     public search: PepSearch;
-    // public topBar: VarTopBar;
     constructor(protected browser: Browser) {
         super(browser);
-        this.list = new VarList(browser);
         this.search = new PepSearch(browser);
         this.search.SearchContainer = By.xpath("//div[@id='searchContainer']");
     }
 
     //dist list
     public readonly certainDistEditBtn: By = By.xpath(`//i[@class='fa fa-pencil']`);
+    public IdRowTitle = By.xpath('//*[contains(text(),"DistributorID")]');
     //dist editor
     public readonly distributorDetailsTitle: By = By.xpath(`//*[contains(text(),'Distributor details')]`);
     public readonly supportBtn: By = By.css(`#btnBackEndArea`);
@@ -38,13 +30,6 @@ export class VarDistPage extends AddonPage {
     public readonly newEmptyMachine: By = By.xpath(`//option[contains(text(),'empty')]`);
     public readonly relocateDistBtn: By = By.css(`#btnRelocate`);
 
-
-
-
-
-
-
-
     public async editPresentedDist(): Promise<boolean> {
         this.browser.sleep(1500);
         await this.browser.click(By.xpath("(//div[@class='ui-grid-canvas']//div[@class='ui-grid-row ng-scope'])[2]"));
@@ -52,17 +37,13 @@ export class VarDistPage extends AddonPage {
         await this.browser.click(this.certainDistEditBtn);
         this.browser.sleep(1000);
         // await this.browser.switchTo(this.AddonContainerIframe);
-        return (await this.untilIsVisible(this.distributorDetailsTitle, 40000));
+        return await this.untilIsVisible(this.distributorDetailsTitle, 40000);
     }
 
     public async enterSupportSettings(): Promise<boolean> {
         await this.browser.click(this.supportBtn);
-        return (await this.untilIsVisible(this.supportTitle, 40000));
+        return await this.untilIsVisible(this.supportTitle, 40000);
     }
-
-    // public async getNucMachine(): Promise<string> {
-    //     return (await (await this.browser.findElement(this.nucMachineText)).getText());
-    // }
 
     public async recycleNuc() {
         await this.browser.sendKeys(this.recycleReasonTxtBox, `login perormance auto test setup` + Key.ENTER);
@@ -76,7 +57,10 @@ export class VarDistPage extends AddonPage {
             await this.browser.click(this.recycleModalContinueBtn);
             await this.untilIsVisible(this.recycleModalMessage, 40000);
             const postRecycleMessage = await (await this.browser.findElement(this.recycleModalMessage)).getText();
-            if (postRecycleMessage !== 'Distributor Website was recycled successfully DO NOT click on Reload after clicking on Recycle. Login into the distributor and data will be reloaded automatically') {
+            if (
+                postRecycleMessage !==
+                'Distributor Website was recycled successfully DO NOT click on Reload after clicking on Recycle. Login into the distributor and data will be reloaded automatically'
+            ) {
                 throw Error(`nuc returned wrong message for recycling: ${postRecycleMessage}`);
             } else {
                 await this.browser.click(this.secondModalOK);
@@ -99,6 +83,4 @@ export class VarDistPage extends AddonPage {
             await this.browser.click(this.recycleModalContinueBtn);
         }
     }
-
-
 }

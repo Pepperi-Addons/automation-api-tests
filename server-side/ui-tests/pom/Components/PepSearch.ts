@@ -6,7 +6,7 @@ export class PepSearch extends Component {
     /**
      *
      */
-    private _searchContainer: By = By.xpath('//pep-search');;
+    private _searchContainer: By = By.xpath('//pep-search');
     constructor(browser: Browser) {
         super(browser);
     }
