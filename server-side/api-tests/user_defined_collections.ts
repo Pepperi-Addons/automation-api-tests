@@ -112,7 +112,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
             it(`Validate Correct Error Reject Message`, async () => {
                 await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
-                    `https://papi.staging.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Fields.OptionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.OptionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`,
+                    `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Fields.OptionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.OptionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`,
                 );
             });
             //TODO: Create CRUD test when possible after API changed to block some API configuration that are not supported by the UI
@@ -305,7 +305,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
             it(`Validate Correct Error Reject Message`, async () => {
                 await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
-                    `https://papi.staging.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`,
+                    `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`,
                 );
             });
             //TODO: Create CRUD test when possible after API changed to block some API configuration that are not supported by the UI
