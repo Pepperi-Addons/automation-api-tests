@@ -13,6 +13,8 @@ import {
 import chrome from 'selenium-webdriver/chrome';
 import GeneralService, { ConsoleColors } from '../../services/general.service';
 
+
+
 export class Browser {
     private driver: ThenableWebDriver;
     private options: chrome.Options;
@@ -608,6 +610,29 @@ export class Browser {
         }
         return logsArr;
     }
+
+    public async queryNetworkLogsForCertainResponseAndReturnTiming(urlLookingFor: string, numOfTries: number = 500, responseCodeLookingFor?: string, responseStatusLookingFor?: string): Promise<number> {
+        let consoleLogs: any[] = [];
+        let duration;
+        const start = Date.now();
+        outerloop: do {
+            consoleLogs = await this.getPerformanceLogs();
+            // prefLogs.forEach(logEntry => consoleLogs.push(logEntry));
+            for (let index = 0; index < consoleLogs.length; index++) {
+                if (consoleLogs[index].message.method === 'Network.responseReceived') {
+                    if (consoleLogs[index].message.params.response.url === urlLookingFor &&
+                        consoleLogs[index].message.params.response.status === responseCodeLookingFor ? responseCodeLookingFor : "200" &&
+                            consoleLogs[index].message.params.response.statusText === responseStatusLookingFor ? responseStatusLookingFor : "OK") {
+                        duration = Date.now() - start;
+                        break outerloop;
+                    }
+                }
+            }
+            numOfTries--;
+        } while (true && numOfTries > 0);
+        return duration;
+    }
+
 
     /**
      * closes the child window in focus, the parent window is still open
