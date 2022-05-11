@@ -866,6 +866,7 @@ export default class GeneralService {
         );
         return !!pattern.test(s.replace(' ', '%20'));
     }
+
     /**
      * This uses the var endpoint, this is why this have to get varKey
      * @param addonUUID
