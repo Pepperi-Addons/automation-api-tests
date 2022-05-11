@@ -163,20 +163,13 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     schemeName,
                     [createDocumentTestData, secondDocument, thirdDocument],
                 );
-                expect(createDocumentResponse).to.deep.equal([
-                    {
-                        Key: '1',
-                        Status: 'Update',
-                    },
-                    {
-                        Key: 'Second Document',
-                        Status: 'Insert',
-                    },
-                    {
-                        Key: 'Third Document',
-                        Status: 'Insert',
-                    },
-                ]);
+                expect(createDocumentResponse.errors).to.be.false;
+                expect(createDocumentResponse.items[0].index).to.have.property('_id').that.equal('1');
+                expect(createDocumentResponse.items[0].index).to.have.property('result').that.equal('updated');
+                expect(createDocumentResponse.items[1].index).to.have.property('_id').that.equal('Second Document');
+                expect(createDocumentResponse.items[1].index).to.have.property('result').that.equal('created');
+                expect(createDocumentResponse.items[2].index).to.have.property('_id').that.equal('Third Document');
+                expect(createDocumentResponse.items[2].index).to.have.property('result').that.equal('created');
             });
 
             it('Read Document (Search By DSL: DI-19467)', async () => {
@@ -460,20 +453,13 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     schemeName,
                     [createDocumentTestData, secondDocument, thirdDocument],
                 );
-                expect(createDocumentResponse).to.deep.equal([
-                    {
-                        Key: '1',
-                        Status: 'Update',
-                    },
-                    {
-                        Key: 'Second Document',
-                        Status: 'Insert',
-                    },
-                    {
-                        Key: 'Third Document',
-                        Status: 'Insert',
-                    },
-                ]);
+                expect(createDocumentResponse.errors).to.be.false;
+                expect(createDocumentResponse.items[0].index).to.have.property('_id').that.equal('1');
+                expect(createDocumentResponse.items[0].index).to.have.property('result').that.equal('updated');
+                expect(createDocumentResponse.items[1].index).to.have.property('_id').that.equal('Second Document');
+                expect(createDocumentResponse.items[1].index).to.have.property('result').that.equal('created');
+                expect(createDocumentResponse.items[2].index).to.have.property('_id').that.equal('Third Document');
+                expect(createDocumentResponse.items[2].index).to.have.property('result').that.equal('created');
             });
 
             it('Read Document (Search By DSL: DI-19467)', async () => {
