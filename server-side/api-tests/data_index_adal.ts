@@ -250,7 +250,9 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(createDocumentResponse).to.have.property('updated').to.equal(1);
+                expect(createDocumentResponse, JSON.stringify(createDocumentResponse))
+                    .to.have.property('updated')
+                    .to.equal(1);
             });
 
             it('Read Updated Document After Update Query', async () => {
@@ -545,7 +547,9 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(createDocumentResponse).to.have.property('updated').to.equal(1);
+                expect(createDocumentResponse, JSON.stringify(createDocumentResponse))
+                    .to.have.property('updated')
+                    .to.equal(1);
             });
 
             it('Read Updated Document After Update Query', async () => {
