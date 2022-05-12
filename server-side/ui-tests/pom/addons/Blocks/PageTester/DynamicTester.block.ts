@@ -1,9 +1,8 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../../utilities/browser';
-import { PageTesterBlockName } from './PageTesterBlockName.enum';
-import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
+import { PageTesterBlockName, ConfigurablePageTesterBlock } from './base/index';
 
-export class DynamicTester extends PageTesterSectionBlock {
+export class DynamicTester extends ConfigurablePageTesterBlock {
     constructor(blockId: string, browser: Browser) {
         super(PageTesterBlockName.DynamicTester, blockId, browser);
     }
@@ -29,11 +28,11 @@ export class DynamicTester extends PageTesterSectionBlock {
     public async clickSetParamBtn(paramKey: string): Promise<void> {
         return await this.browser.click(this.getSetParamBtn(paramKey));
     }
-    /**
-     * Initializes block configuration by entering block edit mode. Exits edit block mode after loading animation has finished.
-     */
-    public async initBlockConfig(): Promise<void> {
-        await this.editBlock();
-        return await this.SideBar.exitBlockEditorMode();
-    }
+    // /**
+    //  * Initializes block configuration by entering block edit mode. Exits edit block mode after loading animation has finished.
+    //  */
+    // public async initBlockConfig(): Promise<void> {
+    //     await this.editBlock();
+    //     return await this.SideBar.exitBlockEditorMode();
+    // }
 }

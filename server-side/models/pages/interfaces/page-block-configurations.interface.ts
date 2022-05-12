@@ -3,6 +3,7 @@ import {
     PageConfigurationParameterString,
     ResourceType,
 } from '@pepperi-addons/papi-sdk';
+import { BlockParamsConfig } from '../index';
 
 export interface IBlockStringParameter extends PageConfigurationParameterString {
     Value?: any;
@@ -22,9 +23,7 @@ export interface IFilter {
     };
 }
 
-export interface TestConfiguration {
+export interface PageTesterConfig {
     Parameters: BlockParamsConfig;
     BlockId: string;
 }
-
-export class BlockParamsConfig extends Array<IBlockFilterParameter | IBlockStringParameter> {}

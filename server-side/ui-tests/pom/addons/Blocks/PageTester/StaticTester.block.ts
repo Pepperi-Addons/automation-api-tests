@@ -1,7 +1,6 @@
 import { By } from 'selenium-webdriver';
 import { Browser } from '../../../../utilities/browser';
-import { PageTesterBlockName } from './PageTesterBlockName.enum';
-import { PageTesterSectionBlock } from './PageTesterSectionBlock.block';
+import { PageTesterSectionBlock, PageTesterBlockName } from './base/index';
 
 export class StaticTester extends PageTesterSectionBlock {
     constructor(blockId: string, browser: Browser) {

@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
+import { AwsCloudwatchGroups, LogsPayload, LogsResponse, LogsService } from '../services/logas_api.service';
 
 export async function AWSLogsTester(generalService: GeneralService, request, tester: TesterFunctions) {
     await AWSLogsTest(generalService, request, tester);
@@ -42,7 +42,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     describe('Logs API Tests Suites', () => {
         describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
-            //Pepperi Notification Service
+            //Cloudwatch Addon Service
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
@@ -80,6 +80,7 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                 const jsonDataFromAuditLog: LogsResponse[] = await logsService.getLogsByPayload(payload);
                 //Default:
                 // ["DistributorUUID", "ActionUUID", "UserUUID", "Level", "Message", "DateTimeStamp"]
+                expect(jsonDataFromAuditLog.length).to.be.above(0);
                 jsonDataFromAuditLog.forEach((jsonLogResponse) => {
                     expect(jsonLogResponse).to.have.own.property('DistributorUUID');
                     expect(jsonLogResponse.DistributorUUID).to.equal(distUUID);
@@ -103,9 +104,37 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     ).to.be.true;
                 });
             });
+            it('POST - Basic Get Logs Functionality - Validating All Groups Exist', async () => {
+                const allExpectedGropus: AwsCloudwatchGroups[] = [
+                    'AsyncAddon',
+                    'CodeJobs',
+                    'SyncOperation',
+                    'CustomDomain',
+                    'LogFetcher',
+                    'CPAPI',
+                    'PFS',
+                    'PNS',
+                    'CPAS',
+                    'OperationInvoker',
+                    'FileIntegration',
+                    'Addon',
+                ];
+
+                for (let index = 0; index < allExpectedGropus.length; index++) {
+                    const payload: LogsPayload = {
+                        Groups: [allExpectedGropus[index]],
+                    };
+
+                    try {
+                        await logsService.getLogsByPayload(payload);
+                    } catch (e) {
+                        const errorMessage = (e as Error).message;
+                        expect.fail(`group: '${allExpectedGropus[index]}';   failed on:'${errorMessage}'`);
+                    }
+                }
+            });
             describe('POST - Negative Payload Testing', () => {
                 it('No Payload', async () => {
-                    //bug reporting no payload
                     const emptyPayload = {};
                     const jsonDataFromAuditLog = await generalService.fetchStatus('/logs', {
                         method: 'POST',
@@ -154,7 +183,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('String PageSize', async () => {
-                    //bug in sending string page size
                     const payload: any = {
                         Groups: ['PAPI'],
                         Filter: "Level = 'ERROR'",
@@ -185,7 +213,6 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                     }
                 });
                 it('String Page', async () => {
-                    //bug in sending string page
                     const payload: any = {
                         Groups: ['PAPI'],
                         Filter: "Level = 'ERROR'",
@@ -404,8 +431,8 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
                         },
                     );
                     numOfTries++;
-                } while (!createSessionResponse.Body.AccessToken && numOfTries < 50);
-                expect(numOfTries).to.be.lessThan(50);
+                } while (!createSessionResponse.Body.AccessToken && numOfTries < 150);
+                expect(numOfTries).to.be.lessThan(150);
                 expect(createSessionResponse.Ok).to.equal(true);
                 expect(createSessionResponse.Status).to.equal(200);
                 const URL = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/GetSyncStatus`;

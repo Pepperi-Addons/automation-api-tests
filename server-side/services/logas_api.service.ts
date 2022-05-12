@@ -40,7 +40,7 @@ type AwsCloudwatchFields =
     | 'UserID'
     | 'Version';
 
-type AwsCloudwatchGroups =
+export type AwsCloudwatchGroups =
     | 'AsyncAddon'
     | 'CodeJobs'
     | 'Addon'
@@ -53,7 +53,8 @@ type AwsCloudwatchGroups =
     | 'PNS'
     | 'FileIntegration'
     | 'CPAS'
-    | 'OperationInvoker';
+    | 'OperationInvoker'
+    | 'ExternalGroupName';
 
 export class LogsService {
     papiClient: PapiClient;
