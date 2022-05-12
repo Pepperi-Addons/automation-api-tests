@@ -110,7 +110,13 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(schemeBeforeArr).to.be.an('array');
             });
 
-            it(`Create`, async () => {
+            it(`Validate Correct Error Reject Message`, async () => {
+                await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
+                    `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Fields.OptionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.OptionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`,
+                );
+            });
+            //TODO: Create CRUD test when possible after API changed to block some API configuration that are not supported by the UI
+            /*it(`Create`, async () => {
                 const postSchemeResponse = await udcService.postScheme(schemaTestData);
                 expect(postSchemeResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postSchemeResponse.CreationDateTime).to.include('Z');
@@ -225,7 +231,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             it(`Validate Sum Restore After Hidden = True`, async () => {
                 const collectionSchemeAfterPostArr = await udcService.getSchemes();
                 expect(collectionSchemeAfterPostArr.length).to.equal(schemeBeforeArr.length);
-            });
+            });*/
         });
 
         describe('CRUD Collection Document', () => {
@@ -274,16 +280,16 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     },
                 },
             };
-            const documentTestData = {
-                Key: collectionName + 'Key',
-                StringField1: 'String 1 Test',
-                StringField2: 'String 2 Test',
-                IntegerField1: 1,
-                IntegerField2: 2,
-                OptionalValuesField: '1',
-                StringArray: ['String array 1', 'String array 2', 'String array 3'],
-                IntegerArray: [1, 2, 3],
-            };
+            // const documentTestData = {
+            //     Key: collectionName + 'Key',
+            //     StringField1: 'String 1 Test',
+            //     StringField2: 'String 2 Test',
+            //     IntegerField1: 1,
+            //     IntegerField2: 2,
+            //     OptionalValuesField: '1',
+            //     StringArray: ['String array 1', 'String array 2', 'String array 3'],
+            //     IntegerArray: [1, 2, 3],
+            // };
             let schemeBeforeArr;
 
             it(`Get Collections Scheme Before`, async () => {
@@ -297,7 +303,13 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 );
             });
 
-            it(`Create Scheme`, async () => {
+            it(`Validate Correct Error Reject Message`, async () => {
+                await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
+                    `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`,
+                );
+            });
+            //TODO: Create CRUD test when possible after API changed to block some API configuration that are not supported by the UI
+            /*it(`Create Scheme`, async () => {
                 const postSchemeResponse = await udcService.postScheme(schemaTestData);
                 expect(postSchemeResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postSchemeResponse.CreationDateTime).to.include('Z');
@@ -478,7 +490,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             it(`Validate Sum Restore After Hidden = True`, async () => {
                 const collectionSchemeAfterPostArr = await udcService.getSchemes();
                 expect(collectionSchemeAfterPostArr.length).to.equal(schemeBeforeArr.length);
-            });
+            });*/
 
             // it(`Post file negative tests`, async () => {
             //     const tempKey = 'NegativeFile' + Math.floor(Math.random() * 1000000).toString() + '.txt';
