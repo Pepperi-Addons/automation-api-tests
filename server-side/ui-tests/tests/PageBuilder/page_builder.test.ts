@@ -59,13 +59,15 @@ export async function PageBuilderTests(
             after(async function () {
                 await browser.quit();
             });
-            describe('Load Order Tests', function () {
-                BlockLoadTests(pagesService, pagesReq);
-            });
 
             describe('Basic Block Tests', function () {
                 BasicBlockTests(pagesService, pagesReq);
             });
+
+            describe('Load Order Tests', function () {
+                BlockLoadTests(pagesService, pagesReq);
+            });
+
 
             describe('Produce Consume Tests', function () {
                 ProduceConsumeTests(pagesService, pagesReq);
