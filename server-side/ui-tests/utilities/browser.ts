@@ -182,8 +182,7 @@ export class Browser {
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
                         console.log(
-                            `%cClicked with xpath selector: '${
-                                selector.valueOf()['value']
+                            `%cClicked with xpath selector: '${selector.valueOf()['value']
                             }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
@@ -192,8 +191,7 @@ export class Browser {
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
                         console.log(
-                            `%cClicked with css selector: '${
-                                selector.valueOf()['value']
+                            `%cClicked with css selector: '${selector.valueOf()['value']
                             }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
@@ -253,8 +251,7 @@ export class Browser {
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
             console.log(
-                `%cSentKeys with defult selector: '${
-                    selector.valueOf()['value']
+                `%cSentKeys with defult selector: '${selector.valueOf()['value']
                 }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                 ConsoleColors.SentKeysMessage,
             );
@@ -273,8 +270,7 @@ export class Browser {
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
                         console.log(
-                            `%cSentKeys with actions and defult selector: '${
-                                selector.valueOf()['value']
+                            `%cSentKeys with actions and defult selector: '${selector.valueOf()['value']
                             }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                             ConsoleColors.SentKeysMessage,
                         );
@@ -284,8 +280,7 @@ export class Browser {
                                 `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with xpath selector: '${
-                                    selector.valueOf()['value']
+                                `%cSet value with xpath selector: '${selector.valueOf()['value']
                                 }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
@@ -294,8 +289,7 @@ export class Browser {
                                 `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with css selector: '${
-                                    selector.valueOf()['value']
+                                `%cSet value with css selector: '${selector.valueOf()['value']
                                 }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
@@ -330,9 +324,8 @@ export class Browser {
         timeOutToDisplay = 1000,
         errorOnNoLoad = false,
     ): Promise<void> {
-        const notVisibleMsg = `Loading element ${
-            loadingLocator.valueOf()['value']
-        } not visible after ${timeOutToDisplay}MS`;
+        const notVisibleMsg = `Loading element ${loadingLocator.valueOf()['value']
+            } not visible after ${timeOutToDisplay}MS`;
         const loadTimeoutMsg = `Loading (${loadingLocator.valueOf()['value']}) timeout reached after ${timeOut}MS`;
         console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Start`);
         return this.driver
@@ -617,35 +610,30 @@ export class Browser {
 
     public async queryNetworkLogsForCertainResponseAndReturnTiming(
         urlLookingFor: string,
-        numOfTries = 500,
-        responseCodeLookingFor?: string,
-        responseStatusLookingFor?: string,
+        numOfTries = 5000,
+        responseCodeLookingFor = 200,
+        responseStatusLookingFor = 'OK',
     ): Promise<number> {
+        let currentNumOfTries = 0;
         let consoleLogs: any[] = [];
-        let duration;
+        let duration: undefined | number = undefined;
         const start = Date.now();
-        outerloop: do {
+        do {
             consoleLogs = await this.getPerformanceLogs();
-            // prefLogs.forEach(logEntry => consoleLogs.push(logEntry));
-            for (let index = 0; index < consoleLogs.length; index++) {
-                if (consoleLogs[index].message.method === 'Network.responseReceived') {
-                    if (
-                        consoleLogs[index].message.params.response.url === urlLookingFor &&
-                        consoleLogs[index].message.params.response.status === responseCodeLookingFor
-                            ? responseCodeLookingFor
-                            : '200' &&
-                              consoleLogs[index].message.params.response.statusText === responseStatusLookingFor
-                            ? responseStatusLookingFor
-                            : 'OK'
-                    ) {
-                        duration = Date.now() - start;
-                        break outerloop;
-                    }
-                }
+            consoleLogs = consoleLogs.filter(log => log.message.method === 'Network.responseReceived');
+            consoleLogs = consoleLogs.filter(log => log.message.params.response.url === urlLookingFor);
+            consoleLogs = consoleLogs.filter(log => log.message.params.response.status === responseCodeLookingFor);
+            consoleLogs = consoleLogs.filter(log => log.message.params.response.statusText === responseStatusLookingFor);
+            consoleLogs = consoleLogs.filter(log => log.message.params.type === 'XHR');
+            if (consoleLogs.length === 1) {
+                return (Date.now() - start);
             }
-            numOfTries--;
-        } while (true && numOfTries > 0);
-        return duration;
+            currentNumOfTries++;
+        } while (true && numOfTries > currentNumOfTries);
+        if (duration === undefined) {
+            throw Error(`resopnse for '${urlLookingFor}' was not found for ${currentNumOfTries} tries`);
+        }
+        return duration;//dummy - will throw an error or return before 
     }
 
     /**
