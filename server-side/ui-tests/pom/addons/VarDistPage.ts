@@ -2,6 +2,8 @@ import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 import { Browser } from '../../utilities/browser';
 import { PepSearch } from '../Components/PepSearch';
+import addContext from 'mochawesome/addContext';
+
 
 export class VarDistPage extends AddonPage {
     public search: PepSearch;
@@ -45,7 +47,7 @@ export class VarDistPage extends AddonPage {
         return await this.untilIsVisible(this.supportTitle, 40000);
     }
 
-    public async recycleNuc() {
+    public async recycleNuc(that) {
         await this.browser.sendKeys(this.recycleReasonTxtBox, `login perormance auto test setup` + Key.ENTER);
         await this.browser.click(this.recycleNucBtn);
         await this.untilIsVisible(this.recycleModalMessage, 40000);
@@ -54,6 +56,11 @@ export class VarDistPage extends AddonPage {
             await this.browser.click(this.recycleModalCancleBtn);
             await this.moveDistToEmptyMachine();
         } else {
+            const base64Image = await this.browser.saveScreenshots();
+            addContext(that, {
+                title: `Reseting Nuc`,
+                value: 'data:image/png;base64,' + base64Image,
+            });
             await this.browser.click(this.recycleModalContinueBtn);
             await this.untilIsVisible(this.recycleModalMessage, 40000);
             const postRecycleMessage = await (await this.browser.findElement(this.recycleModalMessage)).getText();
@@ -63,6 +70,11 @@ export class VarDistPage extends AddonPage {
             ) {
                 throw Error(`nuc returned wrong message for recycling: ${postRecycleMessage}`);
             } else {
+                const base64Image = await this.browser.saveScreenshots();
+                addContext(that, {
+                    title: `Reseting Nuc`,
+                    value: 'data:image/png;base64,' + base64Image,
+                });
                 await this.browser.click(this.secondModalOK);
             }
         }

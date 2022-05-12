@@ -31,7 +31,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     // const isInstalledArr = await generalService.areAddonsInstalled(testData);
     // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const urlToLookFor = `https://${_envUrlBase}.pepperi.com/16.80.7/webapi/Service1.svc/v1/HomePage`;
-    
+
     //#endregion Upgrade Cloudwatch Addon
 
     describe('Logs API Tests Suites', () => {
@@ -96,7 +96,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await varListOfDistsPage.search.enterSearch(email + Key.ENTER);
                     expect(await varListOfDistsPage.editPresentedDist()).to.be.true;
                     expect(await varListOfDistsPage.enterSupportSettings()).to.be.true;
-                    await varListOfDistsPage.recycleNuc();
+                    await varListOfDistsPage.recycleNuc(this);
                 });
 
                 it(`Login With The Recycled User For The ${index} Time And Measure Time The Process Took After Recycling`, async function () {
