@@ -10,7 +10,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        pfs: ['00000000-0000-0000-0000-0000000f11e5', '0.5.1'],
+        pfs: ['00000000-0000-0000-0000-0000000f11e5', '0.5.8'],
     };
 
     let varKey;
