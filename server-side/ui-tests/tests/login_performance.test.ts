@@ -23,14 +23,13 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     } else {
         _envUrlBase = 'webapi';
     }
-    const testData = {
-    };
+    const testData = {};
 
-    // const addonVersions = await generalService.baseAddonVersionsInstallation(varPass);
-    // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const urlToLookFor = `https://${_envUrlBase}.pepperi.com/16.80.7/webapi/Service1.svc/v1/HomePage`;
+    const addonVersions = await generalService.baseAddonVersionsInstallation(varPass);
+    const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
 
     //#endregion Upgrade Cloudwatch Addon
 
@@ -67,7 +66,6 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
         //     }
         // });
 
-
         describe('Basic UI Tests Suit', async function () {
             this.retries(0);
 
@@ -92,7 +90,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const varListOfDistsPage = new VarDistPage(driver);
                     await varListOfDistsPage.isSpinnerDone();
                     await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
-                    await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.IdRowTitle, 90000)).eventually.to.be.true;
+                    await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.IdRowTitle, 90000)).eventually.to
+                        .be.true;
                     await varListOfDistsPage.search.enterSearch(email + Key.ENTER);
                     expect(await varListOfDistsPage.editPresentedDist()).to.be.true;
                     expect(await varListOfDistsPage.enterSupportSettings()).to.be.true;
@@ -105,7 +104,10 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await driver.clearCookies();
                     await webAppLoginPage.signIn(email, password);
                     // starting as soon as the btton was pressed
-                    const duration = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(urlToLookFor, numOfTries);
+                    const duration = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
+                        urlToLookFor,
+                        numOfTries,
+                    );
                     addContext(this, {
                         title: `duration after recycl time is`,
                         value: `duration:${duration}`,
@@ -121,7 +123,10 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await driver.clearCookies();
                     await webAppLoginPage.signIn(email, password);
                     // starting as soon as the btton was pressed
-                    const duration = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(urlToLookFor, numOfTries);
+                    const duration = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
+                        urlToLookFor,
+                        numOfTries,
+                    );
                     addContext(this, {
                         title: `duration for ${index} run is`,
                         value: `this run duration: ${duration}`,
@@ -142,9 +147,15 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     value: `duration: ${noRecyclingAVG}`,
                 });
                 const avg120Rec = parseInt((localAVGAfterRec * 1.2).toFixed(0));
-                expect(afterRecyclingAVG).to.be.lessThan(avg120Rec, 'after recycle login is bigger then avg by more then 20%');
+                expect(afterRecyclingAVG).to.be.lessThan(
+                    avg120Rec,
+                    'after recycle login is bigger then avg by more then 20%',
+                );
                 const avg120NoRec = parseInt((localAVGNoRec * 1.2).toFixed(0));
-                expect(afterRecyclingAVG).to.be.lessThan(avg120NoRec, 'no recycle login is bigger then avg by more then 20%');
+                expect(afterRecyclingAVG).to.be.lessThan(
+                    avg120NoRec,
+                    'no recycle login is bigger then avg by more then 20%',
+                );
                 const avg0point8Rec = parseInt((localAVGAfterRec * 0.8).toFixed(0));
                 const avg0point8NoRec = parseInt((localAVGNoRec * 0.8).toFixed(0));
                 if (afterRecyclingAVG < avg0point8Rec) {
@@ -165,8 +176,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
 }
 
 // expect(duration).to.be.lessThan(
-                    //     localAVG,
-                    //     `this run duration took ${(((duration - localAVG) / localAVG) * 100).toFixed(
-                    //         3,
-                    //     )} present longer then the local AVG`,
-                    // );
+//     localAVG,
+//     `this run duration took ${(((duration - localAVG) / localAVG) * 100).toFixed(
+//         3,
+//     )} present longer then the local AVG`,
+// );

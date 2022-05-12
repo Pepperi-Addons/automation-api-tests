@@ -4,7 +4,6 @@ import { Browser } from '../../utilities/browser';
 import { PepSearch } from '../Components/PepSearch';
 import addContext from 'mochawesome/addContext';
 
-
 export class VarDistPage extends AddonPage {
     public search: PepSearch;
     constructor(protected browser: Browser) {
