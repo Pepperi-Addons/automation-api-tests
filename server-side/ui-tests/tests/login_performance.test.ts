@@ -34,37 +34,37 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     //#endregion Upgrade Cloudwatch Addon
 
     describe('Logs API Tests Suites', () => {
-        // describe('Prerequisites Addon for Chart Manager Tests', () => {
-        //     //Test Data
-        //     //Cloudwatch Addon Service
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     for (const addonName in testData) {
-        //         const addonUUID = testData[addonName][0];
-        //         const version = testData[addonName][1];
-        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         const changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
+        describe('Prerequisites Addon for Chart Manager Tests', () => {
+            //Test Data
+            //Cloudwatch Addon Service
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
 
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
 
         describe('Basic UI Tests Suit', async function () {
             this.retries(0);
