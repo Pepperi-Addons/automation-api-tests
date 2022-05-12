@@ -10,6 +10,8 @@ import { performance } from 'perf_hooks';
 let isPerformance = false;
 let isReference = false;
 
+type ReferenceType = 'Resource' | 'DynamicResource' | 'ContainedResource' | 'ContainedDynamicResource';
+
 export async function AddonDataImportExportReferenceTests(
     generalService: GeneralService,
     request,
@@ -35,15 +37,25 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const relationService = new AddonRelationService(generalService);
     const dimxService = new DIMXService(generalService.papiClient);
 
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
+
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
     if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
-        generalService['client'].AddonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID);
+        generalService['client'].AddonSecretKey = await generalService.getSecretKey(
+            generalService['client'].AddonUUID,
+            varKey,
+        );
     }
 
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const secretKey = await generalService.getSecretKey(addonUUID);
+    const secretKey = await generalService.getSecretKey(addonUUID, varKey);
     const version = '0.0.5';
     const schemaName = 'DIMX Test';
     const importJSONFileName = 'import3.json';
@@ -61,12 +73,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.0.106'],
     };
 
-    let varKey;
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        varKey = request.body.varKeyStage;
-    } else {
-        varKey = request.body.varKeyPro;
-    }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // #endregion Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
@@ -3413,7 +3419,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         }
 
         if (isReference) {
-            describe(`DIMX Reference CRUD`, () => {
+            describe(`DIMX Key Reference CRUD But only export since import don't exist yet`, () => {
                 describe(`Create Schema For DIMX With JSON: ${schemaName}`, () => {
                     describe(`Set Relations Of Reference Addon`, () => {
                         it(`Post Export Relation`, async () => {
@@ -3548,18 +3554,18 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 } as any,
                                 ReferenceDynamicOther: {
-                                    Type: 'Resource',
+                                    Type: 'DynamicResource' as ReferenceType,
                                 } as any,
                                 ReferenceDynamicThis: {
-                                    Type: 'Resource',
+                                    Type: 'DynamicResource' as ReferenceType,
                                 } as any,
                                 ReferenceDynamicThisDuplicate: {
-                                    Type: 'Resource',
+                                    Type: 'DynamicResource' as ReferenceType,
                                 } as any,
                                 ReferenceStaticOther: {
                                     Type: 'Array',
                                     Items: {
-                                        Type: 'Resource',
+                                        Type: 'Resource' as ReferenceType,
                                         AddonUUID: generalService['client'].AddonUUID,
                                         Resource: schemaName,
                                     } as any,
@@ -3567,18 +3573,18 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 ReferenceStaticThis: {
                                     Type: 'Array',
                                     Items: {
-                                        Type: 'Resource',
+                                        Type: 'Resource' as ReferenceType,
                                         AddonUUID: addonUUID,
                                         Resource: schemaName,
                                     } as any,
                                 },
                                 ReferenceDynamicOtherDuplicate: {
-                                    Type: 'Resource',
+                                    Type: 'DynamicResource' as ReferenceType,
                                 } as any,
                                 ReferenceStaticOtherDuplicate: {
                                     Type: 'Array',
                                     Items: {
-                                        Type: 'Resource',
+                                        Type: 'Resource' as ReferenceType,
                                         AddonUUID: generalService['client'].AddonUUID,
                                         Resource: schemaName,
                                     } as any,
@@ -4063,6 +4069,658 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
                 });
             });
+
+            //TODO:08/05/2022 - Reference of Data will be developed in the next stage - This test can't work yet and should be developed
+            // describe(`DIMX Data Reference CRUD But only export since import don't exist yet`, () => {
+            //     describe(`Create Schema For DIMX With JSON: ${schemaName}`, () => {
+            //         describe(`Set Relations Of Reference Addon`, () => {
+            //             it(`Post Export Relation`, async () => {
+            //                 const relationResponse = await relationService.postRelationStatus(
+            //                     {
+            //                         'X-Pepperi-OwnerID': generalService['client'].AddonUUID,
+            //                         'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
+            //                     },
+            //                     {
+            //                         Name: 'Get Export From DIMX', // mandatory
+            //                         AddonUUID: generalService['client'].AddonUUID, // mandatory
+            //                         RelationName: 'DataExportResource', // mandatory
+            //                         Type: 'AddonAPI', // mandatory on create
+            //                         Description: 'DIMX Export',
+            //                         AddonRelativeURL: '', // mandatory on create
+            //                     },
+            //                 );
+            //                 expect(relationResponse).to.equal(200);
+            //             });
+
+            //             it(`Get Export Relation`, async () => {
+            //                 const relationBody = {
+            //                     Name: 'Get Export From DIMX', // mandatory
+            //                     AddonUUID: generalService['client'].AddonUUID, // mandatory
+            //                     RelationName: 'DataExportResource', // mandatory
+            //                     Type: 'AddonAPI', // mandatory on create
+            //                     Description: 'DIMX Export',
+            //                     AddonRelativeURL: '', // mandatory on create
+            //                 };
+            //                 const relationResponse = await relationService.getRelationWithNameAndUUID(
+            //                     {
+            //                         'X-Pepperi-OwnerID': generalService['client'].AddonUUID,
+            //                         'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
+            //                     },
+            //                     relationBody.Name,
+            //                     generalService['client'].AddonUUID,
+            //                 );
+            //                 expect(relationResponse[0]).to.include({
+            //                     ...relationBody,
+            //                     Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+            //                     Hidden: false,
+            //                 });
+            //             });
+
+            //             it(`Post Import Relation`, async () => {
+            //                 const relationResponse = await relationService.postRelationStatus(
+            //                     {
+            //                         'X-Pepperi-OwnerID': generalService['client'].AddonUUID,
+            //                         'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
+            //                     },
+            //                     {
+            //                         Name: 'Import With DIMX', // mandatory
+            //                         AddonUUID: generalService['client'].AddonUUID, // mandatory
+            //                         RelationName: 'DataImportResource', // mandatory
+            //                         Type: 'AddonAPI', // mandatory on create
+            //                         Description: 'DIMX Import',
+            //                         AddonRelativeURL: '', // mandatory on create
+            //                     },
+            //                 );
+            //                 expect(relationResponse).to.equal(200);
+            //             });
+
+            //             it(`Get Import Relation`, async () => {
+            //                 const relationBody = {
+            //                     Name: 'Import With DIMX', // mandatory
+            //                     AddonUUID: generalService['client'].AddonUUID, // mandatory
+            //                     RelationName: 'DataImportResource', // mandatory
+            //                     Type: 'AddonAPI', // mandatory on create
+            //                     Description: 'DIMX Import',
+            //                     AddonRelativeURL: '', // mandatory on create
+            //                 };
+            //                 const relationResponse = await relationService.getRelationWithNameAndUUID(
+            //                     {
+            //                         'X-Pepperi-OwnerID': generalService['client'].AddonUUID,
+            //                         'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
+            //                     },
+            //                     relationBody.Name,
+            //                     generalService['client'].AddonUUID,
+            //                 );
+            //                 expect(relationResponse[0]).to.include({
+            //                     ...relationBody,
+            //                     Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+            //                     Hidden: false,
+            //                 });
+            //             });
+            //         });
+
+            //         it(`Reset Schema`, async () => {
+            //             const adalService = new ADALService(generalService.papiClient);
+            //             adalService.papiClient['options'].addonUUID = addonUUID;
+            //             adalService.papiClient['options'].addonSecretKey = secretKey;
+            //             let purgedSchema;
+            //             try {
+            //                 purgedSchema = await adalService.deleteSchema(schemaName);
+            //             } catch (error) {
+            //                 purgedSchema = '';
+            //                 expect(error)
+            //                     .to.have.property('message')
+            //                     .that.includes(
+            //                         `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+            //                     );
+            //             }
+            //             const newSchema = await adalService.postSchema({
+            //                 Name: schemaName,
+            //                 Type: 'data',
+            //                 Fields: {
+            //                     Name: { Type: 'String' },
+            //                     Description: { Type: 'String' },
+            //                     Key: { Type: 'String' },
+            //                     Column1: {
+            //                         Type: 'Array',
+            //                         Items: {
+            //                             Type: 'String',
+            //                         },
+            //                     } as any,
+            //                     object: {
+            //                         Type: 'Object',
+            //                         Fields: {
+            //                             Object: {
+            //                                 Type: 'Object',
+            //                                 Fields: {
+            //                                     Value1: { Type: 'Integer' },
+            //                                     Value2: { Type: 'Integer' },
+            //                                     Value3: { Type: 'Integer' },
+            //                                 },
+            //                             },
+            //                             String: { Type: 'String' },
+            //                             Array: {
+            //                                 Type: 'Array',
+            //                                 Items: { Type: 'String' },
+            //                             },
+            //                         },
+            //                     } as any,
+            //                     ReferenceDynamicOther: {
+            //                         Type: 'ContainedDynamicResource' as ReferenceType,
+            //                     } as any,
+            //                     ReferenceDynamicThis: {
+            //                         Type: 'ContainedDynamicResource' as ReferenceType,
+            //                     } as any,
+            //                     ReferenceDynamicThisDuplicate: {
+            //                         Type: 'ContainedDynamicResource' as ReferenceType,
+            //                     } as any,
+            //                     ReferenceStaticOther: {
+            //                         Type: 'Array',
+            //                         Items: {
+            //                             Type: 'Resource' as ReferenceType,
+            //                             AddonUUID: generalService['client'].AddonUUID,
+            //                             Resource: schemaName,
+            //                         } as any,
+            //                     },
+            //                     ReferenceStaticThis: {
+            //                         Type: 'Array',
+            //                         Items: {
+            //                             Type: 'Resource' as ReferenceType,
+            //                             AddonUUID: addonUUID,
+            //                             Resource: schemaName,
+            //                         } as any,
+            //                     },
+            //                     ReferenceDynamicOtherDuplicate: {
+            //                         Type: 'ContainedDynamicResource' as ReferenceType,
+            //                     } as any,
+            //                     ReferenceStaticOtherDuplicate: {
+            //                         Type: 'Array',
+            //                         Items: {
+            //                             Type: 'Resource' as ReferenceType,
+            //                             AddonUUID: generalService['client'].AddonUUID,
+            //                             Resource: schemaName,
+            //                         } as any,
+            //                     },
+            //                 },
+            //             });
+            //             expect(purgedSchema).to.equal('');
+            //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+            //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
+            //         });
+
+            //         it(`Add Data To Table`, async () => {
+            //             const adalService = new ADALService(generalService.papiClient);
+            //             adalService.papiClient['options'].addonUUID = addonUUID;
+            //             adalService.papiClient['options'].addonSecretKey = secretKey;
+            //             for (let i = 1; i < 4; i++) {
+            //                 if (i < 3) {
+            //                     await adalService.postDataToSchema(addonUUID, schemaName, {
+            //                         Name: schemaName,
+            //                         Description: `DIMX Test ${i}`,
+            //                         Column1: ['Value1', 'Value2', 'Value3'],
+            //                         Key: `testKeyDIMX${i}`,
+            //                         object: {
+            //                             Object: { Value1: 1, Value2: 2, Value3: 3 },
+            //                             String: `DIMX Test ${i}`,
+            //                             Array: ['Value1', 'Value2', 'Value3'],
+            //                         },
+            //                         ReferenceDynamicOther: {
+            //                             AddonUUID: generalService['client'].AddonUUID,
+            //                             Resource: schemaName,
+            //                             Key: `testKeyDIMX${i}`, //Mandatory
+            //                         },
+            //                         ReferenceDynamicThis: {
+            //                             AddonUUID: addonUUID,
+            //                             Resource: schemaName,
+            //                             Key: `testKeyDIMX${i}`, //Mandatory
+            //                         },
+            //                         ReferenceDynamicThisDuplicate: {
+            //                             AddonUUID: addonUUID,
+            //                             Resource: schemaName,
+            //                             Key: `testKeyDIMX${11}`, //Mandatory
+            //                         },
+            //                         ReferenceDynamicOtherDuplicate: {
+            //                             AddonUUID: generalService['client'].AddonUUID,
+            //                             Resource: schemaName,
+            //                             Key: `testKeyDIMX${11}`, //Mandatory
+            //                         },
+            //                         ReferenceStaticOther: [`testKeyDIMX${8 - i}`, `testKeyDIMX${6 - i}`],
+            //                         ReferenceStaticThis: [`testKeyDIMX${3}`, `testKeyDIMX${3}`, `testKeyDIMX${11}`],
+            //                         ReferenceStaticOtherDuplicate: [
+            //                             `testKeyDIMX${3}`,
+            //                             `testKeyDIMX${3}`,
+            //                             `testKeyDIMX${11}`,
+            //                         ],
+            //                     });
+            //                 } else {
+            //                     await adalService.postDataToSchema(addonUUID, schemaName, {
+            //                         Name: schemaName,
+            //                         Description: `DIMX Test ${i}`,
+            //                         Column1: ['Value1', 'Value2', 'Value3'],
+            //                         Key: `testKeyDIMX${i}`,
+            //                         object: {
+            //                             Object: { Value1: 1, Value2: 2, Value3: 3 },
+            //                             String: `DIMX Test ${i}`,
+            //                             Array: ['Value3', 'Value4', 'Value5'],
+            //                         },
+            //                     });
+            //                 }
+            //             }
+            //         });
+
+            //         it(`Reset Reference Addon Schema`, async () => {
+            //             generalService.papiClient['options'].addonUUID = generalService['client'].AddonUUID;
+            //             generalService.papiClient['options'].addonSecretKey = generalService['client'].AddonSecretKey;
+            //             const adalService = new ADALService(generalService.papiClient);
+            //             let purgedSchema;
+            //             try {
+            //                 purgedSchema = await adalService.deleteSchema(schemaName);
+            //             } catch (error) {
+            //                 purgedSchema = '';
+            //                 expect(error)
+            //                     .to.have.property('message')
+            //                     .that.includes(
+            //                         `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
+            //                     );
+            //             }
+            //             const newSchema = await adalService.postSchema({
+            //                 Name: schemaName,
+            //                 Type: 'data',
+            //                 Fields: {
+            //                     Name: { Type: 'String' },
+            //                     Description: { Type: 'String' },
+            //                     Key: { Type: 'String' },
+            //                 },
+            //             });
+            //             expect(purgedSchema).to.equal('');
+            //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+            //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
+            //         });
+
+            //         it(`Add Data To Table Of Reference Addon`, async () => {
+            //             const adalService = new ADALService(generalService.papiClient);
+            //             for (let i = 1; i < 12; i++) {
+            //                 await adalService.postDataToSchema(generalService['client'].AddonUUID, schemaName, {
+            //                     Name: schemaName,
+            //                     Description: `DIMX Reference Test ${i}`,
+            //                     Key: `testKeyDIMX${i}`,
+            //                 });
+            //             }
+            //         });
+            //     });
+
+            //     describe(`Export JSON`, () => {
+            //         let dimxExportDefult;
+            //         let recursiveExportDownloadURL;
+            //         let recursiveExportResources = [];
+
+            //         it(`Export From Relation`, async () => {
+            //             dimxService.papiClient['options'].addonUUID = addonUUID;
+            //             dimxService.papiClient['options'].addonSecretKey = secretKey;
+            //             const relationResponse = await dimxService.dataRecursiveExport(addonUUID, schemaName);
+            //             dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
+            //                 relationResponse.URI,
+            //                 90,
+            //             );
+            //             expect(
+            //                 dimxExportDefult.Status?.ID,
+            //                 JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+            //             ).to.equal(1);
+            //             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+            //                 ? 'pfs.staging.pepperi'
+            //                 : generalService['client'].BaseURL.includes('papi-eu')
+            //                 ? 'eupfs.pepperi'
+            //                 : 'pfs.pepperi';
+
+            //             const recursiveExportResponse = JSON.parse(dimxExportDefult.AuditInfo.ResultObject);
+            //             recursiveExportDownloadURL = recursiveExportResponse.DownloadURL;
+            //             recursiveExportResources = recursiveExportResponse.Resources;
+            //             expect(
+            //                 dimxExportDefult.AuditInfo.ResultObject,
+            //                 JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+            //             ).to.include(`https://${testResponseEnvironment}`);
+            //             expect(
+            //                 recursiveExportDownloadURL,
+            //                 JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+            //             ).to.include(`https://${testResponseEnvironment}`);
+            //             for (let i = 0; i < recursiveExportResources.length; i++) {
+            //                 const exportedResource = recursiveExportResources[i];
+            //                 expect(
+            //                     exportedResource['DownloadURL'],
+            //                     JSON.stringify(recursiveExportResources),
+            //                 ).to.include(`https://${testResponseEnvironment}`);
+            //             }
+            //         });
+
+            //         it(`Export Content`, async () => {
+            //             const relationResponse = await generalService.fetchStatus(
+            //                 JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+            //             );
+            //             console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
+            //             expect(
+            //                 relationResponse.Body,
+            //                 JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+            //             ).to.deep.equal([
+            //                 {
+            //                     ReferenceDynamicThisDuplicate: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX11',
+            //                         AddonUUID: addonUUID,
+            //                     },
+            //                     ReferenceDynamicOther: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX1',
+            //                         AddonUUID: generalService['client'].AddonUUID,
+            //                     },
+            //                     ReferenceStaticOther: ['testKeyDIMX7', 'testKeyDIMX5'],
+            //                     Description: 'DIMX Test 1',
+            //                     ReferenceDynamicThis: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX1',
+            //                         AddonUUID: addonUUID,
+            //                     },
+            //                     Column1: ['Value1', 'Value2', 'Value3'],
+            //                     ReferenceStaticOtherDuplicate: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                     ReferenceStaticThis: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                     ReferenceDynamicOtherDuplicate: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX11',
+            //                         AddonUUID: generalService['client'].AddonUUID,
+            //                     },
+            //                     Name: 'DIMX Test',
+            //                     Key: 'testKeyDIMX1',
+            //                 },
+            //                 {
+            //                     ReferenceDynamicThisDuplicate: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX11',
+            //                         AddonUUID: addonUUID,
+            //                     },
+            //                     ReferenceDynamicOther: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX2',
+            //                         AddonUUID: generalService['client'].AddonUUID,
+            //                     },
+            //                     ReferenceStaticOther: ['testKeyDIMX6', 'testKeyDIMX4'],
+            //                     Description: 'DIMX Test 2',
+            //                     ReferenceDynamicThis: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX2',
+            //                         AddonUUID: addonUUID,
+            //                     },
+            //                     Column1: ['Value1', 'Value2', 'Value3'],
+            //                     ReferenceStaticOtherDuplicate: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                     ReferenceStaticThis: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                     ReferenceDynamicOtherDuplicate: {
+            //                         Resource: 'DIMX Test',
+            //                         Key: 'testKeyDIMX11',
+            //                         AddonUUID: generalService['client'].AddonUUID,
+            //                     },
+            //                     Name: 'DIMX Test',
+            //                     Key: 'testKeyDIMX2',
+            //                 },
+            //                 {
+            //                     Description: 'DIMX Test 3',
+            //                     Column1: ['Value1', 'Value2', 'Value3'],
+            //                     Name: 'DIMX Test',
+            //                     Key: 'testKeyDIMX3',
+            //                 },
+            //             ]);
+            //         });
+
+            //         it(`Export Resources Validate Same Addon Static`, async () => {
+            //             for (let j = 0; j < recursiveExportResources.length; j++) {
+            //                 const exportedResource = recursiveExportResources[j];
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
+            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 if (relationResponse.Body[0].Description != 'DIMX Reference Test 1') {
+            //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
+            //                         [
+            //                             {
+            //                                 Description: 'DIMX Test 3',
+            //                                 Column1: ['Value1', 'Value2', 'Value3'],
+            //                                 Name: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX3',
+            //                             },
+            //                         ],
+            //                     );
+            //                 }
+            //             }
+            //         });
+
+            //         it(`Export Resources Validate Other Addon Static`, async () => {
+            //             for (let j = 0; j < recursiveExportResources.length; j++) {
+            //                 const exportedResource = recursiveExportResources[j];
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
+            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
+            //                     for (let i = 0; i < relationResponse.Body.length; i++) {
+            //                         delete relationResponse.Body[i].ModificationDateTime;
+            //                         delete relationResponse.Body[i].CreationDateTime;
+            //                         delete relationResponse.Body[i].Hidden;
+            //                     }
+            //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
+            //                         [
+            //                             {
+            //                                 Description: 'DIMX Reference Test 4',
+            //                                 Name: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX4',
+            //                             },
+            //                             {
+            //                                 Description: 'DIMX Reference Test 6',
+            //                                 Name: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX6',
+            //                             },
+            //                         ],
+            //                     );
+            //                 }
+            //             }
+            //         });
+
+            //         it(`Export Resources Validate Same Addon Dynamic`, async () => {
+            //             for (let j = 0; j < recursiveExportResources.length; j++) {
+            //                 const exportedResource = recursiveExportResources[j];
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
+            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 if (relationResponse.Body[0].Description != 'DIMX Reference Test 1') {
+            //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
+            //                         [
+            //                             {
+            //                                 ReferenceDynamicThisDuplicate: {
+            //                                     Resource: 'DIMX Test',
+            //                                     Key: 'testKeyDIMX11',
+            //                                     AddonUUID: addonUUID,
+            //                                 },
+            //                                 ReferenceDynamicOther: {
+            //                                     Resource: 'DIMX Test',
+            //                                     Key: 'testKeyDIMX1',
+            //                                     AddonUUID: generalService['client'].AddonUUID,
+            //                                 },
+            //                                 ReferenceStaticOther: ['testKeyDIMX7', 'testKeyDIMX5'],
+            //                                 Description: 'DIMX Test 1',
+            //                                 ReferenceDynamicThis: {
+            //                                     Resource: 'DIMX Test',
+            //                                     Key: 'testKeyDIMX1',
+            //                                     AddonUUID: addonUUID,
+            //                                 },
+            //                                 Column1: ['Value1', 'Value2', 'Value3'],
+            //                                 ReferenceStaticOtherDuplicate: [
+            //                                     'testKeyDIMX3',
+            //                                     'testKeyDIMX3',
+            //                                     'testKeyDIMX11',
+            //                                 ],
+            //                                 ReferenceStaticThis: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                                 ReferenceDynamicOtherDuplicate: {
+            //                                     Resource: 'DIMX Test',
+            //                                     Key: 'testKeyDIMX11',
+            //                                     AddonUUID: generalService['client'].AddonUUID,
+            //                                 },
+            //                                 Name: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX1',
+            //                             },
+            //                         ],
+            //                     );
+            //                 }
+            //             }
+            //         });
+
+            //         it(`Export Resources Validate Other Addon Dynamic`, async () => {
+            //             for (let j = 0; j < recursiveExportResources.length; j++) {
+            //                 const exportedResource = recursiveExportResources[j];
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
+            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
+            //                     for (let i = 0; i < relationResponse.Body.length; i++) {
+            //                         delete relationResponse.Body[i].ModificationDateTime;
+            //                         delete relationResponse.Body[i].CreationDateTime;
+            //                         delete relationResponse.Body[i].Hidden;
+            //                     }
+            //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
+            //                         [
+            //                             {
+            //                                 Description: 'DIMX Reference Test 1',
+            //                                 Name: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX1',
+            //                             },
+            //                         ],
+            //                     );
+            //                 }
+            //             }
+            //         });
+
+            //         it(`Export Resources All As expected`, async () => {
+            //             for (let j = 0; j < recursiveExportResources.length; j++) {
+            //                 const exportedResource = recursiveExportResources[j];
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
+            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
+            //                     for (let i = 0; i < relationResponse.Body.length; i++) {
+            //                         delete relationResponse.Body[i].ModificationDateTime;
+            //                         delete relationResponse.Body[i].CreationDateTime;
+            //                         delete relationResponse.Body[i].Hidden;
+            //                     }
+            //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.equal([
+            //                         {
+            //                             Description: 'DIMX Reference Test 1',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX1',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 2',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX2',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 3',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX3',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 4',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX4',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 5',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX5',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 6',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX6',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 7',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX7',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Reference Test 11',
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX11',
+            //                         },
+            //                     ]);
+            //                 } else {
+            //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.equal([
+            //                         {
+            //                             ReferenceDynamicThisDuplicate: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX11',
+            //                                 AddonUUID: addonUUID,
+            //                             },
+            //                             ReferenceDynamicOther: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX1',
+            //                                 AddonUUID: generalService['client'].AddonUUID,
+            //                             },
+            //                             ReferenceStaticOther: ['testKeyDIMX7', 'testKeyDIMX5'],
+            //                             Description: 'DIMX Test 1',
+            //                             ReferenceDynamicThis: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX1',
+            //                                 AddonUUID: addonUUID,
+            //                             },
+            //                             Column1: ['Value1', 'Value2', 'Value3'],
+            //                             ReferenceStaticOtherDuplicate: [
+            //                                 'testKeyDIMX3',
+            //                                 'testKeyDIMX3',
+            //                                 'testKeyDIMX11',
+            //                             ],
+            //                             ReferenceStaticThis: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                             ReferenceDynamicOtherDuplicate: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX11',
+            //                                 AddonUUID: generalService['client'].AddonUUID,
+            //                             },
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX1',
+            //                         },
+            //                         {
+            //                             ReferenceDynamicThisDuplicate: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX11',
+            //                                 AddonUUID: addonUUID,
+            //                             },
+            //                             ReferenceDynamicOther: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX2',
+            //                                 AddonUUID: generalService['client'].AddonUUID,
+            //                             },
+            //                             ReferenceStaticOther: ['testKeyDIMX6', 'testKeyDIMX4'],
+            //                             Description: 'DIMX Test 2',
+            //                             ReferenceDynamicThis: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX2',
+            //                                 AddonUUID: addonUUID,
+            //                             },
+            //                             Column1: ['Value1', 'Value2', 'Value3'],
+            //                             ReferenceStaticOtherDuplicate: [
+            //                                 'testKeyDIMX3',
+            //                                 'testKeyDIMX3',
+            //                                 'testKeyDIMX11',
+            //                             ],
+            //                             ReferenceStaticThis: ['testKeyDIMX3', 'testKeyDIMX3', 'testKeyDIMX11'],
+            //                             ReferenceDynamicOtherDuplicate: {
+            //                                 Resource: 'DIMX Test',
+            //                                 Key: 'testKeyDIMX11',
+            //                                 AddonUUID: generalService['client'].AddonUUID,
+            //                             },
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX2',
+            //                         },
+            //                         {
+            //                             Description: 'DIMX Test 3',
+            //                             Column1: ['Value1', 'Value2', 'Value3'],
+            //                             Name: 'DIMX Test',
+            //                             Key: 'testKeyDIMX3',
+            //                         },
+            //                     ]);
+            //                 }
+            //             }
+            //         });
+            //     });
+            // });
 
             describe(`Reference Bug Verification`, async () => {
                 describe(`Reference Bug 1`, async () => {

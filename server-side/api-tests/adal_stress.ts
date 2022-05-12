@@ -8,20 +8,21 @@ export async function ADALStressTests(generalService: GeneralService, request, t
     const expect = tester.expect;
     const it = tester.it;
 
-    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
-    // const PepperiSecretKey = await generalService.getSecretKey(PepperiOwnerID);
-
-    //#region Upgrade ADAL
-    const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-    };
-
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
     }
+
+    const PepperiOwnerID = generalService.papiClient['options'].addonUUID;
+    // const PepperiSecretKey = await generalService.getSecretKey(PepperiOwnerID, varKey);
+
+    //#region Upgrade ADAL
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    };
+
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL

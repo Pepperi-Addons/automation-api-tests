@@ -487,7 +487,7 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Subscribe With New Addon With Wrong AddonRelativeURL (Negative) ${_Test_UUID_Second_Addon}`, async () => {
-                    const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
+                    const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID, varKey);
                     const subscriptionBody: Subscription = {
                         AddonRelativeURL: '/test',
                         Type: 'data',
@@ -516,7 +516,7 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Subscribe With New Addon (Test GUID: ${_Test_UUID_Second_Addon}`, async () => {
-                    const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID);
+                    const addonSK = await generalService.getSecretKey(createdAddon.Body.UUID, varKey);
                     const subscriptionBody: Subscription = {
                         AddonRelativeURL: '/test/go',
                         Type: 'data',

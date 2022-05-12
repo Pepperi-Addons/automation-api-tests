@@ -972,7 +972,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             //     expect(postFileResponse.URL).to.include('https://pfs.');
             //     expect(postFileResponse.URL).to.include('.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + tempKey);
             //     const postedFile = await pfsService.getFileAfterDelete(postFileResponse.URL);
-            //     const hardDeleteResponse = await pfsService.hardDelete(distributor.UUID, 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', tempKey)
+            //     const hardDeleteResponse = await pfsService.hardDelete(distributor.UUID, 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',varKey, tempKey)
             //     expect(hardDeleteResponse.Ok).to.be.true;
             //     generalService.sleep(20000);
             //     const postedFileAfterHardDelete = await pfsService.getFileAfterDelete(postFileResponse.URL + '?asas');
@@ -1019,7 +1019,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 ).eventually.to.be.rejectedWith(
                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Test lock mechanism: Fail after locking file.","detail":{"errorcode":"BadRequest"}}}`,
                 );
-                const lockTableResult = await pfsService.getLockTable(lockKey);
+                const lockTableResult = await pfsService.getLockTable(lockKey, varKey);
                 expect(lockTableResult[0].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(lockTableResult[0].CreationDateTime).to.include('Z');
                 expect(lockTableResult[0].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -1078,7 +1078,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 ).eventually.to.be.rejectedWith(
                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Test lock mechanism: Fail after mutating S3.","detail":{"errorcode":"BadRequest"}}}`,
                 );
-                const lockTableResult = await pfsService.getLockTable(lockKey);
+                const lockTableResult = await pfsService.getLockTable(lockKey, varKey);
                 expect(lockTableResult[0].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(lockTableResult[0].CreationDateTime).to.include('Z');
                 expect(lockTableResult[0].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -1137,7 +1137,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 ).eventually.to.be.rejectedWith(
                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Test lock mechanism: Fail after mutating ADAL.","detail":{"errorcode":"BadRequest"}}}`,
                 );
-                const lockTableResult = await pfsService.getLockTable(lockKey);
+                const lockTableResult = await pfsService.getLockTable(lockKey, varKey);
                 expect(lockTableResult[0].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(lockTableResult[0].CreationDateTime).to.include('Z');
                 expect(lockTableResult[0].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
