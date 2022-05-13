@@ -104,8 +104,8 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
         UpgradeDependenciesTests(service, request, testerFunctions),
+        await test_data(client, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
