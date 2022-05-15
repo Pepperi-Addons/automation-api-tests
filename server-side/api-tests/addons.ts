@@ -8593,7 +8593,6 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     '/installation.js/maintenance',
                 testDataObject,
             );
-            debugger;
 
             return callBack(maintenanceApiResponse);
         } else {
