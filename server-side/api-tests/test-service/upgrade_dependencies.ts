@@ -12,8 +12,8 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
     } else {
         varKey = request.body.varKeyPro;
     }
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, true);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', () => {
