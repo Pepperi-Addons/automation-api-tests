@@ -15,6 +15,7 @@ export class WebAppDialog extends Page {
     public ButtonArr: By = By.css('pep-dialog button');
     public doneBtn: By = By.css('[data-qa="doneButton"]');
     public cancelBtn: By = By.css('[data-qa="cancelButton"]');
+    public xBtn: By = By.xpath('//pep-dialog//mat-icon[@role="img"]//pep-icon[@name="system_close"]');
 
     ///Object Types Editor Locators
     public EditorContent: By = By.css('pep-dialog .mat-dialog-content');

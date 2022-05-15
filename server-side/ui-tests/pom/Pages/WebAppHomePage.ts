@@ -8,6 +8,7 @@ import promised from 'chai-as-promised';
 import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { WebAppPage } from './base/WebAppPage';
+import { Driver } from 'selenium-webdriver/chrome';
 
 chai.use(promised);
 
@@ -111,8 +112,13 @@ export class WebAppHomePage extends WebAppPage {
         if (shouldSelectCatalog === false) {
             //if shouldnt select catalog from dialog - click 'cancel' button and return to homepage
             const webAppDialog = new WebAppDialog(this.browser);
-            await this.browser.click(webAppDialog.cancelBtn, 0);
-            this.browser.sleep(2500);
+            if (await this.safeUntilIsVisible(webAppDialog.xBtn, 5000)) {
+                await this.browser.click(webAppDialog.xBtn, 0);
+                this.browser.sleep(2500);
+            } else {
+                await this.browser.click(webAppDialog.cancelBtn, 0);
+                this.browser.sleep(2500);
+            }
         } else {
             try {
                 //wait one sec before cliking on catalog, to prevent click on other screen
@@ -155,7 +161,7 @@ export class WebAppHomePage extends WebAppPage {
     //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
