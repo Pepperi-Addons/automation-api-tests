@@ -18,8 +18,9 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
     const testData = {
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.%'], //has to receive the most advanced version
     };
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     describe('Basic UI Tests Suit', async function () {
         describe('Prerequisites Addons for close catalog test', () => {
             isInstalledArr.forEach((isInstalled, index) => {
