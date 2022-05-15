@@ -5,6 +5,7 @@ import { describe, it, afterEach, beforeEach } from 'mocha';
 import { WebAppLoginPage } from '../pom';
 import { By } from 'selenium-webdriver';
 import { expect } from 'chai';
+import addContext from 'mochawesome/addContext';
 
 /*/
 this test is part of 'Bug Verification' group - created to verify specific bug scenarion found by users which havent been found by other tests
@@ -16,11 +17,13 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
 
     await generalService.baseAddonVersionsInstallation(varPass);
     const testData = {
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.%'], //has to receive the most advanced version
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.%'], //has to receive the most advanced webapp version
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const webappVersion = chnageVersionResponseArr['WebApp Platform'][2];
+
     describe('Basic UI Tests Suit', async function () {
         describe('Prerequisites Addons for close catalog test', () => {
             isInstalledArr.forEach((isInstalled, index) => {
@@ -65,30 +68,23 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
             });
 
             it('Login - Goto Sales Order And Test If Closing Catalog Create A General Error: DI-20093', async function () {
-                //TODO: match this to the newest webapp without the 'x' button
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 const WebAppHomePage = await webAppLoginPage.loginWithImage(email, password);
-                await WebAppHomePage.initiateSalesActivity(undefined, undefined, false); //will exit the catalog menu by pressing 'x' because of last param
+                await WebAppHomePage.initiateSalesActivity(undefined, undefined, false); //will exit the catalog menu by pressing 'cancel' because of last param
                 await driver.click(WebAppHomePage.MainHomePageBtn);
                 driver.sleep(2000);
-                try {
-                    const erroDialog = await driver.findElement(By.css('pep-dialog > div > span'));
-                    const errorText = await erroDialog.getText();
-                    expect(errorText).to.include('Error');
-                    expect.fail('general error message recived after closgin catalog and returning to order center');
-                } catch (e) {
-                    const errorMessage = (e as Error).message;
-                    if (
-                        errorMessage ===
-                        'general error message recived after closgin catalog and returning to order center'
-                    ) {
-                        expect.fail(
-                            'general error message recived after closgin catalog and returning to order center',
-                        );
-                    } else {
-                        return;
-                    }
-                }
+                const modalTitle = await driver.findElement(By.css('pep-dialog > div > span')); //this will work both on error modal and 'order center' modal title
+                const modalTitleText = await modalTitle.getText();
+                expect(modalTitleText).to.include('Select Account');
+                const base64Image = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `could get to 'Select Account' after exiting the catalog view - no general error presented`,
+                    value: 'data:image/png;base64,' + base64Image,
+                });
+                addContext(this, {
+                    title: `passed on ${webappVersion} version of webapp`,
+                    value: `${webappVersion}`,
+                });
             });
         });
     });

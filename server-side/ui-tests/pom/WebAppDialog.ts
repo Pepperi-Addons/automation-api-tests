@@ -13,6 +13,8 @@ export class WebAppDialog extends Page {
     public Title: By = By.css('pep-dialog .dialog-title');
     public Content: By = By.css('div [pep-dialog-content]');
     public ButtonArr: By = By.css('pep-dialog button');
+    public doneBtn: By = By.css('[data-qa="doneButton"]');
+    public cancelBtn: By = By.css('[data-qa="cancelButton"]');
 
     ///Object Types Editor Locators
     public EditorContent: By = By.css('pep-dialog .mat-dialog-content');
