@@ -60,8 +60,9 @@ export async function UomTests(email: string, password: string, varPass: string,
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
     };
 
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    
     //#endregion Upgrade cpi-node & UOM
 
     describe('UOM Tests Suit', async function () {
