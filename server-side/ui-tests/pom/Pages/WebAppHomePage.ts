@@ -109,9 +109,9 @@ export class WebAppHomePage extends WebAppPage {
         }
 
         if (shouldSelectCatalog === false) {
-            //if shouldnt select catalog from dialog - click 'x' button and return to homepage
+            //if shouldnt select catalog from dialog - click 'cancel' button and return to homepage
             const webAppDialog = new WebAppDialog(this.browser);
-            await this.browser.click(webAppDialog.ButtonArr, 0); //in this scenario first indexed button in dialog is the 'x' button
+            await this.browser.click(webAppDialog.cancelBtn, 0);
             this.browser.sleep(2500);
         } else {
             try {
