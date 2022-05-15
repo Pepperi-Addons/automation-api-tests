@@ -8,7 +8,6 @@ import promised from 'chai-as-promised';
 import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { WebAppPage } from './base/WebAppPage';
-import { Driver } from 'selenium-webdriver/chrome';
 
 chai.use(promised);
 
@@ -161,7 +160,7 @@ export class WebAppHomePage extends WebAppPage {
     //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
     }
