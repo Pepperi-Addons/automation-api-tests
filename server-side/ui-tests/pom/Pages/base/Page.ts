@@ -36,6 +36,24 @@ export abstract class Page extends BasePomObject {
         return await this.browser.untilIsVisible(selector, waitUntil);
     }
 
+    public async safeUntilIsVisible(selector: By, waitUntil = 15000): Promise<boolean> {
+        let isVisibale = false;
+        try {
+            isVisibale = await this.browser.untilIsVisible(selector, waitUntil);
+        } catch (e) {
+            const errorMessage = (e as Error).message;
+            if (
+                errorMessage.includes('The test must end, The element is: undefined') ||
+                errorMessage.includes('The test must end, The element is not visible')
+            ) {
+                return false;
+            } else {
+                throw e;
+            }
+        }
+        return isVisibale;
+    }
+
     public async isSpinnerDone(): Promise<boolean> {
         const isHidden = [false, false];
         console.log('%cVerify Spinner Status', ConsoleColors.PageMessage);

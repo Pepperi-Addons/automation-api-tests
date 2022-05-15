@@ -6,16 +6,21 @@ export class PepSearch extends Component {
     /**
      *
      */
+    private _searchContainer: By = By.xpath('//pep-search');
     constructor(browser: Browser) {
         super(browser);
     }
-    private _searchContainer: By = By.xpath('//pep-search');
 
     public get SearchContainer(): By {
         return this._searchContainer;
     }
 
-    public readonly Input: By = By.xpath(`${this.SearchContainer.value}//input`);
+    public set SearchContainer(locator: By) {
+        this._searchContainer = locator;
+        this.Input = By.xpath(`${this.SearchContainer.value}//input`);
+    }
+
+    public Input: By = By.xpath(`${this.SearchContainer.value}//input`);
     public readonly SearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_search']`);
     public readonly ClearSearchButton: By = By.xpath(`${this.SearchContainer.value}//*[@name='system_close']`);
 
