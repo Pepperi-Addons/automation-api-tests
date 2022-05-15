@@ -62,7 +62,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    
+
     //#endregion Upgrade cpi-node & UOM
 
     describe('UOM Tests Suit', async function () {
