@@ -111,8 +111,13 @@ export class WebAppHomePage extends WebAppPage {
         if (shouldSelectCatalog === false) {
             //if shouldnt select catalog from dialog - click 'cancel' button and return to homepage
             const webAppDialog = new WebAppDialog(this.browser);
-            await this.browser.click(webAppDialog.cancelBtn, 0);
-            this.browser.sleep(2500);
+            if (await this.safeUntilIsVisible(webAppDialog.xBtn, 5000)) {
+                await this.browser.click(webAppDialog.xBtn, 0);
+                this.browser.sleep(2500);
+            } else {
+                await this.browser.click(webAppDialog.cancelBtn, 0);
+                this.browser.sleep(2500);
+            }
         } else {
             try {
                 //wait one sec before cliking on catalog, to prevent click on other screen
