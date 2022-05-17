@@ -29,7 +29,7 @@ export class WebAppHomePage extends WebAppPage {
         const accessToken = await webAppAPI.getAccessToken();
         let syncResponse = await webAppAPI.getSyncResponse(accessToken);
         console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
-        expect(syncResponse.Status).to.equal('UpToDate');
+        expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         const webAppList = new WebAppList(this.browser);
         //Resync - Going to Accounts and back to Home Page
         console.log('Wait Before Loading Accounts');
