@@ -13,10 +13,11 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     const generalService = new GeneralService(client);
     let _sumOfLoginDurationAfterRecycling = 0;
     let _sumOfLoginNoRecycleDurations = 0;
-    const numOfRuns = 10;
+    const numOfRuns = 2;
+    const numOfTries = 10000;
+    //locally collected avg's
     const localAVGAfterRec = 82776;
     const localAVGNoRec = 7188;
-    const numOfTries = 10000;
 
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         _envUrlBase = 'webapi.sandbox';
@@ -81,7 +82,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             for (let index = 1; index < numOfRuns + 1; index++) {
                 it(`Loggin With VAR User For The ${index} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]);
+                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //var credentials
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -91,11 +92,11 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await varListOfDistsPage.isSpinnerDone();
                     await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
                     await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.IdRowTitle, 90000)).eventually.to
-                        .be.true;
-                    await varListOfDistsPage.search.enterSearch(email + Key.ENTER);
-                    expect(await varListOfDistsPage.editPresentedDist()).to.be.true;
-                    expect(await varListOfDistsPage.enterSupportSettings()).to.be.true;
-                    await varListOfDistsPage.recycleNuc(this);
+                        .be.true; //var dist page is loaded
+                    await varListOfDistsPage.search.enterSearch(email + Key.ENTER); //searching the user to recycle nuc for
+                    expect(await varListOfDistsPage.editPresentedDist()).to.be.true; //edit page is loaded
+                    expect(await varListOfDistsPage.enterSupportSettings()).to.be.true; //suppoer settings page is loaded
+                    await varListOfDistsPage.recycleNuc(this); //menu interaction
                 });
 
                 it(`Login With The Recycled User For The ${index} Time And Measure Time The Process Took After Recycling`, async function () {
@@ -112,7 +113,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         title: `duration after recycl time is`,
                         value: `duration:${duration}`,
                     });
-                    _sumOfLoginDurationAfterRecycling += duration;
+                    _sumOfLoginDurationAfterRecycling += duration; //collecting data to calculate AVG
                 });
             }
 
@@ -131,7 +132,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         title: `duration for ${index} run is`,
                         value: `this run duration: ${duration}`,
                     });
-                    _sumOfLoginNoRecycleDurations += duration;
+                    _sumOfLoginNoRecycleDurations += duration; //collecting data to calculate AVG
                 });
             }
 
