@@ -615,6 +615,14 @@ export class Browser {
         return logsArr;
     }
 
+    /**
+     *
+     * @param urlLookingFor which url address were wating for the response to
+     * @param numOfTries how many times we should query the browser
+     * @param responseCodeLookingFor which response code we search for in browser logs
+     * @param responseStatusLookingFor which response status we search for in browser logs
+     * @returns
+     */
     public async queryNetworkLogsForCertainResponseAndReturnTiming(
         urlLookingFor: string,
         numOfTries = 5000,
@@ -642,7 +650,7 @@ export class Browser {
         if (duration === undefined) {
             throw Error(`resopnse for '${urlLookingFor}' was not found for ${currentNumOfTries} tries`);
         }
-        return duration; //dummy - will throw an error or return before
+        return duration; //dummy - will throw an error or will return before getting here
     }
 
     /**
