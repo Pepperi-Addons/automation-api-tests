@@ -9,7 +9,7 @@ import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
-    //TODO: 1. change to work on any env // 2. refactor to be more redable
+    //TODO: 1. change to work on any env // 2. refactor to be more readable
     
     let driver: Browser;
     // let _envUrlBase;
