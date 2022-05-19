@@ -6,21 +6,22 @@ import { VarDistPage } from '../pom/addons/VarDistPage';
 import { Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
-// import { ADALService } from '../../services/adal.service';
+import { ADALService } from '../../services/adal.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
     let driver: Browser;
     // let _envUrlBase;
     const generalService = new GeneralService(client);
-    // const adalService = new ADALService(generalService.papiClient);
+    const adalService = new ADALService(generalService.papiClient);
     let _sumOfLoginFrontendDurationAfterRecycling = 0;
     let _sumOfLoginFrontenddDurationNoRecycle = 0;
-    const numOfRuns = 15;
+    const numOfRuns = 10;
     // const numOfTries = 10000;
     //locally collected avg's
     // const localAVGAfterRec = 82776;
     // const localAVGNoRec = 7188;
-    // let _adalAVG = 0;
+    let _adalNoRecAVG = 0;
+    let _adalWithRecAVG = 0;
 
     // if (generalService.papiClient['options'].baseURL.includes('staging')) {
     //     _envUrlBase = 'webapi.sandbox';
@@ -83,11 +84,15 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 await webAppLoginPage.collectEndTestData(this);
                 await driver.quit();
             });
-            // it('getting the AVG from ADAL', async function () {
-            //     const adalResponse = await adalService.getDataFromSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData');
-            //     const prodEntry = adalResponse.filter(response => response.env === 'prod');
-            //     _adalAVG = prodEntry[0].duration;
-            // });
+            it('getting the AVG from ADAL', async function () {
+                const adalResponse = await adalService.getDataFromSchema(
+                    'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                    'LoginPerormanceData',
+                );
+                const prodEntry = adalResponse.filter((response) => response.env === 'prod');
+                _adalWithRecAVG = prodEntry[0].duration_with_rec;
+                _adalNoRecAVG = prodEntry[0].duration_no_rec;
+            });
             for (let index = 1; index < numOfRuns + 1; index++) {
                 it(`Loggin With VAR User For The ${index} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
@@ -160,53 +165,52 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             }
 
             it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 20% or more than the averages`, async function () {
-                // const afterRecyclingBackendAVG = parseInt((_sumOfLoginBackendDurationAfterRecycling / numOfRuns).toFixed(0));
-                // const noRecyclingBackendAVG = parseInt((_sumOfLoginBackendDurationNoRecycle / numOfRuns).toFixed(0));
                 const afterRecyclingFronendAVG = parseInt(
                     (_sumOfLoginFrontendDurationAfterRecycling / numOfRuns).toFixed(0),
                 );
                 const noRecyclingFronendAVG = parseInt((_sumOfLoginFrontenddDurationNoRecycle / numOfRuns).toFixed(0));
-                // addContext(this, {
-                //     title: `avarage backend duration of loggin in AFTER recycling`,
-                //     value: `duration: ${afterRecyclingBackendAVG}`,
-                // });
                 addContext(this, {
                     title: `avarage frontend duration of loggin in AFTER recycling`,
                     value: `duration: ${afterRecyclingFronendAVG}`,
                 });
-                // addContext(this, {
-                //     title: `avarage backend duration of loggin in NO recycling`,
-                //     value: `duration: ${noRecyclingBackendAVG}`,
-                // });
-
                 addContext(this, {
                     title: `avarage frontend duration of loggin in NO recycling`,
                     value: `duration: ${noRecyclingFronendAVG}`,
                 });
-                // const avg120Rec = parseInt((localAVGAfterRec * 1.2).toFixed(0));
-                // expect(afterRecyclingAVG).to.be.lessThan(
-                //     avg120Rec,
-                //     'after recycle login is bigger then avg by more then 20%',
-                // );
-                // const avg120NoRec = parseInt((localAVGNoRec * 1.2).toFixed(0));
-                // expect(afterRecyclingAVG).to.be.lessThan(
-                //     avg120NoRec,
-                //     'no recycle login is bigger then avg by more then 20%',
-                // );
-                // const avg0point8Rec = parseInt((localAVGAfterRec * 0.8).toFixed(0));
-                // const avg0point8NoRec = parseInt((localAVGNoRec * 0.8).toFixed(0));
-                // if (afterRecyclingAVG < avg0point8Rec) {
-                //     addContext(this, {
-                //         title: `the avarage after recycling is lower in 20% or more then the current one`,
-                //         value: `avarage after recycling: ${afterRecyclingAVG}, current AVG:${localAVGAfterRec}`,
-                //     });
-                // }
-                // if (noRecyclingAVG < avg0point8NoRec) {
-                //     addContext(this, {
-                //         title: `the avarage with NO recycling is lower in 20% or more then the current one`,
-                //         value: `avarage after recycling: ${noRecyclingAVG}, current AVG:${localAVGNoRec}`,
-                //     });
-                // }
+                const avg120Rec = parseInt((_adalWithRecAVG * 1.2).toFixed(0));
+                expect(afterRecyclingFronendAVG).to.be.lessThan(
+                    avg120Rec,
+                    'after recycle login is bigger then avg by more then 20%',
+                );
+                const avg120NoRec = parseInt((_adalNoRecAVG * 1.2).toFixed(0));
+                expect(noRecyclingFronendAVG).to.be.lessThan(
+                    avg120NoRec,
+                    'no recycle login is bigger then avg by more then 20%',
+                );
+                const avg0point8Rec = parseInt((_adalWithRecAVG * 0.8).toFixed(0));
+                const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.8).toFixed(0));
+                if (afterRecyclingFronendAVG < avg0point8Rec) {
+                    const newAvgForADAL = parseInt(((_adalWithRecAVG + afterRecyclingFronendAVG) / 2).toFixed(0));
+                    await adalService.postDataToSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData', {
+                        Key: 'prod_perf',
+                        duration_with_rec: newAvgForADAL,
+                    });
+                    addContext(this, {
+                        title: `the avarage after recycling is lower in 20% or more then the current one`,
+                        value: `avarage after recycling: ${afterRecyclingFronendAVG}, current AVG:${_adalWithRecAVG}`,
+                    });
+                }
+                if (noRecyclingFronendAVG < avg0point8NoRec) {
+                    const newAvgForADAL = parseInt(((_adalWithRecAVG + noRecyclingFronendAVG) / 2).toFixed(0));
+                    await adalService.postDataToSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData', {
+                        Key: 'prod_perf',
+                        duration_no_rec: newAvgForADAL,
+                    });
+                    addContext(this, {
+                        title: `the avarage with NO recycling is lower in 20% or more then the current one`,
+                        value: `avarage after recycling: ${noRecyclingFronendAVG}, current AVG:${_adalNoRecAVG}`,
+                    });
+                }
             });
         });
     });
