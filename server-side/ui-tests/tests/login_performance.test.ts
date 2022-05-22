@@ -166,21 +166,19 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 });
             }
 
-            it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 20% or more than the averages`, async function () {
+            it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 10% or more than the averages`, async function () {
                 //TODO: comment here
-                //TODO: show timing in seconds
-                //TODO: show this run AVG and ADAL AVG
                 const afterRecyclingFronendAVG = parseInt(
                     (_sumOfLoginFrontendDurationAfterRecycling / numOfRuns).toFixed(0),
                 );
                 const noRecyclingFronendAVG = parseInt((_sumOfLoginFrontenddDurationNoRecycle / numOfRuns).toFixed(0));
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in AFTER recycling`,
-                    value: `duration: ${afterRecyclingFronendAVG}`,
+                    title: `avarage frontend duration of loggin in AFTER recycling, current ADAL AVG:${_adalWithRecAVG}, in seconds: ${(_adalWithRecAVG / 1000).toFixed(3)}`,
+                    value: `duration: ${afterRecyclingFronendAVG}, in seconds: ${(afterRecyclingFronendAVG / 1000).toFixed(3)}`,
                 });
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in NO recycling`,
-                    value: `duration: ${noRecyclingFronendAVG}`,
+                    title: `avarage frontend duration of loggin in NO recycling, current ADAL AVG:${_adalNoRecAVG}, in seconds: ${(_adalNoRecAVG / 1000).toFixed(3)}`,
+                    value: `duration: ${noRecyclingFronendAVG}, in seconds: ${(noRecyclingFronendAVG / 1000).toFixed(3)}`,
                 });
                 const avg120Rec = parseInt((_adalWithRecAVG * 1.2).toFixed(0));
                 expect(afterRecyclingFronendAVG).to.be.lessThan(
