@@ -17,7 +17,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     const adalService = new ADALService(generalService.papiClient);
     let _sumOfLoginFrontendDurationAfterRecycling = 0;
     let _sumOfLoginFrontenddDurationNoRecycle = 0;
-    const numOfRuns = 10;
+    const numOfRuns = 1;
     // const numOfTries = 10000;
     //locally collected avg's
     // const localAVGAfterRec = 82776;
@@ -130,6 +130,11 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //     numOfTries,
                     // );
                     // const duration = await driver.getTimingOfLoadingThePage();
+                    const base64Image = await this.browser.saveScreenshots();
+                    addContext(this, {
+                        title: `Homepage is loaded`,
+                        value: 'data:image/png;base64,' + base64Image,
+                    });
                     addContext(this, {
                         title: `duration after recycl time is`,
                         value: `duration backend:${duration}`,
@@ -156,6 +161,11 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //     numOfTries,
                     // );
                     // const duration = await driver.getTimingOfLoadingThePage();
+                    const base64Image = await this.browser.saveScreenshots();
+                    addContext(this, {
+                        title: `Homepage is loaded:`,
+                        value: 'data:image/png;base64,' + base64Image,
+                    });
                     addContext(this, {
                         title: `duration after recycl time is`,
                         value: `duration backend:${duration}`,
@@ -202,21 +212,37 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.9).toFixed(0));
                 if (afterRecyclingFronendAVG < avg0point8Rec) {
                     const newAvgForADAL = parseInt(((_adalWithRecAVG + afterRecyclingFronendAVG) / 2).toFixed(0));
-                    await adalService.postDataToSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData', {
-                        Key: 'prod_perf',
-                        duration_with_rec: newAvgForADAL,
-                    });
+                    const adalResponse = await adalService.postDataToSchema(
+                        'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                        'LoginPerormanceData',
+                        {
+                            Key: 'prod_perf',
+                            duration_with_rec: newAvgForADAL,
+                        },
+                    );
+                    expect(adalResponse.env).to.equal('prod');
+                    expect(adalResponse.Hidden).to.equal('false');
+                    expect(adalResponse.Key).to.equal('prod_perf');
+                    expect(adalResponse.duration_with_rec).to.equal(newAvgForADAL);
                     addContext(this, {
                         title: `the avarage after recycling is lower in 20% or more then the current one`,
                         value: `avarage after recycling: ${afterRecyclingFronendAVG}, current AVG:${_adalWithRecAVG}`,
                     });
                 }
                 if (noRecyclingFronendAVG < avg0point8NoRec) {
-                    const newAvgForADAL = parseInt(((_adalWithRecAVG + noRecyclingFronendAVG) / 2).toFixed(0));
-                    await adalService.postDataToSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData', {
-                        Key: 'prod_perf',
-                        duration_no_rec: newAvgForADAL,
-                    });
+                    const newAvgForADAL = parseInt(((_adalNoRecAVG + noRecyclingFronendAVG) / 2).toFixed(0));
+                    const adalResponse = await adalService.postDataToSchema(
+                        'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                        'LoginPerormanceData',
+                        {
+                            Key: 'prod_perf',
+                            duration_no_rec: newAvgForADAL,
+                        },
+                    );
+                    expect(adalResponse.env).to.equal('prod');
+                    expect(adalResponse.Hidden).to.equal('false');
+                    expect(adalResponse.Key).to.equal('prod_perf');
+                    expect(adalResponse.duration_no_rec).to.equal(newAvgForADAL);
                     addContext(this, {
                         title: `the avarage with NO recycling is lower in 20% or more then the current one`,
                         value: `avarage after recycling: ${noRecyclingFronendAVG}, current AVG:${_adalNoRecAVG}`,
