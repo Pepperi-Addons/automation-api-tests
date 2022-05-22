@@ -9,6 +9,8 @@ import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
+    //TODO: 1. change to work on any env // 2. refactor to be more readable
+
     let driver: Browser;
     // let _envUrlBase;
     const generalService = new GeneralService(client);
@@ -96,7 +98,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             for (let index = 1; index < numOfRuns + 1; index++) {
                 it(`Loggin With VAR User For The ${index} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //var credentials
+                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //VAR credentials
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -107,9 +109,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
                     await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.IdRowTitle, 90000)).eventually.to
                         .be.true; //var dist page is loaded
-                    await varListOfDistsPage.search.enterSearch(email + Key.ENTER); //searching the user to recycle nuc for
-                    expect(await varListOfDistsPage.editPresentedDist()).to.be.true; //edit page is loaded
-                    expect(await varListOfDistsPage.enterSupportSettings()).to.be.true; //suppoer settings page is loaded
+                    await varListOfDistsPage.search.enterSearch(email + Key.ENTER); //searching the user to recycle hes nuc
+                    expect(await varListOfDistsPage.editPresentedDist()).to.be.true; //VAR dist edit page is loaded
+                    expect(await varListOfDistsPage.enterSupportSettings()).to.be.true; //support settings VAR page is loaded
                     await varListOfDistsPage.recycleNuc(this); //menu interaction
                 });
 
@@ -120,7 +122,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await webAppLoginPage.signIn(email, password);
                     const start = Date.now();
                     const webappHomePage = new WebAppHomePage(driver);
-                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))) {}
+                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))); //TODO: add limitation of querys here
                     const duration = Date.now() - start;
                     // starting as soon as the btton was pressed
                     // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
@@ -146,7 +148,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await webAppLoginPage.signIn(email, password);
                     const start = Date.now();
                     const webappHomePage = new WebAppHomePage(driver);
-                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))) {}
+                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))); //TODO: add limitation of querys here
                     const duration = Date.now() - start;
                     // starting as soon as the btton was pressed
                     // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
@@ -164,18 +166,27 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 });
             }
 
-            it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 20% or more than the averages`, async function () {
+            it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 10% or more than the averages`, async function () {
+                //TODO: comment here
                 const afterRecyclingFronendAVG = parseInt(
                     (_sumOfLoginFrontendDurationAfterRecycling / numOfRuns).toFixed(0),
                 );
                 const noRecyclingFronendAVG = parseInt((_sumOfLoginFrontenddDurationNoRecycle / numOfRuns).toFixed(0));
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in AFTER recycling`,
-                    value: `duration: ${afterRecyclingFronendAVG}`,
+                    title: `avarage frontend duration of loggin in AFTER recycling, current ADAL AVG:${_adalWithRecAVG}, in seconds: ${(
+                        _adalWithRecAVG / 1000
+                    ).toFixed(3)}`,
+                    value: `duration: ${afterRecyclingFronendAVG}, in seconds: ${(
+                        afterRecyclingFronendAVG / 1000
+                    ).toFixed(3)}`,
                 });
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in NO recycling`,
-                    value: `duration: ${noRecyclingFronendAVG}`,
+                    title: `avarage frontend duration of loggin in NO recycling, current ADAL AVG:${_adalNoRecAVG}, in seconds: ${(
+                        _adalNoRecAVG / 1000
+                    ).toFixed(3)}`,
+                    value: `duration: ${noRecyclingFronendAVG}, in seconds: ${(noRecyclingFronendAVG / 1000).toFixed(
+                        3,
+                    )}`,
                 });
                 const avg120Rec = parseInt((_adalWithRecAVG * 1.2).toFixed(0));
                 expect(afterRecyclingFronendAVG).to.be.lessThan(
@@ -187,8 +198,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     avg120NoRec,
                     'no recycle login is bigger then avg by more then 20%',
                 );
-                const avg0point8Rec = parseInt((_adalWithRecAVG * 0.8).toFixed(0));
-                const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.8).toFixed(0));
+                const avg0point8Rec = parseInt((_adalWithRecAVG * 0.9).toFixed(0));
+                const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.9).toFixed(0));
                 if (afterRecyclingFronendAVG < avg0point8Rec) {
                     const newAvgForADAL = parseInt(((_adalWithRecAVG + afterRecyclingFronendAVG) / 2).toFixed(0));
                     await adalService.postDataToSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData', {
