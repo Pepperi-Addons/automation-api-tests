@@ -10,7 +10,7 @@ import { ADALService } from '../../services/adal.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
     //TODO: 1. change to work on any env // 2. refactor to be more readable
-    
+
     let driver: Browser;
     // let _envUrlBase;
     const generalService = new GeneralService(client);
@@ -122,7 +122,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await webAppLoginPage.signIn(email, password);
                     const start = Date.now();
                     const webappHomePage = new WebAppHomePage(driver);
-                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))) {}
+                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn)));//TODO: add limitation of querys here
                     const duration = Date.now() - start;
                     // starting as soon as the btton was pressed
                     // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
@@ -148,7 +148,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await webAppLoginPage.signIn(email, password);
                     const start = Date.now();
                     const webappHomePage = new WebAppHomePage(driver);
-                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))) {}
+                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn)));//TODO: add limitation of querys here
                     const duration = Date.now() - start;
                     // starting as soon as the btton was pressed
                     // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
@@ -167,6 +167,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             }
 
             it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 20% or more than the averages`, async function () {
+                //TODO: comment here
+                //TODO: show timing in seconds
+                //TODO: show this run AVG and ADAL AVG
                 const afterRecyclingFronendAVG = parseInt(
                     (_sumOfLoginFrontendDurationAfterRecycling / numOfRuns).toFixed(0),
                 );
@@ -189,8 +192,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     avg120NoRec,
                     'no recycle login is bigger then avg by more then 20%',
                 );
-                const avg0point8Rec = parseInt((_adalWithRecAVG * 0.8).toFixed(0));
-                const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.8).toFixed(0));
+                const avg0point8Rec = parseInt((_adalWithRecAVG * 0.9).toFixed(0));
+                const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.9).toFixed(0));
                 if (afterRecyclingFronendAVG < avg0point8Rec) {
                     const newAvgForADAL = parseInt(((_adalWithRecAVG + afterRecyclingFronendAVG) / 2).toFixed(0));
                     await adalService.postDataToSchema('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', 'LoginPerormanceData', {
