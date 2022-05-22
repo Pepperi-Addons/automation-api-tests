@@ -122,7 +122,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await webAppLoginPage.signIn(email, password);
                     const start = Date.now();
                     const webappHomePage = new WebAppHomePage(driver);
-                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn)));//TODO: add limitation of querys here
+                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))); //TODO: add limitation of querys here
                     const duration = Date.now() - start;
                     // starting as soon as the btton was pressed
                     // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
@@ -148,7 +148,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await webAppLoginPage.signIn(email, password);
                     const start = Date.now();
                     const webappHomePage = new WebAppHomePage(driver);
-                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn)));//TODO: add limitation of querys here
+                    while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))); //TODO: add limitation of querys here
                     const duration = Date.now() - start;
                     // starting as soon as the btton was pressed
                     // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
@@ -173,12 +173,20 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 );
                 const noRecyclingFronendAVG = parseInt((_sumOfLoginFrontenddDurationNoRecycle / numOfRuns).toFixed(0));
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in AFTER recycling, current ADAL AVG:${_adalWithRecAVG}, in seconds: ${(_adalWithRecAVG / 1000).toFixed(3)}`,
-                    value: `duration: ${afterRecyclingFronendAVG}, in seconds: ${(afterRecyclingFronendAVG / 1000).toFixed(3)}`,
+                    title: `avarage frontend duration of loggin in AFTER recycling, current ADAL AVG:${_adalWithRecAVG}, in seconds: ${(
+                        _adalWithRecAVG / 1000
+                    ).toFixed(3)}`,
+                    value: `duration: ${afterRecyclingFronendAVG}, in seconds: ${(
+                        afterRecyclingFronendAVG / 1000
+                    ).toFixed(3)}`,
                 });
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in NO recycling, current ADAL AVG:${_adalNoRecAVG}, in seconds: ${(_adalNoRecAVG / 1000).toFixed(3)}`,
-                    value: `duration: ${noRecyclingFronendAVG}, in seconds: ${(noRecyclingFronendAVG / 1000).toFixed(3)}`,
+                    title: `avarage frontend duration of loggin in NO recycling, current ADAL AVG:${_adalNoRecAVG}, in seconds: ${(
+                        _adalNoRecAVG / 1000
+                    ).toFixed(3)}`,
+                    value: `duration: ${noRecyclingFronendAVG}, in seconds: ${(noRecyclingFronendAVG / 1000).toFixed(
+                        3,
+                    )}`,
                 });
                 const avg120Rec = parseInt((_adalWithRecAVG * 1.2).toFixed(0));
                 expect(afterRecyclingFronendAVG).to.be.lessThan(
