@@ -91,7 +91,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                     'LoginPerormanceData',
                 );
+                expect(adalResponse).to.be.not.empty;//ADAL response
                 const prodEntry = adalResponse.filter((response) => response.env === 'prod');
+                expect(prodEntry).to.be.not.empty;//after filter
                 _adalWithRecAVG = prodEntry[0].duration_with_rec;
                 _adalNoRecAVG = prodEntry[0].duration_no_rec;
             });
@@ -130,7 +132,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //     numOfTries,
                     // );
                     // const duration = await driver.getTimingOfLoadingThePage();
-                    const base64Image = await this.browser.saveScreenshots();
+                    const base64Image = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Homepage is loaded`,
                         value: 'data:image/png;base64,' + base64Image,
@@ -161,7 +163,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //     numOfTries,
                     // );
                     // const duration = await driver.getTimingOfLoadingThePage();
-                    const base64Image = await this.browser.saveScreenshots();
+                    const base64Image = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Homepage is loaded:`,
                         value: 'data:image/png;base64,' + base64Image,
