@@ -98,7 +98,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             for (let index = 1; index < numOfRuns + 1; index++) {
                 it(`Loggin With VAR User For The ${index} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //var credentials
+                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //VAR credentials
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -109,9 +109,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
                     await expect(varListOfDistsPage.untilIsVisible(varListOfDistsPage.IdRowTitle, 90000)).eventually.to
                         .be.true; //var dist page is loaded
-                    await varListOfDistsPage.search.enterSearch(email + Key.ENTER); //searching the user to recycle nuc for
-                    expect(await varListOfDistsPage.editPresentedDist()).to.be.true; //edit page is loaded
-                    expect(await varListOfDistsPage.enterSupportSettings()).to.be.true; //suppoer settings page is loaded
+                    await varListOfDistsPage.search.enterSearch(email + Key.ENTER); //searching the user to recycle hes nuc
+                    expect(await varListOfDistsPage.editPresentedDist()).to.be.true; //VAR dist edit page is loaded
+                    expect(await varListOfDistsPage.enterSupportSettings()).to.be.true; //support settings VAR page is loaded
                     await varListOfDistsPage.recycleNuc(this); //menu interaction
                 });
 
