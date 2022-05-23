@@ -29,7 +29,7 @@ export class WebAppHomePage extends WebAppPage {
         const accessToken = await webAppAPI.getAccessToken();
         let syncResponse = await webAppAPI.getSyncResponse(accessToken);
         console.log(`recived sync response: ${JSON.stringify(syncResponse)}`);
-        expect(syncResponse.Status).to.equal('UpToDate');
+        expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         const webAppList = new WebAppList(this.browser);
         //Resync - Going to Accounts and back to Home Page
         console.log('Wait Before Loading Accounts');
@@ -109,10 +109,15 @@ export class WebAppHomePage extends WebAppPage {
         }
 
         if (shouldSelectCatalog === false) {
-            //if shouldnt select catalog from dialog - click 'x' button and return to homepage
+            //if shouldnt select catalog from dialog - click 'cancel' button and return to homepage
             const webAppDialog = new WebAppDialog(this.browser);
-            await this.browser.click(webAppDialog.ButtonArr, 0); //in this scenario first indexed button in dialog is the 'x' button
-            this.browser.sleep(2500);
+            if (await this.safeUntilIsVisible(webAppDialog.xBtn, 5000)) {
+                await this.browser.click(webAppDialog.xBtn, 0);
+                this.browser.sleep(2500);
+            } else {
+                await this.browser.click(webAppDialog.cancelBtn, 0);
+                this.browser.sleep(2500);
+            }
         } else {
             try {
                 //wait one sec before cliking on catalog, to prevent click on other screen

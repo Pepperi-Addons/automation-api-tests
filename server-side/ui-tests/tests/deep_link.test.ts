@@ -65,7 +65,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
             // await dataViews.postDataView(accountsSmartSearchDataView[0]);
 
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.clickOnBtn('Accounts');
@@ -142,7 +142,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
 
         it('Activities With Grand Total SmartSearch', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.clickOnBtn('Activities');
@@ -204,7 +204,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
 
         it('Contacts With Mobile SmartSearch', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.clickOnBtn('Contacts');
@@ -264,7 +264,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
 
         it('Users With Role Name SmartSearch', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.clickOnBtn('Users');
@@ -325,7 +325,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
 
         it('Activities With Grand Total SmartSearch From Accounts', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.clickOnBtn('Accounts');

@@ -44,7 +44,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
         it('Pre Test: Remove Workflow ATD', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const objectTypeEditor = new ObjectTypeEditor(driver);
 
@@ -70,7 +70,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
         it('Workflow Scenario: Update Inventory', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.login(email, password);
+            await webAppLoginPage.loginWithImage(email, password);
 
             const objectTypeEditor = new ObjectTypeEditor(driver);
 

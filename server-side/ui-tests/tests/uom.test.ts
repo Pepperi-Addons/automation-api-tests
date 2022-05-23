@@ -56,13 +56,13 @@ export async function UomTests(email: string, password: string, varPass: string,
     //#region Upgrade cpi-node & UOM
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //has to be hardcoded because upgrade dependencies cant handle this
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.38'], //has to be hardcoded because upgrade dependencies cant handle this
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
     };
 
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
     //#endregion Upgrade cpi-node & UOM
 
     describe('UOM Tests Suit', async function () {
@@ -170,7 +170,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
             it('Setting Up UOM ATD Using UI', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
                 //1. validating all items are added to the main catalog
                 const addonPage = new AddonPage(driver);
                 await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
@@ -205,7 +205,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 });
                 it('UI UOM Test: basic ATD order', async () => {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(email, password);
+                    await webAppLoginPage.loginWithImage(email, password);
                     let webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.manualResync(client);
                     const uom = new Uom(driver);
@@ -231,7 +231,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
                 it('UI UOM Test: item configuration field ATD order', async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(email, password);
+                    await webAppLoginPage.loginWithImage(email, password);
                     const uom = new Uom(driver);
                     await uom.editItemConfigField(_TEST_DATA_ATD_NAME);
                     let webAppHomePage = new WebAppHomePage(driver);
@@ -260,7 +260,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             describe('Data Cleansing', () => {
                 it('Delete test ATD from dist + home screen using UI', async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(email, password);
+                    await webAppLoginPage.loginWithImage(email, password);
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const brandedApp = new BrandedApp(driver);

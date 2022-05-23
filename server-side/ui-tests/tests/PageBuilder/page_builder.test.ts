@@ -49,7 +49,7 @@ export async function PageBuilderTests(
                 pagesReq.browser = await Browser.initiateChrome();
                 browser = pagesReq.browser;
                 const webAppLoginPage = new WebAppLoginPage(browser);
-                const homePage = await webAppLoginPage.login(email, password);
+                const homePage = await webAppLoginPage.loginWithImage(email, password);
                 await homePage.Header.openSettingsAndLoad().then((settingSidePanel) =>
                     settingSidePanel.enterSettingsPage('Pages', 'pages'),
                 );

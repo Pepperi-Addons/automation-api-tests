@@ -42,7 +42,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
         describe('Basic Scenarios', function () {
             it('Order Five Items - Get One Free', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity('Promotion Test');
                 //Create new transaction from the UI
@@ -143,7 +143,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
             it('Order One Item - Get Anohther Item Free', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity('Promotion Test');
                 //Create new transaction from the UI
@@ -245,7 +245,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
         describe('Advanced Scenarios', function () {
             it('Items - Discounts For Ordering Amount Of Items', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
 
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity('Promotion Test');
@@ -495,7 +495,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
             it('Items - Discounts For Ordering More Then Price Of Items', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
 
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity('Promotion Test');
@@ -756,7 +756,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
             it('Order - Discounts For An Order Over Set Price', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
 
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity('Promotion Test');
@@ -1018,7 +1018,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
             it('Package - Discounts For Ordering Quantity From Package (Negative)', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
 
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity('Promotion Test');
@@ -1156,7 +1156,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
 
             it('Package - Discounts For Ordering Quantity From Package', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
 
                 //Promo Steps: [3, 4*, 5, 6*, 8, 9, 10*, 11]; //The marked with "*" are the set promotion steps
                 const promotionsArr = [4, 6, 10];
@@ -1385,7 +1385,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
         describe('Bug Verification', function () {
             it('Package TP Editor UI Pop-Up Container (DI-19254)', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
 

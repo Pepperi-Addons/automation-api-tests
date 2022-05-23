@@ -223,7 +223,7 @@ export async function UDCTests(email: string, password: string, varPass: string,
             });
             it('Create WebApp Session', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
+                await webAppLoginPage.loginWithImage(email, password);
             });
             it('Open UDC', async function () {
                 const webAppHeader = new WebAppHeader(driver);

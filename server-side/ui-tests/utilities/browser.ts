@@ -616,6 +616,44 @@ export class Browser {
     }
 
     /**
+     *
+     * @param urlLookingFor which url address were wating for the response to
+     * @param numOfTries how many times we should query the browser
+     * @param responseCodeLookingFor which response code we search for in browser logs
+     * @param responseStatusLookingFor which response status we search for in browser logs
+     * @returns
+     */
+    public async queryNetworkLogsForCertainResponseAndReturnTiming(
+        urlLookingFor: string,
+        numOfTries = 5000,
+        responseCodeLookingFor = 200,
+        responseStatusLookingFor = 'OK',
+    ): Promise<number> {
+        let currentNumOfTries = 0;
+        let consoleLogs: any[] = [];
+        const duration: undefined | number = undefined;
+        const start = Date.now();
+        do {
+            consoleLogs = await this.getPerformanceLogs();
+            consoleLogs = consoleLogs.filter((log) => log.message.method === 'Network.responseReceived');
+            consoleLogs = consoleLogs.filter((log) => log.message.params.response.url === urlLookingFor);
+            consoleLogs = consoleLogs.filter((log) => log.message.params.response.status === responseCodeLookingFor);
+            consoleLogs = consoleLogs.filter(
+                (log) => log.message.params.response.statusText === responseStatusLookingFor,
+            );
+            consoleLogs = consoleLogs.filter((log) => log.message.params.type === 'XHR');
+            if (consoleLogs.length === 1) {
+                return Date.now() - start;
+            }
+            currentNumOfTries++;
+        } while (true && numOfTries > currentNumOfTries);
+        if (duration === undefined) {
+            throw Error(`resopnse for '${urlLookingFor}' was not found for ${currentNumOfTries} tries`);
+        }
+        return duration; //dummy - will throw an error or will return before getting here
+    }
+
+    /**
      * closes the child window in focus, the parent window is still open
      * @returns
      */
