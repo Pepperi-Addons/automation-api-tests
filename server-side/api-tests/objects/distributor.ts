@@ -3,7 +3,6 @@ import { ObjectsService } from '../../services/objects.service';
 import { DistributorService } from '../../services/distributor.service';
 import { LoremIpsum } from 'lorem-ipsum';
 import { TestDataTests } from '../test-service/test_data';
-import { debug } from 'console';
 
 export interface ClientObject {
     Email: string;

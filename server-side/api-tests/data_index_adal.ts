@@ -320,9 +320,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ deleted: 1 });
-                expect(removeDocumentResponse).to.have.property('success').to.be.true;
+                expect(removeDocumentResponse).to.include({ batches: 1 });
+                expect(removeDocumentResponse).to.include({ deleted: 1 });
             });
 
             it('Bulk Read After Delete Document', async () => {
@@ -347,9 +346,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ deleted: 2 });
-                expect(removeDocumentResponse).to.have.property('success').to.be.true;
+                expect(removeDocumentResponse).to.include({ batches: 1 });
+                expect(removeDocumentResponse).to.include({ deleted: 2 });
             });
 
             it('Read After Delete Document', async () => {
@@ -367,8 +365,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     indexSchema,
                 );
-                expect(readDocumentResponse).to.have.property('resultObject').to.deep.equal({ acknowledged: true });
-                expect(readDocumentResponse).to.have.property('success').to.be.true;
+                expect(readDocumentResponse).to.deep.equal({ acknowledged: true });
             });
         });
 
@@ -617,9 +614,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ deleted: 1 });
-                expect(removeDocumentResponse).to.have.property('success').to.be.true;
+                expect(removeDocumentResponse).to.include({ batches: 1 });
+                expect(removeDocumentResponse).to.include({ deleted: 1 });
             });
 
             it('Bulk Read After Delete Document', async () => {
@@ -644,9 +640,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.have.property('resultObject').to.include({ deleted: 2 });
-                expect(removeDocumentResponse).to.have.property('success').to.be.true;
+                expect(removeDocumentResponse).to.include({ batches: 1 });
+                expect(removeDocumentResponse).to.include({ deleted: 2 });
             });
 
             it('Read After Delete Document', async () => {
@@ -664,8 +659,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     typedIndexSchema,
                 );
-                expect(readDocumentResponse).to.have.property('resultObject').to.deep.equal({ acknowledged: true });
-                expect(readDocumentResponse).to.have.property('success').to.be.true;
+                expect(readDocumentResponse).to.deep.equal({ acknowledged: true });
             });
         });
 
@@ -920,24 +914,15 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Create with no X-Pepperi-SecretKey header (DI-20210)', async () => {
                 dataIndexAdalService.generalService.papiClient['options'].addonSecretKey = '';
-                const createSchemeResponse = await dataIndexAdalService.createScheme(
-                    'index',
-                    generalService.papiClient['options'].addonUUID,
-                    typedIndexSchema,
+                await expect(
+                    dataIndexAdalService.createScheme(
+                        'index',
+                        generalService.papiClient['options'].addonUUID,
+                        typedIndexSchema,
+                    ),
+                ).eventually.to.be.rejectedWith(
+                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Secret key is invalid","detail":{"errorcode":"BadRequest"}}}`,
                 );
-                //TODO: This will start to fail when the bug will be solved, and then it should be changed to catch the correct error
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property('acknowledged').to
-                    .be.true;
-            });
-
-            it('Remove Scheme', async () => {
-                const readDocumentResponse = await dataIndexAdalService.removeScheme(
-                    'index',
-                    generalService.papiClient['options'].addonUUID,
-                    typedIndexSchema,
-                );
-                expect(readDocumentResponse).to.have.property('resultObject').to.deep.equal({ acknowledged: true });
-                expect(readDocumentResponse).to.have.property('success').to.be.true;
             });
         });
     });
