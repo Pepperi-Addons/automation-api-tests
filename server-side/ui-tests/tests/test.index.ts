@@ -177,6 +177,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Uom')) {
         await UomTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('CloseCatalog')) {
