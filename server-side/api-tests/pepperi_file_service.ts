@@ -270,7 +270,10 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/1/2/3/4/5/6/7/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/1/2/3/4/5/6/7/' +
+                        tempKey,
                 );
                 const getFileResponse = await pfsService.getFile('1/2/3/4/5/6/7/' + tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -286,13 +289,16 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Hidden).to.be.false;
                 expect(getFileResponse.URL).to.include('https://pfs.');
                 expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/1/2/3/4/5/6/7/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/1/2/3/4/5/6/7/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile('1/2/3/4/5/6/7/' + tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
                 await expect(
                     pfsService.postFile({
-                        Key: "1/2/3/4/5/6/7/8/NegativeDepthTest.txt",
+                        Key: '1/2/3/4/5/6/7/8/NegativeDepthTest.txt',
                         URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
                         MIME: 'file/plain',
                         Sync: 'Device',
@@ -560,7 +566,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
             it(`Get list of files`, async () => {
                 const rootFolderResponse = await pfsService.getFilesList('/');
-                expect(rootFolderResponse).to.be.an('Array').with.lengthOf(startingListLength.length + 21);
+                expect(rootFolderResponse)
+                    .to.be.an('Array')
+                    .with.lengthOf(startingListLength.length + 21);
                 expect(rootFolderResponse[1].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(rootFolderResponse[1].CreationDateTime).to.include('Z');
                 expect(rootFolderResponse[1].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -910,7 +918,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(deletedFileResponse.Hidden).to.be.true;
             });
 
-            
             it(`Post image file with thumbnail, verify thumbnail is updated after image update`, async () => {
                 const tempKey = 'ThumbnailFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
