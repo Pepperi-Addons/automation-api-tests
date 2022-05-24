@@ -228,10 +228,11 @@ export class Uom extends AddonPage {
                 `${parseFloat(itemGrandTotal.toString()).toFixed(2)}`,
             );
 
-        if (pageGrandTotal !== undefined)
+        if (pageGrandTotal !== undefined) {
             expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
+                `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
             );
+        }
     }
     /**
      *  UI test of UOM items order
