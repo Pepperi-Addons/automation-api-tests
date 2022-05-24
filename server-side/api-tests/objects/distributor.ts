@@ -444,7 +444,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
                         minusEightMonths.toISOString().split('.')[0],
                     );
-                    generalService.sleep(120000);
+                    generalService.sleep(240000);
                     // const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
                     // expect(expirationResponse.Status.Name).to.equal('Success');
                 });
@@ -457,8 +457,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         where: `DistributorID=${adminService.getClientData('DistributorID')}`,
                     });
                     expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);
-                    expect(distributor.Body[0].AccountingStatus.ID).to.equal(2);
-                    expect(distributor.Body[0].AccountingStatus.Name).to.equal('Disabled');
+                    expect(distributor.Body).to.be.an('array').with.lengthOf(0);
                 });
             });
         });

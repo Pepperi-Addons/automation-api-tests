@@ -10,7 +10,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        pfs: ['00000000-0000-0000-0000-0000000f11e5', '0.5.1'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '0.5.11'],
     };
 
     let varKey;
@@ -90,6 +90,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.ModificationDateTime).to.include('Z');
                 expect(getFileResponse.Description).to.equal(tempDescription);
                 expect(getFileResponse).to.have.property('FileVersion').that.is.a('string').and.is.not.empty;
+                expect(getFileResponse).to.have.property('UploadedBy').that.is.a('string').and.is.not.empty;
                 expect(getFileResponse.Folder).to.equal('/');
                 expect(getFileResponse.Key).to.equal(tempKey);
                 expect(getFileResponse.MIME).to.equal('file/plain');
@@ -245,6 +246,67 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 );
                 const deletedFileResponse = await pfsService.deleteFile('TestFolder/' + tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
+            });
+
+            it(`Post file in folder limit + negative test`, async () => {
+                const tempKey = 'FolderFile' + Math.floor(Math.random() * 1000000).toString() + '.txt';
+                const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
+                const postFileResponse = await pfsService.postFile({
+                    Key: '1/2/3/4/5/6/7/' + tempKey,
+                    URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
+                    MIME: 'file/plain',
+                    Sync: 'Device',
+                    Description: tempDescription,
+                });
+                expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(postFileResponse.CreationDateTime).to.include('Z');
+                expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(postFileResponse.ModificationDateTime).to.include('Z');
+                expect(postFileResponse.Description).to.equal(tempDescription);
+                expect(postFileResponse.Folder).to.equal('1/2/3/4/5/6/7');
+                expect(postFileResponse.Key).to.equal('1/2/3/4/5/6/7/' + tempKey);
+                expect(postFileResponse.MIME).to.equal('file/plain');
+                expect(postFileResponse.Name).to.equal(tempKey);
+                expect(postFileResponse.Sync).to.equal('Device');
+                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include(
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/1/2/3/4/5/6/7/' +
+                        tempKey,
+                );
+                const getFileResponse = await pfsService.getFile('1/2/3/4/5/6/7/' + tempKey);
+                expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(getFileResponse.CreationDateTime).to.include('Z');
+                expect(getFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(getFileResponse.ModificationDateTime).to.include('Z');
+                expect(getFileResponse.Description).to.equal(tempDescription);
+                expect(getFileResponse.Folder).to.equal('1/2/3/4/5/6/7');
+                expect(getFileResponse.Key).to.equal('1/2/3/4/5/6/7/' + tempKey);
+                expect(getFileResponse.MIME).to.equal('file/plain');
+                expect(getFileResponse.Name).to.equal(tempKey);
+                expect(getFileResponse.Sync).to.equal('Device');
+                expect(getFileResponse.Hidden).to.be.false;
+                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include(
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/1/2/3/4/5/6/7/' +
+                        tempKey,
+                );
+                const deletedFileResponse = await pfsService.deleteFile('1/2/3/4/5/6/7/' + tempKey);
+                expect(deletedFileResponse.Hidden).to.be.true;
+                await expect(
+                    pfsService.postFile({
+                        Key: '1/2/3/4/5/6/7/8/NegativeDepthTest.txt',
+                        URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
+                        MIME: 'file/plain',
+                        Sync: 'Device',
+                        Description: tempDescription,
+                    }),
+                ).eventually.to.be.rejectedWith(
+                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Requested path is deeper than the maximum allowed depth of 7.","detail":{"errorcode":"BadRequest"}}}`,
+                );
             });
 
             it(`Post folder`, async () => {
@@ -421,6 +483,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         });
 
         describe('Get Files (list)', () => {
+            let startingListLength;
             const rootFileTempKey = 'ListTestsRootFile' + Math.floor(Math.random() * 1000000).toString();
             const rootFiletempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
             const folderFiletempKey = 'ListTestsFolderFile' + Math.floor(Math.random() * 1000000).toString();
@@ -428,6 +491,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             const folderTempKey = 'ListFolder' + Math.floor(Math.random() * 1000000).toString();
 
             it(`Post files and folders for list tests`, async () => {
+                startingListLength = await pfsService.getFilesList('/');
                 let i = 1;
                 while (i < 21) {
                     const postFileResponse = await pfsService.postFile({
@@ -502,19 +566,22 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
             it(`Get list of files`, async () => {
                 const rootFolderResponse = await pfsService.getFilesList('/');
-                expect(rootFolderResponse).to.be.an('Array').with.lengthOf(21);
-                expect(rootFolderResponse[0].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(rootFolderResponse[0].CreationDateTime).to.include('Z');
-                expect(rootFolderResponse[0].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(rootFolderResponse[0].ModificationDateTime).to.include('Z');
-                expect(rootFolderResponse[0].Description).to.equal('');
-                expect(rootFolderResponse[0].Folder).to.equal('/');
-                expect(rootFolderResponse[0].Sync).to.equal('None');
-                expect(rootFolderResponse[0].URL).to.equal('');
-                expect(rootFolderResponse[0].Key).to.equal(folderTempKey + '/');
-                expect(rootFolderResponse[0].MIME).to.equal('pepperi/folder');
-                expect(rootFolderResponse[0].Name).to.equal(folderTempKey + '/');
-                let i = 1;
+                expect(rootFolderResponse)
+                    .to.be.an('Array')
+                    .with.lengthOf(startingListLength.length + 21);
+                expect(rootFolderResponse[1].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(rootFolderResponse[1].CreationDateTime).to.include('Z');
+                expect(rootFolderResponse[1].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(rootFolderResponse[1].ModificationDateTime).to.include('Z');
+                expect(rootFolderResponse[1].Description).to.equal('');
+                expect(rootFolderResponse[1].Folder).to.equal('/');
+                expect(rootFolderResponse[1].Sync).to.equal('None');
+                expect(rootFolderResponse[1].URL).to.equal('');
+                expect(rootFolderResponse[1].Key).to.include('ListFolder');
+                expect(rootFolderResponse[1].Key).to.include('/');
+                expect(rootFolderResponse[1].MIME).to.equal('pepperi/folder');
+                expect(rootFolderResponse[1].Name).to.include('ListFolder');
+                let i = 2;
                 while (i < 21) {
                     expect(rootFolderResponse[i].MIME).to.equal('file/plain');
                     expect(rootFolderResponse[i].Folder).to.equal('/');
@@ -529,7 +596,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 }
                 const folderResponse = await pfsService.getFilesList(folderTempKey + '/');
                 let f = 1;
-                while (i < 21) {
+                while (f < 20) {
                     expect(folderResponse[f].MIME).to.equal('file/plain');
                     expect(folderResponse[f].Folder).to.equal(folderTempKey);
                     expect(folderResponse[f].Description).to.include(folderFiletempDescription);
@@ -723,7 +790,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Delete folder`, async () => {
-                generalService.sleep(260000);
+                generalService.sleep(180000);
                 const deletedFileResponse = await pfsService.deleteFile(folderTempKey + '/');
                 expect(deletedFileResponse.Hidden).to.be.true;
             });
@@ -858,6 +925,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Key: tempKey,
                     URI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
                     MIME: 'image/png',
+                    Cache: false,
                     Thumbnails: [
                         {
                             Size: '200x200',
@@ -958,6 +1026,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             //         "Key": tempKey,
             //         "URI": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
             //         "MIME": "image/png",
+            //         "Cache": false,
             //         "Description": tempDescription
             //     });
             //     expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -975,7 +1044,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             //     const hardDeleteResponse = await pfsService.hardDelete(distributor.UUID, 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',varKey, tempKey)
             //     expect(hardDeleteResponse.Ok).to.be.true;
             //     generalService.sleep(20000);
-            //     const postedFileAfterHardDelete = await pfsService.getFileAfterDelete(postFileResponse.URL + '?asas');
+            //     const postedFileAfterHardDelete = await pfsService.getFileAfterDelete(postFileResponse.URL);
             //     expect(postedFile).to.not.deep.equal(postedFileAfterHardDelete);
             //     expect(postedFileAfterHardDelete.Text).to.include('Access Denied');
             //     expect(postedFileAfterHardDelete.Type).to.equal('Error');
