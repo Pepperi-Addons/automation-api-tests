@@ -136,9 +136,9 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         }
     });
 
-    if (tests != 'Create') {
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests != 'Create') {
+    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
@@ -245,6 +245,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Udc')) {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client);
@@ -268,8 +269,8 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
 export async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(varPass);
-    const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
     const chnageVersionResponseArr = baseAddonVersionsInstallationResponseObj.chnageVersionResponseArr;
+    const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {
