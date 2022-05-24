@@ -136,9 +136,9 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         }
     });
 
-    if (tests != 'Create') {
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests != 'Create') {
+    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
@@ -245,6 +245,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('Udc')) {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client);
