@@ -376,8 +376,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -497,10 +496,10 @@ async function setCatalogSelectionCardUI(generalService: GeneralService, catalog
     });
     expect(catalogSelectionCard).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogSelectionCard.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = catalogSelectionCard[i].UIControlData.split('CatalogSelectionCard');
         const uiControlFromFile = catalogSelectionUIControl.UIControlData.split('CatalogSelectionCard');
         catalogSelectionCard[i].UIControlData = `${uiControlFromAPI[0]}CatalogSelectionCard${uiControlFromFile[1]}`;
@@ -516,10 +515,10 @@ async function setCatalogFormUI(generalService: GeneralService, catalogSelection
     });
     expect(catalogForm).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogForm.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${catalogForm[i]['Type']}, ${catalogForm[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${catalogForm[i]['Type']}, ${catalogForm[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = catalogForm[i].UIControlData.split('CatalogForm');
         const uiControlFromFile = catalogSelectionUIControl.UIControlData.split('CatalogForm');
         catalogForm[i].UIControlData = `${uiControlFromAPI[0]}CatalogForm${uiControlFromFile[1]}`;
@@ -535,10 +534,10 @@ async function setOrderViewsMenu(generalService: GeneralService, orderViewsMenuU
     });
     expect(orderViewsMenu).to.have.length.that.is.above(0);
     for (let i = 0; i < orderViewsMenu.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderViewsMenu[i]['Type']}, ${orderViewsMenu[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderViewsMenu[i]['Type']}, ${orderViewsMenu[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderViewsMenu[i].UIControlData.split('OrderViewsMenu');
         const uiControlFromFile = orderViewsMenuUIControl.UIControlData.split('OrderViewsMenu');
         orderViewsMenu[i].UIControlData = `${uiControlFromAPI[0]}OrderViewsMenu${uiControlFromFile[1]}`;
@@ -554,10 +553,10 @@ async function setOrderCartGrid(generalService: GeneralService, orderCartGridUIC
     });
     expect(orderCartGrid).to.have.length.that.is.above(0);
     for (let i = 0; i < orderCartGrid.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
         const uiControlFromFile = orderCartGridUIControl.UIControlData.split('OrderCartGrid');
         orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
@@ -573,10 +572,10 @@ async function setOrderBanner(generalService: GeneralService, OrderBannerUIContr
     });
     expect(orderBanner).to.have.length.that.is.above(0);
     for (let i = 0; i < orderBanner.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderBanner[i]['Type']}, ${orderBanner[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderBanner[i]['Type']}, ${orderBanner[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderBanner[i].UIControlData.split('OrderBanner');
         const uiControlFromFile = OrderBannerUIControl.UIControlData.split('OrderBanner');
         orderBanner[i].UIControlData = `${uiControlFromAPI[0]}OrderBanner${uiControlFromFile[1]}`;
@@ -592,10 +591,10 @@ async function setOrderCartOpenedFooter(generalService: GeneralService, OrderCar
     });
     expect(orderCartOpenedFooter).to.have.length.that.is.above(0);
     for (let i = 0; i < orderCartOpenedFooter.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderCartOpenedFooter[i]['Type']}, ${orderCartOpenedFooter[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderCartOpenedFooter[i]['Type']}, ${orderCartOpenedFooter[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderCartOpenedFooter[i].UIControlData.split('OrderCartOpenedFooter');
         const uiControlFromFile = OrderCartOpenedFooterUIControl.UIControlData.split('OrderCartOpenedFooter');
         orderCartOpenedFooter[i].UIControlData = `${uiControlFromAPI[0]}OrderCartOpenedFooter${uiControlFromFile[1]}`;
@@ -616,10 +615,10 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         const uiControlFromAPI = orderCenterClosedFooter[0].UIControlData.split('OrderCenterClosedFooter');
         uiControlFromAPI[0] = `${uiControlFromAPI[0].split('OA#')[0]}OA#${atdArray[i]['InternalID']}]`;
         const uiControlFromFile = OrderCenterClosedFooterUIControl.UIControlData.split('OrderCenterClosedFooter');
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
+        // });
         if (JSON.stringify(orderCenterClosedFooter).includes(atdArray[i].InternalID)) {
             orderCenterClosedFooter[0]['InternalID'] = orderCenterClosedFooter[orderOrigenUpdateCounter].InternalID;
             orderOrigenUpdateCounter++;
