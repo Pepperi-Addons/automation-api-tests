@@ -9,19 +9,15 @@ import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
-    //TODO: 1. change to work on any env // 2. refactor to be more readable
+    //TODO: 1. change to work on any env
 
     let driver: Browser;
-    // let _envUrlBase;
     const generalService = new GeneralService(client);
     const adalService = new ADALService(generalService.papiClient);
+    //GLOBALS
     let _sumOfDurationAfterRecycling = 0;
     let _sumODurationNoRecycle = 0;
-    const numOfRuns = 5;
-    // const numOfTries = 10000;
-    //locally collected avg's
-    // const localAVGAfterRec = 82776;
-    // const localAVGNoRec = 7188;
+    const numOfRuns = 10;
     let _adalNoRecAVG = 0;
     let _adalWithRecAVG = 0;
 
@@ -99,7 +95,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 _adalNoRecAVG = prodEntry[0].duration_no_rec;
             });
             for (let index = 1; index < numOfRuns + 1; index++) {
-                it(`Loggin With VAR User For The ${index} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
+                it(`Loggin With VAR User For The ${index}/${numOfRuns} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //VAR credentials
                     const webAppHeader = new WebAppHeader(driver);
@@ -118,7 +114,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await varListOfDistsPage.recycleNuc(this); //menu interaction
                 });
 
-                it(`Login With The Recycled User For The ${index} Time And Measure Time The Process Took After Recycling`, async function () {
+                it(`Login With The Recycled User For The ${index}/${numOfRuns} Time And Measure Time The Process Took After Recycling`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.navigate();
                     await driver.clearCookies(); //to make sure we have no prev data
