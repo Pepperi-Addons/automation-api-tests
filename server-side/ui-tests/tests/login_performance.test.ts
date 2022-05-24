@@ -15,9 +15,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     // let _envUrlBase;
     const generalService = new GeneralService(client);
     const adalService = new ADALService(generalService.papiClient);
-    let _sumOfLoginFrontendDurationAfterRecycling = 0;
-    let _sumOfLoginFrontenddDurationNoRecycle = 0;
-    const numOfRuns = 1;
+    let _sumOfDurationAfterRecycling = 0;
+    let _sumODurationNoRecycle = 0;
+    const numOfRuns = 5;
     // const numOfTries = 10000;
     //locally collected avg's
     // const localAVGAfterRec = 82776;
@@ -126,12 +126,6 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const webappHomePage = new WebAppHomePage(driver);
                     while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))); //TODO: add limitation of querys here
                     const duration = Date.now() - start;
-                    // starting as soon as the btton was pressed
-                    // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
-                    //     urlToLookFor,
-                    //     numOfTries,
-                    // );
-                    // const duration = await driver.getTimingOfLoadingThePage();
                     const base64Image = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Homepage is loaded`,
@@ -141,9 +135,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         title: `duration after recycl time is`,
                         value: `duration backend:${duration}`,
                     });
-                    //collecting data to calculate AVG
-                    // _sumOfLoginBackendDurationAfterRecycling += duration.backendPerformance;
-                    _sumOfLoginFrontendDurationAfterRecycling += duration;
+                    _sumOfDurationAfterRecycling += duration;
                 });
             }
 
@@ -157,12 +149,6 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const webappHomePage = new WebAppHomePage(driver);
                     while (!(await webAppLoginPage.safeUntilIsVisible(webappHomePage.MainHomePageBtn))); //TODO: add limitation of querys here
                     const duration = Date.now() - start;
-                    // starting as soon as the btton was pressed
-                    // const backendPerformance = await driver.queryNetworkLogsForCertainResponseAndReturnTiming(
-                    //     urlToLookFor,
-                    //     numOfTries,
-                    // );
-                    // const duration = await driver.getTimingOfLoadingThePage();
                     const base64Image = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Homepage is loaded:`,
@@ -172,49 +158,52 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         title: `duration after recycl time is`,
                         value: `duration backend:${duration}`,
                     });
-                    //collecting data to calculate AVG
-                    // _sumOfLoginBackendDurationAfterRecycling += duration.backendPerformance;
-                    _sumOfLoginFrontenddDurationNoRecycle += duration;
+                    _sumODurationNoRecycle += duration;
                 });
             }
 
             it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 10% or more than the averages`, async function () {
-                //TODO: comment here
-                const afterRecyclingFronendAVG = parseInt(
-                    (_sumOfLoginFrontendDurationAfterRecycling / numOfRuns).toFixed(0),
-                );
-                const noRecyclingFronendAVG = parseInt((_sumOfLoginFrontenddDurationNoRecycle / numOfRuns).toFixed(0));
+                //1. calculating duration avarage if this run
+                const recyclingAVG = parseInt((_sumOfDurationAfterRecycling / numOfRuns).toFixed(0));
+                const noRecyclingAVG = parseInt((_sumODurationNoRecycle / numOfRuns).toFixed(0));
+                //2. printing the durations to the report
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in AFTER recycling, current ADAL AVG:${_adalWithRecAVG}, in seconds: ${(
+                    title: `THS RUN avarage duration of loggin in AFTER recycling: ${recyclingAVG}, current ADAL AVG: ${_adalWithRecAVG}, in seconds: ${(
                         _adalWithRecAVG / 1000
                     ).toFixed(3)}`,
-                    value: `duration: ${afterRecyclingFronendAVG}, in seconds: ${(
-                        afterRecyclingFronendAVG / 1000
-                    ).toFixed(3)}`,
+                    value: `THIS RUN duration in seconds: ${(recyclingAVG / 1000).toFixed(
+                        3,
+                    )},current ADAL AVG in seconds: ${(_adalWithRecAVG / 1000).toFixed(3)} `,
                 });
                 addContext(this, {
-                    title: `avarage frontend duration of loggin in NO recycling, current ADAL AVG:${_adalNoRecAVG}, in seconds: ${(
+                    title: `THS RUN avarage duration of loggin in NO recycling: ${noRecyclingAVG}, current ADAL AVG: ${_adalNoRecAVG}, in seconds: ${(
                         _adalNoRecAVG / 1000
                     ).toFixed(3)}`,
-                    value: `duration: ${noRecyclingFronendAVG}, in seconds: ${(noRecyclingFronendAVG / 1000).toFixed(
+                    value: `THIS RUN duration in seconds: ${(noRecyclingAVG / 1000).toFixed(
                         3,
-                    )}`,
+                    )},current ADAL AVG in seconds: ${(_adalNoRecAVG / 1000).toFixed(3)} `,
                 });
-                const avg120Rec = parseInt((_adalWithRecAVG * 1.2).toFixed(0));
-                expect(afterRecyclingFronendAVG).to.be.lessThan(
-                    avg120Rec,
+                //3. calculating 120% of the avarage saved in ADAL for AFTER recycle
+                const adal120precAVG = parseInt((_adalWithRecAVG * 1.2).toFixed(0));
+                //3.1. testing whether we passed the saved avarage by more than 20%
+                expect(recyclingAVG).to.be.lessThan(
+                    adal120precAVG,
                     'after recycle login is bigger then avg by more then 20%',
                 );
-                const avg120NoRec = parseInt((_adalNoRecAVG * 1.2).toFixed(0));
-                expect(noRecyclingFronendAVG).to.be.lessThan(
-                    avg120NoRec,
+                //4. calculating 120% of the avarage saved in ADAL for NO recycle
+                const adal120precAVGNoRec = parseInt((_adalNoRecAVG * 1.2).toFixed(0));
+                //4.1. testing whether we passed the saved avarage by more than 20%
+                expect(noRecyclingAVG).to.be.lessThan(
+                    adal120precAVGNoRec,
                     'no recycle login is bigger then avg by more then 20%',
                 );
-                const avg0point8Rec = parseInt((_adalWithRecAVG * 0.9).toFixed(0));
-                const avg0point8NoRec = parseInt((_adalNoRecAVG * 0.9).toFixed(0));
-                if (afterRecyclingFronendAVG < avg0point8Rec) {
-                    const newAvgForADAL = parseInt(((_adalWithRecAVG + afterRecyclingFronendAVG) / 2).toFixed(0));
+                //5. calculating 90% of the avarage saved in ADAL for AFTER recycle
+                const adal80percAVG = parseInt((_adalWithRecAVG * 0.9).toFixed(0));
+                if (recyclingAVG < adal80percAVG) {
+                    //5.1. testing whether we sucseed to run in less than 90% of saved duration
+                    const newAvgForADAL = parseInt(((_adalWithRecAVG + recyclingAVG) / 2).toFixed(0));
                     const adalResponse = await adalService.postDataToSchema(
+                        //5.2. if so - pushing the new avarage of whats saved in ADLA and the new run to ADAL
                         'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                         'LoginPerormanceData',
                         {
@@ -227,13 +216,18 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     expect(adalResponse.Key).to.equal('prod_perf');
                     expect(adalResponse.duration_with_rec).to.equal(newAvgForADAL);
                     addContext(this, {
+                        //printing to report
                         title: `the avarage after recycling is lower in 20% or more then the current one`,
-                        value: `avarage after recycling: ${afterRecyclingFronendAVG}, current AVG:${_adalWithRecAVG}`,
+                        value: `avarage after recycling: ${recyclingAVG}, current AVG:${_adalWithRecAVG}`,
                     });
                 }
-                if (noRecyclingFronendAVG < avg0point8NoRec) {
-                    const newAvgForADAL = parseInt(((_adalNoRecAVG + noRecyclingFronendAVG) / 2).toFixed(0));
+                //6. calculating 90% of the avarage saved in ADAL for NO recycle
+                const adal80percAVGNORec = parseInt((_adalNoRecAVG * 0.9).toFixed(0));
+                if (noRecyclingAVG < adal80percAVGNORec) {
+                    //6.1. testing whether we sucseed to run in less than 90% of saved duration
+                    const newAvgForADAL = parseInt(((_adalNoRecAVG + noRecyclingAVG) / 2).toFixed(0));
                     const adalResponse = await adalService.postDataToSchema(
+                        //6.2. if so - pushing the new avarage of whats saved in ADLA and the new run to ADAL
                         'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                         'LoginPerormanceData',
                         {
@@ -246,8 +240,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     expect(adalResponse.Key).to.equal('prod_perf');
                     expect(adalResponse.duration_no_rec).to.equal(newAvgForADAL);
                     addContext(this, {
+                        //printing to report
                         title: `the avarage with NO recycling is lower in 20% or more then the current one`,
-                        value: `avarage after recycling: ${noRecyclingFronendAVG}, current AVG:${_adalNoRecAVG}`,
+                        value: `avarage after recycling: ${noRecyclingAVG}, current AVG:${_adalNoRecAVG}`,
                     });
                 }
             });
