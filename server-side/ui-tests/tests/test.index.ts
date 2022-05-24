@@ -268,8 +268,8 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
 export async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(varPass);
-    const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
     const chnageVersionResponseArr = baseAddonVersionsInstallationResponseObj.chnageVersionResponseArr;
+    const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {
@@ -374,8 +374,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
