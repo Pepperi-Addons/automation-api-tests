@@ -9,19 +9,15 @@ import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
-    //TODO: 1. change to work on any env // 2. refactor to be more readable
+    //TODO: 1. change to work on any env
 
     let driver: Browser;
-    // let _envUrlBase;
     const generalService = new GeneralService(client);
     const adalService = new ADALService(generalService.papiClient);
+    //GLOBALS
     let _sumOfDurationAfterRecycling = 0;
     let _sumODurationNoRecycle = 0;
-    const numOfRuns = 5;
-    // const numOfTries = 10000;
-    //locally collected avg's
-    // const localAVGAfterRec = 82776;
-    // const localAVGNoRec = 7188;
+    const numOfRuns = 10;
     let _adalNoRecAVG = 0;
     let _adalWithRecAVG = 0;
 
