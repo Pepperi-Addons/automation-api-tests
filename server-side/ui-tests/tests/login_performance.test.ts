@@ -88,6 +88,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             });
             it('getting the AVG from ADAL', async function () {
                 const adalResponse = await adalService.getDataFromSchema(
+                    //querying the ADAL scheme to get saved avarages
                     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                     'LoginPerormanceData',
                 );
