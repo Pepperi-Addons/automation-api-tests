@@ -225,11 +225,12 @@ export class Uom extends AddonPage {
             );
         if (itemGrandTotal !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat(itemGrandTotal.toString()).toFixed(2)}`,
+                `${parseFloat(itemGrandTotal.toString()).toFixed(2)}`,
             );
+
         if (pageGrandTotal !== undefined)
             expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
-                `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
+                `${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
             );
     }
     /**
