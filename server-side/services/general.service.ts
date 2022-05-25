@@ -559,7 +559,7 @@ export default class GeneralService {
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
-                addonName == 'WebApp Platform' ||//evgeny
+                addonName == 'WebApp Platform' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 !isPhased
             ) {
