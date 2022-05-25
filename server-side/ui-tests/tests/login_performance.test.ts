@@ -18,7 +18,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     //GLOBALS
     let _sumOfDurationAfterRecycling = 0;
     let _sumODurationNoRecycle = 0;
-    const numOfRuns = 2;
+    const numOfRuns = 10;
     let _adalNoRecBaseLine = 0;
     let _adalWithRecBaseLine = 0;
     const today = new Date();
