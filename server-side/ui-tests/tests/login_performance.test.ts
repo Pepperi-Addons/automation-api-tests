@@ -137,7 +137,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             }
 
             for (let index = 1; index < numOfRuns + 1; index++) {
-                it(`Login Again With The User: For The ${index} Time And Measure Time The Process Took`, async function () {
+                it(`Login Again With The User: For The ${index}/${numOfRuns} Time And Measure Time The Process Took`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.navigate();
                     await driver.clearCookies(); //to make sure we have no prev data
