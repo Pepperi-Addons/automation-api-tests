@@ -76,6 +76,7 @@ import {
     DataQueriesTests,
     AWSLogsTest,
     SecurityTests,
+    AsyncAddonGetRemoveTests,
 } from './api-tests/index';
 
 let testName = '';
@@ -1216,6 +1217,22 @@ export async function security(client: Client, request: Request, testerFunctions
         await test_data(client, testerFunctions),
         SecurityTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function async_addon_get_remove_codejobs(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'AsyncAddonGetUninstallCJ';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([AsyncAddonGetRemoveTests(service, request, testerFunctions)]).then(() =>
+        testerFunctions.run(),
+    );
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
