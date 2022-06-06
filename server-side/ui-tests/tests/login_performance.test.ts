@@ -218,7 +218,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         },
                     );
                     expect(adalResponse.env).to.equal('prod');
-                    expect(adalResponse.Hidden).to.equal('false');
+                    expect(adalResponse.Hidden).to.equal(false);
                     expect(adalResponse.Key).to.equal('prod_perf');
                     expect(adalResponse.duration_with_rec).to.equal(newBaseLineForADAL);
                     // printing both to console and report
