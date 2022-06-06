@@ -184,7 +184,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 //3.1. testing whether we passed the saved avarage by more than 20%
                 expect(recyclingAVG).to.be.lessThan(
                     adal120precAVG,
-                    `after recycle login is bigger then baseline by: ${(
+                    `after recycle login is bigger than baseline by: ${(
                         ((recyclingAVG - _adalWithRecBaseLine) / _adalWithRecBaseLine) *
                         100
                     ).toFixed(3)}`,
@@ -194,7 +194,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 //4.1. testing whether we passed the saved avarage by more than 20%
                 expect(noRecyclingAVG).to.be.lessThan(
                     adal120precAVGNoRec,
-                    `no recycle login is bigger then baseline by: ${(
+                    `no recycle login is bigger than baseline by: ${(
                         ((noRecyclingAVG - _adalNoRecBaseLine) / _adalNoRecBaseLine) *
                         100
                     ).toFixed(3)}`,
