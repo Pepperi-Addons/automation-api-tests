@@ -187,7 +187,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     `after recycle login is bigger than baseline by: ${(
                         ((recyclingAVG - _adalWithRecBaseLine) / _adalWithRecBaseLine) *
                         100
-                    ).toFixed(3)}`,
+                    ).toFixed(3)}, current baseline:${_adalWithRecBaseLine}, current run result" ${recyclingAVG}`,
                 );
                 //4. calculating 120% of the avarage saved in ADAL for NO recycle
                 const adal120precAVGNoRec = parseInt((_adalNoRecBaseLine * 1.2).toFixed(0));
@@ -197,7 +197,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     `no recycle login is bigger than baseline by: ${(
                         ((noRecyclingAVG - _adalNoRecBaseLine) / _adalNoRecBaseLine) *
                         100
-                    ).toFixed(3)}`,
+                    ).toFixed(3)}, current baseline:${_adalNoRecBaseLine}, current run result" ${noRecyclingAVG}`,
                 );
                 //5. calculating 90% of the avarage saved in ADAL for AFTER recycle
                 const adal80percAVG = parseInt((_adalWithRecBaseLine * 0.9).toFixed(0));
