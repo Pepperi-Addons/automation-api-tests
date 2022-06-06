@@ -241,10 +241,10 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         100
                     ).toFixed(3);
                     console.log(
-                        `the average in this run improved by: ${improvmentPrec}% comparing to the baseline: current run AVG after recycling: ${recyclingAVG}, current BASELINE:${_adalWithRecBaseLine}`,
+                        `the average in this run improved by: ${improvmentPrec} % comparing to the baseline: current run AVG after recycling: ${recyclingAVG}, current BASELINE:${_adalWithRecBaseLine}`,
                     );
                     addContext(this, {
-                        title: `the average of this run with recycling is lower by: ${improvmentPrec} then baseline`,
+                        title: `the average of this run with recycling is lower by: ${improvmentPrec}% then baseline`,
                         value: `current run avarage after recycling: ${recyclingAVG}, current baseline:${_adalWithRecBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
                     });
                 }
@@ -292,7 +292,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         `the average in this run improved by: ${improvmentPrec}% comparing to the baseline: current run AVG after recycling: ${noRecyclingAVG}, current BASELINE:${_adalNoRecBaseLine}`,
                     );
                     addContext(this, {
-                        title: `the average of this run with NO recycling is lower by: ${improvmentPrec} then baseline`,
+                        title: `the average of this run with NO recycling is lower by: ${improvmentPrec}% then baseline`,
                         value: `current run average NO recycling: ${noRecyclingAVG}, current baseline:${_adalNoRecBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
                     });
                 }
