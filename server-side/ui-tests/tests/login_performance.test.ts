@@ -213,12 +213,12 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                         'LoginPerormanceData',
                         {
-                            Key: 'prod_perf',
-                            duration_with_rec: newBaseLineForADAL,
+                            "Key": 'prod_perf',
+                            "duration_with_rec": newBaseLineForADAL,
                         },
                     );
                     expect(adalResponse.env).to.equal('prod');
-                    expect(adalResponse.Hidden).to.equal('false');
+                    expect(adalResponse.Hidden).to.equal(false);
                     expect(adalResponse.Key).to.equal('prod_perf');
                     expect(adalResponse.duration_with_rec).to.equal(newBaseLineForADAL);
                     // printing both to console and report
@@ -248,8 +248,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                         'LoginPerormanceData',
                         {
-                            Key: 'prod_perf',
-                            duration_no_rec: newAvgForADAL,
+                            "Key": 'prod_perf',
+                            "duration_no_rec": newAvgForADAL,
                         },
                     );
                     expect(adalResponse.env).to.equal('prod');
