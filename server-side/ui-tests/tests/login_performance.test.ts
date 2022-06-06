@@ -200,8 +200,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     ).toFixed(3)}, current baseline:${_adalNoRecBaseLine}, current run result" ${noRecyclingAVG}`,
                 );
                 //5. calculating 90% of the avarage saved in ADAL for AFTER recycle
-                const adal80percAVG = parseInt((_adalWithRecBaseLine * 0.9).toFixed(0));
-                if (recyclingAVG < adal80percAVG) {
+                const avg90 = parseInt((_adalWithRecBaseLine * 0.9).toFixed(0));
+                if (recyclingAVG < avg90) {
                     //5.1. testing whether we sucseed to run in less than 90% of saved duration
                     //5.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
                     //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
@@ -229,15 +229,6 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                             },
                         },
                     );
-                    // const adalResponse = await adalService.postDataToSchema(
-                    //     //5.3. pushing the new bseline to ADAL
-                    //     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    //     'LoginPerormanceData',
-                    //     {
-                    //         Key: 'prod_perf',
-                    //         duration_with_rec: newBaseLineForADAL,
-                    //     },
-                    // );
                     expect(trying.Ok).to.equal(true);
                     expect(trying.Status).to.equal(200);
                     expect(trying.Body.env).to.equal('prod');
@@ -246,20 +237,20 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     expect(trying.Body.duration_with_rec).to.equal(newBaseLineForADAL);
                     // printing both to console and report
                     const improvmentPrec = (
-                        ((recyclingAVG - _adalWithRecBaseLine) / _adalWithRecBaseLine) *
+                        ((_adalWithRecBaseLine - recyclingAVG) / _adalWithRecBaseLine) *
                         100
                     ).toFixed(3);
                     console.log(
-                        `the avarage in this run improved by: ${improvmentPrec}% comparing to the baseline: current run AVG after recycling: ${recyclingAVG}, current BASELINE:${_adalWithRecBaseLine}`,
+                        `the average in this run improved by: ${improvmentPrec}% comparing to the baseline: current run AVG after recycling: ${recyclingAVG}, current BASELINE:${_adalWithRecBaseLine}`,
                     );
                     addContext(this, {
-                        title: `the avarage of this run with NO recycling is lower by${improvmentPrec} then baseline`,
-                        value: `current run avarage after recycling: ${recyclingAVG}, current baseline:${_adalWithRecBaseLine}`,
+                        title: `the average of this run with recycling is lower by: ${improvmentPrec} then baseline`,
+                        value: `current run avarage after recycling: ${recyclingAVG}, current baseline:${_adalWithRecBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
                     });
                 }
                 // 6. calculating 90% of the avarage saved in ADAL for NO recycle
-                const adal80percAVGNORec = parseInt((_adalNoRecBaseLine * 0.9).toFixed(0));
-                if (noRecyclingAVG < adal80percAVGNORec) {
+                const avg90NoRec = parseInt((_adalNoRecBaseLine * 0.9).toFixed(0));
+                if (noRecyclingAVG < avg90NoRec) {
                     //6.1. testing whether we sucseed to run in less than 90% of saved duration
                     //6.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
                     //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
@@ -287,44 +278,22 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                             },
                         },
                     );
-                    // const adalResponse = await adalService.postDataToSchema(
-                    //     //5.3. pushing the new bseline to ADAL
-                    //     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    //     'LoginPerormanceData',
-                    //     {
-                    //         Key: 'prod_perf',
-                    //         duration_with_rec: newBaseLineForADAL,
-                    //     },
-                    // );
                     expect(trying.Ok).to.equal(true);
                     expect(trying.Status).to.equal(200);
                     expect(trying.Body.env).to.equal('prod');
                     expect(trying.Body.Hidden).to.equal(false);
                     expect(trying.Body.Key).to.equal('prod_perf');
                     expect(trying.Body.duration_no_rec).to.equal(newBaseLineForADAL);
-                    // const adalResponse = await adalService.postDataToSchema(
-                    //     //6.3. pushing the new bseline to ADAL
-                    //     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    //     'LoginPerormanceData',
-                    //     {
-                    //         Key: 'prod_perf',
-                    //         duration_no_rec: newBaseLineForADAL,
-                    //     },
-                    // );
-                    // expect(adalResponse.env).to.equal('prod');
-                    // expect(adalResponse.Hidden).to.equal('false');
-                    // expect(adalResponse.Key).to.equal('prod_perf');
-                    // expect(adalResponse.duration_no_rec).to.equal(newBaseLineForADAL);
                     //printing both to console and report
-                    const improvmentPrec = (((noRecyclingAVG - _adalNoRecBaseLine) / _adalNoRecBaseLine) * 100).toFixed(
+                    const improvmentPrec = (((_adalNoRecBaseLine - noRecyclingAVG) / _adalNoRecBaseLine) * 100).toFixed(
                         3,
                     );
                     console.log(
-                        `the avarage in this run improved by: ${improvmentPrec}% comparing to the baseline: current run AVG after recycling: ${noRecyclingAVG}, current BASELINE:${_adalNoRecBaseLine}`,
+                        `the average in this run improved by: ${improvmentPrec}% comparing to the baseline: current run AVG after recycling: ${noRecyclingAVG}, current BASELINE:${_adalNoRecBaseLine}`,
                     );
                     addContext(this, {
-                        title: `the avarage of this run with NO recycling is lower by${improvmentPrec} then baseline`,
-                        value: `current run avarage after recycling: ${noRecyclingAVG}, current baseline:${_adalNoRecBaseLine}`,
+                        title: `the average of this run with NO recycling is lower by: ${improvmentPrec} then baseline`,
+                        value: `current run average NO recycling: ${noRecyclingAVG}, current baseline:${_adalNoRecBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
                     });
                 }
             });
