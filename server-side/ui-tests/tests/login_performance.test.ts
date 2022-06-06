@@ -206,7 +206,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //5.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
                     //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
                     const newBaseLineForADAL = parseInt(
-                        ((_adalWithRecBaseLine * 0.95 + recyclingAVG * 0.05) / 2).toFixed(0),
+                        ((_adalWithRecBaseLine * 0.95 + recyclingAVG * 0.05) / 1).toFixed(0),
                     );
                     const secretKey = await generalService.getSecretKey(
                         'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
@@ -255,7 +255,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //6.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
                     //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
                     const newBaseLineForADAL = parseInt(
-                        ((_adalNoRecBaseLine * 0.95 + noRecyclingAVG * 0.05) / 2).toFixed(0),
+                        ((_adalNoRecBaseLine * 0.95 + noRecyclingAVG * 0.05) / 1).toFixed(0),
                     );
                     const secretKey = await generalService.getSecretKey(
                         'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
