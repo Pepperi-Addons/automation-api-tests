@@ -272,7 +272,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     );
                     const bodyToSend = {
                         Key: 'prod_perf',
-                        duration_with_rec: newBaseLineForADAL,
+                        duration_no_rec: newBaseLineForADAL,
                     };
                     const trying = await generalService.fetchStatus(
                         'https://papi.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceData',
@@ -301,7 +301,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     expect(trying.Body.env).to.equal('prod');
                     expect(trying.Body.Hidden).to.equal(false);
                     expect(trying.Body.Key).to.equal('prod_perf');
-                    expect(trying.Body.duration_with_rec).to.equal(newBaseLineForADAL);
+                    expect(trying.Body.duration_no_rec).to.equal(newBaseLineForADAL);
                     // const adalResponse = await adalService.postDataToSchema(
                     //     //6.3. pushing the new bseline to ADAL
                     //     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
