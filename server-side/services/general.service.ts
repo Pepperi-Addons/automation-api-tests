@@ -227,7 +227,7 @@ export default class GeneralService {
         return this.createClient(getToken.access_token);
     }
 
-    private async getToken(email: any, pass: any) {
+    public async getToken(email: any, pass: any) {
         const urlencoded = new URLSearchParams();
         urlencoded.append('username', email);
         urlencoded.append('password', pass);

@@ -8,13 +8,14 @@ import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 import { testData } from '../../services/general.service';
+import { PapiClient } from '@pepperi-addons/papi-sdk/dist/papi-client';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
     //TODO: 1. change to work on any env
 
     let driver: Browser;
     const generalService = new GeneralService(client);
-    const adalService = new ADALService(generalService.papiClient);
+    let adalService = new ADALService(generalService.papiClient);
     //GLOBALS
     let _sumOfDurationAfterRecycling = 0;
     let _sumODurationNoRecycle = 0;
@@ -159,6 +160,14 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             }
 
             it(`Testing All Collected Results: is the timing increased by 120% or more of the averages + is the timing decreased by 10% or more than the averages`, async function () {
+                const token = await generalService.getToken(email, password);
+                const papiClient = new PapiClient({
+                    baseURL: client.BaseURL,
+                    token: token,
+                    addonUUID: client.AddonUUID.length > 10 ? client.AddonUUID : 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                    addonSecretKey: client.AddonSecretKey,
+                });
+                adalService = new ADALService(papiClient);
                 //1. calculating duration avarage if this run
                 const recyclingAVG = parseInt((_sumOfDurationAfterRecycling / numOfRuns).toFixed(0));
                 const noRecyclingAVG = parseInt((_sumODurationNoRecycle / numOfRuns).toFixed(0));
@@ -240,7 +249,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     //6.1. testing whether we sucseed to run in less than 90% of saved duration
                     //6.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
                     //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
-                    const newAvgForADAL = parseInt(
+                    const newBaseLineForADAL = parseInt(
                         ((_adalNoRecBaseLine * 0.95 + noRecyclingAVG * 0.05) / 2).toFixed(0),
                     );
                     const adalResponse = await adalService.postDataToSchema(
@@ -249,13 +258,13 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         'LoginPerormanceData',
                         {
                             Key: 'prod_perf',
-                            duration_no_rec: newAvgForADAL,
+                            duration_no_rec: newBaseLineForADAL,
                         },
                     );
                     expect(adalResponse.env).to.equal('prod');
                     expect(adalResponse.Hidden).to.equal('false');
                     expect(adalResponse.Key).to.equal('prod_perf');
-                    expect(adalResponse.duration_no_rec).to.equal(newAvgForADAL);
+                    expect(adalResponse.duration_no_rec).to.equal(newBaseLineForADAL);
                     //printing both to console and report
                     const improvmentPrec = (((noRecyclingAVG - _adalNoRecBaseLine) / _adalNoRecBaseLine) * 100).toFixed(
                         3,
