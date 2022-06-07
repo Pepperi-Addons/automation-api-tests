@@ -25,12 +25,20 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     const date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
     const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
     const dateTime = date + ' ||| ' + time;
+    let _envUrlBase;
+    let _env;
 
-    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
-    //     _envUrlBase = 'webapi.sandbox';
-    // } else {
-    //     _envUrlBase = 'webapi';
-    // }
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        _envUrlBase = 'papi.staging';
+        _env = 'stage';
+    } else {
+        if (generalService.papiClient['options'].baseURL.includes('-eu')) {
+            _env = 'eu';
+        } else {
+            _env = 'prod';
+        }
+        _envUrlBase = 'papi';
+    }
     // const testData = {};
 
     // const addonVersions =
@@ -88,7 +96,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     'LoginPerormanceData',
                 );
                 expect(adalResponse).to.be.not.empty; //ADAL response
-                const prodEntry = adalResponse.filter((response) => response.env === 'prod');
+                const prodEntry = adalResponse.filter((response) => response.env === _env);
                 expect(prodEntry).to.be.not.empty; //after filter
                 _adalWithRecBaseLine = prodEntry[0].duration_with_rec;
                 _adalNoRecBaseLine = prodEntry[0].duration_no_rec;
@@ -208,33 +216,17 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const newBaseLineForADAL = parseInt(
                         ((_adalWithRecBaseLine * 0.95 + recyclingAVG * 0.05) / 1).toFixed(0),
                     );
-                    const secretKey = await generalService.getSecretKey(
-                        'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                        varPass,
-                    );
                     const bodyToSend = {
                         Key: 'prod_perf',
                         duration_with_rec: newBaseLineForADAL,
                     };
-                    const trying = await generalService.fetchStatus(
-                        'https://papi.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceData',
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(bodyToSend),
-                            headers: {
-                                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-                                //X-Pepperi-OwnerID is the ID of the Addon
-                                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                                'X-Pepperi-SecretKey': secretKey,
-                            },
-                        },
-                    );
-                    expect(trying.Ok).to.equal(true);
-                    expect(trying.Status).to.equal(200);
-                    expect(trying.Body.env).to.equal('prod');
-                    expect(trying.Body.Hidden).to.equal(false);
-                    expect(trying.Body.Key).to.equal('prod_perf');
-                    expect(trying.Body.duration_with_rec).to.equal(newBaseLineForADAL);
+                    const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
+                    expect(adalResponse.Ok).to.equal(true);
+                    expect(adalResponse.Status).to.equal(200);
+                    expect(adalResponse.Body.env).to.equal('prod');
+                    expect(adalResponse.Body.Hidden).to.equal(false);
+                    expect(adalResponse.Body.Key).to.equal('prod_perf');
+                    expect(adalResponse.Body.duration_with_rec).to.equal(newBaseLineForADAL);
                     // printing both to console and report
                     const improvmentPrec = (
                         ((_adalWithRecBaseLine - recyclingAVG) / _adalWithRecBaseLine) *
@@ -257,33 +249,17 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const newBaseLineForADAL = parseInt(
                         ((_adalNoRecBaseLine * 0.95 + noRecyclingAVG * 0.05) / 1).toFixed(0),
                     );
-                    const secretKey = await generalService.getSecretKey(
-                        'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                        varPass,
-                    );
                     const bodyToSend = {
                         Key: 'prod_perf',
                         duration_no_rec: newBaseLineForADAL,
                     };
-                    const trying = await generalService.fetchStatus(
-                        'https://papi.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceData',
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(bodyToSend),
-                            headers: {
-                                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-                                //X-Pepperi-OwnerID is the ID of the Addon
-                                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                                'X-Pepperi-SecretKey': secretKey,
-                            },
-                        },
-                    );
-                    expect(trying.Ok).to.equal(true);
-                    expect(trying.Status).to.equal(200);
-                    expect(trying.Body.env).to.equal('prod');
-                    expect(trying.Body.Hidden).to.equal(false);
-                    expect(trying.Body.Key).to.equal('prod_perf');
-                    expect(trying.Body.duration_no_rec).to.equal(newBaseLineForADAL);
+                    const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
+                    expect(adalResponse.Ok).to.equal(true);
+                    expect(adalResponse.Status).to.equal(200);
+                    expect(adalResponse.Body.env).to.equal('prod');
+                    expect(adalResponse.Body.Hidden).to.equal(false);
+                    expect(adalResponse.Body.Key).to.equal('prod_perf');
+                    expect(adalResponse.Body.duration_no_rec).to.equal(newBaseLineForADAL);
                     //printing both to console and report
                     const improvmentPrec = (((_adalNoRecBaseLine - noRecyclingAVG) / _adalNoRecBaseLine) * 100).toFixed(
                         3,
@@ -299,6 +275,24 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             });
         });
     });
+}
+
+async function postToADAL(varPass, generalService, bodyToSend, envUrlBase) {
+    const secretKey = await generalService.getSecretKey('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', varPass);
+    const adalResponse = await generalService.fetchStatus(
+        `https://${envUrlBase}.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceData`,
+        {
+            method: 'POST',
+            body: JSON.stringify(bodyToSend),
+            headers: {
+                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+                //X-Pepperi-OwnerID is the ID of the Addon
+                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                'X-Pepperi-SecretKey': secretKey,
+            },
+        },
+    );
+    return adalResponse;
 }
 
 // expect(duration).to.be.lessThan(
