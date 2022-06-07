@@ -6,6 +6,7 @@ import { PromotionTests } from './promotion.test';
 import { SecurityPolicyTests } from './security_policy.test';
 import { CreateDistributorTests } from './create_distributor.test';
 import { UomTests } from './uom.test';
+import { ScriptPickerTests } from './script_picker.test';
 import { CloseCatalogTest } from './closing_catalog.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
 import { UDCTests } from './udc.test';
@@ -26,4 +27,5 @@ export {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
+    ScriptPickerTests
 };
