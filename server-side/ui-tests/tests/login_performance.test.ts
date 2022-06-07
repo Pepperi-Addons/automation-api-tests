@@ -30,12 +30,12 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
 
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         _envUrlBase = 'papi.staging';
-        _env = "stage";
+        _env = 'stage';
     } else {
         if (generalService.papiClient['options'].baseURL.includes('-eu')) {
-            _env = "eu";
+            _env = 'eu';
         } else {
-            _env = "prod";
+            _env = 'prod';
         }
         _envUrlBase = 'papi';
     }
@@ -277,12 +277,8 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     });
 }
 
-
 async function postToADAL(varPass, generalService, bodyToSend, envUrlBase) {
-    const secretKey = await generalService.getSecretKey(
-        'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-        varPass,
-    );
+    const secretKey = await generalService.getSecretKey('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', varPass);
     const adalResponse = await generalService.fetchStatus(
         `https://${envUrlBase}.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceData`,
         {
