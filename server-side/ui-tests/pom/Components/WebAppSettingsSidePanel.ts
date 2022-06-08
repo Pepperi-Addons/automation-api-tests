@@ -56,6 +56,11 @@ export class WebAppSettingsSidePanel extends Component {
         'settings/2cabad50-2df0-4136-abda-03ab9c901953/editor?view=var_distributors&uri=grid/vardistributors',
     );
 
+    //config Selectors
+    public ScriptsEditor: By = By.id(
+        'settings/9f3b727c-e88c-4311-8ec4-3857bc8621f3/scripts',
+    );
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         await this.browser.click(
             By.xpath(`${this.SettingsBarContainer.value}//*[contains(@id,"${settingsButtonID}")]/../../..`),

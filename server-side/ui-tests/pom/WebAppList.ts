@@ -243,4 +243,9 @@ export class WebAppList extends Page {
         }
         await this.browser.click(this.SmartSearchCheckBoxDone);
     }
+
+
+    public async getNumOfElements() {
+        return await (await this.browser.findElement(this.TotalResultsText)).getText();
+    }
 }
