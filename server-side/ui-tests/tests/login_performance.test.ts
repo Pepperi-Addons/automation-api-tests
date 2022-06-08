@@ -10,8 +10,6 @@ import { ADALService } from '../../services/adal.service';
 import { testData } from '../../services/general.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
-    //TODO: 1. change to work on any env
-
     let driver: Browser;
     const generalService = new GeneralService(client);
     const adalService = new ADALService(generalService.papiClient);
@@ -217,15 +215,15 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         ((_adalWithRecBaseLine * 0.95 + recyclingAVG * 0.05) / 1).toFixed(0),
                     );
                     const bodyToSend = {
-                        Key: 'prod_perf',
+                        Key: `${_env}_perf`,
                         duration_with_rec: newBaseLineForADAL,
                     };
                     const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
                     expect(adalResponse.Ok).to.equal(true);
                     expect(adalResponse.Status).to.equal(200);
-                    expect(adalResponse.Body.env).to.equal('prod');
+                    expect(adalResponse.Body.env).to.equal(_env);
                     expect(adalResponse.Body.Hidden).to.equal(false);
-                    expect(adalResponse.Body.Key).to.equal('prod_perf');
+                    expect(adalResponse.Body.Key).to.equal(`${_env}_perf`);
                     expect(adalResponse.Body.duration_with_rec).to.equal(newBaseLineForADAL);
                     // printing both to console and report
                     const improvmentPrec = (
@@ -250,15 +248,15 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                         ((_adalNoRecBaseLine * 0.95 + noRecyclingAVG * 0.05) / 1).toFixed(0),
                     );
                     const bodyToSend = {
-                        Key: 'prod_perf',
+                        Key: `${_env}_perf`,
                         duration_no_rec: newBaseLineForADAL,
                     };
                     const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
                     expect(adalResponse.Ok).to.equal(true);
                     expect(adalResponse.Status).to.equal(200);
-                    expect(adalResponse.Body.env).to.equal('prod');
+                    expect(adalResponse.Body.env).to.equal(_env);
                     expect(adalResponse.Body.Hidden).to.equal(false);
-                    expect(adalResponse.Body.Key).to.equal('prod_perf');
+                    expect(adalResponse.Body.Key).to.equal(`${_env}_perf`);
                     expect(adalResponse.Body.duration_no_rec).to.equal(newBaseLineForADAL);
                     //printing both to console and report
                     const improvmentPrec = (((_adalNoRecBaseLine - noRecyclingAVG) / _adalNoRecBaseLine) * 100).toFixed(
