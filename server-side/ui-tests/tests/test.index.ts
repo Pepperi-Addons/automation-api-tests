@@ -24,13 +24,13 @@ import {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
-    ScriptPickerTests
+    ScriptPickerTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 import { testData } from './../../services/general.service';
-import {  } from './script_picker.test';
+import {} from './script_picker.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:

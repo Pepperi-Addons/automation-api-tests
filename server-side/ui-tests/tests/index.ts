@@ -27,5 +27,5 @@ export {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
-    ScriptPickerTests
+    ScriptPickerTests,
 };
