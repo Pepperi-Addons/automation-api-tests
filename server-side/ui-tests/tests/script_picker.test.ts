@@ -12,65 +12,81 @@ chai.use(promised);
 
 export async function ScriptPickerTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
     let driver: Browser;
-
-    const _TEST_DATA_SCRIPT_NAME = `Script_Test_${generalService.generateRandomString(7)}`;
 
     const scriptsArray: string[] = [
         `async function main(data){
         return data.number;
     }
-    // module.exports = {main}`,
-        //     `async function main(data)  { //30b6f9c5-5cdf-430a-bf82-c7aa9821d8d9
-        // const get = pepperi.api.transactions.get({
-        //      key: { UUID: data.UUID },
-        //      fields: ["InternalID", "UUID"]
-        // });
-        //   return get;
-        // };
-        // module.exports = {main}`,
-        //     `async function main(data)  { 
-        //     const res = await client.alert("alert", "putin is douchebag");
-        //          const confirm = await client.confirm(
-        //           "confirm",
-        //           "putin is a huylo"
-        //         );
-        //         const showDialog = await client.showDialog({
-        //           title: "showDialog",
-        //           content: "putin pashul nahuy dibilnaya tvar",
-        //           actions: [
-        //             { title: "not cool putin", value: 1 },
-        //             { title: "really not cool putin", value: 2 },
-        //             { title: "putin is a boomer 3", value: 3 },
-        //             { title: "putin is a boomer 4", value: 4 },
-        //             { title: "putin is a boomer 5", value: 5 }, 
-        //           ],
-        //         });
-        //     console.log(confirm);
-        //         console.log(showDialog)
-
-        //     if (res)
-        //     {
-        //         const mySum = data.xxxx+data.y;
-        //         return data.myText +mySum + data.myText2;
-        //     }
-        //     else 
-        //     {
-        //         const myMul = data.xxxx*data.y;
-        //         return data.myText +myMul + data.myText2;
-        //     }						
-        // }
-        // module.exports = {main}`,
+     module.exports = {main}`,
+        `async function main(data)  { //30b6f9c5-5cdf-430a-bf82-c7aa9821d8d9
+        const get = pepperi.api.transactions.get({
+             key: { UUID: data.UUID },
+             fields: ["InternalID", "UUID"]
+        });
+          return get;
+        };
+        module.exports = {main}`,
+        `async function main(data)  { 
+            const res = await client.alert("alert", "first alert");
+                 const confirm = await client.confirm(
+                  "confirm",
+                  "confirm client"
+                );
+                const showDialog = await client.showDialog({
+                  title: "showDialog",
+                  content: "dialog content",
+                  actions: [
+                    { title: "action 1", value: 1 },
+                    { title: "action 2", value: 2 },
+                    { title: "action 3", value: 3 },
+                  ],
+                });
+            console.log("alert confirmed:"+confirm);
+            console.log("dialog option:"+showDialog);
+        
+            if (res)
+            {
+                return data.x;
+            }
+            else 
+            {
+                return data.y;
+            }						
+        }
+        module.exports = {main}`
     ];
 
-    const scriptParamArray: ScriptParams[] = [{
-        Name: "Number",
+    const scriptParamArray: any[] = [{
+        Name: "number",
         Params: {
             Type: 'Integer',
             DefaultValue: 5
         }
-    }];
+    },
+    {
+        Name: "UUID",
+        Params: {
+            Type: 'String',
+            DefaultValue: '508d815b-b5e1-4cf5-bca1-743f7d008cbf'
+        }
+    },
+    [
+        {
+            Name: "x",
+            Params: {
+                Type: 'Integer',
+                DefaultValue: 1
+            }
+        },
+        {
+            Name: "y",
+            Params: {
+                Type: 'Integer',
+                DefaultValue: 2
+            }
+        }
+    ]];
 
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
@@ -125,15 +141,27 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                     const scriptName = `Script_Test_${generalService.generateRandomString(7)}`;
                     const scriptDesc = `${scriptName}_${generalService.generateRandomString(3)}`;
                     const scriptCode = scriptsArray[index];
-                    const paramName = scriptParamArray[index].Name;
-                    const paramType = scriptParamArray[index].Params.Type;
-                    const paramVal = scriptParamArray[index].Params.DefaultValue;
-                    const scriptParam = {
-                        [`${paramName}`]: {
+                    let scriptParam = {};
+                    if (Array.isArray(scriptParamArray[index])) {
+                        debugger;
+                        for (let index1 = 0; index1 < scriptParamArray[index].length; index1++) {
+                            const paramName = scriptParamArray[index][index1].Name;
+                            const paramType = scriptParamArray[index][index1].Params.Type;
+                            const paramVal = scriptParamArray[index][index1].Params.DefaultValue;
+                            scriptParam[`${paramName}`] = {
+                                Type: paramType,
+                                DefaultValue: paramVal
+                            };
+                        }
+                    } else {
+                        const paramName = scriptParamArray[index].Name;
+                        const paramType = scriptParamArray[index].Params.Type;
+                        const paramVal = scriptParamArray[index].Params.DefaultValue;
+                        scriptParam[`${paramName}`] = {
                             Type: paramType,
                             DefaultValue: paramVal
                         }
-                    };
+                    }
                     const scriptToPost: ScriptConfigObj = {
                         Key: uuid,
                         Hidden: false,
