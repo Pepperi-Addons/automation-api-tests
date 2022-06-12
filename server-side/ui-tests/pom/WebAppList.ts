@@ -245,7 +245,17 @@ export class WebAppList extends Page {
     }
 
 
-    public async getNumOfElements() {
+    public async getNumOfElementsTitle() {
         return await (await this.browser.findElement(this.TotalResultsText)).getText();
+    }
+
+    public async getListElementsAsArray() {
+        return await this.browser.findElements(this.ListRowElements);
+    }
+
+    public async getAllListElementsTextValue() {
+        const allElems = await this.getListElementsAsArray();
+        const text = await Promise.all(allElems.map(async elem => await elem.getText()));
+        return text;
     }
 }
