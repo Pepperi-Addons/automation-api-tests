@@ -341,8 +341,8 @@ export async function addon_async_execution(client: Client, testerFunctions: Tes
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
+        await AddonAsyncExecutionTests(service, testerFunctions),
         await test_data(client, testerFunctions),
-        AddonAsyncExecutionTests(service, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
