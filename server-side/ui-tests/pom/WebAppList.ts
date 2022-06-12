@@ -22,6 +22,7 @@ export class WebAppList extends Page {
     public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
     public ListRowElements: By = By.css('pep-list .table-row-fieldset');
+    public RowElementCheckBox: By = By.css('pep-list .table-row-fieldset > mat-checkbox');
     public TotalResultsText: By = By.css('.total-items .number');
     public LinksInListArr: By = By.css('pep-internal-button a');
 
@@ -84,6 +85,11 @@ export class WebAppList extends Page {
     public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
         return await this.browser.click(this.ListRowElements, position, waitUntil);
+    }
+
+    public async clickOnCheckBoxByElementIndex(position = 0, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.click(this.RowElementCheckBox, position, waitUntil);
     }
 
     public async clickOnFromListRowWebElementByName(textOfElement: string, waitUntil = 15000): Promise<void> {
@@ -257,5 +263,11 @@ export class WebAppList extends Page {
         const allElems = await this.getListElementsAsArray();
         const text = await Promise.all(allElems.map(async elem => await elem.getText()));
         return text;
+    }
+
+    public async getAllListElementTextValueByIndex(index: number) {
+        const allElems = await this.getListElementsAsArray();
+        const text = await Promise.all(allElems.map(async elem => await elem.getText()));
+        return text[index];
     }
 }
