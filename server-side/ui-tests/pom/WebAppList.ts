@@ -23,6 +23,12 @@ export class WebAppList extends Page {
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
     public ListRowElements: By = By.css('pep-list .table-row-fieldset');
     public RowElementCheckBox: By = By.css('pep-list .table-row-fieldset > mat-checkbox');
+    public GeneralCheckBoxValue: By = By.xpath(
+        '//fieldset[contains(@class,"table-header-fieldset")]//mat-checkbox//..//input',
+    );
+    public GeneralCheckBoxClickable: By = By.xpath(
+        '//fieldset[contains(@class,"table-header-fieldset")]//mat-checkbox',
+    );
     public TotalResultsText: By = By.css('.total-items .number');
     public LinksInListArr: By = By.css('pep-internal-button a');
 
@@ -100,6 +106,23 @@ export class WebAppList extends Page {
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
         return await this.browser.click(this.LinksInListArr, position, waitUntil);
+    }
+
+    public async checkAllListElements() {
+        await this.isSpinnerDone();
+        const generalCheckbox = await this.browser.findElement(this.GeneralCheckBoxValue);
+        const isChecked: boolean = (await generalCheckbox.getAttribute('aria-checked')) === 'true' ? true : false;
+        if (!isChecked) {
+            await this.browser.click(this.GeneralCheckBoxClickable);
+        }
+    }
+    public async uncheckAllListElements() {
+        await this.isSpinnerDone();
+        const generalCheckbox = await this.browser.findElement(this.GeneralCheckBoxValue);
+        const isChecked: boolean = (await generalCheckbox.getAttribute('aria-checked')) === 'true' ? true : false;
+        if (isChecked) {
+            await this.browser.click(this.GeneralCheckBoxClickable);
+        }
     }
 
     public async selectCardWebElement(position = 0): Promise<WebElement> {
@@ -250,7 +273,6 @@ export class WebAppList extends Page {
         await this.browser.click(this.SmartSearchCheckBoxDone);
     }
 
-
     public async getNumOfElementsTitle() {
         return await (await this.browser.findElement(this.TotalResultsText)).getText();
     }
@@ -261,13 +283,13 @@ export class WebAppList extends Page {
 
     public async getAllListElementsTextValue() {
         const allElems = await this.getListElementsAsArray();
-        const text = await Promise.all(allElems.map(async elem => await elem.getText()));
+        const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
         return text;
     }
 
     public async getAllListElementTextValueByIndex(index: number) {
         const allElems = await this.getListElementsAsArray();
-        const text = await Promise.all(allElems.map(async elem => await elem.getText()));
+        const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
         return text[index];
     }
 }
