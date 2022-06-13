@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { By } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 
 export interface ScriptConfigObj {
@@ -44,6 +44,13 @@ export class ScriptEditor extends AddonPage {
     public ScriptResultTxtArea: By = By.xpath('(//div[contains(@class,"mat-form-field-infix")]//div)[1]');
     public DialogOkBtn: By = By.css('pep-dialog > div > div> button');
     public LogsTxtArea: By = By.id('mat-input-0');
+    public ValueTypeDropDownDebugger: By = By.xpath('//div[contains(@class,"mat-form-field-infix")]//div');
+    public StaticTypeParamDropDown: By = By.xpath("//span[@class='mat-option-text' and text()='Static']");
+    public StaticParamValueField: By = By.xpath('pep-textbox > mat-form-field');
+    public StaticParamInput: By = By.xpath("//input[@name='|placeholder|']");
+
+
+
 
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
@@ -62,7 +69,7 @@ export class ScriptEditor extends AddonPage {
 
     public async clickDropDownByText(text: string) {
         const spesificDropDownElem = this.SpesificDropDownValue.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|placeholder|', text);
         await this.browser.click(By.xpath(spesificDropDownElem));
         await expect(this.untilIsVisible(this.ModalMainParamArea, 90000)).eventually.to.be.true; //params part of modal is loaded
@@ -113,5 +120,26 @@ export class ScriptEditor extends AddonPage {
         this.browser.sleep(5000);
         const resultTxt = await (await this.browser.findElement(this.LogsTxtArea)).getAttribute('Title');
         return resultTxt;
+    }
+
+    public async setParamTypeToStatic(index: number) {
+        await this.browser.click(this.ValueTypeDropDownDebugger, index);
+        await expect(this.untilIsVisible(this.StaticTypeParamDropDown, 90000)).eventually.to.be.true; //drop down is shown
+        await this.browser.click(this.StaticTypeParamDropDown);
+        await expect(this.untilIsVisible(this.StaticParamValueField, 90000)).eventually.to.be.true; //value input is shown -- problem here
+    }
+
+    public async setParamStaticValue(listOfParam: any[], newValue: string[]) {
+        debugger;
+        let indexOfFirstDropDown = 2;
+        for (let index = 0; index < listOfParam.length; index++) {
+            await this.setParamTypeToStatic(indexOfFirstDropDown);
+            const spesificParamInput = this.StaticParamInput.valueOf()
+            ['value'].slice()
+                .replace("|placeholder|", listOfParam[index].Name);
+            await this.browser.sendKeys(By.xpath(spesificParamInput), newValue[index] + Key.ENTER);
+
+        }
+
     }
 }

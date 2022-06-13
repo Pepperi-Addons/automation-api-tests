@@ -121,66 +121,69 @@ export async function ScriptPickerTests(email: string, password: string, varPass
         {
             Name: 'Script_Return_Number',
             DeafultResult: '5',
+            NewValue: '8',
             ChangedResult: '8',
         },
         {
             Name: 'Script_Get_Trans',
             DeafultResult:
                 '{"success":true,"object":{"InternalID":290607961,"UUID":"508d815b-b5e1-4cf5-bca1-743f7d008cbf"}}',
+            NewValue: '82b42b50-742b-475d-b1b8-fe5716bbaef7',
             ChangedResult:
-                '{"success":true,"object":{"InternalID":287697865,"UUID":"82b42b50-742b-475d-b1b8-fe5716bbaef7"}}', //for UUID: 82b42b50-742b-475d-b1b8-fe5716bbaef7
+                '{"success":true,"object":{"InternalID":287697865,"UUID":"82b42b50-742b-475d-b1b8-fe5716bbaef7"}}', //for UUID: 
         },
         {
             Name: 'Script_Modal',
             DeafultResult: 'abc',
+            NewValue: 'xyz',
             ChangedResult: 'xyz',
         },
     ];
 
-    await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade script dependencies
-    const testData = {
-        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-        'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
-    };
+    // await generalService.baseAddonVersionsInstallation(varPass);
+    // //#region Upgrade script dependencies
+    // const testData = {
+    //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
+    //     CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
+    //     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
+    //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
+    // };
 
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade script dependencies
 
     describe('Scripts Tests Suit', async function () {
         describe('Prerequisites Addons for Scripts Tests', () => {
-            //Test Data
-            //Scripts
-            isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                    expect(isInstalled).to.be.true;
-                });
-            });
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
+            // //Test Data
+            // //Scripts
+            // isInstalledArr.forEach((isInstalled, index) => {
+            //     it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+            //         expect(isInstalled).to.be.true;
+            //     });
+            // });
+            // for (const addonName in testData) {
+            //     const addonUUID = testData[addonName][0];
+            //     const version = testData[addonName][1];
+            //     const varLatestVersion = chnageVersionResponseArr[addonName][2];
+            //     const changeType = chnageVersionResponseArr[addonName][3];
+            //     describe(`Test Data: ${addonName}`, () => {
+            //         it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+            //             if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+            //                 expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+            //             } else {
+            //                 expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+            //             }
+            //         });
+            //         it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+            //             await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+            //                 .eventually.to.have.property('Version')
+            //                 .a('string')
+            //                 .that.is.equal(varLatestVersion);
+            //         });
+            //     });
+            // }
         });
 
         describe('Scripts Test', () => {
@@ -373,6 +376,8 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                         const scriptRunResult = await scriptEditor.runScriptAndGetResult();
                         expect(currentScriptResult[0].DeafultResult).to.be.equal(scriptRunResult);
                     }
+                    debugger;
+                    await scriptEditor.setParamStaticValue(currentScript[0].Parameters, ['8']);
                     await scriptEditor.goBackToScriptList();
                     //validate script list is loaded
                     await expect(scriptEditor.untilIsVisible(scriptEditor.NameHeader, 90000)).eventually.to.be.true;
