@@ -378,6 +378,9 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                     }
                     debugger;//working on this:
                     await scriptEditor.setParamStaticValue(currentScript[0].Parameters, ['8']);
+                    //TODO:
+                    //run again and validate new result
+                    //save and test via API
                     await scriptEditor.goBackToScriptList();
                     //validate script list is loaded
                     await expect(scriptEditor.untilIsVisible(scriptEditor.NameHeader, 90000)).eventually.to.be.true;
