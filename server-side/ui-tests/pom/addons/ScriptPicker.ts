@@ -56,7 +56,7 @@ export class ScriptEditor extends AddonPage {
     public SpesificParamCheckbox: By = By.xpath("//span[text()='|placeholder|']//..//..//..//..//..//..//mat-checkbox//label");
     public InsideModalPencil: By = By.xpath("(//pep-list-actions//pep-menu//*//button)[2]");
     public DefaultValueInput: By = By.xpath("(//addon-script-param-form//pep-dialog//div[2]//input)[3]");
-    public EditorRow: By = By.xpath("//addon-script-editor-form//virtual-scroller//div//div//fieldset");
+    public EditorRow: By = By.xpath("//addon-script-editor-form//virtual-scroller//div//div//fieldset[@class='table-row-fieldset']");
     public ScriptEditorDescriptionTxtArea: By = By.xpath("//mat-dialog-container//div//textarea");
 
     public async enterPickerModal(): Promise<void> {
@@ -177,12 +177,12 @@ export class ScriptEditor extends AddonPage {
             .true; //params title area is loaded
     }
 
-    public async editParam(listOfParam: any[], listOfNewVals: any[]) {
+    public async editParam(numOfScriptInList: number, listOfParam: any[], listOfNewVals: any[]) {//TODO: refactor this stupid flow
         for (let index = 0; index < listOfParam.length; index++) {
             const spesificParamCheckboxInput = this.SpesificParamCheckbox.valueOf()
             ['value'].slice()
                 .replace("|placeholder|", listOfParam[index].Name);
-            await this.browser.click(this.EditorRow);
+            await this.browser.click(this.EditorRow, index);
             this.browser.sleep(1000);
             const checkBoxElem = await this.browser.findElement(By.xpath(spesificParamCheckboxInput));
             await this.browser.executeCommandAdync("arguments[0].click();", checkBoxElem);
@@ -200,6 +200,11 @@ export class ScriptEditor extends AddonPage {
             await this.browser.sendKeys(this.ScriptEditorDescriptionTxtArea, "UI bug");
             await this.browser.click(this.SaveBtn, 0); //in this case first index is the 'save' btn
             await this.validateMainPageIsLoaded();
+            if (index < listOfParam.length - 1) {
+                await this.browser.refresh();
+                await this.validateMainPageIsLoaded();
+                await this.enterEditor(numOfScriptInList);
+            }
         }
     }
 

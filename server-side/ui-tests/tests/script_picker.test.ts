@@ -65,56 +65,56 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 },
             ],
         },
-        // {
-        //     Key: '',
-        //     Hidden: false,
-        //     Name: 'Script_Modal',
-        //     Description: '',
-        //     Code: `async function main(data)  { 
-        //     const res = await client.alert("alert", "first alert");
-        //          const confirm = await client.confirm(
-        //           "confirm",
-        //           "confirm client"
-        //         );
-        //         const showDialog = await client.showDialog({
-        //           title: "showDialog",
-        //           content: "dialog content",
-        //           actions: [
-        //             { title: "action 1", value: 1 },
-        //             { title: "action 2", value: 2 },
-        //             { title: "action 3", value: 3 },
-        //           ],
-        //         });
-        //     console.log("alert confirmed:"+confirm);
-        //     console.log("dialog option:"+showDialog);
+        {
+            Key: '',
+            Hidden: false,
+            Name: 'Script_Modal',
+            Description: '',
+            Code: `async function main(data)  { 
+            const res = await client.alert("alert", "first alert");
+                 const confirm = await client.confirm(
+                  "confirm",
+                  "confirm client"
+                );
+                const showDialog = await client.showDialog({
+                  title: "showDialog",
+                  content: "dialog content",
+                  actions: [
+                    { title: "action 1", value: 1 },
+                    { title: "action 2", value: 2 },
+                    { title: "action 3", value: 3 },
+                  ],
+                });
+            console.log("alert confirmed:"+confirm);
+            console.log("dialog option:"+showDialog);
 
-        //     if (res)
-        //     {
-        //         return data.x;
-        //     }
-        //     else 
-        //     {
-        //         return data.y;
-        //     }						
-        // }
-        // module.exports = {main}`,
-        //     Parameters: [
-        //         {
-        //             Name: 'x',
-        //             Params: {
-        //                 Type: 'Integer',
-        //                 DefaultValue: '8',
-        //             },
-        //         },
-        //         {
-        //             Name: 'y',
-        //             Params: {
-        //                 Type: 'String',
-        //                 DefaultValue: 'abc',
-        //             },
-        //         },
-        //     ],
-        // },
+            if (res)
+            {
+                return data.x;
+            }
+            else 
+            {
+                return data.y;
+            }						
+        }
+        module.exports = {main}`,
+            Parameters: [
+                {
+                    Name: 'x',
+                    Params: {
+                        Type: 'Integer',
+                        DefaultValue: '8',
+                    },
+                },
+                {
+                    Name: 'y',
+                    Params: {
+                        Type: 'String',
+                        DefaultValue: 'abc',
+                    },
+                },
+            ],
+        },
     ];
 
     const scriptResults: any[] = [
@@ -363,7 +363,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                     await scriptEditor.validateMainPageIsLoaded();//validate the page is loaded and can be used
                     //change params and see changed in API
                     await scriptEditor.enterEditor(index);
-                    await scriptEditor.editParam(currentScript.Parameters, currentScriptResult.NewValue);
+                    await scriptEditor.editParam(index, currentScript.Parameters, currentScriptResult.NewValue);
                     await webAppHomePage.returnToHomePage();
                     await webAppHomePage.manualResync(client);
                     const allScriptsOnDist = await generalService.fetchStatus(
