@@ -162,6 +162,10 @@ export class Browser {
         );
     }
 
+    public async executeCommandAdync(command: string, webElem: WebElement) {
+        await this.driver.executeScript(command, webElem);
+    }
+
     public async click(selector: By, index = 0, waitUntil = 15000): Promise<void> {
         try {
             await (await this.findElements(selector, waitUntil))[index].click();
