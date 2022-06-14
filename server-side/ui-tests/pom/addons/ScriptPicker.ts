@@ -53,11 +53,15 @@ export class ScriptEditor extends AddonPage {
     public StaticParamInput: By = By.xpath("//input[@name='|placeholder|']");
     public PublishBtn: By = By.css('[data-qa="Publish"]');
     public ModalParamTitle: By = By.xpath("//span[text()='Parameters']");
-    public SpesificParamCheckbox: By = By.xpath("//span[text()='|placeholder|']//..//..//..//..//..//..//mat-checkbox//label");
-    public InsideModalPencil: By = By.xpath("(//pep-list-actions//pep-menu//*//button)[2]");
-    public DefaultValueInput: By = By.xpath("(//addon-script-param-form//pep-dialog//div[2]//input)[3]");
-    public EditorRow: By = By.xpath("//addon-script-editor-form//virtual-scroller//div//div//fieldset[@class='table-row-fieldset']");
-    public ScriptEditorDescriptionTxtArea: By = By.xpath("//mat-dialog-container//div//textarea");
+    public SpesificParamCheckbox: By = By.xpath(
+        "//span[text()='|placeholder|']//..//..//..//..//..//..//mat-checkbox//label",
+    );
+    public InsideModalPencil: By = By.xpath('(//pep-list-actions//pep-menu//*//button)[2]');
+    public DefaultValueInput: By = By.xpath('(//addon-script-param-form//pep-dialog//div[2]//input)[3]');
+    public EditorRow: By = By.xpath(
+        "//addon-script-editor-form//virtual-scroller//div//div//fieldset[@class='table-row-fieldset']",
+    );
+    public ScriptEditorDescriptionTxtArea: By = By.xpath('//mat-dialog-container//div//textarea');
 
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
@@ -76,7 +80,7 @@ export class ScriptEditor extends AddonPage {
 
     public async clickDropDownByText(text: string) {
         const spesificDropDownElem = this.SpesificDropDownValue.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|placeholder|', text);
         await this.browser.click(By.xpath(spesificDropDownElem));
         await expect(this.untilIsVisible(this.ModalMainParamArea, 90000)).eventually.to.be.true; //params part of modal is loaded
@@ -136,15 +140,15 @@ export class ScriptEditor extends AddonPage {
         await expect(this.untilIsVisible(staticFieldSelector, 90000)).eventually.to.be.true; //value input is shown
         const staticFieldElems = await this.browser.findElement(staticFieldSelector);
         const allFieldsText = await staticFieldElems.getText();
-        expect(allFieldsText).to.equal('');//this way i know the empty static field is thereכ
+        expect(allFieldsText).to.equal(''); //this way i know the empty static field is thereכ
     }
 
     public async setParamStaticValue(listOfParam: any[], newValue: string[]) {
         let runningDropDownIndex = 2;
         for (let index = 0; index < listOfParam.length; index++) {
             const spesificParamInput = this.StaticParamInput.valueOf()
-            ['value'].slice()
-                .replace("|placeholder|", listOfParam[index].Name);
+                ['value'].slice()
+                .replace('|placeholder|', listOfParam[index].Name);
             await this.setParamTypeToStatic(runningDropDownIndex, By.xpath(spesificParamInput));
             await this.browser.sendKeys(By.xpath(spesificParamInput), newValue[index] + Key.ENTER);
             runningDropDownIndex += 4;
@@ -155,15 +159,13 @@ export class ScriptEditor extends AddonPage {
         await this.browser.click(this.PublishBtn);
         const webAppDialog = new WebAppDialog(this.browser);
         await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
-        let titleTxt = await (await this.browser.findElement(webAppDialog.Title)).getText();
+        const titleTxt = await (await this.browser.findElement(webAppDialog.Title)).getText();
         expect(titleTxt).to.include('Publish');
-        let contentTxt = await (await this.browser.findElement(webAppDialog.Content)).getText();
+        const contentTxt = await (await this.browser.findElement(webAppDialog.Content)).getText();
         expect(contentTxt).to.include('Script was published successfully');
         await this.browser.click(this.DialogOkBtn, 0); //in this case first index is the 'Close' btn
         await expect(this.untilIsVisible(this.CodeEditor, 90000)).eventually.to.be.true; //code editor element is loaded
-        await expect(this.untilIsVisible(this.ParamAreaDebugger, 90000)).eventually.to.be
-            .true; //validate prev screen is loaded again
-
+        await expect(this.untilIsVisible(this.ParamAreaDebugger, 90000)).eventually.to.be.true; //validate prev screen is loaded again
     }
 
     public async enterEditor(index: number) {
@@ -173,31 +175,31 @@ export class ScriptEditor extends AddonPage {
         await this.browser.click(this.EditorPencilOption);
         const webAppDialog = new WebAppDialog(this.browser);
         await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
-        await expect(this.untilIsVisible(this.ModalParamTitle, 90000)).eventually.to.be
-            .true; //params title area is loaded
+        await expect(this.untilIsVisible(this.ModalParamTitle, 90000)).eventually.to.be.true; //params title area is loaded
     }
 
-    public async editParam(numOfScriptInList: number, listOfParam: any[], listOfNewVals: any[]) {//TODO: refactor this stupid flow
+    public async editParam(numOfScriptInList: number, listOfParam: any[], listOfNewVals: any[]) {
+        //TODO: refactor this stupid flow
         for (let index = 0; index < listOfParam.length; index++) {
             const spesificParamCheckboxInput = this.SpesificParamCheckbox.valueOf()
-            ['value'].slice()
-                .replace("|placeholder|", listOfParam[index].Name);
+                ['value'].slice()
+                .replace('|placeholder|', listOfParam[index].Name);
             await this.browser.click(this.EditorRow, index);
             this.browser.sleep(1000);
             const checkBoxElem = await this.browser.findElement(By.xpath(spesificParamCheckboxInput));
-            await this.browser.executeCommandAdync("arguments[0].click();", checkBoxElem);
+            await this.browser.executeCommandAdync('arguments[0].click();', checkBoxElem);
             await this.browser.click(this.InsideModalPencil);
             await expect(this.untilIsVisible(this.EditorPencilOption, 90000)).eventually.to.be.true;
             await this.browser.click(this.EditorPencilOption);
             const webAppDialog = new WebAppDialog(this.browser);
             await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
             const defaultValElem = await this.browser.findElement(this.DefaultValueInput);
-            const defaultValTxt = await defaultValElem.getAttribute("title");
+            const defaultValTxt = await defaultValElem.getAttribute('title');
             expect(defaultValTxt).to.equal(listOfParam[index].Params.DefaultValue);
             await this.browser.sendKeys(this.DefaultValueInput, listOfNewVals[index]);
             await this.browser.click(this.SaveBtn, 1); //in this case first index is the 'save' btn
-            await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;//prev modal is loaded
-            await this.browser.sendKeys(this.ScriptEditorDescriptionTxtArea, "UI bug");
+            await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true; //prev modal is loaded
+            await this.browser.sendKeys(this.ScriptEditorDescriptionTxtArea, 'UI bug');
             await this.browser.click(this.SaveBtn, 0); //in this case first index is the 'save' btn
             await this.validateMainPageIsLoaded();
             if (index < listOfParam.length - 1) {
@@ -212,10 +214,8 @@ export class ScriptEditor extends AddonPage {
         await this.browser.click(this.PencilMenuBtn);
         await this.browser.click(this.DebuggerPencilOption);
         await expect(this.untilIsVisible(this.CodeEditor, 90000)).eventually.to.be.true; //code editor element is loaded
-        await expect(this.untilIsVisible(this.ParamAreaDebugger, 90000)).eventually.to.be
-            .true; //code editor element is loaded
+        await expect(this.untilIsVisible(this.ParamAreaDebugger, 90000)).eventually.to.be.true; //code editor element is loaded
     }
-
 
     public async validateMainPageIsLoaded() {
         await expect(this.untilIsVisible(this.NameHeader, 90000)).eventually.to.be.true;

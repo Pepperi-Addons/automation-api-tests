@@ -186,7 +186,8 @@ export class Browser {
                             `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).click();`,
                         );
                         console.log(
-                            `%cClicked with xpath selector: '${selector.valueOf()['value']
+                            `%cClicked with xpath selector: '${
+                                selector.valueOf()['value']
                             }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
@@ -195,7 +196,8 @@ export class Browser {
                             `document.querySelectorAll("${selector['value']}")[${index}].click();`,
                         );
                         console.log(
-                            `%cClicked with css selector: '${selector.valueOf()['value']
+                            `%cClicked with css selector: '${
+                                selector.valueOf()['value']
                             }', on element with index of: ${index}`,
                             ConsoleColors.ClickedMessage,
                         );
@@ -255,7 +257,8 @@ export class Browser {
             this.sleep(400);
             await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
             console.log(
-                `%cSentKeys with defult selector: '${selector.valueOf()['value']
+                `%cSentKeys with defult selector: '${
+                    selector.valueOf()['value']
                 }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                 ConsoleColors.SentKeysMessage,
             );
@@ -274,7 +277,8 @@ export class Browser {
                         await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
                         await el[index].sendKeys(keys);
                         console.log(
-                            `%cSentKeys with actions and defult selector: '${selector.valueOf()['value']
+                            `%cSentKeys with actions and defult selector: '${
+                                selector.valueOf()['value']
                             }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                             ConsoleColors.SentKeysMessage,
                         );
@@ -284,7 +288,8 @@ export class Browser {
                                 `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with xpath selector: '${selector.valueOf()['value']
+                                `%cSet value with xpath selector: '${
+                                    selector.valueOf()['value']
                                 }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
@@ -293,7 +298,8 @@ export class Browser {
                                 `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
                             );
                             console.log(
-                                `%cSet value with css selector: '${selector.valueOf()['value']
+                                `%cSet value with css selector: '${
+                                    selector.valueOf()['value']
                                 }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
                                 ConsoleColors.SentKeysMessage,
                             );
@@ -328,8 +334,9 @@ export class Browser {
         timeOutToDisplay = 1000,
         errorOnNoLoad = false,
     ): Promise<void> {
-        const notVisibleMsg = `Loading element ${loadingLocator.valueOf()['value']
-            } not visible after ${timeOutToDisplay}MS`;
+        const notVisibleMsg = `Loading element ${
+            loadingLocator.valueOf()['value']
+        } not visible after ${timeOutToDisplay}MS`;
         const loadTimeoutMsg = `Loading (${loadingLocator.valueOf()['value']}) timeout reached after ${timeOut}MS`;
         console.log(new Date().toTimeString() + ` - ${this.waitForLoading.name}: Start`);
         return this.driver

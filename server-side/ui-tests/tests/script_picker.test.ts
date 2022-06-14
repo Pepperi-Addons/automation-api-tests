@@ -130,7 +130,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 '{"success":true,"object":{"InternalID":290607961,"UUID":"508d815b-b5e1-4cf5-bca1-743f7d008cbf"}}',
             NewValue: ['82b42b50-742b-475d-b1b8-fe5716bbaef7'],
             ChangedResult:
-                '{"success":true,"object":{"InternalID":287697865,"UUID":"82b42b50-742b-475d-b1b8-fe5716bbaef7"}}', //for UUID: 
+                '{"success":true,"object":{"InternalID":287697865,"UUID":"82b42b50-742b-475d-b1b8-fe5716bbaef7"}}', //for UUID:
         },
         {
             Name: 'Script_Modal',
@@ -321,7 +321,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                     const scriptName = (await webAppList.getAllListElementTextValueByIndex(index)).trim();
                     const currentScript = scriptsTestData.filter((elem) => elem.Name === scriptName)[0];
                     await webAppList.clickOnCheckBoxByElementIndex(index);
-                    await scriptEditor.openDebugger()
+                    await scriptEditor.openDebugger();
                     const base64Image = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Script Picker Editor For ${currentScript.Name} Script`,
@@ -360,7 +360,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                     //validate script list is loaded
                     await scriptEditor.validateMainPageIsLoaded();
                     await driver.refresh(); //refresh the page to see checkbox
-                    await scriptEditor.validateMainPageIsLoaded();//validate the page is loaded and can be used
+                    await scriptEditor.validateMainPageIsLoaded(); //validate the page is loaded and can be used
                     //change params and see changed in API
                     await scriptEditor.enterEditor(index);
                     await scriptEditor.editParam(index, currentScript.Parameters, currentScriptResult.NewValue);
@@ -372,9 +372,13 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                             method: 'GET',
                         },
                     );
-                    const currentScriptFromAPI = allScriptsOnDist.Body.filter(script => script.Key === currentScript.Key)[0];
+                    const currentScriptFromAPI = allScriptsOnDist.Body.filter(
+                        (script) => script.Key === currentScript.Key,
+                    )[0];
                     for (let index = 0; index < currentScript.Parameters.length; index++) {
-                        expect(currentScriptFromAPI.Parameters[currentScript.Parameters[index].Name].DefaultValue).to.equal(currentScriptResult.NewValue[index]);
+                        expect(
+                            currentScriptFromAPI.Parameters[currentScript.Parameters[index].Name].DefaultValue,
+                        ).to.equal(currentScriptResult.NewValue[index]);
                     }
                     await webAppHeader.openSettings();
                     await webAppSettingsSidePanel.selectSettingsByID('Configuration');
