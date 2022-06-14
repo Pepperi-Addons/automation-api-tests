@@ -121,21 +121,21 @@ export async function ScriptPickerTests(email: string, password: string, varPass
         {
             Name: 'Script_Return_Number',
             DeafultResult: '5',
-            NewValue: '8',
+            NewValue: ['8'],
             ChangedResult: '8',
         },
         {
             Name: 'Script_Get_Trans',
             DeafultResult:
                 '{"success":true,"object":{"InternalID":290607961,"UUID":"508d815b-b5e1-4cf5-bca1-743f7d008cbf"}}',
-            NewValue: '82b42b50-742b-475d-b1b8-fe5716bbaef7',
+            NewValue: ['82b42b50-742b-475d-b1b8-fe5716bbaef7'],
             ChangedResult:
                 '{"success":true,"object":{"InternalID":287697865,"UUID":"82b42b50-742b-475d-b1b8-fe5716bbaef7"}}', //for UUID: 
         },
         {
             Name: 'Script_Modal',
             DeafultResult: 'abc',
-            NewValue: 'xyz',
+            NewValue: ['5', 'xyz'],
             ChangedResult: 'xyz',
         },
     ];
@@ -314,7 +314,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 //BUG:ends here
                 for (let index = 0; index < allListElemsText.length; index++) {
                     const scriptName = (await webAppList.getAllListElementTextValueByIndex(index)).trim();
-                    const currentScript = scriptsTestData.filter((elem) => elem.Name === scriptName);
+                    const currentScript = scriptsTestData.filter((elem) => elem.Name === scriptName)[0];
                     await webAppList.clickOnCheckBoxByElementIndex(index);
                     await driver.click(scriptEditor.PencilMenuBtn);
                     await driver.click(scriptEditor.DebuggerPencilOption);
@@ -323,61 +323,40 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                         .true; //code editor element is loaded
                     const base64Image = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `Script Picker Editor For ${currentScript[0].Name} Script`,
+                        title: `Script Picker Editor For ${currentScript.Name} Script`,
                         value: 'data:image/png;base64,' + base64Image,
                     });
                     //testing correct UUID found in URL
                     const currentURL = await driver.getCurrentUrl();
-                    expect(currentURL).to.include(currentScript[0].Key);
+                    expect(currentURL).to.include(currentScript.Key);
                     //testing params names are valid
                     const UIparamNames = await scriptEditor.getDebuggerParamNames();
-                    currentScript[0].Parameters.forEach((param) => expect(param.Name).to.be.oneOf(UIparamNames));
+                    currentScript.Parameters.forEach((param) => expect(param.Name).to.be.oneOf(UIparamNames));
                     //testing param values are valid
                     const paramValueElems = await scriptEditor.getParamValues(
-                        currentScript[0].Parameters.map((param) => param.Name),
+                        currentScript.Parameters.map((param) => param.Name),
                     );
-                    currentScript[0].Parameters.forEach((param) =>
+                    currentScript.Parameters.forEach((param) =>
                         expect(param.Params.DefaultValue.toString()).to.be.oneOf(paramValueElems),
                     );
                     //run as default - validate defult result
-                    const currentScriptResult = scriptResults.filter((result) => result.Name === scriptName);
+                    const currentScriptResult = scriptResults.filter((result) => result.Name === scriptName)[0];
                     if (scriptName === 'Script_Modal') {
                         //the modal script is more complex - pops UI dialog and returns logs + result
                         //testing UI dialogs
-                        await scriptEditor.runScriptAndGetResult(false);
-                        const webAppDialog = new WebAppDialog(driver);
-                        await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
-                        let titleTxt = await (await driver.findElement(webAppDialog.Title)).getText();
-                        expect(titleTxt).to.include('alert');
-                        let contentTxt = await (await driver.findElement(webAppDialog.Content)).getText();
-                        expect(contentTxt).to.include('first alert');
-                        await driver.click(scriptEditor.DialogOkBtn);
-                        await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
-                        titleTxt = await (await driver.findElement(webAppDialog.Title)).getText();
-                        expect(titleTxt).to.include('confirm');
-                        contentTxt = await (await driver.findElement(webAppDialog.Content)).getText();
-                        expect(contentTxt).to.include('confirm client');
-                        await driver.click(scriptEditor.DialogOkBtn, 0); //in this case first index is the 'ok' btn
-                        await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
-                        titleTxt = await (await driver.findElement(webAppDialog.Title)).getText();
-                        expect(titleTxt).to.include('showDialog');
-                        contentTxt = await (await driver.findElement(webAppDialog.Content)).getText();
-                        expect(contentTxt).to.include('dialog content');
-                        await driver.click(scriptEditor.DialogOkBtn, 1); //in this case second index is the 'action 2' button
-                        //validating result
-                        const scriptResult = await scriptEditor.getResult();
-                        expect(currentScriptResult[0].DeafultResult).to.be.equal(scriptResult);
-                        //validating logs output based on actions performed
-                        const logsResult = await scriptEditor.getLogTxtData();
-                        expect(logsResult).to.include('alert confirmed:true');
-                        expect(logsResult).to.include('dialog option:2');
+                        await handleModalScenario(scriptEditor, driver, currentScriptResult, true);
+                        await scriptEditor.setParamStaticValue(currentScript.Parameters, currentScriptResult.NewValue);
+                        await handleModalScenario(scriptEditor, driver, currentScriptResult, false);
                     } else {
                         //simple case of scripts returning data only
-                        const scriptRunResult = await scriptEditor.runScriptAndGetResult();
-                        expect(currentScriptResult[0].DeafultResult).to.be.equal(scriptRunResult);
+                        let scriptRunResult = await scriptEditor.runScriptAndGetResult();
+                        expect(currentScriptResult.DeafultResult).to.be.equal(scriptRunResult);
+                        await scriptEditor.setParamStaticValue(currentScript.Parameters, currentScriptResult.NewValue);
+                        scriptRunResult = await scriptEditor.runScriptAndGetResult();
+                        expect(currentScriptResult.ChangedResult).to.be.equal(scriptRunResult);
                     }
-                    debugger;//working on this:
-                    await scriptEditor.setParamStaticValue(currentScript[0].Parameters, ['8']);
+                    //HANDLE THE SCENARIO OF MODAL
+                    debugger;
                     //TODO:
                     //run again and validate new result
                     //save and test via API
@@ -433,4 +412,39 @@ export async function ScriptPickerTests(email: string, password: string, varPass
             });
         });
     });
+}
+
+async function handleModalScenario(scriptEditor, driver, currentScriptResult, isDeafult: boolean) {
+    //the modal script is more complex - pops UI dialog and returns logs + result
+    //testing UI dialogs
+    await scriptEditor.runScriptAndGetResult(false);
+    const webAppDialog = new WebAppDialog(driver);
+    await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
+    let titleTxt = await (await driver.findElement(webAppDialog.Title)).getText();
+    expect(titleTxt).to.include('alert');
+    let contentTxt = await (await driver.findElement(webAppDialog.Content)).getText();
+    expect(contentTxt).to.include('first alert');
+    await driver.click(scriptEditor.DialogOkBtn);
+    driver.sleep(3000);
+    await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
+    titleTxt = await (await driver.findElement(webAppDialog.Title)).getText();
+    expect(titleTxt).to.include('confirm');
+    contentTxt = await (await driver.findElement(webAppDialog.Content)).getText();
+    expect(contentTxt).to.include('confirm client');
+    await driver.click(scriptEditor.DialogOkBtn, 0); //in this case first index is the 'ok' btn
+    driver.sleep(3000);
+    await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
+    titleTxt = await (await driver.findElement(webAppDialog.Title)).getText();
+    expect(titleTxt).to.include('showDialog');
+    contentTxt = await (await driver.findElement(webAppDialog.Content)).getText();
+    expect(contentTxt).to.include('dialog content');
+    await driver.click(scriptEditor.DialogOkBtn, 1); //in this case second index is the 'action 2' button
+    driver.sleep(3000);
+    //validating result
+    const scriptResult = await scriptEditor.getResult();
+    expect(isDeafult ? currentScriptResult.DeafultResult : currentScriptResult.ChangedResult).to.be.equal(scriptResult);
+    //validating logs output based on actions performed
+    const logsResult = await scriptEditor.getLogTxtData();
+    expect(logsResult).to.include('alert confirmed:true');
+    expect(logsResult).to.include('dialog option:2');
 }

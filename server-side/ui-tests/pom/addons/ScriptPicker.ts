@@ -46,7 +46,7 @@ export class ScriptEditor extends AddonPage {
     public LogsTxtArea: By = By.id('mat-input-0');
     public ValueTypeDropDownDebugger: By = By.xpath('//div[contains(@class,"mat-form-field-infix")]//div');
     public StaticTypeParamDropDown: By = By.xpath("//span[@class='mat-option-text' and text()='Static']");
-    public StaticParamValueField: By = By.xpath('pep-textbox > mat-form-field');
+    public StaticParamValueField: By = By.css('pep-textbox > mat-form-field');
     public StaticParamInput: By = By.xpath("//input[@name='|placeholder|']");
 
 
@@ -122,23 +122,25 @@ export class ScriptEditor extends AddonPage {
         return resultTxt;
     }
 
-    public async setParamTypeToStatic(index: number) {
+    public async setParamTypeToStatic(index: number, staticFieldSelector: By) {
         await this.browser.click(this.ValueTypeDropDownDebugger, index);
         await expect(this.untilIsVisible(this.StaticTypeParamDropDown, 90000)).eventually.to.be.true; //drop down is shown
         await this.browser.click(this.StaticTypeParamDropDown);
-        await expect(this.untilIsVisible(this.StaticParamValueField, 90000)).eventually.to.be.true; //value input is shown -- problem here
+        await expect(this.untilIsVisible(staticFieldSelector, 90000)).eventually.to.be.true; //value input is shown
+        const staticFieldElems = await this.browser.findElement(staticFieldSelector);
+        const allFieldsText = await staticFieldElems.getText();
+        expect(allFieldsText).to.equal('');//this way i know the empty static field is thereכ
     }
 
     public async setParamStaticValue(listOfParam: any[], newValue: string[]) {
-        debugger;
-        let indexOfFirstDropDown = 2;
+        let runningDropDownIndex = 2;
         for (let index = 0; index < listOfParam.length; index++) {
-            await this.setParamTypeToStatic(indexOfFirstDropDown);
             const spesificParamInput = this.StaticParamInput.valueOf()
             ['value'].slice()
                 .replace("|placeholder|", listOfParam[index].Name);
+            await this.setParamTypeToStatic(runningDropDownIndex, By.xpath(spesificParamInput));
             await this.browser.sendKeys(By.xpath(spesificParamInput), newValue[index] + Key.ENTER);
-
+            runningDropDownIndex += 4;
         }
 
     }
