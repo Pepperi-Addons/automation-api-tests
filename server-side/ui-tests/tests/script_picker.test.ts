@@ -37,7 +37,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                     Name: 'number',
                     Params: {
                         Type: 'Integer',
-                        DefaultValue: 5,
+                        DefaultValue: '5',
                     },
                 },
             ],
@@ -65,56 +65,56 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 },
             ],
         },
-        {
-            Key: '',
-            Hidden: false,
-            Name: 'Script_Modal',
-            Description: '',
-            Code: `async function main(data)  { 
-            const res = await client.alert("alert", "first alert");
-                 const confirm = await client.confirm(
-                  "confirm",
-                  "confirm client"
-                );
-                const showDialog = await client.showDialog({
-                  title: "showDialog",
-                  content: "dialog content",
-                  actions: [
-                    { title: "action 1", value: 1 },
-                    { title: "action 2", value: 2 },
-                    { title: "action 3", value: 3 },
-                  ],
-                });
-            console.log("alert confirmed:"+confirm);
-            console.log("dialog option:"+showDialog);
+        // {
+        //     Key: '',
+        //     Hidden: false,
+        //     Name: 'Script_Modal',
+        //     Description: '',
+        //     Code: `async function main(data)  { 
+        //     const res = await client.alert("alert", "first alert");
+        //          const confirm = await client.confirm(
+        //           "confirm",
+        //           "confirm client"
+        //         );
+        //         const showDialog = await client.showDialog({
+        //           title: "showDialog",
+        //           content: "dialog content",
+        //           actions: [
+        //             { title: "action 1", value: 1 },
+        //             { title: "action 2", value: 2 },
+        //             { title: "action 3", value: 3 },
+        //           ],
+        //         });
+        //     console.log("alert confirmed:"+confirm);
+        //     console.log("dialog option:"+showDialog);
 
-            if (res)
-            {
-                return data.x;
-            }
-            else 
-            {
-                return data.y;
-            }						
-        }
-        module.exports = {main}`,
-            Parameters: [
-                {
-                    Name: 'x',
-                    Params: {
-                        Type: 'Integer',
-                        DefaultValue: 8,
-                    },
-                },
-                {
-                    Name: 'y',
-                    Params: {
-                        Type: 'String',
-                        DefaultValue: 'abc',
-                    },
-                },
-            ],
-        },
+        //     if (res)
+        //     {
+        //         return data.x;
+        //     }
+        //     else 
+        //     {
+        //         return data.y;
+        //     }						
+        // }
+        // module.exports = {main}`,
+        //     Parameters: [
+        //         {
+        //             Name: 'x',
+        //             Params: {
+        //                 Type: 'Integer',
+        //                 DefaultValue: '8',
+        //             },
+        //         },
+        //         {
+        //             Name: 'y',
+        //             Params: {
+        //                 Type: 'String',
+        //                 DefaultValue: 'abc',
+        //             },
+        //         },
+        //     ],
+        // },
     ];
 
     const scriptResults: any[] = [
@@ -140,50 +140,50 @@ export async function ScriptPickerTests(email: string, password: string, varPass
         },
     ];
 
-    // await generalService.baseAddonVersionsInstallation(varPass);
-    // //#region Upgrade script dependencies
-    // const testData = {
-    //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
-    //     CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-    //     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
-    //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
-    // };
+    await generalService.baseAddonVersionsInstallation(varPass);
+    //#region Upgrade script dependencies
+    const testData = {
+        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
+        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
+        'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
+        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
+    };
 
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade script dependencies
 
     describe('Scripts Tests Suit', async function () {
         describe('Prerequisites Addons for Scripts Tests', () => {
-            // //Test Data
-            // //Scripts
-            // isInstalledArr.forEach((isInstalled, index) => {
-            //     it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-            //         expect(isInstalled).to.be.true;
-            //     });
-            // });
-            // for (const addonName in testData) {
-            //     const addonUUID = testData[addonName][0];
-            //     const version = testData[addonName][1];
-            //     const varLatestVersion = chnageVersionResponseArr[addonName][2];
-            //     const changeType = chnageVersionResponseArr[addonName][3];
-            //     describe(`Test Data: ${addonName}`, () => {
-            //         it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-            //             if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-            //                 expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-            //             } else {
-            //                 expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-            //             }
-            //         });
-            //         it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-            //             await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-            //                 .eventually.to.have.property('Version')
-            //                 .a('string')
-            //                 .that.is.equal(varLatestVersion);
-            //         });
-            //     });
-            // }
+            //Test Data
+            //Scripts
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
 
         describe('Scripts Test', () => {
@@ -274,6 +274,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 }
                 // debugger;
             });
+            //TODO:1. validate code shown in UI
             it('UI Test: Enter Scripts Editor & Picker And Validate All Scripts Are Found With Correct Params', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
@@ -285,7 +286,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 await webAppSettingsSidePanel.selectSettingsByID('Configuration');
                 await driver.click(webAppSettingsSidePanel.ScriptsEditor);
                 const scriptEditor = new ScriptEditor(driver);
-                await expect(scriptEditor.untilIsVisible(scriptEditor.NameHeader, 90000)).eventually.to.be.true; //script editor page is loaded
+                await scriptEditor.validateMainPageIsLoaded();
                 const webAppList = new WebAppList(driver);
                 //1. testing the outter UI editor to see correct number of Scripts + names
                 const numOfResults = await webAppList.getNumOfElementsTitle();
@@ -313,14 +314,14 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                 // await scriptEditor.clickDropDownByText('None');
                 //BUG:ends here
                 for (let index = 0; index < allListElemsText.length; index++) {
+                    if (index > 0) {
+                        await driver.refresh();
+                        await scriptEditor.validateMainPageIsLoaded();
+                    }
                     const scriptName = (await webAppList.getAllListElementTextValueByIndex(index)).trim();
                     const currentScript = scriptsTestData.filter((elem) => elem.Name === scriptName)[0];
                     await webAppList.clickOnCheckBoxByElementIndex(index);
-                    await driver.click(scriptEditor.PencilMenuBtn);
-                    await driver.click(scriptEditor.DebuggerPencilOption);
-                    await expect(scriptEditor.untilIsVisible(scriptEditor.CodeEditor, 90000)).eventually.to.be.true; //code editor element is loaded
-                    await expect(scriptEditor.untilIsVisible(scriptEditor.ParamAreaDebugger, 90000)).eventually.to.be
-                        .true; //code editor element is loaded
+                    await scriptEditor.openDebugger()
                     const base64Image = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Script Picker Editor For ${currentScript.Name} Script`,
@@ -355,24 +356,32 @@ export async function ScriptPickerTests(email: string, password: string, varPass
                         scriptRunResult = await scriptEditor.runScriptAndGetResult();
                         expect(currentScriptResult.ChangedResult).to.be.equal(scriptRunResult);
                     }
-                    //HANDLE THE SCENARIO OF MODAL
-                    debugger;
-                    //TODO:
-                    //run again and validate new result
-                    //save and test via API
                     await scriptEditor.goBackToScriptList();
                     //validate script list is loaded
-                    await expect(scriptEditor.untilIsVisible(scriptEditor.NameHeader, 90000)).eventually.to.be.true;
-                    await expect(scriptEditor.untilIsVisible(scriptEditor.PencilMenuBtn, 90000)).eventually.to.be.true;
+                    await scriptEditor.validateMainPageIsLoaded();
                     await driver.refresh(); //refresh the page to see checkbox
-                    //validate the page is loaded and can be used
-                    await expect(scriptEditor.untilIsVisible(scriptEditor.NameHeader, 90000)).eventually.to.be.true;
-                    await expect(scriptEditor.untilIsVisible(scriptEditor.PencilMenuBtn, 90000)).eventually.to.be.true;
+                    await scriptEditor.validateMainPageIsLoaded();//validate the page is loaded and can be used
+                    //change params and see changed in API
+                    await scriptEditor.enterEditor(index);
+                    await scriptEditor.editParam(currentScript.Parameters, currentScriptResult.NewValue);
+                    await webAppHomePage.returnToHomePage();
+                    await webAppHomePage.manualResync(client);
+                    const allScriptsOnDist = await generalService.fetchStatus(
+                        'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
+                        {
+                            method: 'GET',
+                        },
+                    );
+                    const currentScriptFromAPI = allScriptsOnDist.Body.filter(script => script.Key === currentScript.Key)[0];
+                    for (let index = 0; index < currentScript.Parameters.length; index++) {
+                        expect(currentScriptFromAPI.Parameters[currentScript.Parameters[index].Name].DefaultValue).to.equal(currentScriptResult.NewValue[index]);
+                    }
+                    await webAppHeader.openSettings();
+                    await webAppSettingsSidePanel.selectSettingsByID('Configuration');
+                    await driver.click(webAppSettingsSidePanel.ScriptsEditor);
+                    await scriptEditor.validateMainPageIsLoaded();
                 }
             });
-            //TODO:1. validate code shown in UI
-            //     2. change param value and run script with it to see new result
-            //     3. save new param - validate changed via API + run from picker
             it('Data Cleansing - Deleting All Added Scripts', async function () {
                 let allScriptsOnDist = await generalService.fetchStatus(
                     'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',

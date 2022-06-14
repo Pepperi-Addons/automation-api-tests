@@ -1,5 +1,7 @@
 import { expect } from 'chai';
 import { By, Key } from 'selenium-webdriver';
+import { WebAppDialog } from '../WebAppDialog';
+import { WebAppList } from '../WebAppList';
 import { AddonPage } from './base/AddonPage';
 
 export interface ScriptConfigObj {
@@ -36,6 +38,7 @@ export class ScriptEditor extends AddonPage {
     public SaveBtn: By = By.css('[data-qa="Save"]');
     public ModalMainParamArea: By = By.css('addon-script-picker> div .pep-main-area');
     public DebuggerPencilOption: By = By.xpath('//span[@title="Debugger"]');
+    public EditorPencilOption: By = By.xpath('//span[@title="Edit"]');
     public CodeEditor: By = By.css('.code-editor');
     public ParamAreaDebugger: By = By.css('pep-form > fieldset > mat-grid-list');
     public DebuggerParamNames: By = By.css('pep-select> pep-field-title > div > mat-label');
@@ -48,9 +51,13 @@ export class ScriptEditor extends AddonPage {
     public StaticTypeParamDropDown: By = By.xpath("//span[@class='mat-option-text' and text()='Static']");
     public StaticParamValueField: By = By.css('pep-textbox > mat-form-field');
     public StaticParamInput: By = By.xpath("//input[@name='|placeholder|']");
-
-
-
+    public PublishBtn: By = By.css('[data-qa="Publish"]');
+    public ModalParamTitle: By = By.xpath("//span[text()='Parameters']");
+    public SpesificParamCheckbox: By = By.xpath("//span[text()='|placeholder|']//..//..//..//..//..//..//mat-checkbox//label");
+    public InsideModalPencil: By = By.xpath("(//pep-list-actions//pep-menu//*//button)[2]");
+    public DefaultValueInput: By = By.xpath("(//addon-script-param-form//pep-dialog//div[2]//input)[3]");
+    public EditorRow: By = By.xpath("//addon-script-editor-form//virtual-scroller//div//div//fieldset");
+    public ScriptEditorDescriptionTxtArea: By = By.xpath("//mat-dialog-container//div//textarea");
 
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
@@ -142,6 +149,71 @@ export class ScriptEditor extends AddonPage {
             await this.browser.sendKeys(By.xpath(spesificParamInput), newValue[index] + Key.ENTER);
             runningDropDownIndex += 4;
         }
+    }
 
+    public async publishScript() {
+        await this.browser.click(this.PublishBtn);
+        const webAppDialog = new WebAppDialog(this.browser);
+        await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
+        let titleTxt = await (await this.browser.findElement(webAppDialog.Title)).getText();
+        expect(titleTxt).to.include('Publish');
+        let contentTxt = await (await this.browser.findElement(webAppDialog.Content)).getText();
+        expect(contentTxt).to.include('Script was published successfully');
+        await this.browser.click(this.DialogOkBtn, 0); //in this case first index is the 'Close' btn
+        await expect(this.untilIsVisible(this.CodeEditor, 90000)).eventually.to.be.true; //code editor element is loaded
+        await expect(this.untilIsVisible(this.ParamAreaDebugger, 90000)).eventually.to.be
+            .true; //validate prev screen is loaded again
+
+    }
+
+    public async enterEditor(index: number) {
+        const webAppList = new WebAppList(this.browser);
+        await webAppList.clickOnCheckBoxByElementIndex(index);
+        await this.browser.click(this.PencilMenuBtn);
+        await this.browser.click(this.EditorPencilOption);
+        const webAppDialog = new WebAppDialog(this.browser);
+        await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(this.ModalParamTitle, 90000)).eventually.to.be
+            .true; //params title area is loaded
+    }
+
+    public async editParam(listOfParam: any[], listOfNewVals: any[]) {
+        for (let index = 0; index < listOfParam.length; index++) {
+            const spesificParamCheckboxInput = this.SpesificParamCheckbox.valueOf()
+            ['value'].slice()
+                .replace("|placeholder|", listOfParam[index].Name);
+            await this.browser.click(this.EditorRow);
+            this.browser.sleep(1000);
+            const checkBoxElem = await this.browser.findElement(By.xpath(spesificParamCheckboxInput));
+            await this.browser.executeCommandAdync("arguments[0].click();", checkBoxElem);
+            await this.browser.click(this.InsideModalPencil);
+            await expect(this.untilIsVisible(this.EditorPencilOption, 90000)).eventually.to.be.true;
+            await this.browser.click(this.EditorPencilOption);
+            const webAppDialog = new WebAppDialog(this.browser);
+            await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;
+            const defaultValElem = await this.browser.findElement(this.DefaultValueInput);
+            const defaultValTxt = await defaultValElem.getAttribute("title");
+            expect(defaultValTxt).to.equal(listOfParam[index].Params.DefaultValue);
+            await this.browser.sendKeys(this.DefaultValueInput, listOfNewVals[index]);
+            await this.browser.click(this.SaveBtn, 1); //in this case first index is the 'save' btn
+            await expect(webAppDialog.untilIsVisible(webAppDialog.Title, 90000)).eventually.to.be.true;//prev modal is loaded
+            await this.browser.sendKeys(this.ScriptEditorDescriptionTxtArea, "UI bug");
+            await this.browser.click(this.SaveBtn, 0); //in this case first index is the 'save' btn
+            await this.validateMainPageIsLoaded();
+        }
+    }
+
+    public async openDebugger() {
+        await this.browser.click(this.PencilMenuBtn);
+        await this.browser.click(this.DebuggerPencilOption);
+        await expect(this.untilIsVisible(this.CodeEditor, 90000)).eventually.to.be.true; //code editor element is loaded
+        await expect(this.untilIsVisible(this.ParamAreaDebugger, 90000)).eventually.to.be
+            .true; //code editor element is loaded
+    }
+
+
+    public async validateMainPageIsLoaded() {
+        await expect(this.untilIsVisible(this.NameHeader, 90000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(this.PencilMenuBtn, 90000)).eventually.to.be.true;
     }
 }
