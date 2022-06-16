@@ -151,14 +151,17 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             ScriptURI: scriptURI,
                             Type: 'User defined',
                         } as Chart;
-                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                            method: 'POST',
-                            headers: {
-                                'X-Pepperi-SecretKey': '',//TODO: add the secret key here -- maybe should be stored in KMS
+                        const chartResponse = await generalService.fetchStatus(
+                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'X-Pepperi-SecretKey': '', //TODO: add the secret key here -- maybe should be stored in KMS
+                                },
+                                body: JSON.stringify(chart),
                             },
-                            body: JSON.stringify(chart),
-                        });
-                        debugger;//TODO
+                        );
+                        debugger; //TODO
                         expect(chartResponse.Status).to.equal(200);
                         expect(chartResponse.Ok).to.be.true;
                         expect(chartResponse.Body).to.have.own.property('Key');
