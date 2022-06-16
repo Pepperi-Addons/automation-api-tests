@@ -197,7 +197,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             Name: chartsPostedByMe[0].Name,
                             ScriptURI: defaultStackedColumnChart[0].ScriptURI,
                         } as Chart;
-                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                             method: 'POST',
                             body: JSON.stringify(chart),
                         });
@@ -236,7 +236,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const headers = {
                             Authorization: null as any,
                         };
-                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                             method: 'POST',
                             body: JSON.stringify(chart),
                             headers: headers,
@@ -247,7 +247,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
 
                     it('Upsert chart - w/o mandatory field: Name', async () => {
                         const chart: Chart = { Description: '', ReadOnly: true, ScriptURI: scriptURI } as Chart;
-                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                             method: 'POST',
                             body: JSON.stringify(chart),
                         });
@@ -264,7 +264,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             ReadOnly: false,
                         } as Chart;
 
-                        const chartResponse = await generalService.fetchStatus(`/charts`, {
+                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                             method: 'POST',
                             body: JSON.stringify(chart),
                         });
@@ -281,7 +281,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             it('Testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
                 for (let i = 0; i < listOfChartsToUpsert.length; i++) {
                     listOfChartsToUpsert[i].Hidden = false;
-                    const chartResponse = await generalService.fetchStatus(`/charts`, {
+                    const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                         method: 'POST',
                         body: JSON.stringify(listOfChartsToUpsert[i]),
                     });
@@ -343,7 +343,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     ReadOnly: false,
                     ScriptURI: 721346,
                 };
-                const chartResponse = await generalService.fetchStatus(`/charts`, {
+                const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                     method: 'POST',
                     body: JSON.stringify(chart),
                 });
@@ -377,7 +377,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     ReadOnly: false,
                     ScriptURI: scriptURI,
                 };
-                const chartResponse = await generalService.fetchStatus(`/charts`, {
+                const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
                     method: 'POST',
                     body: JSON.stringify(chart),
                 });
