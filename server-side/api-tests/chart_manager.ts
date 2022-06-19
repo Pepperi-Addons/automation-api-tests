@@ -197,10 +197,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             Name: chartsPostedByMe[0].Name,
                             ScriptURI: defaultStackedColumnChart[0].ScriptURI,
                         } as Chart;
-                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                            method: 'POST',
-                            body: JSON.stringify(chart),
-                        });
+                        const chartResponse = await generalService.fetchStatus(
+                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(chart),
+                            },
+                        );
                         expect(chartResponse.Status).to.equal(200);
                         expect(chartResponse.Ok).to.be.true;
                         expect(chartResponse.Body).to.have.own.property('Key');
@@ -236,21 +239,27 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const headers = {
                             Authorization: null as any,
                         };
-                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                            method: 'POST',
-                            body: JSON.stringify(chart),
-                            headers: headers,
-                        });
+                        const chartResponse = await generalService.fetchStatus(
+                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(chart),
+                                headers: headers,
+                            },
+                        );
                         expect(chartResponse.Status).to.equal(401);
                         expect(chartResponse.Body.message).to.equal('Unauthorized');
                     });
 
                     it('Upsert chart - w/o mandatory field: Name', async () => {
                         const chart: Chart = { Description: '', ReadOnly: true, ScriptURI: scriptURI } as Chart;
-                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                            method: 'POST',
-                            body: JSON.stringify(chart),
-                        });
+                        const chartResponse = await generalService.fetchStatus(
+                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(chart),
+                            },
+                        );
                         expect(chartResponse.Status).to.equal(400);
                         expect(chartResponse.Body.fault.faultstring).to.equal(
                             'Failed due to exception: Name is a required field',
@@ -264,10 +273,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             ReadOnly: false,
                         } as Chart;
 
-                        const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                            method: 'POST',
-                            body: JSON.stringify(chart),
-                        });
+                        const chartResponse = await generalService.fetchStatus(
+                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                            {
+                                method: 'POST',
+                                body: JSON.stringify(chart),
+                            },
+                        );
                         expect(chartResponse.Status).to.equal(400);
                         expect(chartResponse.Body.fault.faultstring).to.equal(
                             'Failed due to exception: ScriptURI is a required field',
@@ -281,10 +293,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             it('Testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
                 for (let i = 0; i < listOfChartsToUpsert.length; i++) {
                     listOfChartsToUpsert[i].Hidden = false;
-                    const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                        method: 'POST',
-                        body: JSON.stringify(listOfChartsToUpsert[i]),
-                    });
+                    const chartResponse = await generalService.fetchStatus(
+                        `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(listOfChartsToUpsert[i]),
+                        },
+                    );
 
                     expect(chartResponse.Status).to.equal(200);
                     expect(chartResponse.Ok).to.be.true;
@@ -343,10 +358,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     ReadOnly: false,
                     ScriptURI: 721346,
                 };
-                const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                    method: 'POST',
-                    body: JSON.stringify(chart),
-                });
+                const chartResponse = await generalService.fetchStatus(
+                    `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(chart),
+                    },
+                );
                 expect(chartResponse.Status).to.equal(400);
                 expect(chartResponse.Body.fault.faultstring).to.include(
                     'Failed due to exception: Failed upsert file storage',
@@ -377,10 +395,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     ReadOnly: false,
                     ScriptURI: scriptURI,
                 };
-                const chartResponse = await generalService.fetchStatus(`/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`, {
-                    method: 'POST',
-                    body: JSON.stringify(chart),
-                });
+                const chartResponse = await generalService.fetchStatus(
+                    `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(chart),
+                    },
+                );
                 expect(chartResponse.Status).to.equal(200);
                 expect(chartResponse.Ok).to.be.true;
                 expect(chartResponse.Body).to.have.own.property('Key');
