@@ -95,6 +95,7 @@ import {
 import { ADALStressTests } from './adal_stress';
 import { PFSTests } from './pepperi_file_service';
 import { SecurityTests } from './security';
+import { KmsTests } from './kms';
 
 export {
     TestDataTests,
@@ -174,4 +175,5 @@ export {
     DataQueriesTests,
     AWSLogsTest,
     SecurityTests,
+    KmsTests,
 };

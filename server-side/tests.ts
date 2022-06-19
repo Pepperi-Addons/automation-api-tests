@@ -76,6 +76,7 @@ import {
     DataQueriesTests,
     AWSLogsTest,
     SecurityTests,
+    KmsTests,
 } from './api-tests/index';
 
 let testName = '';
@@ -823,12 +824,25 @@ export async function data_queries(client: Client, request: Request, testerFunct
 
 export async function aws_logs(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Data_Queries';
+    testName = 'Aws_Logs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         AWSLogsTest(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function kms(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Kms_Addon';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        KmsTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
