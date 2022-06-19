@@ -144,7 +144,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
     //#region Upgrade script dependencies
     const testData = {
         'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
+        Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
         'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
     };
