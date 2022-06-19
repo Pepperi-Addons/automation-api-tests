@@ -26,17 +26,21 @@ export class ChartsManagerService {
 
     //This should be replace with return this.papiClient.charts.find(); once SDK is developed
     async getCharts(): Promise<Chart[]> {
-        const chartResponse = await this.papiClient.get('/charts?page_size=-1');
+        const chartResponse = await this.papiClient.get(
+            '/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts?page_size=-1',
+        );
         return chartResponse;
     }
 
     async getChartByKey(key: string): Promise<Chart> {
-        const chartResponse = await this.papiClient.get(`/charts?where=Key='${key}'`);
+        const chartResponse = await this.papiClient.get(
+            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts?where=Key='${key}'`,
+        );
         return chartResponse;
     }
 
     postChart(chart: Chart): Promise<Chart> {
-        return this.papiClient.post('/charts', chart);
+        return this.papiClient.post('/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts', chart);
     }
 
     //Remove all test Charts (Hidden = true)
