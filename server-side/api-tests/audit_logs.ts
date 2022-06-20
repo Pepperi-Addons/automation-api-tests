@@ -620,7 +620,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'No Server Error',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
             try {
@@ -633,7 +633,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'No Sync FileName',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
             let syncResponseLength;
@@ -651,7 +651,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync Length',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
 
@@ -666,7 +666,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync Status',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
 
@@ -681,7 +681,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync GetDataResponse',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
         } else {
@@ -702,7 +702,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync FileName',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
             let syncResponseLength;
@@ -720,7 +720,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync Length',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
 
@@ -735,7 +735,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync Status',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
 
@@ -750,7 +750,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 addTestResultUnderHeadline(
                     testName,
                     'Get Sync GetDataResponse',
-                    `Error recived: ${JSON.stringify(syncResponse)}`,
+                    `Error received: ${JSON.stringify(syncResponse)}`,
                 );
             }
         }
