@@ -26,10 +26,10 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     let _env;
 
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        _envUrlBase = 'webapi.sandbox';
+        _envUrlBase = 'papi.staging';
         _env = 'stage';
     } else {
-        _envUrlBase = 'webapi';
+        _envUrlBase = 'papi';
         _env = 'prod';
     }
     const testData = {
@@ -91,7 +91,6 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                     'LoginPerormanceData',
                 );
-                debugger;
                 expect(adalResponse).to.be.not.empty; //ADAL response
                 const envsEntry = adalResponse.filter((response) => response.env === _env);
                 expect(envsEntry).to.be.not.empty; //after filter
