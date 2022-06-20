@@ -26,7 +26,10 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     // } else {
     //     _envUrlBase = 'webapi';
     // }
-    const testData = {};
+    const testData = {
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.53'],
+        'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.317'],
+    };
 
     // const addonVersions =
     await generalService.baseAddonVersionsInstallation(varPass);
