@@ -225,7 +225,7 @@ export class Uom extends AddonPage {
             );
         if (itemGrandTotal !== undefined) {
             const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.be.oneOf([
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.be.oneOf([
                 `$${parseFloat(itemGrandTotalString.toString()).toFixed(2)}`,
                 `-$${(parseFloat(itemGrandTotalString.toString()) * -1).toFixed(2)}`,
             ]);
