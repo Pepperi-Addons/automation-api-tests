@@ -211,10 +211,10 @@ export class Uom extends AddonPage {
         const orderPage = new OrderPage(this.browser);
         if (aoqmUom1Qty !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.be
-                .oneOf[aoqmUom1Qty.toString(), parseFloat(aoqmUom1Qty.toString()).toFixed(2)];
+                .oneOf[(aoqmUom1Qty.toString(), parseFloat(aoqmUom1Qty.toString()).toFixed(2))];
         if (aoqmUom2Qty !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.be
-                .oneOf[aoqmUom2Qty.toString(), parseFloat(aoqmUom2Qty.toString()).toFixed(2)];
+                .oneOf[(aoqmUom2Qty.toString(), parseFloat(aoqmUom2Qty.toString()).toFixed(2))];
         if (wholeItemQty !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
                 wholeItemQty.toString().includes('.')
@@ -666,43 +666,43 @@ class UomUIObject {
     constructor(idOfWUomElement: string) {
         this.aoqmUom1PlusQtyButton.valueOf()['value'] = this.aoqmUom1PlusQtyButton
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1MinusQtyButton.valueOf()['value'] = this.aoqmUom1MinusQtyButton
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1Qty.valueOf()['value'] = this.aoqmUom1Qty
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2PlusQtyButton.valueOf()['value'] = this.aoqmUom2PlusQtyButton
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2MinusQtyButton.valueOf()['value'] = this.aoqmUom2MinusQtyButton
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2Qty.valueOf()['value'] = this.aoqmUom2Qty
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.wholeItemQty.valueOf()['value'] = this.wholeItemQty
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.itemGrandTotal.valueOf()['value'] = this.itemGrandTotal
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom1.valueOf()['value'] = this.aoqmUom1
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
         this.aoqmUom2.valueOf()['value'] = this.aoqmUom2
             .valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', idOfWUomElement);
     }
 }
