@@ -7,7 +7,6 @@ import { Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
-import { testData } from '../../services/general.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
     let driver: Browser;
