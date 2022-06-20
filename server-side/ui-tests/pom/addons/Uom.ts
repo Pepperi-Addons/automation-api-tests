@@ -223,15 +223,20 @@ export class Uom extends AddonPage {
                     ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
                     : wholeItemQty.toString(),
             );
-        if (itemGrandTotal !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat(itemGrandTotal.toString()).toFixed(2)}`,
-            );
+        if (itemGrandTotal !== undefined) {
+            const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
+            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.be.oneOf([
+                `$${parseFloat(itemGrandTotalString.toString()).toFixed(2)}`,
+                `-$${(parseFloat(itemGrandTotalString.toString()) * -1).toFixed(2)}`,
+            ]);
+        }
 
         if (pageGrandTotal !== undefined) {
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
+            const pageGrandTotalString = parseFloat(pageGrandTotal.toString()).toFixed(2);
+            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.be.oneOf([
                 `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
-            );
+                `-$${(parseFloat(pageGrandTotalString.toString()) * -1).toFixed(2)}`,
+            ]);
         }
     }
     /**
