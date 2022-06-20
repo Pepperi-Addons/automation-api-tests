@@ -7,7 +7,6 @@ import { Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
-import { testData } from '../../services/general.service';
 
 export async function LoginPerfTests(email: string, password: string, varPass, client) {
     let driver: Browser;
@@ -26,18 +25,15 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     let _envUrlBase;
     let _env;
 
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        _envUrlBase = 'papi.staging';
-        _env = 'stage';
-    } else {
-        if (generalService.papiClient['options'].baseURL.includes('-eu')) {
-            _env = 'eu';
-        } else {
-            _env = 'prod';
-        }
-        _envUrlBase = 'papi';
-    }
-    // const testData = {};
+    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
+    //     _envUrlBase = 'webapi.sandbox';
+    // } else {
+    //     _envUrlBase = 'webapi';
+    // }
+    const testData = {
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.53'],
+        'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.317'],
+    };
 
     // const addonVersions =
     // await generalService.baseAddonVersionsInstallation(varPass);
