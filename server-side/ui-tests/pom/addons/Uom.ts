@@ -209,12 +209,18 @@ export class Uom extends AddonPage {
         pageGrandTotal?: number,
     ) {
         const orderPage = new OrderPage(this.browser);
-        if (aoqmUom1Qty !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.be
-                .oneOf[(aoqmUom1Qty.toString(), parseFloat(aoqmUom1Qty.toString()).toFixed(2))];
-        if (aoqmUom2Qty !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.be
-                .oneOf[(aoqmUom2Qty.toString(), parseFloat(aoqmUom2Qty.toString()).toFixed(2))];
+        if (aoqmUom1Qty !== undefined) {
+            const optionArr = [aoqmUom1Qty.toString(), parseFloat(aoqmUom1Qty.toString()).toFixed(2)];
+            expect(
+                await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title'),
+            ).to.be.oneOf(optionArr);
+        }
+        if (aoqmUom2Qty !== undefined) {
+            const optionArr = [aoqmUom2Qty.toString(), parseFloat(aoqmUom2Qty.toString()).toFixed(2)];
+            expect(
+                await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title'),
+            ).to.be.oneOf(optionArr);
+        }
         if (wholeItemQty !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
                 wholeItemQty.toString().includes('.')
