@@ -25,18 +25,20 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     let _envUrlBase;
     let _env;
 
-    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
-    //     _envUrlBase = 'webapi.sandbox';
-    // } else {
-    //     _envUrlBase = 'webapi';
-    // }
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        _envUrlBase = 'webapi.sandbox';
+        _env = 'stage';
+    } else {
+        _envUrlBase = 'webapi';
+        _env = 'prod';
+    }
     const testData = {
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.53'],
         'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.317'],
     };
 
     // const addonVersions =
-    // await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     await generalService.areAddonsInstalled(testData);
@@ -89,11 +91,12 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                     'LoginPerormanceData',
                 );
+                debugger;
                 expect(adalResponse).to.be.not.empty; //ADAL response
-                const prodEntry = adalResponse.filter((response) => response.env === _env);
-                expect(prodEntry).to.be.not.empty; //after filter
-                _adalWithRecBaseLine = prodEntry[0].duration_with_rec;
-                _adalNoRecBaseLine = prodEntry[0].duration_no_rec;
+                const envsEntry = adalResponse.filter((response) => response.env === _env);
+                expect(envsEntry).to.be.not.empty; //after filter
+                _adalWithRecBaseLine = envsEntry[0].duration_with_rec;
+                _adalNoRecBaseLine = envsEntry[0].duration_no_rec;
             });
             for (let index = 1; index < numOfRuns + 1; index++) {
                 it(`Loggin With VAR User For The ${index}/${numOfRuns} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
