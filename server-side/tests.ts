@@ -469,7 +469,7 @@ export async function batch_upsert(client: Client, request: Request, testerFunct
 
 export async function dimx_data_import(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Batch_Upsert';
+    testName = 'dimx_data_import';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
