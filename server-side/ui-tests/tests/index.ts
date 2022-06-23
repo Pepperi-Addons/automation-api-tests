@@ -11,7 +11,8 @@ import { CloseCatalogTest } from './closing_catalog.test';
 import { PageBuilderTests } from './PageBuilder/page_builder.test';
 import { UDCTests } from './udc.test';
 import { AWSLogsTester } from './../../api-tests/logs_api';
-import { LoginPerfTests } from './login_performance.test';
+import { LoginPerfTests } from './login_performance_recycle.test';
+import { LoginPerfSqlitefTests } from './login_performance_Sqlite.test';
 
 export {
     LoginTests,
@@ -28,4 +29,5 @@ export {
     CloseCatalogTest,
     LoginPerfTests,
     ScriptPickerTests,
+    LoginPerfSqlitefTests,
 };
