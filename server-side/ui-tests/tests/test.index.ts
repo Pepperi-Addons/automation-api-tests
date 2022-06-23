@@ -31,7 +31,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 import { testData } from './../../services/general.service';
-import { } from './script_picker.test';
+import {} from './script_picker.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -384,7 +384,8 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
+                                    maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));

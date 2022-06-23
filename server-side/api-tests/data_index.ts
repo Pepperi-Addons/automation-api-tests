@@ -174,86 +174,85 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     //     ],
     // };
 
-
     const uiDataObject = {
         all_activities_fields: [
-            { 'fieldID': 'ExternalID', 'type': 'String' },
-            { 'fieldID': 'TaxPercentage', 'type': 'Double' },
-            { 'fieldID': 'Remark', 'type': 'String' },
-            { 'fieldID': 'CreationDateTime', 'type': 'DateTime' },
-            { 'fieldID': 'SubTotal', 'type': 'Double' },
-            { 'fieldID': 'Status', 'type': 'Integer' },
-            { 'fieldID': 'DiscountPercentage', 'type': 'Double' },
-            // {'fieldID':'TSATestIndexString','type':'String'},            
-            // {'fieldID':'TSATestIndexTime','type':'DateTime'},            
-            // {'fieldID':'TSATestIndexCalculated','type':'Integer'},               
-            // {'fieldID':'TSATestIndexAttachment','type':'String'},            
-            // {'fieldID':'TSATestIndexNumber','type':'Integer'},            
-            // {'fieldID':'TSATestIndexDecimalNumber','type':'Double'},            
-            { 'fieldID': 'Account.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Account.City', 'type': 'String' },
-            { 'fieldID': 'Account.Country', 'type': 'String' },
-            { 'fieldID': 'Account.Status', 'type': 'Integer' },
-            { 'fieldID': 'Account.Parent.City', 'type': 'String' },
-            { 'fieldID': 'Catalog.Description', 'type': 'String' },
-            { 'fieldID': 'Catalog.ExternalID', 'type': 'String' },
-            // {'fieldID':'Catalog.TSAImage','type':'String'},            
-            { 'fieldID': 'ContactPerson.ExternalID', 'type': 'String' },
-            { 'fieldID': 'ContactPerson.FirstName', 'type': 'String' },
-            { 'fieldID': 'ContactPerson.Mobile', 'type': 'String' },
-            { 'fieldID': 'Creator.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Creator.FirstName', 'type': 'String' },
-            { 'fieldID': 'Creator.Mobile', 'type': 'String' },
-            { 'fieldID': 'Agent.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Agent.FirstName', 'type': 'String' },
-            { 'fieldID': 'Agent.Mobile', 'type': 'String' },
-            { 'fieldID': 'OriginAccount.ExternalID', 'type': 'String' },
-            { 'fieldID': 'OriginAccount.City', 'type': 'String' },
-            { 'fieldID': 'OriginAccount.Status', 'type': 'Integer' },
-            { 'fieldID': 'AdditionalAccount.ExternalID', 'type': 'String' },
-            { 'fieldID': 'AdditionalAccount.City', 'type': 'String' },
-            { 'fieldID': 'AdditionalAccount.Status', 'type': 'Integer' }
+            { fieldID: 'ExternalID', type: 'String' },
+            { fieldID: 'TaxPercentage', type: 'Double' },
+            { fieldID: 'Remark', type: 'String' },
+            { fieldID: 'CreationDateTime', type: 'DateTime' },
+            { fieldID: 'SubTotal', type: 'Double' },
+            { fieldID: 'Status', type: 'Integer' },
+            { fieldID: 'DiscountPercentage', type: 'Double' },
+            // {'fieldID':'TSATestIndexString','type':'String'},
+            // {'fieldID':'TSATestIndexTime','type':'DateTime'},
+            // {'fieldID':'TSATestIndexCalculated','type':'Integer'},
+            // {'fieldID':'TSATestIndexAttachment','type':'String'},
+            // {'fieldID':'TSATestIndexNumber','type':'Integer'},
+            // {'fieldID':'TSATestIndexDecimalNumber','type':'Double'},
+            { fieldID: 'Account.ExternalID', type: 'String' },
+            { fieldID: 'Account.City', type: 'String' },
+            { fieldID: 'Account.Country', type: 'String' },
+            { fieldID: 'Account.Status', type: 'Integer' },
+            { fieldID: 'Account.Parent.City', type: 'String' },
+            { fieldID: 'Catalog.Description', type: 'String' },
+            { fieldID: 'Catalog.ExternalID', type: 'String' },
+            // {'fieldID':'Catalog.TSAImage','type':'String'},
+            { fieldID: 'ContactPerson.ExternalID', type: 'String' },
+            { fieldID: 'ContactPerson.FirstName', type: 'String' },
+            { fieldID: 'ContactPerson.Mobile', type: 'String' },
+            { fieldID: 'Creator.ExternalID', type: 'String' },
+            { fieldID: 'Creator.FirstName', type: 'String' },
+            { fieldID: 'Creator.Mobile', type: 'String' },
+            { fieldID: 'Agent.ExternalID', type: 'String' },
+            { fieldID: 'Agent.FirstName', type: 'String' },
+            { fieldID: 'Agent.Mobile', type: 'String' },
+            { fieldID: 'OriginAccount.ExternalID', type: 'String' },
+            { fieldID: 'OriginAccount.City', type: 'String' },
+            { fieldID: 'OriginAccount.Status', type: 'Integer' },
+            { fieldID: 'AdditionalAccount.ExternalID', type: 'String' },
+            { fieldID: 'AdditionalAccount.City', type: 'String' },
+            { fieldID: 'AdditionalAccount.Status', type: 'Integer' },
         ],
         transaction_lines_fields: [
-            // {'fieldID':'TSATestIndexString','type':'String'},            
-            // {'fieldID':'TSATestIndexTime','type':'DateTime'},            
-            // {'fieldID':'TSATestIndexCalculated','type':'Integer'},            
-            // {'fieldID':'TSATestIndexNumber','type':'Integer'},            
-            // {'fieldID':'TSATestIndexDecimalNumber','type':'Double'},            
-            { 'fieldID': 'LineNumber', 'type': 'Integer' },
-            { 'fieldID': 'DeliveryDate', 'type': 'DateTime' },
-            { 'fieldID': 'TotalUnitsPriceAfterDiscount', 'type': 'Double' },
-            { 'fieldID': 'TotalUnitsPriceBeforeDiscount', 'type': 'Double' },
-            { 'fieldID': 'Item.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Item.Name', 'type': 'String' },
-            { 'fieldID': 'UnitDiscountPercentage', 'type': 'Double' },
-            { 'fieldID': 'CreationDateTime', 'type': 'DateTime' },
-            { 'fieldID': 'Transaction.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Transaction.InternalID', 'type': 'Integer' },
-            { 'fieldID': 'Transaction.Remark', 'type': 'String' },
-            { 'fieldID': 'Transaction.CreationDateTime', 'type': 'DateTime' },
-            { 'fieldID': 'Transaction.SubTotal', 'type': 'Double' },
-            { 'fieldID': 'Transaction.Status', 'type': 'Integer' },
-            { 'fieldID': 'Transaction.DiscountPercentage', 'type': 'Double' },
-            { 'fieldID': 'Transaction.Account.ExternalID', 'type': 'String' },
-            // {'fieldID':'Transaction.Account.TSAPaymentMethod','type':'String'},            
-            { 'fieldID': 'Transaction.Account.ZipCode', 'type': 'String' },
-            { 'fieldID': 'Transaction.Account.Status', 'type': 'Integer' },
-            { 'fieldID': 'Transaction.Account.City', 'type': 'String' },
-            { 'fieldID': 'Transaction.Account.Parent.City', 'type': 'String' },
-            { 'fieldID': 'Transaction.Agent.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Transaction.Agent.FirstName', 'type': 'String' },
-            { 'fieldID': 'Transaction.Agent.Mobile', 'type': 'String' },
-            { 'fieldID': 'Transaction.ContactPerson.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Transaction.ContactPerson.FirstName', 'type': 'String' },
-            { 'fieldID': 'Transaction.ContactPerson.Mobile', 'type': 'String' },
-            { 'fieldID': 'Transaction.OriginAccount.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Transaction.OriginAccount.City', 'type': 'String' },
-            { 'fieldID': 'Transaction.OriginAccount.Status', 'type': 'Integer' },
-            { 'fieldID': 'Transaction.AdditionalAccount.ExternalID', 'type': 'String' },
-            { 'fieldID': 'Transaction.AdditionalAccount.City', 'type': 'String' },
-            { 'fieldID': 'Transaction.AdditionalAccount.Status', 'type': 'Integer' }
-        ]
+            // {'fieldID':'TSATestIndexString','type':'String'},
+            // {'fieldID':'TSATestIndexTime','type':'DateTime'},
+            // {'fieldID':'TSATestIndexCalculated','type':'Integer'},
+            // {'fieldID':'TSATestIndexNumber','type':'Integer'},
+            // {'fieldID':'TSATestIndexDecimalNumber','type':'Double'},
+            { fieldID: 'LineNumber', type: 'Integer' },
+            { fieldID: 'DeliveryDate', type: 'DateTime' },
+            { fieldID: 'TotalUnitsPriceAfterDiscount', type: 'Double' },
+            { fieldID: 'TotalUnitsPriceBeforeDiscount', type: 'Double' },
+            { fieldID: 'Item.ExternalID', type: 'String' },
+            { fieldID: 'Item.Name', type: 'String' },
+            { fieldID: 'UnitDiscountPercentage', type: 'Double' },
+            { fieldID: 'CreationDateTime', type: 'DateTime' },
+            { fieldID: 'Transaction.ExternalID', type: 'String' },
+            { fieldID: 'Transaction.InternalID', type: 'Integer' },
+            { fieldID: 'Transaction.Remark', type: 'String' },
+            { fieldID: 'Transaction.CreationDateTime', type: 'DateTime' },
+            { fieldID: 'Transaction.SubTotal', type: 'Double' },
+            { fieldID: 'Transaction.Status', type: 'Integer' },
+            { fieldID: 'Transaction.DiscountPercentage', type: 'Double' },
+            { fieldID: 'Transaction.Account.ExternalID', type: 'String' },
+            // {'fieldID':'Transaction.Account.TSAPaymentMethod','type':'String'},
+            { fieldID: 'Transaction.Account.ZipCode', type: 'String' },
+            { fieldID: 'Transaction.Account.Status', type: 'Integer' },
+            { fieldID: 'Transaction.Account.City', type: 'String' },
+            { fieldID: 'Transaction.Account.Parent.City', type: 'String' },
+            { fieldID: 'Transaction.Agent.ExternalID', type: 'String' },
+            { fieldID: 'Transaction.Agent.FirstName', type: 'String' },
+            { fieldID: 'Transaction.Agent.Mobile', type: 'String' },
+            { fieldID: 'Transaction.ContactPerson.ExternalID', type: 'String' },
+            { fieldID: 'Transaction.ContactPerson.FirstName', type: 'String' },
+            { fieldID: 'Transaction.ContactPerson.Mobile', type: 'String' },
+            { fieldID: 'Transaction.OriginAccount.ExternalID', type: 'String' },
+            { fieldID: 'Transaction.OriginAccount.City', type: 'String' },
+            { fieldID: 'Transaction.OriginAccount.Status', type: 'Integer' },
+            { fieldID: 'Transaction.AdditionalAccount.ExternalID', type: 'String' },
+            { fieldID: 'Transaction.AdditionalAccount.City', type: 'String' },
+            { fieldID: 'Transaction.AdditionalAccount.Status', type: 'Integer' },
+        ],
     };
 
     const all_activities_fields_to_test_response = [
@@ -439,8 +438,12 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(postFieldsResponse.Key).to.be.equal('meta_data');
                 //expect(postFieldsResponse.RunDateTime).to.be.null;
                 expect(postFieldsResponse.RunTime).to.be.null;
-                expect(postFieldsResponse.all_activities_fields).to.include.members(all_activities_fields_to_test_response);
-                expect(postFieldsResponse.transaction_lines_fields).to.include.members(transaction_lines_fields_to_test_response);
+                expect(postFieldsResponse.all_activities_fields).to.include.members(
+                    all_activities_fields_to_test_response,
+                );
+                expect(postFieldsResponse.transaction_lines_fields).to.include.members(
+                    transaction_lines_fields_to_test_response,
+                );
             });
 
             it('All Activities Rebuild', async () => {
@@ -547,28 +550,30 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             });
 
                             if (allActivitiesFieldName.includes('.')) {
-                                it(`Create ${allActivitiesFieldName.split('.')[0]} With New ${allActivitiesFieldName.split('.')[1]
-                                    }`, async () => {
-                                        if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                            throw new Error(
-                                                `NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]
-                                                }`,
-                                            );
-                                        }
-                                        createdField = dataIndexService.createTestDataForField(
-                                            allActivitiesFieldName.split('.')[1],
+                                it(`Create ${allActivitiesFieldName.split('.')[0]} With New ${
+                                    allActivitiesFieldName.split('.')[1]
+                                }`, async () => {
+                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
                                         );
-                                        const createAccountResponse = await generalService.fetchStatus('/accounts', {
-                                            method: 'POST',
-                                            body: JSON.stringify({
-                                                Name: 'Data Index Tests',
-                                                ExternalID: testDataAccountExternalID,
-                                                [allActivitiesFieldName.split('.')[1]]: createdField,
-                                            }),
-                                        });
-                                        createdAccountInternalID = createAccountResponse.Body.InternalID;
-                                        expect(createAccountResponse.Status).to.equal(201);
+                                    }
+                                    createdField = dataIndexService.createTestDataForField(
+                                        allActivitiesFieldName.split('.')[1],
+                                    );
+                                    const createAccountResponse = await generalService.fetchStatus('/accounts', {
+                                        method: 'POST',
+                                        body: JSON.stringify({
+                                            Name: 'Data Index Tests',
+                                            ExternalID: testDataAccountExternalID,
+                                            [allActivitiesFieldName.split('.')[1]]: createdField,
+                                        }),
                                     });
+                                    createdAccountInternalID = createAccountResponse.Body.InternalID;
+                                    expect(createAccountResponse.Status).to.equal(201);
+                                });
                             }
 
                             it(`Create Transaction With The New ${allActivitiesFieldName}`, async () => {
@@ -677,23 +682,26 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             });
 
                             if (allActivitiesFieldName.includes('.')) {
-                                it(`Get Existed ${allActivitiesFieldName.split('.')[0]} With Existed ${allActivitiesFieldName.split('.')[1]
-                                    }`, async () => {
-                                        if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                            throw new Error(
-                                                `NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]
-                                                }`,
-                                            );
-                                        }
-                                        const accountsArr = await objectsService.getAccounts({
-                                            where: `${allActivitiesFieldName.split('.')[1]}!='' AND ${allActivitiesFieldName.split('.')[1]
-                                                }!='${createdField}'`,
-                                            page_size: 1,
-                                        });
-                                        existedAccountInternalID = accountsArr[0].InternalID as number;
-                                        existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
-                                        expect(accountsArr.length).to.be.above(0);
+                                it(`Get Existed ${allActivitiesFieldName.split('.')[0]} With Existed ${
+                                    allActivitiesFieldName.split('.')[1]
+                                }`, async () => {
+                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
+                                    }
+                                    const accountsArr = await objectsService.getAccounts({
+                                        where: `${allActivitiesFieldName.split('.')[1]}!='' AND ${
+                                            allActivitiesFieldName.split('.')[1]
+                                        }!='${createdField}'`,
+                                        page_size: 1,
                                     });
+                                    existedAccountInternalID = accountsArr[0].InternalID as number;
+                                    existedField = accountsArr[0][allActivitiesFieldName.split('.')[1]];
+                                    expect(accountsArr.length).to.be.above(0);
+                                });
                             }
 
                             it(`Update Transaction With Existed ${allActivitiesFieldName}`, async () => {
@@ -797,24 +805,26 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             });
 
                             if (allActivitiesFieldName.includes('.')) {
-                                it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${allActivitiesFieldName.split('.')[1]
-                                    }`, async () => {
-                                        if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                            throw new Error(
-                                                `NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]
-                                                }`,
-                                            );
-                                        }
-                                        const updateAccountResponse = await generalService.fetchStatus('/accounts', {
-                                            method: 'POST',
-                                            body: JSON.stringify({
-                                                InternalID: createdAccountInternalID,
-                                                [allActivitiesFieldName.split('.')[1]]: null,
-                                            }),
-                                        });
-                                        emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
-                                        expect(updateAccountResponse.Status).to.equal(200);
+                                it(`Update The New ${allActivitiesFieldName.split('.')[0]} With Empty ${
+                                    allActivitiesFieldName.split('.')[1]
+                                }`, async () => {
+                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
+                                        );
+                                    }
+                                    const updateAccountResponse = await generalService.fetchStatus('/accounts', {
+                                        method: 'POST',
+                                        body: JSON.stringify({
+                                            InternalID: createdAccountInternalID,
+                                            [allActivitiesFieldName.split('.')[1]]: null,
+                                        }),
                                     });
+                                    emptyField = updateAccountResponse.Body[allActivitiesFieldName.split('.')[1]];
+                                    expect(updateAccountResponse.Status).to.equal(200);
+                                });
                             }
 
                             it(`Update Transaction To Empty ${allActivitiesFieldName}`, async () => {
@@ -982,24 +992,26 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
                         describe('Clean UP', () => {
                             if (allActivitiesFieldName.includes('.')) {
-                                it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${allActivitiesFieldName.split('.')[1]
-                                    }`, async () => {
-                                        if (allActivitiesFieldName.split('.')[0] != 'Account') {
-                                            throw new Error(
-                                                `NotImplementedException - Reference Type: ${allActivitiesFieldName.split('.')[0]
-                                                }`,
-                                            );
-                                        }
-                                        const isAccountDeleted = await objectsService.deleteAccount(
-                                            createdAccountInternalID,
+                                it(`Clean Up The New ${allActivitiesFieldName.split('.')[0]} With ${
+                                    allActivitiesFieldName.split('.')[1]
+                                }`, async () => {
+                                    if (allActivitiesFieldName.split('.')[0] != 'Account') {
+                                        throw new Error(
+                                            `NotImplementedException - Reference Type: ${
+                                                allActivitiesFieldName.split('.')[0]
+                                            }`,
                                         );
-                                        expect(isAccountDeleted).to.be.true;
+                                    }
+                                    const isAccountDeleted = await objectsService.deleteAccount(
+                                        createdAccountInternalID,
+                                    );
+                                    expect(isAccountDeleted).to.be.true;
 
-                                        const getDeletedAccount = await objectsService.getAccountByID(
-                                            createdAccountInternalID,
-                                        );
-                                        expect(getDeletedAccount.Hidden).to.be.true;
-                                    });
+                                    const getDeletedAccount = await objectsService.getAccountByID(
+                                        createdAccountInternalID,
+                                    );
+                                    expect(getDeletedAccount.Hidden).to.be.true;
+                                });
                             }
                         });
 
