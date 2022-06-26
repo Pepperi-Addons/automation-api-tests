@@ -65,7 +65,8 @@ export class ElasticSearchService {
     }
 
     getTotals(type: ElasticSearchType, options: QueryOptions = {}) {
-        let url = `/elasticsearch/totals/${type}`;
+        //problem here
+        let url = `/addons/shared_index/index/papi_data_index/totals/10979a11-d7f4-41df-8993-f06bfd778304/${type}`;
         url = addQueryAndOptions(url, options);
         return this.papiClient.get(url);
     }
