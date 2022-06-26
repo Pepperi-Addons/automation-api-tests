@@ -542,6 +542,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                                 baseSortedAndCountedMap = await dataIndexService.createTotalsMapOfField(
                                     allActivitiesFieldName,
                                 );
+                                // debugger;
                                 baseSortedAndCountedMap.forEach((value) => {
                                     //, key) => {
                                     //console.log(`baseSortedAndCountedMap[${key}] = ${value}`);
