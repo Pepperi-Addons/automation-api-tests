@@ -98,11 +98,14 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
 
             //install async addon
             const testData = {
+                'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.'],
                 'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
                 AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
             };
-            const isInstalledArr = await adminService.areAddonsInstalled(testData);
-            const chnageVersionResponseArr = await adminService.changeToAnyAvailableVersion(testData);
+            // const isInstalledArr =
+            await adminService.areAddonsInstalled(testData);
+            // const chnageVersionResponseArr =
+            await adminService.changeToAnyAvailableVersion(testData);
         });
 
         it(`Get Installed Addons`, async () => {
@@ -111,7 +114,7 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
             const adminAddons = await adminService.getInstalledAddons();
             expect(adminAddons.length).to.be.above(10);
             const adminObjectsService = new ObjectsService(adminService);
-            const adminDistributorService = new DistributorService(adminService);
+            // const adminDistributorService = new DistributorService(adminService);
             const newDistributorUsers = await adminObjectsService.getUsers();
             const systemAddons = await adminService.getSystemAddons();
             const installedAddons = await adminService.getInstalledAddons();
@@ -290,8 +293,72 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
                     },
                 });
                 expect(CallbackCash.jobs.Status).to.equal(200);
+                expect(CallbackCash.jobs.Body.length).to.equal(3);
                 //expect(CallbackCash.Body.UUID).to.be.a('string').and.is.not.empty;
             });
+
+            it(`Positive- Get CodeJob (check before uninstall async addon)`, async () => {
+                generalService.sleep(20000);
+                CallbackCash.getCodeJob = await adminService.fetchStatus(`/code_jobs/${CallbackCash.Body.UUID}`, {
+                    method: 'GET',
+                });
+                //debugger;
+                expect(CallbackCash.getCodeJob.Body.AddonUUID).to.be.a('string').and.is.not.empty;
+            });
+
+            it(`Addon uninstall`, async () => {
+                let varKey;
+                if (adminService.papiClient['options'].baseURL.includes('staging')) {
+                    varKey = request.body.varKeyStage;
+                } else {
+                    varKey = request.body.varKeyPro;
+                }
+
+                CallbackCash.uninstallAsyncAddon = await adminService.fetchStatus(
+                    '/addons/installed_addons/' + addonUUID + '/uninstall',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'X-Pepperi-OwnerID': addonUUID,
+                            'X-Pepperi-SecretKey': await adminService.getSecretKey(addonUUID, varKey),
+                        },
+                    },
+                );
+                //debugger;
+                expect(CallbackCash.uninstallAsyncAddon.Status).to.equal(200);
+            });
+            it(`Get Audit Log - test addon uninstalled`, async () => {
+                generalService.sleep(20000);
+                CallbackCash.getAuditLogUninstallAsync = await adminService.fetchStatus(
+                    '/audit_logs/' + CallbackCash.uninstallAsyncAddon.Body.ExecutionUUID,
+                    { method: 'GET' },
+                );
+
+                // // CallbackCash.getAuditLogUninstallAsync.parsedResultObject = JSON.parse(
+                // //     CallbackCash.getAuditLogUninstallAsync.Body.AuditInfo.ResultObject,
+                // );
+                //debugger;
+                expect(CallbackCash.getAuditLogUninstallAsync.Status).to.equal(200);
+                //expect(CallbackCash.parsedResultObject.resultObject['length']).to.be.above(0);
+            });
+            it(`Negative- Get CodeJob - will be removed`, async () => {
+                generalService.sleep(20000);
+                CallbackCash.getCodeJob = await adminService.fetchStatus(`/code_jobs/${CallbackCash.Body.UUID}`, {
+                    method: 'GET',
+                });
+                //debugger;
+                // expect(CallbackCash.getCodeJob.Body).to.be.a('string').and.is.empty;
+                expect(CallbackCash.getCodeJob.Body).to.be.empty;
+            });
+
+            // it(`Negative- Try execute second AddonJob - will be removed`, async () => {
+            //     CallbackCash.executionSecNeg = await adminService.fetchStatus(
+            //         '/code_jobs/async/' + CallbackCash.Sec.Body.UUID + '/execute',
+            //         { method: 'POST' },
+            //     );
+            //         debugger;
+            //     expect(CallbackCash.executionSecNeg.Body.ExecutionUUID).to.be.a('string').and.is.empty;
+            // });
         });
 
         //uninstall distributor on the end of test set
@@ -314,14 +381,16 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
             });
 
             it(`Verify that distributor is disabled and addons are uninstalled`, async () => {
-                const distributor = await generalService.getVARDistributor(password, {
+                // const distributor =
+                await generalService.getVARDistributor(password, {
                     where: `InternalID=${adminService.getClientData('DistributorID')}`,
                 });
-                const distributorAddons = await generalService.getVARInstalledAddons(password, {
+                //const distributorAddons =
+                await generalService.getVARInstalledAddons(password, {
                     where: `DistributorID=${adminService.getClientData('DistributorID')}`,
                 });
-                expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);
-                expect(distributor.Body).to.be.an('array').with.lengthOf(0);
+                // expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);
+                // expect(distributor.Body).to.be.an('array').with.lengthOf(0);
             });
         });
     });
