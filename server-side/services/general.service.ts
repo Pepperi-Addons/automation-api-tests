@@ -24,7 +24,7 @@ export const testData = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.'], //PAPI
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.57'],
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.79'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
@@ -277,6 +277,8 @@ export default class GeneralService {
             },
         };
     }
+
+    // getSecretfromKMS() {}
 
     getSecret() {
         let addonUUID;
@@ -559,7 +561,7 @@ export default class GeneralService {
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
-                addonName == 'WebApp Platform' ||
+                addonName == 'WebApp Platform' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 !isPhased
             ) {
