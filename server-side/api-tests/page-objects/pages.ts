@@ -1,24 +1,26 @@
 import { NgComponentRelation, Page, PageBlock, PageSection } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../../services/general.service';
-import { PagesService } from '../../services/pages.service';
+import { PagesService } from '../../services/pages/pages.service';
 import { v4 as newUuid } from 'uuid';
-import { PageClass } from '../../models/page.class';
+import { PageApiClass } from '../../models/page-api.class';
 import { PageFactory } from '../../models/page.factory';
 
 export async function PagesTestSuite(generalService: GeneralService, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-    // const pageBuilderName = 'sub-addon-1';
-    // const slideShowName = 'sub-addon-2';
+
     //#region Upgrade Addon requirements
     const testData = {
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
-        'sub-addon-1': ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon
-        PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
-        'sub-addon-2': ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.36'], //Slideshow Addon
+        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //16.65.12
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], //Page Builder Addon 0.0.81
+        // PageBuilderTester: ['5046a9e4-ffa4-41bc-8b62-db1c2cf3e455', ''],
+        'Page Tester': ['3da3c1d7-6aa9-4938-bcdb-b8b4acbf8535', ''],
+
+        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '0.0.52'], //Slideshow Addon 0.0.36
     };
 
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
@@ -28,17 +30,14 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
     const pagesService = new PagesService(generalService);
     let basePage: Page = PageFactory.defaultPage();
-    const pageBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Page Block Tester');
-
+    const pageBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Static Tester');
     const basePageBlock: PageBlock = PageFactory.defaultPageBlock(pageBlockRelation);
 
     describe('Pages API Tests Suite', function () {
-        console.log(`${new Date().getTime()} - Started Describe: Pages API Tests Suite`);
-
         describe('Prerequisites Addon for Pages API Tests', () => {
             //Test Data
-            it('Validate That All The Needed Addons Installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
@@ -69,20 +68,14 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
         describe('Base Page Tests Suite', function () {
             it('Create new page', async function () {
-                console.log(`${new Date().getTime()} - Started test: Create new page`);
-
                 const resultPage = await pagesService.createOrUpdatePage(basePage);
                 basePage.Key = resultPage.Key;
-                console.log(`${new Date().getTime()} - Ended test: Create new page`);
                 pagesService.deepCompareObjects(basePage, resultPage, expect);
             });
 
             it('Modify page name', async function () {
-                console.log(`${new Date().getTime()} - Started Describe: Modify Base Page Tests Suite`);
-                console.log(`${new Date().getTime()} - Started test: Modify page name`);
                 basePage.Name = `${new Date().toLocaleDateString()} - PagesApiTest`;
                 const resultPage = await pagesService.createOrUpdatePage(basePage);
-                console.log(`${new Date().getTime()} - Ended test: Modify page name`);
                 pagesService.deepCompareObjects(basePage, resultPage, expect);
             });
 
@@ -131,55 +124,149 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
 
         describe('Page Blocks Tests Suite', function () {
             it('Add Page Block', async function () {
-                console.log(`${new Date().getTime()} - Started Describe: Page Blocks Tests Suite`);
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 testPage.addNewBlock(basePageBlock);
                 const resultPage = await pagesService.createOrUpdatePage(testPage.page);
                 pagesService.deepCompareObjects(testPage.page, resultPage, expect);
                 basePage = testPage.page;
             });
 
-            it('Add PageBlock without mandatory field', async function () {
-                const blockProps = Object.getOwnPropertyNames(basePageBlock).filter((prop) => prop !== 'length');
-                for (const prop of blockProps) {
-                    const pageClass = new PageClass(basePage);
-                    let pageBlock: PageBlock = {} as any;
-                    console.log(`${new Date().getTime()} - Started test: Add PageBlock without '${prop}' field`);
-                    pageBlock = pagesService.objectWithoutTargetProp(basePageBlock, blockProps, prop);
-
-                    pageClass.addNewBlock(pageBlock);
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
-                        `${prop} is missing`,
-                    );
-                    console.log(`${new Date().getTime()} - Ended test: Add PageBlock without '${prop}' field`);
-                }
-            });
+            // it('Add Page Block with Incorrect Relation', async function () {
+            //     const testPage = new PageClass(basePage);
+            //     let tempRel = basePageBlock;
+            //     tempRel.Relation.
+            //     testPage.addNewBlock(basePageBlock);
+            //     const resultPage = await pagesService.createOrUpdatePage(testPage.page);
+            //     pagesService.deepCompareObjects(testPage.page, resultPage, expect);
+            //     basePage = testPage.page;
+            // });
 
             it("Add PageBlock without mandatory 'Relation' fields", async function () {
                 const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
-                const pageClass = new PageClass(basePage);
-                const pageBlock: PageBlock = { Key: basePageBlock.Key } as any;
+                const pageClass = new PageApiClass(basePage);
+
                 for (const prop of properties) {
-                    console.log(`${new Date().getTime()} - Started test: Remove PageBlock Relation's '${prop}' field`);
-
-                    pageBlock.Relation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
-
+                    const pageRelation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
+                    const pageBlock: PageBlock = {
+                        Key: basePageBlock.Key,
+                        Relation: pageRelation,
+                        Configuration: basePageBlock.Configuration,
+                    };
                     pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
 
-                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
-                        `${prop} is missing`,
-                    );
+                    if (prop == 'Name' || prop == 'AddonUUID') {
+                        const expectedError =
+                            prop == 'AddonUUID'
+                                ? `${prop} is missing`
+                                : `Resource should be the same as Block -> Relation -> ${prop}`;
 
-                    console.log(`${new Date().getTime()} - Ended test: Remove PageBlock Relation's '${prop}' field`);
+                        await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                            expectedError,
+                        );
+                    } else {
+                        const postResult = await pagesService.createOrUpdatePage(pageClass.page);
+                        pagesService.deepCompareObjects(basePage, postResult, expect);
+                    }
+                }
+            });
+
+            it('Add PageBlock with Incorrect Relation Fields', async function () {
+                const properties = Object.getOwnPropertyNames(pageBlockRelation).filter((prop) => prop !== 'length');
+                const pageClass = new PageApiClass(basePage);
+
+                for (const prop of properties) {
+                    const pageRelation = pagesService.objectWithoutTargetProp(pageBlockRelation, properties, prop);
+                    pageRelation[prop] = 'FillterProp';
+                    const pageBlock: PageBlock = {
+                        Key: basePageBlock.Key,
+                        Configuration: basePageBlock.Configuration,
+                        Relation: pageRelation,
+                    };
+                    pageClass.overwriteBlockByKey(pageBlock.Key, pageBlock);
+
+                    if (prop == 'Name' || prop == 'AddonUUID') {
+                        const expectedError =
+                            prop == 'AddonUUID'
+                                ? `Block with ${prop} ${pageRelation[prop]} doesn\'t exist as available page block`
+                                : `Resource should be the same as Block -> Relation -> ${prop}`;
+                        await expect(
+                            pagesService.createOrUpdatePage(pageClass.page).then((page) => JSON.stringify(page)),
+                            `Relation field '${prop}'`,
+                        ).to.eventually.be.rejectedWith(expectedError);
+                    } else {
+                        const postResult = await pagesService.createOrUpdatePage(pageClass.page);
+                        pagesService.deepCompareObjects(basePage, postResult, expect);
+                    }
+                }
+            });
+            it('Add PageBlock without mandatory field', async function () {
+                const blockProps = Object.getOwnPropertyNames(basePageBlock).filter((prop) => prop !== 'length');
+                for (const prop of blockProps) {
+                    const pageClass = new PageApiClass(basePage);
+                    const pageBlock: PageBlock = pagesService.objectWithoutTargetProp(basePageBlock, blockProps, prop);
+                    // pageBlock = pagesService.objectWithoutTargetProp(basePageBlock, blockProps, prop);
+
+                    pageClass.addNewBlock(pageBlock);
+                    await expect(
+                        pagesService.createOrUpdatePage(pageClass.page).then((page) => JSON.stringify(page)),
+                    ).to.eventually.be.rejectedWith(`${prop} is missing`);
                 }
             });
 
             it('Add duplicate Page Block key', async function () {
-                const pageClass = new PageClass(basePage);
+                const pageClass = new PageApiClass(basePage);
                 pageClass.addNewBlock(basePageBlock);
                 await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
-                    'already exist',
+                    'already exists',
                 );
+            });
+            describe('Page Paramters Tests Suite', function () {
+                it("Add duplicate filter key for two 'parameter' types", async function () {
+                    const pageClass = new PageApiClass(basePage);
+                    const paramKey = 'MyKey';
+                    const testBlock = PageFactory.defaultPageBlock(pageBlockRelation);
+                    testBlock.PageConfiguration = {
+                        Parameters: [
+                            {
+                                Key: paramKey,
+                                Type: 'String',
+                                Consume: true,
+                                Produce: true,
+                            },
+                            {
+                                Key: paramKey,
+                                Type: 'Filter',
+                                Consume: true,
+                                Produce: true,
+                                Resource: 'accounts',
+                                Fields: ['test'],
+                            },
+                        ],
+                    };
+                    pageClass.addNewBlock(testBlock);
+                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                        ` Parameters with key ${paramKey} should be with the same Type.`,
+                    );
+                });
+                it('Add Parameter with Produce and Consume as false', async function () {
+                    const pageClass = new PageApiClass(basePage);
+                    const testBlock = PageFactory.defaultPageBlock(pageBlockRelation);
+                    const paramKey = 'ParamKey';
+                    testBlock.PageConfiguration = {
+                        Parameters: [
+                            {
+                                Key: paramKey,
+                                Type: 'String',
+                                Consume: false,
+                                Produce: false,
+                            },
+                        ],
+                    };
+                    pageClass.addNewBlock(testBlock);
+                    await expect(pagesService.createOrUpdatePage(pageClass.page)).to.eventually.be.rejectedWith(
+                        `The parameter (with key ${paramKey}) is not allowed, at least on of the properties Produce or Consume should be true`,
+                    );
+                });
             });
         });
 
@@ -189,29 +276,25 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
         };
         describe('Page Layout Tests Suite', function () {
             it('Add Page Section', async function () {
-                console.log(`${new Date().getTime()} - Started Describe: Page Layout Tests Suite`);
-                console.log(`${new Date().getTime()} - Started test: Add Page Section`);
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 testPage.addSection(baseSection);
                 const result = await pagesService.createOrUpdatePage(testPage.page);
                 pagesService.deepCompareObjects(testPage.page, result, expect);
                 basePage = testPage.page;
-                console.log(`${new Date().getTime()} - Ended test: Add Page Section`);
             });
 
             it('Add Page Layout with Incorrect PageSizeType', async function () {
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
 
                 const tempPage = testPage.page;
                 tempPage.Layout.ColumnsGap = 'BadType' as any;
                 await expect(pagesService.createOrUpdatePage(tempPage)).to.eventually.be.rejectedWith(
                     `Page -> Layout -> ColumnsGap should be value from`,
                 );
-                // await pagesService.deletePage(testPage);
             });
 
             it('Add Block to Section', async function () {
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 testPage.addBlockToSection(basePageBlock.Key, baseSection.Key, 0);
                 const result = await pagesService.createOrUpdatePage(testPage.page);
                 pagesService.deepCompareObjects(testPage.page, result, expect);
@@ -221,7 +304,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             it('Add Page Section without mandatory field', async function () {
                 const sectionProps = Object.getOwnPropertyNames(baseSection).filter((prop) => prop !== 'length');
                 for (const prop of sectionProps) {
-                    const pageClass = new PageClass(basePage);
+                    const pageClass = new PageApiClass(basePage);
                     let pageSection: PageSection = {} as any;
                     pageSection = pagesService.objectWithoutTargetProp(baseSection, sectionProps, prop);
                     pageClass.addSection(pageSection);
@@ -231,7 +314,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 }
             });
             it('Add Incorrect Block Key to Section', async function () {
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 const testSection: PageSection = {
                     Key: newUuid(),
                     Columns: [{}],
@@ -243,7 +326,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 );
             });
             it('Add Incorrect Section Split values', async function () {
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 const testSection: PageSection = {
                     Key: newUuid(),
                     Columns: [{}, {}, {}],
@@ -255,7 +338,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 );
             });
             it('Add Duplicate Block Key to Section', async function () {
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 const testSection: PageSection = {
                     Key: newUuid(),
                     Columns: [{}, {}],
@@ -265,12 +348,12 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 testPage.addBlockToSection(basePageBlock.Key, testSection.Key, 0);
                 testPage.addBlockToSection(basePageBlock.Key, testSection.Key, 1);
                 await expect(pagesService.createOrUpdatePage(testPage.page)).to.eventually.be.rejectedWith(
-                    'already exist in another section column',
+                    'already exists in another section column',
                 );
             });
 
             it('Add Incorrect Hide Type', async function () {
-                const testPage = new PageClass(basePage);
+                const testPage = new PageApiClass(basePage);
                 const testSection: PageSection = {
                     Key: newUuid(),
                     Columns: [{}],
@@ -283,11 +366,11 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             });
 
             it('Block Removal On Uninstall Addon', async function () {
-                const testPage = new PageClass(basePage);
-                const testSection: PageSection = {
-                    Key: newUuid(),
-                    Columns: [{}],
-                };
+                const page = PageFactory.defaultPage();
+                page.Name = 'PagesApiTest - Remove Slideshow Test';
+                const testPage = new PageApiClass(page);
+
+                const testSection: PageSection = PageFactory.defaultSection();
                 testPage.addSection(testSection);
 
                 const slideBlockRelation: NgComponentRelation = await pagesService.getBlockRelation('Slideshow');
@@ -296,13 +379,11 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 testPage.addNewBlockToSection(slideShowBlock, testSection.Key, 0);
                 const postPageResult = await pagesService.createOrUpdatePage(testPage.page);
                 pagesService.deepCompareObjects(testPage.page, postPageResult, expect);
-                const expectedPage = await pagesService.getPages({ where: `Key='${testPage.page.Key}'` });
-                pagesService.deepCompareObjects(testPage.page, expectedPage[0], expect);
-                const uninstallResult = await generalService
-                    .uninstallAddon(testData['sub-addon-2'][0])
-                    .catch((error) => {
-                        throw error;
-                    });
+                console.log(`Page Key: ${postPageResult.Key}`);
+                // testPage.editPageKey(postPageResult.Key);
+                const uninstallResult = await generalService.uninstallAddon(testData.Slideshow[0]).catch((error) => {
+                    throw error;
+                });
                 expect(uninstallResult.URI).to.not.be.undefined;
                 const auditResult = await generalService.getAuditLogResultObjectIfValid(<string>uninstallResult.URI);
                 expect(auditResult).to.have.deep.include({ Status: { ID: 1, Name: 'Success' } });
@@ -312,16 +393,16 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 const timeOutinMs = 300000;
                 do {
                     resultPages = await pagesService.getPages({ page_size: -1 });
-                    await generalService.sleepTimeout(5000);
+                    await generalService.sleepAsync(5000);
                 } while (
-                    JSON.stringify(resultPages).includes(testData['sub-addon-2'][0]) &&
+                    JSON.stringify(resultPages).includes(testData.Slideshow[0]) &&
                     new Date().getTime() < startTime + timeOutinMs
                 );
 
                 resultPages.map(function (page) {
                     expect(JSON.stringify(page))
                         .to.not.include(
-                            testData['sub-addon-2'][0],
+                            testData.Slideshow[0],
                             "Slideshow's addon blocks still exists in page's Blocks array after uninstalling",
                         )
                         .and.to.not.include(
@@ -332,48 +413,35 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             });
         });
 
-        describe('Load Testing', function () {
+        describe('Page Creation Limit Test', function () {
             const pagesArray: Array<Page> = [];
-            const pagesToCreate = 500;
-            it(`Create ${pagesToCreate} pages`, async function () {
-                console.log(`${new Date().getTime()} - Started Describe: Load Testing`);
-                console.log(`${new Date().getTime()} - Started Test: Create 1000 pages`);
+            const pagesLimit = 100;
+
+            it(`Exceed create limit of ${pagesLimit} pages`, async function () {
+                const currentPages = (await pagesService.getPages({ page_size: -1 })).length;
                 const errorCounter: Array<{ message: string; count: number }> = [];
-                const promises: Array<Promise<Page | void>> = [];
+                // const promises: Array<Promise<Page | void>> = [];
+                const postResults: Array<Page | void> = [];
                 let time = new Date();
-                console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
-                for (let i = 0; i < 500; i++) {
-                    const uuid = newUuid(); //i.toString()+ '-'+
-                    const page: Page = {
-                        Key: uuid,
-                        Name: `${uuid} - Pages Load Test`,
-                        Blocks: [],
-                        Layout: {
-                            Sections: [],
-                        },
-                    };
+                const pagesToCreate = pagesLimit - currentPages;
+                console.log(`Page creation start: ${generalService.getTime()};${time.getMilliseconds()}`);
+                for (let i = 0; i < pagesToCreate; i++) {
+                    const page: Page = PageFactory.defaultPage();
                     pagesArray[i] = page;
-                    promises[i] = pagesService.createOrUpdatePage(page).catch((error) => {
+                    postResults[i] = await pagesService.createOrUpdatePage(page).catch((error) => {
                         addToErrorCounter(errorCounter, (error as Error).message);
                     });
-                    await generalService.sleepTimeout(25);
+                    // await generalService.sleepAsync(200);
                 }
 
                 time = new Date();
-                console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+                console.log(`Page creation end: ${generalService.getTime()};${time.getMilliseconds()}`);
 
-                const postResults = await Promise.all(promises);
-
-                time = new Date();
-                console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
+                // const postResults = await Promise.all(promises);
+                // time = new Date();
+                // console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
                 postResults.map((postResult, index) => {
                     if (postResult && postResult?.Key) {
-                        if (!pagesArray[index].Name?.includes(<string>postResult.Key)) {
-                            addToErrorCounter(
-                                errorCounter,
-                                `${postResult.Key} is not contained in the page's name: ${pagesArray[index].Name}`,
-                            );
-                        }
                         pagesArray[index].Key = postResult.Key;
                     } else {
                         if (pagesArray[index]) {
@@ -384,9 +452,14 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                             : addToErrorCounter(errorCounter, 'Result of POST returned empty');
                     }
                 });
-
+                await expect(
+                    pagesService
+                        .createOrUpdatePage(PageFactory.defaultPage())
+                        .then((pageResult: void | Page) => (postResults[pagesToCreate] = pageResult)),
+                ).to.eventually.be.rejectedWith(
+                    `You exceeded your pages number limit (${pagesLimit}) - please contact your administrator`,
+                );
                 for (const page of pagesArray.filter((x) => x?.Key)) {
-                    // let actual: void | Page | undefined;
                     const actual = postResults.filter((_page) => _page && _page.Key === page.Key);
 
                     try {
@@ -420,86 +493,85 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                         expect,
                     ),
                 );
-                console.log(`${new Date().getTime()} - Ended Test: Create 1000 pages`);
             });
 
-            it(`Delete ${pagesToCreate} pages`, async function () {
-                console.log(`${new Date().getTime()} - Started Test: Delete 1000 pages`);
-                const errorCounter: Array<{ message: string; count: number }> = [];
+            // it(`Delete ${pagesLimit} pages`, async function () {
+            //     const errorCounter: Array<{ message: string; count: number }> = [];
 
-                let time = new Date();
-                console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
-                const promises: Array<Promise<Page | void>> = [];
-                for (const [index, page] of pagesArray.entries()) {
-                    if (page) {
-                        await generalService.sleepTimeout(25);
-                        promises[index] = pagesService.deletePage(page).catch((error) => {
-                            addToErrorCounter(errorCounter, (error as Error).message);
-                        });
-                    }
-                }
+            //     let time = new Date();
+            //     console.log(`Before all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+            //     const promises: Array<Promise<Page | void>> = [];
+            //     for (const [index, page] of pagesArray.entries()) {
+            //         if (page) {
+            //             await generalService.sleepAsync(100);
+            //             promises[index] = pagesService.deletePage(page).catch((error) => {
+            //                 addToErrorCounter(errorCounter, (error as Error).message);
+            //             });
+            //         }
+            //     }
 
-                time = new Date();
-                console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
+            //     time = new Date();
+            //     console.log(`After all calls: ${generalService.getTime()};${time.getMilliseconds()}`);
 
-                await Promise.all(promises);
+            //     await Promise.all(promises);
 
-                time = new Date();
-                console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
+            //     time = new Date();
+            //     console.log(`After all calls were returned: ${generalService.getTime()};${time.getMilliseconds()}`);
 
-                expect(
-                    errorCounter,
-                    errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
-                ).to.be.empty;
+            //     expect(
+            //         errorCounter,
+            //         errorCounter.map((value) => `message: ${value.message}\ncount: ${value.count}`).join('\n'),
+            //     ).to.be.empty;
 
-                const resultKeys = (await pagesService.getPages({ page_size: -1 })).map((page) => page.Key);
-                const pageKeys = pagesArray
-                    .filter((x) => x?.Key)
-                    .map(function (page) {
-                        if (page?.Key) {
-                            return page.Key;
-                        }
-                    });
+            //     const resultKeys = (await pagesService.getPages({ page_size: -1 }))
+            //         .map((page) => page.Key)
+            //         .filter((key): key is string => !!key);
+            //     const pageKeys = pagesArray.map((page) => page.Key).filter((key): key is string => !!key);
 
-                expect(
-                    resultKeys,
-                    `Retrieved page keys: ${resultKeys.toString()}\nPage keys that were deleted: ${pageKeys}`,
-                ).to.not.have.any.members(pageKeys);
-                pagesArray.map(function (page) {
-                    if (page?.Key) {
-                        return expect(
-                            page.Key,
-                            `Expected ${page.Key} to not be one of: ${resultKeys.join(', ')}`,
-                        ).to.not.be.oneOf(resultKeys);
-                    }
-                });
+            //     expect(
+            //         resultKeys,
+            //         `Retrieved page keys: ${resultKeys}\nPage keys that were deleted: ${pageKeys}`,
+            //     ).to.not.include.members(pageKeys);
 
-                console.log(`${new Date().getTime()} - Ended Test: Delete 1000 pages`);
-            });
+            //     pagesArray.map(function (page) {
+            //         if (page?.Key) {
+            //             return expect(
+            //                 page.Key,
+            //                 `Expected ${page.Key} to not be one of: ${resultKeys.join(', ')}`,
+            //             ).to.not.be.oneOf(resultKeys);
+            //         }
+            //     });
+
+            // });
         });
 
         describe('Page Tests Suite Cleanup', function () {
             it('Delete created page', async function () {
-                console.log(`${new Date().getTime()} - Started Describe: Page Tests Suite Cleanup`);
-                console.log(`${new Date().getTime()} - Started test: Delete created page`);
-                await pagesService.deletePage(basePage);
-                const result = await pagesService.getPages({ where: `Key='${basePage.Key}'`, include_deleted: true });
-                expect(result[0]?.Hidden).is.equal(true);
-                console.log(`${new Date().getTime()} - Ended test: Delete created page`);
+                const deleteResult = await pagesService.deletePage(basePage);
+                pagesService.deepCompareObjects(basePage, deleteResult, expect);
+                // const result = await pagesService.getPages({ where: `Key='${basePage.Key}'`, include_deleted: true });
+                const result = await pagesService.getPage(basePage.Key as string);
+
+                // console.log(`%cBug in Pages API FindOptions - DI-19747`, ConsoleColors.BugSkipped);
+                expect(result?.Hidden).is.equal(true);
             });
 
-            it('Cleanup of all automation pages', async function () {
-                console.log(`${new Date().getTime()} - Started: Cleanup of all automation pages`);
+            it('Cleanup of all PagesApiTest pages', async function () {
                 const errorCounter: Array<{ message: string; count: number }> = [];
                 const pagesFromApi = await pagesService.getPages({ page_size: -1 });
+                const pageNamesToDelete = [
+                    'PagesApiTest',
+                    'Remove Slideshow Test',
+                    'SamplePage',
+                    'Produce Consume Tests',
+                    'Advanced SetParams Tests',
+                    'Load Order Tests',
+                ];
+
                 for (const page of pagesFromApi) {
-                    if (page?.Name) {
-                        if (page.Name.includes('Test') || page.Name.includes('PagesApiTest')) {
-                            await pagesService
-                                .deletePage(page)
-                                .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
-                        }
-                    }
+                    await deletePageIncluding(page, pagesService, pageNamesToDelete).catch((error) => {
+                        addToErrorCounter(errorCounter, `Page ${page.Key} - ${(error as Error).message}`);
+                    });
                 }
                 expect(
                     errorCounter,
@@ -507,8 +579,7 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
                 ).to.be.empty;
 
                 const resultNames = (await pagesService.getPages({ page_size: -1 })).map((page) => page?.Name);
-                expect(resultNames).to.not.include('Test').and.to.not.include('PagesApiTest');
-                console.log(`${new Date().getTime()} - Ended: Cleanup of all automation pages`);
+                expect(resultNames).to.not.include.members(pageNamesToDelete);
             });
         });
 
@@ -517,4 +588,24 @@ export async function PagesTestSuite(generalService: GeneralService, tester: Tes
             index > -1 ? errorCounter[index].count++ : errorCounter.push({ message: errorMessage, count: 1 });
         }
     });
+}
+async function deletePageIncluding(page: Page, pagesService: PagesService, pageNamesToDelete: string[] = []) {
+    if (page?.Name) {
+        if (pageNamesToDelete.length == 0 || pageNamesToDelete.find((name) => page.Name?.includes(name))) {
+            page.Blocks.forEach((block) => {
+                if (!block.Configuration?.Data) {
+                    block.Configuration.Data = {};
+                }
+                if (block.Configuration?.Resource != block.Relation.Name) {
+                    block.Configuration.Resource = block.Relation.Name;
+                }
+                if (block.Configuration?.AddonUUID != block.Relation.AddonUUID) {
+                    block.Configuration.AddonUUID = block.Relation.AddonUUID;
+                }
+            });
+
+            await pagesService.deletePage(page);
+            // .catch((error) => addToErrorCounter(errorCounter, (error as Error).message));
+        }
+    }
 }

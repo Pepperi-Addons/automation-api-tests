@@ -1,7 +1,8 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './Pages/base/Page';
 import config from '../../config';
-import { WebElement, Locator, By } from 'selenium-webdriver';
+import { WebElement, By } from 'selenium-webdriver';
+import { ConsoleColors } from '../../services/general.service';
 
 export enum SelectSmartSearchRange {
     '=' = 1,
@@ -12,39 +13,50 @@ export enum SelectSmartSearchRange {
 
 export class WebAppList extends Page {
     table: string[][] = [];
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 
-    public List: Locator = By.css('pep-list .scrollable-content');
-    public Headers: Locator = By.css('pep-list .table-header-fieldset fieldset .header-label');
-    public RadioButtons: Locator = By.css('pep-list .table-row-fieldset .mat-radio-button');
-    public Cells: Locator = By.css('pep-list .table-row-fieldset .pep-report-fields');
-    public ListRowElements: Locator = By.css('pep-list .table-row-fieldset');
-    public TotalResultsText: Locator = By.css('.total-items .number');
-    public LinksInListArr: Locator = By.css('pep-internal-button a');
+    public List: By = By.css('pep-list .scrollable-content');
+    public Headers: By = By.css('pep-list .table-header-fieldset fieldset .header-label');
+    public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
+    public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
+    public ListRowElements: By = By.css('pep-list .table-row-fieldset');
+    public RowElementCheckBox: By = By.css('pep-list .table-row-fieldset > mat-checkbox');
+    public GeneralCheckBoxValue: By = By.xpath(
+        '//fieldset[contains(@class,"table-header-fieldset")]//mat-checkbox//..//input',
+    );
+    public GeneralCheckBoxClickable: By = By.xpath(
+        '//fieldset[contains(@class,"table-header-fieldset")]//mat-checkbox',
+    );
+    public TotalResultsText: By = By.css('.total-items .number');
+    public LinksInListArr: By = By.css('pep-internal-button a');
+
+    //Addon Page
+    public AddonCells: By = By.css('pep-list .table-row-fieldset');
+    public AddonAddButton: By = By.css('[data-qa] [title="Add"]');
 
     //Card List
-    public CardListElements: Locator = By.css('pep-list .scrollable-content > div pep-form');
+    public CardListElements: By = By.css('pep-list .scrollable-content > div pep-form');
 
     //Cart List
-    public CartListElements: Locator = By.css('pep-list pep-form');
-    public CartListElementsBtn: Locator = By.css('pep-form button');
-    public CartListElementsQuantityBtn: Locator = By.css('pep-form pep-quantity-selector button');
-    public CartListElementsQuantityInput: Locator = By.css('pep-form pep-quantity-selector input');
-    public CartListElementsInternalBtn: Locator = By.css('pep-form pep-internal-menu button');
-    public CartListElementsGridLineViewInternalBtn: Locator = By.css('pep-list pep-internal-button');
-    public CartListGridLineHeaderItemPrice: Locator = By.css('label#ItemPrice');
+    public CartListElements: By = By.css('pep-list pep-form');
+    public CartListElementsBtn: By = By.css('pep-form button');
+    public CartListElementsQuantityBtn: By = By.css('pep-form pep-quantity-selector button');
+    public CartListElementsQuantityInput: By = By.css('pep-form pep-quantity-selector input');
+    public CartListElementsInternalBtn: By = By.css('pep-form pep-internal-menu button');
+    public CartListElementsGridLineViewInternalBtn: By = By.css('pep-list pep-internal-button');
+    public CartListGridLineHeaderItemPrice: By = By.css('label#ItemPrice');
 
     //Smart Search
-    public SmartSearchOptions: Locator = By.css('app-advanced-search label');
-    public SmartSearchCheckBoxBtnArr: Locator = By.css('.advance-search-menu li[title] input');
-    public SmartSearchCheckBoxTitleArr: Locator = By.css('.advance-search-menu li[title] label');
-    public SmartSearchCheckBoxOptions: Locator = By.css('.advance-search-menu li');
-    public SmartSearchCheckBoxDone: Locator = By.css('.advance-search-menu .done');
-    public SmartSearchCheckBoxClear: Locator = By.css('.advance-search-menu .clear');
-    public SmartSearchSelect: Locator = By.css('.advance-search-menu .smBody select');
-    public SmartSearchNumberInputArr: Locator = By.css(`.advance-search-menu .smBody input[type='number']`);
+    public SmartSearchOptions: By = By.css('app-advanced-search label');
+    public SmartSearchCheckBoxBtnArr: By = By.css('.advance-search-menu li[title] input');
+    public SmartSearchCheckBoxTitleArr: By = By.css('.advance-search-menu li[title] label');
+    public SmartSearchCheckBoxOptions: By = By.css('.advance-search-menu li');
+    public SmartSearchCheckBoxDone: By = By.css('.advance-search-menu .done');
+    public SmartSearchCheckBoxClear: By = By.css('.advance-search-menu .clear');
+    public SmartSearchSelect: By = By.css('.advance-search-menu .smBody select');
+    public SmartSearchNumberInputArr: By = By.css(`.advance-search-menu .smBody input[type='number']`);
 
     public async validateListRowElements(ms?: number): Promise<void> {
         await this.isSpinnerDone();
@@ -60,7 +72,7 @@ export class WebAppList extends Page {
         return await this.validateElements(this.CartListElements, ms);
     }
 
-    public async validateElements(selector: Locator, ms?: number): Promise<void> {
+    public async validateElements(selector: By, ms?: number): Promise<void> {
         let tempListItems = await this.browser.findElements(selector);
         let tempListItemsLength;
         let loopCounter = ms ? ms / 1500 : 20;
@@ -78,12 +90,39 @@ export class WebAppList extends Page {
 
     public async clickOnFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
-        return await this.click(this.ListRowElements, position, waitUntil);
+        return await this.browser.click(this.ListRowElements, position, waitUntil);
+    }
+
+    public async clickOnCheckBoxByElementIndex(position = 0, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.click(this.RowElementCheckBox, position, waitUntil);
+    }
+
+    public async clickOnFromListRowWebElementByName(textOfElement: string, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.ClickByText(this.ListRowElements, textOfElement, waitUntil);
     }
 
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
-        return await this.click(this.LinksInListArr, position, waitUntil);
+        return await this.browser.click(this.LinksInListArr, position, waitUntil);
+    }
+
+    public async checkAllListElements() {
+        await this.isSpinnerDone();
+        const generalCheckbox = await this.browser.findElement(this.GeneralCheckBoxValue);
+        const isChecked: boolean = (await generalCheckbox.getAttribute('aria-checked')) === 'true' ? true : false;
+        if (!isChecked) {
+            await this.browser.click(this.GeneralCheckBoxClickable);
+        }
+    }
+    public async uncheckAllListElements() {
+        await this.isSpinnerDone();
+        const generalCheckbox = await this.browser.findElement(this.GeneralCheckBoxValue);
+        const isChecked: boolean = (await generalCheckbox.getAttribute('aria-checked')) === 'true' ? true : false;
+        if (isChecked) {
+            await this.browser.click(this.GeneralCheckBoxClickable);
+        }
     }
 
     public async selectCardWebElement(position = 0): Promise<WebElement> {
@@ -105,6 +144,23 @@ export class WebAppList extends Page {
                     this.table[j].push(await cells[headrs.length * (j - 1) + i].getText());
                 }
             }
+        }
+        return this.table;
+    }
+
+    public async getAddonListAsTable(): Promise<string[][]> {
+        await this.validateListRowElements();
+        const headrs = await this.browser.findElements(this.Headers);
+        const cells = await this.browser.findElements(this.AddonCells);
+        this.table = [];
+        this.table.push([]);
+        for (let i = 0; i < headrs.length; i++) {
+            this.table[0].push(await headrs[i].getText());
+        }
+        for (let j = 0; j < cells.length; j++) {
+            this.table.push([]);
+            const tableRow = (await cells[j].getText()).split('\n');
+            this.table[j + 1].push(tableRow[0], tableRow[1]);
         }
         return this.table;
     }
@@ -195,7 +251,7 @@ export class WebAppList extends Page {
                 throw new Error(`Index of ${index} is out of range`);
             },
             () => {
-                console.log(`Element ${this.SmartSearchCheckBoxOptions.toString()} not found`);
+                console.log(`%cElement ${this.SmartSearchCheckBoxOptions.toString()} not found`, ConsoleColors.Error);
             },
         );
         return;
@@ -215,5 +271,25 @@ export class WebAppList extends Page {
             await this.browser.sendKeys(this.SmartSearchNumberInputArr, max, 1);
         }
         await this.browser.click(this.SmartSearchCheckBoxDone);
+    }
+
+    public async getNumOfElementsTitle() {
+        return await (await this.browser.findElement(this.TotalResultsText)).getText();
+    }
+
+    public async getListElementsAsArray() {
+        return await this.browser.findElements(this.ListRowElements);
+    }
+
+    public async getAllListElementsTextValue() {
+        const allElems = await this.getListElementsAsArray();
+        const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
+        return text;
+    }
+
+    public async getAllListElementTextValueByIndex(index: number) {
+        const allElems = await this.getListElementsAsArray();
+        const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
+        return text[index];
     }
 }

@@ -14,74 +14,74 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
 
     //#region Prerequisites for Audit Logs Tests
     //TestData
-    const testDataDraftToExecuteInPositiveTest = {
-        UUID: '',
-        CodeJobName: 'New CodeJob with draft code for Audit Logs Positive Test',
-        Description: 'Execute Job Using Draft Code',
-        //This can be used to test the Scheduler addon (1/3)
-        // "CodeJobName": "004" + "  Published no Sceduled Positive",
-        // "Description": "Published no Sceduled",
-        Owner: '',
-        CronExpression: '0/20 * 1/1 * *', //Every 20   minutes
-        NextRunTime: null,
-        IsScheduled: false,
-        FailureAlertEmailTo: ['qa@pepperi.com'],
-        FailureAlertEmailSubject: 'Execution section',
-        ExecutedCode: '',
-        DraftCode:
-            'exports.main=async(Client)=>{' +
-            'var response;' +
-            "Client.addLogEntry('Info', 'Start Code Test');" +
-            'response = {' +
-            "success:'true'," +
-            "errorMessage:''," +
-            'resultObject: new Object()' +
-            '};' +
-            'function multiply(a,b){' +
-            'var res = {' +
-            "'multiplyResult':a*b" +
-            '};' +
-            "Client.addLogEntry('Info','Start Funcion multiply = ' + JSON.stringify(res));" +
-            'response.resultObject=res;' +
-            "response.errorMessage='test msg';" +
-            'response.success=true;' +
-            'return(response);' +
-            '}' +
-            'return multiply(4,2);' +
-            '};',
-        CodeJobIsHidden: false,
-        CreationDateTime: '',
-        ModificationDateTime: '',
-        ExecutionMemoryLevel: 1,
-        NumberOfTries: 1,
-    };
+    // const testDataDraftToExecuteInPositiveTest = {
+    //     UUID: '',
+    //     CodeJobName: 'New CodeJob with draft code for Audit Logs Positive Test',
+    //     Description: 'Execute Job Using Draft Code',
+    //     //This can be used to test the Scheduler addon (1/3)
+    //     // "CodeJobName": "004" + "  Published no Sceduled Positive",
+    //     // "Description": "Published no Sceduled",
+    //     Owner: '',
+    //     CronExpression: '0/20 * 1/1 * *', //Every 20   minutes
+    //     NextRunTime: null,
+    //     IsScheduled: false,
+    //     FailureAlertEmailTo: ['qa@pepperi.com'],
+    //     FailureAlertEmailSubject: 'Execution section',
+    //     ExecutedCode: '',
+    //     DraftCode:
+    //         'exports.main=async(Client)=>{' +
+    //         'var response;' +
+    //         "Client.addLogEntry('Info', 'Start Code Test');" +
+    //         'response = {' +
+    //         "success:'true'," +
+    //         "errorMessage:''," +
+    //         'resultObject: new Object()' +
+    //         '};' +
+    //         'function multiply(a,b){' +
+    //         'var res = {' +
+    //         "'multiplyResult':a*b" +
+    //         '};' +
+    //         "Client.addLogEntry('Info','Start Funcion multiply = ' + JSON.stringify(res));" +
+    //         'response.resultObject=res;' +
+    //         "response.errorMessage='test msg';" +
+    //         'response.success=true;' +
+    //         'return(response);' +
+    //         '}' +
+    //         'return multiply(4,2);' +
+    //         '};',
+    //     CodeJobIsHidden: false,
+    //     CreationDateTime: '',
+    //     ModificationDateTime: '',
+    //     ExecutionMemoryLevel: 1,
+    //     NumberOfTries: 1,
+    // };
 
-    const testDataDraftToExecuteInNegativeTest = {
-        UUID: '',
-        CodeJobName: 'New CodeJob with draft code for Audit Logs Negative Test',
-        Description: 'Fail to Execute Job Using Draft Code',
-        //This can be used to test the Scheduler addon (2/3)
-        // "CodeJobName": "004" + " Published no Sceduled Negative",
-        // "Description": "Published no Sceduled",
-        Owner: '',
-        CronExpression: '0/20 * 1/1 * *', //Every 20 minutes
-        NextRunTime: null,
-        IsScheduled: false,
-        FailureAlertEmailTo: ['qa@pepperi.com'],
-        FailureAlertEmailSubject: 'Execution section',
-        ExecutedCode: '',
-        DraftCode:
-            'exports.main = async (Client) => {' +
-            'var response = {};' +
-            "Client.addLogEntry('Info', 'Start throw new error');" +
-            "throw new Error('orenTest');" +
-            'return (response);' +
-            '};',
-        CreationDateTime: '',
-        ModificationDateTime: '',
-        ExecutionMemoryLevel: 1,
-        NumberOfTries: 1,
-    };
+    // const testDataDraftToExecuteInNegativeTest = {
+    //     UUID: '',
+    //     CodeJobName: 'New CodeJob with draft code for Audit Logs Negative Test',
+    //     Description: 'Fail to Execute Job Using Draft Code',
+    //     //This can be used to test the Scheduler addon (2/3)
+    //     // "CodeJobName": "004" + " Published no Sceduled Negative",
+    //     // "Description": "Published no Sceduled",
+    //     Owner: '',
+    //     CronExpression: '0/20 * 1/1 * *', //Every 20 minutes
+    //     NextRunTime: null,
+    //     IsScheduled: false,
+    //     FailureAlertEmailTo: ['qa@pepperi.com'],
+    //     FailureAlertEmailSubject: 'Execution section',
+    //     ExecutedCode: '',
+    //     DraftCode:
+    //         'exports.main = async (Client) => {' +
+    //         'var response = {};' +
+    //         "Client.addLogEntry('Info', 'Start throw new error');" +
+    //         "throw new Error('orenTest');" +
+    //         'return (response);' +
+    //         '};',
+    //     CreationDateTime: '',
+    //     ModificationDateTime: '',
+    //     ExecutionMemoryLevel: 1,
+    //     NumberOfTries: 1,
+    // };
 
     const testDataBodySyncTest = {
         LocalDataUpdates: null,
@@ -111,7 +111,8 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     const syncOldNegativeTest = 'Old Sync Negative Test';
     setNewTestHeadline(syncOldNegativeTest);
 
-    const codeJobPositiveTest = 'Audit Logs Positive CodeJob Test';
+    //Finally removed 14/03/2022 after nofar flipped how code job run
+    /*const codeJobPositiveTest = 'Audit Logs Positive CodeJob Test';
     setNewTestHeadline(codeJobPositiveTest);
 
     const codeJobNegativeTest = 'Audit Logs Negative CodeJob Test';
@@ -121,7 +122,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     setNewTestHeadline(codeJobPositiveAsyncTest);
 
     const codeJobNegativeAsyncTest = 'Audit Logs Negative Async CodeJob Test';
-    setNewTestHeadline(codeJobNegativeAsyncTest);
+    setNewTestHeadline(codeJobNegativeAsyncTest);*/
 
     //#endregion Test Config area
 
@@ -130,271 +131,272 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
 
     //TODO: Totally remove this if when Production and Stage are the same
     //These endpoints canceled in Stage in 13/01/2022 by Nofar
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        //Print Test Results
-        await Promise.all([
-            //Sync Test
-            await executeSyncTest(syncTest, testDataBodySyncTest),
-            await executeSyncOldTest(syncOldTest, testDataBodySyncTest),
-            await executeSyncOldTest(syncOldNegativeTest, testDataBodySyncTest),
-            //These tests are for the old Sync Enpoint
-            //The old Sync endpoint canceled at 17/01/2021 in PAPI version 9.5.378
-            // createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
-            //     async (positiveCodeJobUUID) => {
-            //         await executeDraftCodeJobTest(
-            //             codeJobPositiveTest,
-            //             positiveCodeJobUUID,
-            //             testDataDraftToExecuteInPositiveTest,
-            //             false,
-            //         );
-            //     },
-            // ),
-            // createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
-            //     async (negativeCodeJobUUID) => {
-            //         //The response objects in case of exceptions for sync calls - changed in 06/11/2021
-            //         // await executeDraftCodeJobTest(
-            //         //     codeJobNegativeTest,
-            //         //     negativeCodeJobUUID,
-            //         //     testDataDraftToExecuteInNegativeTest,
-            //         //     false,
-            //         // );
-            //         await generalService.papiClient
-            //             .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
-            //             .then((res) => {
-            //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft', res);
-            //             })
-            //             .catch((err) => {
-            //                 if (
-            //                     err.message.includes(
-            //                         'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
-            //                     )
-            //                 ) {
-            //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft');
-            //                 } else {
-            //                     addTestResultUnderHeadline(
-            //                         codeJobNegativeTest,
-            //                         'Post execute CodeJob with draft',
-            //                         err.message,
-            //                     );
-            //                 }
-            //             });
-            //     },
-            // ),
-            //These tests are for the new Async Enpoint
-            //These endpoints canceled in Stage in 13/01/2022 by Nofar
-            // createCodeJobUsingDraftTest(codeJobPositiveAsyncTest, testDataDraftToExecuteInPositiveTest).then(
-            //     async (positiveAsyncCodeJobUUID) => {
-            //         await executeDraftCodeJobTest(
-            //             codeJobPositiveAsyncTest,
-            //             positiveAsyncCodeJobUUID,
-            //             testDataDraftToExecuteInPositiveTest,
-            //             true,
-            //         );
-            //     },
-            // ),
-            // createCodeJobUsingDraftTest(codeJobNegativeAsyncTest, testDataDraftToExecuteInNegativeTest).then(
-            //     async (negativeAsyncCodeJobUUID) => {
-            //         await executeDraftCodeJobTest(
-            //             codeJobNegativeAsyncTest,
-            //             negativeAsyncCodeJobUUID,
-            //             testDataDraftToExecuteInNegativeTest,
-            //             true,
-            //         );
-            //     },
-            // ),
-        ]).then(() => printTestResults(describe, expect, it, 'Audit Logs Tests Suites'));
-    } else {
-        //Print Test Results
-        await Promise.all([
-            //Sync Test
-            await executeSyncTest(syncTest, testDataBodySyncTest),
-            await executeSyncOldTest(syncOldTest, testDataBodySyncTest),
-            await executeSyncOldTest(syncOldNegativeTest, testDataBodySyncTest),
-            //These tests are for the old Sync Enpoint
-            //The old Sync endpoint canceled at 17/01/2021 in PAPI version 9.5.378
-            // createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
-            //     async (positiveCodeJobUUID) => {
-            //         await executeDraftCodeJobTest(
-            //             codeJobPositiveTest,
-            //             positiveCodeJobUUID,
-            //             testDataDraftToExecuteInPositiveTest,
-            //             false,
-            //         );
-            //     },
-            // ),
-            // createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
-            //     async (negativeCodeJobUUID) => {
-            //         //The response objects in case of exceptions for sync calls - changed in 06/11/2021
-            //         // await executeDraftCodeJobTest(
-            //         //     codeJobNegativeTest,
-            //         //     negativeCodeJobUUID,
-            //         //     testDataDraftToExecuteInNegativeTest,
-            //         //     false,
-            //         // );
-            //         await generalService.papiClient
-            //             .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
-            //             .then((res) => {
-            //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft', res);
-            //             })
-            //             .catch((err) => {
-            //                 if (
-            //                     err.message.includes(
-            //                         'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
-            //                     )
-            //                 ) {
-            //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft');
-            //                 } else {
-            //                     addTestResultUnderHeadline(
-            //                         codeJobNegativeTest,
-            //                         'Post execute CodeJob with draft',
-            //                         err.message,
-            //                     );
-            //                 }
-            //             });
-            //     },
-            // ),
-            //These tests are for the new Async Enpoint
-            createCodeJobUsingDraftTest(codeJobPositiveAsyncTest, testDataDraftToExecuteInPositiveTest).then(
-                async (positiveAsyncCodeJobUUID) => {
-                    await executeDraftCodeJobTest(
-                        codeJobPositiveAsyncTest,
-                        positiveAsyncCodeJobUUID,
-                        testDataDraftToExecuteInPositiveTest,
-                        true,
-                    );
-                },
-            ),
-            createCodeJobUsingDraftTest(codeJobNegativeAsyncTest, testDataDraftToExecuteInNegativeTest).then(
-                async (negativeAsyncCodeJobUUID) => {
-                    await executeDraftCodeJobTest(
-                        codeJobNegativeAsyncTest,
-                        negativeAsyncCodeJobUUID,
-                        testDataDraftToExecuteInNegativeTest,
-                        true,
-                    );
-                },
-            ),
-        ]).then(() => printTestResults(describe, expect, it, 'Audit Logs Tests Suites'));
-    }
+    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
+    //TODO : 13/03/2022 remove this commnet out sections after tests will pass and be stable in production and EU
+    //Print Test Results
+    await Promise.all([
+        //Sync Test
+        await executeSyncTest(syncTest, testDataBodySyncTest),
+        await executeSyncOldTest(syncOldTest, testDataBodySyncTest),
+        await executeSyncOldTest(syncOldNegativeTest, testDataBodySyncTest),
+        //These tests are for the old Sync Enpoint
+        //The old Sync endpoint canceled at 17/01/2021 in PAPI version 9.5.378
+        // createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
+        //     async (positiveCodeJobUUID) => {
+        //         await executeDraftCodeJobTest(
+        //             codeJobPositiveTest,
+        //             positiveCodeJobUUID,
+        //             testDataDraftToExecuteInPositiveTest,
+        //             false,
+        //         );
+        //     },
+        // ),
+        // createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
+        //     async (negativeCodeJobUUID) => {
+        //         //The response objects in case of exceptions for sync calls - changed in 06/11/2021
+        //         // await executeDraftCodeJobTest(
+        //         //     codeJobNegativeTest,
+        //         //     negativeCodeJobUUID,
+        //         //     testDataDraftToExecuteInNegativeTest,
+        //         //     false,
+        //         // );
+        //         await generalService.papiClient
+        //             .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
+        //             .then((res) => {
+        //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft', res);
+        //             })
+        //             .catch((err) => {
+        //                 if (
+        //                     err.message.includes(
+        //                         'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
+        //                     )
+        //                 ) {
+        //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft');
+        //                 } else {
+        //                     addTestResultUnderHeadline(
+        //                         codeJobNegativeTest,
+        //                         'Post execute CodeJob with draft',
+        //                         err.message,
+        //                     );
+        //                 }
+        //             });
+        //     },
+        // ),
+        //These tests are for the new Async Enpoint
+        //These endpoints canceled in Stage in 13/01/2022 by Nofar
+        // createCodeJobUsingDraftTest(codeJobPositiveAsyncTest, testDataDraftToExecuteInPositiveTest).then(
+        //     async (positiveAsyncCodeJobUUID) => {
+        //         await executeDraftCodeJobTest(
+        //             codeJobPositiveAsyncTest,
+        //             positiveAsyncCodeJobUUID,
+        //             testDataDraftToExecuteInPositiveTest,
+        //             true,
+        //         );
+        //     },
+        // ),
+        // createCodeJobUsingDraftTest(codeJobNegativeAsyncTest, testDataDraftToExecuteInNegativeTest).then(
+        //     async (negativeAsyncCodeJobUUID) => {
+        //         await executeDraftCodeJobTest(
+        //             codeJobNegativeAsyncTest,
+        //             negativeAsyncCodeJobUUID,
+        //             testDataDraftToExecuteInNegativeTest,
+        //             true,
+        //         );
+        //     },
+        // ),
+    ]).then(() => printTestResults(describe, expect, it, 'Audit Logs Tests Suites'));
+    // } else {
+    //     //Print Test Results
+    //     await Promise.all([
+    //         //Sync Test
+    //         await executeSyncTest(syncTest, testDataBodySyncTest),
+    //         await executeSyncOldTest(syncOldTest, testDataBodySyncTest),
+    //         await executeSyncOldTest(syncOldNegativeTest, testDataBodySyncTest),
+    //         //These tests are for the old Sync Enpoint
+    //         //The old Sync endpoint canceled at 17/01/2021 in PAPI version 9.5.378
+    //         // createCodeJobUsingDraftTest(codeJobPositiveTest, testDataDraftToExecuteInPositiveTest).then(
+    //         //     async (positiveCodeJobUUID) => {
+    //         //         await executeDraftCodeJobTest(
+    //         //             codeJobPositiveTest,
+    //         //             positiveCodeJobUUID,
+    //         //             testDataDraftToExecuteInPositiveTest,
+    //         //             false,
+    //         //         );
+    //         //     },
+    //         // ),
+    //         // createCodeJobUsingDraftTest(codeJobNegativeTest, testDataDraftToExecuteInNegativeTest).then(
+    //         //     async (negativeCodeJobUUID) => {
+    //         //         //The response objects in case of exceptions for sync calls - changed in 06/11/2021
+    //         //         // await executeDraftCodeJobTest(
+    //         //         //     codeJobNegativeTest,
+    //         //         //     negativeCodeJobUUID,
+    //         //         //     testDataDraftToExecuteInNegativeTest,
+    //         //         //     false,
+    //         //         // );
+    //         //         await generalService.papiClient
+    //         //             .post('/code_jobs/' + negativeCodeJobUUID + '/execute_draft')
+    //         //             .then((res) => {
+    //         //                 addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft', res);
+    //         //             })
+    //         //             .catch((err) => {
+    //         //                 if (
+    //         //                     err.message.includes(
+    //         //                         'execute_draft failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: orenTest","detail":{"errorcode":"InnerException"}}}',
+    //         //                     )
+    //         //                 ) {
+    //         //                     addTestResultUnderHeadline(codeJobNegativeTest, 'Post execute CodeJob with draft');
+    //         //                 } else {
+    //         //                     addTestResultUnderHeadline(
+    //         //                         codeJobNegativeTest,
+    //         //                         'Post execute CodeJob with draft',
+    //         //                         err.message,
+    //         //                     );
+    //         //                 }
+    //         //             });
+    //         //     },
+    //         // ),
+    //         //These tests are for the new Async Enpoint
+    //         createCodeJobUsingDraftTest(codeJobPositiveAsyncTest, testDataDraftToExecuteInPositiveTest).then(
+    //             async (positiveAsyncCodeJobUUID) => {
+    //                 await executeDraftCodeJobTest(
+    //                     codeJobPositiveAsyncTest,
+    //                     positiveAsyncCodeJobUUID,
+    //                     testDataDraftToExecuteInPositiveTest,
+    //                     true,
+    //                 );
+    //             },
+    //         ),
+    //         createCodeJobUsingDraftTest(codeJobNegativeAsyncTest, testDataDraftToExecuteInNegativeTest).then(
+    //             async (negativeAsyncCodeJobUUID) => {
+    //                 await executeDraftCodeJobTest(
+    //                     codeJobNegativeAsyncTest,
+    //                     negativeAsyncCodeJobUUID,
+    //                     testDataDraftToExecuteInNegativeTest,
+    //                     true,
+    //                 );
+    //             },
+    //         ),
+    //     ]).then(() => printTestResults(describe, expect, it, 'Audit Logs Tests Suites'));
+    // }
 
     //Test
-    async function createCodeJobUsingDraftTest(testName, draftExecuteableCode) {
-        let codeJobUUID;
-        const updateValuesToDraftExecute = draftExecuteableCode;
-        const UpdateApiResponse = await generalService.papiClient.post('/code_jobs', updateValuesToDraftExecute);
-        if (UpdateApiResponse.UUID.length < 36) {
-            addTestResultUnderHeadline(testName, 'Post CodeJob with Draft', UpdateApiResponse);
-        } else {
-            codeJobUUID = UpdateApiResponse.UUID;
-            addTestResultUnderHeadline(testName, 'Post CodeJob with Draft');
-        }
-        return codeJobUUID;
-    }
+    // async function createCodeJobUsingDraftTest(testName, draftExecuteableCode) {
+    //     let codeJobUUID;
+    //     const updateValuesToDraftExecute = draftExecuteableCode;
+    //     const UpdateApiResponse = await generalService.papiClient.post('/code_jobs', updateValuesToDraftExecute);
+    //     if (UpdateApiResponse.UUID.length < 36) {
+    //         addTestResultUnderHeadline(testName, 'Post CodeJob with Draft', UpdateApiResponse);
+    //     } else {
+    //         codeJobUUID = UpdateApiResponse.UUID;
+    //         addTestResultUnderHeadline(testName, 'Post CodeJob with Draft');
+    //     }
+    //     return codeJobUUID;
+    // }
 
     //Test
-    async function executeDraftCodeJobTest(testName, codeJobUUID, testDataBody, async) {
-        //This can be used to test the Scheduler addon (3/3)
-        //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
-        let executeDraftCodeApiResponse;
-        try {
-            if (async) {
-                executeDraftCodeApiResponse = await generalService.papiClient.post(
-                    '/code_jobs/async/' + codeJobUUID + '/execute_draft',
-                );
-            } else {
-                executeDraftCodeApiResponse = await generalService.papiClient.post(
-                    '/code_jobs/' + codeJobUUID + '/execute_draft',
-                );
-            }
-        } catch (error) {
-            executeDraftCodeApiResponse = error;
-        }
+    // async function executeDraftCodeJobTest(testName, codeJobUUID, testDataBody, async) {
+    //     //This can be used to test the Scheduler addon (3/3)
+    //     //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
+    //     let executeDraftCodeApiResponse;
+    //     try {
+    //         if (async) {
+    //             executeDraftCodeApiResponse = await generalService.papiClient.post(
+    //                 '/code_jobs/async/' + codeJobUUID + '/execute_draft',
+    //             );
+    //         } else {
+    //             executeDraftCodeApiResponse = await generalService.papiClient.post(
+    //                 '/code_jobs/' + codeJobUUID + '/execute_draft',
+    //             );
+    //         }
+    //     } catch (error) {
+    //         executeDraftCodeApiResponse = error;
+    //     }
 
-        //async is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
-        console.log({ executeDraftCodeApiResponse: executeDraftCodeApiResponse });
+    //     //async is a new end point that was changed by Yossi in 07/06/2020 and for now it replace the old one
+    //     console.log({ executeDraftCodeApiResponse: executeDraftCodeApiResponse });
 
-        if (async) {
-            if (executeDraftCodeApiResponse.ExecutionUUID.length > 36 || executeDraftCodeApiResponse.URI.length > 48) {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft', executeDraftCodeApiResponse);
-            } else {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft');
-            }
-        } else {
-            if (executeDraftCodeApiResponse.success === undefined) {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft', executeDraftCodeApiResponse);
-            } else {
-                addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft');
-            }
-        }
+    //     if (async) {
+    //         if (executeDraftCodeApiResponse.ExecutionUUID.length > 36 || executeDraftCodeApiResponse.URI.length > 48) {
+    //             addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft', executeDraftCodeApiResponse);
+    //         } else {
+    //             addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft');
+    //         }
+    //     } else {
+    //         if (executeDraftCodeApiResponse.success === undefined) {
+    //             addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft', executeDraftCodeApiResponse);
+    //         } else {
+    //             addTestResultUnderHeadline(testName, 'Post execute CodeJob with draft');
+    //         }
+    //     }
 
-        if (codeJobUUID != undefined) {
-            let inetrvalLimit = 180000;
-            const SetIntervalEvery = 6000;
-            await new Promise((resolve) => {
-                const getResultObjectInterval = setInterval(async () => {
-                    inetrvalLimit -= SetIntervalEvery;
-                    if (inetrvalLimit < 1) {
-                        clearInterval(getResultObjectInterval);
-                        await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
-                        addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Interval Timer', false);
-                        return resolve(null);
-                    }
-                    const getAuditLogURI =
-                        "/audit_logs?Where=AuditInfo.JobMessageData.CodeJobUUID='" + codeJobUUID + "'";
+    //     if (codeJobUUID != undefined) {
+    //         let inetrvalLimit = 180000;
+    //         const SetIntervalEvery = 6000;
+    //         await new Promise((resolve) => {
+    //             const getResultObjectInterval = setInterval(async () => {
+    //                 inetrvalLimit -= SetIntervalEvery;
+    //                 if (inetrvalLimit < 1) {
+    //                     clearInterval(getResultObjectInterval);
+    //                     await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
+    //                     addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Interval Timer', false);
+    //                     return resolve(null);
+    //                 }
+    //                 const getAuditLogURI =
+    //                     "/audit_logs?Where=AuditInfo.JobMessageData.CodeJobUUID='" + codeJobUUID + "'";
 
-                    let apiResponse;
-                    try {
-                        apiResponse = await generalService.papiClient.get(getAuditLogURI);
-                    } catch (error) {
-                        clearInterval(getResultObjectInterval);
-                        apiResponse = error;
-                        console.log({ getAuditLogApiResponse: apiResponse });
+    //                 let apiResponse;
+    //                 try {
+    //                     apiResponse = await generalService.papiClient.get(getAuditLogURI);
+    //                 } catch (error) {
+    //                     clearInterval(getResultObjectInterval);
+    //                     apiResponse = error;
+    //                     console.log({ getAuditLogApiResponse: apiResponse });
 
-                        await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
-                        addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Throwing Error: ', apiResponse);
-                        return resolve(null);
-                    }
+    //                     await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
+    //                     addTestResultUnderHeadline(testName, 'Audit Logs of Code Job - Throwing Error: ', apiResponse);
+    //                     return resolve(null);
+    //                 }
 
-                    if (JSON.stringify(apiResponse).includes('"ResultObject":')) {
-                        clearInterval(getResultObjectInterval);
-                        await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
+    //                 if (JSON.stringify(apiResponse).includes('"ResultObject":')) {
+    //                     clearInterval(getResultObjectInterval);
+    //                     await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
 
-                        //Print the API response
-                        console.log({ Code_Job_Result_Object: apiResponse });
+    //                     //Print the API response
+    //                     console.log({ Code_Job_Result_Object: apiResponse });
 
-                        const codeJobResultObject = isExecuteDraftCodeJobValidResponse(apiResponse, testDataBody);
-                        console.log('CodeJobResultObject return result: ' + codeJobResultObject);
-                        addTestResultUnderHeadline(
-                            testName,
-                            'Execute Draft Code Job Valid Response',
-                            codeJobResultObject,
-                        );
-                        const auditLogsResultObject = await generalService.getAuditLogResultObjectIfValid(
-                            getAuditLogURI,
-                        );
+    //                     const codeJobResultObject = isExecuteDraftCodeJobValidResponse(apiResponse, testDataBody);
+    //                     console.log('CodeJobResultObject return result: ' + codeJobResultObject);
+    //                     addTestResultUnderHeadline(
+    //                         testName,
+    //                         'Execute Draft Code Job Valid Response',
+    //                         codeJobResultObject,
+    //                     );
+    //                     const auditLogsResultObject = await generalService.getAuditLogResultObjectIfValid(
+    //                         getAuditLogURI,
+    //                     );
 
-                        //Print the AuditLogs Result Object
-                        console.log({ Code_Job_Audit_Logs_Object: auditLogsResultObject });
+    //                     //Print the AuditLogs Result Object
+    //                     console.log({ Code_Job_Audit_Logs_Object: auditLogsResultObject });
 
-                        //Report test result
-                        if (JSON.stringify(auditLogsResultObject).includes('AuditInfo')) {
-                            addTestResultUnderHeadline(testName, 'Audit Logs of Draft Code Job Valid Response');
-                        } else {
-                            addTestResultUnderHeadline(
-                                testName,
-                                'Audit Logs of Draft Code Job Valid Response',
-                                auditLogsResultObject,
-                            );
-                        }
-                        resolve(null);
-                    }
-                }, SetIntervalEvery);
-            });
-        }
+    //                     //Report test result
+    //                     if (JSON.stringify(auditLogsResultObject).includes('AuditInfo')) {
+    //                         addTestResultUnderHeadline(testName, 'Audit Logs of Draft Code Job Valid Response');
+    //                     } else {
+    //                         addTestResultUnderHeadline(
+    //                             testName,
+    //                             'Audit Logs of Draft Code Job Valid Response',
+    //                             auditLogsResultObject,
+    //                         );
+    //                     }
+    //                     resolve(null);
+    //                 }
+    //             }, SetIntervalEvery);
+    //         });
+    //     }
 
-        //This can be use to easily extract the token to the console
-        //console.log({Token : API._Token})
-    }
+    //     //This can be use to easily extract the token to the console
+    //     //console.log({Token : API._Token})
+    // }
 
     //Test
     async function executeSyncTest(testName, testDataBody) {
@@ -608,41 +610,80 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             .then((res) => res.Body);
 
         if (testName.includes('Negative')) {
-            addTestResultUnderHeadline(
-                testName,
-                'No Server Error',
-                JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
-            );
-
-            addTestResultUnderHeadline(
-                testName,
-                'No Sync FileName',
-                JSON.stringify(syncResponse).includes('/h:FileName') ? JSON.stringify(syncResponse) : true,
-            );
-
-            const Length = JSON.stringify(syncResponse)
-                .split('h:Length')[1]
-                .slice(-5, -2)
-                .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Length',
-                Number(Length) == 1 ? true : 'Length is: ' + Length,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Server Error',
+                    JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Server Error',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Sync FileName',
+                    JSON.stringify(syncResponse).includes('/h:FileName') ? JSON.stringify(syncResponse) : true,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'No Sync FileName',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
+            let syncResponseLength;
+            try {
+                syncResponseLength = JSON.stringify(syncResponse)
+                    .split('h:Length')[1]
+                    .slice(-5, -2)
+                    .replace(/[^0-9]/g, '');
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Length',
+                    Number(syncResponseLength) == 1 ? true : 'Length is: ' + syncResponseLength,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Length',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const Status = JSON.stringify(syncResponse).split('h:Status')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Status',
-                Status.includes('NoDataToSent') ? true : 'Status is: ' + Status,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    Status.includes('NoDataToSent') ? true : 'Status is: ' + Status,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync GetDataResponse',
-                GetDataResponse.includes('IA==') ? true : 'Status is: ' + GetDataResponse,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    GetDataResponse.includes('IA==') ? true : 'Status is: ' + GetDataResponse,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
         } else {
             addTestResultUnderHeadline(
                 testName,
@@ -651,35 +692,67 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             );
 
             const FileName = JSON.stringify(syncResponse).split('h:FileName')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync FileName',
-                FileName.includes('GetData.sqlite') ? true : 'FileName is: ' + FileName,
-            );
-
-            const Length = JSON.stringify(syncResponse)
-                .split('h:Length')[1]
-                .slice(-10, -2)
-                .replace(/[^0-9]/g, '');
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Length',
-                Number(Length) > 200 ? true : 'Length is: ' + Length,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync FileName',
+                    FileName.includes('GetData.sqlite') ? true : 'FileName is: ' + FileName,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync FileName',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
+            let syncResponseLength;
+            try {
+                syncResponseLength = JSON.stringify(syncResponse)
+                    .split('h:Length')[1]
+                    .slice(-10, -2)
+                    .replace(/[^0-9]/g, '');
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Length',
+                    Number(syncResponseLength) > 200 ? true : 'Length is: ' + syncResponseLength,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Length',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const Status = JSON.stringify(syncResponse).split('h:Status')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync Status',
-                Status.includes('DataSent') ? true : 'Status is: ' + Status,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    Status.includes('DataSent') ? true : 'Status is: ' + Status,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync Status',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
 
             const GetDataResponse = JSON.stringify(syncResponse).split('GetDataResponse')[1];
-            addTestResultUnderHeadline(
-                testName,
-                'Get Sync GetDataResponse',
-                GetDataResponse.length > 200 ? true : 'GetDataResponse is: ' + GetDataResponse,
-            );
+            try {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    GetDataResponse.length > 200 ? true : 'GetDataResponse is: ' + GetDataResponse,
+                );
+            } catch (error) {
+                addTestResultUnderHeadline(
+                    testName,
+                    'Get Sync GetDataResponse',
+                    `Error received: ${JSON.stringify(syncResponse)}`,
+                );
+            }
         }
 
         //This can be use to easily extract the token to the console
@@ -687,123 +760,123 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     }
 
     //Base Functions
-    function isExecuteDraftCodeJobValidResponse(codeJobAPIResponse, testDataBody) {
-        let tempObj = {} as any;
-        if (codeJobAPIResponse[0] === undefined) {
-            tempObj = codeJobAPIResponse.result;
-        } else {
-            tempObj = codeJobAPIResponse[0];
-        }
-        //Check UUID
-        try {
-            if (
-                tempObj.DistributorUUID == tempObj.UUID ||
-                tempObj.DistributorUUID == tempObj.Event.User.UUID ||
-                tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                tempObj.UUID == tempObj.Event.User.UUID ||
-                tempObj.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                tempObj.UUID != tempObj.UUID ||
-                tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[1] != tempObj.DistributorUUID ||
-                tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[3] !=
-                    tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
-                tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
-            ) {
-                return 'Error in UUID in Code Job API Response';
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                error.stack = 'UUID in Code Job API Response:\n' + error.stack;
-            }
-            return error;
-        }
-        //Check Date and Time
-        try {
-            if (
-                !tempObj.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
-                !tempObj.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
-            ) {
-                return 'Error in Date and Time in Code Job API Response';
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                error.stack = 'Date and Time in Code Job API Response:\n' + error.stack;
-            }
-            return error;
-        }
-        //Check Type and Event
-        try {
-            if (
-                (tempObj.AuditType != 'action' && tempObj.AuditType != 'data') ||
-                tempObj.Event.Type != 'code_job_execution' ||
-                tempObj.Event.User.Email != generalService.getClientData('UserEmail') ||
-                tempObj.Event.User.InternalID != generalService.getClientData('UserID') ||
-                tempObj.Event.User.UUID != generalService.getClientData('UserUUID') ||
-                tempObj.AuditInfo.JobMessageData.CodeJobName != testDataBody.CodeJobName ||
-                tempObj.AuditInfo.JobMessageData.CodeJobDescription != testDataBody.Description
-            ) {
-                return 'The Type or Event contain wrong data';
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                error.stack = 'Type and Event in Code Job API Response:\n' + error.stack;
-            }
-            return error;
-        }
-        //Check Result Object
-        try {
-            //Verify that ErrorMessage exist
-            if (tempObj.AuditInfo.ErrorMessage != undefined) {
-                //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("ERROR")
-                //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("Error") //Changed in 26/07 investigated with nofar
-                if (tempObj.AuditInfo.ErrorMessage.includes('Failed') ^ testDataBody.DraftCode.includes('Error')) {
-                    return 'Error in execution result';
-                }
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                error.stack = 'Draft Code Error in Code Job API Response:\n' + error.stack;
-            }
-            return error;
-        }
-        return true;
-    }
+    // function isExecuteDraftCodeJobValidResponse(codeJobAPIResponse, testDataBody) {
+    //     let tempObj = {} as any;
+    //     if (codeJobAPIResponse[0] === undefined) {
+    //         tempObj = codeJobAPIResponse.result;
+    //     } else {
+    //         tempObj = codeJobAPIResponse[0];
+    //     }
+    //     //Check UUID
+    //     try {
+    //         if (
+    //             tempObj.DistributorUUID == tempObj.UUID ||
+    //             tempObj.DistributorUUID == tempObj.Event.User.UUID ||
+    //             tempObj.DistributorUUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //             tempObj.UUID == tempObj.Event.User.UUID ||
+    //             tempObj.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //             tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //             tempObj.UUID != tempObj.UUID ||
+    //             tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[1] != tempObj.DistributorUUID ||
+    //             tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[3] !=
+    //                 tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+    //             tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
+    //         ) {
+    //             return 'Error in UUID in Code Job API Response';
+    //         }
+    //     } catch (error) {
+    //         if (error instanceof Error) {
+    //             error.stack = 'UUID in Code Job API Response:\n' + error.stack;
+    //         }
+    //         return error;
+    //     }
+    //     //Check Date and Time
+    //     try {
+    //         if (
+    //             !tempObj.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
+    //             !tempObj.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
+    //         ) {
+    //             return 'Error in Date and Time in Code Job API Response';
+    //         }
+    //     } catch (error) {
+    //         if (error instanceof Error) {
+    //             error.stack = 'Date and Time in Code Job API Response:\n' + error.stack;
+    //         }
+    //         return error;
+    //     }
+    //     //Check Type and Event
+    //     try {
+    //         if (
+    //             (tempObj.AuditType != 'action' && tempObj.AuditType != 'data') ||
+    //             tempObj.Event.Type != 'code_job_execution' ||
+    //             tempObj.Event.User.Email != generalService.getClientData('UserEmail') ||
+    //             tempObj.Event.User.InternalID != generalService.getClientData('UserID') ||
+    //             tempObj.Event.User.UUID != generalService.getClientData('UserUUID') ||
+    //             tempObj.AuditInfo.JobMessageData.CodeJobName != testDataBody.CodeJobName ||
+    //             tempObj.AuditInfo.JobMessageData.CodeJobDescription != testDataBody.Description
+    //         ) {
+    //             return 'The Type or Event contain wrong data';
+    //         }
+    //     } catch (error) {
+    //         if (error instanceof Error) {
+    //             error.stack = 'Type and Event in Code Job API Response:\n' + error.stack;
+    //         }
+    //         return error;
+    //     }
+    //     //Check Result Object
+    //     try {
+    //         //Verify that ErrorMessage exist
+    //         if (tempObj.AuditInfo.ErrorMessage != undefined) {
+    //             //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("ERROR")
+    //             //Old apy was tempObj.AuditInfo.ResultObject.toString().includes("Error") //Changed in 26/07 investigated with nofar
+    //             if (tempObj.AuditInfo.ErrorMessage.includes('Failed') ^ testDataBody.DraftCode.includes('Error')) {
+    //                 return 'Error in execution result';
+    //             }
+    //         }
+    //     } catch (error) {
+    //         if (error instanceof Error) {
+    //             error.stack = 'Draft Code Error in Code Job API Response:\n' + error.stack;
+    //         }
+    //         return error;
+    //     }
+    //     return true;
+    // }
 
     //Function to remove all the Scheduler Code Jobs from Distributor
-    async function removeAllSchedulerCodeJobFromDistributor(codeJobUUID?: string) {
-        //codeJobUUID = undefined;
-        //for (var index = 100; index > 0; index--) {
-        let getAllCodeJobs = [] as any;
-        if (codeJobUUID == undefined) {
-            getAllCodeJobs = await generalService.papiClient.get('/code_jobs?Fields=UUID');
-        } else {
-            getAllCodeJobs.push({ UUID: codeJobUUID });
-        }
-        // if (getAllCodeJobs.length == 0) {
-        //     break;
-        // }
-        for (let i = 0; i < getAllCodeJobs.length; i++) {
-            const codeJobObject = {
-                CodeJobIsHidden: true,
-                UUID: getAllCodeJobs[i].UUID,
-                IsScheduled: false,
-            };
-            await generalService.fetchStatus(generalService['client'].BaseURL + '/code_jobs', {
-                method: 'POST',
-                body: JSON.stringify(codeJobObject),
-                headers: {
-                    Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-                    //X-Pepperi-OwnerID is the ID of the Addon
-                    'X-Pepperi-OwnerID': '9b00d684-4615-4293-9727-63da81802a8d',
-                },
-            });
+    // async function removeAllSchedulerCodeJobFromDistributor(codeJobUUID?: string) {
+    //     //codeJobUUID = undefined;
+    //     //for (var index = 100; index > 0; index--) {
+    //     let getAllCodeJobs = [] as any;
+    //     if (codeJobUUID == undefined) {
+    //         getAllCodeJobs = await generalService.papiClient.get('/code_jobs?Fields=UUID');
+    //     } else {
+    //         getAllCodeJobs.push({ UUID: codeJobUUID });
+    //     }
+    //     // if (getAllCodeJobs.length == 0) {
+    //     //     break;
+    //     // }
+    //     for (let i = 0; i < getAllCodeJobs.length; i++) {
+    //         const codeJobObject = {
+    //             CodeJobIsHidden: true,
+    //             UUID: getAllCodeJobs[i].UUID,
+    //             IsScheduled: false,
+    //         };
+    //         await generalService.fetchStatus(generalService['client'].BaseURL + '/code_jobs', {
+    //             method: 'POST',
+    //             body: JSON.stringify(codeJobObject),
+    //             headers: {
+    //                 Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+    //                 //X-Pepperi-OwnerID is the ID of the Addon
+    //                 'X-Pepperi-OwnerID': '9b00d684-4615-4293-9727-63da81802a8d',
+    //             },
+    //         });
 
-            console.log(i);
-            console.log(JSON.stringify(codeJobObject.UUID));
-            if (getAllCodeJobs.length == 1) {
-                i = 0;
-                break;
-            }
-        }
-    }
+    //         console.log(i);
+    //         console.log(JSON.stringify(codeJobObject.UUID));
+    //         if (getAllCodeJobs.length == 1) {
+    //             i = 0;
+    //             break;
+    //         }
+    //     }
+    // }
 }
