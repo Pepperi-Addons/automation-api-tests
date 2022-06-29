@@ -132,9 +132,9 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
-        sync(client, testerFunctions),
-        file_storage(client, testerFunctions),
-        fields(client, testerFunctions),
+        await sync(client, testerFunctions),
+        await file_storage(client, testerFunctions),
+        await fields(client, testerFunctions),
     ]).then(() => testerFunctions.run());
     testName = '';
     return testResult;
