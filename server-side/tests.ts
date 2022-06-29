@@ -132,7 +132,6 @@ export async function all(client: Client, request: Request, testerFunctions: Tes
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
-        await UpgradeDependenciesTests(service, request, testerFunctions),
         await test_data(client, testerFunctions),
         await sync(client, testerFunctions),
         await file_storage(client, testerFunctions),
