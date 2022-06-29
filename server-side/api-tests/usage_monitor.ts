@@ -7,7 +7,8 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
     const it = tester.it;
     const usageMonitorService = new UsageMonitorService(generalService);
 
-    const testBaseVersion = '1.0.58';
+    //const testBaseVersion = '1.0.69';
+    const testBaseVersion = '1.0.154';
 
     //#region Upgrade ADAL
     const testData = {
@@ -27,8 +28,8 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
-            it('Validate that all the needed addons are installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
@@ -58,7 +59,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
         });
         describe(`Compare data from base and last versions`, () => {
             it(`Negative: AddonUUID not equale to OwnerID`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 // console.log(usageMonitorService.papiClient['options'].addonUUID,usageMonitorService.papiClient['options'].addonSecretKey )
                 // usageMonitorService.papiClient['options'].addonUUID = {}
                 // usageMonitorService.papiClient['options'].addonSecretKey = {}

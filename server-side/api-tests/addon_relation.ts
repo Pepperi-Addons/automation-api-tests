@@ -7,22 +7,24 @@ export async function AddonRelationTests(generalService: GeneralService, request
     const it = tester.it;
     const relationService = new AddonRelationService(generalService);
 
-    const addonUUID = generalService['client'].BaseURL.includes('staging')
-        ? '48d20f0b-369a-4b34-b48a-ffe245088513'
-        : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const secretKey = await relationService.getSecretKey();
-
-    //#region Upgrade ADAL
-    const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-    };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
     }
+
+    const addonUUID = generalService['client'].BaseURL.includes('staging')
+        ? '48d20f0b-369a-4b34-b48a-ffe245088513'
+        : '78696fc6-a04f-4f82-aadf-8f823776473f';
+    const secretKey = await generalService.getSecretKey(addonUUID, varKey);
+
+    //#region Upgrade ADAL
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+    };
+
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
@@ -31,8 +33,8 @@ export async function AddonRelationTests(generalService: GeneralService, request
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
-            it('Validate that all the needed addons are installed', async () => {
-                isInstalledArr.forEach((isInstalled) => {
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
                 });
             });
@@ -62,7 +64,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
         });
         describe(`addon Relation negative scenarios`, () => {
             it(`Negative: AddonUUID not equale to OwnerID`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': generalService.papiClient['options'].addonUUID,
@@ -84,7 +86,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: AddonUUID not equale to SecretKey`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -106,7 +108,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Name is mandatory field`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -128,7 +130,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: RelationName is mandatory field`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -150,7 +152,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Type is mandatory field`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -172,7 +174,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Relation type AddonAPI, creation without AddonRelativeURL`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -194,7 +196,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Relation type NgComponent, creation without SubType`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -219,7 +221,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Relation type NgComponent, creation without ComponentName`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -244,7 +246,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Relation type NgComponent, creation without ModuleName`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -269,7 +271,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Relation type NgComponent, creation without AddonRelativeURL`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -294,7 +296,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 );
             });
             it(`Negative: Relation type Navigate, creation without AddonRelativeURL`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelation(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -318,7 +320,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
         });
         describe(`addon Relation positive scenarios`, () => {
             it(`Craete addon Relation`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelationStatus(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -338,7 +340,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                 expect(relationResponse).to.equal(200);
             });
             it(`Get addon Relation`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.getRelation(
                     //const relationResponse = await relationService.getRelation2(
                     {
@@ -373,7 +375,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
 
             ///////////////////////////
             it(`Update addon Relation to Hidden = true`, async () => {
-                //const secretKey = await relationService.getSecretKey()
+                //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const relationResponse = await relationService.postRelationStatus(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
@@ -403,7 +405,7 @@ export async function AddonRelationTests(generalService: GeneralService, request
                     Description: 'test1',
                     AddonRelativeURL: '/api/test1', // mandatory on create
                 };
-                const relationResponse = await relationService.getRelationWithName(
+                const relationResponse = await relationService.getRelationWithNameAndUUID(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
                         'X-Pepperi-SecretKey': secretKey,

@@ -212,6 +212,7 @@ export async function MaintenanceFullTests(generalService: GeneralService, reque
         await ExecuteAddonsTests(generalService, request, tester);
 }
 
+//debug: this is the 'main' function which runs everything
 export async function ExecuteAddonsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
@@ -7045,6 +7046,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
@@ -7123,6 +7125,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
@@ -7272,11 +7275,11 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
-
                     let isData = false;
                     for (const property in apiResponse.resultObject.upgrade) {
                         apiResponse.resultObject.upgrade[property].forEach(() => {
@@ -7430,11 +7433,11 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
-
                     let isData = false;
                     for (const property in apiResponse.resultObject.install) {
                         apiResponse.resultObject.install[property].forEach(() => {
@@ -7573,11 +7576,11 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
                     intervalCounter--;
-
                     let isData = false;
                     for (const property in apiResponse.resultObject.upgrade) {
                         const propertyDate = new Date(property);
@@ -7788,6 +7791,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
@@ -7989,6 +7993,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     addTestResultUnderHeadline(testName, 'Maintenance response - Intervel Timer', false);
                     return;
                 }
+                //debug: this is where things tend to break - validation of server response - validation of server response
                 if (apiResponse != undefined) {
                     resolve(null);
                     clearInterval(getResultObjectInterval);
@@ -8148,6 +8153,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     //Uprade Test
                     let isData = false;
                     for (const property in apiResponse.resultObject.upgrade) {
+                        //debug: this is where things tend to break - validation of server response
                         const propertyDate = new Date(property);
                         const deltaUntilStart =
                             (propertyDate.getTime() - testExecutionData.testDate.getTime()) / 1000 / 60 / 60 / 24;
@@ -8580,6 +8586,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             // }
 
             //var maintenanceApiResponse = await generalService.papiClient.'POST', "addons/api/00000000-0000-0000-0000-000000000a91/version/" + getAPIVersion + "/installation.js/maintenance", testDataObject);
+            //debug: this is the callitself to the endpoint - here you can find the data, version var etc
             const maintenanceApiResponse = await generalService.papiClient.post(
                 '/addons/api/00000000-0000-0000-0000-000000000a91/version/' +
                     getAPIVersion +

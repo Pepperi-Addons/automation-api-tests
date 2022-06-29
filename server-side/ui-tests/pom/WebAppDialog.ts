@@ -1,66 +1,58 @@
 import { Browser } from '../utilities/browser';
-import { Page } from './base/page';
+import { Page } from './Pages/base/Page';
 import config from '../../config';
-import { Locator, By } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
+import { ConsoleColors } from '../../services/general.service';
 
 export class WebAppDialog extends Page {
-    constructor(browser: Browser) {
+    constructor(protected browser: Browser) {
         super(browser, `${config.baseUrl}`);
     }
 
-    public Dialog: Locator = By.css('pep-dialog');
-    public Title: Locator = By.css('pep-dialog .dialog-title');
-    public Content: Locator = By.css('div [pep-dialog-content]');
-    public ButtonArr: Locator = By.css('pep-dialog button');
+    public Dialog: By = By.css('pep-dialog');
+    public Title: By = By.css('pep-dialog .dialog-title');
+    public Content: By = By.css('div [pep-dialog-content]');
+    public ButtonArr: By = By.css('pep-dialog button');
+    public doneBtn: By = By.css('[data-qa="doneButton"]');
+    public cancelBtn: By = By.css('[data-qa="cancelButton"]');
+    public xBtn: By = By.xpath('//pep-dialog//mat-icon[@role="img"]//pep-icon[@name="system_close"]');
 
     ///Object Types Editor Locators
-    public EditorContent: Locator = By.css('pep-dialog .mat-dialog-content');
-    public EditorTextBoxInput: Locator = By.css('pep-dialog .mat-dialog-content pep-textbox input');
-    public EditorTextAreaInput: Locator = By.css('pep-dialog .mat-dialog-content pep-textarea [matinput]');
-    public EditorInput: Locator = By.css('pep-dialog .mat-dialog-content .pep-field input');
-    public EditorMatInput: Locator = By.css('pep-dialog .mat-dialog-content .pep-field [matinput]');
+    public EditorContent: By = By.css('pep-dialog .mat-dialog-content');
+    public EditorTextBoxInput: By = By.css('pep-dialog .mat-dialog-content pep-textbox input');
+    public EditorTextAreaInput: By = By.css('pep-dialog .mat-dialog-content pep-textarea [matinput]');
+    public EditorInput: By = By.css('pep-dialog .mat-dialog-content .pep-field input');
+    public EditorMatInput: By = By.css('pep-dialog .mat-dialog-content .pep-field [matinput]');
 
-    public DialogXpath: Locator = By.xpath('.//pep-dialog');
+    public DialogXpath: By = By.xpath('.//pep-dialog');
 
     //Iframe Dialogs
-    public IframeDialog: Locator = By.css('.warning-dialog');
-    public IframeDialogMessage: Locator = By.css('.warning-dialog #msgModalTextContent');
-    public IframeDialogCancelBtn: Locator = By.css('.warning-dialog #msgModalLeftBtn');
-    public IframeDialogApproveBtn: Locator = By.css('.warning-dialog #msgModalRightBtn');
+    public IframeDialog: By = By.css('.warning-dialog');
+    public IframeDialogMessage: By = By.css('.warning-dialog #msgModalTextContent');
+    public IframeDialogCancelBtn: By = By.css('.warning-dialog #msgModalLeftBtn');
+    public IframeDialogApproveBtn: By = By.css('.warning-dialog #msgModalRightBtn');
 
     public async selectDialogBoxBeforeNewOrder(buttonText = 'Yes'): Promise<void> {
-        //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 5000).then(
-            async (res) => {
-                for (let i = 0; i < res.length; i++) {
-                    if ((await res[i].getText()).trim() == buttonText) {
-                        await res[i].click();
-                        break;
-                    }
-                }
-            },
-            () => {
-                console.log(`Element ${this.ButtonArr.toString()} not found`);
-            },
-        );
+        /**
+         * Click to dismiss if dialog box found
+         */
+        try {
+            await this.browser.ClickByText(this.ButtonArr, buttonText);
+        } catch (error) {
+            console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
+        }
         return;
     }
 
     public async selectDialogBox(buttonText: string): Promise<void> {
-        //Click to dismiss if dialog box found
-        await this.browser.findElements(this.ButtonArr, 4000).then(
-            async (res) => {
-                for (let i = 0; i < res.length; i++) {
-                    if ((await res[i].getText()).trim() == buttonText) {
-                        await res[i].click();
-                        break;
-                    }
-                }
-            },
-            () => {
-                console.log(`Element ${this.ButtonArr.toString()} not found`);
-            },
-        );
+        /**
+         * Click to dismiss if dialog box found
+         */
+        try {
+            await this.browser.ClickByText(this.ButtonArr, buttonText);
+        } catch (error) {
+            console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
+        }
         return;
     }
 
@@ -77,7 +69,7 @@ export class WebAppDialog extends Page {
                 return await res.getText();
             },
             () => {
-                console.log(`Element ${this.ButtonArr.toString()} not found`);
+                console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
                 return `Element ${this.ButtonArr.toString()} not found`;
             },
         );

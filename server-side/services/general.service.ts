@@ -17,6 +17,26 @@ import { performance } from 'perf_hooks';
 import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
+import tester from '../tester';
+
+export const testData = {
+    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.498'], //PAPI
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.79'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.'],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
+    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
+    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
+    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
+    'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+    'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+    'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+};
 
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
@@ -28,11 +48,11 @@ export const ConsoleColors = {
     NevigationMessage: 'color: #3BB9FF',
     ClickedMessage: 'color: #00FFFF',
     SentKeysMessage: 'color: #C3FDB8',
+    ElementFoundMessage: 'color: #6AFB92',
     BugSkipped: 'color: #F535AA',
     Error: 'color: #FF0000',
     Success: 'color: #00FF00',
 };
-
 console.log('%cLogs Colors Information:\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.MenuHeader}`); //Black, Yellow
 console.log('%c#F87217\t\tSystem Information\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SystemInformation}`); //Pumpkin Orange
 console.log('%c#FFD801\t\tInformation\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Information}`); //Rubber Ducky Yellow
@@ -41,12 +61,18 @@ console.log('%c#6C2DC7\t\tPage Message\t\t', `${ConsoleColors.MenuBackground}; $
 console.log('%c#3BB9FF\t\tNevigation Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.NevigationMessage}`); //Deep Sky Blue
 console.log('%c#00FFFF\t\tClicked Message\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.ClickedMessage}`); //Aqua
 console.log('%c#C3FDB8\t\tSentKeys Message\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.SentKeysMessage}`); //Light Jade
+console.log(
+    '%c#6AFB92\t\tElement Found Message\t',
+    `${ConsoleColors.MenuBackground}; ${ConsoleColors.ElementFoundMessage}`,
+); //Dragon Green
 console.log('%c#F535AA\t\tBug Skipped\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.BugSkipped}`); //Neon Pink
 console.log('%c#FF0000\t\tError\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Error}`); //red
 console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${ConsoleColors.Success}`); //green
 
 /**
  * This listner will be added when scripts start from the API or from CLI
+ * In cased of errors from selenium-webdriver libary or an error that includes message of "Error"
+ * The process will end
  */
 process.on('unhandledRejection', async (error) => {
     if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
@@ -54,6 +80,13 @@ process.on('unhandledRejection', async (error) => {
         console.log('Wait 10 seconds before trying to call the browser api again');
         console.debug(`%cSleep: ${10000} milliseconds`, ConsoleColors.Information);
         msSleep(10000);
+    } else if (error instanceof Error && JSON.stringify(error.message).includes('Error')) {
+        console.log(`%cError unhandledRejection: ${error.message}`, ConsoleColors.Error);
+        console.log(
+            `%cIn cases of unhandledRejection that include message of "Error" the process stopped`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
     } else {
         console.log(`%cError unhandledRejection: ${error}`, ConsoleColors.Error);
         console.debug(`%cSleep: ${4000} milliseconds`, ConsoleColors.Information);
@@ -142,7 +175,7 @@ export default class GeneralService {
      * @param ms
      * @returns
      */
-    sleepTimeout(ms: number) {
+    sleepAsync(ms: number) {
         console.debug(`%cAsync Sleep: ${ms} milliseconds`, ConsoleColors.Information);
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
@@ -168,7 +201,33 @@ export default class GeneralService {
         return query ? url + '?' + query : url;
     }
 
+    initiateTesterFunctions(client: Client, testName: string) {
+        const testEnvironment = client.BaseURL.includes('staging')
+            ? 'Sandbox'
+            : client.BaseURL.includes('papi-eu')
+            ? 'Production-EU'
+            : 'Production';
+        const { describe, expect, assert, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } =
+            tester(client, testName, testEnvironment);
+        return {
+            describe,
+            expect,
+            assert,
+            it,
+            run,
+            setNewTestHeadline,
+            addTestResultUnderHeadline,
+            printTestResults,
+        };
+    }
+
     async initiateTester(email, pass): Promise<Client> {
+        const getToken = await this.getToken(email, pass);
+
+        return this.createClient(getToken.access_token);
+    }
+
+    private async getToken(email: any, pass: any) {
         const urlencoded = new URLSearchParams();
         urlencoded.append('username', email);
         urlencoded.append('password', pass);
@@ -190,16 +249,23 @@ export default class GeneralService {
             .then((res) => res.text())
             .then((res) => (res ? JSON.parse(res) : ''));
 
-        return this.createClient(getToken.access_token);
+        if (!getToken?.access_token) {
+            throw new Error(
+                `Error unauthorized\nError: ${getToken.error}\nError description: ${getToken.error_description}`,
+            );
+        }
+
+        return getToken;
     }
 
     createClient(authorization) {
         if (!authorization) {
-            throw new Error('unauthorized');
+            throw new Error('Error unauthorized');
         }
         const token = authorization.replace('Bearer ', '') || '';
         const parsedToken = jwt_decode(token);
-        const [sk, AddonUUID] = this.getSecret();
+        const [AddonUUID, sk] = this.getSecret();
+
         return {
             AddonUUID: AddonUUID,
             AddonSecretKey: sk,
@@ -211,6 +277,8 @@ export default class GeneralService {
             },
         };
     }
+
+    // getSecretfromKMS() {}
 
     getSecret() {
         let addonUUID;
@@ -228,7 +296,7 @@ export default class GeneralService {
             try {
                 sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
             } catch (error) {
-                console.log(`SK Not found: ${error}`);
+                console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
                 sk = '00000000-0000-0000-0000-000000000000';
             }
         }
@@ -277,8 +345,8 @@ export default class GeneralService {
         return this.client.BaseURL.includes('staging')
             ? 'Sandbox'
             : this.client.BaseURL.includes('papi-eu')
-                ? 'Production-EU'
-                : 'Production';
+            ? 'Production-EU'
+            : 'Production';
     }
 
     getClientData(data: ClientData): string {
@@ -351,8 +419,8 @@ export default class GeneralService {
                 auditLogResponse === null
                     ? auditLogResponse
                     : auditLogResponse[0] === undefined
-                        ? auditLogResponse
-                        : auditLogResponse[0];
+                    ? auditLogResponse
+                    : auditLogResponse[0];
             //This case is used when AuditLog was not created at all (This can happen and it is valid)
             if (auditLogResponse === null) {
                 this.sleep(4000);
@@ -427,42 +495,40 @@ export default class GeneralService {
         const isInstalledArr: boolean[] = [];
         const installedAddonsArr = await this.getInstalledAddons({ page_size: -1 });
         let installResponse;
-        for (const addonUUID in testData) {
-            let isInstalled = false;
-            for (let i = 0; i < installedAddonsArr.length; i++) {
-                if (installedAddonsArr[i].Addon !== null) {
-                    if (installedAddonsArr[i].Addon.Name == addonUUID) {
-                        isInstalled = true;
-                        break;
-                    }
-                }
-            }
+        for (const addonName in testData) {
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
+
+            const isInstalled = installedAddonsArr.find((addon) => addon.Addon.Name == addonName) ? true : false;
+
             if (!isInstalled) {
-                if (testData[addonUUID][0] == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
+                //API Testing Framework AddonUUID
+                if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${testData[addonUUID][0]}`)
+                        .addonUUID(`${addonUUID}`)
                         .install('0.0.235');
                 } else {
-                    if (testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/)) {
-                        const version = testData[addonUUID][1].match(/\d+[\.]\d+[/.]\d+/);
+                    if (version.match(/\d+[\.]\d+[/.]\d+/)) {
+                        const versionToInstall = version.match(/\d+[\.]\d+[/.]\d+/);
                         if (version?.length && typeof version[0] === 'string') {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${testData[addonUUID][0]}`)
-                                .install(version[0]);
+                                .addonUUID(`${addonUUID}`)
+                                .install(String(versionToInstall));
                         } else {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${testData[addonUUID][0]}`)
+                                .addonUUID(`${addonUUID}`)
                                 .install();
                         }
                     } else {
                         installResponse = await this.papiClient.addons.installedAddons
-                            .addonUUID(`${testData[addonUUID][0]}`)
+                            .addonUUID(`${addonUUID}`)
                             .install();
                     }
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
                     isInstalledArr.push(false);
+                    continue;
                 }
             }
             isInstalledArr.push(true);
@@ -474,6 +540,13 @@ export default class GeneralService {
         return this.papiClient.addons.installedAddons.addonUUID(addonUuid).uninstall();
     }
 
+    /**
+     * changes the version of the already installed addons based on 'test data'
+     * @param varKey
+     * @param testData
+     * @param isPhased if true will query only for pahsed versions
+     * @returns
+     */
     async changeVersion(
         varKey: string,
         testData: { [any: string]: string[] },
@@ -488,9 +561,13 @@ export default class GeneralService {
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
-                addonName == 'WebApp API Framework' ||
+                addonName == 'WebApp Platform' || //evgeny
+                addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 !isPhased
             ) {
+                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            }
+            if (addonName == 'ADAL' && this.papiClient['options'].baseURL.includes('staging')) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
             const fetchVarResponse = await this.fetchStatus(
@@ -505,32 +582,46 @@ export default class GeneralService {
                     },
                 },
             );
+
             let varLatestVersion;
-            if (fetchVarResponse.Status == 200) {
+            if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 200) {
                 try {
                     varLatestVersion = fetchVarResponse.Body[0].Version;
                 } catch (error) {
                     throw new Error(
-                        `Get latest addon version failed: ${version}, Status: ${varLatestVersion.Status
+                        `Get latest addon version failed: ${version}, Status: ${
+                            varLatestVersion.Status
                         }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                     );
                 }
-            } else if (fetchVarResponse.Status == 401) {
+            } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
                 throw new Error(
-                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.Header.title}`,
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
                 );
-            } else {
+            } else if (fetchVarResponse.Body.length > 0) {
                 throw new Error(
-                    `Get latest addon version failed: ${version}, Status: ${fetchVarResponse.Status
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchVarResponse.Status
                     }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
                 );
             }
-            testData[addonName].push(varLatestVersion);
+            if (varLatestVersion) {
+                testData[addonName].push(varLatestVersion);
+            } else {
+                testData[addonName].push(version);
+            }
 
+            let varLatestValidVersion: string | undefined = varLatestVersion;
+            if (fetchVarResponse.Body.length === 0) {
+                varLatestValidVersion = undefined;
+            }
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
-                .upgrade(varLatestVersion);
+                .upgrade(varLatestValidVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+            if (fetchVarResponse.Body.length === 0) {
+                varLatestValidVersion = auditLogResponse.AuditInfo.ToVersion;
+            }
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -540,7 +631,7 @@ export default class GeneralService {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
-                        .downgrade(varLatestVersion);
+                        .downgrade(varLatestValidVersion as string);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
                     testData[addonName].push(String(auditLogResponse.Status?.Name));
@@ -571,13 +662,15 @@ export default class GeneralService {
                     LatestVersion = fetchResponse.Body[0].Version;
                 } catch (error) {
                     throw new Error(
-                        `Get latest addon version failed: ${version}, Status: ${LatestVersion.Status
+                        `Get latest addon version failed: ${version}, Status: ${
+                            LatestVersion.Status
                         }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
                     );
                 }
             } else {
                 throw new Error(
-                    `Get latest addon version failed: ${version}, Status: ${fetchResponse.Status
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchResponse.Status
                     }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
                 );
             }
@@ -586,7 +679,7 @@ export default class GeneralService {
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(LatestVersion);
-            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+            let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
@@ -597,7 +690,7 @@ export default class GeneralService {
                     upgradeResponse = await this.papiClient.addons.installedAddons
                         .addonUUID(`${addonUUID}`)
                         .downgrade(LatestVersion);
-                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
+                    auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
                     testData[addonName].push(changeType);
                     testData[addonName].push(String(auditLogResponse.Status?.Name));
                 }
@@ -632,7 +725,8 @@ export default class GeneralService {
                 const end = performance.now();
                 const isSucsess = response.status > 199 && response.status < 400 ? true : false;
                 console[isSucsess ? 'log' : 'debug'](
-                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${uri.startsWith('/') ? this['client'].BaseURL + uri : uri
+                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                        uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
                     `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information}`,
                 );
@@ -717,6 +811,12 @@ export default class GeneralService {
         return latestSchema;
     }
 
+    async baseAddonVersionsInstallation(varPass: string) {
+        const isInstalledArr = await this.areAddonsInstalled(testData);
+        const chnageVersionResponseArr = await this.changeVersion(varPass, testData, false);
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {
             const entery = schema[j];
@@ -760,38 +860,37 @@ export default class GeneralService {
         //taken from https://tutorial.eyehunts.com/js/url-validation-regex-javascript-example-code/
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', // fragment locator
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', // fragment locator
             'i', // makes the regex case insensitive
         );
         return !!pattern.test(s.replace(' ', '%20'));
     }
 
     /**
-     * The addon must be installed for this function to work
+     * This uses the var endpoint, this is why this have to get varKey
      * @param addonUUID
+     * @param varKey this have to from the api or the cli that trigger this process
      * @returns
      */
-    getSecretKey(addonUUID: string): Promise<string> {
-        return this.papiClient
-            .post('/code_jobs/get_data_for_job_execution', {
-                JobMessageData: {
-                    UUID: '00000000-0000-0000-0000-000000000000',
-                    MessageType: 'AddonMessage',
-                    AddonData: {
-                        AddonUUID: addonUUID,
-                        AddonPath: 0,
-                    },
+    async getSecretKey(addonUUID: string, varKey: string): Promise<string> {
+        const updateVersionResponse = await this.fetchStatus(
+            this['client'].BaseURL.replace('papi-eu', 'papi') + `/var/addons/${addonUUID}/secret_key`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                 },
-            })
-            .then((res) => res.ClientObject.AddonSecretKey);
+            },
+        );
+        return updateVersionResponse.Body.SecretKey;
     }
 
     generateRandomString(length: number): string {
-        let result = ' ';
+        let result = '';
         for (let i = 0; i < length; i++) {
             result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
         }
@@ -801,6 +900,24 @@ export default class GeneralService {
     async executeScriptFromTestData(scriptName: string): Promise<void> {
         await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
         return;
+    }
+
+    /**
+     * will return true if dateToTest param is indicating a time point which happened less than howLongAgo milliseconds ago
+     * @param dateToTest tested date in millisecods
+     * @param howLongAgo less than how many milliseconds should pass
+     * @param timeDiff time diff between the time zone which the machine running the code is in and time zone tested date taken from
+     * @returns
+     */
+    isLessThanGivenTimeAgo(dateToTest, howLongAgo, timeDiff?) {
+        if (timeDiff) dateToTest += timeDiff;
+        const timeAgo = Date.now() - howLongAgo;
+        return dateToTest > timeAgo;
+    }
+
+    replaceAll(string: string, searchValue: string, replaceValue: string) {
+        const regex = new RegExp(searchValue, 'g');
+        return string.replace(regex, replaceValue);
     }
 }
 

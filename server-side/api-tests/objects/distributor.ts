@@ -311,7 +311,6 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         expect(contact).to.not.have.property('SecurityGroupUUID');
                         expect(contact).to.have.property('IsBuyer').that.is.a('boolean').and.is.false;
                     });
-
                     contactUUIDArray = connectAsBuyerContacts.map((item) => item['UUID']);
                     const connectAsBuyer = await adminObjectsService.connectAsBuyer({
                         UUIDs: contactUUIDArray,
@@ -360,14 +359,14 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 let supportAdminClient;
                 let supportAdminService;
                 let supportAdminObjectsService;
-                let supportAdminDistributorService;
+                // let supportAdminDistributorService;
                 let usersBeforeExpiration;
                 let buyersBeforeExpiration;
                 it(`Initiate support admin client + get users & buyers before expiration`, async () => {
                     supportAdminClient = await generalService.initiateTester(clientArr[4].Email, clientArr[4].Password);
                     supportAdminService = new GeneralService(supportAdminClient);
                     supportAdminObjectsService = new ObjectsService(supportAdminService);
-                    supportAdminDistributorService = new DistributorService(supportAdminService);
+                    // supportAdminDistributorService = new DistributorService(supportAdminService);
                     usersBeforeExpiration = await supportAdminObjectsService.getUsers({ include_deleted: true });
                     buyersBeforeExpiration = await supportAdminObjectsService.getContactsSDK({
                         include_deleted: true,
@@ -387,8 +386,9 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
                         minusThreeMonths.toISOString().split('.')[0],
                     );
-                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
-                    expect(expirationResponse.Status.Name).to.equal('Success');
+                    generalService.sleep(30000);
+                    // const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    // expect(expirationResponse.Status.Name).to.equal('Success');
                 });
 
                 it(`Get users + buyers with support admin and verify all deleted`, async () => {
@@ -415,8 +415,9 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
                         validExpirationDate.toISOString().split('.')[0],
                     );
-                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
-                    expect(expirationResponse.Status.Name).to.equal('Success');
+                    generalService.sleep(30000);
+                    // const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    // expect(expirationResponse.Status.Name).to.equal('Success');
                 });
 
                 it(`Get users + buyers with support admin and verify correct users were unhidden`, async () => {
@@ -443,8 +444,9 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
                         minusEightMonths.toISOString().split('.')[0],
                     );
-                    const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
-                    expect(expirationResponse.Status.Name).to.equal('Success');
+                    generalService.sleep(240000);
+                    // const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
+                    // expect(expirationResponse.Status.Name).to.equal('Success');
                 });
 
                 it(`Verify that distributor is disabled and addons are uninstalled`, async () => {
@@ -455,8 +457,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         where: `DistributorID=${adminService.getClientData('DistributorID')}`,
                     });
                     expect(distributorAddons.Body).to.be.an('array').with.lengthOf(0);
-                    expect(distributor.Body[0].AccountingStatus.ID).to.equal(2);
-                    expect(distributor.Body[0].AccountingStatus.Name).to.equal('Disabled');
+                    expect(distributor.Body).to.be.an('array').with.lengthOf(0);
                 });
             });
         });

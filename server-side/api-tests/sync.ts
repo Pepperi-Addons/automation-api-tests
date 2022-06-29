@@ -983,7 +983,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                                     testBody['LocalDataUpdates' as any].jsonBody[2].Lines[j][
                                         index > 0 ? (index > 3 ? index + 3 : index + 1) : index
                                     ]
-                                } Not identical to recived Property: ${
+                                } Not identical to received Property: ${
                                     getTransactionsLines[0][localTestValuesArr[index]]
                                 } | `;
                             }
@@ -1052,7 +1052,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         apiGetResponse.ClientInfo[prop] != testBody[prop].toString()
                     ) {
                         console.log(`Is this: ${apiGetResponse.ClientInfo[prop]}, equal to this: ${testBody[prop]}`);
-                        errorMessage += `Missmatch sent Property: ${apiGetResponse.ClientInfo[prop]} Not identical to recived Property: ${testBody[prop]} | `;
+                        errorMessage += `Missmatch sent Property: ${apiGetResponse.ClientInfo[prop]} Not identical to received Property: ${testBody[prop]} | `;
                     } else if (prop.includes('Formatted')) {
                         isFormattedDate = true;
                         if (

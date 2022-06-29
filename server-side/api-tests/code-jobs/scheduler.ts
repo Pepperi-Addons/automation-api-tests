@@ -14,17 +14,26 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
     let CodeJobUUIDCron;
 
     service['options'].addonUUID = '';
+    const addonUUID = generalService['client'].BaseURL.includes('staging')
+        ? '48d20f0b-369a-4b34-b48a-ffe245088513'
+        : '78696fc6-a04f-4f82-aadf-8f823776473f';
+    const jsFileName = 'test_functions.js'; //'test.js';
+    // let functionName = 'ido';
+    //const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
+    const functionNamecreateNewCodeJobRetryTest = 'scheduler';
+    const version = '0.0.5';
 
     // this will run the first test that will run the second and so on..
-    await createNewCJToChroneTest();
+    await installAddonToDist();
 
     describe('Cron Expression Test Case', () => {
-        it('Insert New CodJob For Cron Verification Test: Finished', () => {
+        it('Insert New AddonJob For Cron Verification Test: Finished', () => {
             assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
         });
-        it('Publish New Code Job For Cron Verification Test: Finished', () => {
-            assert(CallbackCash.publishCodeJobCronTest, CallbackCash.publishCodeJobCronTestError);
-        });
+        // it('Execute New Addon Job For Cron Verification Test: Finished', () => {
+        //     assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
+        // });
+
         it('Validate Empty log (The Log should Be Empty): Finished', () => {
             assert(logcash.emtyLogResponsCron, logcash.emtyLogResponsCronError);
         });
@@ -48,6 +57,20 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         });
     });
 
+    async function installAddonToDist() {
+        await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
+            method: 'POST',
+        });
+        //#region Upgrade Pepperitest (Jenkins Special Addon)
+        const testData = {
+            'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
+        };
+        CallbackCash.installAddonToDist = await generalService.changeToAnyAvailableVersion(testData);
+        //#endregion Upgrade Pepperitest (Jenkins Special Addon)
+        //debugger;
+        await createNewCJToChroneTest();
+    }
+
     async function createNewCJToChroneTest() {
         CodeJobBody = {
             UUID: '',
@@ -60,12 +83,16 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             FailureAlertEmailTo: ['qa@pepperi.com'],
             FailureAlertEmailSubject: 'Execution section',
             ExecutedCode: '',
-            DraftCode:
-                'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',
+            Type: 'AddonJob',
+            // DraftCode:
+            //     'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',
             CodeJobIsHidden: false,
             CreationDateTime: '',
             ModificationDateTime: '',
             ExecutionMemoryLevel: 1,
+            AddonPath: jsFileName, // Only for AddonJob
+            AddonUUID: addonUUID, // Only for AddonJob
+            FunctionName: functionNamecreateNewCodeJobRetryTest,
         };
 
         CallbackCash.insertNewCJtoCronVerification = await service.codeJobs.upsert(CodeJobBody);
@@ -73,11 +100,12 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         //var status = CallbackCash.insertNewCJtoCronVerification.success;
         //CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
         logcash.insertNewCJtoCronVerification = true;
-
+        //debugger;
         if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodeJobBody.CodeJobName) {
             // CodeJobUUIDCron != "" removed from IF
             CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
-            await publishCodeJobCronTest();
+            //await executeDraftCodeWithoutRetry();
+            await getEmptyLogsToExecutedCronTest();
         } else {
             logcash.insertNewCJtoCronVerification = false;
             logcash.insertNewCJtoCronVerificationErrorMsg =
@@ -87,6 +115,26 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                 CallbackCash.insertNewCJtoCronVerification.statusText;
         }
 
+        // async function executeDraftCodeWithoutRetry() {
+        //     CallbackCash.executeDraftCodeWithoutRetry = await generalService.fetchStatus(
+        //         '/code_jobs/async/' + CallbackCash.insertNewCJtoCronVerification.UUID + '/execute',
+        //         { method: 'POST' },
+        //     ); // changed to .Body.UUID from .Body.CodeJobUUID
+
+        //     if (
+        //         CallbackCash.executeDraftCodeWithoutRetry.Status == 200 && // status changed to Status
+        //         CallbackCash.executeDraftCodeWithoutRetry.Body.ExecutionUUID != '' &&
+        //         CallbackCash.executeDraftCodeWithoutRetry.Body.URI != ''
+        //     ) {
+        //         logcash.executeDraftCodeWithoutRetry = true;
+        //     } else {
+        //         logcash.executeDraftCodeWithoutRetry = false;
+        //         logcash.ErrorFromexecuteDraftCodeWithoutRetry = 'Post to execute CodeJob with draft code failed';
+        //     }
+        //     //debugger;
+        //     generalService.sleep(20000);
+        //     await getEmptyLogsToExecutedCronTest();
+        // }
         // service .httpPost("/code_jobs", CodeJobBody, (success) => {
         //     logcash.insertNewCJtoCronVerification = true;
         //     CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;  // result.CodeJobUUID to result.UUID
@@ -100,25 +148,25 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         // return res
     }
 
-    async function publishCodeJobCronTest() {
-        // publish this job code
-        CallbackCash.publishCodeJobCronTest = await generalService.fetchStatus(
-            `/code_jobs/${CodeJobUUIDCron}/publish`,
-            {
-                method: 'POST',
-            },
-        );
-        if (CallbackCash.publishCodeJobCronTest.Status == 200) {
-            CallbackCash.publishCodeJobCronTest = true;
-            generalService.sleep(5000);
-            await getEmptyLogsToExecutedCronTest();
-        } else {
-            CallbackCash.publishCodeJobCronTest = false;
-            CallbackCash.publishCodeJobCronTestError = 'The publish  failed . CodeJobUUID is ' + CodeJobUUIDCron;
-            await updateCronToChroneTestIsScheduledFalse();
-        }
-        CallbackCash.publishCodeJobCronRunTime = new Date().toISOString();
-    }
+    // async function publishCodeJobCronTest() {
+    //     // publish this job code
+    //     CallbackCash.publishCodeJobCronTest = await generalService.fetchStatus(
+    //         `/code_jobs/${CodeJobUUIDCron}/publish`,
+    //         {
+    //             method: 'POST',
+    //         },
+    //     );
+    //     if (CallbackCash.publishCodeJobCronTest.Status == 200) {
+    //         CallbackCash.publishCodeJobCronTest = true;
+    //         generalService.sleep(5000);
+    //         await getEmptyLogsToExecutedCronTest();
+    //     } else {
+    //         CallbackCash.publishCodeJobCronTest = false;
+    //         CallbackCash.publishCodeJobCronTestError = 'The publish  failed . CodeJobUUID is ' + CodeJobUUIDCron;
+    //         await updateCronToChroneTestIsScheduledFalse();
+    //     }
+    //     CallbackCash.publishCodeJobCronRunTime = new Date().toISOString();
+    // }
     async function getEmptyLogsToExecutedCronTest() {
         //CallbackCash.ResponseEmptyExecutedLogsCronTest = API.Call.Sync("Get", "code_jobs/" + CodeJobUUIDCron + "/executions");
         CallbackCash.ResponseEmptyExecutedLogsCronTest = await service.auditLogs.find({
@@ -155,17 +203,18 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             await updateCronToChroneTestIsScheduledFalse();
         } else {
             if (CallbackCash.ResponseExecutedLogsCronTest.length == 0) {
+                logTimeCount = logTimeCount + 1;
                 generalService.sleep(20000);
                 await getLogsToExecutedCronTest();
-                logTimeCount = logTimeCount + 1;
             } else {
                 if (
                     CallbackCash.ResponseExecutedLogsCronTest[CallbackCash.ResponseExecutedLogsCronTest.length - 1]
                         .Status.Name == 'InProgress'
                 ) {
                     generalService.sleep(20000);
-                    await getLogsToExecutedCronTest();
                     logTimeCount = logTimeCount + 1;
+                    await getLogsToExecutedCronTest();
+                    //logTimeCount = logTimeCount + 1;
                 }
                 //var tmp = JSON.parse(CallbackCash.ResponseExecutedLogsCronTest[0]Object);
                 else if (
@@ -235,8 +284,9 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
                         // || CallbackCash.ResponseExecutedLogsCronTestSecond[2].Status.Name == "InProgress"
                     ) {
                         generalService.sleep(20000);
-                        await getLogsToExecutedCronSecondTest();
                         logTimeCount = logTimeCount + 1;
+                        await getLogsToExecutedCronSecondTest();
+                        //logTimeCount = logTimeCount + 1;
                     } else {
                         logcash.ResponseExecutedLogsCronTestSecond = false;
                         logcash.ResponseExecutedLogsCronTestSecondErrorMsg =
