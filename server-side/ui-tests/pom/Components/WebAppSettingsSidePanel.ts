@@ -24,8 +24,7 @@ export class WebAppSettingsSidePanel extends Component {
 
     public static getSubCategoryBtn(subCategoryId: string, categoryId: string): By {
         return By.xpath(
-            `${
-                WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
+            `${WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
             }/parent::mat-expansion-panel//li[contains(@id,'${subCategoryId}')]`,
         );
     }
@@ -55,6 +54,11 @@ export class WebAppSettingsSidePanel extends Component {
     public VarDistsEditor: By = By.id(
         'settings/2cabad50-2df0-4136-abda-03ab9c901953/editor?view=var_distributors&uri=grid/vardistributors',
     );
+
+    public VarDistsBetaEditor: By = By.id(
+        'settings/3149b5b3-9b84-41de-b399-e853ea9ff790/var_distributors',
+    );
+
 
     //config Selectors
     public ScriptsEditor: By = By.id('settings/9f3b727c-e88c-4311-8ec4-3857bc8621f3/scripts');

@@ -14,7 +14,7 @@ export class VarDistPage extends AddonPage {
 
     //dist list
     public readonly certainDistEditBtn: By = By.xpath(`//i[@class='fa fa-pencil']`);
-    public IdRowTitle = By.xpath('//*[contains(text(),"DistributorID")]');
+    public IdRowTitle = By.xpath('//*[contains(text(),"Distributor ID") or contains(text(),"DistributorID")]');
     //dist editor
     public readonly distributorDetailsTitle: By = By.xpath(`//*[contains(text(),'Distributor details')]`);
     public readonly supportBtn: By = By.css(`#btnBackEndArea`);
@@ -31,6 +31,7 @@ export class VarDistPage extends AddonPage {
     public readonly newEmptyMachine: By = By.xpath(`//option[contains(text(),'empty')]`);
     public readonly relocateDistBtn: By = By.css(`#btnRelocate`);
 
+    //->>
     public async editPresentedDist(): Promise<boolean> {
         this.browser.sleep(1500);
         await this.browser.click(By.xpath("(//div[@class='ui-grid-canvas']//div[@class='ui-grid-row ng-scope'])[2]"));
@@ -39,6 +40,17 @@ export class VarDistPage extends AddonPage {
         this.browser.sleep(1000);
         // await this.browser.switchTo(this.AddonContainerIframe);
         return await this.untilIsVisible(this.distributorDetailsTitle, 40000);
+    }
+
+    public async editPresentedDistNewBeta(): Promise<boolean> {
+        this.browser.sleep(1500);
+        await this.browser.click(By.xpath("//input[@type='radio']"));//select the dist
+        this.browser.sleep(1500);
+        await this.browser.click(By.xpath("//pep-list-actions//pep-menu//div//button"));//click pencil icon
+        this.browser.sleep(1000);
+        await this.browser.click(By.xpath("//button[contains(@title,'Edit')]"));//edit button
+        // await this.browser.switchTo(this.AddonContainerIframe);
+        return await this.untilIsVisible(By.xpath("//ng-component//h5"), 40000);
     }
 
     public async enterSupportSettings(): Promise<boolean> {

@@ -35,7 +35,10 @@ export class PepSearch extends Component {
         this._searchContainer = By.xpath(`${xpathLocator.value}//pep-search`);
     }
 
-    public async enterSearch(searchText: string): Promise<void> {
+    public async enterSearch(searchText: string, xpathElem?: By): Promise<void> {
+        if (xpathElem) {
+            return await this.browser.findSingleElement(xpathElem).sendKeys(searchText);
+        }
         return await this.browser.findSingleElement(this.Input).sendKeys(searchText);
     }
 
