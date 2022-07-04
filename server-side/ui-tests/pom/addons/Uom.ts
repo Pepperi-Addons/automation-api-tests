@@ -209,29 +209,38 @@ export class Uom extends AddonPage {
         pageGrandTotal?: number,
     ) {
         const orderPage = new OrderPage(this.browser);
-        if (aoqmUom1Qty !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title')).to.equal(
-                aoqmUom1Qty.toString(),
-            );
-        if (aoqmUom2Qty !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title')).to.equal(
-                aoqmUom2Qty.toString(),
-            );
+        if (aoqmUom1Qty !== undefined) {
+            const optionArr = [aoqmUom1Qty.toString(), parseFloat(aoqmUom1Qty.toString()).toFixed(2)];
+            expect(
+                await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title'),
+            ).to.be.oneOf(optionArr);
+        }
+        if (aoqmUom2Qty !== undefined) {
+            const optionArr = [aoqmUom2Qty.toString(), parseFloat(aoqmUom2Qty.toString()).toFixed(2)];
+            expect(
+                await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title'),
+            ).to.be.oneOf(optionArr);
+        }
         if (wholeItemQty !== undefined)
             expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
                 wholeItemQty.toString().includes('.')
                     ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
                     : wholeItemQty.toString(),
             );
-        if (itemGrandTotal !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.equal(
-                `$${parseFloat(itemGrandTotal.toString()).toFixed(2)}`,
-            );
+        if (itemGrandTotal !== undefined) {
+            const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
+            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.be.oneOf([
+                `$${parseFloat(itemGrandTotalString.toString()).toFixed(2)}`,
+                `-$${(parseFloat(itemGrandTotalString.toString()) * -1).toFixed(2)}`,
+            ]);
+        }
 
         if (pageGrandTotal !== undefined) {
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.equal(
+            const pageGrandTotalString = parseFloat(pageGrandTotal.toString()).toFixed(2);
+            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.be.oneOf([
                 `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
-            );
+                `-$${(parseFloat(pageGrandTotalString.toString()) * -1).toFixed(2)}`,
+            ]);
         }
     }
     /**

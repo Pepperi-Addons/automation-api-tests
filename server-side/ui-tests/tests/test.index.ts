@@ -24,11 +24,14 @@ import {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
+    ScriptPickerTests,
+    LoginPerfSqlitefTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 import { testData } from './../../services/general.service';
+import {} from './script_picker.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -249,6 +252,12 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client);
+    }
+    if (tests.includes('script_picker')) {
+        await ScriptPickerTests(email, pass, varPass, client);
+    }
+    if (tests.includes('login_perf_sqlite')) {
+        await LoginPerfSqlitefTests(email, pass, varPass, client);
     }
     if (tests.includes('aws_logs')) {
         await AWSLogsTester(

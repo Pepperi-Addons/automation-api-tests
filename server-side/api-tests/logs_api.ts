@@ -20,9 +20,9 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const TimeZoneDiffWithAWS = HOUR * 3;
     let _envUrlBase;
 
-    //#region Upgrade Cloudwatch Addon
+    //#region Upgrade Logs Addon
     const testData = {
-        CloudWatch: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''], //alway take the newest version of 'logsAPI' addon
+        Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''], //alway take the newest version of 'logsAPI' addon
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -37,12 +37,12 @@ export async function AWSLogsTest(generalService: GeneralService, request, teste
     const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    //#endregion Upgrade Cloudwatch Addon
+    //#endregion Upgrade Logs Addon
 
     describe('Logs API Tests Suites', () => {
         describe('Prerequisites Addon for Chart Manager Tests', () => {
             //Test Data
-            //Cloudwatch Addon Service
+            //Logs Addon Service
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
