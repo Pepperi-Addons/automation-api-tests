@@ -232,6 +232,8 @@ export class Uom extends AddonPage {
             expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.be.oneOf([
                 `$${parseFloat(itemGrandTotalString.toString()).toFixed(2)}`,
                 `-$${(parseFloat(itemGrandTotalString.toString()) * -1).toFixed(2)}`,
+                `$ ${parseFloat(itemGrandTotalString.toString())}`,
+                `-$ ${parseFloat(itemGrandTotalString.toString()) * -1}`,
             ]);
         }
 
@@ -240,6 +242,8 @@ export class Uom extends AddonPage {
             expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.be.oneOf([
                 `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
                 `-$${(parseFloat(pageGrandTotalString.toString()) * -1).toFixed(2)}`,
+                `$ ${parseFloat(pageGrandTotal.toString())}`,
+                `-$ ${parseFloat(pageGrandTotalString.toString()) * -1}`,
             ]);
         }
     }

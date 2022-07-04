@@ -337,6 +337,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
     //#region Upgrade Data Index
     const testData = {
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],

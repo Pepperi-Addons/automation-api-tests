@@ -346,17 +346,15 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
     describe('Export And Import ATD Tests Suites', () => {
         describe('Prerequisites Addon for ImportExportATD Tests', () => {
             //Test Data
-            it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${
-                transactionsTypeArr[transactionsTypeArr[0]]
-            }`, () => {
-                expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
-            });
+            it(`Test Data: Transaction - Name: ${transactionsTypeArr[0]}, TypeID:${transactionsTypeArr[transactionsTypeArr[0]]
+                }`, () => {
+                    expect(transactionsTypeArr[transactionsTypeArr[0]]).to.be.a('number').that.is.above(0);
+                });
 
-            it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${
-                activitiesTypeArr[activitiesTypeArr[0]]
-            }`, () => {
-                expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
-            });
+            it(`Test Data: Activity - Name: ${activitiesTypeArr[0]}, TypeID:${activitiesTypeArr[activitiesTypeArr[0]]
+                }`, () => {
+                    expect(activitiesTypeArr[activitiesTypeArr[0]]).to.be.a('number').that.is.above(0);
+                });
 
             //ImportExportATD, Data Views API
             isInstalledArr.forEach((isInstalled, index) => {
@@ -1031,8 +1029,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 testDataExistingActivityATD = await importExportATDService.postActivitiesATD(
                                     testDataATD(
                                         Math.floor(Math.random() * 10000000).toString() +
-                                            ' ' +
-                                            Math.random().toString(36).substring(10),
+                                        ' ' +
+                                        Math.random().toString(36).substring(10),
                                         `Copy of ${activityName} Override`,
                                     ),
                                 );
@@ -1109,11 +1107,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                                     testDataRenameATD = await importExportATDService.postActivitiesATD({
                                         InternalID: testDataNewActivityATDNewExport.InternalID,
-                                        ExternalID: `Test ATD ${
-                                            Math.floor(Math.random() * 10000000).toString() +
+                                        ExternalID: `Test ATD ${Math.floor(Math.random() * 10000000).toString() +
                                             ' ' +
                                             Math.random().toString(36).substring(10)
-                                        }`,
+                                            }`,
                                         Description: testDataNewActivityATDNewExport.Description.replace(
                                             'Override',
                                             'New',
@@ -1217,27 +1214,27 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj).length -
-                                            JSON.stringify(originalATDExportObj).length,
+                                        JSON.stringify(originalATDExportObj).length,
                                     ) > 10 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.DataViews).length -
-                                            JSON.stringify(originalATDExportObj.DataViews).length,
+                                        JSON.stringify(originalATDExportObj.DataViews).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Fields).length -
-                                            JSON.stringify(originalATDExportObj.Fields).length,
+                                        JSON.stringify(originalATDExportObj.Fields).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.References).length -
-                                            JSON.stringify(originalATDExportObj.References).length,
+                                        JSON.stringify(originalATDExportObj.References).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Workflow).length -
-                                            JSON.stringify(originalATDExportObj.Workflow).length,
+                                        JSON.stringify(originalATDExportObj.Workflow).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Settings).length -
-                                            JSON.stringify(originalATDExportObj.Settings).length,
+                                        JSON.stringify(originalATDExportObj.Settings).length,
                                     ) > 2 ||
                                     originalATDExportObj.Fields.length == 0 ||
                                     originalATDExportObj.DataViews.length == 0 ||
@@ -1246,23 +1243,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     originalATDExportObj.Settings.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin ATD length ${
-                                            JSON.stringify(originalATDExportObj).length
-                                        }, Copy to existing ATD length ${
-                                            JSON.stringify(existingATDExportObj).length
-                                        }, Created new ATD length ${
-                                            JSON.stringify(newATDExportObj).length
-                                        }, Origin ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${originalATDID}, New ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${existingATDID},  The Origin ATD Response was: ${
-                                            originalATDExportResponse.URL
-                                        },  The copy to existing ATD Response was: ${
-                                            existingATDExportResponse.URL
+                                        `Origin ATD length ${JSON.stringify(originalATDExportObj).length
+                                        }, Copy to existing ATD length ${JSON.stringify(existingATDExportObj).length
+                                        }, Created new ATD length ${JSON.stringify(newATDExportObj).length
+                                        }, Origin ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${originalATDID}, New ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${existingATDID},  The Origin ATD Response was: ${originalATDExportResponse.URL
+                                        },  The copy to existing ATD Response was: ${existingATDExportResponse.URL
                                         }, The copy to new ATD Response was: ${newATDExportResponse.URL}.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj).length -
-                                                JSON.stringify(originalATDExportObj).length,
+                                            JSON.stringify(originalATDExportObj).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1272,29 +1264,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.DataViews).length -
-                                            JSON.stringify(originalATDExportObj.DataViews).length,
+                                        JSON.stringify(originalATDExportObj.DataViews).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.DataViews).length -
-                                                JSON.stringify(newATDExportObj.DataViews).length,
+                                            JSON.stringify(newATDExportObj.DataViews).length,
                                         ) > 2) ||
                                     originalATDExportObj.DataViews.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin DataViews length ${
-                                            JSON.stringify(originalATDExportObj.DataViews).length
-                                        }, Copy to existing DataViews length ${
-                                            JSON.stringify(existingATDExportObj.DataViews).length
-                                        }, Created new DataViews length ${
-                                            JSON.stringify(newATDExportObj.DataViews).length
+                                        `Origin DataViews length ${JSON.stringify(originalATDExportObj.DataViews).length
+                                        }, Copy to existing DataViews length ${JSON.stringify(existingATDExportObj.DataViews).length
+                                        }, Created new DataViews length ${JSON.stringify(newATDExportObj.DataViews).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.DataViews).length -
-                                                JSON.stringify(originalATDExportObj.DataViews).length,
+                                            JSON.stringify(originalATDExportObj.DataViews).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1304,27 +1293,25 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Fields).length -
-                                            JSON.stringify(originalATDExportObj.Fields).length,
+                                        JSON.stringify(originalATDExportObj.Fields).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Fields).length -
-                                                JSON.stringify(newATDExportObj.Fields).length,
+                                            JSON.stringify(newATDExportObj.Fields).length,
                                         ) > 2) ||
                                     originalATDExportObj.Fields.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin Fields length ${
-                                            JSON.stringify(originalATDExportObj.Fields).length
-                                        }, Copy to existing Fields length ${
-                                            JSON.stringify(existingATDExportObj.Fields).length
+                                        `Origin Fields length ${JSON.stringify(originalATDExportObj.Fields).length
+                                        }, Copy to existing Fields length ${JSON.stringify(existingATDExportObj.Fields).length
                                         }, Created new Fields length ${JSON.stringify(newATDExportObj.Fields).length}.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Fields).length -
-                                                JSON.stringify(originalATDExportObj.Fields).length,
+                                            JSON.stringify(originalATDExportObj.Fields).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1334,29 +1321,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.References).length -
-                                            JSON.stringify(originalATDExportObj.References).length,
+                                        JSON.stringify(originalATDExportObj.References).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.References).length -
-                                                JSON.stringify(newATDExportObj.References).length,
+                                            JSON.stringify(newATDExportObj.References).length,
                                         ) > 2) ||
                                     originalATDExportObj.References.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin References length ${
-                                            JSON.stringify(originalATDExportObj.References).length
-                                        }, Copy to existing References length ${
-                                            JSON.stringify(existingATDExportObj.References).length
-                                        }, Created new References length ${
-                                            JSON.stringify(newATDExportObj.References).length
+                                        `Origin References length ${JSON.stringify(originalATDExportObj.References).length
+                                        }, Copy to existing References length ${JSON.stringify(existingATDExportObj.References).length
+                                        }, Created new References length ${JSON.stringify(newATDExportObj.References).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.References).length -
-                                                JSON.stringify(originalATDExportObj.References).length,
+                                            JSON.stringify(originalATDExportObj.References).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1366,29 +1350,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Workflow).length -
-                                            JSON.stringify(originalATDExportObj.Workflow).length,
+                                        JSON.stringify(originalATDExportObj.Workflow).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Workflow).length -
-                                                JSON.stringify(newATDExportObj.Workflow).length,
+                                            JSON.stringify(newATDExportObj.Workflow).length,
                                         ) > 2) ||
                                     originalATDExportObj.Workflow.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin Workflow length ${
-                                            JSON.stringify(originalATDExportObj.Workflow).length
-                                        }, Copy to existing Workflow length ${
-                                            JSON.stringify(existingATDExportObj.Workflow).length
-                                        }, Created new Workflow length ${
-                                            JSON.stringify(newATDExportObj.Workflow).length
+                                        `Origin Workflow length ${JSON.stringify(originalATDExportObj.Workflow).length
+                                        }, Copy to existing Workflow length ${JSON.stringify(existingATDExportObj.Workflow).length
+                                        }, Created new Workflow length ${JSON.stringify(newATDExportObj.Workflow).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Workflow).length -
-                                                JSON.stringify(originalATDExportObj.Workflow).length,
+                                            JSON.stringify(originalATDExportObj.Workflow).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1398,29 +1379,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Settings).length -
-                                            JSON.stringify(originalATDExportObj.Settings).length,
+                                        JSON.stringify(originalATDExportObj.Settings).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Settings).length -
-                                                JSON.stringify(newATDExportObj.Settings).length,
+                                            JSON.stringify(newATDExportObj.Settings).length,
                                         ) > 2) ||
                                     originalATDExportObj.Settings.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin Settings length ${
-                                            JSON.stringify(originalATDExportObj.Settings).length
-                                        }, Copy to Settings DataViews length ${
-                                            JSON.stringify(existingATDExportObj.Settings).length
-                                        }, Created new Settings length ${
-                                            JSON.stringify(newATDExportObj.Settings).length
+                                        `Origin Settings length ${JSON.stringify(originalATDExportObj.Settings).length
+                                        }, Copy to Settings DataViews length ${JSON.stringify(existingATDExportObj.Settings).length
+                                        }, Created new Settings length ${JSON.stringify(newATDExportObj.Settings).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Settings).length -
-                                                JSON.stringify(originalATDExportObj.Settings).length,
+                                            JSON.stringify(originalATDExportObj.Settings).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1493,8 +1471,8 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 testDataExistingTransactionATD = await importExportATDService.postTransactionsATD(
                                     testDataATD(
                                         Math.floor(Math.random() * 10000000).toString() +
-                                            ' ' +
-                                            Math.random().toString(36).substring(10),
+                                        ' ' +
+                                        Math.random().toString(36).substring(10),
                                         `Copy of ${transactionName} Override`,
                                     ),
                                 );
@@ -1581,11 +1559,10 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
                                     testDataRenameATD = await importExportATDService.postTransactionsATD({
                                         InternalID: testDataNewTransactionATDNewExport.InternalID,
-                                        ExternalID: `Test ATD ${
-                                            Math.floor(Math.random() * 10000000).toString() +
+                                        ExternalID: `Test ATD ${Math.floor(Math.random() * 10000000).toString() +
                                             ' ' +
                                             Math.random().toString(36).substring(10)
-                                        }`,
+                                            }`,
                                         Description: testDataNewTransactionATDNewExport.Description.replace(
                                             'Override',
                                             'New',
@@ -1689,31 +1666,31 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj).length -
-                                            JSON.stringify(originalATDExportObj).length,
+                                        JSON.stringify(originalATDExportObj).length,
                                     ) > 10 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.DataViews).length -
-                                            JSON.stringify(originalATDExportObj.DataViews).length,
+                                        JSON.stringify(originalATDExportObj.DataViews).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Fields).length -
-                                            JSON.stringify(originalATDExportObj.Fields).length,
+                                        JSON.stringify(originalATDExportObj.Fields).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.References).length -
-                                            JSON.stringify(originalATDExportObj.References).length,
+                                        JSON.stringify(originalATDExportObj.References).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Workflow).length -
-                                            JSON.stringify(originalATDExportObj.Workflow).length,
+                                        JSON.stringify(originalATDExportObj.Workflow).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Settings).length -
-                                            JSON.stringify(originalATDExportObj.Settings).length,
+                                        JSON.stringify(originalATDExportObj.Settings).length,
                                     ) > 2 ||
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.LineFields).length -
-                                            JSON.stringify(originalATDExportObj.LineFields).length,
+                                        JSON.stringify(originalATDExportObj.LineFields).length,
                                     ) > 2 ||
                                     originalATDExportObj.Fields.length == 0 ||
                                     originalATDExportObj.DataViews.length == 0 ||
@@ -1723,23 +1700,18 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     originalATDExportObj.Settings.LineFields == 0
                                 ) {
                                     expect.fail(
-                                        `Origin ATD length ${
-                                            JSON.stringify(originalATDExportObj).length
-                                        }, Copy to existing ATD length ${
-                                            JSON.stringify(existingATDExportObj).length
-                                        }, Created new ATD length ${
-                                            JSON.stringify(newATDExportObj).length
-                                        }, Origin ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${originalATDID}, New ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${existingATDID},  The Origin ATD Response was: ${
-                                            originalATDExportResponse.URL
-                                        },  The copy to existing ATD Response was: ${
-                                            existingATDExportResponse.URL
+                                        `Origin ATD length ${JSON.stringify(originalATDExportObj).length
+                                        }, Copy to existing ATD length ${JSON.stringify(existingATDExportObj).length
+                                        }, Created new ATD length ${JSON.stringify(newATDExportObj).length
+                                        }, Origin ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${originalATDID}, New ATD Export URL was: /addons/api/e9029d7f-af32-4b0e-a513-8d9ced6f8186/api/export_type_definition?type=activities&subtype=${existingATDID},  The Origin ATD Response was: ${originalATDExportResponse.URL
+                                        },  The copy to existing ATD Response was: ${existingATDExportResponse.URL
                                         }, The copy to new ATD Response was: ${newATDExportResponse.URL}.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj).length -
-                                                JSON.stringify(originalATDExportObj).length,
+                                            JSON.stringify(originalATDExportObj).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1749,29 +1721,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.DataViews).length -
-                                            JSON.stringify(originalATDExportObj.DataViews).length,
+                                        JSON.stringify(originalATDExportObj.DataViews).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.DataViews).length -
-                                                JSON.stringify(newATDExportObj.DataViews).length,
+                                            JSON.stringify(newATDExportObj.DataViews).length,
                                         ) > 2) ||
                                     originalATDExportObj.DataViews.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin DataViews length ${
-                                            JSON.stringify(originalATDExportObj.DataViews).length
-                                        }, Copy to existing DataViews length ${
-                                            JSON.stringify(existingATDExportObj.DataViews).length
-                                        }, Created new DataViews length ${
-                                            JSON.stringify(newATDExportObj.DataViews).length
+                                        `Origin DataViews length ${JSON.stringify(originalATDExportObj.DataViews).length
+                                        }, Copy to existing DataViews length ${JSON.stringify(existingATDExportObj.DataViews).length
+                                        }, Created new DataViews length ${JSON.stringify(newATDExportObj.DataViews).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.DataViews).length -
-                                                JSON.stringify(originalATDExportObj.DataViews).length,
+                                            JSON.stringify(originalATDExportObj.DataViews).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1781,27 +1750,25 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Fields).length -
-                                            JSON.stringify(originalATDExportObj.Fields).length,
+                                        JSON.stringify(originalATDExportObj.Fields).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Fields).length -
-                                                JSON.stringify(newATDExportObj.Fields).length,
+                                            JSON.stringify(newATDExportObj.Fields).length,
                                         ) > 2) ||
                                     originalATDExportObj.Fields.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin Fields length ${
-                                            JSON.stringify(originalATDExportObj.Fields).length
-                                        }, Copy to existing Fields length ${
-                                            JSON.stringify(existingATDExportObj.Fields).length
+                                        `Origin Fields length ${JSON.stringify(originalATDExportObj.Fields).length
+                                        }, Copy to existing Fields length ${JSON.stringify(existingATDExportObj.Fields).length
                                         }, Created new Fields length ${JSON.stringify(newATDExportObj.Fields).length}.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Fields).length -
-                                                JSON.stringify(originalATDExportObj.Fields).length,
+                                            JSON.stringify(originalATDExportObj.Fields).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1811,29 +1778,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.References).length -
-                                            JSON.stringify(originalATDExportObj.References).length,
+                                        JSON.stringify(originalATDExportObj.References).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.References).length -
-                                                JSON.stringify(newATDExportObj.References).length,
+                                            JSON.stringify(newATDExportObj.References).length,
                                         ) > 2) ||
                                     originalATDExportObj.References.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin References length ${
-                                            JSON.stringify(originalATDExportObj.References).length
-                                        }, Copy to existing References length ${
-                                            JSON.stringify(existingATDExportObj.References).length
-                                        }, Created new References length ${
-                                            JSON.stringify(newATDExportObj.References).length
+                                        `Origin References length ${JSON.stringify(originalATDExportObj.References).length
+                                        }, Copy to existing References length ${JSON.stringify(existingATDExportObj.References).length
+                                        }, Created new References length ${JSON.stringify(newATDExportObj.References).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.References).length -
-                                                JSON.stringify(originalATDExportObj.References).length,
+                                            JSON.stringify(originalATDExportObj.References).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1843,29 +1807,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Workflow).length -
-                                            JSON.stringify(originalATDExportObj.Workflow).length,
+                                        JSON.stringify(originalATDExportObj.Workflow).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Workflow).length -
-                                                JSON.stringify(newATDExportObj.Workflow).length,
+                                            JSON.stringify(newATDExportObj.Workflow).length,
                                         ) > 2) ||
                                     originalATDExportObj.Workflow.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin Workflow length ${
-                                            JSON.stringify(originalATDExportObj.Workflow).length
-                                        }, Copy to existing Workflow length ${
-                                            JSON.stringify(existingATDExportObj.Workflow).length
-                                        }, Created new Workflow length ${
-                                            JSON.stringify(newATDExportObj.Workflow).length
+                                        `Origin Workflow length ${JSON.stringify(originalATDExportObj.Workflow).length
+                                        }, Copy to existing Workflow length ${JSON.stringify(existingATDExportObj.Workflow).length
+                                        }, Created new Workflow length ${JSON.stringify(newATDExportObj.Workflow).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Workflow).length -
-                                                JSON.stringify(originalATDExportObj.Workflow).length,
+                                            JSON.stringify(originalATDExportObj.Workflow).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1875,29 +1836,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.Settings).length -
-                                            JSON.stringify(originalATDExportObj.Settings).length,
+                                        JSON.stringify(originalATDExportObj.Settings).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Settings).length -
-                                                JSON.stringify(newATDExportObj.Settings).length,
+                                            JSON.stringify(newATDExportObj.Settings).length,
                                         ) > 2) ||
                                     originalATDExportObj.Settings.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin Settings length ${
-                                            JSON.stringify(originalATDExportObj.Settings).length
-                                        }, Copy to Settings DataViews length ${
-                                            JSON.stringify(existingATDExportObj.Settings).length
-                                        }, Created new Settings length ${
-                                            JSON.stringify(newATDExportObj.Settings).length
+                                        `Origin Settings length ${JSON.stringify(originalATDExportObj.Settings).length
+                                        }, Copy to Settings DataViews length ${JSON.stringify(existingATDExportObj.Settings).length
+                                        }, Created new Settings length ${JSON.stringify(newATDExportObj.Settings).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.Settings).length -
-                                                JSON.stringify(originalATDExportObj.Settings).length,
+                                            JSON.stringify(originalATDExportObj.Settings).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -1907,29 +1865,26 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 if (
                                     Math.abs(
                                         JSON.stringify(existingATDExportObj.LineFields).length -
-                                            JSON.stringify(originalATDExportObj.LineFields).length,
+                                        JSON.stringify(originalATDExportObj.LineFields).length,
                                     ) > 2 ||
                                     (isNewATD &&
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.LineFields).length -
-                                                JSON.stringify(newATDExportObj.LineFields).length,
+                                            JSON.stringify(newATDExportObj.LineFields).length,
                                         ) > 2) ||
                                     originalATDExportObj.LineFields.length == 0
                                 ) {
                                     expect.fail(
-                                        `Origin LineFields length ${
-                                            JSON.stringify(originalATDExportObj.LineFields).length
-                                        }, Copy to LineFields DataViews length ${
-                                            JSON.stringify(existingATDExportObj.LineFields).length
-                                        }, Created new LineFields length ${
-                                            JSON.stringify(newATDExportObj.LineFields).length
+                                        `Origin LineFields length ${JSON.stringify(originalATDExportObj.LineFields).length
+                                        }, Copy to LineFields DataViews length ${JSON.stringify(existingATDExportObj.LineFields).length
+                                        }, Created new LineFields length ${JSON.stringify(newATDExportObj.LineFields).length
                                         }.`,
                                     );
                                 } else {
                                     expect(
                                         Math.abs(
                                             JSON.stringify(existingATDExportObj.LineFields).length -
-                                                JSON.stringify(originalATDExportObj.LineFields).length,
+                                            JSON.stringify(originalATDExportObj.LineFields).length,
                                         ),
                                     ).to.be.below(10);
                                 }
@@ -2165,6 +2120,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         let ATDExportResponse;
                         let ATDImportResponse;
                         it('Post ATD to Override Existing ATD', async () => {
+                            // debugger;
                             const references = await generalService
                                 .fetchStatus(TransactionsATDArr[index].URL)
                                 .then((res) => res.Body)
@@ -2207,11 +2163,12 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                 (ATDExportResponse = await importExportATDService.exportATD(
                                     'transactions',
                                     testATDInternalID,
-                                )),
-                            )
-                                .to.have.property('URI')
-                                .that.contain('/audit_logs/');
-
+                                    )),
+                                    )
+                                    .to.have.property('URI')
+                                    .that.contain('/audit_logs/');
+                                    // debugger;
+                                    
                             let maxLoopsCounter = 90;
                             do {
                                 generalService.sleep(2000);
@@ -2245,7 +2202,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj).length -
-                                        JSON.stringify(beforeATDExportObj).length,
+                                    JSON.stringify(beforeATDExportObj).length,
                                 ) > 10
                             ) {
                                 expect(`The Content Length of: ${afterATDExportResponse.URL}`).to.equal(
@@ -2258,7 +2215,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj).length -
-                                        JSON.stringify(beforeATDExportObj).length,
+                                    JSON.stringify(beforeATDExportObj).length,
                                 ) > 10
                             ) {
                                 expect(JSON.stringify(afterATDExportObj).length).to.equal(
@@ -2275,7 +2232,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj.DataViews).length -
-                                        JSON.stringify(beforeATDExportObj.DataViews).length,
+                                    JSON.stringify(beforeATDExportObj.DataViews).length,
                                 ) > 2
                             ) {
                                 beforeATDExportObj.DataViews.sort(compareByContextName);
@@ -2343,7 +2300,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj.Fields).length -
-                                        JSON.stringify(beforeATDExportObj.Fields).length,
+                                    JSON.stringify(beforeATDExportObj.Fields).length,
                                 ) > 2
                             ) {
                                 beforeATDExportObj.Fields.sort(compareByFieldID);
@@ -2408,7 +2365,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj.LineFields).length -
-                                        JSON.stringify(beforeATDExportObj.LineFields).length,
+                                    JSON.stringify(beforeATDExportObj.LineFields).length,
                                 ) > 2
                             ) {
                                 beforeATDExportObj.LineFields.sort(compareByFieldID);
@@ -2496,7 +2453,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj.References).length -
-                                        JSON.stringify(beforeATDExportObj.References).length,
+                                    JSON.stringify(beforeATDExportObj.References).length,
                                 ) > 2
                             ) {
                                 beforeATDExportObj.References.sort(compareByName);
@@ -2554,8 +2511,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                                     }
                                 }
                                 expect.fail(
-                                    `These items are not match: ${JSON.stringify(errorsArr)}, The URL Before: ${
-                                        TransactionsATDArr[index].URL
+                                    `These items are not match: ${JSON.stringify(errorsArr)}, The URL Before: ${TransactionsATDArr[index].URL
                                     }, The URL After of: ${afterATDExportResponse.URL}`,
                                 );
                             }
@@ -2570,7 +2526,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj.Settings).length -
-                                        JSON.stringify(beforeATDExportObj.Settings).length,
+                                    JSON.stringify(beforeATDExportObj.Settings).length,
                                 ) > 2
                             ) {
                                 errorsArr.push(
@@ -2643,7 +2599,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                             if (
                                 Math.abs(
                                     JSON.stringify(afterATDExportObj.Workflow).length -
-                                        JSON.stringify(beforeATDExportObj.Workflow).length,
+                                    JSON.stringify(beforeATDExportObj.Workflow).length,
                                 ) > 2
                             ) {
                                 errorsArr.push(
@@ -2711,7 +2667,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         if (
                             Math.abs(
                                 JSON.stringify(afterATDExportObj.DataViews).length -
-                                    JSON.stringify(beforeATDExportObj.DataViews).length,
+                                JSON.stringify(beforeATDExportObj.DataViews).length,
                             ) > 2
                         ) {
                             beforeATDExportObj.DataViews.sort(compareByContextName);
@@ -2777,7 +2733,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         if (
                             Math.abs(
                                 JSON.stringify(afterATDExportObj.Fields).length -
-                                    JSON.stringify(beforeATDExportObj.Fields).length,
+                                JSON.stringify(beforeATDExportObj.Fields).length,
                             ) > 2
                         ) {
                             beforeATDExportObj.Fields.sort(compareByFieldID);
@@ -2840,7 +2796,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         if (
                             Math.abs(
                                 JSON.stringify(afterATDExportObj.LineFields).length -
-                                    JSON.stringify(beforeATDExportObj.LineFields).length,
+                                JSON.stringify(beforeATDExportObj.LineFields).length,
                             ) > 2
                         ) {
                             beforeATDExportObj.LineFields.sort(compareByFieldID);
@@ -2928,7 +2884,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         if (
                             Math.abs(
                                 JSON.stringify(afterATDExportObj.References).length -
-                                    JSON.stringify(beforeATDExportObj.References).length,
+                                JSON.stringify(beforeATDExportObj.References).length,
                             ) > 2
                         ) {
                             beforeATDExportObj.References.sort(compareByName);
@@ -3000,7 +2956,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         if (
                             Math.abs(
                                 JSON.stringify(afterATDExportObj.Settings).length -
-                                    JSON.stringify(beforeATDExportObj.Settings).length,
+                                JSON.stringify(beforeATDExportObj.Settings).length,
                             ) > 2
                         ) {
                             errorsArr.push(
@@ -3073,7 +3029,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
                         if (
                             Math.abs(
                                 JSON.stringify(afterATDExportObj.Workflow).length -
-                                    JSON.stringify(beforeATDExportObj.Workflow).length,
+                                JSON.stringify(beforeATDExportObj.Workflow).length,
                             ) > 2
                         ) {
                             errorsArr.push(

@@ -147,6 +147,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
             });
 
             it(`Execute AddonJob Code Job Valid Response`, async () => {
+                debugger;
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Execute AddonJob Code Job Valid Response') {
@@ -338,6 +339,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
 
         //Base Functions
         function isExecuteAddonJobCodeJobValidResponse(codeJobAPIResponse, testDataBody) {
+            debugger;
             let tempObj = {} as any;
             if (codeJobAPIResponse[0] === undefined) {
                 tempObj = codeJobAPIResponse.result;
@@ -355,7 +357,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                     tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
                     tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] == tempObj.DistributorUUID ||
                     tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] ==
-                        tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                    tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
                 ) {
                     return 'Error in UUID in Code Job API Response';
@@ -382,6 +384,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
             }
             //Check Type and Event
             try {
+                debugger;
                 if (
                     (tempObj.AuditType != 'action' && tempObj.AuditType != 'action') ||
                     tempObj.Event.Type != 'addon_job_execution' ||

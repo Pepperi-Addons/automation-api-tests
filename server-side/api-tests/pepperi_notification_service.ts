@@ -408,6 +408,7 @@ export async function PepperiNotificationServiceTests(
                 it('Create Addon', async () => {
                     //Create
                     //To make sure eddon is deleted no matter what
+    
                     createdAddon = await generalService.fetchStatus(
                         generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
                         {
@@ -421,8 +422,37 @@ export async function PepperiNotificationServiceTests(
 
                     for (let index = 0; index < versionsArr.length; index++) {
                         versiontestAddon = {
+                            Available: true,
                             AddonUUID: createdAddon.Body.UUID,
                             Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                        };
+                        versiontestAddon.Phased = true;
+                        versiontestAddon.StartPhasedDateTime = new Date().toJSON();
+
+                        versionsArr[index] = await generalService
+                            .fetchStatus(
+                                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                                {
+                                    method: `POST`,
+                                    headers: {
+                                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                                    },
+                                    body: JSON.stringify(versiontestAddon),
+                                },
+                            )
+                            .then((res) => res.Body);
+
+                    }
+                    expect(createdAddon.Body.Name).to.equal(testAddon.Name);
+                    expect(versionsArr[0].Version).to.contain('0.0.1');
+                    expect(versionsArr[1].Version).to.contain('0.0.2');
+                    expect(versionsArr[2].Version).to.contain('0.0.3');
+
+                    for (let index = 0; index < versionsArr.length; index++) {
+                        versiontestAddon = {
+                            Available: true,
+                            UUID: versionsArr[index].UUID,
+                            Version: '0.0.' + (index), //Name here can't be changed or it will send messages VIA teams
                         };
                         versiontestAddon.Phased = true;
                         versiontestAddon.StartPhasedDateTime = new Date().toJSON();
@@ -438,11 +468,9 @@ export async function PepperiNotificationServiceTests(
                                 },
                             )
                             .then((res) => res.Body);
+
                     }
-                    expect(createdAddon.Body.Name).to.equal(testAddon.Name);
-                    expect(versionsArr[0].Version).to.contain('0.0.1');
-                    expect(versionsArr[1].Version).to.contain('0.0.2');
-                    expect(versionsArr[2].Version).to.contain('0.0.3');
+
                 });
 
                 it('Install Addon', async () => {
@@ -827,8 +855,8 @@ export async function PepperiNotificationServiceTests(
                     for (let index = 0; index < versionsArr.length; index++) {
                         const deleteVersionApiResponse = await generalService.fetchStatus(
                             generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                                '/var/addons/versions/' +
-                                versionsArr[index].UUID,
+                            '/var/addons/versions/' +
+                            versionsArr[index].UUID,
                             {
                                 method: `DELETE`,
                                 headers: {
@@ -847,8 +875,8 @@ export async function PepperiNotificationServiceTests(
                 it('Delete Addon', async () => {
                     const deleteApiResponse = await generalService.fetchStatus(
                         generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                            '/var/addons/' +
-                            createdAddon.Body.UUID,
+                        '/var/addons/' +
+                        createdAddon.Body.UUID,
                         {
                             method: `DELETE`,
                             headers: {
@@ -1117,6 +1145,7 @@ export async function PepperiNotificationServiceTests(
                 });
 
                 it(`Subscribe And Validate Get With Where (DI-18054) (Test GUID: ${_Test_UUID_Subscription}`, async () => {
+                    debugger;
                     const subscriptionBody: Subscription = {
                         AddonRelativeURL: '/logger/sync_pns_test',
                         Type: 'data',
@@ -1257,7 +1286,8 @@ export async function PepperiNotificationServiceTests(
                     expect(firstSyncSchema.Path).to.include(
                         '/addons/api/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/logger/sync_pns_test',
                     );
-                    expect(secondAsyncShema.Path).to.include(
+                    debugger;
+                    expect(secondAsyncShema.Path).to.include(//falling here
                         '/addons/api/async/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/logger/sync_pns_test',
                     );
                 });
