@@ -155,26 +155,32 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     if (tests.includes('Sanity')) {
         await LoginTests(email, pass);
         await OrderTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Workflow')) {
         await WorkflowTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DeepLink')) {
         await DeepLinkTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Promotion')) {
         await PromotionTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Security')) {
         await SecurityPolicyTests(email, pass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Create')) {
         await CreateDistributorTests(generalService, varPass, varPassEU);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Uom')) {
@@ -184,10 +190,12 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('CloseCatalog')) {
         await CloseCatalogTest(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('PageBuilder')) {
         await PageBuilderTests(email, pass, varPass, generalService);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Distributor')) {
@@ -202,6 +210,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DimxAPI')) {
@@ -216,6 +225,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DimxPerformance')) {
@@ -230,6 +240,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DimxReference')) {
@@ -244,6 +255,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Udc')) {
@@ -252,12 +264,15 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('script_picker')) {
         await ScriptPickerTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_perf_sqlite')) {
         await LoginPerfSqlitefTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('aws_logs')) {
         await AWSLogsTester(
@@ -271,6 +286,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     run();

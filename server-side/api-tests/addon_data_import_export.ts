@@ -72,7 +72,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
-
+    await generalService.baseAddonVersionsInstallation(varKey);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // #endregion Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
