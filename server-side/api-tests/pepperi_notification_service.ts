@@ -443,6 +443,32 @@ export async function PepperiNotificationServiceTests(
                     expect(versionsArr[0].Version).to.contain('0.0.1');
                     expect(versionsArr[1].Version).to.contain('0.0.2');
                     expect(versionsArr[2].Version).to.contain('0.0.3');
+
+                    for (let index = 0; index < versionsArr.length; index++) {
+                        versiontestAddon = {
+                            UUID: versionsArr[index].UUID,
+                            Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                        };
+                        versiontestAddon.Available = true;
+                        versiontestAddon.Phased = true;
+                        versiontestAddon.StartPhasedDateTime = new Date().toJSON();
+                        versionsArr[index] = await generalService
+                            .fetchStatus(
+                                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                                {
+                                    method: `POST`,
+                                    headers: {
+                                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                                    },
+                                    body: JSON.stringify(versiontestAddon),
+                                },
+                            )
+                            .then((res) => res.Body);
+                    }
+
+                    expect(versionsArr[0].Available).to.equal(true);
+                    expect(versionsArr[1].Available).to.equal(true);
+                    expect(versionsArr[2].Available).to.equal(true);
                 });
 
                 it('Install Addon', async () => {
