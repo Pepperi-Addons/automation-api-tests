@@ -1643,8 +1643,9 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         //console.log({ Get_Var_Addons_Empty_Versions_Array_Create: createVersionApiResponse });
 
         //console.log({ Get_Var_Addons_Single_Version_In_Bulk_End_Point_Create_Status_Text: createVersionApiResponse }); //.statusText.split('<h2>')[1].split('</h2>')[0] });
-        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion =
-            JSON.stringify(createVersionApiResponse).includes('fault'); //.statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
+        mandatoryStepsPostVersionsArrayWithoutBulkEndPointTest.FailToCreateAddonVersion = JSON.stringify(
+            createVersionApiResponse,
+        ).includes('The requested URL was rejected. Please consult with your administrator'); //.statusText.split('<h2>')[1].split('</h2>')[0].includes("500 - Internal server error.");
         addTestResultUnderHeadline(
             testName,
             'Create New Addon With Single Version In Bulk End Point Test',
@@ -1821,12 +1822,15 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
         //console.log({ Post_Addon_Without_Name_Test: createApiResponse });
-        mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion =
-            JSON.stringify(createApiResponse).includes('fault');
+        mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion = JSON.stringify(
+            createApiResponse,
+        ).includes('The requested URL was rejected. Please consult with your administrator');
         addTestResultUnderHeadline(
             testName,
             'Post Addon Without Name Negative Test',
-            JSON.stringify(createApiResponse).includes('fault'),
+            JSON.stringify(createApiResponse).includes(
+                'The requested URL was rejected. Please consult with your administrator',
+            ),
         );
 
         if (mandatoryStepsPostAddonAddonWithoutNameTest.FailToCreateAddonVersion == true) {
