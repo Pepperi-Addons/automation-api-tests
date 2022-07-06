@@ -818,6 +818,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     //#region Addons Tests
     //Test Install addon without version files (Negative)
     async function executeInstallAddonWithoutVersionFilesTest(testName, testDataBody) {
+        // debugger;
         const mandatoryStepsInstallAddonWithoutVersionFiles = {
             createAddon: false,
             failedToInstallAddon: false,
@@ -842,10 +843,26 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             mandatoryStepsInstallAddonWithoutVersionFiles.createAddon =
                 testDataBody.Name == createApiResponse.Body.Name;
 
-            //Install without version
+            const testUpdateBody = {
+                UUID: createApiResponse.Body.UUID,
+                Available: true,
+            };
+            // const updateAddonResponse =
+            await generalService.fetchStatus(
+                generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons',
+                {
+                    method: `POST`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                    },
+                    body: JSON.stringify(testUpdateBody),
+                },
+            );
+            // debugger;
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
                 .install();
+            //Install without version
             //console.log({ Post_Addon_Without_Version_Files: postInstallAddonApiResponse });
 
             let postAddonApiResponse;
@@ -1193,6 +1210,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
     //Test Install Newest Addon Without Version - Version 2
     async function executeInstallNewestAddonWithoutVersionTest(testName, testDataBody) {
+        debugger;
         const mandatoryStepsInstallNewestAddonWithoutVersion = {
             createAddon: false,
             installAddon: false,
@@ -1227,6 +1245,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
                     versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -1240,6 +1260,31 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     })
                     .then((res) => res.Body);
             }
+
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                versionTestDataBody.Available = true;
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(true);
+
+            debugger;
 
             //Install newest available without version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
