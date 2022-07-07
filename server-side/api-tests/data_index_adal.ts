@@ -191,7 +191,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
-                    indexSchema
+                    indexSchema,
                 );
                 expect(readDocumentResponse).to.deep.include.members([
                     secondDocument,
@@ -252,7 +252,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
-                    indexSchema
+                    indexSchema,
                 );
                 expect(createDocumentResponse, JSON.stringify(createDocumentResponse))
                     .to.have.property('updated')
@@ -287,7 +287,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
-                    indexSchema
+                    indexSchema,
                 );
                 expect(createDocumentResponse).to.have.property('updated').to.equal(3);
             });
@@ -304,7 +304,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
-                    indexSchema
+                    indexSchema,
                 );
                 expect(readDocumentResponse[0]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
                 expect(readDocumentResponse[0]).to.have.property('DocumentNumber').to.equal(4);
@@ -457,7 +457,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     createDocumentTestData,
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal(createDocumentTestData);
             });
@@ -468,7 +468,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     [createDocumentTestData, secondDocument, thirdDocument],
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal([
                     {
@@ -498,7 +498,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(readDocumentResponse).to.deep.include.members([
                     secondDocument,
@@ -528,7 +528,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     updateDocumentTestData,
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal(updateDocumentTestData);
             });
@@ -560,7 +560,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse, JSON.stringify(createDocumentResponse))
                     .to.have.property('updated')
@@ -595,7 +595,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.have.property('updated').to.equal(3);
             });
@@ -612,7 +612,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(readDocumentResponse[0]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
                 expect(readDocumentResponse[0]).to.have.property('DocumentNumber').to.equal(4);
@@ -821,7 +821,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     typedSchemeName,
                     createDocumentTestData,
-                    typedIndexSchema
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal(createDocumentTestData);
             });
@@ -848,7 +848,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Uninstall Addon With Data Index Documents', async () => {
                 const uninstallAddonResponse: any = await generalService.uninstallAddon(addonUUID);
-                ;
                 const uninstallAddonAuditLogResponse = await generalService.getAuditLogResultObjectIfValid(
                     uninstallAddonResponse.URI,
                     90,

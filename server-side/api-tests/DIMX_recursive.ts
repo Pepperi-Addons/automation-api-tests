@@ -42,22 +42,17 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         );
     }
 
-
-
     //#region Upgrade Addons
-
-
-
 
     const hostSchemaName = 'RecursiveImportTestHost';
     const referenceSchemaName = 'RecursiveImportTestReference';
     const containedSchemaName = 'RecursiveImportTestContained';
     const addonFunctionsFileName = 'recursive15.js';
-    const addonRecursiveTestHostFunction = 'RecursiveImportTestHost_ImportRelativeURL'
-    const addonRecursiveTestReferenceFunction = 'RecursiveImportTestReference_ImportRelativeURL'
-    const addonRecursiveHostMappingFunction = 'RecursiveImportTestHost_MappingRelativeURL'
-    const addonRecursiveReferenceTestReferenceFunction = 'RecursiveImportTestReference_MappingRelativeURL'
-    const addonRecursiveImportTestContainedFunction = 'RecursiveImportTestContained_FixRelativeURL'
+    const addonRecursiveTestHostFunction = 'RecursiveImportTestHost_ImportRelativeURL';
+    const addonRecursiveTestReferenceFunction = 'RecursiveImportTestReference_ImportRelativeURL';
+    const addonRecursiveHostMappingFunction = 'RecursiveImportTestHost_MappingRelativeURL';
+    const addonRecursiveReferenceTestReferenceFunction = 'RecursiveImportTestReference_MappingRelativeURL';
+    const addonRecursiveImportTestContainedFunction = 'RecursiveImportTestContained_FixRelativeURL';
     //#endregion Upgrade Addons
 
     describe('DIMX recursive Tests Suites', () => {
@@ -105,7 +100,10 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                 let base64File;
                 if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
                     const file = fs.readFileSync(
-                        path.resolve(__dirname.replace('\\build\\server-side', ''), './test-data/recursiveFunctions.ts'),
+                        path.resolve(
+                            __dirname.replace('\\build\\server-side', ''),
+                            './test-data/recursiveFunctions.ts',
+                        ),
                     );
                     base64File = file.toString('base64');
                 } else {
@@ -247,7 +245,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         Type: 'AddonAPI', // mandatory on create
                         AddonRelativeURL: '', // mandatory on create
                         MappingRelativeURL: null,
-                        FixRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveImportTestContainedFunction}`
+                        FixRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveImportTestContainedFunction}`,
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -288,7 +286,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         RelationName: 'DataImportResource', // mandatory
                         Type: 'AddonAPI', // mandatory on create
                         AddonRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveTestReferenceFunction}`, // mandatory on create
-                        MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveReferenceTestReferenceFunction}`
+                        MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveReferenceTestReferenceFunction}`,
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -301,7 +299,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     RelationName: 'DataImportResource', // mandatory
                     Type: 'AddonAPI', // mandatory on create
                     AddonRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveTestReferenceFunction}`, // mandatory on create
-                    MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveReferenceTestReferenceFunction}`
+                    MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveReferenceTestReferenceFunction}`,
                 };
                 const relationResponse = await relationService.getRelationWithNameAndUUID(
                     {
@@ -311,11 +309,11 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     relationBody.Name,
                     addonUUID,
                 );
-                // expect(relationResponse[0]).to.include({
-                //     ...relationBody,
-                //     Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
-                //     Hidden: false,
-                //});
+                expect(relationResponse[0]).to.include({
+                    ...relationBody,
+                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                    Hidden: false,
+                });
             });
 
             it(`Post RecursiveImportTestHost Relation`, async () => {
@@ -330,7 +328,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         RelationName: 'DataImportResource', // mandatory
                         Type: 'AddonAPI', // mandatory on create
                         AddonRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveTestHostFunction}`, // mandatory on create
-                        MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveHostMappingFunction}`
+                        MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveHostMappingFunction}`,
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -343,7 +341,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     RelationName: 'DataImportResource', // mandatory
                     Type: 'AddonAPI', // mandatory on create
                     AddonRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveTestHostFunction}`, // mandatory on create
-                    MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveHostMappingFunction}`
+                    MappingRelativeURL: `/${addonFunctionsFileName}/${addonRecursiveHostMappingFunction}`,
                 };
                 const relationResponse = await relationService.getRelationWithNameAndUUID(
                     {
@@ -353,11 +351,11 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     relationBody.Name,
                     addonUUID,
                 );
-                // expect(relationResponse[0]).to.include({
-                //     ...relationBody,
-                //     Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
-                //     Hidden: false,
-                // });
+                expect(relationResponse[0]).to.include({
+                    ...relationBody,
+                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                    Hidden: false,
+                });
             });
 
             it(`Post RecursiveImportTestReference Relation`, async () => {
@@ -467,8 +465,8 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         Prop2: {
                             Type: 'Resource',
                             AddonUUID: addonUUID,
-                            Resource: referenceSchemaName
-                        }
+                            Resource: referenceSchemaName,
+                        },
                     },
                 } as any);
                 expect(purgedSchema).to.equal('');
@@ -496,7 +494,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     Type: 'data',
                     Fields: {
                         ContainedInnerStringData: { Type: 'String' },
-                        ContainedInnerIntegerData: { Type: 'Integer' }
+                        ContainedInnerIntegerData: { Type: 'Integer' },
                     },
                 } as any);
                 expect(purgedSchema).to.equal('');
@@ -523,7 +521,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     Name: containedSchemaName,
                     Type: 'data',
                     Fields: {
-                        ContainedProp1: { Type: 'String' }
+                        ContainedProp1: { Type: 'String' },
                     },
                 } as any);
                 expect(purgedSchema).to.equal('');
@@ -540,19 +538,19 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         {
                             Key: 'HostKey1',
                             Prop1: 'HostValue1',
-                            Prop2: 'ReferenceKey1'
+                            Prop2: 'ReferenceKey1',
                         },
                         {
                             Key: 'HostKey2',
                             Prop1: 'HostValue2',
-                            Prop2: 'ReferenceKey2'
+                            Prop2: 'ReferenceKey2',
                         },
                         {
                             Key: 'HostKey3',
                             Prop1: 'HostValue3',
-                            Prop2: 'ReferenceKey3'
-                        }
-                    ]
+                            Prop2: 'ReferenceKey3',
+                        },
+                    ],
                 });
             });
 
@@ -566,24 +564,24 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                             Key: 'ReferenceKey1',
                             Prop1: 'ReferenceValue1',
                             Prop2: {
-                                ContainedProp1: 'ContainedValue1'
-                            }
+                                ContainedProp1: 'ContainedValue1',
+                            },
                         },
                         {
                             Key: 'ReferenceKey2',
                             Prop1: 'ReferenceValue2',
                             Prop2: {
-                                ContainedProp1: 'ContainedValue2'
-                            }
+                                ContainedProp1: 'ContainedValue2',
+                            },
                         },
                         {
                             Key: 'ReferenceKey3',
                             Prop1: 'ReferenceValue3',
                             Prop2: {
-                                ContainedProp1: 'ContainedValue3'
-                            }
-                        }
-                    ]
+                                ContainedProp1: 'ContainedValue3',
+                            },
+                        },
+                    ],
                 });
             });
 
@@ -593,87 +591,92 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                     ? 'pfs.staging.pepperi'
                     : generalService['client'].BaseURL.includes('papi-eu')
-                        ? 'eupfs.pepperi'
-                        : 'pfs.pepperi';
+                    ? 'eupfs.pepperi'
+                    : 'pfs.pepperi';
                 const mappingObject = {};
                 mappingObject[`${addonUUID}_RecursiveImportTestReference`] = {
                     ReferenceKey2: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey2'
+                        NewKey: 'Mapped ReferenceKey2',
                     },
                     ReferenceKey1: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey1'
+                        NewKey: 'Mapped ReferenceKey1',
                     },
                     ReferenceKey3: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey3'
-                    }
+                        NewKey: 'Mapped ReferenceKey3',
+                    },
                 };
                 mappingObject[`${addonUUID}_RecursiveImportTestHost`] = {
                     HostKey2: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey2'
+                        NewKey: 'Mapped HostKey2',
                     },
                     HostKey1: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey1'
+                        NewKey: 'Mapped HostKey1',
                     },
                     HostKey3: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey3'
-                    }
+                        NewKey: 'Mapped HostKey3',
+                    },
                 };
                 recursiveExportResponse = await dimxService.recursiveExport(addonUUID, hostSchemaName);
-                expect(recursiveExportResponse).to.have.property('URI').that.is.a('string').and.includes('/audit_logs/');
+                expect(recursiveExportResponse)
+                    .to.have.property('URI')
+                    .that.is.a('string')
+                    .and.includes('/audit_logs/');
                 expect(recursiveExportResponse).to.have.property('ExecutionUUID').that.is.a('string').and.is.not.empty;
-                const getAuditResponse = await generalService.getAuditLogResultObjectIfValid(recursiveExportResponse.URI, 30)
+                const getAuditResponse = await generalService.getAuditLogResultObjectIfValid(
+                    recursiveExportResponse.URI,
+                    30,
+                );
                 const resultObject = JSON.parse(getAuditResponse.AuditInfo.ResultObject);
                 expect(resultObject).to.have.property('URI').that.is.a('string').and.includes(distributor.UUID);
-                expect(resultObject).to.have.property('URI').that.is.a('string').and.includes('/DIMXUploadedFiles/DIMX_import/');
+                expect(resultObject)
+                    .to.have.property('URI')
+                    .that.is.a('string')
+                    .and.includes('/DIMXUploadedFiles/DIMX_import/');
                 expect(resultObject).to.have.property('URI').that.is.a('string').and.includes(testResponseEnvironment);
-                expect(resultObject).to.have.property('DistributorUUID').that.is.a('string').and.equals(distributor.UUID);
+                expect(resultObject)
+                    .to.have.property('DistributorUUID')
+                    .that.is.a('string')
+                    .and.equals(distributor.UUID);
                 expect(resultObject).to.have.property('Version').that.is.a('string');
                 expect(resultObject).to.have.property('Resources').that.is.an('array');
                 recursiveExportResponse = resultObject;
             });
 
             it(`Create Mapping`, async () => {
-                const pfsService = new PFSService(generalService);
-                const distributor = await pfsService.getDistributor();
-                const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
-                    ? 'pfs.staging.pepperi'
-                    : generalService['client'].BaseURL.includes('papi-eu')
-                        ? 'eupfs.pepperi'
-                        : 'pfs.pepperi';
                 const mappingObject = {};
                 mappingObject[`${addonUUID}_RecursiveImportTestReference`] = {
                     ReferenceKey2: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey2'
+                        NewKey: 'Mapped ReferenceKey2',
                     },
                     ReferenceKey1: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey1'
+                        NewKey: 'Mapped ReferenceKey1',
                     },
                     ReferenceKey3: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey3'
-                    }
+                        NewKey: 'Mapped ReferenceKey3',
+                    },
                 };
                 mappingObject[`${addonUUID}_RecursiveImportTestHost`] = {
                     HostKey2: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey2'
+                        NewKey: 'Mapped HostKey2',
                     },
                     HostKey1: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey1'
+                        NewKey: 'Mapped HostKey1',
                     },
                     HostKey3: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey3'
-                    }
+                        NewKey: 'Mapped HostKey3',
+                    },
                 };
                 const mappingResponse = await dimxService.mapping(addonUUID, hostSchemaName, recursiveExportResponse);
                 expect(mappingResponse.Mapping).to.deep.equal(mappingObject);
@@ -683,59 +686,82 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                     ? 'cdn.staging.pepperi'
                     : generalService['client'].BaseURL.includes('papi-eu')
-                        ? 'eucdn.pepperi'
-                        : 'cdn.pepperi';
+                    ? 'eucdn.pepperi'
+                    : 'cdn.pepperi';
                 const mappingObject = {};
                 mappingObject[`${addonUUID}_RecursiveImportTestReference`] = {
                     ReferenceKey2: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey2'
+                        NewKey: 'Mapped ReferenceKey2',
                     },
                     ReferenceKey1: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey1'
+                        NewKey: 'Mapped ReferenceKey1',
                     },
                     ReferenceKey3: {
                         Action: 'Replace',
-                        NewKey: 'Mapped ReferenceKey3'
-                    }
+                        NewKey: 'Mapped ReferenceKey3',
+                    },
                 };
                 mappingObject[`${addonUUID}_RecursiveImportTestHost`] = {
                     HostKey2: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey2'
+                        NewKey: 'Mapped HostKey2',
                     },
                     HostKey1: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey1'
+                        NewKey: 'Mapped HostKey1',
                     },
                     HostKey3: {
                         Action: 'Replace',
-                        NewKey: 'Mapped HostKey3'
-                    }
+                        NewKey: 'Mapped HostKey3',
+                    },
                 };
-                recursiveExportResponse["Mapping"] = mappingObject;
-                let recursiveImportResponse = await dimxService.recursiveImport(addonUUID, hostSchemaName, recursiveExportResponse);
-                expect(recursiveImportResponse).to.have.property('URI').that.is.a('string').and.includes('/audit_logs/');
+                recursiveExportResponse['Mapping'] = mappingObject;
+                let recursiveImportResponse = await dimxService.recursiveImport(
+                    addonUUID,
+                    hostSchemaName,
+                    recursiveExportResponse,
+                );
+                expect(recursiveImportResponse)
+                    .to.have.property('URI')
+                    .that.is.a('string')
+                    .and.includes('/audit_logs/');
                 expect(recursiveImportResponse).to.have.property('ExecutionUUID').that.is.a('string').and.is.not.empty;
-                const getAuditResponse = await generalService.getAuditLogResultObjectIfValid(recursiveImportResponse.URI, 30)
+                const getAuditResponse = await generalService.getAuditLogResultObjectIfValid(
+                    recursiveImportResponse.URI,
+                    30,
+                );
                 const resultObject = JSON.parse(getAuditResponse.AuditInfo.ResultObject);
                 expect(resultObject).to.have.property('URI').that.is.a('string').and.includes(testResponseEnvironment);
                 expect(resultObject).to.have.property('URI').that.is.a('string').and.includes('/TemporaryFiles/');
                 expect(resultObject).to.have.property('AddonUUID').that.is.a('string').that.equals(addonUUID);
                 expect(resultObject).to.have.property('Resources').that.is.an('array');
                 expect(resultObject).to.have.property('Resource').that.equals(hostSchemaName);
-                expect(resultObject.Resources[0]).to.have.property('URI').that.is.a('string').and.includes(testResponseEnvironment);
-                expect(resultObject.Resources[0]).to.have.property('URI').that.is.a('string').and.includes('/TemporaryFiles/');
-                expect(resultObject.Resources[0]).to.have.property('AddonUUID').that.is.a('string').that.equals(addonUUID);
+                expect(resultObject.Resources[0])
+                    .to.have.property('URI')
+                    .that.is.a('string')
+                    .and.includes(testResponseEnvironment);
+                expect(resultObject.Resources[0])
+                    .to.have.property('URI')
+                    .that.is.a('string')
+                    .and.includes('/TemporaryFiles/');
+                expect(resultObject.Resources[0])
+                    .to.have.property('AddonUUID')
+                    .that.is.a('string')
+                    .that.equals(addonUUID);
                 expect(resultObject.Resources[0]).to.have.property('Resource').that.equals(referenceSchemaName);
                 recursiveImportResponse = resultObject;
-                const recursiveImportCDN = await generalService.fetchStatus(recursiveImportResponse.URI, {
-                    method: 'GET',
-                }).then((res) => res.Body);
-                const recursiveImportResourceCDN = await generalService.fetchStatus(recursiveImportResponse.Resources[0].URI, {
-                    method: 'GET',
-                }).then((res) => res.Body);
+                const recursiveImportCDN = await generalService
+                    .fetchStatus(recursiveImportResponse.URI, {
+                        method: 'GET',
+                    })
+                    .then((res) => res.Body);
+                const recursiveImportResourceCDN = await generalService
+                    .fetchStatus(recursiveImportResponse.Resources[0].URI, {
+                        method: 'GET',
+                    })
+                    .then((res) => res.Body);
                 expect(recursiveImportResourceCDN).to.be.an('array').with.lengthOf(3);
                 expect(recursiveImportResourceCDN[0]).to.have.property('Key').that.equals('Mapped ReferenceKey2');
                 expect(recursiveImportResourceCDN[0]).to.have.property('Status').that.equals('Insert');

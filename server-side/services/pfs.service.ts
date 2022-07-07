@@ -30,7 +30,9 @@ export class PFSService {
     }
 
     invalidate(schemaName, key) {
-        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + key + '/invalidate');
+        return this.papiClient.post(
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + key + '/invalidate',
+        );
     }
 
     postFileSDK(schemaName, file: any) {
@@ -53,7 +55,11 @@ export class PFSService {
     }
 
     getFileSDK(schemaName, path: string) {
-        return this.papiClient.addons.pfs.uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe').schema(schemaName).key(path).get()
+        return this.papiClient.addons.pfs
+            .uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe')
+            .schema(schemaName)
+            .key(path)
+            .get();
     }
 
     getFilesList(schemaName, path: string, options?: QueryOptions) {
@@ -84,7 +90,7 @@ export class PFSService {
         return buf;
     }
 
-    async getFileFromURLNoBuffer(url){
+    async getFileFromURLNoBuffer(url) {
         const response = await this.generalService.fetchStatus(url, { method: `GET` });
         return response;
     }
@@ -175,6 +181,9 @@ export class PFSService {
     }
 
     rollBack(schemaName, file: any) {
-        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testRollback=true', file);
+        return this.papiClient.post(
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testRollback=true',
+            file,
+        );
     }
 }

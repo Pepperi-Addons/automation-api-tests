@@ -1,7 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { PFSService } from '../services/pfs.service';
 import { ADALService } from '../services/adal.service';
-import { stringify } from 'querystring';
 // import { pfs } from '../tests';
 
 export async function PFSTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -28,7 +27,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     describe('PFS Tests Suites', () => {
         const schemaName = 'pfsTestSchema';
-        let verifyAfterPurge = [] as any;
+        const verifyAfterPurge = [] as any;
         describe('Prerequisites Addon for PFS Tests', () => {
             //Test Data
             //PFS
@@ -78,7 +77,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 }
                 const newSchema = await adalService.postSchema({
                     Name: schemaName,
-                    Type: 'pfs'
+                    Type: 'pfs',
                 } as any);
                 expect(purgedSchema).to.equal('');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
@@ -98,15 +97,14 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Post + Get file in root folder`, async () => {
                 const tempKey = 'RootFolderFile' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const postFileResponse = await pfsService.postFile(schemaName,
-                    {
+                const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
                     MIME: 'file/plain',
                     Sync: 'Device',
                     Description: tempDescription,
                     Cache: false,
-                    ExpirationDateTime:  '2035-07-03T05:56:17.222Z'
+                    ExpirationDateTime: '2035-07-03T05:56:17.222Z',
                 });
                 expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postFileResponse.CreationDateTime).to.include('Z');
@@ -121,7 +119,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const getFileResponse = await pfsService.getFile(schemaName, tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -140,7 +143,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Hidden).to.be.false;
                 expect(getFileResponse.URL).to.include('https://pfs.');
                 expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const getFileBeforeDelete = await pfsService.getFileFromURL(getFileResponse.URL);
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
@@ -152,14 +160,13 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Post file with space in name`, async () => {
                 const tempKey = 'Name with spaces' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const postFileResponse = await pfsService.postFile(schemaName,
-                    {
+                const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
                     MIME: 'file/plain',
                     Sync: 'Device',
                     Description: tempDescription,
-                    Cache: true
+                    Cache: true,
                 });
                 expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postFileResponse.CreationDateTime).to.include('Z');
@@ -173,7 +180,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const getFileResponse = await pfsService.getFile(schemaName, tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -191,11 +203,15 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Hidden).to.be.false;
                 expect(getFileResponse.URL).to.include('https://pfs.');
                 expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const fileBeforeUpdate = await pfsService.getFileFromURL(getFileResponse.URL);
-                const updateFileResponse = await pfsService.postFile(schemaName,
-                    {
+                const updateFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
                     MIME: 'image/png',
@@ -214,7 +230,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(updateFileResponse.Sync).to.equal('None');
                 expect(updateFileResponse.URL).to.include('https://pfs.');
                 expect(updateFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const fileAfterUpdate = await pfsService.getFileFromURL(updateFileResponse.URL);
                 expect(fileBeforeUpdate).to.deep.equal(fileAfterUpdate);
@@ -244,7 +265,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const getFileResponse = await pfsService.getFileSDK(schemaName, tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -261,7 +287,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Hidden).to.be.false;
                 expect(getFileResponse.URL).to.include('https://pfs.');
                 expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
@@ -289,7 +320,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
@@ -315,7 +351,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
@@ -343,7 +384,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/TestFolder/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/TestFolder/' +
+                        tempKey,
                 );
                 const getFileResponse = await pfsService.getFile(schemaName, 'TestFolder/' + tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -359,7 +405,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Hidden).to.be.false;
                 expect(getFileResponse.URL).to.include('https://pfs.');
                 expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/TestFolder/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/TestFolder/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, 'TestFolder/' + tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
@@ -389,7 +440,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/1/2/3/4/5/6/7/' +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/1/2/3/4/5/6/7/' +
                         tempKey,
                 );
                 const getFileResponse = await pfsService.getFile(schemaName, '1/2/3/4/5/6/7/' + tempKey);
@@ -408,7 +461,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/1/2/3/4/5/6/7/' +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/1/2/3/4/5/6/7/' +
                         tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, '1/2/3/4/5/6/7/' + tempKey);
@@ -526,7 +581,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const updateFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
@@ -545,7 +605,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Delete file`, async () => {
                 const tempKey = 'FileForDelete' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const postFileResponse = await pfsService.postFile(schemaName,{
+                const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
                     MIME: 'file/plain',
@@ -564,7 +624,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
                 expect(deletedFileResponse.Key).to.equal(tempKey);
@@ -652,7 +717,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(postFileResponse.Sync).to.equal('Device');
                     expect(postFileResponse.URL).to.include('https://pfs.');
                     expect(postFileResponse.URL).to.include(
-                        '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + rootFileTempKey,
+                        '.pepperi.com/' +
+                            distributor.UUID +
+                            '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                            schemaName +
+                            '/' +
+                            rootFileTempKey,
                     );
                     i++;
                 }
@@ -694,7 +764,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(postFileResponse.URL).to.include(
                         '.pepperi.com/' +
                             distributor.UUID +
-                            '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' +
+                            '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                            schemaName +
+                            '/' +
                             folderTempKey +
                             '/' +
                             folderFiletempKey,
@@ -729,7 +801,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(rootFolderResponse[i].Key).to.include(rootFileTempKey);
                     expect(rootFolderResponse[i].URL).to.include('https://pfs.');
                     expect(rootFolderResponse[i].URL).to.include(
-                        '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + rootFileTempKey,
+                        '.pepperi.com/' +
+                            distributor.UUID +
+                            '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                            schemaName +
+                            '/' +
+                            rootFileTempKey,
                     );
                     i++;
                 }
@@ -745,7 +822,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(folderResponse[f].URL).to.include(
                         '.pepperi.com/' +
                             distributor.UUID +
-                            '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' +
+                            '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                            schemaName +
+                            '/' +
                             folderTempKey +
                             '/' +
                             folderFiletempKey,
@@ -817,7 +896,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             // });
 
             it(`Page size parameter`, async () => {
-                const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', { page_size: 2 });
+                const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
+                    page_size: 2,
+                });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(2);
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription + ' 1');
                 expect(getFileResponse[1].Description).to.include(folderFiletempDescription + ' 10');
@@ -837,7 +918,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse[0].URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
                         folderTempKey +
                         '/' +
                         folderFiletempKey,
@@ -858,7 +941,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse[0].URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/'+
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
                         folderTempKey +
                         '/' +
                         folderFiletempKey,
@@ -897,7 +982,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
                 let f = 1;
                 while (f < 21) {
-                    deletedFileResponse = await pfsService.deleteFile(schemaName, 
+                    deletedFileResponse = await pfsService.deleteFile(
+                        schemaName,
                         folderTempKey + '/' + folderFiletempKey + '-' + f + '.txt',
                     );
                     expect(deletedFileResponse.Hidden).to.be.true;
@@ -906,7 +992,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Include Deleted`, async () => {
-                const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', { include_deleted: true });
+                const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
+                    include_deleted: true,
+                });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(20);
                 expect(getFileResponse[0].Hidden).to.be.true;
                 expect(getFileResponse[1].Hidden).to.be.true;
@@ -958,7 +1046,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('None');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(postFileResponse).to.have.property('PresignedURL').that.is.a('string').and.is.not.empty;
                 const putResponse = await pfsService.putPresignedURL(postFileResponse.PresignedURL, putImage);
@@ -996,7 +1089,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(postFileResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
                 expect(postFileResponse.Thumbnails[0]).to.have.property('Size').that.equals('200x200');
@@ -1011,7 +1109,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(deleteThumbnailResponse.Key).to.equal(tempKey);
                 expect(deleteThumbnailResponse.URL).to.include('https://pfs.');
                 expect(deleteThumbnailResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(deleteThumbnailResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.empty;
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
@@ -1038,7 +1141,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const updateFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
@@ -1050,7 +1158,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         },
                     ],
                     Description: tempDescription,
-                    Cache: false
+                    Cache: false,
                 });
                 expect(updateFileResponse.Key).to.equal(tempKey);
                 expect(updateFileResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
@@ -1059,7 +1167,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
                 generalService.sleep(60000);
-                const thumbnailAfterDelete = await pfsService.getFileFromURLNoBuffer(updateFileResponse.Thumbnails[0].URL);
+                const thumbnailAfterDelete = await pfsService.getFileFromURLNoBuffer(
+                    updateFileResponse.Thumbnails[0].URL,
+                );
                 expect(thumbnailAfterDelete.Body.Text).to.include('AccessDenied');
             });
 
@@ -1089,7 +1199,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(postFileResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
                 expect(postFileResponse.Thumbnails[0]).to.have.property('Size').that.equals('200x200');
@@ -1100,12 +1215,17 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     URI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN8AAADiCAMAAAD5w+JtAAAAOVBMVEX///+BgYF+fn6mpqbm5uZycnJvb292dnbk5OR/f3/Kysrz8/PFxcX5+fmXl5d7e3uHh4ft7e2qqqrlWm1NAAAAvklEQVR4nO3XCw7CIBRFwT5KpdZP1f0vVmOscQMExZkVnJsmBYYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPhGh/m4m8acW3dUcjqXNSKVmFuX1HFJ8bSPa+uUKkq8rMfWKTUs67YvptYtNYzpvS/dWsdU8LlvbB1TgX2/7Z/29fh/6f18GHbbvNLl+T7kx83seX1ZWpdUMkdJUaZe5z2+YB5T7vT1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAduANy0AJFN8zV0wAAAABJRU5ErkJggg==',
                     MIME: 'image/png',
                     Description: tempDescription,
-                    Cache: false
+                    Cache: false,
                 });
                 expect(updateFileResponse.Key).to.equal(tempKey);
                 expect(updateFileResponse.URL).to.include('https://pfs.');
                 expect(updateFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(updateFileResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
                 expect(updateFileResponse.Thumbnails[0]).to.have.property('Size').that.equals('200x200');
@@ -1116,8 +1236,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Post image file with thumbnail, verify invalidation + negative`, async () => {
-                const Folder = 'InvalidateTestFolder'
-                const tempKey = Folder + '/' + 'InvalidateFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
+                const Folder = 'InvalidateTestFolder';
+                const tempKey =
+                    Folder + '/' + 'InvalidateFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
@@ -1143,7 +1264,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Name).to.equal(tempKey.split(Folder + '/')[1]);
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(postFileResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
                 expect(postFileResponse.Thumbnails[0]).to.have.property('Size').that.equals('200x200');
@@ -1155,12 +1281,17 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     URI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN8AAADiCAMAAAD5w+JtAAAAOVBMVEX///+BgYF+fn6mpqbm5uZycnJvb292dnbk5OR/f3/Kysrz8/PFxcX5+fmXl5d7e3uHh4ft7e2qqqrlWm1NAAAAvklEQVR4nO3XCw7CIBRFwT5KpdZP1f0vVmOscQMExZkVnJsmBYYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPhGh/m4m8acW3dUcjqXNSKVmFuX1HFJ8bSPa+uUKkq8rMfWKTUs67YvptYtNYzpvS/dWsdU8LlvbB1TgX2/7Z/29fh/6f18GHbbvNLl+T7kx83seX1ZWpdUMkdJUaZe5z2+YB5T7vT1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAduANy0AJFN8zV0wAAAABJRU5ErkJggg==',
                     MIME: 'image/png',
                     Description: tempDescription,
-                    Cache: false
+                    Cache: false,
                 });
                 expect(updateFileResponse.Key).to.equal(tempKey);
                 expect(updateFileResponse.URL).to.include('https://pfs.');
                 expect(updateFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(updateFileResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
                 expect(updateFileResponse.Thumbnails[0]).to.have.property('Size').that.equals('200x200');
@@ -1178,7 +1309,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(invalidateResponse.Name).to.equal(tempKey.split(Folder + '/')[1]);
                 expect(invalidateResponse.URL).to.include('https://pfs.');
                 expect(invalidateResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 expect(invalidateResponse).to.have.property('Thumbnails').that.is.an('Array').and.is.not.empty;
                 expect(invalidateResponse.Thumbnails[0]).to.have.property('Size').that.equals('200x200');
@@ -1188,9 +1324,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const fileAfterInvalidate = await pfsService.getFileFromURL(postFileResponse.URL);
                 expect(thumbnailBeforeInvalidate).to.not.deep.equal(thumbnailAfterInvalidate);
                 expect(fileBeforeInvalidate).to.not.deep.equal(fileAfterInvalidate);
-                await expect(
-                    pfsService.invalidate(schemaName, 'NegativeShouldFail.png'),
-                ).eventually.to.be.rejectedWith(
+                await expect(pfsService.invalidate(schemaName, 'NegativeShouldFail.png')).eventually.to.be.rejectedWith(
                     `${generalService.papiClient['options'].baseURL}/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/pfsTestSchema/NegativeShouldFail.png/invalidate failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Could not find requested item: 'NegativeShouldFail.png'","detail":{"errorcode":"NotFound"}}}`,
                 );
             });
@@ -1280,7 +1414,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Post file + update and verify fail after lock`, async () => {
                 const tempKey = 'FailAfterLockTest' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const lockKey = distributor.UUID + '~' + 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe~' + schemaName + '~' + tempKey;
+                const lockKey =
+                    distributor.UUID + '~' + 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe~' + schemaName + '~' + tempKey;
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
@@ -1300,7 +1435,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 await expect(
                     pfsService.postFileFailAfterLock(schemaName, {
@@ -1339,7 +1479,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Post file + update and verify fail after S3`, async () => {
                 const tempKey = 'FailAfterS3Test' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const lockKey = distributor.UUID + '~' + 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe~' + schemaName + '~' + tempKey;
+                const lockKey =
+                    distributor.UUID + '~' + 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe~' + schemaName + '~' + tempKey;
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
@@ -1359,7 +1500,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 await expect(
                     pfsService.postFileFailAfterS3(schemaName, {
@@ -1398,7 +1544,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Post file + update and verify fail after ADAL`, async () => {
                 const tempKey = 'FailAfterADALTest' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const lockKey = distributor.UUID + '~' + 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe~' + schemaName + '~' + tempKey;
+                const lockKey =
+                    distributor.UUID + '~' + 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe~' + schemaName + '~' + tempKey;
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
@@ -1418,7 +1565,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Sync).to.equal('Device');
                 expect(postFileResponse.URL).to.include('https://pfs.');
                 expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 await expect(
                     pfsService.postFileFailAfterADAL(schemaName, {
@@ -1461,7 +1613,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Sync).to.equal('Device');
                 expect(getFileResponse.URL).to.include('https://pfs.');
                 expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey,
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
@@ -1469,11 +1626,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
             it(`Delete pfs Schema and verify purged files`, async () => {
                 const adalService = new ADALService(generalService.papiClient);
-                let purgedSchema;
                 try {
-                    purgedSchema = await adalService.deleteSchema(schemaName);
+                    await adalService.deleteSchema(schemaName);
                 } catch (error) {
-                    purgedSchema = '';
                     expect(error)
                         .to.have.property('message')
                         .that.includes(

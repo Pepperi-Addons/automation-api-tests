@@ -28,19 +28,19 @@ export class DIMXService {
         );
     }
 
-    insertDataToSchemeDIMX(addonUUID: string, tableName: string, body){
+    insertDataToSchemeDIMX(addonUUID: string, tableName: string, body) {
         return this.papiClient.post(`/addons/data/import/${addonUUID}/${tableName}`, body);
     }
 
-    recursiveExport(addonUUID: string, tableName: string){
-        return this.papiClient.post(`/addons/data/export/file/recursive/${addonUUID}/${tableName}`)
+    recursiveExport(addonUUID: string, tableName: string) {
+        return this.papiClient.post(`/addons/data/export/file/recursive/${addonUUID}/${tableName}`);
     }
 
-    mapping(addonUUID: string, tableName: string, body){
-        return this.papiClient.post(`/addons/data/mapping/${addonUUID}/${tableName}`, body)
+    mapping(addonUUID: string, tableName: string, body) {
+        return this.papiClient.post(`/addons/data/mapping/${addonUUID}/${tableName}`, body);
     }
 
-    recursiveImport(addonUUID: string, tableName: string, body){
-        return this.papiClient.post(`/addons/data/import/file/recursive/${addonUUID}/${tableName}`, body)
+    recursiveImport(addonUUID: string, tableName: string, body) {
+        return this.papiClient.post(`/addons/data/import/file/recursive/${addonUUID}/${tableName}`, body);
     }
 }

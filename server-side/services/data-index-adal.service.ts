@@ -8,7 +8,6 @@ export interface DataIndexSchema {
 }
 
 interface DataIndexDocument {
-
     Key: string | number;
     [key: string]: any;
 }
@@ -27,7 +26,7 @@ interface DataIndexQuery {
 
 export class DataIndexAdalService {
     globalSleep = 900;
-    constructor(public generalService: GeneralService) { }
+    constructor(public generalService: GeneralService) {}
 
     async changeEndpoint(type, scheme) {
         if (type == 'index') {
@@ -52,7 +51,7 @@ export class DataIndexAdalService {
         addonUUID: string,
         schemeName: string,
         scheme: DataIndexDocument,
-        indexName?
+        indexName?,
     ) {
         const path = await this.changeEndpoint(type, indexName);
         await this.generalService.sleepAsync(this.globalSleep);
@@ -64,15 +63,21 @@ export class DataIndexAdalService {
         addonUUID: string,
         schemeName: string,
         schemeArr: DataIndexDocument[],
-        indexName?
+        indexName?,
     ) {
-        let obj = { Objects: schemeArr };
+        const obj = { Objects: schemeArr };
         const path = await this.changeEndpoint(type, indexName);
         await this.generalService.sleepAsync(this.globalSleep);
         return this.generalService.papiClient.post(`/addons/${path}/batch/${addonUUID}/${schemeName}`, obj);
     }
 
-    async updateDocument(type: DataIndexSchema['Type'], addonUUID: string, schemeName: string, query: DataIndexQuery, scheme) {
+    async updateDocument(
+        type: DataIndexSchema['Type'],
+        addonUUID: string,
+        schemeName: string,
+        query: DataIndexQuery,
+        scheme,
+    ) {
         const path = await this.changeEndpoint(type, scheme);
         await this.generalService.sleepAsync(this.globalSleep);
         return this.generalService.papiClient.post(`/addons/${path}/update/${addonUUID}/${schemeName}`, query);
@@ -84,7 +89,13 @@ export class DataIndexAdalService {
         return this.generalService.papiClient.get(`/addons/${path}/${addonUUID}/${indexName}`);
     }
 
-    async searchAllDocuments(type: DataIndexSchema['Type'], addonUUID, indexName: string, query: DataIndexQuery, scheme) {
+    async searchAllDocuments(
+        type: DataIndexSchema['Type'],
+        addonUUID,
+        indexName: string,
+        query: DataIndexQuery,
+        scheme,
+    ) {
         const path = await this.changeEndpoint(type, scheme);
         await this.generalService.sleepAsync(this.globalSleep);
         return this.generalService.papiClient.post(`/addons/${path}/search/${addonUUID}/${indexName}`, query);
@@ -108,7 +119,13 @@ export class DataIndexAdalService {
         return this.generalService.papiClient.get(url);
     }
 
-    async removeDocuments(type: DataIndexSchema['Type'], addonUUID, indexName: string | number, scheme, query: DataIndexQuery) {
+    async removeDocuments(
+        type: DataIndexSchema['Type'],
+        addonUUID,
+        indexName: string | number,
+        scheme,
+        query: DataIndexQuery,
+    ) {
         const path = await this.changeEndpoint(type, scheme);
         await this.generalService.sleepAsync(this.globalSleep);
         return this.generalService.papiClient.post(`/addons/${path}/delete/${addonUUID}/${indexName}`, query);
