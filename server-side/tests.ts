@@ -45,6 +45,7 @@ import {
     OpenCatalogTests,
     DistributorTests,
     PFSTests,
+    DIMXrecursive,
     UDCTests,
     ChartManagerTests,
     ImportExportATDActivitiesTests,
@@ -775,6 +776,19 @@ export async function pfs(client: Client, request: Request, testerFunctions: Tes
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         PFSTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function dimxrecursive(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'DIMX Recursive';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DIMXrecursive(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
