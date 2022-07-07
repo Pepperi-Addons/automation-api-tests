@@ -18,7 +18,7 @@ export class DataIndexService {
             select: [`count(${fieldName})`],
             group_by: fieldName,
         });
-
+        // debugger;
         if (totlasArr.length <= 0) {
             throw new Error('Empty array response from elastic search');
         }

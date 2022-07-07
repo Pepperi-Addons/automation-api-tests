@@ -68,11 +68,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
-
+    await generalService.baseAddonVersionsInstallation(varKey);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // #endregion Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
@@ -409,9 +409,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
-                        console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
+                        console.log({ URI: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
                         expect(
                             relationResponse.Body,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -513,9 +513,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Import Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
-                        console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL });
+                        console.log({ URI: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
                             { Key: 'testKeyDIMX0', Status: 'Insert' },
                             { Key: 'testKeyDIMX1', Status: 'Ignore' },
@@ -555,9 +555,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Import Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
-                        console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL });
+                        console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
                             { Key: 'testKeyDIMX0', Status: 'Insert' },
                             { Key: 'testKeyDIMX1', Status: 'Insert' },
@@ -611,9 +611,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         }
 
                         const NewRelationResponse = await generalService.fetchStatus(
-                            JSON.parse(newDimxExport.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(newDimxExport.AuditInfo.ResultObject).URI,
                         );
-                        console.log({ URL: JSON.parse(newDimxExport.AuditInfo.ResultObject).DownloadURL });
+                        console.log({ URL: JSON.parse(newDimxExport.AuditInfo.ResultObject).URI });
 
                         NewRelationResponse.Body.sort((a, b) => (a.Key > b.Key ? 1 : -1));
 
@@ -734,7 +734,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportCsv.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI,
                         );
                         console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject) });
                         expect(
@@ -834,9 +834,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Import Content (DI-19419)`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportCsv.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI,
                         );
-                        console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject).DownloadURL });
+                        console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
                             { Key: 'testKeyDIMX0', Status: 'Insert' },
                             { Key: 'testKeyDIMX1', Status: 'Ignore' },
@@ -873,9 +873,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Import Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportCsv.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI,
                         );
-                        console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject).DownloadURL });
+                        console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
                             { Key: 'testKeyDIMX0', Status: 'Insert' },
                             { Key: 'testKeyDIMX1', Status: 'Insert' },
@@ -934,10 +934,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         }
 
                         const NewRelationResponse = await generalService.fetchStatus(
-                            JSON.parse(newDimxExport.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(newDimxExport.AuditInfo.ResultObject).URI,
                         );
 
-                        console.log({ URL: JSON.parse(newDimxExport.AuditInfo.ResultObject).DownloadURL });
+                        console.log({ URL: JSON.parse(newDimxExport.AuditInfo.ResultObject).URI });
 
                         const NewRelationResponseArr = NewRelationResponse.Body.Text.split('\n');
                         NewRelationResponseArr.sort();
@@ -1032,7 +1032,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
                         console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
                         expect(
@@ -1144,7 +1144,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                     it(`Export Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
                         console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
                         expect(
@@ -1212,7 +1212,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                                 it(`Export Content`, async () => {
                                     const relationResponse = await generalService.fetchStatus(
-                                        JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                                        JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                                     );
                                     console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
                                     if (jsonCsv[j] == 'csv') {
@@ -1397,7 +1397,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Export Content`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                                 );
                                 console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject) });
                                 if (jsonCsv[i] == 'json') {
@@ -1543,7 +1543,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Export Content After Change (DI-19592)`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).URI,
                                 );
                                 console.log({ URL: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject) });
 
@@ -1627,7 +1627,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import With Relation Restore`, async () => {
                                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                                    URI: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                    URI: JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
@@ -1653,9 +1653,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import Content After Restore`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxImport.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxImport.AuditInfo.ResultObject).URI,
                                 );
-                                console.log({ URL: JSON.parse(dimxImport.AuditInfo.ResultObject).DownloadURL });
+                                console.log({ URL: JSON.parse(dimxImport.AuditInfo.ResultObject).URI });
                                 relationResponse.Body.sort(compareByKey);
                                 expect(
                                     relationResponse.Body[0],
@@ -1711,7 +1711,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Export Content After Restore`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxExportAfterRestore.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxExportAfterRestore.AuditInfo.ResultObject).URI,
                                 );
                                 console.log({ URL: JSON.parse(dimxExportAfterRestore.AuditInfo.ResultObject) });
                                 if (jsonCsv[i] == 'json') {
@@ -1857,7 +1857,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import With Relation Insert`, async () => {
                                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                                    URI: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                    URI: JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                                     OverwriteObject: false,
                                     Delimiter: ',',
                                 });
@@ -1883,9 +1883,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import Content After Insert`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxImportInsert.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxImportInsert.AuditInfo.ResultObject).URI,
                                 );
-                                console.log({ URL: JSON.parse(dimxImportInsert.AuditInfo.ResultObject).DownloadURL });
+                                console.log({ URL: JSON.parse(dimxImportInsert.AuditInfo.ResultObject).URI });
                                 relationResponse.Body.sort(compareByKey);
                                 expect(
                                     relationResponse.Body[0],
@@ -1941,7 +1941,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Export Content After Insert (DI-19592)`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxExportAfterInsert.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxExportAfterInsert.AuditInfo.ResultObject).URI,
                                 );
                                 console.log({ URL: JSON.parse(dimxExportAfterInsert.AuditInfo.ResultObject) });
                                 if (jsonCsv[i] == 'json') {
@@ -2191,7 +2191,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                             );
                             console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject) });
                             const NewRelationResponseArr =
@@ -2450,7 +2450,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                             );
                             console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject) });
                             const NewRelationResponseArr =
@@ -2467,7 +2467,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Import With Relation Same Content With Diffrent Delimiter`, async () => {
                             const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                                URI: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                URI: JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                                 OverwriteObject: false,
                                 Delimiter: delimiterArr[i],
                             });
@@ -2492,7 +2492,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Import Content That Was Just Exported`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).URI,
                             );
 
                             const relationAfterResponse = await dimxService.dataExport(addonUUID, schemaName, {
@@ -2506,10 +2506,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             );
 
                             console.log({
-                                URL_Before: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
-                                URL_After: JSON.parse(dimxAuditLogContent.AuditInfo.ResultObject).DownloadURL,
-                                URL_Expected_Diff: JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject)
-                                    .DownloadURL,
+                                URL_Before: JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
+                                URL_After: JSON.parse(dimxAuditLogContent.AuditInfo.ResultObject).URI,
+                                URL_Expected_Diff: JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).URI,
                             });
 
                             relationResponse.Body.sort(compareByKey);
@@ -2595,7 +2594,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import After Change With Relation Same Content With Diffrent Delimiter`, async () => {
                                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                                    URI: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                                    URI: JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                                     OverwriteObject: false,
                                     Delimiter: delimiterArr[i],
                                 });
@@ -2620,7 +2619,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import Content That Was Just Exported`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).URI,
                                 );
 
                                 const relationAfterResponse = await dimxService.dataExport(addonUUID, schemaName, {
@@ -2634,10 +2633,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 );
 
                                 console.log({
-                                    URL_Before: JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
-                                    URL_After: JSON.parse(dimxAuditLogContent.AuditInfo.ResultObject).DownloadURL,
-                                    URL_Expected_Diff: JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject)
-                                        .DownloadURL,
+                                    URL_Before: JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
+                                    URL_After: JSON.parse(dimxAuditLogContent.AuditInfo.ResultObject).URI,
+                                    URL_Expected_Diff: JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).URI,
                                 });
 
                                 relationResponse.Body.sort(compareByKey);
@@ -3092,7 +3090,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxExportBefore.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxExportBefore.AuditInfo.ResultObject).URI,
                                 );
                                 console.log({ URL: JSON.parse(dimxExportBefore.AuditInfo.ResultObject) });
                                 const NewRelationResponseArr =
@@ -3109,7 +3107,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import With Relation Same Content With Diffrent Delimiter`, async () => {
                                 const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                                    URI: JSON.parse(dimxExportBefore.AuditInfo.ResultObject).DownloadURL,
+                                    URI: JSON.parse(dimxExportBefore.AuditInfo.ResultObject).URI,
                                     OverwriteObject: true,
                                     Delimiter: delimiterArr[i],
                                 });
@@ -3134,7 +3132,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Import Content That Was Just Exported`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).URI,
                                 );
 
                                 relationResponse.Body.sort(compareByKey);
@@ -3166,10 +3164,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 );
 
                                 console.log({
-                                    URL_Before: JSON.parse(dimxExportBefore.AuditInfo.ResultObject).DownloadURL,
-                                    URL_After: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).DownloadURL,
-                                    URL_Expected_Diff: JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject)
-                                        .DownloadURL,
+                                    URL_Before: JSON.parse(dimxExportBefore.AuditInfo.ResultObject).URI,
+                                    URL_After: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).URI,
+                                    URL_Expected_Diff: JSON.parse(dimxImportAfterNoChange.AuditInfo.ResultObject).URI,
                                 });
 
                                 expect(
@@ -3193,7 +3190,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
                                 const relationResponse = await generalService.fetchStatus(
-                                    JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                    JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).URI,
                                 );
                                 console.log({ URL: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject) });
                                 const NewRelationResponseArr =
@@ -3399,7 +3396,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                 //         it(`Export Content With Delimiter Of: "${delimiterArr[i]}"`, async () => {
                 //             const relationResponse = await generalService.fetchStatus(
-                //                 JSON.parse(dimxExport.AuditInfo.ResultObject).DownloadURL,
+                //                 JSON.parse(dimxExport.AuditInfo.ResultObject).URI,
                 //             );
                 //             console.log({ URL: JSON.parse(dimxExport.AuditInfo.ResultObject) });
                 //             const NewRelationResponseArr =
@@ -3699,7 +3696,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                 describe(`Export JSON`, () => {
                     let dimxExportDefult;
-                    let recursiveExportDownloadURL;
+                    let recursiveExportURI;
                     let recursiveExportResources = [];
 
                     it(`Export From Relation`, async () => {
@@ -3721,28 +3718,26 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             : 'pfs.pepperi';
 
                         const recursiveExportResponse = JSON.parse(dimxExportDefult.AuditInfo.ResultObject);
-                        recursiveExportDownloadURL = recursiveExportResponse.DownloadURL;
+                        recursiveExportURI = recursiveExportResponse.URI;
                         recursiveExportResources = recursiveExportResponse.Resources;
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
                         ).to.include(`https://${testResponseEnvironment}`);
-                        expect(
-                            recursiveExportDownloadURL,
-                            JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
-                        ).to.include(`https://${testResponseEnvironment}`);
+                        expect(recursiveExportURI, JSON.stringify(dimxExportDefult.AuditInfo.ResultObject)).to.include(
+                            `https://${testResponseEnvironment}`,
+                        );
                         for (let i = 0; i < recursiveExportResources.length; i++) {
                             const exportedResource = recursiveExportResources[i];
-                            expect(
-                                exportedResource['DownloadURL'],
-                                JSON.stringify(recursiveExportResources),
-                            ).to.include(`https://${testResponseEnvironment}`);
+                            expect(exportedResource['URI'], JSON.stringify(recursiveExportResources)).to.include(
+                                `https://${testResponseEnvironment}`,
+                            );
                         }
                     });
 
                     it(`Export Content`, async () => {
                         const relationResponse = await generalService.fetchStatus(
-                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
                         console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
                         expect(
@@ -3819,8 +3814,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export Resources Validate Same Addon Static`, async () => {
                         for (let j = 0; j < recursiveExportResources.length; j++) {
                             const exportedResource = recursiveExportResources[j];
-                            const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-                            console.log({ URL: exportedResource['DownloadURL'] });
+                            const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+                            console.log({ URL: exportedResource['URI'] });
                             if (relationResponse.Body[0].Description != 'DIMX Reference Test 1') {
                                 expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
                                     [
@@ -3839,8 +3834,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export Resources Validate Other Addon Static`, async () => {
                         for (let j = 0; j < recursiveExportResources.length; j++) {
                             const exportedResource = recursiveExportResources[j];
-                            const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-                            console.log({ URL: exportedResource['DownloadURL'] });
+                            const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+                            console.log({ URL: exportedResource['URI'] });
                             if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
                                 for (let i = 0; i < relationResponse.Body.length; i++) {
                                     delete relationResponse.Body[i].ModificationDateTime;
@@ -3868,8 +3863,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export Resources Validate Same Addon Dynamic`, async () => {
                         for (let j = 0; j < recursiveExportResources.length; j++) {
                             const exportedResource = recursiveExportResources[j];
-                            const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-                            console.log({ URL: exportedResource['DownloadURL'] });
+                            const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+                            console.log({ URL: exportedResource['URI'] });
                             if (relationResponse.Body[0].Description != 'DIMX Reference Test 1') {
                                 expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
                                     [
@@ -3915,8 +3910,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export Resources Validate Other Addon Dynamic`, async () => {
                         for (let j = 0; j < recursiveExportResources.length; j++) {
                             const exportedResource = recursiveExportResources[j];
-                            const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-                            console.log({ URL: exportedResource['DownloadURL'] });
+                            const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+                            console.log({ URL: exportedResource['URI'] });
                             if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
                                 for (let i = 0; i < relationResponse.Body.length; i++) {
                                     delete relationResponse.Body[i].ModificationDateTime;
@@ -3939,8 +3934,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export Resources All As expected`, async () => {
                         for (let j = 0; j < recursiveExportResources.length; j++) {
                             const exportedResource = recursiveExportResources[j];
-                            const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-                            console.log({ URL: exportedResource['DownloadURL'] });
+                            const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+                            console.log({ URL: exportedResource['URI'] });
                             if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
                                 for (let i = 0; i < relationResponse.Body.length; i++) {
                                     delete relationResponse.Body[i].ModificationDateTime;
@@ -4351,7 +4346,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
             //     describe(`Export JSON`, () => {
             //         let dimxExportDefult;
-            //         let recursiveExportDownloadURL;
+            //         let recursiveExportURI;
             //         let recursiveExportResources = [];
 
             //         it(`Export From Relation`, async () => {
@@ -4373,20 +4368,20 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 : 'pfs.pepperi';
 
             //             const recursiveExportResponse = JSON.parse(dimxExportDefult.AuditInfo.ResultObject);
-            //             recursiveExportDownloadURL = recursiveExportResponse.DownloadURL;
+            //             recursiveExportURI = recursiveExportResponse.URI;
             //             recursiveExportResources = recursiveExportResponse.Resources;
             //             expect(
             //                 dimxExportDefult.AuditInfo.ResultObject,
             //                 JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
             //             ).to.include(`https://${testResponseEnvironment}`);
             //             expect(
-            //                 recursiveExportDownloadURL,
+            //                 recursiveExportURI,
             //                 JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
             //             ).to.include(`https://${testResponseEnvironment}`);
             //             for (let i = 0; i < recursiveExportResources.length; i++) {
             //                 const exportedResource = recursiveExportResources[i];
             //                 expect(
-            //                     exportedResource['DownloadURL'],
+            //                     exportedResource['URI'],
             //                     JSON.stringify(recursiveExportResources),
             //                 ).to.include(`https://${testResponseEnvironment}`);
             //             }
@@ -4394,7 +4389,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
             //         it(`Export Content`, async () => {
             //             const relationResponse = await generalService.fetchStatus(
-            //                 JSON.parse(dimxExportDefult.AuditInfo.ResultObject).DownloadURL,
+            //                 JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
             //             );
             //             console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject) });
             //             expect(
@@ -4471,8 +4466,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //         it(`Export Resources Validate Same Addon Static`, async () => {
             //             for (let j = 0; j < recursiveExportResources.length; j++) {
             //                 const exportedResource = recursiveExportResources[j];
-            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+            //                 console.log({ URL: exportedResource['URI'] });
             //                 if (relationResponse.Body[0].Description != 'DIMX Reference Test 1') {
             //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
             //                         [
@@ -4491,8 +4486,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //         it(`Export Resources Validate Other Addon Static`, async () => {
             //             for (let j = 0; j < recursiveExportResources.length; j++) {
             //                 const exportedResource = recursiveExportResources[j];
-            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+            //                 console.log({ URL: exportedResource['URI'] });
             //                 if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
             //                     for (let i = 0; i < relationResponse.Body.length; i++) {
             //                         delete relationResponse.Body[i].ModificationDateTime;
@@ -4520,8 +4515,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //         it(`Export Resources Validate Same Addon Dynamic`, async () => {
             //             for (let j = 0; j < recursiveExportResources.length; j++) {
             //                 const exportedResource = recursiveExportResources[j];
-            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+            //                 console.log({ URL: exportedResource['URI'] });
             //                 if (relationResponse.Body[0].Description != 'DIMX Reference Test 1') {
             //                     expect(relationResponse.Body, JSON.stringify(exportedResource)).to.deep.include.members(
             //                         [
@@ -4567,8 +4562,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //         it(`Export Resources Validate Other Addon Dynamic`, async () => {
             //             for (let j = 0; j < recursiveExportResources.length; j++) {
             //                 const exportedResource = recursiveExportResources[j];
-            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+            //                 console.log({ URL: exportedResource['URI'] });
             //                 if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
             //                     for (let i = 0; i < relationResponse.Body.length; i++) {
             //                         delete relationResponse.Body[i].ModificationDateTime;
@@ -4591,8 +4586,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //         it(`Export Resources All As expected`, async () => {
             //             for (let j = 0; j < recursiveExportResources.length; j++) {
             //                 const exportedResource = recursiveExportResources[j];
-            //                 const relationResponse = await generalService.fetchStatus(exportedResource['DownloadURL']);
-            //                 console.log({ URL: exportedResource['DownloadURL'] });
+            //                 const relationResponse = await generalService.fetchStatus(exportedResource['URI']);
+            //                 console.log({ URL: exportedResource['URI'] });
             //                 if (relationResponse.Body[0].Description == 'DIMX Reference Test 1') {
             //                     for (let i = 0; i < relationResponse.Body.length; i++) {
             //                         delete relationResponse.Body[i].ModificationDateTime;
@@ -4878,7 +4873,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Export Content`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxExportOriginal.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxExportOriginal.AuditInfo.ResultObject).URI,
                             );
                             console.log({ URL: JSON.parse(dimxExportOriginal.AuditInfo.ResultObject) });
                             if (performanceTest.Sufix == 'json') {
@@ -4985,7 +4980,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Export Content After Change`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject).URI,
                             );
                             console.log({ URL: JSON.parse(dimxExportAfterChange.AuditInfo.ResultObject) });
                             if (performanceTest.Sufix == 'json') {
@@ -5035,7 +5030,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Import With Relation Restore`, async () => {
                             const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                                URI: JSON.parse(dimxExportOriginal.AuditInfo.ResultObject).DownloadURL,
+                                URI: JSON.parse(dimxExportOriginal.AuditInfo.ResultObject).URI,
                                 OverwriteObject: false,
                                 Delimiter: ',',
                             });
@@ -5067,9 +5062,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Import Content After Restore`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).URI,
                             );
-                            console.log({ URL: JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).DownloadURL });
+                            console.log({ URL: JSON.parse(dimxImportAfterChange.AuditInfo.ResultObject).URI });
                             relationResponse.Body.sort(compareByKey);
                             expect(
                                 relationResponse.Body[0],
@@ -5121,7 +5116,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Export Content After Restore`, async () => {
                             const relationResponse = await generalService.fetchStatus(
-                                JSON.parse(dimxExportOriginal.AuditInfo.ResultObject).DownloadURL,
+                                JSON.parse(dimxExportOriginal.AuditInfo.ResultObject).URI,
                             );
                             console.log({ URL: JSON.parse(dimxExportOriginal.AuditInfo.ResultObject) });
                             if (performanceTest.Sufix == 'json') {

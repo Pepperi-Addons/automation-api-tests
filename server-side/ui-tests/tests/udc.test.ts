@@ -20,15 +20,15 @@ export async function UDCTests(email: string, password: string, varPass: string,
     //4: Add a test with Import Export ATD and UDC (DI-19699)
 
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
-
+    await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade UDC
     const testData = {
         'User Defined Collections': [UserDefinedCollectionsUUID, '0.0.52'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade UDC
 
     describe('UDC UI Tests Suit', async function () {

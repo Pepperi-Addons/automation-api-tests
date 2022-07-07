@@ -24,12 +24,14 @@ import {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
+    ScriptPickerTests,
+    LoginPerfSqlitefTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
-import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 import { testData } from './../../services/general.service';
+import {} from './script_picker.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -136,9 +138,9 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         }
     });
 
-    if (tests != 'Create') {
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests != 'Create') {
+    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
@@ -153,38 +155,47 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     if (tests.includes('Sanity')) {
         await LoginTests(email, pass);
         await OrderTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Workflow')) {
         await WorkflowTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DeepLink')) {
         await DeepLinkTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Promotion')) {
         await PromotionTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Security')) {
         await SecurityPolicyTests(email, pass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Create')) {
         await CreateDistributorTests(generalService, varPass, varPassEU);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Uom')) {
         await UomTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('CloseCatalog')) {
         await CloseCatalogTest(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('PageBuilder')) {
         await PageBuilderTests(email, pass, varPass, generalService);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Distributor')) {
@@ -199,6 +210,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DimxAPI')) {
@@ -213,6 +225,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DimxPerformance')) {
@@ -227,6 +240,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('DimxReference')) {
@@ -241,13 +255,24 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Udc')) {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('script_picker')) {
+        await ScriptPickerTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('login_perf_sqlite')) {
+        await LoginPerfSqlitefTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('aws_logs')) {
         await AWSLogsTester(
@@ -261,6 +286,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     run();
@@ -268,8 +294,8 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
 export async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(varPass);
-    const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
     const chnageVersionResponseArr = baseAddonVersionsInstallationResponseObj.chnageVersionResponseArr;
+    const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', function () {
@@ -495,10 +521,10 @@ async function setCatalogSelectionCardUI(generalService: GeneralService, catalog
     });
     expect(catalogSelectionCard).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogSelectionCard.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = catalogSelectionCard[i].UIControlData.split('CatalogSelectionCard');
         const uiControlFromFile = catalogSelectionUIControl.UIControlData.split('CatalogSelectionCard');
         catalogSelectionCard[i].UIControlData = `${uiControlFromAPI[0]}CatalogSelectionCard${uiControlFromFile[1]}`;
@@ -514,10 +540,10 @@ async function setCatalogFormUI(generalService: GeneralService, catalogSelection
     });
     expect(catalogForm).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogForm.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${catalogForm[i]['Type']}, ${catalogForm[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${catalogForm[i]['Type']}, ${catalogForm[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = catalogForm[i].UIControlData.split('CatalogForm');
         const uiControlFromFile = catalogSelectionUIControl.UIControlData.split('CatalogForm');
         catalogForm[i].UIControlData = `${uiControlFromAPI[0]}CatalogForm${uiControlFromFile[1]}`;
@@ -533,10 +559,10 @@ async function setOrderViewsMenu(generalService: GeneralService, orderViewsMenuU
     });
     expect(orderViewsMenu).to.have.length.that.is.above(0);
     for (let i = 0; i < orderViewsMenu.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderViewsMenu[i]['Type']}, ${orderViewsMenu[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderViewsMenu[i]['Type']}, ${orderViewsMenu[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderViewsMenu[i].UIControlData.split('OrderViewsMenu');
         const uiControlFromFile = orderViewsMenuUIControl.UIControlData.split('OrderViewsMenu');
         orderViewsMenu[i].UIControlData = `${uiControlFromAPI[0]}OrderViewsMenu${uiControlFromFile[1]}`;
@@ -552,10 +578,10 @@ async function setOrderCartGrid(generalService: GeneralService, orderCartGridUIC
     });
     expect(orderCartGrid).to.have.length.that.is.above(0);
     for (let i = 0; i < orderCartGrid.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
         const uiControlFromFile = orderCartGridUIControl.UIControlData.split('OrderCartGrid');
         orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
@@ -571,10 +597,10 @@ async function setOrderBanner(generalService: GeneralService, OrderBannerUIContr
     });
     expect(orderBanner).to.have.length.that.is.above(0);
     for (let i = 0; i < orderBanner.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderBanner[i]['Type']}, ${orderBanner[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderBanner[i]['Type']}, ${orderBanner[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderBanner[i].UIControlData.split('OrderBanner');
         const uiControlFromFile = OrderBannerUIControl.UIControlData.split('OrderBanner');
         orderBanner[i].UIControlData = `${uiControlFromAPI[0]}OrderBanner${uiControlFromFile[1]}`;
@@ -590,10 +616,10 @@ async function setOrderCartOpenedFooter(generalService: GeneralService, OrderCar
     });
     expect(orderCartOpenedFooter).to.have.length.that.is.above(0);
     for (let i = 0; i < orderCartOpenedFooter.length; i++) {
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${orderCartOpenedFooter[i]['Type']}, ${orderCartOpenedFooter[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${orderCartOpenedFooter[i]['Type']}, ${orderCartOpenedFooter[i]['InternalID']}`,
+        // });
         const uiControlFromAPI = orderCartOpenedFooter[i].UIControlData.split('OrderCartOpenedFooter');
         const uiControlFromFile = OrderCartOpenedFooterUIControl.UIControlData.split('OrderCartOpenedFooter');
         orderCartOpenedFooter[i].UIControlData = `${uiControlFromAPI[0]}OrderCartOpenedFooter${uiControlFromFile[1]}`;
@@ -614,10 +640,10 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         const uiControlFromAPI = orderCenterClosedFooter[0].UIControlData.split('OrderCenterClosedFooter');
         uiControlFromAPI[0] = `${uiControlFromAPI[0].split('OA#')[0]}OA#${atdArray[i]['InternalID']}]`;
         const uiControlFromFile = OrderCenterClosedFooterUIControl.UIControlData.split('OrderCenterClosedFooter');
-        addContext(this, {
-            title: 'Test Data',
-            value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
-        });
+        // addContext(this, {
+        //     title: 'Test Data',
+        //     value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
+        // });
         if (JSON.stringify(orderCenterClosedFooter).includes(atdArray[i].InternalID)) {
             orderCenterClosedFooter[0]['InternalID'] = orderCenterClosedFooter[orderOrigenUpdateCounter].InternalID;
             orderOrigenUpdateCounter++;
