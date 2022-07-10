@@ -1551,6 +1551,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     postAddonApiResponse = await generalService.papiClient.get(postUninstallAddonApiResponse.URI);
                     maxLoopsCounter--;
                 } while (postAddonApiResponse.Status.ID == 2 && maxLoopsCounter > 0);
+                // debugger;
                 //console.log({ Audit_Log_Addon_Uninstall: postAddonApiResponse });
                 //Uninstall results
                 mandatoryStepsInstallAddonWithVersion.unInstallAddon = postAddonApiResponse.Status.ID == 1;
@@ -4376,6 +4377,34 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install newest available without version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -4558,6 +4587,34 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
+
             //Install newest available without version
             const postInstalAddonWithDeletedAddonVersionApiResponse =
                 await generalService.papiClient.addons.installedAddons.addonUUID(createApiResponse.Body.UUID).install();
@@ -4722,7 +4779,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //console.log({ Token: API._Token })
     }
 
-    //Test Uninstall with deleted addon
+    //Test Uninstall with deleted addon //EVGENY2
     async function executeUninstallAddonWithDeletedAddonTest(testName, testDataBody) {
         const mandatoryStepsUninstallAddonWithDeletedAddon = {
             createAddon: false,
@@ -4770,6 +4827,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     })
                     .then((res) => res.Body);
             }
+
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
 
             //Install newest available without version
             const postInstalAddonWithDeletedAddonApiResponse = await generalService.papiClient.addons.installedAddons
@@ -5134,7 +5218,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //console.log({ Token: API._Token })
     }
 
-    //Test Downgrade Uninstalled addon (Negative)
+    //Test Downgrade Uninstalled addon (Negative)//EVGENY3
     async function executeUninstallAddonAndDowngradeTest(testName, testDataBody) {
         const mandatoryStepsUninstallAddonAndDowngrade = {
             createAddon: false,
@@ -5183,6 +5267,34 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     })
                     .then((res) => res.Body);
             }
+
+            
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
 
             //Install newest available without version
             const postInstalAddonWithDeletedAddonApiResponse = await generalService.papiClient.addons.installedAddons
