@@ -4377,7 +4377,6 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
-            
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = {
                     UUID: versionsArr[index].UUID,
@@ -4613,7 +4612,6 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             expect(versionsArr[0].Available).to.equal(true);
             expect(versionsArr[1].Available).to.equal(true);
             expect(versionsArr[2].Available).to.equal(false);
-
 
             //Install newest available without version
             const postInstalAddonWithDeletedAddonVersionApiResponse =
@@ -5268,7 +5266,6 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
-            
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = {
                     UUID: versionsArr[index].UUID,
