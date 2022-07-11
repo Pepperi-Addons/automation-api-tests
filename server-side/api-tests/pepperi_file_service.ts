@@ -3,6 +3,10 @@ import { PFSService } from '../services/pfs.service';
 import { ADALService } from '../services/adal.service';
 // import { pfs } from '../tests';
 
+export async function PFSTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await PFSTests(generalService, request, tester);
+}
+
 export async function PFSTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const pfsService = new PFSService(generalService);
     const describe = tester.describe;
