@@ -44,7 +44,7 @@ import {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
-    PFSTests,
+    // PFSTests,
     DIMXrecursive,
     UDCTests,
     ChartManagerTests,
