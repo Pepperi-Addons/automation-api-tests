@@ -9,7 +9,6 @@ import {
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
     AddonDataImportExportReferenceTests,
-    PFSTests,
 } from '../../api-tests/index';
 import {
     LoginTests,
@@ -33,6 +32,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 import { testData } from './../../services/general.service';
 import {} from './script_picker.test';
+import { PFSTestser } from '../../api-tests/pepperi_file_service';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -230,7 +230,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
 
     if (tests.includes('PfsAPI')) {
-        await PFSTests(
+        await PFSTestser(
             generalService,
             {
                 body: {
