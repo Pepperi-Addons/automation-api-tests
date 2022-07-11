@@ -4,6 +4,9 @@ import { ADALService } from '../services/adal.service';
 // import { pfs } from '../tests';
 
 export async function PFSTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    console.log(generalService);
+    console.log(request);
+    console.log(tester);
     await PFSTests(generalService, request, tester);
 }
 
