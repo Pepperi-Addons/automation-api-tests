@@ -5701,9 +5701,10 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             addTestResultUnderHeadline(
                 testName,
                 'Delete Addon - End Test',
-                JSON.stringify(deleteApiResponse.Body)==='{"Success":true}',
+                JSON.stringify(deleteApiResponse.Body) === '{"Success":true}',
             );
-            mandatoryStepsInstallAddonWithVersion.deleteAddon =JSON.stringify(deleteApiResponse.Body)==='{"Success":true}';
+            mandatoryStepsInstallAddonWithVersion.deleteAddon =
+                JSON.stringify(deleteApiResponse.Body) === '{"Success":true}';
         }
 
         if (
