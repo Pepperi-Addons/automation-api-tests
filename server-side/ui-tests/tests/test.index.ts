@@ -9,6 +9,7 @@ import {
     AddonDataImportExportTests,
     AddonDataImportExportPerformanceTests,
     AddonDataImportExportReferenceTests,
+    PFSTests,
 } from '../../api-tests/index';
 import {
     LoginTests,
@@ -215,6 +216,21 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('DimxAPI')) {
         await AddonDataImportExportTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('PfsAPI')) {
+        await PFSTests(
             generalService,
             {
                 body: {
