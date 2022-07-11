@@ -11,7 +11,6 @@ export async function PFSTestser(generalService: GeneralService, request, tester
 }
 
 export async function PFSTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const pfsService = new PFSService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -34,6 +33,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             varKey,
         );
     }
+    const pfsService = new PFSService(generalService);
     await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // debugger;
