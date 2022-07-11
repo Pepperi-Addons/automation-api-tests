@@ -33,7 +33,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
         _env = 'prod';
     }
     const testData = {
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
     };
 
     // const addonVersions =
