@@ -31,6 +31,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             varKey,
         );
     }
+    await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
