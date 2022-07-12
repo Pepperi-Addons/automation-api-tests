@@ -30,7 +30,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         generalService.papiClient['options'].addonSecretKey = addonSecretKey;
     }
     const pfsService = new PFSService(generalService);
-    // await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
