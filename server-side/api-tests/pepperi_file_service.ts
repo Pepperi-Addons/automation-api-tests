@@ -40,7 +40,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const distributor = await pfsService.getDistributor();
-    console.log(`!!!!!!!DIST IN JENKINS:${distributor}`);
+    console.log(`!!!!!!!DIST IN JENKINS:${JSON.stringify(distributor)}`);
     //#endregion Upgrade PFS
 
     describe('PFS Tests Suites', () => {
