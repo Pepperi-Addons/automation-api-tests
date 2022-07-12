@@ -26,11 +26,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     }
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
     if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
-        generalService['client'].AddonSecretKey = await generalService.getSecretKey(
-            generalService['client'].AddonUUID,
-            varKey,
-        );
-        console.log(`!!!!ADDON SK IN JENKINS:${generalService['client'].AddonSecretKey}`);
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+        console.log(`!!!!ADDON SK IN JENKINS GS:${generalService['client'].AddonSecretKey}`);
+        console.log(`!!!!ADDON SK IN JENKINS PC:${generalService.papiClient['options']}`);
     }
     console.log('############GENERAL SERVICE AFTER SK PUSHED');
     console.dir(generalService);
