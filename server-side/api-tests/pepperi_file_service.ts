@@ -84,11 +84,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const adalService = new ADALService(generalService.papiClient);
                 let purgedSchema;
                 try {
-                    purgedSchema = await generalService.fetchStatus('/addons/data/schemes/pfsTestSchema/purge', {
-                        method: `POST`,
-                    });
-                    console.log(`FETCH STATUS RESPONSE:${JSON.stringify(purgedSchema)}`);
-                    // purgedSchema = await adalService.deleteSchema(schemaName);
+                    // purgedSchema = await generalService.fetchStatus('/addons/data/schemes/pfsTestSchema/purge', {
+                    //     method: `POST`,
+                    // });
+                    // console.log(`FETCH STATUS RESPONSE:${JSON.stringify(purgedSchema)}`);
+                    purgedSchema = await adalService.deleteSchema(schemaName);
                 } catch (error) {
                     purgedSchema = '';
                     expect(error)
