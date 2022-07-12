@@ -3,8 +3,6 @@ import { AddonDataScheme, PapiClient, AddonData, FindOptions } from '@pepperi-ad
 export class ADALService {
     constructor(public papiClient: PapiClient) {
         this.papiClient = papiClient;
-        console.log('INSIDE ADAL');
-        console.dir(this.papiClient);
     }
 
     postSchema(addonDataScheme: AddonDataScheme) {

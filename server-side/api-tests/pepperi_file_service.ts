@@ -12,7 +12,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     const expect = tester.expect;
     const it = tester.it;
 
-    console.log('############TEST IS STARTING############');
     //#region Upgrade PFS
     const testData = {
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
@@ -29,20 +28,13 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
         generalService['client'].AddonSecretKey = addonSecretKey;
         generalService.papiClient['options'].addonSecretKey = addonSecretKey;
-        console.log(`!!!!ADDON SK IN JENKINS GS:${generalService['client'].AddonSecretKey}`);
-        console.log(`!!!!ADDON SK IN JENKINS PC:${generalService.papiClient['options']}`);
     }
-    console.log('############GENERAL SERVICE AFTER SK PUSHED');
-    console.dir(generalService);
-    console.log('############GENERAL SERVICE PAPI CLIENT AFTER SK PUSHED');
-    console.dir(generalService.papiClient);
     const pfsService = new PFSService(generalService);
     // await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const distributor = await pfsService.getDistributor();
-    console.log(`!!!!!!!DIST IN JENKINS:${JSON.stringify(distributor)}`);
     //#endregion Upgrade PFS
 
     describe('PFS Tests Suites', () => {
@@ -86,14 +78,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const adalService = new ADALService(generalService.papiClient);
                 let purgedSchema;
                 try {
-                    purgedSchema = await generalService.fetchStatus('/addons/data/schemes/pfsTestSchema/purge', {
-                        method: `POST`,
-                    });
-                    console.log(`FETCH STATUS RESPONSE:${JSON.stringify(purgedSchema)}`);
                     purgedSchema = await adalService.deleteSchema(schemaName);
-                    console.log(`PAPI CLIENT RESPONSE:${JSON.stringify(purgedSchema)}`);
                 } catch (error) {
-                    console.log(`PAPI CLIENT RESPONSE:${JSON.stringify(error)}`);
                     purgedSchema = '';
                     expect(error)
                         .to.have.property('message')
