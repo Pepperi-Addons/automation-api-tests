@@ -1,7 +1,9 @@
 import { AddonDataScheme, PapiClient, AddonData, FindOptions } from '@pepperi-addons/papi-sdk';
 
 export class ADALService {
-    constructor(public papiClient: PapiClient) {}
+    constructor(public papiClient: PapiClient) {
+        this.papiClient = papiClient;
+    }
 
     postSchema(addonDataScheme: AddonDataScheme) {
         return this.papiClient.addons.data.schemes.post(addonDataScheme);
