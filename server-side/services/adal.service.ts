@@ -3,6 +3,7 @@ import { AddonDataScheme, PapiClient, AddonData, FindOptions } from '@pepperi-ad
 export class ADALService {
     constructor(public papiClient: PapiClient) {
         this.papiClient = papiClient;
+        console.dir(this.papiClient);
     }
 
     postSchema(addonDataScheme: AddonDataScheme) {
@@ -22,6 +23,7 @@ export class ADALService {
     }
 
     deleteSchema(tableName: string) {
+        console.dir(this.papiClient);
         return this.papiClient.post(`/addons/data/schemes/${tableName}/purge`);
     }
 }
