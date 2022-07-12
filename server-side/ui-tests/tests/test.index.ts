@@ -71,16 +71,28 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     const generalService = new GeneralService(client);
 
+    const arrayOfItResules: string[] = [];
+    let testSuitName = '';
+
     let nestedGap = '';
     let startedTestSuiteTitle = '';
 
     generalService.PrintMemoryUseToLog('Start', tests);
-    after(function () {
+    after(async function () {
+        const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
+        const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
+        if (testSuitStatus === 'SUCCESS') {
+            const monitoringResult = await generalService.sendResultsToMonitoringAddon(testSuitName, testSuitStatus);
+            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            }
+        }
         generalService.PrintMemoryUseToLog('End', tests);
     });
 
     beforeEach(function () {
         let isCorrectNestedGap = false;
+        testSuitName = testSuitName === '' ? this.currentTest.parent.title : testSuitName;
         do {
             if (
                 this.currentTest.parent.suites.length > nestedGap.length &&
@@ -118,17 +130,35 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         } while (!isCorrectNestedGap);
     });
 
-    afterEach(function () {
+    afterEach(async function () {
         if (this.currentTest.state != 'passed') {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
+            arrayOfItResules.push('FAIL');
+            const indexOfParentheses =
+                this.currentTest.parent.title.indexOf('(') === -1
+                    ? this.currentTest.parent.title.length
+                    : this.currentTest.parent.title.indexOf('(');
+            const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
+            const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry}_outof:${this.currentTest._retries}`;
+            const monitoringResult = await generalService.sendResultsToMonitoringAddon(testName, 'ERROR');
+            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            }
         } else {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Success,
             );
+            arrayOfItResules.push('PASS');
+            // const testSuitName = this.currentTest.parent.title.substring(0, this.currentTest.parent.title.indexOf('('));
+            // const testName = `${testSuitName}:${this.currentTest.title}`;
+            // const monitoringResult = await generalService.sendResultsToMonitoringAddon(testName, "SUCCESS");
+            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+            //     console.log("FAILED TO SEND REPORT TO MOINITORING ADDON", ConsoleColors.Error);
+            // }
         }
         if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
             console.log(
@@ -157,6 +187,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         await LoginTests(email, pass);
         await OrderTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('evgeny')) {
+        await WorkflowTests(email, pass, client);
     }
 
     if (tests.includes('Workflow')) {
