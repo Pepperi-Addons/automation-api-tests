@@ -22,7 +22,6 @@ export class ADALService {
     }
 
     deleteSchema(tableName: string) {
-        console.dir(this.papiClient);
         return this.papiClient.post(`/addons/data/schemes/${tableName}/purge`);
     }
 }
