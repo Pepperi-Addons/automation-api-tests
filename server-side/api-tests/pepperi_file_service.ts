@@ -4,9 +4,6 @@ import { ADALService } from '../services/adal.service';
 // import { pfs } from '../tests';
 
 export async function PFSTestser(generalService: GeneralService, request, tester: TesterFunctions) {
-    console.log(generalService);
-    console.log(request);
-    console.log(tester);
     await PFSTests(generalService, request, tester);
 }
 
@@ -15,6 +12,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     const expect = tester.expect;
     const it = tester.it;
 
+    console.log('############TEST IS STARTING############');
     //#region Upgrade PFS
     const testData = {
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
@@ -34,6 +32,10 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         );
         console.log(`!!!!ADDON SK IN JENKINS:${generalService['client'].AddonSecretKey}`);
     }
+    console.log('############GENERAL SERVICE AFTER SK PUSHED');
+    console.dir(generalService);
+    console.log('############GENERAL SERVICE PAPI CLIENT AFTER SK PUSHED');
+    console.dir(generalService.papiClient);
     const pfsService = new PFSService(generalService);
     // await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
