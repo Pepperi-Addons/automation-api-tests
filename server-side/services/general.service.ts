@@ -36,6 +36,7 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+    system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''], //needed to be able to report tests results
 };
 
 export const ConsoleColors = {
@@ -816,6 +817,33 @@ export default class GeneralService {
         const isInstalledArr = await this.areAddonsInstalled(testData);
         const chnageVersionResponseArr = await this.changeVersion(varPass, testData, false);
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
+    async sendResultsToMonitoringAddon(testName: string, testStatus: string) {
+        const addonsSK = this.getSecret()[1];
+        const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+        const current = new Date();
+        const time = current.toLocaleTimeString();
+        const body = {
+            Name: `${testName}_${time}`, //param:addon was tested (test name)
+            Description: `${this.generateRandomString(10)}`, //param: version of the addon
+            Status: testStatus, //param is passing
+            Message: 'evgeny', //param link to Jenkins
+            NotificationWebhook: '',
+            SendNotification: '',
+        };
+        const monitoringResult = await this.fetchStatus('/system_health/notifications', {
+            method: 'POST',
+            headers: {
+                'X-Pepperi-SecretKey': addonsSK,
+                'X-Pepperi-OwnerID': testingAddonUUID,
+            },
+            body: JSON.stringify(body),
+        });
+        return monitoringResult;
+        //except(monitoringResult.Ok).to.equal(true);
+        //except(monitoringResult.Status).to.equal(200);
+        //except(monitoringResult.Error).to.equal({});
     }
 
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
