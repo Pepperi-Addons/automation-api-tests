@@ -32,6 +32,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             generalService['client'].AddonUUID,
             varKey,
         );
+        console.log(`!!!!ADDON SK IN JENKINS:${generalService['client'].AddonSecretKey}`);
     }
     const pfsService = new PFSService(generalService);
     await generalService.baseAddonVersionsInstallation(varKey);
@@ -39,6 +40,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const distributor = await pfsService.getDistributor();
+    console.log(`!!!!!!!DIST IN JENKINS:${distributor}`);
     //#endregion Upgrade PFS
 
     describe('PFS Tests Suites', () => {
