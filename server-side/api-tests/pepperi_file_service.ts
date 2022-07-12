@@ -35,7 +35,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         console.log(`!!!!ADDON SK IN JENKINS:${generalService['client'].AddonSecretKey}`);
     }
     const pfsService = new PFSService(generalService);
-    await generalService.baseAddonVersionsInstallation(varKey);
+    // await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
@@ -84,7 +84,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const adalService = new ADALService(generalService.papiClient);
                 let purgedSchema;
                 try {
-                    purgedSchema = await adalService.deleteSchema(schemaName);
+                    purgedSchema = await generalService.fetchStatus('/addons/data/schemes/pfsTestSchema/purge', {
+                        method: `POST`,
+                    });
+                    console.log(`FETCH STATUS RESPONSE:${JSON.stringify(purgedSchema)}`);
+                    // purgedSchema = await adalService.deleteSchema(schemaName);
                 } catch (error) {
                     purgedSchema = '';
                     expect(error)
