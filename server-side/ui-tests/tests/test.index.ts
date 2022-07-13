@@ -70,8 +70,8 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     const client: Client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
-
-    const arrayOfItResules: string[] = [];
+    //SYS REPORTING CURRENTLY DISABLED
+    // const arrayOfItResules: string[] = [];
     let testSuitName = '';
 
     let nestedGap = '';
@@ -79,14 +79,15 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     generalService.PrintMemoryUseToLog('Start', tests);
     after(async function () {
-        const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
-        const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
-        if (testSuitStatus === 'SUCCESS') {
-            const monitoringResult = await generalService.sendResultsToMonitoringAddon(testSuitName, testSuitStatus);
-            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-            }
-        }
+        //SYS REPORTING CURRENTLY DISABLED
+        // const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
+        // const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
+        // if (testSuitStatus === 'SUCCESS') {
+        //     const monitoringResult = await generalService.sendResultsToMonitoringAddon('user',testSuitName, testSuitStatus, 'env');
+        //     if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+        //         console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+        //     }
+        // }
         generalService.PrintMemoryUseToLog('End', tests);
     });
 
@@ -136,23 +137,24 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
-            arrayOfItResules.push('FAIL');
-            const indexOfParentheses =
-                this.currentTest.parent.title.indexOf('(') === -1
-                    ? this.currentTest.parent.title.length
-                    : this.currentTest.parent.title.indexOf('(');
-            const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
-            const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry}_outof:${this.currentTest._retries}`;
-            const monitoringResult = await generalService.sendResultsToMonitoringAddon(testName, 'ERROR');
-            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-            }
+            //SYS REPORTING CURRENTLY DISABLED
+            // arrayOfItResules.push('FAIL');
+            // const indexOfParentheses =
+            //     this.currentTest.parent.title.indexOf('(') === -1
+            //         ? this.currentTest.parent.title.length
+            //         : this.currentTest.parent.title.indexOf('(');
+            // const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
+            // const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
+            // const monitoringResult = await generalService.sendResultsToMonitoringAddon('user',testName, 'ERROR', 'env');
+            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+            //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            // }
         } else {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Success,
             );
-            arrayOfItResules.push('PASS');
+            // arrayOfItResules.push('PASS');
             // const testSuitName = this.currentTest.parent.title.substring(0, this.currentTest.parent.title.indexOf('('));
             // const testName = `${testSuitName}:${this.currentTest.title}`;
             // const monitoringResult = await generalService.sendResultsToMonitoringAddon(testName, "SUCCESS");

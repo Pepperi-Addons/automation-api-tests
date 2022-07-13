@@ -36,7 +36,7 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-    system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''], //needed to be able to report tests results
+    system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
 export const ConsoleColors = {
@@ -564,6 +564,7 @@ export default class GeneralService {
                 addonName == 'API Testing Framework' ||
                 addonName == 'WebApp Platform' || //evgeny
                 addonName == 'ADAL' || //evgeny
+                addonName == 'system_health' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 !isPhased
             ) {
@@ -819,14 +820,14 @@ export default class GeneralService {
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
 
-    async sendResultsToMonitoringAddon(testName: string, testStatus: string) {
+    async sendResultsToMonitoringAddon(userName: string, testName: string, testStatus: string, env: string) {
         const addonsSK = this.getSecret()[1];
         const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
         const current = new Date();
         const time = current.toLocaleTimeString();
         const body = {
             Name: `${testName}_${time}`, //param:addon was tested (test name)
-            Description: `${this.generateRandomString(10)}`, //param: version of the addon
+            Description: `Running on: ${userName} - ${env}`, //param: version of the addon
             Status: testStatus, //param is passing
             Message: 'evgeny', //param link to Jenkins
             NotificationWebhook: '',
