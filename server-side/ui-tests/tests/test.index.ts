@@ -32,6 +32,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 import { testData } from './../../services/general.service';
 import {} from './script_picker.test';
+import { PFSTestser } from '../../api-tests/pepperi_file_service';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -69,17 +70,30 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     const client: Client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
+    //SYS REPORTING CURRENTLY DISABLED
+    // const arrayOfItResules: string[] = [];
+    let testSuitName = '';
 
     let nestedGap = '';
     let startedTestSuiteTitle = '';
 
     generalService.PrintMemoryUseToLog('Start', tests);
-    after(function () {
+    after(async function () {
+        //SYS REPORTING CURRENTLY DISABLED
+        // const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
+        // const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
+        // if (testSuitStatus === 'SUCCESS') {
+        //     const monitoringResult = await generalService.sendResultsToMonitoringAddon('user',testSuitName, testSuitStatus, 'env');
+        //     if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+        //         console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+        //     }
+        // }
         generalService.PrintMemoryUseToLog('End', tests);
     });
 
     beforeEach(function () {
         let isCorrectNestedGap = false;
+        testSuitName = testSuitName === '' ? this.currentTest.parent.title : testSuitName;
         do {
             if (
                 this.currentTest.parent.suites.length > nestedGap.length &&
@@ -117,17 +131,36 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         } while (!isCorrectNestedGap);
     });
 
-    afterEach(function () {
+    afterEach(async function () {
         if (this.currentTest.state != 'passed') {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
+            //SYS REPORTING CURRENTLY DISABLED
+            // arrayOfItResules.push('FAIL');
+            // const indexOfParentheses =
+            //     this.currentTest.parent.title.indexOf('(') === -1
+            //         ? this.currentTest.parent.title.length
+            //         : this.currentTest.parent.title.indexOf('(');
+            // const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
+            // const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
+            // const monitoringResult = await generalService.sendResultsToMonitoringAddon('user',testName, 'ERROR', 'env');
+            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+            //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            // }
         } else {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Success,
             );
+            // arrayOfItResules.push('PASS');
+            // const testSuitName = this.currentTest.parent.title.substring(0, this.currentTest.parent.title.indexOf('('));
+            // const testName = `${testSuitName}:${this.currentTest.title}`;
+            // const monitoringResult = await generalService.sendResultsToMonitoringAddon(testName, "SUCCESS");
+            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+            //     console.log("FAILED TO SEND REPORT TO MOINITORING ADDON", ConsoleColors.Error);
+            // }
         }
         if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
             console.log(
@@ -156,6 +189,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         await LoginTests(email, pass);
         await OrderTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('evgeny')) {
+        await WorkflowTests(email, pass, client);
     }
 
     if (tests.includes('Workflow')) {
@@ -215,6 +252,21 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('DimxAPI')) {
         await AddonDataImportExportTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('PfsAPI')) {
+        await PFSTestser(
             generalService,
             {
                 body: {

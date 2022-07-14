@@ -112,7 +112,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         `exports.AsIs = async (Client, Request) => {
                             return Request.body;
                         };
-                        
+
                         exports.RecursiveImportTestHost_ImportRelativeURL = async (Client, Request) => {
                             const addonUUID = Client.BaseURL.includes('staging')
                             ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -121,19 +121,19 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                             const refName = 'RecursiveImportTestReference';
                             const addonUUIDName = addonUUID + '_' + name;
                             const addonUUIDrefName = addonUUID + '_' + refName;
-                            
+
                             // this is our general mapping object, containing the mapping objects of all resources
                             if(Request.body["Mapping"]){
                                 const mappingObject:{[addonUUID_resource:string]:{
                                     [original_key:string]:{Action:"Replace", NewKey:string}
                                 }} = Request.body["Mapping"];
-                        
+
                                 if(mappingObject[addonUUIDName] && mappingObject[addonUUIDrefName]){
                                     // myMapping is the specific mapping object of the Host resource
                                     const myMapping = mappingObject[addonUUIDName];
                                     // regMapping is the specific mapping object of the Reference resource
                                     const refMapping = mappingObject[addonUUIDrefName];
-                        
+
                                     if (Request.body && Request.body.DIMXObjects){
                                         for (let index = 0; index < Request.body.DIMXObjects.length; index++) {
                                             const element = Request.body.DIMXObjects[index];
@@ -147,13 +147,12 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                                             }
                                         }
                                     }
-                                }    
+                                }
                             }
-                            
+
                             return Request.body;
                         };
-                        
-                        
+
                         exports.RecursiveImportTestReference_ImportRelativeURL = async (Client, Request) => {
                             const addonUUID = Client.BaseURL.includes('staging')
                             ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -165,7 +164,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                                 const mappingObject:{[addonUUID_resource:string]:{
                                     [original_key:string]:{Action:"Replace", NewKey:string}
                                 }} = Request.body["Mapping"];
-                                
+
                                 if(mappingObject[addonUUIDName]){
                                     // myMapping is the specific mapping object of the Reference resource
                                     const myMapping = mappingObject[addonUUIDName];
@@ -178,11 +177,11 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                                             }
                                         }
                                     }
-                                } 
+                                }
                             }
                             return Request.body;
                         };
-                        
+
                         exports.RecursiveImportTestHost_MappingRelativeURL = async (Client, Request) => {
                             const mappingArray:{[original_key:string]:{Action:"Replace", NewKey:string}} = {};
                             const objects:any[] = Request.body.Objects;
@@ -191,7 +190,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                             })
                             return {Mapping:mappingArray};
                         };
-                        
+
                         exports.RecursiveImportTestReference_MappingRelativeURL = async (Client, Request) => {
                             const mappingArray:{[original_key:string]:{Action:"Replace", NewKey:string}} = {};
                             const objects:any[] = Request.body.Objects;
@@ -200,12 +199,12 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                             })
                             return {Mapping:mappingArray};
                         };
-                        
+
                         exports.RecursiveImportTestContained_FixRelativeURL = async (Client, Request) => {
                             const obj = Request.body["Object"];
                             obj["ContainedProp1"] = 'Fixed ' + obj["ContainedProp1"];
                             return obj;
-                        };   
+                        };
                         `,
                     ).toString('base64');
                 }

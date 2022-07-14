@@ -3,15 +3,18 @@ import { PFSService } from '../services/pfs.service';
 import { ADALService } from '../services/adal.service';
 // import { pfs } from '../tests';
 
+export async function PFSTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await PFSTests(generalService, request, tester);
+}
+
 export async function PFSTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    const pfsService = new PFSService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.9'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', 's'],
     };
 
     let varKey;
@@ -20,8 +23,16 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     } else {
         varKey = request.body.varKeyPro;
     }
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+    }
+    const pfsService = new PFSService(generalService);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    // debugger;
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const distributor = await pfsService.getDistributor();
     //#endregion Upgrade PFS
 
