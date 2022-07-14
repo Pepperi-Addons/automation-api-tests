@@ -14,7 +14,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', 's'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     };
 
     let varKey;
