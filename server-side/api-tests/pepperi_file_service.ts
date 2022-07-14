@@ -14,7 +14,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     };
 
     let varKey;
@@ -128,7 +128,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -152,7 +152,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Name).to.equal(tempKey);
                 expect(getFileResponse.Sync).to.equal('Device');
                 expect(getFileResponse.Hidden).to.be.false;
-                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include('pfs.');
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -189,7 +189,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -212,7 +212,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Name).to.equal(tempKey);
                 expect(getFileResponse.Sync).to.equal('Device');
                 expect(getFileResponse.Hidden).to.be.false;
-                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include('pfs.');
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -239,7 +239,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(updateFileResponse.MIME).to.equal('image/png');
                 expect(updateFileResponse.Name).to.equal(tempKey);
                 expect(updateFileResponse.Sync).to.equal('None');
-                expect(updateFileResponse.URL).to.include('https://pfs.');
+                expect(updateFileResponse.URL).to.include('pfs.');
                 expect(updateFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -274,7 +274,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -296,7 +296,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.Name).to.equal(tempKey);
                 expect(getFileResponse.Sync).to.equal('Device');
                 expect(getFileResponse.Hidden).to.be.false;
-                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include('pfs.');
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -329,7 +329,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -360,7 +360,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Key).to.equal(tempKey);
                 expect(postFileResponse.MIME).to.equal('application/vnd.ms-excel');
                 expect(postFileResponse.Name).to.equal(tempKey);
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -388,12 +388,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postFileResponse.ModificationDateTime).to.include('Z');
                 expect(postFileResponse.Description).to.equal(tempDescription);
-                expect(postFileResponse.Folder).to.equal('TestFolder');
+                expect(postFileResponse.Folder).to.equal('TestFolder/');
                 expect(postFileResponse.Key).to.equal('TestFolder/' + tempKey);
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -408,13 +408,13 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(getFileResponse.ModificationDateTime).to.include('Z');
                 expect(getFileResponse.Description).to.equal(tempDescription);
-                expect(getFileResponse.Folder).to.equal('TestFolder');
+                expect(getFileResponse.Folder).to.equal('TestFolder/');
                 expect(getFileResponse.Key).to.equal('TestFolder/' + tempKey);
                 expect(getFileResponse.MIME).to.equal('file/plain');
                 expect(getFileResponse.Name).to.equal(tempKey);
                 expect(getFileResponse.Sync).to.equal('Device');
                 expect(getFileResponse.Hidden).to.be.false;
-                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include('pfs.');
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -442,12 +442,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postFileResponse.ModificationDateTime).to.include('Z');
                 expect(postFileResponse.Description).to.equal(tempDescription);
-                expect(postFileResponse.Folder).to.equal('1/2/3/4/5/6/7');
+                expect(postFileResponse.Folder).to.equal('1/2/3/4/5/6/7/');
                 expect(postFileResponse.Key).to.equal('1/2/3/4/5/6/7/' + tempKey);
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -462,13 +462,13 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(getFileResponse.ModificationDateTime).to.include('Z');
                 expect(getFileResponse.Description).to.equal(tempDescription);
-                expect(getFileResponse.Folder).to.equal('1/2/3/4/5/6/7');
+                expect(getFileResponse.Folder).to.equal('1/2/3/4/5/6/7/');
                 expect(getFileResponse.Key).to.equal('1/2/3/4/5/6/7/' + tempKey);
                 expect(getFileResponse.MIME).to.equal('file/plain');
                 expect(getFileResponse.Name).to.equal(tempKey);
                 expect(getFileResponse.Sync).to.equal('Device');
                 expect(getFileResponse.Hidden).to.be.false;
-                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include('pfs.');
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -590,7 +590,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -633,7 +633,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -726,7 +726,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(postFileResponse.MIME).to.equal('file/plain');
                     expect(postFileResponse.Name).to.equal(rootFileTempKey + '-' + i + '.txt');
                     expect(postFileResponse.Sync).to.equal('Device');
-                    expect(postFileResponse.URL).to.include('https://pfs.');
+                    expect(postFileResponse.URL).to.include('pfs.');
                     expect(postFileResponse.URL).to.include(
                         '.pepperi.com/' +
                             distributor.UUID +
@@ -766,12 +766,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                     expect(postFileResponse.ModificationDateTime).to.include('Z');
                     expect(postFileResponse.Description).to.equal(folderFiletempDescription + ' ' + f);
-                    expect(postFileResponse.Folder).to.equal(folderTempKey);
+                    expect(postFileResponse.Folder).to.equal(folderTempKey + '/');
                     expect(postFileResponse.Key).to.equal(folderTempKey + '/' + folderFiletempKey + '-' + f + '.txt');
                     expect(postFileResponse.MIME).to.equal('file/plain');
                     expect(postFileResponse.Name).to.equal(folderFiletempKey + '-' + f + '.txt');
                     expect(postFileResponse.Sync).to.equal('Device');
-                    expect(postFileResponse.URL).to.include('https://pfs.');
+                    expect(postFileResponse.URL).to.include('pfs.');
                     expect(postFileResponse.URL).to.include(
                         '.pepperi.com/' +
                             distributor.UUID +
@@ -810,7 +810,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     expect(rootFolderResponse[i].Description).to.include(rootFiletempDescription);
                     expect(rootFolderResponse[i].Name).to.include(rootFileTempKey);
                     expect(rootFolderResponse[i].Key).to.include(rootFileTempKey);
-                    expect(rootFolderResponse[i].URL).to.include('https://pfs.');
+                    expect(rootFolderResponse[i].URL).to.include('pfs.');
                     expect(rootFolderResponse[i].URL).to.include(
                         '.pepperi.com/' +
                             distributor.UUID +
@@ -825,11 +825,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 let f = 1;
                 while (f < 20) {
                     expect(folderResponse[f].MIME).to.equal('file/plain');
-                    expect(folderResponse[f].Folder).to.equal(folderTempKey);
+                    expect(folderResponse[f].Folder).to.equal(folderTempKey + '/');
                     expect(folderResponse[f].Description).to.include(folderFiletempDescription);
                     expect(folderResponse[f].Name).to.include(folderFiletempKey);
                     expect(folderResponse[f].Key).to.include(folderFiletempKey);
-                    expect(folderResponse[f].URL).to.include('https://pfs.');
+                    expect(folderResponse[f].URL).to.include('pfs.');
                     expect(folderResponse[f].URL).to.include(
                         '.pepperi.com/' +
                             distributor.UUID +
@@ -925,7 +925,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription);
                 expect(getFileResponse[0].Name).to.include(folderFiletempKey);
                 expect(getFileResponse[0].Key).to.include(folderFiletempKey);
-                expect(getFileResponse[0].URL).to.include('https://pfs.');
+                expect(getFileResponse[0].URL).to.include('pfs.');
                 expect(getFileResponse[0].URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -948,7 +948,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription);
                 expect(getFileResponse[0].Name).to.include(folderFiletempKey);
                 expect(getFileResponse[0].Key).to.include(folderFiletempKey);
-                expect(getFileResponse[0].URL).to.include('https://pfs.');
+                expect(getFileResponse[0].URL).to.include('pfs.');
                 expect(getFileResponse[0].URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1055,7 +1055,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('image/jpeg');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('None');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1098,7 +1098,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Key).to.equal(tempKey);
                 expect(postFileResponse.MIME).to.equal('image/png');
                 expect(postFileResponse.Name).to.equal(tempKey);
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1118,7 +1118,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Description: tempDescription,
                 });
                 expect(deleteThumbnailResponse.Key).to.equal(tempKey);
-                expect(deleteThumbnailResponse.URL).to.include('https://pfs.');
+                expect(deleteThumbnailResponse.URL).to.include('pfs.');
                 expect(deleteThumbnailResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1150,7 +1150,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Key).to.equal(tempKey);
                 expect(postFileResponse.MIME).to.equal('image/png');
                 expect(postFileResponse.Name).to.equal(tempKey);
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1208,7 +1208,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.Key).to.equal(tempKey);
                 expect(postFileResponse.MIME).to.equal('image/png');
                 expect(postFileResponse.Name).to.equal(tempKey);
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1229,7 +1229,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Cache: false,
                 });
                 expect(updateFileResponse.Key).to.equal(tempKey);
-                expect(updateFileResponse.URL).to.include('https://pfs.');
+                expect(updateFileResponse.URL).to.include('pfs.');
                 expect(updateFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1268,12 +1268,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postFileResponse.ModificationDateTime).to.include('Z');
                 expect(postFileResponse.Description).to.equal(tempDescription);
-                expect(postFileResponse.Folder).to.equal(Folder);
+                expect(postFileResponse.Folder).to.equal(Folder + '/');
                 expect(postFileResponse.Hidden).to.be.false;
                 expect(postFileResponse.Key).to.equal(tempKey);
                 expect(postFileResponse.MIME).to.equal('image/png');
                 expect(postFileResponse.Name).to.equal(tempKey.split(Folder + '/')[1]);
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1295,7 +1295,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Cache: false,
                 });
                 expect(updateFileResponse.Key).to.equal(tempKey);
-                expect(updateFileResponse.URL).to.include('https://pfs.');
+                expect(updateFileResponse.URL).to.include('pfs.');
                 expect(updateFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1313,12 +1313,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(invalidateResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(invalidateResponse.ModificationDateTime).to.include('Z');
                 expect(invalidateResponse.Description).to.equal(tempDescription);
-                expect(invalidateResponse.Folder).to.equal(Folder);
+                expect(invalidateResponse.Folder).to.equal(Folder + '/');
                 expect(invalidateResponse.Hidden).to.be.false;
                 expect(invalidateResponse.Key).to.equal(tempKey);
                 expect(invalidateResponse.MIME).to.equal('image/png');
                 expect(invalidateResponse.Name).to.equal(tempKey.split(Folder + '/')[1]);
-                expect(invalidateResponse.URL).to.include('https://pfs.');
+                expect(invalidateResponse.URL).to.include('pfs.');
                 expect(invalidateResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1408,7 +1408,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             //     expect(postFileResponse.Key).to.equal(tempKey);
             //     expect(postFileResponse.MIME).to.equal('image/png');
             //     expect(postFileResponse.Name).to.equal(tempKey);
-            //     expect(postFileResponse.URL).to.include('https://pfs.');
+            //     expect(postFileResponse.URL).to.include('pfs.');
             //     expect(postFileResponse.URL).to.include('.pepperi.com/' + distributor.UUID + '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + tempKey);
             //     const postedFile = await pfsService.getFileAfterDelete(postFileResponse.URL);
             //     const hardDeleteResponse = await pfsService.hardDelete(distributor.UUID, 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',varKey, tempKey)
@@ -1444,7 +1444,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1509,7 +1509,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1574,7 +1574,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(postFileResponse.MIME).to.equal('file/plain');
                 expect(postFileResponse.Name).to.equal(tempKey);
                 expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('https://pfs.');
+                expect(postFileResponse.URL).to.include('pfs.');
                 expect(postFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
@@ -1622,7 +1622,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileResponse.MIME).to.equal('image/png');
                 expect(getFileResponse.Name).to.equal(tempKey);
                 expect(getFileResponse.Sync).to.equal('Device');
-                expect(getFileResponse.URL).to.include('https://pfs.');
+                expect(getFileResponse.URL).to.include('pfs.');
                 expect(getFileResponse.URL).to.include(
                     '.pepperi.com/' +
                         distributor.UUID +
