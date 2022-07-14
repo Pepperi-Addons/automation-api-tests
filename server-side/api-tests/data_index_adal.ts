@@ -815,7 +815,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 adalService.papiClient['options'].addonUUID = addonUUID;
                 adalService.papiClient['options'].addonSecretKey = addonUUIDSK;
 
-                const createSchemeInAdalResponse = await adalService.postSchema(typedIndexSchema as any);
+                const createSchemeInAdalResponse = (await adalService.postSchema(typedIndexSchema as any)) as any;
 
                 delete createSchemeInAdalResponse.CreationDateTime;
                 delete createSchemeInAdalResponse.ModificationDateTime;
