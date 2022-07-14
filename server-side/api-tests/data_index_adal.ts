@@ -103,7 +103,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 },
             };
 
-            const distributorUUID = generalService.getClientData('DistributorUUID');
+            // const distributorUUID = generalService.getClientData('DistributorUUID');
 
             const createDocumentTestData = {
                 DocumentName: 'Dor',
@@ -724,7 +724,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
         });
 
         describe('Validate Index and Typed Index Scheme and Documents Removed With Uninstall (DI-19803, DI-20220)', () => {
-            const distributorUUID = generalService.getClientData('DistributorUUID');
+            // const distributorUUID = generalService.getClientData('DistributorUUID');
             const indexSchemeName = 'test_index';
             const indexSchema = {
                 Name: indexSchemeName,

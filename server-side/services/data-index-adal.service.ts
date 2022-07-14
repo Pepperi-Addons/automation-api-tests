@@ -65,9 +65,7 @@ export class DataIndexAdalService {
         schemeArr: DataIndexDocument[],
         indexName?,
     ) {
-        const obj = { Objects: schemeArr,
-                      OverwriteObject: false,
-                      MaxPageSize: 100 };
+        const obj = { Objects: schemeArr, OverwriteObject: false, MaxPageSize: 100 };
         const path = await this.changeEndpoint(type, indexName);
         await this.generalService.sleepAsync(this.globalSleep);
         return this.generalService.papiClient.post(`/addons/${path}/batch/${addonUUID}/${schemeName}`, obj);
