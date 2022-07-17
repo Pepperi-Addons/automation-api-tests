@@ -19,7 +19,7 @@ import { DistributorService } from '../../services/distributor.service';
 import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
 import { LoginTests, OrderTests } from '.';
-import { replaceItemsTests, replaceUIControlsTests, upgradeDependenciesTests } from './test.index';
+import { replaceItemsTests, replaceUIControlsTests, newUserDependenciesTests } from './test.index';
 import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
@@ -73,7 +73,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     lettersGenerator[1] +
                     (Math.random() * 10000000000).toString().substring(0, 6);
 
-                clientArr.push({ Email: distributorEmail, Password: distributorPassword });
+                clientArr.push({ Email: 'sync@pepperitest.com', Password: 'Aa123456' });
 
                 const newDistributor = await distributorService.createDistributor({
                     FirstName: distributorFirstName,
@@ -247,7 +247,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     //Verify all items exist or replace them
                     await replaceItemsTests(adminService);
 
-                    await upgradeDependenciesTests(adminService, varPass);
+                    await newUserDependenciesTests(adminService, varPass);
                 });
             });
 
