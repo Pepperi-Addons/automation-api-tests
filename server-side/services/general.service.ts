@@ -835,7 +835,11 @@ export default class GeneralService {
 
     async baseAddonVersionsInstallation(varPass: string, otherTestData?: any) {
         const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testData);
-        const chnageVersionResponseArr = await this.changeVersion(varPass, otherTestData ? otherTestData : testData, false);
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testData,
+            false,
+        );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
 
