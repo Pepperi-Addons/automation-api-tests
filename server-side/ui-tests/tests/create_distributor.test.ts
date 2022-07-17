@@ -73,7 +73,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     lettersGenerator[1] +
                     (Math.random() * 10000000000).toString().substring(0, 6);
 
-                clientArr.push({ Email: 'sync@pepperitest.com', Password: 'Aa123456' });
+                clientArr.push({ Email: distributorEmail, Password: distributorPassword });
 
                 const newDistributor = await distributorService.createDistributor({
                     FirstName: distributorFirstName,
