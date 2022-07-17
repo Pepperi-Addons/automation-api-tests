@@ -13,7 +13,7 @@ export class WebAppHeader extends Page {
     public Settings: By = By.css('[data-qa="systemSettings"]');
     public Help: By = By.css('[data-qa="systemSuppot"]');
     public UserBtn: By = By.css('[data-qa="systemAvatar"]');
-    public Home: By =  By.css('[data-qa="systemHome"]');
+    public Home: By = By.css('[data-qa="systemHome"]');
 
     public async openSettings() {
         await this.browser.click(this.Settings);
