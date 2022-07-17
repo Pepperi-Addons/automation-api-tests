@@ -35,7 +35,7 @@ import {
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
-import { testData } from './../../services/general.service';
+// import { testData } from './../../services/general.service';
 import {} from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 
@@ -372,14 +372,14 @@ export async function newUserDependenciesTests(generalService: GeneralService, v
         this.retries(1);
 
         isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+            it(`Validate That Needed Addon Is Installed: ${Object.keys(testDataForInitUser)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });
 
-        for (const addonName in testData) {
-            const addonUUID = testData[addonName][0];
-            const version = testData[addonName][1];
+        for (const addonName in testDataForInitUser) {
+            const addonUUID = testDataForInitUser[addonName][0];
+            const version = testDataForInitUser[addonName][1];
             const varLatestVersion = chnageVersionResponseArr[addonName][2];
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, function () {
