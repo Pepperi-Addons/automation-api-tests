@@ -1,4 +1,9 @@
-import GeneralService, { ConsoleColors, TesterFunctions, ResourceTypes } from '../../services/general.service';
+import GeneralService, {
+    ConsoleColors,
+    TesterFunctions,
+    ResourceTypes,
+    testDataForInitUser,
+} from '../../services/general.service';
 import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
 import chai, { expect } from 'chai';
@@ -70,8 +75,8 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     const client: Client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
-    //SYS REPORTING CURRENTLY DISABLED
-    // const arrayOfItResules: string[] = [];
+    //SYS REPORTING
+    const arrayOfItResules: string[] = [];
     let testSuitName = '';
 
     let nestedGap = '';
@@ -79,15 +84,20 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     generalService.PrintMemoryUseToLog('Start', tests);
     after(async function () {
-        //SYS REPORTING CURRENTLY DISABLED
-        // const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
-        // const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
-        // if (testSuitStatus === 'SUCCESS') {
-        //     const monitoringResult = await generalService.sendResultsToMonitoringAddon('user',testSuitName, testSuitStatus, 'env');
-        //     if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-        //         console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-        //     }
-        // }
+        //SYS REPORTING
+        const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
+        const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
+        if (testSuitStatus === 'SUCCESS') {
+            const monitoringResult = await generalService.sendResultsToMonitoringAddon(
+                'user',
+                testSuitName,
+                testSuitStatus,
+                'env',
+            );
+            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            }
+        }
         generalService.PrintMemoryUseToLog('End', tests);
     });
 
@@ -137,18 +147,23 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
-            //SYS REPORTING CURRENTLY DISABLED
-            // arrayOfItResules.push('FAIL');
-            // const indexOfParentheses =
-            //     this.currentTest.parent.title.indexOf('(') === -1
-            //         ? this.currentTest.parent.title.length
-            //         : this.currentTest.parent.title.indexOf('(');
-            // const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
-            // const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
-            // const monitoringResult = await generalService.sendResultsToMonitoringAddon('user',testName, 'ERROR', 'env');
-            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-            //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-            // }
+            //SYS REPORTING
+            arrayOfItResules.push('FAIL');
+            const indexOfParentheses =
+                this.currentTest.parent.title.indexOf('(') === -1
+                    ? this.currentTest.parent.title.length
+                    : this.currentTest.parent.title.indexOf('(');
+            const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
+            const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
+            const monitoringResult = await generalService.sendResultsToMonitoringAddon(
+                'user',
+                testName,
+                'ERROR',
+                'env',
+            );
+            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            }
         } else {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
@@ -182,7 +197,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         //Verify all items exist or replace them
         await replaceItemsTests(generalService);
 
-        await upgradeDependenciesTests(generalService, varPass);
+        await newUserDependenciesTests(generalService, varPass);
     }
 
     if (tests.includes('Sanity')) {
@@ -344,8 +359,11 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     run();
 })();
 
-export async function upgradeDependenciesTests(generalService: GeneralService, varPass: string) {
-    const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(varPass);
+export async function newUserDependenciesTests(generalService: GeneralService, varPass: string) {
+    const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(
+        varPass,
+        testDataForInitUser,
+    );
     const chnageVersionResponseArr = baseAddonVersionsInstallationResponseObj.chnageVersionResponseArr;
     const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
 
