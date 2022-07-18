@@ -76,8 +76,8 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     const generalService = new GeneralService(client);
     //SYS REPORTING
-    const arrayOfItResules: string[] = [];
-    let testSuitName = '';
+    // const arrayOfItResules: string[] = [];
+    // let testSuitName = '';
 
     let nestedGap = '';
     let startedTestSuiteTitle = '';
@@ -85,25 +85,25 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     generalService.PrintMemoryUseToLog('Start', tests);
     after(async function () {
         //SYS REPORTING
-        const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
-        const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
-        if (testSuitStatus === 'SUCCESS') {
-            const monitoringResult = await generalService.sendResultsToMonitoringAddon(
-                'user',
-                testSuitName,
-                testSuitStatus,
-                'env',
-            );
-            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-            }
-        }
+        // const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
+        // const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
+        // if (testSuitStatus === 'SUCCESS') {
+        //     const monitoringResult = await generalService.sendResultsToMonitoringAddon(
+        //         'user',
+        //         testSuitName,
+        //         testSuitStatus,
+        //         'env',
+        //     );
+        // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+        //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+        // }
+        // }
         generalService.PrintMemoryUseToLog('End', tests);
     });
 
     beforeEach(function () {
         let isCorrectNestedGap = false;
-        testSuitName = testSuitName === '' ? this.currentTest.parent.title : testSuitName;
+        // testSuitName = testSuitName === '' ? this.currentTest.parent.title : testSuitName;
         do {
             if (
                 this.currentTest.parent.suites.length > nestedGap.length &&
@@ -148,22 +148,22 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
                 ConsoleColors.Error,
             );
             //SYS REPORTING
-            arrayOfItResules.push('FAIL');
-            const indexOfParentheses =
-                this.currentTest.parent.title.indexOf('(') === -1
-                    ? this.currentTest.parent.title.length
-                    : this.currentTest.parent.title.indexOf('(');
-            const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
-            const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
-            const monitoringResult = await generalService.sendResultsToMonitoringAddon(
-                'user',
-                testName,
-                'ERROR',
-                'env',
-            );
-            if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-                console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-            }
+            // arrayOfItResules.push('FAIL');
+            // const indexOfParentheses =
+            //     this.currentTest.parent.title.indexOf('(') === -1
+            //         ? this.currentTest.parent.title.length
+            //         : this.currentTest.parent.title.indexOf('(');
+            // const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
+            // const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
+            // const monitoringResult = await generalService.sendResultsToMonitoringAddon(
+            //     'user',
+            //     testName,
+            //     'ERROR',
+            //     'env',
+            // );
+            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
+            //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
+            // }
         } else {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
