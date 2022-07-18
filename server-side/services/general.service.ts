@@ -843,32 +843,32 @@ export default class GeneralService {
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
 
-    async sendResultsToMonitoringAddon(userName: string, testName: string, testStatus: string, env: string) {
-        const addonsSK = this.getSecret()[1];
-        const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
-        const current = new Date();
-        const time = current.toLocaleTimeString();
-        const body = {
-            Name: `${testName}_${time}`, //param:addon was tested (test name)
-            Description: `Running on: ${userName} - ${env}`, //param: version of the addon
-            Status: testStatus, //param is passing
-            Message: 'evgeny', //param link to Jenkins
-            NotificationWebhook: '',
-            SendNotification: '',
-        };
-        const monitoringResult = await this.fetchStatus('/system_health/notifications', {
-            method: 'POST',
-            headers: {
-                'X-Pepperi-SecretKey': addonsSK,
-                'X-Pepperi-OwnerID': testingAddonUUID,
-            },
-            body: JSON.stringify(body),
-        });
-        return monitoringResult;
-        //except(monitoringResult.Ok).to.equal(true);
-        //except(monitoringResult.Status).to.equal(200);
-        //except(monitoringResult.Error).to.equal({});
-    }
+    // async sendResultsToMonitoringAddon(userName: string, testName: string, testStatus: string, env: string) {
+    //     const addonsSK = this.getSecret()[1];
+    //     const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+    //     const current = new Date();
+    //     const time = current.toLocaleTimeString();
+    //     const body = {
+    //         Name: `${testName}_${time}`, //param:addon was tested (test name)
+    //         Description: `Running on: ${userName} - ${env}`, //param: version of the addon
+    //         Status: testStatus, //param is passing
+    //         Message: 'evgeny', //param link to Jenkins
+    //         NotificationWebhook: '',
+    //         SendNotification: '',
+    //     };
+    //     // const monitoringResult = await this.fetchStatus('/system_health/notifications', {
+    //     //     method: 'POST',
+    //     //     headers: {
+    //     //         'X-Pepperi-SecretKey': addonsSK,
+    //     //         'X-Pepperi-OwnerID': testingAddonUUID,
+    //     //     },
+    //     //     body: JSON.stringify(body),
+    //     // });
+    //     return {};
+    //     //except(monitoringResult.Ok).to.equal(true);
+    //     //except(monitoringResult.Status).to.equal(200);
+    //     //except(monitoringResult.Error).to.equal({});
+    // }
 
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {
