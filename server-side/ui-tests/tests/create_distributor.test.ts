@@ -101,12 +101,15 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     let tryCounter = 0;
                     let isHomePageLoaded = false;
                     do {
-                        isHomePageLoaded = await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn, 90000);
+                        isHomePageLoaded = await webAppHomePage.safeUntilIsVisible(
+                            webAppHomePage.MainHomePageBtn,
+                            90000,
+                        );
                         if (!isHomePageLoaded) {
                             tryCounter++;
                             await driver.refresh();
                             generalService.sleep(1000 * 5 * 1);
-                            const isErrorPresented = await driver.untilIsVisible(
+                            const isErrorPresented = await webAppHomePage.safeUntilIsVisible(
                                 By.xpath('//span[contains(text(),"Error")]'),
                             );
                             if (isErrorPresented) {
