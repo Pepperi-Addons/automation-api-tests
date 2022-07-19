@@ -73,19 +73,14 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     lettersGenerator[1] +
                     (Math.random() * 10000000000).toString().substring(0, 6);
 
-                clientArr.push({ Email: "loginperfeu2@pepperitest.com", Password: "Aa123456" });
+                clientArr.push({ Email: distributorEmail, Password: distributorPassword });
 
                 const newDistributor = await distributorService.createDistributor({
-                    // FirstName: distributorFirstName,
-                    // LastName: distributorLastName,
-                    // Email: distributorEmail,
-                    // Company: distributorCompany,
-                    // Password: distributorPassword,
-                    FirstName: "eu",
-                    LastName: "performance test user",
-                    Email: "loginperfeu2@pepperitest.com",
-                    Company: "automation tests",
-                    Password: "Aa123456",
+                    FirstName: distributorFirstName,
+                    LastName: distributorLastName,
+                    Email: distributorEmail,
+                    Company: distributorCompany,
+                    Password: distributorPassword,
                 });
                 //(DI-19116):
                 if (
@@ -106,7 +101,10 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     let tryCounter = 0;
                     let isHomePageLoaded = false;
                     do {
-                        isHomePageLoaded = await webAppHomePage.safeUntilIsVisible(webAppHomePage.MainHomePageBtn, 90000);
+                        isHomePageLoaded = await webAppHomePage.safeUntilIsVisible(
+                            webAppHomePage.MainHomePageBtn,
+                            90000,
+                        );
                         if (!isHomePageLoaded) {
                             tryCounter++;
                             await driver.refresh();
