@@ -82,8 +82,9 @@ export class DistributorService {
                     )
                 ) {
                     console.log('%cBug exist for this response: (DI-19116)', ConsoleColors.BugSkipped);
-                    this.generalService.sleep(1000 * 60 * 1);
+                    // this.generalService.sleep(1000 * 60 * 1);
                     isNotKnown = false;
+                    break; //in this case the server wont return a 200 - but the user is existing
                 }
                 if (
                     newDistributor.Body?.fault?.faultstring ==

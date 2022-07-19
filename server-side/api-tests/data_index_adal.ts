@@ -17,7 +17,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
 
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '0.0.194'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
@@ -103,7 +103,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 },
             };
 
-            const distributorUUID = generalService.getClientData('DistributorUUID');
+            // const distributorUUID = generalService.getClientData('DistributorUUID');
 
             const createDocumentTestData = {
                 DocumentName: 'Dor',
@@ -136,14 +136,20 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     indexSchema,
                 );
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property('acknowledged').to
-                    .be.true;
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse))
-                    .to.have.property('index')
-                    .to.equal(`${distributorUUID}_${generalService.papiClient['options'].addonUUID}_${schemeName}`);
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property(
-                    'shards_acknowledged',
-                ).to.be.true;
+                expect(createSchemeResponse).to.have.property('DataSourceData');
+                expect(createSchemeResponse).to.have.property('Fields');
+                expect(createSchemeResponse.DataSourceURL).to.equal('https://url');
+                expect(createSchemeResponse.Hidden).to.be.false;
+                expect(createSchemeResponse.Name).to.equal('test_index');
+                expect(createSchemeResponse.Type).to.equal('index');
+                expect(createSchemeResponse.DataSourceData.IndexName).to.have.equal('tester');
+                expect(createSchemeResponse.DataSourceData.NumberOfShards).to.have.equal(1);
+                expect(createSchemeResponse.Fields).to.have.property('DocumentBool');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentDate');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentDouble');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentMixedFormat');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentName');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentNumber');
             });
 
             it('Create Document', async () => {
@@ -166,7 +172,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 expect(createDocumentResponse).to.deep.equal([
                     {
                         Key: '1',
-                        Status: 'Update',
+                        Status: 'Ignore',
                     },
                     {
                         Key: 'Second Document',
@@ -180,6 +186,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read Document (Search By DSL: DI-19467)', async () => {
+                debugger;
                 const readDocumentResponse = await dataIndexAdalService.searchAllDocuments(
                     'index',
                     generalService.papiClient['options'].addonUUID,
@@ -191,6 +198,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
+                    indexSchema,
                 );
                 expect(readDocumentResponse).to.deep.include.members([
                     secondDocument,
@@ -201,6 +209,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read All Documents', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
@@ -225,6 +234,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read Updated Document After Override', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
@@ -249,6 +259,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
+                    indexSchema,
                 );
                 expect(createDocumentResponse, JSON.stringify(createDocumentResponse))
                     .to.have.property('updated')
@@ -257,6 +268,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read Updated Document After Update Query', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
@@ -264,6 +276,16 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 );
                 expect(readDocumentResponse).to.have.property('DocumentDouble').to.equal(3);
                 expect(readDocumentResponse).to.have.property('DocumentNumber').to.equal(4);
+            });
+
+            it('Rollback update document', async () => {
+                const createDocumentResponse = await dataIndexAdalService.createDocument(
+                    'index',
+                    generalService.papiClient['options'].addonUUID,
+                    schemeName,
+                    createDocumentTestData,
+                );
+                expect(createDocumentResponse).to.deep.equal(createDocumentTestData);
             });
 
             it('Update Bulk Documents With Query (DI-19450)', async () => {
@@ -282,11 +304,13 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
+                    indexSchema,
                 );
                 expect(createDocumentResponse).to.have.property('updated').to.equal(3);
             });
 
             it('Bulk Read Updated Document After Update Query', async () => {
+                debugger;
                 const readDocumentResponse = await dataIndexAdalService.searchAllDocuments(
                     'index',
                     generalService.papiClient['options'].addonUUID,
@@ -298,6 +322,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
+                    indexSchema,
                 );
                 expect(readDocumentResponse[0]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
                 expect(readDocumentResponse[0]).to.have.property('DocumentNumber').to.equal(4);
@@ -312,6 +337,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
+                    indexSchema,
                     {
                         query: {
                             match: {
@@ -320,12 +346,12 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.include({ deleted: 1 });
+                expect(removeDocumentResponse).to.include({ success: true });
             });
 
             it('Bulk Read After Delete Document', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
@@ -338,20 +364,21 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
+                    indexSchema,
                     {
                         query: {
                             match: {
-                                DocumentName: updateDocumentTestData.DocumentName,
+                                DocumentName: createDocumentTestData.DocumentName,
                             },
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.include({ deleted: 2 });
+                expect(removeDocumentResponse).to.include({ success: true });
             });
 
             it('Read After Delete Document', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
@@ -365,17 +392,17 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     indexSchema,
                 );
-                expect(readDocumentResponse).to.deep.equal({ acknowledged: true });
+                expect(readDocumentResponse).to.deep.equal({ success: true });
             });
         });
 
         //TODO: This test is related to Router ADAL - Talk with Shir - Yoni :D
         describe('Typed Index CRUD', () => {
-            const schemeName = 'test_typed_index';
+            const schemeName = 'test_shared_index';
             const typedIndexSchema = {
                 Name: schemeName,
                 Hidden: false,
-                Type: 'typed_index' as DataIndexSchema['Type'],
+                Type: 'shared_index' as DataIndexSchema['Type'],
                 DataSourceURL: 'https://url',
                 DataSourceData: {
                     IndexName: 'tester',
@@ -434,33 +461,45 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             it('Create Scheme', async () => {
                 const adalService = new ADALService(generalService.papiClient);
                 const createSchemeInAdalResponse = await adalService.postSchema(typedIndexSchema as any);
-
-                delete createSchemeInAdalResponse.CreationDateTime;
-                delete createSchemeInAdalResponse.ModificationDateTime;
-                expect(createSchemeInAdalResponse).to.deep.equal(typedIndexSchema);
+                expect(createSchemeInAdalResponse).to.have.property('DataSourceData');
+                expect(createSchemeInAdalResponse).to.have.property('Fields');
+                expect(createSchemeInAdalResponse.DataSourceURL).to.equal('https://url');
+                expect(createSchemeInAdalResponse.Hidden).to.be.false;
+                expect(createSchemeInAdalResponse.Name).to.equal('test_shared_index');
+                expect(createSchemeInAdalResponse.Type).to.equal('shared_index');
+                expect(createSchemeInAdalResponse.DataSourceData.IndexName).to.have.equal('tester');
+                expect(createSchemeInAdalResponse.DataSourceData.NumberOfShards).to.have.equal(1);
+                expect(createSchemeInAdalResponse.Fields).to.have.property('DocumentBool');
+                expect(createSchemeInAdalResponse.Fields).to.have.property('DocumentDate');
+                expect(createSchemeInAdalResponse.Fields).to.have.property('DocumentDouble');
+                expect(createSchemeInAdalResponse.Fields).to.have.property('DocumentMixedFormat');
+                expect(createSchemeInAdalResponse.Fields).to.have.property('DocumentName');
+                expect(createSchemeInAdalResponse.Fields).to.have.property('DocumentNumber');
             });
 
             it('Create Document', async () => {
                 const createDocumentResponse = await dataIndexAdalService.createDocument(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     createDocumentTestData,
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal(createDocumentTestData);
             });
 
             it('Bulk Create Document', async () => {
                 const createDocumentResponse = await dataIndexAdalService.createBatchDocument(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     [createDocumentTestData, secondDocument, thirdDocument],
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal([
                     {
                         Key: '1',
-                        Status: 'Update',
+                        Status: 'Ignore',
                     },
                     {
                         Key: 'Second Document',
@@ -475,7 +514,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read Document (Search By DSL: DI-19467)', async () => {
                 const readDocumentResponse = await dataIndexAdalService.searchAllDocuments(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     {
@@ -485,6 +524,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
+                    typedIndexSchema,
                 );
                 expect(readDocumentResponse).to.deep.include.members([
                     secondDocument,
@@ -495,7 +535,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read All Documents', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                 );
@@ -509,17 +550,19 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Update Document (Override With Create)', async () => {
                 const createDocumentResponse = await dataIndexAdalService.createDocument(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     updateDocumentTestData,
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal(updateDocumentTestData);
             });
 
             it('Read Updated Document After Override', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     1,
@@ -529,7 +572,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Update Document With DSL Query (DI-19468)', async () => {
                 const createDocumentResponse = await dataIndexAdalService.updateDocument(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     {
@@ -543,6 +586,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse, JSON.stringify(createDocumentResponse))
                     .to.have.property('updated')
@@ -551,7 +595,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read Updated Document After Update Query', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     1,
@@ -560,9 +605,20 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 expect(readDocumentResponse).to.have.property('DocumentNumber').to.equal(4);
             });
 
+            it('Rollback Document', async () => {
+                const createDocumentResponse = await dataIndexAdalService.createDocument(
+                    'shared_index',
+                    generalService.papiClient['options'].addonUUID,
+                    schemeName,
+                    createDocumentTestData,
+                    typedIndexSchema,
+                );
+                expect(createDocumentResponse).to.deep.equal(createDocumentTestData);
+            });
+
             it('Update Bulk Documents With Query (DI-19450)', async () => {
                 const createDocumentResponse = await dataIndexAdalService.updateDocument(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     {
@@ -576,13 +632,14 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             lang: 'painless',
                         },
                     },
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.have.property('updated').to.equal(3);
             });
 
             it('Bulk Read Updated Document After Update Query', async () => {
                 const readDocumentResponse = await dataIndexAdalService.searchAllDocuments(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                     {
@@ -592,6 +649,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                             },
                         },
                     },
+                    typedIndexSchema,
                 );
                 expect(readDocumentResponse[0]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
                 expect(readDocumentResponse[0]).to.have.property('DocumentNumber').to.equal(4);
@@ -603,9 +661,10 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Bulk Remove Document', async () => {
                 const removeDocumentResponse = await dataIndexAdalService.removeDocuments(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
+                    typedIndexSchema,
                     {
                         query: {
                             match: {
@@ -614,13 +673,13 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.include({ deleted: 1 });
+                expect(removeDocumentResponse).to.include({ success: true });
             });
 
             it('Bulk Read After Delete Document', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                 );
@@ -629,24 +688,25 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Remove Document', async () => {
                 const removeDocumentResponse = await dataIndexAdalService.removeDocuments(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
+                    typedIndexSchema,
                     {
                         query: {
                             match: {
-                                DocumentName: updateDocumentTestData.DocumentName,
+                                DocumentName: createDocumentTestData.DocumentName,
                             },
                         },
                     },
                 );
-                expect(removeDocumentResponse).to.include({ batches: 1 });
-                expect(removeDocumentResponse).to.include({ deleted: 2 });
+                expect(removeDocumentResponse).to.include({ success: true });
             });
 
             it('Read After Delete Document', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                 );
@@ -655,17 +715,16 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Remove Scheme', async () => {
                 const readDocumentResponse = await dataIndexAdalService.removeScheme(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     typedIndexSchema,
                 );
-                expect(readDocumentResponse).to.deep.equal({ acknowledged: true });
+                expect(readDocumentResponse).to.deep.equal({ success: true });
             });
         });
 
-        //TODO: remove this when the bug will be fixed
-        /*describe('Validate Index and Typed Index Scheme and Documents Removed With Uninstall (DI-19803, DI-20220)', () => {
-            const distributorUUID = generalService.getClientData('DistributorUUID');
+        describe('Validate Index and Typed Index Scheme and Documents Removed With Uninstall (DI-19803, DI-20220)', () => {
+            // const distributorUUID = generalService.getClientData('DistributorUUID');
             const indexSchemeName = 'test_index';
             const indexSchema = {
                 Name: indexSchemeName,
@@ -702,11 +761,11 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 },
             };
 
-            const typedSchemeName = 'test_typed_index';
+            const typedSchemeName = 'test_shared_index';
             const typedIndexSchema = {
                 Name: typedSchemeName,
                 Hidden: false,
-                Type: 'typed_index' as DataIndexSchema['Type'],
+                Type: 'shared_index' as DataIndexSchema['Type'],
                 DataSourceURL: 'https://url',
                 DataSourceData: {
                     IndexName: 'tester',
@@ -756,10 +815,11 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 adalService.papiClient['options'].addonUUID = addonUUID;
                 adalService.papiClient['options'].addonSecretKey = addonUUIDSK;
 
-                const createSchemeInAdalResponse = await adalService.postSchema(typedIndexSchema as any);
+                const createSchemeInAdalResponse = (await adalService.postSchema(typedIndexSchema as any)) as any;
 
                 delete createSchemeInAdalResponse.CreationDateTime;
                 delete createSchemeInAdalResponse.ModificationDateTime;
+                delete createSchemeInAdalResponse.AddonUUID;
                 expect(createSchemeInAdalResponse).to.deep.equal(typedIndexSchema);
             });
 
@@ -769,16 +829,20 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     indexSchema,
                 );
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property('acknowledged').to
-                    .be.true;
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse))
-                    .to.have.property('index')
-                    .to.equal(
-                        `${distributorUUID}_${generalService.papiClient['options'].addonUUID}_${indexSchemeName}`,
-                    );
-                expect(createSchemeResponse, JSON.stringify(createSchemeResponse)).to.have.property(
-                    'shards_acknowledged',
-                ).to.be.true;
+                expect(createSchemeResponse).to.have.property('DataSourceData');
+                expect(createSchemeResponse).to.have.property('Fields');
+                expect(createSchemeResponse.DataSourceURL).to.equal('https://url');
+                expect(createSchemeResponse.Hidden).to.be.false;
+                expect(createSchemeResponse.Name).to.equal('test_index');
+                expect(createSchemeResponse.Type).to.equal('index');
+                expect(createSchemeResponse.DataSourceData.IndexName).to.have.equal('tester');
+                expect(createSchemeResponse.DataSourceData.NumberOfShards).to.have.equal(1);
+                expect(createSchemeResponse.Fields).to.have.property('DocumentBool');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentDate');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentDouble');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentMixedFormat');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentName');
+                expect(createSchemeResponse.Fields).to.have.property('DocumentNumber');
             });
 
             it('Create Index Document', async () => {
@@ -793,17 +857,19 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Create Typed Index Document', async () => {
                 const createDocumentResponse = await dataIndexAdalService.createDocument(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     typedSchemeName,
                     createDocumentTestData,
+                    typedIndexSchema,
                 );
                 expect(createDocumentResponse).to.deep.equal(createDocumentTestData);
             });
 
             it('Read All Index Documents', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     typedSchemeName,
                 );
@@ -812,6 +878,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read All Typed Index Documents', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     indexSchemeName,
@@ -821,7 +888,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Uninstall Addon With Data Index Documents', async () => {
                 const uninstallAddonResponse: any = await generalService.uninstallAddon(addonUUID);
-                ;
                 const uninstallAddonAuditLogResponse = await generalService.getAuditLogResultObjectIfValid(
                     uninstallAddonResponse.URI,
                     90,
@@ -834,21 +900,21 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read After Delete Index Document', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                    'typed_index',
+                    typedIndexSchema,
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     typedSchemeName,
                 );
-                debugger;
                 expect(readDocumentResponse).to.deep.equal([]);
             });
 
             it('Read After Delete Typed Index Document', async () => {
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     indexSchemeName,
                 );
-                debugger;
                 expect(readDocumentResponse).to.deep.equal([]);
             });
 
@@ -858,22 +924,18 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     indexSchema,
                 );
-                debugger;
-                expect(readDocumentResponse).to.have.property('resultObject').to.deep.equal({ acknowledged: true });
-                expect(readDocumentResponse).to.have.property('success').to.be.true;
+                expect(readDocumentResponse).to.deep.equal({ success: true });
             });
 
             it('Remove Typed Index Scheme', async () => {
                 const readDocumentResponse = await dataIndexAdalService.removeScheme(
-                    'typed_index',
+                    'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     typedIndexSchema,
                 );
-                debugger;
-                expect(readDocumentResponse).to.have.property('resultObject').to.deep.equal({ acknowledged: true });
-                expect(readDocumentResponse).to.have.property('success').to.be.true;
+                expect(readDocumentResponse).to.deep.equal({ success: true });
             });
-        });*/
+        });
 
         describe(`Bug Verification`, async () => {
             const schemeName = 'test_index';
@@ -921,7 +983,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         typedIndexSchema,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Secret key is invalid","detail":{"errorcode":"BadRequest"}}}`,
+                    `https://papi.staging.pepperi.com/V1.0/addons/index/schemes/48d20f0b-369a-4b34-b48a-ffe245088513/create failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Secret key was not provided","detail":{"errorcode":"BadRequest"}}}`,
                 );
             });
         });

@@ -21,11 +21,36 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
+<<<<<<< HEAD
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5'], //PAPI
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.'],
+=======
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.200'],
+>>>>>>> 80f4b9c75d533115eb245ec0af3faad11b9d469c
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.79'],
-    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.'],
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
+    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
+    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
+    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
+    'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+    'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+    'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+    system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
+};
+
+export const testDataForInitUser = {
+    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.200'],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
@@ -562,14 +587,16 @@ export default class GeneralService {
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
                 addonName == 'WebApp Platform' || //evgeny
+                // addonName == 'ADAL' || //evgeny
+                addonName == 'system_health' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
-            if (addonName == 'ADAL' && this.papiClient['options'].baseURL.includes('staging')) {
-                searchString = `AND Version Like '${version}%' AND Available Like 1`;
-            }
+            // if (addonName == 'ADAL' && this.papiClient['options'].baseURL.includes('staging')) {
+            //     searchString = `AND Version Like '${version}%' AND Available Like 1`;
+            // }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',
@@ -812,11 +839,42 @@ export default class GeneralService {
         return latestSchema;
     }
 
-    async baseAddonVersionsInstallation(varPass: string) {
-        const isInstalledArr = await this.areAddonsInstalled(testData);
-        const chnageVersionResponseArr = await this.changeVersion(varPass, testData, false);
+    async baseAddonVersionsInstallation(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testData);
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testData,
+            false,
+        );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
+
+    // async sendResultsToMonitoringAddon(userName: string, testName: string, testStatus: string, env: string) {
+    //     const addonsSK = this.getSecret()[1];
+    //     const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+    //     const current = new Date();
+    //     const time = current.toLocaleTimeString();
+    //     const body = {
+    //         Name: `${testName}_${time}`, //param:addon was tested (test name)
+    //         Description: `Running on: ${userName} - ${env}`, //param: version of the addon
+    //         Status: testStatus, //param is passing
+    //         Message: 'evgeny', //param link to Jenkins
+    //         NotificationWebhook: '',
+    //         SendNotification: '',
+    //     };
+    //     // const monitoringResult = await this.fetchStatus('/system_health/notifications', {
+    //     //     method: 'POST',
+    //     //     headers: {
+    //     //         'X-Pepperi-SecretKey': addonsSK,
+    //     //         'X-Pepperi-OwnerID': testingAddonUUID,
+    //     //     },
+    //     //     body: JSON.stringify(body),
+    //     // });
+    //     return {};
+    //     //except(monitoringResult.Ok).to.equal(true);
+    //     //except(monitoringResult.Status).to.equal(200);
+    //     //except(monitoringResult.Error).to.equal({});
+    // }
 
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {

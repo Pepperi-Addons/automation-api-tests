@@ -92,6 +92,7 @@ export class VarDistPage extends AddonPage {
             throw Error(`nuc returned wrong message for relocating: ${preRelocateMessage}`);
         } else {
             await this.browser.click(this.recycleModalContinueBtn);
+            await this.browser.click(this.secondModalOK);
         }
     }
 }

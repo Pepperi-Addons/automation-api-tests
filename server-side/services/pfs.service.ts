@@ -25,35 +25,45 @@ export class PFSService {
         this.generalService = service;
     }
 
-    postFile(file: any) {
-        return this.papiClient.post('/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', file);
+    postFile(schemaName, file: any) {
+        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, file);
     }
 
-    postFileSDK(file: any) {
-        return this.papiClient.addons.files.uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe').post(file);
+    invalidate(schemaName, key) {
+        return this.papiClient.post(
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '/' + key + '/invalidate',
+        );
+    }
+
+    postFileSDK(schemaName, file: any) {
+        return this.papiClient.addons.pfs.uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe').schema(schemaName).post(file);
     }
 
     postFileNegative(file: any) {
-        return this.papiClient.post('/addons/files/', file);
+        return this.papiClient.post('/addons/pfs/', file);
     }
 
-    deleteFile(key: any) {
-        return this.papiClient.post('/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', {
+    deleteFile(schemaName, key: any) {
+        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, {
             Key: key,
             Hidden: 'true',
         });
     }
 
-    getFile(path: string) {
-        return this.papiClient.get(`/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${path}`);
+    getFile(schemaName, path: string) {
+        return this.papiClient.get(`/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}/${path}`);
     }
 
-    getFileSDK(path: string) {
-        return this.papiClient.addons.files.uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe').key(path).get();
+    getFileSDK(schemaName, path: string) {
+        return this.papiClient.addons.pfs
+            .uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe')
+            .schema(schemaName)
+            .key(path)
+            .get();
     }
 
-    getFilesList(path: string, options?: QueryOptions) {
-        let url = `/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe?folder=${path}`;
+    getFilesList(schemaName, path: string, options?: QueryOptions) {
+        let url = `/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}?folder=${path}`;
         if (options) {
             url = this.addQueryAndOptions(url, options);
         }
@@ -78,6 +88,11 @@ export class PFSService {
         const arrayData = await response.arrayBuffer();
         const buf = Buffer.from(arrayData);
         return buf;
+    }
+
+    async getFileFromURLNoBuffer(url) {
+        const response = await this.generalService.fetchStatus(url, { method: `GET` });
+        return response;
     }
 
     async putPresignedURL(url, body) {
@@ -129,8 +144,8 @@ export class PFSService {
             .then((res) => res.Body);
     }
 
-    async negativePOST(key) {
-        return await this.generalService.fetchStatus('/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', {
+    async negativePOST(schemaName, key) {
+        return await this.generalService.fetchStatus('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, {
             method: 'POST',
             body: JSON.stringify({
                 Key: 'ListFolder42319/',
@@ -144,28 +159,31 @@ export class PFSService {
         });
     }
 
-    postFileFailAfterLock(file: any) {
+    postFileFailAfterLock(schemaName, file: any) {
         return this.papiClient.post(
-            '/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe?testing_transaction=stop_after_lock',
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_lock',
             file,
         );
     }
 
-    postFileFailAfterS3(file: any) {
+    postFileFailAfterS3(schemaName, file: any) {
         return this.papiClient.post(
-            '/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe?testing_transaction=stop_after_S3',
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_S3',
             file,
         );
     }
 
-    postFileFailAfterADAL(file: any) {
+    postFileFailAfterADAL(schemaName, file: any) {
         return this.papiClient.post(
-            '/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe?testing_transaction=stop_after_ADAL',
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_ADAL',
             file,
         );
     }
 
-    rollBack(file: any) {
-        return this.papiClient.post('/addons/files/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe?testRollback=true', file);
+    rollBack(schemaName, file: any) {
+        return this.papiClient.post(
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testRollback=true',
+            file,
+        );
     }
 }
