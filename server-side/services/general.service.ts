@@ -704,6 +704,7 @@ export default class GeneralService {
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
                 if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                    //debugger;
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);

@@ -57,6 +57,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
     //#region Mocha
+
     describe('DIMX Data Import Tests Suites', () => {
         describe('Prerequisites Addon for DIMX Tests', () => {
             //Test Data
@@ -95,6 +96,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         it('Test Initiation', async () => {
             // this will run the first test that will run the second and so on..Its test initiation
             logcash.secretKey = await generalService.getSecretKey(addonUUID, varKey);
+            await getRelation();
         });
         it('Schema with name created', async () => {
             assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
@@ -272,7 +274,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         // }
         if (
             logcash.insertDataToTableNonRelation.fault.faultstring.includes(
-                'Failed due to exception: Relation: Permission denied. No rsults found for the query',
+                'Failed due to exception: Relation: Permission denied. No results found for the query',
             )
         ) {
             logcash.insertDataToTableWithOwnerIDStatus = true;
