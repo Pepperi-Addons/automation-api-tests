@@ -103,7 +103,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 _adalNoRecBaseLine = envsEntry[0].duration_no_rec;
             });
             for (let index = 1; index < numOfRuns + 1; index++) {
-                it(`Loggin With VAR User For The {${index}/${numOfRuns} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
+                it(`Loggin With VAR User For The ${index}/${numOfRuns} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.login(varUserName, varPassword); //VAR credentials
                     const webAppHeader = new WebAppHeader(driver);
@@ -122,7 +122,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await varListOfDistsPage.recycleNuc(this); //menu interaction
                 });
 
-                it(`Login With The Recycled User For The  Time And Measure Time The Process Took After Recycling`, async function () {
+                it(`Login With The Recycled User For The ${index}/${numOfRuns} Time And Measure Time The Process Took After Recycling`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.navigate();
                     await driver.clearCookies(); //to make sure we have no prev data
