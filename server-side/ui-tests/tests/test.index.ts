@@ -330,7 +330,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
-        await LoginPerfTests(email, pass, varPass, client);
+        await LoginPerfTests(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('script_picker')) {

@@ -8,7 +8,7 @@ import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 
-export async function LoginPerfTests(email: string, password: string, varPass, client) {
+export async function LoginPerfTests(email: string, password: string, varPass, client, varPassEu) {
     let driver: Browser;
     const generalService = new GeneralService(client);
     const adalService = new ADALService(generalService.papiClient);
@@ -28,10 +28,16 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         _envUrlBase = 'papi.staging';
         _env = 'stage';
+    } else if (generalService.papiClient['options'].baseURL.includes('papi-eu')) {
+        //handle EU user
+        _envUrlBase = 'papi-eu';
+        _env = 'eu';
     } else {
         _envUrlBase = 'papi';
         _env = 'prod';
     }
+    const varUserName = _env === 'eu' ? varPassEu.split(':')[0] : varPass.split(':')[0];
+    const varPassword = _env === 'eu' ? varPassEu.split(':')[1] : varPass.split(':')[1];
     const testData = {
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
     };
@@ -97,9 +103,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                 _adalNoRecBaseLine = envsEntry[0].duration_no_rec;
             });
             for (let index = 1; index < numOfRuns + 1; index++) {
-                it(`Loggin With VAR User For The ${index}/${numOfRuns} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
+                it(`Loggin With VAR User For The {${index}/${numOfRuns} Time And Reset Nuc For The User About To Be Tested Using VAR UI`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.login(varPass.split(':')[0], varPass.split(':')[1]); //VAR credentials
+                    await webAppLoginPage.login(varUserName, varPassword); //VAR credentials
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -116,7 +122,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     await varListOfDistsPage.recycleNuc(this); //menu interaction
                 });
 
-                it(`Login With The Recycled User For The ${index}/${numOfRuns} Time And Measure Time The Process Took After Recycling`, async function () {
+                it(`Login With The Recycled User For The  Time And Measure Time The Process Took After Recycling`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.navigate();
                     await driver.clearCookies(); //to make sure we have no prev data
