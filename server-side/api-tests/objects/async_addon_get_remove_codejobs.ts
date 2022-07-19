@@ -104,13 +104,11 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
             };
             //const chnageVersionResponseArr =
             await adminService.changeToAnyAvailableVersion(testData);
-            const isInstalledArr =
-            await adminService.areAddonsInstalled(testData);
+            const isInstalledArr = await adminService.areAddonsInstalled(testData);
             //debugger;
-            for (let index = 0; index < isInstalledArr.length-1; index++) {
+            for (let index = 0; index < isInstalledArr.length - 1; index++) {
                 expect(isInstalledArr[index]).to.be.true;
             }
-            
         });
 
         it(`Get Installed Addons`, async () => {
