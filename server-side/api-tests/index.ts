@@ -42,6 +42,7 @@ import { CodeJobsRetryTests } from './code-jobs/code_jobs_retry';
 import { CodeJobsAddonTests } from './code-jobs/code_jobs_addon';
 import { AddonRelationTests } from './addon_relation';
 import { UsageMonitorTests } from './usage_monitor';
+import { AsyncAddonGetRemoveTests } from './objects/async_addon_get_remove_codejobs';
 //#endregion Oleg's Framwork Tests
 
 //#region Yoni's Tests
@@ -145,6 +146,7 @@ export {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
+    AsyncAddonGetRemoveTests,
     PFSTests,
     DIMXrecursive,
     UDCTests,
