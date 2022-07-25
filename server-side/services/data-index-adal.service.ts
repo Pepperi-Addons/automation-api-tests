@@ -7,6 +7,20 @@ export interface DataIndexSchema {
     [key: string]: any;
 }
 
+interface QueryOptions {
+    select?: string[];
+    group_by?: string;
+    fields?: string[];
+    where?: string;
+    order_by?: string;
+    page?: number;
+    page_size?: number;
+    include_nested?: boolean;
+    full_mode?: boolean;
+    include_deleted?: boolean;
+    is_distinct?: boolean;
+}
+
 interface DataIndexDocument {
     Key: string | number;
     [key: string]: any;
@@ -129,5 +143,22 @@ export class DataIndexAdalService {
         const path = await this.changeEndpoint(type, scheme);
         await this.generalService.sleepAsync(this.globalSleep);
         return this.generalService.papiClient.post(`/addons/${path}/delete/${addonUUID}/${indexName}`, query);
+    }
+
+    addQueryAndOptions(url: string, options: QueryOptions = {}) {
+        const optionsArr: string[] = [];
+        Object.keys(options).forEach((key) => {
+            optionsArr.push(key + '=' + encodeURIComponent(options[key]));
+        });
+        const query = optionsArr.join('&');
+        return query ? url + '?' + query : url;
+    }
+
+    async getTotals(type, scheme, addonUUID, indexName, options: QueryOptions = {}) {
+        const path = await this.changeEndpoint(type, scheme);
+        await this.generalService.sleepAsync(this.globalSleep);
+        let url = `/addons/${path}/totals/${addonUUID}/${indexName}`;
+        url = this.addQueryAndOptions(url, options);
+        return this.generalService.papiClient.get(url);
     }
 }
