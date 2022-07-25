@@ -88,9 +88,11 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                     DocumentNumber: {
                         Type: 'Integer',
+                        Indexed: true,
                     },
                     DocumentDouble: {
                         Type: 'Double',
+                        Indexed: true,
                     },
                     DocumentDate: {
                         Type: 'DateTime',
@@ -186,7 +188,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read Document (Search By DSL: DI-19467)', async () => {
-                debugger;
                 const readDocumentResponse = await dataIndexAdalService.searchAllDocuments(
                     'index',
                     generalService.papiClient['options'].addonUUID,
@@ -200,11 +201,9 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                     indexSchema,
                 );
-                expect(readDocumentResponse).to.deep.include.members([
-                    secondDocument,
-                    thirdDocument,
-                    createDocumentTestData,
-                ]);
+                expect(readDocumentResponse.hits.hits[0]._source).to.deep.equal(createDocumentTestData);
+                expect(readDocumentResponse.hits.hits[1]._source).to.deep.equal(secondDocument);  
+                expect(readDocumentResponse.hits.hits[2]._source).to.deep.equal(thirdDocument);  
             });
 
             it('Read All Documents', async () => {
@@ -220,6 +219,23 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     createDocumentTestData,
                 ]);
                 expect(readDocumentResponse.length).to.equal(3);
+            });
+
+            it('Get totals index', async () => {
+                const getTotalsData = await dataIndexAdalService.getTotals('index', indexSchema, generalService.papiClient['options'].addonUUID, schemeName,  {
+                    select: [
+                        'sum(DocumentNumber)',
+                        'avg(DocumentNumber)',
+                        'min(DocumentDouble)',
+                        'max(DocumentDouble)',
+                        'count(Key)',
+                    ],
+                });
+                expect(getTotalsData[0]).to.have.property('avg_DocumentNumber').that.equals(5);
+                expect(getTotalsData[0]).to.have.property('max_DocumentDouble').that.equals(50.3);
+                expect(getTotalsData[0]).to.have.property('min_DocumentDouble').that.equals(50.3);
+                expect(getTotalsData[0]).to.have.property('sum_DocumentNumber').that.equals(15);
+                expect(getTotalsData[0]).to.have.property('count_Key').that.equals(3);
             });
 
             it('Update Document (Override With Create)', async () => {
@@ -310,7 +326,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Bulk Read Updated Document After Update Query', async () => {
-                debugger;
                 const readDocumentResponse = await dataIndexAdalService.searchAllDocuments(
                     'index',
                     generalService.papiClient['options'].addonUUID,
@@ -324,12 +339,12 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                     indexSchema,
                 );
-                expect(readDocumentResponse[0]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
-                expect(readDocumentResponse[0]).to.have.property('DocumentNumber').to.equal(4);
-                expect(readDocumentResponse[1]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
-                expect(readDocumentResponse[1]).to.have.property('DocumentNumber').to.equal(4);
-                expect(readDocumentResponse[2]).to.have.property('DocumentDouble').to.equal(-9);
-                expect(readDocumentResponse[2]).to.have.property('DocumentNumber').to.equal(4);
+                expect(readDocumentResponse.hits.hits[0]._source).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
+                expect(readDocumentResponse.hits.hits[0]._source).to.have.property('DocumentNumber').to.equal(4);
+                expect(readDocumentResponse.hits.hits[1]._source).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
+                expect(readDocumentResponse.hits.hits[1]._source).to.have.property('DocumentNumber').to.equal(4);
+                expect(readDocumentResponse.hits.hits[2]._source).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
+                expect(readDocumentResponse.hits.hits[2]._source).to.have.property('DocumentNumber').to.equal(4);
             });
 
             it('Bulk Remove Document', async () => {
@@ -419,9 +434,11 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                     DocumentNumber: {
                         Type: 'Integer',
+                        Indexed: true,
                     },
                     DocumentDouble: {
                         Type: 'Double',
+                        Indexed: true,
                     },
                     DocumentDate: {
                         Type: 'DateTime',
@@ -526,11 +543,9 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                     typedIndexSchema,
                 );
-                expect(readDocumentResponse).to.deep.include.members([
-                    secondDocument,
-                    thirdDocument,
-                    createDocumentTestData,
-                ]);
+                expect(readDocumentResponse.hits.hits[0]._source).to.deep.include(createDocumentTestData);
+                expect(readDocumentResponse.hits.hits[1]._source).to.deep.include(secondDocument);  
+                expect(readDocumentResponse.hits.hits[2]._source).to.deep.include(thirdDocument);  
             });
 
             it('Read All Documents', async () => {
@@ -546,6 +561,23 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     createDocumentTestData,
                 ]);
                 expect(readDocumentResponse.length).to.equal(3);
+            });
+
+            it('Get totals shared index', async () => {
+                const getTotalsData = await dataIndexAdalService.getTotals('shared_index', typedIndexSchema, generalService.papiClient['options'].addonUUID, schemeName,  {
+                    select: [
+                        'sum(DocumentNumber)',
+                        'avg(DocumentNumber)',
+                        'min(DocumentDouble)',
+                        'max(DocumentDouble)',
+                        'count(Key)',
+                    ],
+                });
+                expect(getTotalsData[0]).to.have.property('avg_DocumentNumber').that.equals(5);
+                expect(getTotalsData[0]).to.have.property('max_DocumentDouble').that.equals(50.3);
+                expect(getTotalsData[0]).to.have.property('min_DocumentDouble').that.equals(50.3);
+                expect(getTotalsData[0]).to.have.property('sum_DocumentNumber').that.equals(15);
+                expect(getTotalsData[0]).to.have.property('count_Key').that.equals(3);
             });
 
             it('Update Document (Override With Create)', async () => {
@@ -651,12 +683,12 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                     typedIndexSchema,
                 );
-                expect(readDocumentResponse[0]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
-                expect(readDocumentResponse[0]).to.have.property('DocumentNumber').to.equal(4);
-                expect(readDocumentResponse[1]).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
-                expect(readDocumentResponse[1]).to.have.property('DocumentNumber').to.equal(4);
-                expect(readDocumentResponse[2]).to.have.property('DocumentDouble').to.equal(-9);
-                expect(readDocumentResponse[2]).to.have.property('DocumentNumber').to.equal(4);
+                expect(readDocumentResponse.hits.hits[0]._source).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
+                expect(readDocumentResponse.hits.hits[0]._source).to.have.property('DocumentNumber').to.equal(4);
+                expect(readDocumentResponse.hits.hits[1]._source).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
+                expect(readDocumentResponse.hits.hits[1]._source).to.have.property('DocumentNumber').to.equal(4);
+                expect(readDocumentResponse.hits.hits[2]._source).to.have.property('DocumentDouble').to.equal(-150.89999999999998);
+                expect(readDocumentResponse.hits.hits[2]._source).to.have.property('DocumentNumber').to.equal(4);
             });
 
             it('Bulk Remove Document', async () => {
@@ -806,7 +838,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 Key: 1,
             };
 
-            it('Change Services To Work For Other Addon And Create Schems', async () => {
+            it('Change Services To Work For Other Addon And Create Schemas', async () => {
                 generalService.papiClient['options'].addonUUID = addonUUID;
                 const addonUUIDSK = await generalService.getSecretKey(addonUUID, varKey);
                 generalService.papiClient['options'].addonSecretKey = addonUUIDSK;
@@ -815,34 +847,17 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 adalService.papiClient['options'].addonUUID = addonUUID;
                 adalService.papiClient['options'].addonSecretKey = addonUUIDSK;
 
-                const createSchemeInAdalResponse = (await adalService.postSchema(typedIndexSchema as any)) as any;
+                const createIndexSchemeInAdalResponse = (await adalService.postSchema(indexSchema as any)) as any;
+                const createSharedIndexSchemeInAdalResponse = (await adalService.postSchema(typedIndexSchema as any)) as any;
 
-                delete createSchemeInAdalResponse.CreationDateTime;
-                delete createSchemeInAdalResponse.ModificationDateTime;
-                delete createSchemeInAdalResponse.AddonUUID;
-                expect(createSchemeInAdalResponse).to.deep.equal(typedIndexSchema);
-            });
-
-            it('Create Scheme', async () => {
-                const createSchemeResponse = await dataIndexAdalService.createScheme(
-                    'index',
-                    generalService.papiClient['options'].addonUUID,
-                    indexSchema,
-                );
-                expect(createSchemeResponse).to.have.property('DataSourceData');
-                expect(createSchemeResponse).to.have.property('Fields');
-                expect(createSchemeResponse.DataSourceURL).to.equal('https://url');
-                expect(createSchemeResponse.Hidden).to.be.false;
-                expect(createSchemeResponse.Name).to.equal('test_index');
-                expect(createSchemeResponse.Type).to.equal('index');
-                expect(createSchemeResponse.DataSourceData.IndexName).to.have.equal('tester');
-                expect(createSchemeResponse.DataSourceData.NumberOfShards).to.have.equal(1);
-                expect(createSchemeResponse.Fields).to.have.property('DocumentBool');
-                expect(createSchemeResponse.Fields).to.have.property('DocumentDate');
-                expect(createSchemeResponse.Fields).to.have.property('DocumentDouble');
-                expect(createSchemeResponse.Fields).to.have.property('DocumentMixedFormat');
-                expect(createSchemeResponse.Fields).to.have.property('DocumentName');
-                expect(createSchemeResponse.Fields).to.have.property('DocumentNumber');
+                delete createIndexSchemeInAdalResponse.CreationDateTime;
+                delete createIndexSchemeInAdalResponse.ModificationDateTime;
+                delete createIndexSchemeInAdalResponse.AddonUUID;
+                expect(createIndexSchemeInAdalResponse).to.deep.equal(indexSchema);
+                delete createSharedIndexSchemeInAdalResponse.CreationDateTime;
+                delete createSharedIndexSchemeInAdalResponse.ModificationDateTime;
+                delete createSharedIndexSchemeInAdalResponse.AddonUUID;
+                expect(createSharedIndexSchemeInAdalResponse).to.deep.equal(typedIndexSchema);
             });
 
             it('Create Index Document', async () => {
@@ -896,26 +911,29 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     uninstallAddonAuditLogResponse.Status?.ID,
                     JSON.stringify(uninstallAddonAuditLogResponse.AuditInfo.ResultObject),
                 ).to.equal(1);
+                generalService.sleep(10000)
             });
 
-            it('Read After Delete Index Document', async () => {
-                const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+            it('Read After Delete Shared Index Document', async () => {
+                await expect(dataIndexAdalService.getDocumentByNameAndOptionalKey(
                     typedIndexSchema,
                     'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     typedSchemeName,
+                )).eventually.to.be.rejectedWith(
+                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/48d20f0b-369a-4b34-b48a-ffe245088513/test_shared_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_type_tester]: org.elasticsearch.index.IndexNotFoundException: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_type_tester]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
                 );
-                expect(readDocumentResponse).to.deep.equal([]);
             });
 
-            it('Read After Delete Typed Index Document', async () => {
-                const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+            it('Read After Delete Index Document', async () => {
+                await expect(dataIndexAdalService.getDocumentByNameAndOptionalKey(
                     indexSchema,
                     'index',
                     generalService.papiClient['options'].addonUUID,
                     indexSchemeName,
+                )).eventually.to.be.rejectedWith(
+                    `${generalService.papiClient['options'].baseURL}/addons/index/48d20f0b-369a-4b34-b48a-ffe245088513/test_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_test_index]: org.elasticsearch.index.IndexNotFoundException: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_test_index]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
                 );
-                expect(readDocumentResponse).to.deep.equal([]);
             });
 
             it('Remove Scheme Index', async () => {
@@ -924,7 +942,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     indexSchema,
                 );
-                expect(readDocumentResponse).to.deep.equal({ success: true });
+                expect(readDocumentResponse).to.deep.include({ success: false });
             });
 
             it('Remove Typed Index Scheme', async () => {
@@ -933,7 +951,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     typedIndexSchema,
                 );
-                expect(readDocumentResponse).to.deep.equal({ success: true });
+                expect(readDocumentResponse).to.deep.include({ success: false });
             });
         });
 
