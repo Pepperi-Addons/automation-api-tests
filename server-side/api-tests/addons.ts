@@ -2907,7 +2907,6 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             expect(versionsArr[1].Available).to.equal(false);
             expect(versionsArr[2].Available).to.equal(false);
 
-
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
