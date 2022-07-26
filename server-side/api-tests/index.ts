@@ -95,11 +95,13 @@ import {
 } from './addon_data_import_export';
 import { ADALStressTests } from './adal_stress';
 import { PFSTests } from './pepperi_file_service';
+import { PermissionsTests } from './permissions';
 import { DIMXrecursive } from './DIMX_recursive';
 import { SecurityTests } from './security';
 
 export {
     TestDataTests,
+    PermissionsTests,
     UpgradeDependenciesTests,
     LocalAddonFileCreatorTests,
     FileStorageTests,
