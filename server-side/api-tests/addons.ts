@@ -3569,6 +3569,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -3786,6 +3813,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -3988,6 +4042,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     })
                     .then((res) => res.Body);
             }
+
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
 
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
@@ -4193,6 +4274,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -4394,6 +4502,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     })
                     .then((res) => res.Body);
             }
+
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
 
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
@@ -5273,6 +5408,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install newest available without version
             const postInstalAddonWithDeletedAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -5775,6 +5937,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install with available version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -6090,6 +6279,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //https://{{server}}.pepperi.com/V1.0/addons/installed_addons?where=Version='0.0.38'
 
             //     "UUID": "1a067b97-628c-4783-96c9-1df0513730bc",
@@ -6397,6 +6613,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     .then((res) => res.Body);
             }
 
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
+
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons
                 .addonUUID(createApiResponse.Body.UUID)
@@ -6699,6 +6942,33 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     })
                     .then((res) => res.Body);
             }
+
+            for (let index = 0; index < versionsArr.length; index++) {
+                versionTestDataBody = {
+                    UUID: versionsArr[index].UUID,
+                    Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
+                };
+                if (index == 2) {
+                    versionTestDataBody.Available = false;
+                } else {
+                    versionTestDataBody.Available = true;
+                }
+                versionTestDataBody.Phased = true;
+                versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
+                versionsArr[index] = await generalService
+                    .fetchStatus(generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions', {
+                        method: `POST`,
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        },
+                        body: JSON.stringify(versionTestDataBody),
+                    })
+                    .then((res) => res.Body);
+            }
+
+            expect(versionsArr[0].Available).to.equal(true);
+            expect(versionsArr[1].Available).to.equal(true);
+            expect(versionsArr[2].Available).to.equal(false);
 
             //Install addon with version
             const postInstallAddonApiResponse = await generalService.papiClient.addons.installedAddons

@@ -20,7 +20,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
     //#region Upgrade Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
+        'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeToAnyAvailableVersion(testData);
@@ -69,8 +69,9 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             let actionsBody;
 
             it(`Execute CodeJob with AddonJob`, async () => {
+                debugger;
                 executeTestResults = await executeAddonJobCodeJobTest(addonUUID, 'PositiveTest');
-                //debugger;
+                debugger;
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Post execute CodeJob with AddonJob') {
@@ -120,7 +121,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             it(`Get Audit Log And Adal Data`, async () => {
                 auditLogBody = await generalService.papiClient.get(testAuditURI);
                 adalLogBody = await generalService.papiClient.addons.data
-                    .uuid(testData.AsyncAddon[0])
+                    .uuid(testData['Async Task Execution'][0])
                     //.table('actions')   changed to jobs
                     .table('jobs')
                     .key(testAuditUUID)
@@ -147,7 +148,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                 actionsBody = await generalService.papiClient.get(`/jobs/${testAuditUUID}`);
                 //debugger;
                 adalLogBody = await generalService.papiClient.addons.data
-                    .uuid(testData.AsyncAddon[0])
+                    .uuid(testData['Async Task Execution'][0])
                     //.table('actions')   changed to jobs
                     .table('jobs')
                     .key(testAuditUUID)
@@ -229,7 +230,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             it(`Get Audit Log And Adal Data`, async () => {
                 auditLogBody = await generalService.papiClient.get(testAuditURI);
                 adalLogBody = await generalService.papiClient.addons.data
-                    .uuid(testData.AsyncAddon[0])
+                    .uuid(testData['Async Task Execution'][0])
                     .table('jobs')
                     .key(testAuditUUID)
                     .get();
@@ -253,6 +254,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
 
         //Test
         async function executeAddonJobCodeJobTest(codeJobUUID, executeFunction) {
+            debugger;
             const executeResultData: TestResults[] = [];
             //This can be used to test the Scheduler addon (3/3)
             //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
