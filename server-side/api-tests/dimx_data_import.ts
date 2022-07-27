@@ -1,6 +1,10 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { AddonRelationService } from '../services/addon-relation.service';
 
+export async function DimxDataImportTestsTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await DimxDataImportTests(generalService, request, tester);
+}
+
 export async function DimxDataImportTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const assert = tester.assert;
@@ -51,6 +55,14 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     } else {
         varKey = request.body.varKeyPro;
     }
+
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+    }
+
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade ADAL
