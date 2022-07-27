@@ -38,6 +38,7 @@ import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
 import {} from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
+import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -282,6 +283,21 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('PfsAPI')) {
         await PFSTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('AsyncAddonGetRemoveCodeJobsCLI')) {
+        await AsyncAddonGetRemoveTestser(
             generalService,
             {
                 body: {
