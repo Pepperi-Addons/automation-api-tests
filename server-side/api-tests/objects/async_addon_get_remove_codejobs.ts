@@ -112,7 +112,7 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
             const testData = {
                 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.'],
                 'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-                AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
+                'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
             };
             //const chnageVersionResponseArr =
             await adminService.changeToAnyAvailableVersion(testData);
