@@ -411,6 +411,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
         describe('Export', () => {
             it('Clean Data Index', async () => {
+                // debugger;
                 const auditLogCreate = await dataIndexService.cleanDataIndex();
                 expect(auditLogCreate).to.have.property('URI');
 
@@ -447,6 +448,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('All Activities Rebuild', async () => {
+                // debugger;
                 generalService.sleep(4000);
                 const auditLogCreate = await dataIndexService.rebuildAllActivities();
                 expect(auditLogCreate).to.have.property('URI');
@@ -459,6 +461,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('All Activities Polling', async () => {
+                // debugger;
                 let pollingResponse;
                 let maxLoopsCounter = 90;
                 do {
@@ -482,6 +485,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('Transaction Lines Rebuild', async () => {
+                // debugger;
                 generalService.sleep(4000);
                 const auditLogCreate = await dataIndexService.rebuildTransactionLines();
                 expect(auditLogCreate).to.have.property('URI');
@@ -494,6 +498,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('Transaction Lines Polling', async () => {
+                // debugger;
                 let pollingResponse;
                 let maxLoopsCounter = 90;
                 do {
@@ -578,6 +583,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             }
 
                             it(`Create Transaction With The New ${allActivitiesFieldName}`, async () => {
+                                // debugger;
                                 const transactionArr = await objectsService.getTransaction({
                                     where: `Type LIKE '%Sales Order%'`,
                                     page_size: 1,
@@ -617,6 +623,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             });
 
                             it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                // debugger;
                                 //try for 50 seconds to get the updated fields
                                 let maxLoopsCounter = _MAX_LOOPS;
                                 let isCreatedField = false;

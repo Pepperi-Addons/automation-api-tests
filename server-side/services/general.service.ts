@@ -21,9 +21,9 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.200'],
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
@@ -448,18 +448,22 @@ export default class GeneralService {
                 loopsAmount--;
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
-            else if (auditLogResponse.Status.ID == '2') {
+            else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
                 this.sleep(2000);
                 console.log(
-                    '%cIn_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.',
+                    `%cIn_Progres: Status ID is ${auditLogResponse.Status.ID}, Retry ' + loopsAmount + ' Times.`,
                     ConsoleColors.Information,
                 );
                 loopsAmount--;
             }
-        } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
+        } while (
+            (auditLogResponse === null || auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') &&
+            loopsAmount > 0
+        );
 
         //Check UUID
         try {
+            // debugger;
             if (
                 auditLogResponse.DistributorUUID == auditLogResponse.UUID ||
                 auditLogResponse.DistributorUUID == auditLogResponse.Event.User.UUID ||
@@ -477,6 +481,7 @@ export default class GeneralService {
 
         //Check Date and Time
         try {
+            // debugger;
             if (
                 !auditLogResponse.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
                 !auditLogResponse.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
@@ -491,6 +496,7 @@ export default class GeneralService {
         }
         //Check Type and Event
         try {
+            // debugger;
             if (
                 (auditLogResponse.AuditType != 'action' && auditLogResponse.AuditType != 'data') ||
                 (auditLogResponse.Event.Type != 'code_job_execution' &&
@@ -503,6 +509,7 @@ export default class GeneralService {
                 throw new Error('Error in Type and Event in Audit Log API Response');
             }
         } catch (error) {
+            debugger;
             if (error instanceof Error) {
                 error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
             }
@@ -982,7 +989,7 @@ function msSleep(ms: number) {
 export interface TesterFunctions {
     describe: { (name: string, fn: () => any): any };
     expect: Chai.ExpectStatic;
-    assert?: Chai.AssertStatic | any;
+    assert: Chai.AssertStatic;
     it: any;
     run: any;
     setNewTestHeadline?: any;

@@ -422,7 +422,7 @@ export async function maintenance(client: Client, request: Request, testerFuncti
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
+        // await test_data(client, testerFunctions),
         SingleMaintenanceAndDependenciesAddonsTests(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
