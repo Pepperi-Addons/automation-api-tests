@@ -1139,13 +1139,13 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             // debugger;
             //console.log({ Audit_Log_Addon_Without_Version: postAddonApiResponse });
 
-            // debugger;
+            debugger;
             mandatoryStepsInstallAddonWithNonAvailableVersion.failedToInstallAddon =
-                postAddonApiResponse.Status.Name == 'Failure';
+                postAddonApiResponse.Status.Name == 'Success';
             addTestResultUnderHeadline(
                 testName,
-                'Install Addon With Non Available Version',
-                postAddonApiResponse.Status.Name == 'Failure',
+                'Install Addon With Non Available Version', //evgozo
+                postAddonApiResponse.Status.Name == 'Success',
             );
         } catch (err) {
             // debugger;

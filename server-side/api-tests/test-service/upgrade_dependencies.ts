@@ -38,8 +38,11 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
                 });
 
                 it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                    await expect(service.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                        .eventually.to.have.property('Version')
+                    const currentInstalledVersion = await service.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .get();
+                    expect(currentInstalledVersion)
+                        .to.have.property('Version')
                         .a('string')
                         .that.is.equal(varLatestVersion);
                 });
