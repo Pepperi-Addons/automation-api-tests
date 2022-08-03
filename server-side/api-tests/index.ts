@@ -19,7 +19,8 @@ import { PagesTestSuite } from './page-objects/pages';
 import {
     BaseAddonsTests,
     UninstallAddonsTests,
-    SingleMaintenanceAndDependenciesAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTestsPart1,
+    SingleMaintenanceAndDependenciesAddonsTestsPart2,
     MaintenanceFullTests,
 } from './addons';
 import { VarTests, CreateTestDataAddon } from './var';
@@ -116,7 +117,8 @@ export {
     PagesTestSuite,
     BaseAddonsTests,
     UninstallAddonsTests,
-    SingleMaintenanceAndDependenciesAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTestsPart1,
+    SingleMaintenanceAndDependenciesAddonsTestsPart2,
     MaintenanceFullTests,
     VarTests,
     CreateTestDataAddon,

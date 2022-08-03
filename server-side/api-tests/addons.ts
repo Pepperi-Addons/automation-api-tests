@@ -35,7 +35,8 @@ const testConfigObj = {
     isAddonsAPIDowngradeAndUninstall: false, //Addons API Downgrade and Uninstall
     isAddonsWithDependenciesAPI: false, //Addons Dependencies API
     //isMaintenanceConsole: false, //Maintenance Console Table Print - can only work on browsers not on the server.
-    isMaintenanceSingle: false, //Maintenance Single
+    isMaintenanceSingle1: false, //Maintenance Single
+    isMaintenanceSingle2: false, //Maintenance Single
     isMaintenanceUpgrade: false, //Maintenance Upgrade Distribution
     isMaintenanceInstall: false, //Maintenance Install Distribution
     isMaintenanceFull: false, //Maintenance Full Distribution
@@ -168,7 +169,8 @@ export async function BaseAddonsTests(generalService: GeneralService, request, t
     (testConfigObj.isAddonsAPIInstallAndUpgrade = true), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
-        (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle1 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle2 = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
         (testConfigObj.isMaintenanceFull = false), //Maintenance Full Distribution
@@ -179,14 +181,15 @@ export async function UninstallAddonsTests(generalService: GeneralService, reque
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = true), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
-        (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle1 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle2 = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
         (testConfigObj.isMaintenanceFull = false), //Maintenance Full Distribution
         await ExecuteAddonsTests(generalService, request, tester);
 }
 
-export async function SingleMaintenanceAndDependenciesAddonsTests(
+export async function SingleMaintenanceAndDependenciesAddonsTestsPart1(
     generalService: GeneralService,
     request,
     tester: TesterFunctions,
@@ -194,7 +197,40 @@ export async function SingleMaintenanceAndDependenciesAddonsTests(
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = true), //Addons Dependencies API
-        (testConfigObj.isMaintenanceSingle = true), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle1 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle2 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
+        (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
+        (testConfigObj.isMaintenanceFull = false), //Maintenance Full Distribution
+        await ExecuteAddonsTests(generalService, request, tester);
+}
+
+export async function SingleMaintenanceAndDependenciesAddonsTestsPart2(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
+        (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
+        (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
+        (testConfigObj.isMaintenanceSingle1 = true), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle2 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
+        (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
+        (testConfigObj.isMaintenanceFull = false), //Maintenance Full Distribution
+        await ExecuteAddonsTests(generalService, request, tester);
+}
+
+export async function SingleMaintenanceAndDependenciesAddonsTestsPart3(
+    generalService: GeneralService,
+    request,
+    tester: TesterFunctions,
+) {
+    (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
+        (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
+        (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
+        (testConfigObj.isMaintenanceSingle1 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle2 = true), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = false), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = false), //Maintenance Install Distribution
         (testConfigObj.isMaintenanceFull = false), //Maintenance Full Distribution
@@ -205,7 +241,8 @@ export async function MaintenanceFullTests(generalService: GeneralService, reque
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
         (testConfigObj.isAddonsWithDependenciesAPI = false), //Addons Dependencies API
-        (testConfigObj.isMaintenanceSingle = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle1 = false), //Maintenance Single
+        (testConfigObj.isMaintenanceSingle2 = false), //Maintenance Single
         (testConfigObj.isMaintenanceUpgrade = true), //Maintenance Upgrade Distribution
         (testConfigObj.isMaintenanceInstall = true), //Maintenance Install Distribution
         (testConfigObj.isMaintenanceFull = true), //Maintenance Full Distribution
@@ -611,7 +648,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
     //#region Phased maintenance single maintenance executions
 
-    if (testConfigObj.isMaintenanceSingle) {
+    if (testConfigObj.isMaintenanceSingle1) {
         //Set Date AutomaticUpgradeAfter
         testExecutionData.testDate = new Date(testDate.getTime() + 0);
 
@@ -648,7 +685,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             testTempObject2,
             testConfigObj.isOnlineServer,
         );
+    }
 
+    if (testConfigObj.isMaintenanceSingle2) {
         //Change Test Data Object
         testExecutionData.changePhasedGroupVersionDays = -7;
         const testTempObject3 = Object.assign({}, testExecutionData);
@@ -663,6 +702,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         //Change Test Data Object
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * 7);
         const testTempObject4 = Object.assign({}, testExecutionData);
+
         await executePhasedMaintenanceUpgradeStartDateInFewDaysTest(
             phasedMaintenanceUpgradeStartDateIn7Days,
             testTempObject4,
@@ -678,6 +718,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             testConfigObj.isOnlineServer,
         );
 
+        testExecutionData.changePhasedGroupVersionDays = 0;
         //Change Test Data Object
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 1000 * 60 * 60 * 24 * 20);
         const testTempObject6 = Object.assign({}, testExecutionData);

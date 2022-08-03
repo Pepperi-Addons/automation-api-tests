@@ -1515,11 +1515,22 @@ export async function PepperiNotificationServiceTests(
                 expect(testResults[2]).to.be.equal(false, 'Subscription Not Remved (DI-18555): Test_Update_PNS');
 
                 //Validate Schema created
-                await expect(
-                    adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName),
-                ).eventually.to.be.rejectedWith(
-                    `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist, for table = TypeScript Installation Schema`,
-                );
+                let isError = false;
+                try {
+                    await adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName);
+                } catch (error) {
+                    const message = (error as any).message;
+                    expect(message).to.include(
+                        'Failed due to exception: Table schema must exist, for table = TypeScript Installation Schema',
+                    );
+                    isError = true;
+                }
+                expect(isError).to.be.true;
+                // await expect(
+                //     adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName),
+                // ).eventually.to.be.rejectedWith(
+                //     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist, for table = TypeScript Installation Schema`,
+                // );
             });
 
             it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {

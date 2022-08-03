@@ -451,7 +451,9 @@ export default class GeneralService {
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
                 this.sleep(2000);
                 console.log(
-                    `%cIn_Progres: Status ID is ${auditLogResponse.Status.ID}, Retry ' + loopsAmount + ' Times.`,
+                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
+                        auditLogResponse.Status.ID
+                    }, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
                 );
                 loopsAmount--;
