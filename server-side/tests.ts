@@ -17,7 +17,8 @@ import {
     PagesTestSuite,
     BaseAddonsTests,
     UninstallAddonsTests,
-    SingleMaintenanceAndDependenciesAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTestsPart1,
+    SingleMaintenanceAndDependenciesAddonsTestsPart2,
     MaintenanceFullTests,
     VarTests,
     CreateTestDataAddon,
@@ -80,6 +81,7 @@ import {
     SecurityTests,
     AsyncAddonGetRemoveTests,
 } from './api-tests/index';
+import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
 
 let testName = '';
 
@@ -415,15 +417,41 @@ export async function addons_uninstall(client: Client, request: Request, testerF
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
 }
-
-export async function maintenance(client: Client, request: Request, testerFunctions: TesterFunctions) {
+//TODO: once it works: add comments
+export async function maintenance1(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Maintenance_and_Dependencies';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     const testResult = await Promise.all([
         // await test_data(client, testerFunctions),
-        SingleMaintenanceAndDependenciesAddonsTests(service, request, testerFunctions),
+        SingleMaintenanceAndDependenciesAddonsTestsPart1(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function maintenance2(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Maintenance_and_Dependencies';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        // await test_data(client, testerFunctions),
+        SingleMaintenanceAndDependenciesAddonsTestsPart2(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function maintenance3(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Maintenance_and_Dependencies';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        // await test_data(client, testerFunctions),
+        SingleMaintenanceAndDependenciesAddonsTestsPart3(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
