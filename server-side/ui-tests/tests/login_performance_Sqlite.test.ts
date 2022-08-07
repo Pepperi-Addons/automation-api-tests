@@ -4,7 +4,6 @@ import { WebAppHomePage, WebAppLoginPage } from '../pom';
 import { expect } from 'chai';
 // import { VarDistPage } from '../pom/addons/VarDistPage';
 // import { Key } from 'selenium-webdriver';
-// import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 import addContext from 'mochawesome/addContext';
