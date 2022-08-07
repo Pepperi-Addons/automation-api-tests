@@ -298,7 +298,105 @@ export default class GeneralService {
         };
     }
 
-    // getSecretfromKMS() {}
+    async getSecretfromKMS(key: string) {
+        const kmsData = (await this.papiClient.get(`/kms/parameters/${key}`)).Value;
+        return kmsData;
+    }
+
+    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string) {
+        const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
+        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+        const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
+        console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
+        const jobNameAsUrlSafe = encodeURI(jobName);
+        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobNameAsUrlSafe, jobQueueId);
+        await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobNameAsUrlSafe);
+    }
+
+    async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
+        const jenkinsBaseUrl = 'https://admin-box.pepperi.com/job/';
+        const jobRemoteURL = jenkinsBaseUrl + jobPath;
+        const jenkinsStartingJobResponse = await this.fetchStatus(jobRemoteURL, {
+            method: 'GET',
+            headers: {
+                Authorization: `Basic ` + base64Credentials,
+            },
+        });
+        if (jenkinsStartingJobResponse.Status !== 201) {
+            throw `ERROR STATUS WHEN CALLING: ${jobRemoteURL}, GOT ${jenkinsStartingJobResponse.Status} instead OF 201`;
+        }
+        if (jenkinsStartingJobResponse.Ok !== true) {
+            throw `ERROR STATUS WHEN CALLING: ${jobRemoteURL}, GOT ${jenkinsStartingJobResponse.Ok} instead of TRUE`;
+        }
+        if (!jenkinsStartingJobResponse.Headers.location.includes('https://admin-box.pepperi.com/queue/item/')) {
+            throw `ERROR RESPONSE WHEN CALLING: ${jobRemoteURL}, GOT PREFIX LOCATION OF ${jenkinsStartingJobResponse.Headers.location} instead of https://admin-box.pepperi.com/queue/item/`;
+        }
+        const jenkinsLocationSplit = jenkinsStartingJobResponse.Headers.location.split('/');
+        const jenkinsRunQueueNumber = jenkinsLocationSplit[jenkinsLocationSplit.length - 2];
+        const jenkinsRunQueueNumberAsNumber = parseInt(jenkinsRunQueueNumber);
+        if (isNaN(jenkinsRunQueueNumberAsNumber)) {
+            throw `ERROR RESPONSE WHEN CALLING: ${jobRemoteURL}, QUEUE ID IS NOT A NUMBER: ${jenkinsRunQueueNumber}`;
+        }
+        return jenkinsRunQueueNumberAsNumber;
+    }
+
+    async pollJenkinsEndPointUntillJobStarted(
+        buildUserCredsBase64: string,
+        jobNameAsUrlSafe: string,
+        jenkinsRunQueueNumberAsNumber: number,
+    ) {
+        let gottenIdFromJenkins = 0;
+        let jenkinsJobResponsePolling: FetchStatusResponse = {
+            Ok: false,
+            Status: 0,
+            Body: undefined,
+            Error: undefined,
+        };
+        do {
+            jenkinsJobResponsePolling = await this.fetchStatus(
+                `https://admin-box.pepperi.com/job/Infra-Jenkins/job/Production-WebApp/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Basic ` + buildUserCredsBase64,
+                    },
+                },
+            );
+            gottenIdFromJenkins = jenkinsJobResponsePolling.Body.queueId;
+            console.log(`waiting for job queue id: ${gottenIdFromJenkins} to start -- still in Jenkins Queue`);
+            this.sleep(4500);
+        } while (gottenIdFromJenkins !== jenkinsRunQueueNumberAsNumber);
+        const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
+        console.log(`job: ${jenkinsJobName} STARTED execution`);
+    }
+
+    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobNameAsUrlSafe: string) {
+        let gottenResultFromJenkins = '';
+        let jenkinsJobResponsePolling: FetchStatusResponse = {
+            Ok: false,
+            Status: 0,
+            Body: undefined,
+            Error: undefined,
+        };
+        do {
+            jenkinsJobResponsePolling = await this.fetchStatus(
+                `https://admin-box.pepperi.com/job/Infra-Jenkins/job/Production-WebApp/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Basic ` + buildUserCredsBase64,
+                    },
+                },
+            );
+            gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
+            console.log(`received result is ${gottenResultFromJenkins}`);
+            this.sleep(4500);
+            // debugger;
+        } while (gottenResultFromJenkins === 'null');
+        const jenkinsJobResult = jenkinsJobResponsePolling.Body.result;
+        const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
+        console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult}`);
+    }
 
     getSecret() {
         let addonUUID;
