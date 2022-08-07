@@ -17,6 +17,8 @@ export class WebAppLoginPage extends Page {
     public Password: By = By.css('input[type="password"]');
     public Next: By = By.css('#nextBtn');
     public LoginBtn: By = By.css('#loginBtn');
+    public UserBtn: By = By.css('[data-qa="systemAvatar"]');
+    public signOutBtn: By = By.id('btnSignOut');
 
     /**
      * This function should be used after nevigation to LoginPage was validate
@@ -66,5 +68,13 @@ export class WebAppLoginPage extends Page {
         const webAppHeader = new WebAppHeader(this.browser);
         await expect(this.untilIsVisible(webAppHeader.CompanyLogo, 30000)).eventually.to.be.true;
         return;
+    }
+
+    public async logout(): Promise<void> {
+        await this.browser.click(this.UserBtn);
+        await expect(this.untilIsVisible(this.signOutBtn, 50000)).eventually.to.be.true;
+        await this.browser.click(this.signOutBtn);
+        await expect(this.untilIsVisible(this.Next, 90000)).eventually.to.be.true;
+        console.log('go to IDP page');
     }
 }
