@@ -63,8 +63,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         generalService.papiClient['options'].addonSecretKey = addonSecretKey;
     }
 
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade ADAL
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
