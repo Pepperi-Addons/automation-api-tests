@@ -40,6 +40,7 @@ import {} from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
+import { LoginPerfTestsReload } from './login_performance_reload.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -371,6 +372,10 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
     if (tests.includes('login_perf_sqlite')) {
         await LoginPerfSqlitefTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('login_perf_reload')) {
+        await LoginPerfTestsReload(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('aws_logs')) {
