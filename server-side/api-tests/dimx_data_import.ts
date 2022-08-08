@@ -47,7 +47,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
-        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        'Export and Import Framework': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
