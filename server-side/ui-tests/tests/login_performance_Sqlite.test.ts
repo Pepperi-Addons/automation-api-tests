@@ -7,6 +7,7 @@ import { expect } from 'chai';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 import addContext from 'mochawesome/addContext';
+import { testData as baseAddons } from '../../services/general.service';
 
 export async function LoginPerfSqlitefTests(email: string, password: string, varPass, client) {
     let driver: Browser;
@@ -30,22 +31,19 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
         _envUrlBase = 'papi';
         _env = 'prod';
     }
-    const testData = {
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
-    };
 
     //     // const addonVersions =
     await generalService.baseAddonVersionsInstallation(varPass);
     //     // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, baseAddons, false);
+    await generalService.areAddonsInstalled(baseAddons);
     //     // const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
 
     describe('Login Performance Tests Suites', () => {
         describe('Prerequisites Addon for Login Performance Test', () => {
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
+            for (const addonName in baseAddons) {
+                const addonUUID = baseAddons[addonName][0];
+                const version = baseAddons[addonName][1];
                 const varLatestVersion = chnageVersionResponseArr[addonName][2];
                 const changeType = chnageVersionResponseArr[addonName][3];
                 describe(`Test Data: ${addonName}`, () => {
@@ -102,7 +100,7 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                     await webAppLoginPage.signIn(email, password);
                     await generalService.runJenkinsJobRemotely(
                         'JenkinsBuildUserCred',
-                        'Infra-Jenkins/job/Production-WebApp/job/Performance%20Tests%20-%20Kill%20Webapp%20User/build?token=PerformanceTestsKillWebApp',
+                        'API%20Testing%20Framework/job/Performance%20Tests%20-%20Kill%20Webapp%20User/build?token=PerformanceTestsKillWebApp',
                         'Performance Tests - Kill Webapp User',
                     );
                     await webAppLoginPage.logout();
