@@ -158,7 +158,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                         });
                     }
                     if (
-                        arrayOfAddonsDiff[index]['System'].Name !== 'Data Index Framework' && //is a dependency of other addons so no bug here
+                        arrayOfAddonsDiff[index]['Installed'].Name !== 'Data Index Framework' && //is a dependency of other addons so no bug here
                         arrayOfAddonsDiff[index]['System'] == 'Addon Missing'
                     ) {
                         it(`Addon Is Installed That Is Not System: ${arrayOfAddonsDiff[index]['Installed'].Name}`, async () => {
