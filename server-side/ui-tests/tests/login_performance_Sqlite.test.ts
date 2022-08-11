@@ -21,14 +21,14 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
     const date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
     const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
     const dateTime = date + ' ||| ' + time;
-    let _envUrlBase;
+    // let _envUrlBase;
     let _env;
 
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        _envUrlBase = 'papi.staging';
+        // _envUrlBase = 'papi.staging';
         _env = 'stage';
     } else {
-        _envUrlBase = 'papi';
+        // _envUrlBase = 'papi';
         _env = 'prod';
     }
 
@@ -141,67 +141,67 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                     )} `,
                 });
                 //3. calculating 120% of the avarage saved in ADA
-                const killing120precAVG = parseInt((_adalAfterKliingBaseLine * 1.2).toFixed(0));
-                //3.1. testing whether we passed the saved avarage by more than 20%
-                expect(killingAVG).to.be.lessThan(
-                    killing120precAVG,
-                    `AFTER killing SQLite login is bigger than baseline by: ${(
-                        ((killingAVG - _adalAfterKliingBaseLine) / _adalAfterKliingBaseLine) *
-                        100
-                    ).toFixed(3)}, current baseline:${_adalAfterKliingBaseLine}, current run result" ${killingAVG}`,
-                );
+                // const killing120precAVG = parseInt((_adalAfterKliingBaseLine * 1.2).toFixed(0));
+                // //3.1. testing whether we passed the saved avarage by more than 20%
+                // expect(killingAVG).to.be.lessThan(
+                //     killing120precAVG,
+                //     `AFTER killing SQLite login is bigger than baseline by: ${(
+                //         ((killingAVG - _adalAfterKliingBaseLine) / _adalAfterKliingBaseLine) *
+                //         100
+                //     ).toFixed(3)}, current baseline:${_adalAfterKliingBaseLine}, current run result" ${killingAVG}`,
+                // );
                 //4. calculating 90% of the avarage saved in ADAL
-                const avg90 = parseInt((_adalAfterKliingBaseLine * 0.9).toFixed(0));
-                if (killingAVG < avg90) {
-                    //5.1. testing whether we sucseed to run in less than 90% of saved duration
-                    //5.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
-                    //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
-                    const newBaseLineForADAL = parseInt(
-                        ((_adalAfterKliingBaseLine * 0.95 + killingAVG * 0.05) / 1).toFixed(0),
-                    );
-                    const bodyToSend = {
-                        Key: `${_env}_perf`,
-                        duration: newBaseLineForADAL,
-                    };
-                    const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
-                    expect(adalResponse.Ok).to.equal(true);
-                    expect(adalResponse.Status).to.equal(200);
-                    expect(adalResponse.Body.env).to.equal(_env);
-                    expect(adalResponse.Body.Hidden).to.equal(false);
-                    expect(adalResponse.Body.Key).to.equal(`${_env}_perf`);
-                    expect(adalResponse.Body.duration).to.equal(newBaseLineForADAL);
-                    // printing both to console and report
-                    const improvmentPrec = (
-                        ((_adalAfterKliingBaseLine - killingAVG) / _adalAfterKliingBaseLine) *
-                        100
-                    ).toFixed(3);
-                    console.log(
-                        `the average in this run improved by: ${improvmentPrec} % comparing to the baseline: current run AVG AFTER killing SQLite: ${killingAVG}, current BASELINE:${_adalAfterKliingBaseLine}`,
-                    );
-                    addContext(this, {
-                        title: `the average of this run AFTER killing SQLite is lower by: ${improvmentPrec}% then baseline`,
-                        value: `current run avarage AFTER killing SQLite: ${killingAVG}, current baseline:${_adalAfterKliingBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
-                    });
-                }
+                // const avg90 = parseInt((_adalAfterKliingBaseLine * 0.9).toFixed(0));
+                // if (killingAVG < avg90) {
+                //     //5.1. testing whether we sucseed to run in less than 90% of saved duration
+                //     //5.2. if so - use 'Weighted arithmetic mean' which takes only 5% of the calculated baseline to create the updated baseline in ADAL
+                //     //this way ADAL's baseline will really 'MOVE' only if a number of runs was this good
+                //     const newBaseLineForADAL = parseInt(
+                //         ((_adalAfterKliingBaseLine * 0.95 + killingAVG * 0.05) / 1).toFixed(0),
+                //     );
+                //     const bodyToSend = {
+                //         Key: `${_env}_perf`,
+                //         duration: newBaseLineForADAL,
+                //     };
+                //     const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
+                //     expect(adalResponse.Ok).to.equal(true);
+                //     expect(adalResponse.Status).to.equal(200);
+                //     expect(adalResponse.Body.env).to.equal(_env);
+                //     expect(adalResponse.Body.Hidden).to.equal(false);
+                //     expect(adalResponse.Body.Key).to.equal(`${_env}_perf`);
+                //     expect(adalResponse.Body.duration).to.equal(newBaseLineForADAL);
+                //     // printing both to console and report
+                //     const improvmentPrec = (
+                //         ((_adalAfterKliingBaseLine - killingAVG) / _adalAfterKliingBaseLine) *
+                //         100
+                //     ).toFixed(3);
+                //     console.log(
+                //         `the average in this run improved by: ${improvmentPrec} % comparing to the baseline: current run AVG AFTER killing SQLite: ${killingAVG}, current BASELINE:${_adalAfterKliingBaseLine}`,
+                //     );
+                //     addContext(this, {
+                //         title: `the average of this run AFTER killing SQLite is lower by: ${improvmentPrec}% then baseline`,
+                //         value: `current run avarage AFTER killing SQLite: ${killingAVG}, current baseline:${_adalAfterKliingBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
+                //     });
+                // }
             });
         });
     });
 }
 
-async function postToADAL(varPass, generalService, bodyToSend, envUrlBase) {
-    const secretKey = await generalService.getSecretKey('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', varPass);
-    const adalResponse = await generalService.fetchStatus(
-        `https://${envUrlBase}.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceDataKillSqlite`,
-        {
-            method: 'POST',
-            body: JSON.stringify(bodyToSend),
-            headers: {
-                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-                //X-Pepperi-OwnerID is the ID of the Addon
-                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                'X-Pepperi-SecretKey': secretKey,
-            },
-        },
-    );
-    return adalResponse;
-}
+// async function postToADAL(varPass, generalService, bodyToSend, envUrlBase) {
+//     const secretKey = await generalService.getSecretKey('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', varPass);
+//     const adalResponse = await generalService.fetchStatus(
+//         `https://${envUrlBase}.pepperi.com/V1.0/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/LoginPerormanceDataKillSqlite`,
+//         {
+//             method: 'POST',
+//             body: JSON.stringify(bodyToSend),
+//             headers: {
+//                 Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+//                 //X-Pepperi-OwnerID is the ID of the Addon
+//                 'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+//                 'X-Pepperi-SecretKey': secretKey,
+//             },
+//         },
+//     );
+//     return adalResponse;
+// }
