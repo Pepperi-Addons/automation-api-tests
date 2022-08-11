@@ -310,7 +310,7 @@ export default class GeneralService {
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
         const jobNameAsUrlSafe = encodeURI(jobName);
         await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobNameAsUrlSafe, jobQueueId);
-        await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobNameAsUrlSafe);
+        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobNameAsUrlSafe);
     }
 
     async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
@@ -354,7 +354,7 @@ export default class GeneralService {
         };
         do {
             jenkinsJobResponsePolling = await this.fetchStatus(
-                `https://admin-box.pepperi.com/job/Infra-Jenkins/job/Production-WebApp/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
                 {
                     method: 'GET',
                     headers: {
@@ -380,7 +380,7 @@ export default class GeneralService {
         };
         do {
             jenkinsJobResponsePolling = await this.fetchStatus(
-                `https://admin-box.pepperi.com/job/Infra-Jenkins/job/Production-WebApp/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
                 {
                     method: 'GET',
                     headers: {
@@ -396,6 +396,7 @@ export default class GeneralService {
         const jenkinsJobResult = jenkinsJobResponsePolling.Body.result;
         const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
         console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult}`);
+        return jenkinsJobResult;
     }
 
     getSecret() {
