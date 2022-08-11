@@ -299,6 +299,7 @@ export default class GeneralService {
     }
 
     async getSecretfromKMS(key: string) {
+        console.log(this.papiClient['options']);
         const kmsData = (await this.papiClient.get(`/kms/parameters/${key}`)).Value;
         return kmsData;
     }

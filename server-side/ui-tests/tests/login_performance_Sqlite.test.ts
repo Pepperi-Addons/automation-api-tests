@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
 import addContext from 'mochawesome/addContext';
-import { testData as baseAddons } from '../../services/general.service';
+// import { testData as baseAddons } from '../../services/general.service';
 
 export async function LoginPerfSqlitefTests(email: string, password: string, varPass, client) {
     let driver: Browser;
@@ -40,35 +40,35 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
     }
 
     //     // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, baseAddons, false);
-    await generalService.areAddonsInstalled(baseAddons);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, baseAddons, false);
+    // await generalService.areAddonsInstalled(baseAddons);
     //     // const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
 
     describe('Login Performance Tests Suites', () => {
-        describe('Prerequisites Addon for Login Performance Test', () => {
-            for (const addonName in baseAddons) {
-                const addonUUID = baseAddons[addonName][0];
-                const version = baseAddons[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
+        // describe('Prerequisites Addon for Login Performance Test', () => {
+        //     for (const addonName in baseAddons) {
+        //         const addonUUID = baseAddons[addonName][0];
+        //         const version = baseAddons[addonName][1];
+        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
+        //         const changeType = chnageVersionResponseArr[addonName][3];
+        //         describe(`Test Data: ${addonName}`, () => {
+        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+        //                 } else {
+        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+        //                 }
+        //             });
 
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
-        });
+        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(varLatestVersion);
+        //             });
+        //         });
+        //     }
+        // });
 
         describe('Basic UI Tests Suit', async function () {
             this.retries(0);
