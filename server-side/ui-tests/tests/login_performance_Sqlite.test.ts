@@ -141,15 +141,15 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                     )} `,
                 });
                 //3. calculating 120% of the avarage saved in ADA
-                const killing120precAVG = parseInt((_adalAfterKliingBaseLine * 1.2).toFixed(0));
-                //3.1. testing whether we passed the saved avarage by more than 20%
-                expect(killingAVG).to.be.lessThan(
-                    killing120precAVG,
-                    `AFTER killing SQLite login is bigger than baseline by: ${(
-                        ((killingAVG - _adalAfterKliingBaseLine) / _adalAfterKliingBaseLine) *
-                        100
-                    ).toFixed(3)}, current baseline:${_adalAfterKliingBaseLine}, current run result" ${killingAVG}`,
-                );
+                // const killing120precAVG = parseInt((_adalAfterKliingBaseLine * 1.2).toFixed(0));
+                // //3.1. testing whether we passed the saved avarage by more than 20%
+                // expect(killingAVG).to.be.lessThan(
+                //     killing120precAVG,
+                //     `AFTER killing SQLite login is bigger than baseline by: ${(
+                //         ((killingAVG - _adalAfterKliingBaseLine) / _adalAfterKliingBaseLine) *
+                //         100
+                //     ).toFixed(3)}, current baseline:${_adalAfterKliingBaseLine}, current run result" ${killingAVG}`,
+                // );
                 //4. calculating 90% of the avarage saved in ADAL
                 // const avg90 = parseInt((_adalAfterKliingBaseLine * 0.9).toFixed(0));
                 // if (killingAVG < avg90) {
