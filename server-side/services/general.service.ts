@@ -392,7 +392,7 @@ export default class GeneralService {
             console.log(`received result is ${gottenResultFromJenkins}`);
             this.sleep(4500);
             // debugger;
-        } while (gottenResultFromJenkins === 'null');
+        } while (gottenResultFromJenkins === null);
         const jenkinsJobResult = jenkinsJobResponsePolling.Body.result;
         const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
         console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult}`);
