@@ -75,6 +75,6 @@ export class WebAppLoginPage extends Page {
         await expect(this.untilIsVisible(this.signOutBtn, 50000)).eventually.to.be.true;
         await this.browser.click(this.signOutBtn);
         await expect(this.untilIsVisible(this.Next, 90000)).eventually.to.be.true;
-        console.log('go to IDP page');
+        console.log('got to IDP page');
     }
 }

@@ -32,8 +32,6 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
         _env = 'prod';
     }
 
-    //     // const addonVersions =
-    await generalService.baseAddonVersionsInstallation(varPass);
     //     // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, baseAddons, false);
     await generalService.areAddonsInstalled(baseAddons);
@@ -89,23 +87,24 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                 expect(adalResponse).to.be.not.empty; //ADAL response
                 const envsEntry = adalResponse.filter((response) => response.env === _env);
                 expect(envsEntry).to.be.not.empty; //after filter
-                _adalAfterKliingBaseLine = envsEntry[0].duration_after_kill;
+                _adalAfterKliingBaseLine = envsEntry[0].duration;
+                console.log(`AVG duration from ADAL is: ${_adalAfterKliingBaseLine}`);
             });
 
             for (let index = 1; index < numOfRuns + 1; index++) {
                 it(`Use Jenkins Job: 'Project Performance Tests - Kill Webapp User' To Kill Users Sqlite For The ${index}/${numOfRuns} Time`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.navigate();
-                    await driver.clearCookies(); //to make sure we have no prev data
                     await webAppLoginPage.signIn(email, password);
-                    await generalService.runJenkinsJobRemotely(
+                    const jenkinsResult = await generalService.runJenkinsJobRemotely(
                         'JenkinsBuildUserCred',
                         'API%20Testing%20Framework/job/Performance%20Tests%20-%20Kill%20Webapp%20User/build?token=PerformanceTestsKillWebApp',
                         'Performance Tests - Kill Webapp User',
                     );
+                    expect(jenkinsResult).to.equal('SUCCESS');
                     await webAppLoginPage.logout();
                 });
-                it(`Login With The User Which For The ${index}/${numOfRuns} Time And Measure Time The Process Took After Recycling`, async function () {
+                it(`Login With The User Which SQLite was killed For The ${index}/${numOfRuns} Time And Measure Time The Process Took After Killing SQLite`, async function () {
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.navigate();
                     await driver.clearCookies(); //to make sure we have no prev data
@@ -132,19 +131,21 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                 const killingAVG = parseInt((_sumOfDurationAfterKillingSqlite / numOfRuns).toFixed(0));
                 //2. printing the durations to the report
                 addContext(this, {
-                    title: `THS RUN avarage duration of loggin in AFTER recycling: ${killingAVG}, current ADAL AVG: ${_adalAfterKliingBaseLine}, in seconds: ${(
+                    title: `THS RUN avarage duration of loggin in AFTER killing SQLite: ${killingAVG}, current ADAL AVG AFTER killing SQLite: ${_adalAfterKliingBaseLine}, in seconds: ${(
                         _adalAfterKliingBaseLine / 1000
                     ).toFixed(3)}`,
                     value: `THIS RUN duration in seconds: ${(killingAVG / 1000).toFixed(
                         3,
-                    )},current ADAL AVG in seconds: ${(_adalAfterKliingBaseLine / 1000).toFixed(3)} `,
+                    )},current ADAL AVG AFTER killing SQLite in seconds: ${(_adalAfterKliingBaseLine / 1000).toFixed(
+                        3,
+                    )} `,
                 });
                 //3. calculating 120% of the avarage saved in ADA
                 const killing120precAVG = parseInt((_adalAfterKliingBaseLine * 1.2).toFixed(0));
                 //3.1. testing whether we passed the saved avarage by more than 20%
                 expect(killingAVG).to.be.lessThan(
                     killing120precAVG,
-                    `after recycle login is bigger than baseline by: ${(
+                    `AFTER killing SQLite login is bigger than baseline by: ${(
                         ((killingAVG - _adalAfterKliingBaseLine) / _adalAfterKliingBaseLine) *
                         100
                     ).toFixed(3)}, current baseline:${_adalAfterKliingBaseLine}, current run result" ${killingAVG}`,
@@ -160,7 +161,7 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                     );
                     const bodyToSend = {
                         Key: `${_env}_perf`,
-                        duration_with_rec: newBaseLineForADAL,
+                        duration: newBaseLineForADAL,
                     };
                     const adalResponse = await postToADAL(varPass, generalService, bodyToSend, _envUrlBase);
                     expect(adalResponse.Ok).to.equal(true);
@@ -168,18 +169,18 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
                     expect(adalResponse.Body.env).to.equal(_env);
                     expect(adalResponse.Body.Hidden).to.equal(false);
                     expect(adalResponse.Body.Key).to.equal(`${_env}_perf`);
-                    expect(adalResponse.Body.duration_with_rec).to.equal(newBaseLineForADAL);
+                    expect(adalResponse.Body.duration).to.equal(newBaseLineForADAL);
                     // printing both to console and report
                     const improvmentPrec = (
                         ((_adalAfterKliingBaseLine - killingAVG) / _adalAfterKliingBaseLine) *
                         100
                     ).toFixed(3);
                     console.log(
-                        `the average in this run improved by: ${improvmentPrec} % comparing to the baseline: current run AVG after recycling: ${killingAVG}, current BASELINE:${_adalAfterKliingBaseLine}`,
+                        `the average in this run improved by: ${improvmentPrec} % comparing to the baseline: current run AVG AFTER killing SQLite: ${killingAVG}, current BASELINE:${_adalAfterKliingBaseLine}`,
                     );
                     addContext(this, {
-                        title: `the average of this run with recycling is lower by: ${improvmentPrec}% then baseline`,
-                        value: `current run avarage after recycling: ${killingAVG}, current baseline:${_adalAfterKliingBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
+                        title: `the average of this run AFTER killing SQLite is lower by: ${improvmentPrec}% then baseline`,
+                        value: `current run avarage AFTER killing SQLite: ${killingAVG}, current baseline:${_adalAfterKliingBaseLine}, new baseline to push to ADAL: ${newBaseLineForADAL}`,
                     });
                 }
             });
