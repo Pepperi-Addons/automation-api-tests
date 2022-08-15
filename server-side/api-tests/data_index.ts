@@ -29,6 +29,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         // 'TSATestIndexDecimalNumber',
         // 'Account.ExternalID',
         'Account.City',
+        // 'Account.UUID'
         // 'Account.Country',
         // 'Account.Status',
         // 'Account.Parent.City',
@@ -191,6 +192,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             // {'fieldID':'TSATestIndexDecimalNumber','type':'Double'},
             { fieldID: 'Account.ExternalID', type: 'String' },
             { fieldID: 'Account.City', type: 'String' },
+            { fieldID: 'Account.UUID', type: 'String' },
             { fieldID: 'Account.Country', type: 'String' },
             { fieldID: 'Account.Status', type: 'Integer' },
             { fieldID: 'Account.Parent.City', type: 'String' },
@@ -235,6 +237,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             { fieldID: 'Transaction.Status', type: 'Integer' },
             { fieldID: 'Transaction.DiscountPercentage', type: 'Double' },
             { fieldID: 'Transaction.Account.ExternalID', type: 'String' },
+            { fieldID: 'Transaction.Account.UUID', type: 'String' },
             // {'fieldID':'Transaction.Account.TSAPaymentMethod','type':'String'},
             { fieldID: 'Transaction.Account.ZipCode', type: 'String' },
             { fieldID: 'Transaction.Account.Status', type: 'Integer' },
@@ -337,9 +340,10 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
     //#region Upgrade Data Index
     const testData = {
+        Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.8'],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     };
     let varKey;
@@ -411,6 +415,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
         describe('Export', () => {
             it('Clean Data Index', async () => {
+                // debugger;
                 const auditLogCreate = await dataIndexService.cleanDataIndex();
                 expect(auditLogCreate).to.have.property('URI');
 
@@ -423,6 +428,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('Post Fields To Export', async () => {
+                // debugger;
                 const auditLogCreate = await dataIndexService.exportDataToDataIndex(uiDataObject);
                 expect(auditLogCreate).to.have.property('URI');
 
@@ -447,6 +453,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('All Activities Rebuild', async () => {
+                // debugger;
                 generalService.sleep(4000);
                 const auditLogCreate = await dataIndexService.rebuildAllActivities();
                 expect(auditLogCreate).to.have.property('URI');
@@ -459,6 +466,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('All Activities Polling', async () => {
+                // debugger;
                 let pollingResponse;
                 let maxLoopsCounter = 90;
                 do {
@@ -477,11 +485,14 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     (pollingResponse.Status == 'InProgress' || pollingResponse.Status == '') &&
                     maxLoopsCounter > 0
                 );
+                // debugger;
+                expect(pollingResponse.FieldsToExport).to.include.members(all_activities_fields_to_test_response);
                 expect(pollingResponse.Message).to.equal('');
                 expect(pollingResponse.Status).to.equal('Success');
             });
 
             it('Transaction Lines Rebuild', async () => {
+                // debugger;
                 generalService.sleep(4000);
                 const auditLogCreate = await dataIndexService.rebuildTransactionLines();
                 expect(auditLogCreate).to.have.property('URI');
@@ -494,6 +505,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('Transaction Lines Polling', async () => {
+                // debugger;
                 let pollingResponse;
                 let maxLoopsCounter = 90;
                 do {
@@ -511,6 +523,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     (pollingResponse.Status == 'InProgress' || pollingResponse.Status == '') &&
                     maxLoopsCounter > 0
                 );
+                expect(pollingResponse.FieldsToExport).to.include.members(transaction_lines_fields_to_test_response);
                 expect(pollingResponse.Message).to.equal('');
                 expect(pollingResponse.Status).to.equal('Success');
             });
@@ -578,6 +591,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             }
 
                             it(`Create Transaction With The New ${allActivitiesFieldName}`, async () => {
+                                // debugger;
                                 const transactionArr = await objectsService.getTransaction({
                                     where: `Type LIKE '%Sales Order%'`,
                                     page_size: 1,
@@ -617,6 +631,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                             });
 
                             it(`${allActivitiesFieldName} Total Count Above 0`, async () => {
+                                // debugger;
                                 //try for 50 seconds to get the updated fields
                                 let maxLoopsCounter = _MAX_LOOPS;
                                 let isCreatedField = false;

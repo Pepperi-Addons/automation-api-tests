@@ -157,7 +157,10 @@ export async function DistributorTests(generalService: GeneralService, request, 
                             expect.fail(`Addon.Name: ${JSON.stringify(arrayOfAddonsDiff[index]['System'].Name)}`);
                         });
                     }
-                    if (arrayOfAddonsDiff[index]['System'] == 'Addon Missing') {
+                    if (
+                        arrayOfAddonsDiff[index]['Installed'].Name !== 'Data Index Framework' && //is a dependency of other addons so no bug here
+                        arrayOfAddonsDiff[index]['System'] == 'Addon Missing'
+                    ) {
                         it(`Addon Is Installed That Is Not System: ${arrayOfAddonsDiff[index]['Installed'].Name}`, async () => {
                             expect.fail(`Addon.Name: ${JSON.stringify(arrayOfAddonsDiff[index]['Installed'].Name)}`);
                         });
@@ -444,7 +447,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                     expect(distributorResponse.Body.TrialExpirationDateTime).to.equal(
                         minusEightMonths.toISOString().split('.')[0],
                     );
-                    generalService.sleep(240000);
+                    generalService.sleep(250000);
                     // const expirationResponse = await supportAdminDistributorService.runExpirationProtocol();
                     // expect(expirationResponse.Status.Name).to.equal('Success');
                 });

@@ -1,9 +1,13 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { AddonRelationService } from '../services/addon-relation.service';
 
+export async function DimxDataImportTestsTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await DimxDataImportTests(generalService, request, tester);
+}
+
 export async function DimxDataImportTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
-    const assert = tester.assert;
+    // const assert = tester.assert;
     const expect = tester.expect;
     const it = tester.it;
     const relationService = new AddonRelationService(generalService);
@@ -43,7 +47,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
-        Import_Export: ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        'Export and Import Framework': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -51,8 +55,16 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     } else {
         varKey = request.body.varKeyPro;
     }
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+    }
+
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade ADAL
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
@@ -99,66 +111,72 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             await getRelation();
         });
         it('Schema with name created', async () => {
-            assert(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage);
+            expect(logcash.createSchemaWithMandFieldNameStatus, logcash.createSchemaWithMandFieldNameErrorMessage).to.be
+                .true;
         });
     });
     describe('Insert objects to created schema ', () => {
         it('Negative-Insert two obects(overwrite is default [false] without relation)', async () => {
-            assert(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError);
+            expect(logcash.insertDataToTableWithOwnerIDStatus, logcash.insertDataToTableWithOwnerIDError).to.be.true;
         });
         it('Insert two obects(overwrite is default [false] with relation)', async () => {
-            assert(logcash.insertDataToTableWithRelationStatus, logcash.insertDataToTableWithRelationError);
+            expect(logcash.insertDataToTableWithRelationStatus, logcash.insertDataToTableWithRelationError).to.be.true;
         });
         it('Negative - Update data one of created key with >400Kb(overwrite is default [false])  ', async () => {
-            assert(logcash.insertDataToTableWithOwnerID400kStatus, logcash.insertDataToTableWithOwnerID400kError);
+            expect(logcash.insertDataToTableWithOwnerID400kStatus, logcash.insertDataToTableWithOwnerID400kError).to.be
+                .true;
         });
         it('Update one of two inserted objects(overwrite is default [false])  ', async () => {
-            assert(logcash.updateDataToTableStatus, logcash.updateDataToTableError);
+            expect(logcash.updateDataToTableStatus, logcash.updateDataToTableError).to.be.true;
         });
         it('Get from this schema. Will get 2 objects , one will be updated(overwrite is default [false])  ', async () => {
-            assert(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError);
+            expect(logcash.getDataToTableWithOwnerIDStatus, logcash.getDataToTableWithOwnerIDError).to.be.true;
         });
         it('Get from this schema. Will get 2 objects , one will be updated and second will get error : KEY missing (overwrite is default [false])  ', async () => {
-            assert(logcash.updateDataStatuseVerificationStatus, logcash.updateDataStatuseVerificationError);
+            expect(logcash.updateDataStatuseVerificationStatus, logcash.updateDataStatuseVerificationError).to.be.true;
         });
         it('Update one of two inserted objects(overwrite is updated [true])  ', async () => {
-            assert(logcash.updateDataToTableOverwriteTrueStatus, logcash.updateDataToTableOverwriteTrueError);
+            expect(logcash.updateDataToTableOverwriteTrueStatus, logcash.updateDataToTableOverwriteTrueError).to.be
+                .true;
         });
         it('Get from this schema. Will get 2 objects , one will be updated(overwrite is [true])  ', async () => {
-            assert(logcash.getDataToTableOverwriteTrueStatus, logcash.getDataToTableOverwriteTrueError);
+            expect(logcash.getDataToTableOverwriteTrueStatus, logcash.getDataToTableOverwriteTrueError).to.be.true;
         });
         it('Negative - Insert 10 objects with one duplicated key(overwrite is [true]. All 10 rows will fail)  ', async () => {
-            assert(logcash.addDataToTableOverwriteTrueStatus, logcash.addDataToTableOverwriteTrueError);
+            expect(logcash.addDataToTableOverwriteTrueStatus, logcash.addDataToTableOverwriteTrueError).to.be.true;
         });
         it('Negative/Positive - The test will faill on 25 and will succeed for the other 25 inserted keys (ovewrite=true))  ', async () => {
-            assert(logcash.add50InsertsToTableOverwriteTrueStatus, logcash.add50InsertsToTableOverwriteTrueError);
+            expect(logcash.add50InsertsToTableOverwriteTrueStatus, logcash.add50InsertsToTableOverwriteTrueError).to.be
+                .true;
         });
         it('Negative - The test will faill on GET on all 50 inserted keys (ovewrite=false))  ', async () => {
-            assert(logcash.add50InsertsToTableOverwriteFalseStatus, logcash.add50InsertsToTableOverwriteFalseError);
+            expect(logcash.add50InsertsToTableOverwriteFalseStatus, logcash.add50InsertsToTableOverwriteFalseError).to
+                .be.true;
         });
         it('Negative - The test will fail on bigger to 500 inserts)  ', async () => {
-            assert(logcash.add50InsertsToTableOverwriteFalseStatus, logcash.add50InsertsToTableOverwriteFalseError);
+            expect(logcash.add50InsertsToTableOverwriteFalseStatus, logcash.add50InsertsToTableOverwriteFalseError).to
+                .be.true;
         });
         it('RelativeURL function test)  ', async () => {
-            assert(logcash.add50InsertsRelativeURLTestStatus, logcash.add50InsertsRelativeURLTestError);
+            expect(logcash.add50InsertsRelativeURLTestStatus, logcash.add50InsertsRelativeURLTestError).to.be.true;
         });
         it('Negative - Update (one objects) with saved word INDEXES will faile)  ', async () => {
-            assert(logcash.updateDataToTableNegativeStatus, logcash.updateDataToTableNegativeError);
+            expect(logcash.updateDataToTableNegativeStatus, logcash.updateDataToTableNegativeError).to.be.true;
         });
         it('Insert data to schema by type META_DATA ', async () => {
-            assert(logcash.insertDataToTableStatus, logcash.insertDataToTableError);
+            expect(logcash.insertDataToTableStatus, logcash.insertDataToTableError).to.be.true;
         });
         it('Negative-Insert data to schema by type META_DATA without OwnerID ', async () => {
-            assert(logcash.insertDataToTableNegativeStatus, logcash.insertDataToTableNegativeError);
+            expect(logcash.insertDataToTableNegativeStatus, logcash.insertDataToTableNegativeError).to.be.true;
         });
         it('Drop schema by type META_DATA  ', async () => {
-            assert(logcash.dropShemaDataStatus, logcash.dropShemaDataError);
+            expect(logcash.dropShemaDataStatus, logcash.dropShemaDataError).to.be.true;
         });
         it('Insert data to schema by type INDEXED_DATA  ', async () => {
-            assert(logcash.insertDataToTableIndexedDataStatus, logcash.insertDataToTableError);
+            expect(logcash.insertDataToTableIndexedDataStatus, logcash.insertDataToTableError).to.be.true;
         });
         it('Drop schema by type INDEXED_DATA  ', async () => {
-            assert(logcash.dropIndexedShemaDataStatus, logcash.dropIndexedShemaDataError);
+            expect(logcash.dropIndexedShemaDataStatus, logcash.dropIndexedShemaDataError).to.be.true;
         });
     });
 

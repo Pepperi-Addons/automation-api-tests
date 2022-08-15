@@ -20,7 +20,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
     //#region Upgrade Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-        AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
+        'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     };
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeToAnyAvailableVersion(testData);
@@ -69,8 +69,9 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             let actionsBody;
 
             it(`Execute CodeJob with AddonJob`, async () => {
+                // debugger;
                 executeTestResults = await executeAddonJobCodeJobTest(addonUUID, 'PositiveTest');
-                //debugger;
+                // debugger;
                 let testExist = false;
                 for (let i = 0; i < executeTestResults.length; i++) {
                     if (executeTestResults[i].Name == 'Post execute CodeJob with AddonJob') {
@@ -120,7 +121,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             it(`Get Audit Log And Adal Data`, async () => {
                 auditLogBody = await generalService.papiClient.get(testAuditURI);
                 adalLogBody = await generalService.papiClient.addons.data
-                    .uuid(testData.AsyncAddon[0])
+                    .uuid(testData['Async Task Execution'][0])
                     //.table('actions')   changed to jobs
                     .table('jobs')
                     .key(testAuditUUID)
@@ -143,28 +144,28 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             });
 
             it(`Get Action And Adal Data`, async () => {
-                //actionsBody = await generalService.papiClient.get(`/actions/${testAuditUUID}`);
-                actionsBody = await generalService.papiClient.get(`/jobs/${testAuditUUID}`);
+                // actionsBody = await generalService.papiClient.get(`/actions/${testAuditUUID}`);
+                actionsBody = await generalService.papiClient.get(`/addons/jobs/${testAuditUUID}`);
                 //debugger;
                 adalLogBody = await generalService.papiClient.addons.data
-                    .uuid(testData.AsyncAddon[0])
+                    .uuid(testData['Async Task Execution'][0])
                     //.table('actions')   changed to jobs
                     .table('jobs')
                     .key(testAuditUUID)
                     .get();
-                expect(auditLogBody.UUID == actionsBody.Key);
+                expect(adalLogBody.Key == actionsBody.Key);
             });
 
             it(`Validae Action And Adal Pass`, async () => {
                 expect(actionsBody.Status).to.equal('Success');
-                expect(auditLogBody.Status.Name).to.equal('Success');
+                expect(adalLogBody.Status).to.equal('Success');
             });
 
             it(`Validae Action And Adal Result Object`, async () => {
                 expect(actionsBody.ResultObject).to.equal(
                     '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
                 );
-                expect(auditLogBody.AuditInfo.ResultObject).to.equal(
+                expect(adalLogBody.ResultObject).to.equal(
                     '{"success":true,"errorMessage":"test msg","resultObject":{"multiplyResult":8}}',
                 );
             });
@@ -229,7 +230,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             it(`Get Audit Log And Adal Data`, async () => {
                 auditLogBody = await generalService.papiClient.get(testAuditURI);
                 adalLogBody = await generalService.papiClient.addons.data
-                    .uuid(testData.AsyncAddon[0])
+                    .uuid(testData['Async Task Execution'][0])
                     .table('jobs')
                     .key(testAuditUUID)
                     .get();
@@ -253,6 +254,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
 
         //Test
         async function executeAddonJobCodeJobTest(codeJobUUID, executeFunction) {
+            // debugger;
             const executeResultData: TestResults[] = [];
             //This can be used to test the Scheduler addon (3/3)
             //let phasedTest = await generalService.papiClient.post("/code_jobs/" + codeJobUUID + "/publish");
@@ -264,7 +266,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             } catch (error) {
                 executeAddonJobCodeApiResponse = error;
             }
-            //debugger;
+            // debugger;
             console.log({ executeAddonJobCodeApiResponse: executeAddonJobCodeApiResponse });
 
             executeResultData.push({
@@ -273,10 +275,12 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
             });
 
             if (codeJobUUID != undefined) {
+                // debugger;
                 let inetrvalLimit = 180000;
                 const SetIntervalEvery = 6000;
                 return await new Promise((resolve) => {
                     const getResultObjectInterval = setInterval(async () => {
+                        // debugger;
                         inetrvalLimit -= SetIntervalEvery;
                         if (inetrvalLimit < 1) {
                             clearInterval(getResultObjectInterval);
@@ -290,9 +294,11 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                         const getAuditLogURI = executeAddonJobCodeApiResponse.URI;
 
                         let apiResponse;
+                        // debugger;
                         try {
                             apiResponse = await generalService.papiClient.get(getAuditLogURI);
                         } catch (error) {
+                            // debugger;
                             clearInterval(getResultObjectInterval);
                             apiResponse = error;
                             console.log({ getAuditLogApiResponse: apiResponse });
@@ -307,6 +313,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                         }
 
                         if (JSON.stringify(apiResponse).includes('"ResultObject":')) {
+                            // debugger;
                             clearInterval(getResultObjectInterval);
                             await removeAllSchedulerCodeJobFromDistributor(codeJobUUID);
 
@@ -430,6 +437,7 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
 
         //Function to remove all the Scheduler Code Jobs from Distributor
         async function removeAllSchedulerCodeJobFromDistributor(codeJobUUID?: string) {
+            // debugger;
             //codeJobUUID = undefined;
             //for (var index = 100; index > 0; index--) {
             let getAllCodeJobs = [] as any;
@@ -456,7 +464,6 @@ export async function AddonAsyncExecutionTests(generalService: GeneralService, t
                         'X-Pepperi-OwnerID': '9b00d684-4615-4293-9727-63da81802a8d',
                     },
                 });
-
                 console.log(i);
                 console.log(JSON.stringify(codeJobObject.UUID));
                 if (getAllCodeJobs.length == 1) {
