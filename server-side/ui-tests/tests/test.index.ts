@@ -74,6 +74,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
             return;
         },
         ValidatePermission: async function (policyName: string) {
+            console.log(policyName);
             return;
         },
     });

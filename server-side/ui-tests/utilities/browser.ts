@@ -26,6 +26,7 @@ export class Browser {
             return;
         },
         ValidatePermission: async function (policyName: string) {
+            console.log(policyName);
             return;
         },
     });
