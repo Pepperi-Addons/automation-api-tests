@@ -70,7 +70,9 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         Retry: function () {
             return;
         },
-        ValidatePermission:async function(policyName: string){}
+        ValidatePermission: async function (policyName: string) {
+            return;
+        },
     });
 
     const client: Client = await tempGeneralService.initiateTester(email, pass);

@@ -2,9 +2,6 @@ import { PermissionsService } from '../services/permissions.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ObjectsService } from '../services/objects.service';
 import { DistributorService } from '../services/distributor.service';
-import { DebugServer } from '@pepperi-addons/debug-server/dist';
-import { PapiClient } from '@pepperi-addons/papi-sdk';
-import { server } from '../app.local';
 
 export async function PermissionsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     let password;
@@ -275,9 +272,7 @@ export async function PermissionsTests(generalService: GeneralService, request, 
                     gotError = true;
                 }
                 expect(gotError, message).to.be.false;
-                await expect(
-                    repClient.ValidatePermission(policyName),
-                ).eventually.to.be.rejectedWith(
+                await expect(repClient.ValidatePermission(policyName)).eventually.to.be.rejectedWith(
                     `Failed due to exception: You don't have permissions to call this endpoint`,
                 );
                 expect(await permissionsService.deleteUser('InternalID', createdUser.InternalID)).to.be.true;
@@ -318,7 +313,12 @@ export async function PermissionsTests(generalService: GeneralService, request, 
             });
 
             it(`Create account + contact and connect as buyer`, async () => {
-                const contactEmail = 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com'
+                const contactEmail =
+                    'Email' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '@' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '.com';
                 contactAccount = await objectsService.createAccount({
                     ExternalID: 'ContactTestAccount',
                     Name: 'Contact Test Account',
@@ -370,9 +370,7 @@ export async function PermissionsTests(generalService: GeneralService, request, 
                     .to.have.property('CreationDateTime')
                     .that.includes(new Date().toISOString().split('T')[0]);
                 expect(createBuyerProfileResponse).to.have.property('CreationDateTime').that.includes('Z');
-                await expect(
-                    buyerClient.ValidatePermission(policyName),
-                ).eventually.to.be.rejectedWith(
+                await expect(buyerClient.ValidatePermission(policyName)).eventually.to.be.rejectedWith(
                     `Failed due to exception: You don't have permissions to call this endpoint`,
                 );
             });
@@ -410,8 +408,8 @@ export async function PermissionsTests(generalService: GeneralService, request, 
                 }
                 expect(gotError, message).to.be.false;
                 expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.true,
-                expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.false,
-                expect(await objectsService.deleteAccount(contactAccount.InternalID)).to.be.true;
+                    expect(await objectsService.deleteContact(createdContact.InternalID)).to.be.false,
+                    expect(await objectsService.deleteAccount(contactAccount.InternalID)).to.be.true;
             });
 
             it('Delete Profile', async () => {

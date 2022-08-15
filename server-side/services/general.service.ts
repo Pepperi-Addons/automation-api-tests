@@ -295,7 +295,9 @@ export default class GeneralService {
             Retry: function () {
                 return;
             },
-            ValidatePermission: async (policyName) => { await this.validatePermission(policyName, token, parsedToken['pepperi.baseurl']); }
+            ValidatePermission: async (policyName) => {
+                await this.validatePermission(policyName, token, parsedToken['pepperi.baseurl']);
+            },
         } as Client;
     }
 
@@ -303,25 +305,25 @@ export default class GeneralService {
         const permmisionsUUID = '3c888823-8556-4956-a49c-77a189805d22';
         const url = `${baseURL}/addons/api/${permmisionsUUID}/api/validate_permission`;
         const AddonUUID = this.getSecret()[0];
-    
+
         const headers = {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
         };
-    
+
         const body = {
             policyName: policyName,
             addonUUID: AddonUUID,
         };
-    
+
         const response = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(body) });
-        
+
         if (response.ok) {
             return;
         } else {
             const responseJson = await response.json();
             const error: any = new Error(responseJson.fault.faultstring);
             error.code = response.status;
-            throw error; 
+            throw error;
         }
     }
 
