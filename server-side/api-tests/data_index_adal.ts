@@ -16,8 +16,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     //#region Upgrade Data Index ADAL Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '0.0.194'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
@@ -33,6 +32,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     //#endregion Upgrade Data Index ADAL Pepperitest (Jenkins Special Addon)
 
     describe('Data Index ADAL Tests Suites', () => {
+        const distributorUUID = generalService.getClientData('DistributorUUID');
         describe('Prerequisites Addon for Data Index ADAL Tests', () => {
             //Test Datas
             //Data Index ADAL, Pepperi Notification Service
@@ -104,8 +104,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     },
                 },
             };
-
-            // const distributorUUID = generalService.getClientData('DistributorUUID');
 
             const createDocumentTestData = {
                 DocumentName: 'Dor',
@@ -937,7 +935,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     uninstallAddonAuditLogResponse.Status?.ID,
                     JSON.stringify(uninstallAddonAuditLogResponse.AuditInfo.ResultObject),
                 ).to.equal(1);
-                generalService.sleep(10000);
+                generalService.sleep(20000);
             });
 
             it('Read After Delete Shared Index Document', async () => {
@@ -949,7 +947,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         typedSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/48d20f0b-369a-4b34-b48a-ffe245088513/test_shared_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_type_tester]: org.elasticsearch.index.IndexNotFoundException: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_type_tester]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [${distributorUUID}_${addonUUID}_type_tester]: org.elasticsearch.index.IndexNotFoundException: no such index [${distributorUUID}_${addonUUID}_type_tester]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
                 );
             });
 
@@ -962,7 +960,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         indexSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/index/48d20f0b-369a-4b34-b48a-ffe245088513/test_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_test_index]: org.elasticsearch.index.IndexNotFoundException: no such index [1ed20d78-c0b9-42dd-8336-35352cd50174_48d20f0b-369a-4b34-b48a-ffe245088513_test_index]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [${distributorUUID}_${addonUUID}_test_index]: org.elasticsearch.index.IndexNotFoundException: no such index [${distributorUUID}_${addonUUID}_test_index]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
                 );
             });
 
@@ -1031,7 +1029,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         typedIndexSchema,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `https://papi.staging.pepperi.com/V1.0/addons/index/schemes/48d20f0b-369a-4b34-b48a-ffe245088513/create failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Secret key was not provided","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/index/schemes/${addonUUID}/create failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Secret key was not provided","detail":{"errorcode":"BadRequest"}}}`,
                 );
             });
         });

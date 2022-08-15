@@ -37,11 +37,51 @@ export class PermissionsService {
         return this.papiClient.post('/policies', body);
     }
 
+    createProfile(body) {
+        return this.papiClient.post('/policy_profiles', body);
+    }
+
+    deletePolicy(body) {
+        return this.papiClient.post('/policies', body);
+    }
+
+    deleteProfile(body) {
+        return this.papiClient.post('/policy_profiles', body);
+    }
+
     getPolicies(options?: QueryOptions) {
         let url = '/policies';
         if (options) {
             url = this.addQueryAndOptions(url, options);
         }
         return this.papiClient.get(url);
+    }
+
+    getProfiles(options?: QueryOptions) {
+        let url = '/policy_profiles';
+        if (options) {
+            url = this.addQueryAndOptions(url, options);
+        }
+        return this.papiClient.get(url);
+    }
+
+    deleteUser(type, ID) {
+        switch (type) {
+            case 'UUID':
+                return this.papiClient
+                    .delete('/users/uuid/' + ID)
+                    .then((res) => res.text())
+                    .then((res) => (res ? JSON.parse(res) : ''));
+            case 'ExternalID':
+                return this.papiClient
+                    .delete('/users/externalid/' + ID)
+                    .then((res) => res.text())
+                    .then((res) => (res ? JSON.parse(res) : ''));
+            case 'InternalID':
+                return this.papiClient
+                    .delete('/users/' + ID)
+                    .then((res) => res.text())
+                    .then((res) => (res ? JSON.parse(res) : ''));
+        }
     }
 }

@@ -25,6 +25,7 @@ export class Browser {
         Retry: function () {
             return;
         },
+         ValidatePermission:async function(policyName: string){}
     });
 
     /**
