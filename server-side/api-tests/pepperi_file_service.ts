@@ -229,6 +229,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     MIME: 'image/png',
                     Sync: 'None',
                     Description: tempDescription,
+                    Cache: true,
                 });
                 expect(updateFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(updateFileResponse.CreationDateTime).to.include('Z');

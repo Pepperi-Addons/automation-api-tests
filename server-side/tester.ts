@@ -13,7 +13,6 @@ import { ConsoleColors } from './services/general.service';
 chai.use(promised);
 
 export default function Tester(client?: Client, testName?: string, environment?: string) {
-    // debugger;
     const failedTestsNames: string[] = [];
     let suitName = '';
     let wholeTestName = '';
