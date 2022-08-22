@@ -712,7 +712,7 @@ export async function dimxrecursive(client: Client, request: Request, testerFunc
 //     service.PrintMemoryUseToLog('Start', testName);
 //     testerFunctions = service.initiateTesterFunctions(client, testName);
 //     await checkVersionsTest(service, request, testerFunctions);
-//     await test_data(client, testerFunctions);
+//     // await test_data(client, testerFunctions);
 //     service.PrintMemoryUseToLog('End', testName);
 //     return await testerFunctions.run();
 // }
