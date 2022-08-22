@@ -40,10 +40,10 @@ export async function LoginPerfTestsReload(email: string, password: string, varP
     const varPassword = _env === 'eu' ? varPassEu.split(':')[1] : varPass.split(':')[1];
 
     // const addonVersions =
-    await generalService.baseAddonVersionsInstallation(varPass);
-    // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
+    // await generalService.baseAddonVersionsInstallation(varPass);
+    // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, baseAddons, false);
-    await generalService.areAddonsInstalled(baseAddons);
+    // await generalService.areAddonsInstalled(baseAddons);
     // const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
 
     describe('Login Performance Tests Suites', () => {
@@ -88,6 +88,7 @@ export async function LoginPerfTestsReload(email: string, password: string, varP
                 console.log(`THIS TEST WAS PERFORMED AT: ${dateTime}`);
             });
             it('getting the AVG from ADAL', async function () {
+                debugger;
                 const adalResponseReload = await adalService.getDataFromSchema(
                     //querying the ADAL scheme to get saved avarages
                     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
