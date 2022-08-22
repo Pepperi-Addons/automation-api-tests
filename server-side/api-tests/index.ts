@@ -30,6 +30,7 @@ import { AddonAsyncExecutionTests } from './addon_async_execution';
 
 //#region Oleg's Framwork Tests
 import { DBSchemaTests } from './schema';
+import { SchemaTypeDataIndexedTests } from './schema_type_data_index';
 import { BatchUpsertTests } from './batch_upsert';
 import { DimxDataImportTests } from './dimx_data_import';
 import { SchedulerTests } from './code-jobs/scheduler';
@@ -122,6 +123,7 @@ export {
     AddonAuditLogsTests,
     AddonAsyncExecutionTests,
     DBSchemaTests,
+    SchemaTypeDataIndexedTests,
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
