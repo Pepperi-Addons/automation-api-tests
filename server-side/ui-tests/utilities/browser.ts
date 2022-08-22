@@ -25,6 +25,10 @@ export class Browser {
         Retry: function () {
             return;
         },
+        ValidatePermission: async function (policyName: string) {
+            console.log(policyName);
+            return;
+        },
     });
 
     /**

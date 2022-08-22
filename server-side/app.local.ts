@@ -2,8 +2,8 @@ import { DebugServer } from '@pepperi-addons/debug-server';
 import config from '../addon.config.json';
 
 const dir = __dirname;
-const server = new DebugServer({
-    addonUUID: process.env.AddonUUID,
+export const server = new DebugServer({
+    addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
     apiDirectory: dir,
     port: config.DebugPort,
 });

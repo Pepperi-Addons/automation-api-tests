@@ -23,13 +23,14 @@ export class VarDistPage extends AddonPage {
     public readonly nucMachineText: By = By.css(`#machine`);
     public readonly recycleNucBtn: By = By.css(`#btnRecycle`);
     public readonly recycleReasonTxtBox: By = By.css(`#logTxt`);
-    public readonly recycleModalMessage: By = By.css(`#msgModalText`);
-    public readonly recycleModalContinueBtn: By = By.css(`#msgModalRightBtn`);
-    public readonly recycleModalCancleBtn: By = By.css(`#msgModalLeftBtn`);
+    public readonly NucOpModalMessage: By = By.css(`#msgModalText`);
+    public readonly nucOpModalRightBtn: By = By.css(`#msgModalRightBtn`);
+    public readonly nucOpModalLeftBtn: By = By.css(`#msgModalLeftBtn`);
     public readonly secondModalOK: By = By.css(`#msgModalLeftBtn`);
     public readonly newMachineDropDown: By = By.css(`#newMachine`);
     public readonly newEmptyMachine: By = By.xpath(`//option[contains(text(),'empty')]`);
     public readonly relocateDistBtn: By = By.css(`#btnRelocate`);
+    public readonly reloadDbBtn: By = By.id(`btnReload`);
 
     public async editPresentedDist(): Promise<boolean> {
         this.browser.sleep(1500);
@@ -46,13 +47,29 @@ export class VarDistPage extends AddonPage {
         return await this.untilIsVisible(this.supportTitle, 40000);
     }
 
+    public async reloadDB(that): Promise<void> {
+        await this.browser.sendKeys(this.recycleReasonTxtBox, `login perormance auto test setup` + Key.ENTER);
+        await this.browser.click(this.reloadDbBtn);
+        await this.untilIsVisible(this.NucOpModalMessage, 40000);
+        const postReloadMsg = await (await this.browser.findElement(this.NucOpModalMessage)).getText();
+        if (postReloadMsg !== 'DB reload succeeded!') {
+            const base64Image = await this.browser.saveScreenshots();
+            addContext(that, {
+                title: `Reloading DB - FAILED:`,
+                value: 'data:image/png;base64,' + base64Image,
+            });
+            throw Error('could not reload DB!');
+        }
+        await this.browser.click(this.nucOpModalLeftBtn);
+    }
+
     public async recycleNuc(that) {
         await this.browser.sendKeys(this.recycleReasonTxtBox, `login perormance auto test setup` + Key.ENTER);
         await this.browser.click(this.recycleNucBtn);
-        await this.untilIsVisible(this.recycleModalMessage, 40000);
-        const preRecycleMessage = await (await this.browser.findElement(this.recycleModalMessage)).getText();
+        await this.untilIsVisible(this.NucOpModalMessage, 40000);
+        const preRecycleMessage = await (await this.browser.findElement(this.NucOpModalMessage)).getText();
         if (preRecycleMessage !== 'there are 1 distributors on this nucleus') {
-            await this.browser.click(this.recycleModalCancleBtn);
+            await this.browser.click(this.nucOpModalLeftBtn);
             await this.moveDistToEmptyMachine();
         } else {
             const base64Image = await this.browser.saveScreenshots();
@@ -60,9 +77,9 @@ export class VarDistPage extends AddonPage {
                 title: `Reseting Nuc`,
                 value: 'data:image/png;base64,' + base64Image,
             });
-            await this.browser.click(this.recycleModalContinueBtn);
-            await this.untilIsVisible(this.recycleModalMessage, 40000);
-            const postRecycleMessage = await (await this.browser.findElement(this.recycleModalMessage)).getText();
+            await this.browser.click(this.nucOpModalRightBtn);
+            await this.untilIsVisible(this.NucOpModalMessage, 40000);
+            const postRecycleMessage = await (await this.browser.findElement(this.NucOpModalMessage)).getText();
             if (
                 postRecycleMessage !==
                 'Distributor Website was recycled successfully DO NOT click on Reload after clicking on Recycle. Login into the distributor and data will be reloaded automatically'
@@ -86,12 +103,12 @@ export class VarDistPage extends AddonPage {
         await this.browser.sendKeys(this.recycleReasonTxtBox, `login perormance auto test setup` + Key.ENTER);
         this.browser.sleep(500);
         await this.browser.click(this.relocateDistBtn);
-        await this.untilIsVisible(this.recycleModalMessage, 40000);
-        const preRelocateMessage = await (await this.browser.findElement(this.recycleModalMessage)).getText();
+        await this.untilIsVisible(this.NucOpModalMessage, 40000);
+        const preRelocateMessage = await (await this.browser.findElement(this.NucOpModalMessage)).getText();
         if (preRelocateMessage !== 'Are you sure you want to move the distributor to different nucleus?') {
             throw Error(`nuc returned wrong message for relocating: ${preRelocateMessage}`);
         } else {
-            await this.browser.click(this.recycleModalContinueBtn);
+            await this.browser.click(this.nucOpModalRightBtn);
             await this.browser.click(this.secondModalOK);
         }
     }

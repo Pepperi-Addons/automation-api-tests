@@ -21,10 +21,10 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.200'],
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.%'],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.13'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.91'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
@@ -36,15 +36,15 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-    system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
+    // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
 export const testDataForInitUser = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.200'],
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.7'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.85'],
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.%'],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.85.91'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
@@ -295,10 +295,138 @@ export default class GeneralService {
             Retry: function () {
                 return;
             },
-        };
+            ValidatePermission: async (policyName) => {
+                await this.validatePermission(policyName, token, parsedToken['pepperi.baseurl']);
+            },
+        } as Client;
     }
 
-    // getSecretfromKMS() {}
+    async validatePermission(policyName: string, token: string, baseURL: string): Promise<void> {
+        const permmisionsUUID = '3c888823-8556-4956-a49c-77a189805d22';
+        const url = `${baseURL}/addons/api/${permmisionsUUID}/api/validate_permission`;
+        const AddonUUID = this.getSecret()[0];
+
+        const headers = {
+            Authorization: `Bearer ${token}`,
+        };
+
+        const body = {
+            policyName: policyName,
+            addonUUID: AddonUUID,
+        };
+
+        const response = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(body) });
+
+        if (response.ok) {
+            return;
+        } else {
+            const responseJson = await response.json();
+            const error: any = new Error(responseJson.fault.faultstring);
+            error.code = response.status;
+            throw error;
+        }
+    }
+
+    async getSecretfromKMS(key: string) {
+        const kmsData = (await this.papiClient.get(`/kms/parameters/${key}`)).Value;
+        return kmsData;
+    }
+
+    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string) {
+        const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
+        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+        const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
+        console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
+        const jobNameAsUrlSafe = encodeURI(jobName);
+        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobNameAsUrlSafe, jobQueueId);
+        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobNameAsUrlSafe);
+    }
+
+    async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
+        const jenkinsBaseUrl = 'https://admin-box.pepperi.com/job/';
+        const jobRemoteURL = jenkinsBaseUrl + jobPath;
+        const jenkinsStartingJobResponse = await this.fetchStatus(jobRemoteURL, {
+            method: 'GET',
+            headers: {
+                Authorization: `Basic ` + base64Credentials,
+            },
+        });
+        if (jenkinsStartingJobResponse.Status !== 201) {
+            throw `ERROR STATUS WHEN CALLING: ${jobRemoteURL}, GOT ${jenkinsStartingJobResponse.Status} instead OF 201`;
+        }
+        if (jenkinsStartingJobResponse.Ok !== true) {
+            throw `ERROR STATUS WHEN CALLING: ${jobRemoteURL}, GOT ${jenkinsStartingJobResponse.Ok} instead of TRUE`;
+        }
+        if (!jenkinsStartingJobResponse.Headers.location.includes('https://admin-box.pepperi.com/queue/item/')) {
+            throw `ERROR RESPONSE WHEN CALLING: ${jobRemoteURL}, GOT PREFIX LOCATION OF ${jenkinsStartingJobResponse.Headers.location} instead of https://admin-box.pepperi.com/queue/item/`;
+        }
+        const jenkinsLocationSplit = jenkinsStartingJobResponse.Headers.location.split('/');
+        const jenkinsRunQueueNumber = jenkinsLocationSplit[jenkinsLocationSplit.length - 2];
+        const jenkinsRunQueueNumberAsNumber = parseInt(jenkinsRunQueueNumber);
+        if (isNaN(jenkinsRunQueueNumberAsNumber)) {
+            throw `ERROR RESPONSE WHEN CALLING: ${jobRemoteURL}, QUEUE ID IS NOT A NUMBER: ${jenkinsRunQueueNumber}`;
+        }
+        return jenkinsRunQueueNumberAsNumber;
+    }
+
+    async pollJenkinsEndPointUntillJobStarted(
+        buildUserCredsBase64: string,
+        jobNameAsUrlSafe: string,
+        jenkinsRunQueueNumberAsNumber: number,
+    ) {
+        let gottenIdFromJenkins = 0;
+        let jenkinsJobResponsePolling: FetchStatusResponse = {
+            Ok: false,
+            Status: 0,
+            Body: undefined,
+            Error: undefined,
+        };
+        do {
+            jenkinsJobResponsePolling = await this.fetchStatus(
+                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Basic ` + buildUserCredsBase64,
+                    },
+                },
+            );
+            gottenIdFromJenkins = jenkinsJobResponsePolling.Body.queueId;
+            console.log(`waiting for job queue id: ${gottenIdFromJenkins} to start -- still in Jenkins Queue`);
+            this.sleep(4500);
+        } while (gottenIdFromJenkins !== jenkinsRunQueueNumberAsNumber);
+        const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
+        console.log(`job: ${jenkinsJobName} STARTED execution`);
+    }
+
+    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobNameAsUrlSafe: string) {
+        let gottenResultFromJenkins = '';
+        let jenkinsJobResponsePolling: FetchStatusResponse = {
+            Ok: false,
+            Status: 0,
+            Body: undefined,
+            Error: undefined,
+        };
+        do {
+            jenkinsJobResponsePolling = await this.fetchStatus(
+                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Basic ` + buildUserCredsBase64,
+                    },
+                },
+            );
+            gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
+            console.log(`received result is ${gottenResultFromJenkins}`);
+            this.sleep(4500);
+            // debugger;
+        } while (gottenResultFromJenkins === null);
+        const jenkinsJobResult = jenkinsJobResponsePolling.Body.result;
+        const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
+        console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult}`);
+        return jenkinsJobResult;
+    }
 
     getSecret() {
         let addonUUID;
@@ -448,18 +576,24 @@ export default class GeneralService {
                 loopsAmount--;
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
-            else if (auditLogResponse.Status.ID == '2') {
+            else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
                 this.sleep(2000);
                 console.log(
-                    '%cIn_Progres: Status ID is 2, Retry ' + loopsAmount + ' Times.',
+                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
+                        auditLogResponse.Status.ID
+                    }, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
                 );
                 loopsAmount--;
             }
-        } while ((auditLogResponse === null || auditLogResponse.Status.ID == '2') && loopsAmount > 0);
+        } while (
+            (auditLogResponse === null || auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') &&
+            loopsAmount > 0
+        );
 
         //Check UUID
         try {
+            // debugger;
             if (
                 auditLogResponse.DistributorUUID == auditLogResponse.UUID ||
                 auditLogResponse.DistributorUUID == auditLogResponse.Event.User.UUID ||
@@ -477,6 +611,7 @@ export default class GeneralService {
 
         //Check Date and Time
         try {
+            // debugger;
             if (
                 !auditLogResponse.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
                 !auditLogResponse.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
@@ -491,6 +626,7 @@ export default class GeneralService {
         }
         //Check Type and Event
         try {
+            // debugger;
             if (
                 (auditLogResponse.AuditType != 'action' && auditLogResponse.AuditType != 'data') ||
                 (auditLogResponse.Event.Type != 'code_job_execution' &&
@@ -503,6 +639,7 @@ export default class GeneralService {
                 throw new Error('Error in Type and Event in Audit Log API Response');
             }
         } catch (error) {
+            debugger;
             if (error instanceof Error) {
                 error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
             }
@@ -982,7 +1119,7 @@ function msSleep(ms: number) {
 export interface TesterFunctions {
     describe: { (name: string, fn: () => any): any };
     expect: Chai.ExpectStatic;
-    assert?: Chai.AssertStatic | any;
+    assert: Chai.AssertStatic;
     it: any;
     run: any;
     setNewTestHeadline?: any;

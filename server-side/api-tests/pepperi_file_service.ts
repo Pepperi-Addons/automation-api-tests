@@ -15,6 +15,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     //#region Upgrade PFS
     const testData = {
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
     let varKey;
@@ -228,6 +229,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     MIME: 'image/png',
                     Sync: 'None',
                     Description: tempDescription,
+                    Cache: true,
                 });
                 expect(updateFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(updateFileResponse.CreationDateTime).to.include('Z');
@@ -921,7 +923,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(1);
                 expect(getFileResponse[0].MIME).to.equal('file/plain');
-                expect(getFileResponse[0].Folder).to.equal(folderTempKey);
+                expect(getFileResponse[0].Folder).to.equal(folderTempKey + '/');
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription);
                 expect(getFileResponse[0].Name).to.include(folderFiletempKey);
                 expect(getFileResponse[0].Key).to.include(folderFiletempKey);
@@ -944,7 +946,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(1);
                 expect(getFileResponse[0].MIME).to.equal('file/plain');
-                expect(getFileResponse[0].Folder).to.equal(folderTempKey);
+                expect(getFileResponse[0].Folder).to.equal(folderTempKey + '/');
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription);
                 expect(getFileResponse[0].Name).to.include(folderFiletempKey);
                 expect(getFileResponse[0].Key).to.include(folderFiletempKey);

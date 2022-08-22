@@ -387,9 +387,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                     tempObj.Event.Type != 'addon_job_execution' ||
                     tempObj.Event.User.Email != generalService.getClientData('UserEmail') ||
                     tempObj.Event.User.InternalID != generalService.getClientData('UserID') ||
-                    tempObj.Event.User.UUID != generalService.getClientData('UserUUID') ||
-                    tempObj.AuditInfo.JobMessageData.CodeJobName != testDataBody.CodeJobName ||
-                    tempObj.AuditInfo.JobMessageData.CodeJobDescription != testDataBody.Description
+                    tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
                 ) {
                     return 'The Type or Event contain wrong data';
                 }

@@ -15,6 +15,10 @@ export interface AddonVersionTestData {
     CurrentPhasedVersion?: string;
 }
 
+export async function AsyncAddonGetRemoveTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await AsyncAddonGetRemoveTests(generalService, request, tester);
+}
+
 export async function AsyncAddonGetRemoveTests(generalService: GeneralService, request, tester: TesterFunctions) {
     let password;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -24,6 +28,14 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
     } else {
         password = request.body.varKeyPro;
     }
+
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, password);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+    }
+
     const distributorService = new DistributorService(generalService, password);
     const describe = tester.describe;
     const expect = tester.expect;
@@ -100,7 +112,7 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
             const testData = {
                 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.'],
                 'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-                AsyncAddon: ['00000000-0000-0000-0000-0000000a594c', ''],
+                'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
             };
             //const chnageVersionResponseArr =
             await adminService.changeToAnyAvailableVersion(testData);

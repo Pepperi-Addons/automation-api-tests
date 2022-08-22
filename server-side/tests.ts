@@ -11,12 +11,14 @@ import {
     FieldsTests,
     SyncLongTests,
     SyncTests,
+    PermissionsTests,
     SyncWithBigDataTests,
     SyncCleanTests,
     PagesTestSuite,
     BaseAddonsTests,
     UninstallAddonsTests,
-    SingleMaintenanceAndDependenciesAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTestsPart1,
+    SingleMaintenanceAndDependenciesAddonsTestsPart2,
     MaintenanceFullTests,
     VarTests,
     CreateTestDataAddon,
@@ -45,7 +47,7 @@ import {
     ElasticSearchTests,
     OpenCatalogTests,
     DistributorTests,
-    // PFSTests,
+    PFSTests,
     DIMXrecursive,
     UDCTests,
     ChartManagerTests,
@@ -80,6 +82,8 @@ import {
     SecurityTests,
     AsyncAddonGetRemoveTests,
 } from './api-tests/index';
+import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
+// import { checkVersionsTest } from './api-tests/check_versions';
 
 let testName = '';
 
@@ -90,12 +94,10 @@ export async function test_data(client: Client, testerFunctions: TesterFunctions
         testName = 'Test_Data';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([await test_data(client, testerFunctions)]).then(() =>
-            testerFunctions.run(),
-        );
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return TestDataTests(service, testerFunctions);
     }
@@ -106,12 +108,10 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     testName = 'Upgrade_Dependencies';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await UpgradeDependenciesTests(service, request, testerFunctions),
-        await test_data(client, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UpgradeDependenciesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function upload_local_file(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -119,12 +119,10 @@ export async function upload_local_file(client: Client, request: Request, tester
     testName = 'Local_Addon_File_Creator_Tests';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        LocalAddonFileCreatorTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await LocalAddonFileCreatorTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 //#endregion Service Tests
 
@@ -133,14 +131,12 @@ export async function all(client: Client, testerFunctions: TesterFunctions) {
     testName = 'All';
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        sync(client, testerFunctions),
-        file_storage(client, testerFunctions),
-        fields(client, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await sync(client, testerFunctions);
+    await file_storage(client, testerFunctions);
+    await fields(client, testerFunctions);
+    await test_data(client, testerFunctions);
     testName = '';
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function file_storage(client: Client, testerFunctions: TesterFunctions) {
@@ -149,13 +145,10 @@ export async function file_storage(client: Client, testerFunctions: TesterFuncti
         testName = 'File_Storage';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            FileStorageTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await FileStorageTests(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
-        testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return FileStorageTests(service, testerFunctions);
     }
@@ -167,13 +160,11 @@ export async function data_views(client: Client, testerFunctions: TesterFunction
         testName = 'Data_Views';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            DataViewsTestsBase(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await DataViewsTestsBase(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return DataViewsTestsBase(service, testerFunctions);
     }
@@ -185,13 +176,10 @@ export async function data_views_positive(client: Client, testerFunctions: Teste
         testName = 'Data_Views_Positive';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            DataViewsTestsPositive(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await DataViewsTestsPositive(service, testerFunctions), await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return DataViewsTestsPositive(service, testerFunctions);
     }
@@ -203,13 +191,11 @@ export async function data_views_negative(client: Client, testerFunctions: Teste
         testName = 'Data_Views_Negative';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            DataViewsTestsNegative(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await DataViewsTestsNegative(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return DataViewsTestsNegative(service, testerFunctions);
     }
@@ -221,13 +207,11 @@ export async function fields(client: Client, testerFunctions: TesterFunctions) {
         testName = 'Fields';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            FieldsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await FieldsTests(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return FieldsTests(service, testerFunctions);
     }
@@ -239,13 +223,11 @@ export async function sync(client: Client, testerFunctions: TesterFunctions) {
         testName = 'Sync';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            SyncLongTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await SyncLongTests(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return SyncTests(service, testerFunctions);
     }
@@ -256,13 +238,11 @@ export async function sync_big_data(client: Client, testerFunctions: TesterFunct
     testName = 'Sync_Big_Data';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SyncWithBigDataTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await SyncWithBigDataTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function sync_clean(client: Client, testerFunctions: TesterFunctions) {
@@ -270,13 +250,11 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     testName = 'Sync_Clean';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SyncCleanTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await SyncCleanTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
-    return testResult;
+    return await testerFunctions.run();
 }
 //#endregion All Tests
 export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
@@ -291,12 +269,10 @@ export async function pages_api(client: Client, testerFunctions: TesterFunctions
     testName = 'Pages_Api';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        PagesTestSuite(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await PagesTestSuite(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 //#region Old Framwork Tests
@@ -306,14 +282,11 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
         testName = 'Audit_Logs';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            AuditLogsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await AuditLogsTests(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return AuditLogsTests(service, testerFunctions);
     }
@@ -325,14 +298,11 @@ export async function addon_audit_logs(client: Client, testerFunctions: TesterFu
         testName = 'Addon_Audit_Logs';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-
-        const testResult = await Promise.all([
-            await test_data(client, testerFunctions),
-            AddonAuditLogsTests(service, testerFunctions),
-        ]).then(() => testerFunctions.run());
+        await AddonAuditLogsTests(service, testerFunctions);
+        await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
-        return testResult;
+        return await testerFunctions.run();
     } else {
         return AddonAuditLogsTests(service, testerFunctions);
     }
@@ -343,13 +313,11 @@ export async function addon_async_execution(client: Client, testerFunctions: Tes
     testName = 'Addon_Async_Execution';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await AddonAsyncExecutionTests(service, testerFunctions),
-        await test_data(client, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AddonAsyncExecutionTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     testName = '';
-    return testResult;
+    return testerFunctions.run();
 }
 
 export async function var_api(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -357,12 +325,10 @@ export async function var_api(client: Client, request: Request, testerFunctions:
     testName = 'Var';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        VarTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await VarTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function var_system_addons(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -370,11 +336,9 @@ export async function var_system_addons(client: Client, request: Request, tester
     testName = 'Var System Addons';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([VarSystemAddonsTests(service, request, testerFunctions)]).then(() =>
-        testerFunctions.run(),
-    );
+    await VarSystemAddonsTests(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function create_test_data_addon(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -382,12 +346,10 @@ export async function create_test_data_addon(client: Client, request: Request, t
     testName = 'Create_Test_Data_Addon';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CreateTestDataAddon(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await CreateTestDataAddon(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addons(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -395,12 +357,10 @@ export async function addons(client: Client, request: Request, testerFunctions: 
     testName = 'Addons';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        BaseAddonsTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await BaseAddonsTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addons_uninstall(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -408,25 +368,40 @@ export async function addons_uninstall(client: Client, request: Request, testerF
     testName = 'Addons_Uninstall';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        UninstallAddonsTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UninstallAddonsTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
-
-export async function maintenance(client: Client, request: Request, testerFunctions: TesterFunctions) {
+//TODO: once it works: add comments
+export async function maintenance1(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    testName = 'Maintenance_and_Dependencies';
+    testName = 'Maintenance_and_Dependencies1';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SingleMaintenanceAndDependenciesAddonsTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await SingleMaintenanceAndDependenciesAddonsTestsPart1(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
+}
+
+export async function maintenance2(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Maintenance_and_Dependencies2';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await SingleMaintenanceAndDependenciesAddonsTestsPart2(service, request, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function maintenance3(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Maintenance_and_Dependencies3';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await SingleMaintenanceAndDependenciesAddonsTestsPart3(service, request, testerFunctions),
+        service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
 }
 
 export async function maintenance_full(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -434,12 +409,9 @@ export async function maintenance_full(client: Client, request: Request, testerF
     testName = 'Maintenance_Full';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        MaintenanceFullTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    await MaintenanceFullTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions), service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
 }
 //#endregion Old Framwork Tests
 
@@ -449,12 +421,10 @@ export async function schema(client: Client, request: Request, testerFunctions: 
     testName = 'Schema';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        DBSchemaTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await DBSchemaTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function schema_type_data_index(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -475,12 +445,10 @@ export async function batch_upsert(client: Client, request: Request, testerFunct
     testName = 'Batch_Upsert';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        BatchUpsertTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await BatchUpsertTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function dimx_data_import(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -488,12 +456,10 @@ export async function dimx_data_import(client: Client, request: Request, testerF
     testName = 'dimx_data_import';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        DimxDataImportTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await DimxDataImportTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function scheduler(client: Client, testerFunctions: TesterFunctions) {
@@ -501,22 +467,10 @@ export async function scheduler(client: Client, testerFunctions: TesterFunctions
     testName = 'Scheduler';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    // let testResult;
-    //TODO: Run new SchedulerTests on Stage and old SchedulerTests on other
-    //TODO: If tests pass on 13/03/2022 remove these comments
-    // if (client.BaseURL.includes('staging')) {
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SchedulerTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    // } else {
-    //     testResult = await Promise.all([
-    //         await test_data(client, testerFunctions),
-    //         SchedulerTestsOld(service, testerFunctions),
-    //     ]).then(() => testerFunctions.run());
-    // }
+    await SchedulerTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function code_jobs(client: Client, testerFunctions: TesterFunctions) {
@@ -524,22 +478,10 @@ export async function code_jobs(client: Client, testerFunctions: TesterFunctions
     testName = 'Code_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    // let testResult;
-    //TODO: Remove the code_jobs endpoint from Jenkins, This test was removed from Stage: "CodeJobsTests", This test was added for now: "AddonJobsTests"
-    //TODO: If tests pass on 13/03/2022 remove these comments
-    // if (client.BaseURL.includes('staging')) {
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AddonJobsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    // } else {
-    //     testResult = await Promise.all([
-    //         await test_data(client, testerFunctions),
-    //         CodeJobsTests(service, testerFunctions),
-    //     ]).then(() => testerFunctions.run());
-    // }
+    await AddonJobsTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addon_jobs(client: Client, testerFunctions: TesterFunctions) {
@@ -547,12 +489,10 @@ export async function addon_jobs(client: Client, testerFunctions: TesterFunction
     testName = 'Addon_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AddonJobsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AddonJobsTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function timeout_addon_jobs(client: Client, testerFunctions: TesterFunctions) {
@@ -560,12 +500,10 @@ export async function timeout_addon_jobs(client: Client, testerFunctions: Tester
     testName = 'TimeOut_Addon_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        TimeOutAddonJobsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await TimeOutAddonJobsTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function install(client: Client, testerFunctions: TesterFunctions) {
@@ -573,12 +511,10 @@ export async function install(client: Client, testerFunctions: TesterFunctions) 
     testName = 'Install';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        InstallTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await InstallTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function code_jobs_addon(client: Client, testerFunctions: TesterFunctions) {
@@ -586,12 +522,10 @@ export async function code_jobs_addon(client: Client, testerFunctions: TesterFun
     testName = 'Code_Jobs_Addon';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CodeJobsAddonTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await CodeJobsAddonTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function code_jobs_retry(client: Client, testerFunctions: TesterFunctions) {
@@ -599,12 +533,10 @@ export async function code_jobs_retry(client: Client, testerFunctions: TesterFun
     testName = 'Code_Jobs_Retry';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CodeJobsRetryTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await CodeJobsRetryTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addon_relations(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -612,12 +544,10 @@ export async function addon_relations(client: Client, request: Request, testerFu
     testName = 'Relations';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AddonRelationTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AddonRelationTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function usage_monitor(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -625,12 +555,10 @@ export async function usage_monitor(client: Client, request: Request, testerFunc
     testName = 'Usage_Monitor';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        UsageMonitorTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UsageMonitorTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 //#endregion Oleg's Framwork Tests
 
@@ -640,17 +568,15 @@ export async function objects(client: Client, testerFunctions: TesterFunctions) 
     testName = 'Objects';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        UDTTests(service, testerFunctions),
-        UsersTests(service, testerFunctions),
-        AccountsTests(service, testerFunctions),
-        ContactsTests(service, testerFunctions),
-        GeneralActivitiesTests(service, testerFunctions),
-        TransactionTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UDTTests(service, testerFunctions);
+    await UsersTests(service, testerFunctions);
+    await AccountsTests(service, testerFunctions);
+    await ContactsTests(service, testerFunctions);
+    await GeneralActivitiesTests(service, testerFunctions);
+    await TransactionTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function udt(client: Client, testerFunctions: TesterFunctions) {
@@ -658,12 +584,10 @@ export async function udt(client: Client, testerFunctions: TesterFunctions) {
     testName = 'UDT';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        UDTTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UDTTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function users(client: Client, testerFunctions: TesterFunctions) {
@@ -671,12 +595,10 @@ export async function users(client: Client, testerFunctions: TesterFunctions) {
     testName = 'Users';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        UsersTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UsersTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function accounts(client: Client, testerFunctions: TesterFunctions) {
@@ -684,12 +606,10 @@ export async function accounts(client: Client, testerFunctions: TesterFunctions)
     testName = 'Accounts';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AccountsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AccountsTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function bulk_big_data(client: Client, testerFunctions: TesterFunctions) {
@@ -697,12 +617,10 @@ export async function bulk_big_data(client: Client, testerFunctions: TesterFunct
     testName = 'Bulk_Big_Data';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        BulkBigDataTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await test_data(client, testerFunctions);
+    await BulkBigDataTests(service, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function contacts(client: Client, testerFunctions: TesterFunctions) {
@@ -710,12 +628,10 @@ export async function contacts(client: Client, testerFunctions: TesterFunctions)
     testName = 'Contacts';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ContactsTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ContactsTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function general_activities(client: Client, testerFunctions: TesterFunctions) {
@@ -723,12 +639,10 @@ export async function general_activities(client: Client, testerFunctions: Tester
     testName = 'General_Activities';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        GeneralActivitiesTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await GeneralActivitiesTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function transactions(client: Client, testerFunctions: TesterFunctions) {
@@ -736,12 +650,9 @@ export async function transactions(client: Client, testerFunctions: TesterFuncti
     testName = 'Transactions';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        TransactionTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
-    service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    await TransactionTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
+    return await testerFunctions.run();
 }
 
 export async function elastic_search(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -749,12 +660,10 @@ export async function elastic_search(client: Client, request: Request, testerFun
     testName = 'Elastic_Search';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ElasticSearchTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ElasticSearchTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return testerFunctions.run();
 }
 
 export async function open_catalog(client: Client, testerFunctions: TesterFunctions) {
@@ -762,13 +671,10 @@ export async function open_catalog(client: Client, testerFunctions: TesterFuncti
     testName = 'Open_Catalog';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        OpenCatalogTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await OpenCatalogTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    testName = '';
-    return testResult;
+    return testerFunctions.run();
 }
 
 export async function distributor(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -776,50 +682,64 @@ export async function distributor(client: Client, request: Request, testerFuncti
     testName = 'Distributor';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([DistributorTests(service, request, testerFunctions)]).then(() =>
-        testerFunctions.run(),
-    );
+    await DistributorTests(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
-// export async function pfs(client: Client, request: Request, testerFunctions: TesterFunctions) {
-//     const service = new GeneralService(client);
-//     testName = 'PFS';
-//     service.PrintMemoryUseToLog('Start', testName);
-//     testerFunctions = service.initiateTesterFunctions(client, testName);
-//     const testResult = await Promise.all([
-//         await test_data(client, testerFunctions),
-//         PFSTests(service, request, testerFunctions),
-//     ]).then(() => testerFunctions.run());
-//     service.PrintMemoryUseToLog('End', testName);
-//     return testResult;
-// }
+export async function pfs(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'PFS';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await PFSTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function permissions(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Permissions';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await PermissionsTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
 
 export async function dimxrecursive(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'DIMX Recursive';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        DIMXrecursive(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await DIMXrecursive(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
+
+// export async function checkVersions(client: Client, request: Request, testerFunctions: TesterFunctions) {
+//     const service = new GeneralService(client);
+//     testName = 'DIMX Recursive';
+//     service.PrintMemoryUseToLog('Start', testName);
+//     testerFunctions = service.initiateTesterFunctions(client, testName);
+//     await checkVersionsTest(service, request, testerFunctions);
+//     // await test_data(client, testerFunctions);
+//     service.PrintMemoryUseToLog('End', testName);
+//     return await testerFunctions.run();
+// }
 
 export async function udc(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'UDC';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        UDCTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await UDCTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 //#endregion Yoni's Tests
 
@@ -829,12 +749,10 @@ export async function charts_manager(client: Client, request: Request, testerFun
     testName = 'Charts_Manager';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ChartManagerTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ChartManagerTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function data_queries(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -842,12 +760,10 @@ export async function data_queries(client: Client, request: Request, testerFunct
     testName = 'Data_Queries';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        DataQueriesTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await DataQueriesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function aws_logs(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -855,12 +771,10 @@ export async function aws_logs(client: Client, request: Request, testerFunctions
     testName = 'Data_Queries';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AWSLogsTest(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AWSLogsTest(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 //#endregion Evgeny's Tests
 
@@ -870,12 +784,10 @@ export async function import_export_atd_activities(client: Client, request: Requ
     testName = 'Import_Export_ATD_Activities';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDActivitiesTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDActivitiesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_transactions(
@@ -887,12 +799,10 @@ export async function import_export_atd_transactions(
     testName = 'Import_Export_ATD_Transactions';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_activities_box(
@@ -904,12 +814,10 @@ export async function import_export_atd_activities_box(
     testName = 'Import_Export_ATD_Activities_Box';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDActivitiesBoxTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDActivitiesBoxTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_transactions_box(
@@ -921,12 +829,10 @@ export async function import_export_atd_transactions_box(
     testName = 'Import_Export_ATD_Transactions_Box';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsBoxTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsBoxTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return testerFunctions.run();
 }
 
 export async function import_export_atd_activities_override(
@@ -938,12 +844,10 @@ export async function import_export_atd_activities_override(
     testName = 'Import_Export_ATD_Activities_Override';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDActivitiesOverrideTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDActivitiesOverrideTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_transactions_override(
@@ -955,12 +859,10 @@ export async function import_export_atd_transactions_override(
     testName = 'Import_Export_ATD_Transactions_Override';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsOverrideTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsOverrideTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_transactions_override_winzer(
@@ -972,12 +874,10 @@ export async function import_export_atd_transactions_override_winzer(
     testName = 'Import_Export_ATD_Transactions_Override_Winzer';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsOverrideWinzerTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsOverrideWinzerTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_transactions_override_winzer_two(
@@ -989,12 +889,10 @@ export async function import_export_atd_transactions_override_winzer_two(
     testName = 'Import_Export_ATD_Transactions_Override_Winzer_Two';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsOverrideWinzerTestsTwo(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsOverrideWinzerTestsTwo(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_transactions_override_winzer_three(
@@ -1006,12 +904,10 @@ export async function import_export_atd_transactions_override_winzer_three(
     testName = 'Import_Export_ATD_Transactions_Override_Winzer_Three';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsOverrideWinzerTestsThree(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsOverrideWinzerTestsThree(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_local(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1020,12 +916,10 @@ export async function import_export_atd_local(client: Client, request: Request, 
     ImportExportATDLocalTests;
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDLocalTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDLocalTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function import_export_atd_bug_reproduction(
@@ -1037,12 +931,10 @@ export async function import_export_atd_bug_reproduction(
     testName = 'Import_Export_ATD_Bug_Reproduction';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ImportExportATDTransactionsOverridBugReproductionTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ImportExportATDTransactionsOverridBugReproductionTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 //#endregion import export ATD Tests
 
@@ -1051,12 +943,10 @@ export async function adal(client: Client, request: Request, testerFunctions: Te
     testName = 'ADAL';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ADALTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ADALTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function adal_stress(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1064,12 +954,10 @@ export async function adal_stress(client: Client, request: Request, testerFuncti
     testName = 'ADAL_Stress';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        ADALStressTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await ADALStressTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function pepperi_notification_service(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1077,12 +965,10 @@ export async function pepperi_notification_service(client: Client, request: Requ
     testName = 'Pepperi_Notification_Service';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        PepperiNotificationServiceTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await PepperiNotificationServiceTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function nuc_recovery(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1090,12 +976,10 @@ export async function nuc_recovery(client: Client, request: Request, testerFunct
     testName = 'NUC_Recovery';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        NucRecoveryTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await NucRecoveryTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function nuc_recovery_sdk(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1103,12 +987,10 @@ export async function nuc_recovery_sdk(client: Client, request: Request, testerF
     testName = 'NUC_Recovery_SDK';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        NucRecoverySDKTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await NucRecoverySDKTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function nuc_recovery_wacd(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1116,12 +998,10 @@ export async function nuc_recovery_wacd(client: Client, request: Request, tester
     testName = 'NUC_Recovery_WACD';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        NucRecoveryWACDTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await test_data(client, testerFunctions);
+    await NucRecoveryWACDTests(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function data_index(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1129,12 +1009,10 @@ export async function data_index(client: Client, request: Request, testerFunctio
     testName = 'Data_Index';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        DataIndexTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await DataIndexTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function data_index_adal(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1142,12 +1020,10 @@ export async function data_index_adal(client: Client, request: Request, testerFu
     testName = 'Data_Index_ADAL';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        DataIndexADALTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await DataIndexADALTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function maintenance_job(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1155,12 +1031,10 @@ export async function maintenance_job(client: Client, request: Request, testerFu
     testName = 'Maintenance_Job';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        MaintenanceJobTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await MaintenanceJobTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function cpi_node(client: Client, testerFunctions: TesterFunctions) {
@@ -1168,12 +1042,10 @@ export async function cpi_node(client: Client, testerFunctions: TesterFunctions)
     testName = 'CPI_Node';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CPINodeTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await CPINodeTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function code_jobs_clean(client: Client, testerFunctions: TesterFunctions) {
@@ -1181,12 +1053,10 @@ export async function code_jobs_clean(client: Client, testerFunctions: TesterFun
     testName = 'Code_Jobs_Clean';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        CodeJobsCleanTests(service, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await CodeJobsCleanTests(service, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addon_data_import_export(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1194,12 +1064,10 @@ export async function addon_data_import_export(client: Client, request: Request,
     testName = 'Addon_Data_Import_Export';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AddonDataImportExportTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AddonDataImportExportTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addon_data_import_export_performanc(
@@ -1211,12 +1079,10 @@ export async function addon_data_import_export_performanc(
     testName = 'Addon_Data_Import_Export_Performanc';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AddonDataImportExportPerformanceTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AddonDataImportExportPerformanceTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function addon_data_import_export_reference(
@@ -1228,12 +1094,10 @@ export async function addon_data_import_export_reference(
     testName = 'Addon_Data_Import_Export_Reference';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        AddonDataImportExportReferenceTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await AddonDataImportExportReferenceTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function security(client: Client, request: Request, testerFunctions: TesterFunctions) {
@@ -1241,12 +1105,10 @@ export async function security(client: Client, request: Request, testerFunctions
     testName = 'Addon_Data_Import_Export_Reference';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SecurityTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await SecurityTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }
 
 export async function async_addon_get_remove_codejobs(
@@ -1258,9 +1120,7 @@ export async function async_addon_get_remove_codejobs(
     testName = 'AsyncAddonGetUninstallCJ';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([AsyncAddonGetRemoveTests(service, request, testerFunctions)]).then(() =>
-        testerFunctions.run(),
-    );
+    await AsyncAddonGetRemoveTests(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
 }

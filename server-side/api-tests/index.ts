@@ -19,7 +19,8 @@ import { PagesTestSuite } from './page-objects/pages';
 import {
     BaseAddonsTests,
     UninstallAddonsTests,
-    SingleMaintenanceAndDependenciesAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTestsPart1,
+    SingleMaintenanceAndDependenciesAddonsTestsPart2,
     MaintenanceFullTests,
 } from './addons';
 import { VarTests, CreateTestDataAddon } from './var';
@@ -96,11 +97,13 @@ import {
 } from './addon_data_import_export';
 import { ADALStressTests } from './adal_stress';
 import { PFSTests } from './pepperi_file_service';
+import { PermissionsTests } from './permissions';
 import { DIMXrecursive } from './DIMX_recursive';
 import { SecurityTests } from './security';
 
 export {
     TestDataTests,
+    PermissionsTests,
     UpgradeDependenciesTests,
     LocalAddonFileCreatorTests,
     FileStorageTests,
@@ -115,7 +118,8 @@ export {
     PagesTestSuite,
     BaseAddonsTests,
     UninstallAddonsTests,
-    SingleMaintenanceAndDependenciesAddonsTests,
+    SingleMaintenanceAndDependenciesAddonsTestsPart1,
+    SingleMaintenanceAndDependenciesAddonsTestsPart2,
     MaintenanceFullTests,
     VarTests,
     CreateTestDataAddon,
