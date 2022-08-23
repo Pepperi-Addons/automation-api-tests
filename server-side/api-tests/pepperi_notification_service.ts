@@ -1526,13 +1526,8 @@ export async function PepperiNotificationServiceTests(
                     isError = true;
                 }
                 expect(isError).to.be.true;
-                // await expect(
-                //     adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName),
-                // ).eventually.to.be.rejectedWith(
-                //     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist, for table = TypeScript Installation Schema`,
-                // );
             });
-            //EVGENY has commented this out in 23/8/2022 with Ido's permission - done because PNS CANT BE UNINSTALLED
+            //EVGENY has commented this out in 23/8/2022 with Ido's permission - done because PNS CANT BE UNINSTALLED {DI-21149 for reference}
             // it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
             //     const uninstalledAddon = await generalService.papiClient.addons.installedAddons
             //         .addonUUID(testData['Pepperi Notification Service'][0])
