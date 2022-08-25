@@ -1,6 +1,8 @@
 import { AddonVersion, InstalledAddon } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+
 
 export interface TestDataBody {
     ApiData: {
@@ -928,8 +930,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1045,8 +1047,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1062,7 +1064,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Try to elso delete non exitting version if created
             const deleteVersionApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/versions/Non Existing Version',
+                '/var/addons/versions/Non Existing Version',
                 {
                     method: `DELETE`,
                     headers: {
@@ -1076,8 +1078,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1196,8 +1198,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1212,8 +1214,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1372,9 +1374,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsInstallNewestAddonWithoutVersion.InstallCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[1].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[1].Version,
             );
 
             if (!isRightVersion) {
@@ -1418,8 +1420,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1433,8 +1435,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1593,9 +1595,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsInstallAddonWithVersion.InstallCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[0].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[0].Version,
             );
 
             if (!isRightVersion) {
@@ -1642,8 +1644,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1657,8 +1659,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1792,8 +1794,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             // debugger;//here
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/versions/' +
-                    versionsArr[1].UUID,
+                '/var/addons/versions/' +
+                versionsArr[1].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -1843,8 +1845,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Upgraded to Deleted version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' Upgraded to Deleted version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsUpgradeAddonWithoutVersionFiles.failedToUpgradeAddon) {
@@ -1889,8 +1891,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -1904,8 +1906,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2073,8 +2075,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Upgraded to non existing version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' Upgraded to non existing version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsUpgradeAddonWithoutExistingVersion.failedToUpgradeAddon) {
@@ -2118,8 +2120,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2133,8 +2135,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2304,8 +2306,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 !isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Upgraded to non available version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' Upgraded to non available version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsUpgradeAddonWithNonAvailableVersion.failedToUpgradeAddon) {
@@ -2349,8 +2351,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2364,8 +2366,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2533,8 +2535,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 !isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' failed to upgraded to version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' failed to upgraded to version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsUpgradeToNewestAddonVersion.UpgradeCorrectVersion) {
@@ -2578,8 +2580,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2593,8 +2595,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2767,8 +2769,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 !isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' failed to upgraded to version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' failed to upgraded to version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsUpgradeToNewestAddonVersionWithoutVersion.UpgradeCorrectVersionWithoutVersion) {
@@ -2815,8 +2817,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -2830,8 +2832,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -2999,8 +3001,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Error Upgraded To Version Without Available Version: ' +
-                          postUpgradeAddonApiResponse,
+                    ' Error Upgraded To Version Without Available Version: ' +
+                    postUpgradeAddonApiResponse,
             );
         } catch (err) {
             debugger;
@@ -3039,8 +3041,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3054,8 +3056,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3076,7 +3078,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         if (
             mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.createAddon == true &&
             mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.failedTUpgradeCorrectVersionWithoutAvailableVersion ==
-                true &&
+            true &&
             mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.unInstallAddon == true &&
             mandatoryStepsUpgradeToNewestAddonVersionWithoutAvailableVersion.deleteAddon == true
         ) {
@@ -3228,8 +3230,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Error Upgraded To Version Without Phased Version: ' +
-                          postUpgradeAddonApiResponse,
+                    ' Error Upgraded To Version Without Phased Version: ' +
+                    postUpgradeAddonApiResponse,
             );
 
             if (
@@ -3276,8 +3278,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3291,8 +3293,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3313,7 +3315,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         if (
             mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.createAddon == true &&
             mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.failedTUpgradeCorrectVersionWithoutPhasedVersion ==
-                true &&
+            true &&
             mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.unInstallAddon == true &&
             mandatoryStepsUpgradeToNewestAddonVersionWithoutPhasedVersion.deleteAddon == true
         ) {
@@ -3461,8 +3463,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage != null
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' failed to upgraded to version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' failed to upgraded to version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsUpgradeAddonWithVersion.failedtoUpgradeVersion) {
@@ -3506,8 +3508,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3521,8 +3523,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3655,8 +3657,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete version 2
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/versions/' +
-                    versionsArr[0].UUID,
+                '/var/addons/versions/' +
+                versionsArr[0].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3704,8 +3706,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Downgraded to Deleted version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' Downgraded to Deleted version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsDowngradeAddonWithoutVersionFiles.failedToDowngradeAddon) {
@@ -3749,8 +3751,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3764,8 +3766,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -3934,8 +3936,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Downgraded to non existing version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' Downgraded to non existing version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsDowngradeAddonWithoutExistingVersion.failedToDowngradeAddon) {
@@ -3979,8 +3981,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -3994,8 +3996,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4165,8 +4167,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 !isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' Downgraded to non available version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' Downgraded to non available version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsDowngradeAddonWithNonAvailableVersion.failedToDowngradeAddon) {
@@ -4211,8 +4213,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4226,8 +4228,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4395,8 +4397,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 !isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' failed to downgraded to version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' failed to downgraded to version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsDowngradeToOldestAddonVersion.DowngradeCorrectVersion) {
@@ -4440,8 +4442,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4455,8 +4457,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4624,8 +4626,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 isErrorMessage
                     ? true
                     : postAddonApiResponse.AuditInfo.FromVersion +
-                          ' failed to downgraded to version: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion,
+                    ' failed to downgraded to version: ' +
+                    postAddonApiResponse.AuditInfo.ToVersion,
             );
 
             if (!mandatoryStepsDowngradeAddonWithVersion.failedtoDowngradeVersion) {
@@ -4669,8 +4671,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4684,8 +4686,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -4841,9 +4843,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsUninstallAddon.InstallCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[1].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[1].Version,
             );
 
             if (!isRightVersion) {
@@ -4883,8 +4885,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -4898,8 +4900,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5052,9 +5054,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsUninstalAddonWithDeletedAddonVersion.InstallCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[1].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[1].Version,
             );
 
             if (!isRightVersion) {
@@ -5067,8 +5069,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Delete Addon version
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/versions/' +
-                    versionsArr[1].UUID,
+                '/var/addons/versions/' +
+                versionsArr[1].UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5123,8 +5125,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5138,8 +5140,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5292,9 +5294,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsUninstallAddonWithDeletedAddon.InstallCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[1].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[1].Version,
             );
 
             if (!isRightVersion) {
@@ -5310,8 +5312,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5325,8 +5327,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5515,9 +5517,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsUninstallAddonAndUpgrade.installCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[1].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[1].Version,
             );
 
             if (!isRightVersion) {
@@ -5589,8 +5591,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5604,8 +5606,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -5759,9 +5761,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 mandatoryStepsUninstallAddonAndDowngrade.installCorrectAddon
                     ? true
                     : 'The response is: ' +
-                          postAddonApiResponse.AuditInfo.ToVersion +
-                          ' Expected response is: ' +
-                          versionsArr[1].Version,
+                    postAddonApiResponse.AuditInfo.ToVersion +
+                    ' Expected response is: ' +
+                    versionsArr[1].Version,
             );
 
             if (!isRightVersion) {
@@ -5835,8 +5837,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -5850,8 +5852,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -6062,9 +6064,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     mandatoryStepsInstallAddonWithVersion.InstallCorrectAddon
                         ? true
                         : 'The response is: ' +
-                              postAddonApiResponse.AuditInfo.ToVersion +
-                              ' Expected response is: ' +
-                              versionsArr[0].Version,
+                        postAddonApiResponse.AuditInfo.ToVersion +
+                        ' Expected response is: ' +
+                        versionsArr[0].Version,
                 );
 
                 if (!isRightVersion) {
@@ -6123,8 +6125,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -6138,8 +6140,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -6444,9 +6446,9 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     mandatoryStepsInstallAddonWithVersion.InstallCorrectAddon
                         ? true
                         : 'The response is: ' +
-                              postAddonApiResponse.AuditInfo.ToVersion +
-                              ' Expected response is: ' +
-                              versionsArr[0].Version,
+                        postAddonApiResponse.AuditInfo.ToVersion +
+                        ' Expected response is: ' +
+                        versionsArr[0].Version,
                 );
 
                 if (!isRightVersion) {
@@ -6505,8 +6507,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -6520,8 +6522,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -6757,8 +6759,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     !isErrorMessage
                         ? true
                         : postAddonApiResponse.AuditInfo.FromVersion +
-                              ' failed to upgraded to version: ' +
-                              postAddonApiResponse.AuditInfo.ToVersion,
+                        ' failed to upgraded to version: ' +
+                        postAddonApiResponse.AuditInfo.ToVersion,
                 );
             }
 
@@ -6833,8 +6835,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -6848,8 +6850,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -7087,8 +7089,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     !isErrorMessage
                         ? true
                         : postAddonApiResponse.AuditInfo.FromVersion +
-                              ' failed to downgraded to version: ' +
-                              postAddonApiResponse.AuditInfo.ToVersion,
+                        ' failed to downgraded to version: ' +
+                        postAddonApiResponse.AuditInfo.ToVersion,
                 );
             }
 
@@ -7163,8 +7165,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 const deleteVersionApiResponse = await generalService.fetchStatus(
                     generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                        '/var/addons/versions/' +
-                        versionsArr[index].UUID,
+                    '/var/addons/versions/' +
+                    versionsArr[index].UUID,
                     {
                         method: `DELETE`,
                         headers: {
@@ -7178,8 +7180,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             }
             const deleteApiResponse = await generalService.fetchStatus(
                 generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                    '/var/addons/' +
-                    createApiResponse.Body.UUID,
+                '/var/addons/' +
+                createApiResponse.Body.UUID,
                 {
                     method: `DELETE`,
                     headers: {
@@ -7880,22 +7882,22 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     false,
                                 );
                             } else {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     true,
                                 );
                             }
@@ -7904,22 +7906,22 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have less then 100 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have less then 100 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     true,
                                 );
                             } else if (deltaSincePhased < 18 && totalAddonsForToday >= 100) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have less then 100 maintenance results' +
-                                        'but there are ' +
-                                        totalAddonsForToday +
-                                        ' results.',
+                                    property.split('T')[0] +
+                                    ' to have less then 100 maintenance results' +
+                                    'but there are ' +
+                                    totalAddonsForToday +
+                                    ' results.',
                                     'API response size: ' + apiResponse.resultObject.upgrade[property].length,
                                 );
                             } else if (deltaSincePhased >= 18 && totalAddonsForToday == 100) {
@@ -7932,11 +7934,11 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 100 maintenance results' +
-                                        'but there are ' +
-                                        totalAddonsForToday +
-                                        ' results.',
+                                    property.split('T')[0] +
+                                    ' to have 100 maintenance results' +
+                                    'but there are ' +
+                                    totalAddonsForToday +
+                                    ' results.',
                                     'API response size: ' + apiResponse.resultObject.upgrade[property].length,
                                 );
                             }
@@ -8026,22 +8028,22 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     false,
                                 );
                             } else {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     true,
                                 );
                             }
@@ -8050,55 +8052,55 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     true,
                                 );
                             } else if (deltaUntilStart < 0 && totalAddonsForToday != 0) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' but there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' but there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     apiResponse.resultObject.upgrade[property].length.toString(),
                                 );
                             } else if (deltaUntilStart > 0 && totalAddonsForToday == 0) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have more then 0 maintenance results' +
-                                        ' but there are ' +
-                                        totalAddonsForToday +
-                                        ' results.',
+                                    property.split('T')[0] +
+                                    ' to have more then 0 maintenance results' +
+                                    ' but there are ' +
+                                    totalAddonsForToday +
+                                    ' results.',
                                     'API response size: ' + apiResponse.resultObject.upgrade[property].length,
                                 );
                             } else if (deltaUntilStart > 0 && totalAddonsForToday > 100) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have less then 100 maintenance results' +
-                                        ' but there are ' +
-                                        totalAddonsForToday +
-                                        ' results.',
+                                    property.split('T')[0] +
+                                    ' to have less then 100 maintenance results' +
+                                    ' but there are ' +
+                                    totalAddonsForToday +
+                                    ' results.',
                                     'API response size: ' + apiResponse.resultObject.upgrade[property].length,
                                 );
                             } else if (deltaUntilStart > 0 && totalAddonsForToday <= 100) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have less or 100 maintenance results' +
-                                        'and there are ' +
-                                        totalAddonsForToday +
-                                        ' results.',
+                                    property.split('T')[0] +
+                                    ' to have less or 100 maintenance results' +
+                                    'and there are ' +
+                                    totalAddonsForToday +
+                                    ' results.',
                                     true,
                                 );
                             }
@@ -8183,55 +8185,55 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have 0 maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results',
+                                property.split('T')[0] +
+                                ' to have 0 maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results',
                                 true,
                             );
                         } else if (deltaUntilStart < 0 && totalAddonsForToday != 0) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have 0 maintenance results' +
-                                    ' but there are ' +
-                                    totalAddonsForToday +
-                                    ' results',
+                                property.split('T')[0] +
+                                ' to have 0 maintenance results' +
+                                ' but there are ' +
+                                totalAddonsForToday +
+                                ' results',
                                 apiResponse.resultObject.install[property].length.toString(),
                             );
                         } else if (deltaUntilStart > 0 && totalAddonsForToday == 0) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have more then 0 maintenance results' +
-                                    ' but there are ' +
-                                    totalAddonsForToday +
-                                    ' results.',
+                                property.split('T')[0] +
+                                ' to have more then 0 maintenance results' +
+                                ' but there are ' +
+                                totalAddonsForToday +
+                                ' results.',
                                 'API response size: ' + apiResponse.resultObject.install[property].length,
                             );
                         } else if (deltaUntilStart > 0 && totalAddonsForToday > 100) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have less then 100 maintenance results' +
-                                    ' but there are ' +
-                                    totalAddonsForToday +
-                                    ' results.',
+                                property.split('T')[0] +
+                                ' to have less then 100 maintenance results' +
+                                ' but there are ' +
+                                totalAddonsForToday +
+                                ' results.',
                                 'API response size: ' + apiResponse.resultObject.install[property].length,
                             );
                         } else if (deltaUntilStart > 0 && totalAddonsForToday <= 100) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have less or 100 maintenance results' +
-                                    'and there are ' +
-                                    totalAddonsForToday +
-                                    ' results.',
+                                property.split('T')[0] +
+                                ' to have less or 100 maintenance results' +
+                                'and there are ' +
+                                totalAddonsForToday +
+                                ' results.',
                                 true,
                             );
                         }
@@ -8336,117 +8338,117 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointOnePercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointOnePercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointOnePercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointOnePercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointOnePercent),
                             );
                         } else if (deltaUntilStart < 6) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTwoPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTwoPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
-                                    '% from expectedd)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTwoPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTwoPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
+                                '% from expectedd)',
                                 isInRangeOf(totalAddonsForToday, pointTwoPercent),
                             );
                         } else if (deltaUntilStart < 9) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointFivePercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointFivePercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointFivePercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointFivePercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointFivePercent),
                             );
                         } else if (deltaUntilStart < 12) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTenPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTenPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTenPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTenPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointTenPercent),
                             );
                         } else if (deltaUntilStart < 15) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTwentyPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTwentyPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTwentyPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTwentyPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointTwentyPercent),
                             );
                         } else if (deltaUntilStart < 18) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointFiftyPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointFiftyPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointFiftyPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointFiftyPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointFiftyPercent),
                             );
                         } else {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have ' +
-                                    pointAll +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have ' +
+                                pointAll +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
+                                '% from expected)',
                                 totalAddonsForToday == pointAll,
                             );
                         }
@@ -8540,117 +8542,117 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointOnePercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointOnePercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointOnePercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointOnePercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointOnePercent),
                             );
                         } else if (deltaUntilStart < 6) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTwoPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTwoPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
-                                    '% from expectedd)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTwoPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTwoPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
+                                '% from expectedd)',
                                 isInRangeOf(totalAddonsForToday, pointTwoPercent),
                             );
                         } else if (deltaUntilStart < 9) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointFivePercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointFivePercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointFivePercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointFivePercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointFivePercent),
                             );
                         } else if (deltaUntilStart < 12) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTenPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTenPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTenPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTenPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointTenPercent),
                             );
                         } else if (deltaUntilStart < 15) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTwentyPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTwentyPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTwentyPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTwentyPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointTwentyPercent),
                             );
                         } else if (deltaUntilStart < 18) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointFiftyPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointFiftyPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointFiftyPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointFiftyPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointFiftyPercent),
                             );
                         } else {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected for date ' +
-                                    property.split('T')[0] +
-                                    ' to have ' +
-                                    pointAll +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have ' +
+                                pointAll +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
+                                '% from expected)',
                                 totalAddonsForToday == pointAll,
                             );
                         }
@@ -8744,117 +8746,117 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointOnePercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointOnePercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointOnePercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointOnePercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointOnePercent),
                             );
                         } else if (deltaUntilStart < 6) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTwoPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTwoPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
-                                    '% from expectedd)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTwoPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTwoPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
+                                '% from expectedd)',
                                 isInRangeOf(totalAddonsForToday, pointTwoPercent),
                             );
                         } else if (deltaUntilStart < 9) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointFivePercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointFivePercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointFivePercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointFivePercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointFivePercent),
                             );
                         } else if (deltaUntilStart < 12) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTenPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTenPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTenPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTenPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointTenPercent),
                             );
                         } else if (deltaUntilStart < 15) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointTwentyPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointTwentyPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointTwentyPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointTwentyPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointTwentyPercent),
                             );
                         } else if (deltaUntilStart < 18) {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have between ' +
-                                    parseInt((pointFiftyPercent * limitMin) as any) +
-                                    ' and ' +
-                                    parseInt((pointFiftyPercent * limitMax) as any) +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have between ' +
+                                parseInt((pointFiftyPercent * limitMin) as any) +
+                                ' and ' +
+                                parseInt((pointFiftyPercent * limitMax) as any) +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
+                                '% from expected)',
                                 isInRangeOf(totalAddonsForToday, pointFiftyPercent),
                             );
                         } else {
                             addTestResultUnderHeadline(
                                 testName,
                                 'Expected Install for date ' +
-                                    property.split('T')[0] +
-                                    ' to have ' +
-                                    pointAll +
-                                    ' maintenance results' +
-                                    ' and there are ' +
-                                    totalAddonsForToday +
-                                    ' results (' +
-                                    (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
-                                    '% from expected)',
+                                property.split('T')[0] +
+                                ' to have ' +
+                                pointAll +
+                                ' maintenance results' +
+                                ' and there are ' +
+                                totalAddonsForToday +
+                                ' results (' +
+                                (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
+                                '% from expected)',
                                 totalAddonsForToday == pointAll,
                             );
                         }
@@ -8908,22 +8910,22 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     false,
                                 );
                             } else {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected for date ' +
-                                        property.split('T')[0] +
-                                        ' to have 0 maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results',
+                                    property.split('T')[0] +
+                                    ' to have 0 maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results',
                                     true,
                                 );
                             }
@@ -8932,117 +8934,117 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have between ' +
-                                        parseInt((pointOnePercent * limitMin) as any) +
-                                        ' and ' +
-                                        parseInt((pointOnePercent * limitMax) as any) +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
-                                        '% from expected)',
+                                    property.split('T')[0] +
+                                    ' to have between ' +
+                                    parseInt((pointOnePercent * limitMin) as any) +
+                                    ' and ' +
+                                    parseInt((pointOnePercent * limitMax) as any) +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointOnePercent) * 100).toFixed(1) +
+                                    '% from expected)',
                                     isInRangeOf(totalAddonsForToday, pointOnePercent),
                                 );
                             } else if (deltaUntilStart < 6) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have between ' +
-                                        parseInt((pointTwoPercent * limitMin) as any) +
-                                        ' and ' +
-                                        parseInt((pointTwoPercent * limitMax) as any) +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
-                                        '% from expectedd)',
+                                    property.split('T')[0] +
+                                    ' to have between ' +
+                                    parseInt((pointTwoPercent * limitMin) as any) +
+                                    ' and ' +
+                                    parseInt((pointTwoPercent * limitMax) as any) +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointTwoPercent) * 100).toFixed(1) +
+                                    '% from expectedd)',
                                     isInRangeOf(totalAddonsForToday, pointTwoPercent),
                                 );
                             } else if (deltaUntilStart < 9) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have between ' +
-                                        parseInt((pointFivePercent * limitMin) as any) +
-                                        ' and ' +
-                                        parseInt((pointFivePercent * limitMax) as any) +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
-                                        '% from expected)',
+                                    property.split('T')[0] +
+                                    ' to have between ' +
+                                    parseInt((pointFivePercent * limitMin) as any) +
+                                    ' and ' +
+                                    parseInt((pointFivePercent * limitMax) as any) +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointFivePercent) * 100).toFixed(1) +
+                                    '% from expected)',
                                     isInRangeOf(totalAddonsForToday, pointFivePercent),
                                 );
                             } else if (deltaUntilStart < 12) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have between ' +
-                                        parseInt((pointTenPercent * limitMin) as any) +
-                                        ' and ' +
-                                        parseInt((pointTenPercent * limitMax) as any) +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
-                                        '% from expected)',
+                                    property.split('T')[0] +
+                                    ' to have between ' +
+                                    parseInt((pointTenPercent * limitMin) as any) +
+                                    ' and ' +
+                                    parseInt((pointTenPercent * limitMax) as any) +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointTenPercent) * 100).toFixed(1) +
+                                    '% from expected)',
                                     isInRangeOf(totalAddonsForToday, pointTenPercent),
                                 );
                             } else if (deltaUntilStart < 15) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have between ' +
-                                        parseInt((pointTwentyPercent * limitMin) as any) +
-                                        ' and ' +
-                                        parseInt((pointTwentyPercent * limitMax) as any) +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
-                                        '% from expected)',
+                                    property.split('T')[0] +
+                                    ' to have between ' +
+                                    parseInt((pointTwentyPercent * limitMin) as any) +
+                                    ' and ' +
+                                    parseInt((pointTwentyPercent * limitMax) as any) +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointTwentyPercent) * 100).toFixed(1) +
+                                    '% from expected)',
                                     isInRangeOf(totalAddonsForToday, pointTwentyPercent),
                                 );
                             } else if (deltaUntilStart < 18) {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have between ' +
-                                        parseInt((pointFiftyPercent * limitMin) as any) +
-                                        ' and ' +
-                                        parseInt((pointFiftyPercent * limitMax) as any) +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
-                                        '% from expected)',
+                                    property.split('T')[0] +
+                                    ' to have between ' +
+                                    parseInt((pointFiftyPercent * limitMin) as any) +
+                                    ' and ' +
+                                    parseInt((pointFiftyPercent * limitMax) as any) +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointFiftyPercent) * 100).toFixed(1) +
+                                    '% from expected)',
                                     isInRangeOf(totalAddonsForToday, pointFiftyPercent),
                                 );
                             } else {
                                 addTestResultUnderHeadline(
                                     testName,
                                     'Expected Upgrade for date ' +
-                                        property.split('T')[0] +
-                                        ' to have ' +
-                                        pointAll +
-                                        ' maintenance results' +
-                                        ' and there are ' +
-                                        totalAddonsForToday +
-                                        ' results (' +
-                                        (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
-                                        '% from expected)',
+                                    property.split('T')[0] +
+                                    ' to have ' +
+                                    pointAll +
+                                    ' maintenance results' +
+                                    ' and there are ' +
+                                    totalAddonsForToday +
+                                    ' results (' +
+                                    (100 - (totalAddonsForToday / pointAll) * 100).toFixed(1) +
+                                    '% from expected)',
                                     totalAddonsForToday == pointAll,
                                 );
                             }
@@ -9312,10 +9314,21 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //var maintenanceApiResponse = await generalService.papiClient.'POST', "addons/api/00000000-0000-0000-0000-000000000a91/version/" + getAPIVersion + "/installation.js/maintenance", testDataObject);
             //debug: this is the callitself to the endpoint - here you can find the data, version var etc
+            /****EVGENY****: every time the 'maintenance2' test is failing you can un-comment this area and get the body sent as a file
+            try {
+                fs.writeFileSync("testData.txt", JSON.stringify(testDataObject));
+            } catch (error) {
+                console.log(`file was not created:${(error as any).message}`);
+                return;
+            }
+            console.log(`file is created!`);
+            debugger;
+            */
+           
             const maintenanceApiResponse = await generalService.papiClient.post(
                 '/addons/api/00000000-0000-0000-0000-000000000a91/version/' +
-                    getAPIVersion +
-                    '/installation.js/maintenance',
+                getAPIVersion +
+                '/installation.js/maintenance',
                 testDataObject,
             );
 
@@ -9433,8 +9446,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 try {
                     deleteApiResponse = await generalService.fetchStatus(
                         generalService['client'].BaseURL.replace('papi-eu', 'papi') +
-                            '/var/addons/versions/' +
-                            getInstalledAddonsApiResponse[index].Addon.UUID,
+                        '/var/addons/versions/' +
+                        getInstalledAddonsApiResponse[index].Addon.UUID,
                         {
                             method: `DELETE`,
                             headers: {
