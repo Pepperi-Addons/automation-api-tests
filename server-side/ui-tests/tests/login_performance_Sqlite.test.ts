@@ -45,8 +45,15 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
     }
 
     // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, baseAddons, false);
-    await generalService.areAddonsInstalled(baseAddons);
+    const testData = {
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.70'],
+    };
+
+    // const addonVersions =
+    await generalService.baseAddonVersionsInstallation(varPass);
+    // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    await generalService.areAddonsInstalled(testData);
     //     // const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
 
     describe('Login Performance Tests Suites', () => {
