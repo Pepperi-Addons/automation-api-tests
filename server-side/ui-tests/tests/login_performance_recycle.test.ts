@@ -39,7 +39,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     const varUserName = _env === 'eu' ? varPassEu.split(':')[0] : varPass.split(':')[0];
     const varPassword = _env === 'eu' ? varPassEu.split(':')[1] : varPass.split(':')[1];
     const testData = {
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.70'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.74'],
     };
 
     // const addonVersions =
