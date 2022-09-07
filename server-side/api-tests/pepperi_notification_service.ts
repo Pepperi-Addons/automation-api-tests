@@ -26,7 +26,7 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.344'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.%'],
         'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     let varKey;
@@ -1526,39 +1526,34 @@ export async function PepperiNotificationServiceTests(
                     isError = true;
                 }
                 expect(isError).to.be.true;
-                // await expect(
-                //     adalService.getDataFromSchema(testDataAddonUUID, testDataAddonSchemaName),
-                // ).eventually.to.be.rejectedWith(
-                //     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist, for table = TypeScript Installation Schema`,
-                // );
             });
+            //EVGENY has commented this out in 23/8/2022 with Ido's permission - done because PNS CANT BE UNINSTALLED {DI-21149 for reference}
+            // it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
+            //     const uninstalledAddon = await generalService.papiClient.addons.installedAddons
+            //         .addonUUID(testData['Pepperi Notification Service'][0])
+            //         .uninstall();
 
-            it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
-                const uninstalledAddon = await generalService.papiClient.addons.installedAddons
-                    .addonUUID(testData['Pepperi Notification Service'][0])
-                    .uninstall();
+            //     expect(uninstalledAddon).to.have.property('URI');
 
-                expect(uninstalledAddon).to.have.property('URI');
+            //     const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
+            //         uninstalledAddon.URI as string,
+            //         40,
+            //     );
 
-                const postAddonApiResponse = await generalService.getAuditLogResultObjectIfValid(
-                    uninstalledAddon.URI as string,
-                    40,
-                );
+            //     expect(postAddonApiResponse.Status?.ID).to.be.equal(1);
 
-                expect(postAddonApiResponse.Status?.ID).to.be.equal(1);
+            //     const deleteAddon = await generalService.papiClient
+            //         .delete(`/addons/installed_addons/${testData['Pepperi Notification Service'][0]}`)
+            //         .catch((res) => res);
 
-                const deleteAddon = await generalService.papiClient
-                    .delete(`/addons/installed_addons/${testData['Pepperi Notification Service'][0]}`)
-                    .catch((res) => res);
+            //     expect(deleteAddon.message).to.include(
+            //         'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Current user cannot delete this, or UUID was not in the database',
+            //     );
 
-                expect(deleteAddon.message).to.include(
-                    'failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Current user cannot delete this, or UUID was not in the database',
-                );
-
-                const installAddon = await generalService.areAddonsInstalled(testData);
-                expect(installAddon[0]).to.be.true;
-                expect(installAddon[1]).to.be.true;
-            });
+            //     const installAddon = await generalService.areAddonsInstalled(testData);
+            //     expect(installAddon[0]).to.be.true;
+            //     expect(installAddon[1]).to.be.true;
+            // });
 
             it(`Verify ADAL Upgraded After PNS`, async () => {
                 //Downgrade ADAL

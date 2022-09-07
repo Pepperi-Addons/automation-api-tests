@@ -1,6 +1,8 @@
 import { AddonVersion, InstalledAddon } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { v4 as uuidv4 } from 'uuid';
+// this needs to be un-commneted if the other section is un-commneted:
+// import fs from 'fs';
 
 export interface TestDataBody {
     ApiData: {
@@ -9312,6 +9314,17 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
 
             //var maintenanceApiResponse = await generalService.papiClient.'POST', "addons/api/00000000-0000-0000-0000-000000000a91/version/" + getAPIVersion + "/installation.js/maintenance", testDataObject);
             //debug: this is the callitself to the endpoint - here you can find the data, version var etc
+            /****EVGENY****: every time the 'maintenance2' test is failing you can un-comment this area and get the body sent as a file
+            try {
+                fs.writeFileSync("testData.txt", JSON.stringify(testDataObject));
+            } catch (error) {
+                console.log(`file was not created:${(error as any).message}`);
+                return;
+            }
+            console.log(`file is created!`);
+            debugger;
+            */
+
             const maintenanceApiResponse = await generalService.papiClient.post(
                 '/addons/api/00000000-0000-0000-0000-000000000a91/version/' +
                     getAPIVersion +
