@@ -178,7 +178,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Negative_Index_not_created',
+                    Name: 'negative_Index_not_created',
                     Type: 'data',
                     StringIndexName: 'my_index_table',
                     Fields: {
@@ -194,7 +194,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.createSchemaTypeDataIndexNegative.Name == 'Negative_Index_not_created' &&
+            logcash.createSchemaTypeDataIndexNegative.Name == 'negative_Index_not_created' &&
             logcash.createSchemaTypeDataIndexNegative.Hidden == false &&
             logcash.createSchemaTypeDataIndexNegative.Type == 'data' &&
             logcash.createSchemaTypeDataIndexNegative.Fields.testBoolean.Type == 'Bool' &&
@@ -276,7 +276,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                 },
                 body: JSON.stringify({
                     //Name: ('DataTypeIndexedTable' + Date()).replace(/\s+/g, ""),
-                    Name: ('DataTypeIndexedTable' + newUuid()),
+                    Name: ('dataTypeIndexedTable' + newUuid()),
                     Type: 'data',
                     StringIndexName: 'my_index_table',
                     Fields: {
@@ -292,7 +292,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.createSchemaTypeDataIndex.Name.includes('DataTypeIndexedTable') &&
+            logcash.createSchemaTypeDataIndex.Name.includes('dataTypeIndexedTable') &&
             logcash.createSchemaTypeDataIndex.Hidden == false &&
             logcash.createSchemaTypeDataIndex.Type == 'data' &&
             logcash.createSchemaTypeDataIndex.Fields.testBoolean.Type == 'Bool' &&
@@ -378,7 +378,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.upsertSchemaTypeDataIndex.Name.includes ('DataTypeIndexedTable') &&
+            logcash.upsertSchemaTypeDataIndex.Name.includes ('dataTypeIndexedTable') &&
             logcash.upsertSchemaTypeDataIndex.Hidden == false &&
             logcash.upsertSchemaTypeDataIndex.Type == 'data' &&
             logcash.upsertSchemaTypeDataIndex.Fields.testBoolean.Type == 'Bool' &&
@@ -628,7 +628,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.upsertSchemaAddIndexedField.Name.includes ('DataTypeIndexedTable') &&
+            logcash.upsertSchemaAddIndexedField.Name.includes ('dataTypeIndexedTable') &&
             logcash.upsertSchemaAddIndexedField.Hidden == false &&
             logcash.upsertSchemaAddIndexedField.Type == 'data' &&
             logcash.upsertSchemaAddIndexedField.Fields.testBoolean.Type == 'Bool' &&
