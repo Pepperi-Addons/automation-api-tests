@@ -187,6 +187,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 'X-Pepperi-SecretKey': logcash.secretKey,
             },
             relationBody.RelationName,
+            addonUUID
         );
         //debugger;
         if (relationResponse.length == 0 || relationResponse.length == undefined) {

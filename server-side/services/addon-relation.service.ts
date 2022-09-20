@@ -43,9 +43,9 @@ export class AddonRelationService {
             .then((res) => res.Body);
     }
 
-    async getRelationByRelationType(headers: { [key: string]: string }, relationtype: string) {
+    async getRelationByRelationType(headers: { [key: string]: string }, relationtype: string, addonUUID) {
         return this.generalService
-            .fetchStatus(`/addons/data/relations?where=RelationName='${relationtype}'`, {
+            .fetchStatus(`/addons/data/relations?where=AddonUUID='${addonUUID}'AND RelationName='${relationtype}'`, {
                 method: 'GET',
                 headers: headers,
             })

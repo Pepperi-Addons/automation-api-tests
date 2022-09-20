@@ -26,6 +26,7 @@ import {
     AddonAuditLogsTests,
     AddonAsyncExecutionTests,
     DBSchemaTests,
+    DBSchemaTestsPart2,
     SchemaTypeDataIndexedTests,
     BatchUpsertTests,
     DimxDataImportTests,
@@ -422,6 +423,17 @@ export async function schema(client: Client, request: Request, testerFunctions: 
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await DBSchemaTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function schema_part2(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'SchemaPart2';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await DBSchemaTestsPart2(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();

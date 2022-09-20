@@ -446,7 +446,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 logcash.createSchemaWithoutNameStatus = false;
                 logcash.createSchemaWithoutNameError =
                     'Will get error: Cannot read property <Name> of null, but acctually get:' +
-                    logcash.createSchemaWithoutName;
+                    logcash.createSchemaWithoutName.fault.faultstring;
             }
         } else {
             logcash.createSchemaWithoutNameStatus == false;
