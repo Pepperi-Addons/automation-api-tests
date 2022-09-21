@@ -13,7 +13,7 @@ const installedAddons = {
     'Automated Jobs': '' as any,
     'Relations Framework': '' as any,
     'Object Types Editor': '' as any,
-    'Pepperi Notification Service': '' as any,
+    'Notification Service': '' as any,
     'Item Trade Promotions': '' as any,
     'Order Trade Promotions': '' as any,
     'Package Trade Promotions': '' as any,
@@ -62,8 +62,8 @@ export async function TestDataTests(
                 installedAddons['Relations Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Object Types Editor')
                 installedAddons['Object Types Editor'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'Pepperi Notification Service')
-                installedAddons['Pepperi Notification Service'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Notification Service')
+                installedAddons['Notification Service'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Item Trade Promotions')
                 installedAddons['Item Trade Promotions'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Order Trade Promotions')
@@ -151,8 +151,8 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Object Types Editor'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`Pepperi Notification Service | Version: ${installedAddons['Pepperi Notification Service']}`, () => {
-                const regexMatched = installedAddons['Pepperi Notification Service'].replace(regex, '');
+            it(`Pepperi Notification Service | Version: ${installedAddons['Notification Service']}`, () => {
+                const regexMatched = installedAddons['Notification Service'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {

@@ -83,6 +83,7 @@ import {
     AsyncAddonGetRemoveTests,
 } from './api-tests/index';
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
+// import { checkVersionsTest } from './api-tests/check_versions';
 
 let testName = '';
 
@@ -705,6 +706,17 @@ export async function dimxrecursive(client: Client, request: Request, testerFunc
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
+
+// export async function checkVersions(client: Client, request: Request, testerFunctions: TesterFunctions) {
+//     const service = new GeneralService(client);
+//     testName = 'DIMX Recursive';
+//     service.PrintMemoryUseToLog('Start', testName);
+//     testerFunctions = service.initiateTesterFunctions(client, testName);
+//     await checkVersionsTest(service, request, testerFunctions);
+//     // await test_data(client, testerFunctions);
+//     service.PrintMemoryUseToLog('End', testName);
+//     return await testerFunctions.run();
+// }
 
 export async function udc(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);

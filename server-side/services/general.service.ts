@@ -23,8 +23,8 @@ export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.%'],
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.80'],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.13'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.80'], //NG14
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
@@ -32,7 +32,7 @@ export const testData = {
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
-    'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
@@ -52,7 +52,7 @@ export const testDataForInitUser = {
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
-    'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
