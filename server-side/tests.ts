@@ -39,6 +39,7 @@ import {
     UDTTests,
     UsersTests,
     AccountsTests,
+    LegacyResourcesTests,
     BulkBigDataTests,
     ContactsTests,
     GeneralActivitiesTests,
@@ -995,6 +996,17 @@ export async function data_index_adal(client: Client, request: Request, testerFu
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await DataIndexADALTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function legacy_resources(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Legacy_Resources';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await LegacyResourcesTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();

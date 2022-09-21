@@ -2,8 +2,8 @@ exports.RecursiveImportTestHost_ImportRelativeURL = async (Client, Request) => {
     const addonUUID = Client.BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const name = 'RecursiveImportTestHost';
-    const refName = 'RecursiveImportTestReference';
+    const name = 'recursiveImportTestHost';
+    const refName = 'recursiveImportTestReference';
     const addonUUIDName = addonUUID + '_' + name;
     const addonUUIDrefName = addonUUID + '_' + refName;
 
@@ -40,7 +40,7 @@ exports.RecursiveImportTestReference_ImportRelativeURL = async (Client, Request)
     const addonUUID = Client.BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
-    const name = 'RecursiveImportTestReference';
+    const name = 'recursiveImportTestReference';
     const addonUUIDName = addonUUID + '_' + name;
     // this is our general mapping object, containing the mapping objects of all resources
     if (Request.body['Mapping']) {
