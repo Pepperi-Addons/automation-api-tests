@@ -33,7 +33,7 @@ export async function NucRecoveryTests(generalService: GeneralService, request, 
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {

@@ -27,7 +27,7 @@ export async function PepperiNotificationServiceTests(
     //#region Upgrade Pepperi Notification Service
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.%'],
-        'Pepperi Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -1530,7 +1530,7 @@ export async function PepperiNotificationServiceTests(
             //EVGENY has commented this out in 23/8/2022 with Ido's permission - done because PNS CANT BE UNINSTALLED {DI-21149 for reference}
             // it(`Uninstall with Hidden Subscription (DI-18241)`, async () => {
             //     const uninstalledAddon = await generalService.papiClient.addons.installedAddons
-            //         .addonUUID(testData['Pepperi Notification Service'][0])
+            //         .addonUUID(testData['Notification Service'][0])
             //         .uninstall();
 
             //     expect(uninstalledAddon).to.have.property('URI');
@@ -1543,7 +1543,7 @@ export async function PepperiNotificationServiceTests(
             //     expect(postAddonApiResponse.Status?.ID).to.be.equal(1);
 
             //     const deleteAddon = await generalService.papiClient
-            //         .delete(`/addons/installed_addons/${testData['Pepperi Notification Service'][0]}`)
+            //         .delete(`/addons/installed_addons/${testData['Notification Service'][0]}`)
             //         .catch((res) => res);
 
             //     expect(deleteAddon.message).to.include(
@@ -1558,7 +1558,7 @@ export async function PepperiNotificationServiceTests(
             it(`Verify ADAL Upgraded After PNS`, async () => {
                 //Downgrade ADAL
                 let downgradeAddon = await generalService.papiClient.addons.installedAddons
-                    .addonUUID(testData['Pepperi Notification Service'][0])
+                    .addonUUID(testData['Notification Service'][0])
                     .downgrade('1.0.101');
 
                 expect(downgradeAddon).to.have.property('URI');
@@ -1586,7 +1586,7 @@ export async function PepperiNotificationServiceTests(
 
                 //Upgrade ADAL
                 let upgradeAddon = await generalService.papiClient.addons.installedAddons
-                    .addonUUID(testData['Pepperi Notification Service'][0])
+                    .addonUUID(testData['Notification Service'][0])
                     .upgrade('1.0.110');
 
                 expect(upgradeAddon).to.have.property('URI');
