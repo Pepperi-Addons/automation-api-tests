@@ -122,8 +122,11 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             it('Get Data From dedicated table', () => {
                 assert(logcash.getDataDedicatedStatus, logcash.getDataDedicatedError);     
             });
-            it('Get Data From ADAL table', () => {
-                assert(logcash.getDataDedicatedStatus, logcash.getDataDedicatedError);
+            it('Get Data From ADAL table(order by indexed fields)', () => {
+                assert(logcash.getDataADALbyNameStatus, logcash.getDataADALbyNameError);
+            });
+            it('Get Data From ADAL table(order by indexed/not indexed fields)', () => {
+                assert(logcash.getDataADALbyName2Status, logcash.getDataADALbyName2Error);
             });
             it('Drop Existing Table: Finished', () => {
                 assert(logcash.getDataADALStatus, logcash.getDataADALError);   
@@ -148,7 +151,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             });
         });
     });
-
+    logcash.getDataADALbyName2Status = false;
+             logcash.getDataADALbyName2Error
     //#endregion Mocha
 
     //get secret key
@@ -312,7 +316,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     async function getDedicatedScheme() {
         logcash.getDedicatedScheme = await generalService
-            .fetchStatus(baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '_' + logcash.createSchemaTypeDataIndex.Name, {
+            .fetchStatus(baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -400,7 +404,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     async function getDedicatedSchemeAferUpsert() {
         logcash.getDedicatedSchemeAferUpsert = await generalService
-            .fetchStatus(baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '_' + logcash.createSchemaTypeDataIndex.Name, {
+            .fetchStatus(baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -486,7 +490,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     async function getDataDedicated() { // get data from elastic
         logcash.getDataDedicatedStatus = true;
         logcash.getDataDedicated = await generalService
-        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '_' + logcash.createSchemaTypeDataIndex.Name, {
+        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -576,8 +580,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         if(logcash.getDataADALbyName.length == 10){
             for (let index = 0; index < logcash.getDataADALbyName.length -1; index++) {
                 if (
-                    Object.entries(logcash.getDataADALbyName[index]).length == 2 //&&
-                    // logcash.getDataDedicated[index]["testBoolean"] != '' &&
+                    Object.entries(logcash.getDataADALbyName[index]).length == 2 &&
+                    Object.entries(logcash.getDataADALbyName[index])[1][1] == 'insert ' + index //&&
                     // logcash.getDataDedicated[index]["TestDateTime"] != '' &&
                     // logcash.getDataDedicated[index]["testString"] != '' &&
                     // logcash.getDataDedicated[index]["TestDouble"] != '' &&
@@ -586,13 +590,51 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                     //logcash.getDataDedicatedStatus = true;
                 }
                 else{
-                    logcash.getDataADALStatus = false;
-                    logcash.getDataADALError = 'Get data by key failed'
+                    logcash.getDataADALbyNameStatus = false;
+                    logcash.getDataADALbyNameError = 'Get data by key failed'
                 }
             }
         }
-        else{logcash.getDataDedicatedStatus = false;
-             logcash.getDataDedicatedError = 'will be get 10 objects , but actually get ' + logcash.getDataADALbyName.length
+        else{logcash.getDataADALbyNameStatus = false;
+             logcash.getDataADALbyNameError = 'will be get 10 objects , but actually get ' + logcash.getDataADALbyName.length
+        }
+        //debugger;
+        await getDataADALbyName2();
+    }
+
+    async function getDataADALbyName2() {
+        logcash.getDataADALbyName2Status = true;
+        logcash.getDataADALbyName2 = await generalService
+        .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name +'?include_deleted=true&fields=TestDateTime,Key,secInteger&order_by=TestDateTime', {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    // 'X-Pepperi-OwnerID': addonUUID,
+                    // 'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if(logcash.getDataADALbyName2.length == 10){
+            for (let index = 0; index < logcash.getDataADALbyName2.length -1; index++) {
+                if (
+                    Object.entries(logcash.getDataADALbyName2[index]).length == 3 &&
+                    Object.entries(logcash.getDataADALbyName2[index])[2][1]== 'insert ' + index //&&
+                    // logcash.getDataDedicated[index]["TestDateTime"] != '' &&
+                    // logcash.getDataDedicated[index]["testString"] != '' &&
+                    // logcash.getDataDedicated[index]["TestDouble"] != '' &&
+                    // logcash.getDataDedicated[index]["TestInteger"] != ''
+                ) {
+                    //logcash.getDataDedicatedStatus = true;
+                }
+                else{
+                    logcash.getDataADALbyName2Status = false;
+                    logcash.getDataADALbyName2Error = 'Get data by key failed'
+                }
+            }
+        }
+        else{logcash.getDataADALbyName2Status = false;
+             logcash.getDataADALbyName2Error = 'will be get 10 objects , but actually get ' + logcash.getDataADALbyName2.length
         }
         //debugger;
         await upsertSchemaAddIndexedField();
@@ -700,7 +742,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     async function getDataDedicatedAfterInsert() { // get data from elastic
         logcash.getDataDedicatedAfterInsertStatus = true;
         logcash.getDataDedicatedAfterInsert = await generalService
-        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '_' + logcash.createSchemaTypeDataIndex.Name, {
+        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -764,7 +806,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     //#region  verify if elastic data and dedicated schemo deleted 
     async function getDataDedicatedAfterDrop() { // get data from elastic
         logcash.getDataDedicatedAfterDrop = await generalService
-        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '_' + logcash.createSchemaTypeDataIndex.Name, {
+        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
