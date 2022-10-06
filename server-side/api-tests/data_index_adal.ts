@@ -877,10 +877,12 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 delete createIndexSchemeInAdalResponse.CreationDateTime;
                 delete createIndexSchemeInAdalResponse.ModificationDateTime;
                 delete createIndexSchemeInAdalResponse.AddonUUID;
+                delete createIndexSchemeInAdalResponse.GenericResource;
                 expect(createIndexSchemeInAdalResponse).to.deep.equal(indexSchema);
                 delete createSharedIndexSchemeInAdalResponse.CreationDateTime;
                 delete createSharedIndexSchemeInAdalResponse.ModificationDateTime;
                 delete createSharedIndexSchemeInAdalResponse.AddonUUID;
+                delete createSharedIndexSchemeInAdalResponse.GenericResource;
                 expect(createSharedIndexSchemeInAdalResponse).to.deep.equal(typedIndexSchema);
             });
 
