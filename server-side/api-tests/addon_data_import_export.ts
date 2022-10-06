@@ -58,6 +58,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const secretKey = await generalService.getSecretKey(addonUUID, varKey);
     const version = '0.0.5';
     const schemaName = 'DIMX Test';
+    const importOverwriteFileName = 'Overwrite.json';
     const importJSONFileName = 'import3.json';
     const importCSVFileName = 'import2.csv';
     const addonFunctionsFileName = 'dimx24.js';
@@ -70,11 +71,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        'Export and Import Framework': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
     await generalService.baseAddonVersionsInstallation(varKey);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     // #endregion Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
 
     describe('Addon Data Import Export Tests Suites', () => {
@@ -216,7 +217,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         'X-Pepperi-SecretKey': secretKey,
                     },
                     {
-                        Name: 'Get Export From DIMX', // mandatory
+                        Name: schemaName, // mandatory
                         AddonUUID: addonUUID, // mandatory
                         RelationName: 'DataExportResource', // mandatory
                         Type: 'AddonAPI', // mandatory on create
@@ -229,7 +230,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
             it(`Get Export Relation`, async () => {
                 const relationBody = {
-                    Name: 'Get Export From DIMX', // mandatory
+                    Name: schemaName, // mandatory
                     AddonUUID: addonUUID, // mandatory
                     RelationName: 'DataExportResource', // mandatory
                     Type: 'AddonAPI', // mandatory on create
@@ -258,7 +259,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         'X-Pepperi-SecretKey': secretKey,
                     },
                     {
-                        Name: 'Import With DIMX', // mandatory
+                        Name: schemaName, // mandatory
                         AddonUUID: addonUUID, // mandatory
                         RelationName: 'DataImportResource', // mandatory
                         Type: 'AddonAPI', // mandatory on create
@@ -269,29 +270,29 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 expect(relationResponse).to.equal(200);
             });
 
-            it(`Get Import Relation`, async () => {
-                const relationBody = {
-                    Name: 'Import With DIMX', // mandatory
-                    AddonUUID: addonUUID, // mandatory
-                    RelationName: 'DataImportResource', // mandatory
-                    Type: 'AddonAPI', // mandatory on create
-                    Description: 'DIMX Import',
-                    AddonRelativeURL: `/${addonFunctionsFileName}/${addonImportFunctionName}`, // mandatory on create
-                };
-                const relationResponse = await relationService.getRelationWithNameAndUUID(
-                    {
-                        'X-Pepperi-OwnerID': addonUUID,
-                        'X-Pepperi-SecretKey': secretKey,
-                    },
-                    relationBody.Name,
-                    addonUUID,
-                );
-                expect(relationResponse[0]).to.include({
-                    ...relationBody,
-                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
-                    Hidden: false,
-                });
-            });
+            // it(`Get Import Relation`, async () => {
+            //     const relationBody = {
+            //         Name: schemaName, // mandatory
+            //         AddonUUID: addonUUID, // mandatory
+            //         RelationName: 'DataImportResource', // mandatory
+            //         Type: 'AddonAPI', // mandatory on create
+            //         Description: 'DIMX Import',
+            //         AddonRelativeURL: `/${addonFunctionsFileName}/${addonImportFunctionName}`, // mandatory on create
+            //     };
+            //     const relationResponse = await relationService.getRelationWithNameAndUUID(
+            //         {
+            //             'X-Pepperi-OwnerID': addonUUID,
+            //             'X-Pepperi-SecretKey': secretKey,
+            //         },
+            //         relationBody.Name,
+            //         addonUUID,
+            //     );
+            //     expect(relationResponse[0]).to.include({
+            //         ...relationBody,
+            //         Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+            //         Hidden: false,
+            //     });
+            // });
         });
 
         if (!isPerformance && !isReference) {
@@ -568,6 +569,91 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         ]);
                     });
 
+                    it(`Post File in JSON Format`, async () => {
+                        const adoonVersionResponse = await generalService.papiClient.addons.versions.find({
+                            where: `AddonUUID='${addonUUID}' AND Version='${version}'`,
+                        });
+                        expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
+                        expect(adoonVersionResponse[0].Version).to.equal(version);
+
+                        let base64File;
+                        if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
+                            //js instead of json since build process ignore json in intention
+                            const file = fs.readFileSync(
+                                path.resolve(
+                                    __dirname.replace('\\build\\server-side', ''),
+                                    './test-data/Overwrite.json.js',
+                                ),
+                                {
+                                    encoding: 'utf8',
+                                },
+                            );
+                            base64File = Buffer.from(file).toString('base64');
+                        } else {
+                            // Changed to not use local files, but always the same content
+                            base64File = Buffer.from(
+                                '[{"Name":"DIMX Test","Description":"DIMX Test 0","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX0","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 0","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 1","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX1","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 1","Array":["Value1","Value2","Value3"]}}]',
+                            ).toString('base64');
+                        }
+
+                        const versionTestDataBody = {
+                            AddonUUID: addonUUID,
+                            UUID: adoonVersionResponse[0].UUID,
+                            Version: version,
+                            Files: [{ FileName: importOverwriteFileName, URL: '', Base64Content: base64File }],
+                        };
+
+                        const updateVersionResponse = await generalService.fetchStatus(
+                            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                            {
+                                method: `POST`,
+                                headers: {
+                                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                                },
+                                body: JSON.stringify(versionTestDataBody),
+                            },
+                        );
+                        expect(updateVersionResponse.Status).to.equal(200);
+                    });
+
+                    it(`Import With Relation (OverwriteTable)`, async () => {
+                        const testEnvironment = generalService['client'].BaseURL.includes('staging')
+                            ? 'cdn.staging.pepperi'
+                            : 'cdn.pepperi';
+                        const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
+                            URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importOverwriteFileName}`,
+                            OverwriteTable: true,
+                        });
+                        dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
+                            relationResponse.URI,
+                            90,
+                        );
+                        expect(
+                            dimxExportDefult.Status?.ID,
+                            JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                        ).to.equal(1);
+                        const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
+                            ? 'cdn.staging.pepperi'
+                            : generalService['client'].BaseURL.includes('papi-eu')
+                            ? 'eucdn.pepperi'
+                            : 'cdn.pepperi';
+                        expect(
+                            dimxExportDefult.AuditInfo.ResultObject,
+                            JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
+                        ).to.include(`https://${testResponseEnvironment}`);
+                    });
+
+                    it(`Import Content`, async () => {
+                        const relationResponse = await generalService.fetchStatus(
+                            JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
+                        );
+                        console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI });
+                        expect(relationResponse.Body).to.deep.equal([
+                            { Key: 'testKeyDIMX0', Status: 'Ignore' },
+                            { Key: 'testKeyDIMX1', Status: 'Ignore' },
+                        ]);
+                    });
+
                     it(`Export the Imported Content`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
@@ -581,7 +667,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const file = fs.readFileSync(
                                     path.resolve(
                                         __dirname.replace('\\build\\server-side', ''),
-                                        './test-data/import.json.js',
+                                        './test-data/Overwrite.json.js',
                                     ),
                                     {
                                         encoding: 'utf8',
@@ -603,10 +689,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             contentFromFileAsArr = [
                                 { Name: 'DIMX Test', Description: 'DIMX Test 0', Key: 'testKeyDIMX0' },
                                 { Name: 'DIMX Test', Description: 'DIMX Test 1', Key: 'testKeyDIMX1' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 2', Key: 'testKeyDIMX2' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 3', Key: 'testKeyDIMX3' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 4', Key: 'testKeyDIMX4' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 5', Key: 'testKeyDIMX5' },
                             ];
                         }
 
@@ -716,6 +798,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
+                            Delimiter: ';',
                         });
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
@@ -889,6 +972,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export the Imported Content`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
+                            Delimiter: ';',
                         });
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
@@ -2806,7 +2890,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         'X-Pepperi-SecretKey': secretKey,
                                     },
                                     {
-                                        Name: 'Get Export From DIMX', // mandatory
+                                        Name: schemaName, // mandatory
                                         AddonUUID: addonUUID, // mandatory
                                         RelationName: 'DataExportResource', // mandatory
                                         Type: 'AddonAPI', // mandatory on create
@@ -2819,7 +2903,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                             it(`Get Export Relation`, async () => {
                                 const relationBody = {
-                                    Name: 'Get Export From DIMX', // mandatory
+                                    Name: schemaName, // mandatory
                                     AddonUUID: addonUUID, // mandatory
                                     RelationName: 'DataExportResource', // mandatory
                                     Type: 'AddonAPI', // mandatory on create
@@ -2847,7 +2931,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         'X-Pepperi-SecretKey': secretKey,
                                     },
                                     {
-                                        Name: 'Import With DIMX', // mandatory
+                                        Name: schemaName, // mandatory
                                         AddonUUID: addonUUID, // mandatory
                                         RelationName: 'DataImportResource', // mandatory
                                         Type: 'AddonAPI', // mandatory on create
@@ -2858,28 +2942,28 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 expect(relationResponse).to.equal(200);
                             });
 
-                            it(`Get Import Relation`, async () => {
-                                const relationBody = {
-                                    Name: 'Import With DIMX', // mandatory
-                                    AddonUUID: addonUUID, // mandatory
-                                    RelationName: 'DataImportResource', // mandatory
-                                    Type: 'AddonAPI', // mandatory on create
-                                    Description: 'DIMX Import',
-                                    AddonRelativeURL: `/${addonFunctionsFileName}/ImportArrayManipulation`, // mandatory on create
-                                };
-                                const relationResponse = await relationService.getRelationWithNameAndUUID(
-                                    {
-                                        'X-Pepperi-OwnerID': addonUUID,
-                                        'X-Pepperi-SecretKey': secretKey,
-                                    },
-                                    relationBody.Name,
-                                );
-                                expect(relationResponse[0]).to.include({
-                                    ...relationBody,
-                                    Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
-                                    Hidden: false,
-                                });
-                            });
+                            // it(`Get Import Relation`, async () => {
+                            //     const relationBody = {
+                            //         Name: schemaName, // mandatory
+                            //         AddonUUID: addonUUID, // mandatory
+                            //         RelationName: 'DataImportResource', // mandatory
+                            //         Type: 'AddonAPI', // mandatory on create
+                            //         Description: 'DIMX Import',
+                            //         AddonRelativeURL: `/${addonFunctionsFileName}/ImportArrayManipulation`, // mandatory on create
+                            //     };
+                            //     const relationResponse = await relationService.getRelationWithNameAndUUID(
+                            //         {
+                            //             'X-Pepperi-OwnerID': addonUUID,
+                            //             'X-Pepperi-SecretKey': secretKey,
+                            //         },
+                            //         relationBody.Name,
+                            //     );
+                            //     expect(relationResponse[0]).to.include({
+                            //         ...relationBody,
+                            //         Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                            //         Hidden: false,
+                            //     });
+                            // });
 
                             it(`Reset Schema Before`, async () => {
                                 const adalService = new ADALService(generalService.papiClient);
@@ -3426,7 +3510,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
                                 },
                                 {
-                                    Name: 'Get Export From DIMX', // mandatory
+                                    Name: schemaName, // mandatory
                                     AddonUUID: generalService['client'].AddonUUID, // mandatory
                                     RelationName: 'DataExportResource', // mandatory
                                     Type: 'AddonAPI', // mandatory on create
@@ -3439,7 +3523,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Get Export Relation`, async () => {
                             const relationBody = {
-                                Name: 'Get Export From DIMX', // mandatory
+                                Name: schemaName, // mandatory
                                 AddonUUID: generalService['client'].AddonUUID, // mandatory
                                 RelationName: 'DataExportResource', // mandatory
                                 Type: 'AddonAPI', // mandatory on create
@@ -3479,29 +3563,29 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             expect(relationResponse).to.equal(200);
                         });
 
-                        it(`Get Import Relation`, async () => {
-                            const relationBody = {
-                                Name: 'Import With DIMX', // mandatory
-                                AddonUUID: generalService['client'].AddonUUID, // mandatory
-                                RelationName: 'DataImportResource', // mandatory
-                                Type: 'AddonAPI', // mandatory on create
-                                Description: 'DIMX Import',
-                                AddonRelativeURL: '', // mandatory on create
-                            };
-                            const relationResponse = await relationService.getRelationWithNameAndUUID(
-                                {
-                                    'X-Pepperi-OwnerID': generalService['client'].AddonUUID,
-                                    'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
-                                },
-                                relationBody.Name,
-                                generalService['client'].AddonUUID,
-                            );
-                            expect(relationResponse[0]).to.include({
-                                ...relationBody,
-                                Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
-                                Hidden: false,
-                            });
-                        });
+                        // it(`Get Import Relation`, async () => {
+                        //     const relationBody = {
+                        //         Name: 'Import With DIMX', // mandatory
+                        //         AddonUUID: generalService['client'].AddonUUID, // mandatory
+                        //         RelationName: 'DataImportResource', // mandatory
+                        //         Type: 'AddonAPI', // mandatory on create
+                        //         Description: 'DIMX Import',
+                        //         AddonRelativeURL: '', // mandatory on create
+                        //     };
+                        //     const relationResponse = await relationService.getRelationWithNameAndUUID(
+                        //         {
+                        //             'X-Pepperi-OwnerID': generalService['client'].AddonUUID,
+                        //             'X-Pepperi-SecretKey': generalService['client'].AddonSecretKey as string,
+                        //         },
+                        //         relationBody.Name,
+                        //         generalService['client'].AddonUUID,
+                        //     );
+                        //     expect(relationResponse[0]).to.include({
+                        //         ...relationBody,
+                        //         Key: `${relationBody.Name}_${relationBody.AddonUUID}_${relationBody.RelationName}`,
+                        //         Hidden: false,
+                        //     });
+                        // });
                     });
 
                     it(`Reset Schema`, async () => {
