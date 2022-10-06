@@ -58,6 +58,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const secretKey = await generalService.getSecretKey(addonUUID, varKey);
     const version = '0.0.5';
     const schemaName = 'DIMX Test';
+    const importOverwriteFileName = 'Overwrite.json'
     const importJSONFileName = 'import3.json';
     const importCSVFileName = 'import2.csv';
     const addonFunctionsFileName = 'dimx24.js';
@@ -66,7 +67,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
     //#region Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.422'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
@@ -568,12 +569,59 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         ]);
                     });
 
+                    it(`Post File in JSON Format`, async () => {
+                        const adoonVersionResponse = await generalService.papiClient.addons.versions.find({
+                            where: `AddonUUID='${addonUUID}' AND Version='${version}'`,
+                        });
+                        expect(adoonVersionResponse[0].AddonUUID).to.equal(addonUUID);
+                        expect(adoonVersionResponse[0].Version).to.equal(version);
+
+                        let base64File;
+                        if (generalService['client'].AssetsBaseUrl.includes('/localhost:')) {
+                            //js instead of json since build process ignore json in intention
+                            const file = fs.readFileSync(
+                                path.resolve(
+                                    __dirname.replace('\\build\\server-side', ''),
+                                    './test-data/Overwrite.json.js',
+                                ),
+                                {
+                                    encoding: 'utf8',
+                                },
+                            );
+                            base64File = Buffer.from(file).toString('base64');
+                        } else {
+                            // Changed to not use local files, but always the same content
+                            base64File = Buffer.from(
+                                '[{"Name":"DIMX Test","Description":"DIMX Test 0","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX0","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 0","Array":["Value1","Value2","Value3"]}},{"Name":"DIMX Test","Description":"DIMX Test 1","Column1":["Value1","Value2","Value3"],"Key":"testKeyDIMX1","object":{"Object":{"Value1":1,"Value2":2,"Value3":3},"String":"DIMX Test 1","Array":["Value1","Value2","Value3"]}}]',
+                            ).toString('base64');
+                        }
+
+                        const versionTestDataBody = {
+                            AddonUUID: addonUUID,
+                            UUID: adoonVersionResponse[0].UUID,
+                            Version: version,
+                            Files: [{ FileName: importOverwriteFileName, URL: '', Base64Content: base64File }],
+                        };
+
+                        const updateVersionResponse = await generalService.fetchStatus(
+                            generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
+                            {
+                                method: `POST`,
+                                headers: {
+                                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                                },
+                                body: JSON.stringify(versionTestDataBody),
+                            },
+                        );
+                        expect(updateVersionResponse.Status).to.equal(200);
+                    });
+
                     it(`Import With Relation (OverwriteTable)`, async () => {
                         const testEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'cdn.staging.pepperi'
                             : 'cdn.pepperi';
                         const relationResponse = await dimxService.dataImport(addonUUID, schemaName, {
-                            URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importJSONFileName}`,
+                            URI: `https://${testEnvironment}.com/Addon/Public/${addonUUID}/${version}/${importOverwriteFileName}`,
                             OverwriteTable: true,
                         });
                         dimxExportDefult = await generalService.getAuditLogResultObjectIfValid(
@@ -601,12 +649,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         );
                         console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
-                            { Key: 'testKeyDIMX0', Status: 'Insert' },
-                            { Key: 'testKeyDIMX1', Status: 'Insert' },
-                            { Key: 'testKeyDIMX2', Status: 'Insert' },
-                            { Key: 'testKeyDIMX3', Status: 'Insert' },
-                            { Key: 'testKeyDIMX4', Status: 'Insert' },
-                            { Key: 'testKeyDIMX5', Status: 'Insert' },
+                            { Key: 'testKeyDIMX0', Status: 'Ignore' },
+                            { Key: 'testKeyDIMX1', Status: 'Ignore' },
                         ]);
                     });
 
@@ -623,7 +667,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const file = fs.readFileSync(
                                     path.resolve(
                                         __dirname.replace('\\build\\server-side', ''),
-                                        './test-data/import.json.js',
+                                        './test-data/Overwrite.json.js',
                                     ),
                                     {
                                         encoding: 'utf8',
@@ -645,10 +689,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             contentFromFileAsArr = [
                                 { Name: 'DIMX Test', Description: 'DIMX Test 0', Key: 'testKeyDIMX0' },
                                 { Name: 'DIMX Test', Description: 'DIMX Test 1', Key: 'testKeyDIMX1' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 2', Key: 'testKeyDIMX2' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 3', Key: 'testKeyDIMX3' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 4', Key: 'testKeyDIMX4' },
-                                { Name: 'DIMX Test', Description: 'DIMX Test 5', Key: 'testKeyDIMX5' },
                             ];
                         }
 

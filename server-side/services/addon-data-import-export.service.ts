@@ -17,7 +17,7 @@ export class DIMXService {
     dataImport(
         addonUUID: string,
         tableName: string,
-        data?: { URI: string; Delimiter?: string; OverwriteObject?: boolean, OverwriteTable?: boolean },
+        data?: { URI: string; Delimiter?: string; OverwriteObject?: boolean; OverwriteTable?: boolean },
     ) {
         return this.papiClient.post(`/addons/data/import/file/${addonUUID}/${tableName}`, data);
     }
