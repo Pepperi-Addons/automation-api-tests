@@ -594,8 +594,8 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                     ? 'pfs.staging.pepperi'
                     : generalService['client'].BaseURL.includes('papi-eu')
-                        ? 'eupfs.pepperi'
-                        : 'pfs.pepperi';
+                    ? 'eupfs.pepperi'
+                    : 'pfs.pepperi';
                 const mappingObject = {};
                 mappingObject[`${addonUUID}_recursiveImportTestReference`] = {
                     ReferenceKey2: {
@@ -637,10 +637,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                 );
                 const resultObject = JSON.parse(getAuditResponse.AuditInfo.ResultObject);
                 expect(resultObject).to.have.property('URI').that.is.a('string').and.includes(distributor.UUID);
-                expect(resultObject)
-                    .to.have.property('URI')
-                    .that.is.a('string')
-                    .and.includes('/DIMXUploadedFiles/');
+                expect(resultObject).to.have.property('URI').that.is.a('string').and.includes('/DIMXUploadedFiles/');
                 expect(resultObject).to.have.property('URI').that.is.a('string').and.includes(testResponseEnvironment);
                 expect(resultObject)
                     .to.have.property('DistributorUUID')
@@ -689,8 +686,8 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                     ? 'cdn.staging.pepperi'
                     : generalService['client'].BaseURL.includes('papi-eu')
-                        ? 'eucdn.pepperi'
-                        : 'cdn.pepperi';
+                    ? 'eucdn.pepperi'
+                    : 'cdn.pepperi';
                 const mappingObject = {};
                 mappingObject[`${addonUUID}_recursiveImportTestReference`] = {
                     ReferenceKey2: {
@@ -766,12 +763,18 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                     })
                     .then((res) => res.Body);
 
-                const recursiveImportResourceCDN0 = recursiveImportResourceCDN.find(elem => elem.Key === 'Mapped ReferenceKey1');
-                const recursiveImportResourceCDN1 = recursiveImportResourceCDN.find(elem => elem.Key === 'Mapped ReferenceKey2');
-                const recursiveImportResourceCDN3 = recursiveImportResourceCDN.find(elem => elem.Key === 'Mapped ReferenceKey3');
-                const recursiveImportCDN0 = recursiveImportCDN.find(elem => elem.Key === 'Mapped HostKey2');
-                const recursiveImportCDN1 = recursiveImportCDN.find(elem => elem.Key === 'Mapped HostKey1');
-                const recursiveImportCDN2 = recursiveImportCDN.find(elem => elem.Key === 'Mapped HostKey3');
+                const recursiveImportResourceCDN0 = recursiveImportResourceCDN.find(
+                    (elem) => elem.Key === 'Mapped ReferenceKey1',
+                );
+                const recursiveImportResourceCDN1 = recursiveImportResourceCDN.find(
+                    (elem) => elem.Key === 'Mapped ReferenceKey2',
+                );
+                const recursiveImportResourceCDN3 = recursiveImportResourceCDN.find(
+                    (elem) => elem.Key === 'Mapped ReferenceKey3',
+                );
+                const recursiveImportCDN0 = recursiveImportCDN.find((elem) => elem.Key === 'Mapped HostKey2');
+                const recursiveImportCDN1 = recursiveImportCDN.find((elem) => elem.Key === 'Mapped HostKey1');
+                const recursiveImportCDN2 = recursiveImportCDN.find((elem) => elem.Key === 'Mapped HostKey3');
 
                 expect(recursiveImportResourceCDN).to.be.an('array').with.lengthOf(3);
                 expect(recursiveImportResourceCDN1).to.have.property('Key').that.equals('Mapped ReferenceKey2');

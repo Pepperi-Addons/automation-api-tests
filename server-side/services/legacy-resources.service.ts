@@ -4,7 +4,6 @@ import {
     ApiFieldObject,
     GeneralActivity,
     Transaction,
-    Item,
     TransactionLines,
     FindOptions,
     User,

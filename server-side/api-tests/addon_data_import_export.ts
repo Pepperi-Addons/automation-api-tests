@@ -58,7 +58,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const secretKey = await generalService.getSecretKey(addonUUID, varKey);
     const version = '0.0.5';
     const schemaName = 'DIMX Test';
-    const importOverwriteFileName = 'Overwrite.json'
+    const importOverwriteFileName = 'Overwrite.json';
     const importJSONFileName = 'import3.json';
     const importCSVFileName = 'import2.csv';
     const addonFunctionsFileName = 'dimx24.js';
@@ -798,7 +798,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export From Relation`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
-                            Delimiter: ';'
+                            Delimiter: ';',
                         });
                         dimxExportCsv = await generalService.getAuditLogResultObjectIfValid(relationResponse.URI, 90);
                         expect(dimxExportCsv.Status?.ID, JSON.stringify(dimxExportCsv.AuditInfo.ResultObject)).to.equal(
@@ -972,7 +972,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     it(`Export the Imported Content`, async () => {
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName, {
                             Format: 'csv',
-                            Delimiter: ';'
+                            Delimiter: ';',
                         });
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,

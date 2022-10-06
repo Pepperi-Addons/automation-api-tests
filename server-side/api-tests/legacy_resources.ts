@@ -2,7 +2,6 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ObjectsService } from '../services/objects.service';
 import { LegacyResourcesService } from '../services/legacy-resources.service';
 
-
 export async function LegacyResourcesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const objectsService = new ObjectsService(generalService);
     const service = new LegacyResourcesService(generalService);
@@ -12,7 +11,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
     //#region Upgrade Legacy Resources
     const testData = {
-        'core': ['00000000-0000-0000-0000-00000000c07e', '0.0.24'],
+        core: ['00000000-0000-0000-0000-00000000c07e', '0.0.24'],
         'core-resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.0.7'],
     };
 
@@ -23,8 +22,8 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         varKey = request.body.varKeyPro;
     }
 
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    await generalService.areAddonsInstalled(testData);
+    await generalService.changeVersion(varKey, testData, false);
     //#endregion Upgrade Legacy Resources
 
     describe('Legacy Resources Test Suites', () => {
@@ -46,17 +45,17 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 createdItem = await objectsService.postItem({
                     ExternalID: itemExternalID,
-                    MainCategoryID: mainCategoryID
+                    MainCategoryID: mainCategoryID,
                 });
 
                 legacyCreatedItem = await service.post('items', {
                     ExternalID: legacyItemExternalID,
-                    MainCategoryID: mainCategoryID
-                })
+                    MainCategoryID: mainCategoryID,
+                });
 
                 createdItem.Key = createdItem.UUID;
-                let createdItemKeys = Object.keys(createdItem);
-                let legacyCreatedItemKeys = Object.keys(legacyCreatedItem);
+                const createdItemKeys = Object.keys(createdItem);
+                const legacyCreatedItemKeys = Object.keys(legacyCreatedItem);
                 expect(createdItemKeys).to.deep.equal(legacyCreatedItemKeys);
                 expect(legacyCreatedItem).to.have.property('InternalID').that.is.a('number');
                 expect(legacyCreatedItem).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
@@ -85,7 +84,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(legacyCreatedItem).to.have.property('Parent');
                 expect(legacyCreatedItem).to.have.property('UPC');
                 expect(legacyCreatedItem).to.have.property('Inventory');
-                expect(legacyCreatedItem.Inventory).to.have.property('URI').that.equals(`/inventory?where=ItemInternalID=${legacyCreatedItem.InternalID}`);
+                expect(legacyCreatedItem.Inventory)
+                    .to.have.property('URI')
+                    .that.equals(`/inventory?where=ItemInternalID=${legacyCreatedItem.InternalID}`);
                 expect(legacyCreatedItem).to.have.property('Prop1');
                 expect(legacyCreatedItem).to.have.property('Prop2');
                 expect(legacyCreatedItem).to.have.property('Prop3');
@@ -103,7 +104,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     MainCategoryID: mainCategoryID,
                     CaseQuantity: 5,
                     Name: 'Testing12345',
-                    Price: 25
+                    Price: 25,
                 });
 
                 legacyUpdatedItem = await service.post('items', {
@@ -111,12 +112,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     MainCategoryID: mainCategoryID,
                     CaseQuantity: 5,
                     Name: 'Testing12345',
-                    Price: 25
+                    Price: 25,
                 });
 
                 updatedItem.Key = updatedItem.UUID;
-                let updatedItemKeys = Object.keys(createdItem);
-                let legacyUpdatedItemKeys = Object.keys(legacyCreatedItem);
+                const updatedItemKeys = Object.keys(createdItem);
+                const legacyUpdatedItemKeys = Object.keys(legacyCreatedItem);
                 expect(updatedItemKeys).to.deep.equal(legacyUpdatedItemKeys);
                 expect(updatedItem.AllowDecimal).to.equal(legacyUpdatedItem.AllowDecimal);
                 expect(updatedItem.MainCategoryID).to.equal(legacyUpdatedItem.MainCategoryID);
@@ -150,40 +151,40 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get Item by key', async () => {
-                let getByKeyItem = await service.getByKey('items', legacyCreatedItem.Key);
+                const getByKeyItem = await service.getByKey('items', legacyCreatedItem.Key);
                 expect(getByKeyItem).to.deep.equal(legacyUpdatedItem);
-                await expect(
-                    service.getByKey('items', '1234'),
-                ).eventually.to.be.rejected;
+                await expect(service.getByKey('items', '1234')).eventually.to.be.rejected;
             });
 
             it('Get Item by Unique key', async () => {
-                let getItemByInternalID = await service.getByUniqueKey('items', 'InternalID', legacyCreatedItem.InternalID);
+                const getItemByInternalID = await service.getByUniqueKey(
+                    'items',
+                    'InternalID',
+                    legacyCreatedItem.InternalID,
+                );
                 expect(getItemByInternalID).to.deep.equal(legacyUpdatedItem);
-                let getItemByUUID = await service.getByUniqueKey('items', 'UUID', legacyCreatedItem.UUID);
+                const getItemByUUID = await service.getByUniqueKey('items', 'UUID', legacyCreatedItem.UUID);
                 expect(getItemByUUID).to.deep.equal(legacyUpdatedItem);
-                let getItemByExternalID = await service.getByUniqueKey('items', 'ExternalID', legacyCreatedItem.ExternalID);
+                const getItemByExternalID = await service.getByUniqueKey(
+                    'items',
+                    'ExternalID',
+                    legacyCreatedItem.ExternalID,
+                );
                 expect(getItemByExternalID).to.deep.equal(legacyUpdatedItem);
-                let getItemByKey = await service.getByUniqueKey('items', 'Key', legacyCreatedItem.Key);
+                const getItemByKey = await service.getByUniqueKey('items', 'Key', legacyCreatedItem.Key);
                 expect(getItemByKey).to.deep.equal(legacyUpdatedItem);
-                await expect(
-                    service.getByUniqueKey('items', 'InternalID', '123412'),
-                ).eventually.to.be.rejected;
-                await expect(
-                    service.getByUniqueKey('items', 'Price', '123412'),
-                ).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('items', 'InternalID', '123412')).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('items', 'Price', '123412')).eventually.to.be.rejected;
             });
 
             describe('Items search', () => {
                 let legacyItems;
                 it('Where', async () => {
-                    let whereItems;
-                    whereItems = await objectsService.getItems({ where: `ExternalID='Automated API Item'` });
-                    let legacyWhereItems;
-                    legacyWhereItems = await service.search('items', {
-                        where: `ExternalID='Automated API Item'`
+                    const whereItems = await objectsService.getItems({ where: `ExternalID='Automated API Item'` });
+                    const legacyWhereItems = await service.search('items', {
+                        where: `ExternalID='Automated API Item'`,
                     });
-                    expect(whereItems.length).to.equal(legacyWhereItems.length)
+                    expect(whereItems.length).to.equal(legacyWhereItems.length);
                 });
 
                 it('Page and PageSize', async () => {
@@ -191,42 +192,49 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     let legacyPageItems;
                     legacyPageItems = await service.search('items', {
                         page: 1,
-                        pageSize: 1
+                        pageSize: 1,
                     });
                     expect(legacyPageItems.length).to.equal(1);
                     expect(legacyPageItems[0]).to.deep.equal(legacyItems[0]);
                     legacyPageItems = await service.search('items', {
                         page: 2,
-                        pageSize: 1
+                        pageSize: 1,
                     });
                     expect(legacyPageItems.length).to.equal(1);
                     expect(legacyPageItems[0]).to.deep.equal(legacyItems[1]);
                     legacyPageItems = await service.search('items', {
-                        pageSize: 5
+                        pageSize: 5,
                     });
                     expect(legacyPageItems.length).to.equal(5);
                     legacyPageItems = await service.search('items', {
-                        pageSize: -1
+                        pageSize: -1,
                     });
                     expect(legacyPageItems.length).to.equal(legacyItems.length);
                 });
 
                 it('KeyList', async () => {
-                    legacyItems = await service.get(`items?where=UUID IN ('${items[0].UUID}','${items[1].UUID}','${items[2].UUID}','${items[3].UUID}')`);
-                    let legacyKeyListItems;
-                    legacyKeyListItems = await service.search('items', {
-                        KeyList: [items[0].UUID, items[1].UUID, items[2].UUID, items[3].UUID]
+                    legacyItems = await service.get(
+                        `items?where=UUID IN ('${items[0].UUID}','${items[1].UUID}','${items[2].UUID}','${items[3].UUID}')`,
+                    );
+                    const legacyKeyListItems = await service.search('items', {
+                        KeyList: [items[0].UUID, items[1].UUID, items[2].UUID, items[3].UUID],
                     });
                     expect(legacyKeyListItems.length).to.equal(legacyItems.length);
                     expect(legacyKeyListItems).to.deep.equal(legacyItems);
                 });
 
                 it('UniqueFieldList', async () => {
-                    legacyItems = await service.get(`items?where=InternalID IN ('${items[0].InternalID}','${items[1].InternalID}','${items[2].InternalID}','${items[3].InternalID}')`);
-                    let legacyUniqueFieldItems;
-                    legacyUniqueFieldItems = await service.search('items', {
-                        UniqueFieldList: [items[0].InternalID, items[1].InternalID, items[2].InternalID, items[3].InternalID],
-                        UniqueFieldID: 'InternalID'
+                    legacyItems = await service.get(
+                        `items?where=InternalID IN ('${items[0].InternalID}','${items[1].InternalID}','${items[2].InternalID}','${items[3].InternalID}')`,
+                    );
+                    const legacyUniqueFieldItems = await service.search('items', {
+                        UniqueFieldList: [
+                            items[0].InternalID,
+                            items[1].InternalID,
+                            items[2].InternalID,
+                            items[3].InternalID,
+                        ],
+                        UniqueFieldID: 'InternalID',
                     });
                     expect(legacyUniqueFieldItems.length).to.equal(legacyItems.length);
                     expect(legacyUniqueFieldItems).to.deep.equal(legacyItems);
@@ -234,10 +242,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 it('Fields', async () => {
                     legacyItems = await service.get(`items?where=InternalID=${items[0].InternalID}`);
-                    let legacyFieldsItems;
-                    legacyFieldsItems = await service.search(`items`, {
+                    const legacyFieldsItems = await service.search(`items`, {
                         Where: `InternalID=${items[0].InternalID}`,
-                        Fields: 'InternalID'
+                        Fields: 'InternalID',
                     });
                     expect(legacyFieldsItems.length).to.equal(legacyItems.length);
                     expect(legacyFieldsItems).to.deep.equal([{ InternalID: items[0].InternalID }]);
@@ -276,16 +283,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 legacyAccountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
 
                 createdAccount = await objectsService.createAccount({
-                    ExternalID: accountExternalID
+                    ExternalID: accountExternalID,
                 });
 
                 legacyCreatedAccount = await service.post('accounts', {
                     ExternalID: legacyAccountExternalID,
-                })
+                });
 
                 createdAccount.Key = createdAccount.UUID;
-                let createdAccountKeys = Object.keys(createdAccount);
-                let legacyCreatedAccountKeys = Object.keys(legacyCreatedAccount);
+                const createdAccountKeys = Object.keys(createdAccount);
+                const legacyCreatedAccountKeys = Object.keys(legacyCreatedAccount);
                 expect(createdAccountKeys).to.deep.equal(legacyCreatedAccountKeys);
                 expect(legacyCreatedAccount).to.have.property('InternalID').that.is.a('number');
                 expect(legacyCreatedAccount).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
@@ -314,7 +321,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(legacyCreatedAccount).to.have.property('Status').that.is.a('number').and.equals(2);
                 expect(legacyCreatedAccount).to.have.property('StatusName').that.is.a('string').and.equals('Submitted');
                 expect(legacyCreatedAccount).to.have.property('Street').that.is.a('string');
-                expect(legacyCreatedAccount.Catalogs).to.have.property('URI').that.equals(`/inventory?where=ItemInternalID=${legacyCreatedAccount.InternalID}`);
+                expect(legacyCreatedAccount.Catalogs)
+                    .to.have.property('URI')
+                    .that.equals(`/inventory?where=ItemInternalID=${legacyCreatedAccount.InternalID}`);
                 expect(legacyCreatedAccount).to.have.property('Prop1');
                 expect(legacyCreatedAccount).to.have.property('Prop2');
                 expect(legacyCreatedAccount).to.have.property('Prop3');
@@ -333,19 +342,19 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     ExternalID: accountExternalID,
                     City: 'Holon',
                     Name: 'Testing12345',
-                    Discount: 25
+                    Discount: 25,
                 });
 
                 legacyUpdatedAccount = await service.post('accounts', {
                     ExternalID: legacyAccountExternalID,
                     City: 'Holon',
                     Name: 'Testing12345',
-                    Discount: 25
+                    Discount: 25,
                 });
 
                 updatedAccount.Key = updatedAccount.UUID;
-                let updatedAccountKeys = Object.keys(createdAccount);
-                let legacyUpdatedAccountKeys = Object.keys(legacyCreatedAccount);
+                const updatedAccountKeys = Object.keys(createdAccount);
+                const legacyUpdatedAccountKeys = Object.keys(legacyCreatedAccount);
                 expect(updatedAccountKeys).to.deep.equal(legacyUpdatedAccountKeys);
                 expect(updatedAccount.City).to.equal(legacyUpdatedAccount.City);
                 expect(updatedAccount.Country).to.equal(legacyUpdatedAccount.Country);
@@ -379,40 +388,42 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get account by key', async () => {
-                let getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
+                const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
                 expect(getByKeyAccount).to.deep.equal(legacyUpdatedAccount);
-                await expect(
-                    service.getByKey('accounts', '1234'),
-                ).eventually.to.be.rejected;
+                await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
 
             it('Get account by Unique key', async () => {
-                let getAccountByInternalID = await service.getByUniqueKey('accounts', 'InternalID', legacyCreatedAccount.InternalID);
+                const getAccountByInternalID = await service.getByUniqueKey(
+                    'accounts',
+                    'InternalID',
+                    legacyCreatedAccount.InternalID,
+                );
                 expect(getAccountByInternalID).to.deep.equal(legacyUpdatedAccount);
-                let getAccountByUUID = await service.getByUniqueKey('accounts', 'UUID', legacyCreatedAccount.UUID);
+                const getAccountByUUID = await service.getByUniqueKey('accounts', 'UUID', legacyCreatedAccount.UUID);
                 expect(getAccountByUUID).to.deep.equal(legacyUpdatedAccount);
-                let getAccountByExternalID = await service.getByUniqueKey('accounts', 'ExternalID', legacyCreatedAccount.ExternalID);
+                const getAccountByExternalID = await service.getByUniqueKey(
+                    'accounts',
+                    'ExternalID',
+                    legacyCreatedAccount.ExternalID,
+                );
                 expect(getAccountByExternalID).to.deep.equal(legacyUpdatedAccount);
-                let getAccountByKey = await service.getByUniqueKey('accounts', 'Key', legacyCreatedAccount.Key);
+                const getAccountByKey = await service.getByUniqueKey('accounts', 'Key', legacyCreatedAccount.Key);
                 expect(getAccountByKey).to.deep.equal(legacyUpdatedAccount);
-                await expect(
-                    service.getByUniqueKey('accounts', 'InternalID', '123412'),
-                ).eventually.to.be.rejected;
-                await expect(
-                    service.getByUniqueKey('accounts', 'Price', '123412'),
-                ).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('accounts', 'InternalID', '123412')).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('accounts', 'Price', '123412')).eventually.to.be.rejected;
             });
 
             describe('Accounts search', () => {
                 let legacyAccounts;
                 it('Where', async () => {
-                    let whereAccounts;
-                    whereAccounts = await objectsService.getAccounts({ where: `ExternalID='Automated API Account'` });
-                    let legacyWhereAccounts;
-                    legacyWhereAccounts = await service.search('accounts', {
-                        where: `ExternalID='Automated API Account'`
+                    const whereAccounts = await objectsService.getAccounts({
+                        where: `ExternalID='Automated API Account'`,
                     });
-                    expect(whereAccounts.length).to.equal(legacyWhereAccounts.length)
+                    const legacyWhereAccounts = await service.search('accounts', {
+                        where: `ExternalID='Automated API Account'`,
+                    });
+                    expect(whereAccounts.length).to.equal(legacyWhereAccounts.length);
                 });
 
                 it('Page and PageSize', async () => {
@@ -420,42 +431,49 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     let legacyPageAccounts;
                     legacyPageAccounts = await service.search('accounts', {
                         page: 1,
-                        pageSize: 1
+                        pageSize: 1,
                     });
                     expect(legacyPageAccounts.length).to.equal(1);
                     expect(legacyPageAccounts[0]).to.deep.equal(legacyAccounts[0]);
                     legacyPageAccounts = await service.search('accounts', {
                         page: 2,
-                        pageSize: 1
+                        pageSize: 1,
                     });
                     expect(legacyPageAccounts.length).to.equal(1);
                     expect(legacyPageAccounts[0]).to.deep.equal(legacyAccounts[1]);
                     legacyPageAccounts = await service.search('accounts', {
-                        pageSize: 5
+                        pageSize: 5,
                     });
                     expect(legacyPageAccounts.length).to.equal(5);
                     legacyPageAccounts = await service.search('accounts', {
-                        pageSize: -1
+                        pageSize: -1,
                     });
                     expect(legacyPageAccounts.length).to.equal(legacyAccounts.length);
                 });
 
                 it('KeyList', async () => {
-                    legacyAccounts = await service.get(`accounts?where=UUID IN ('${accounts[0].UUID}','${accounts[1].UUID}','${accounts[2].UUID}','${accounts[3].UUID}')`);
-                    let legacyKeyListAccounts;
-                    legacyKeyListAccounts = await service.search('accounts', {
-                        KeyList: [accounts[0].UUID, accounts[1].UUID, accounts[2].UUID, accounts[3].UUID]
+                    legacyAccounts = await service.get(
+                        `accounts?where=UUID IN ('${accounts[0].UUID}','${accounts[1].UUID}','${accounts[2].UUID}','${accounts[3].UUID}')`,
+                    );
+                    const legacyKeyListAccounts = await service.search('accounts', {
+                        KeyList: [accounts[0].UUID, accounts[1].UUID, accounts[2].UUID, accounts[3].UUID],
                     });
                     expect(legacyKeyListAccounts.length).to.equal(legacyAccounts.length);
                     expect(legacyKeyListAccounts).to.deep.equal(legacyAccounts);
                 });
 
                 it('UniqueFieldList', async () => {
-                    legacyAccounts = await service.get(`accounts?where=InternalID IN ('${accounts[0].InternalID}','${accounts[1].InternalID}','${accounts[2].InternalID}','${accounts[3].InternalID}')`);
-                    let legacyUniqueFieldAccounts;
-                    legacyUniqueFieldAccounts = await service.search('accounts', {
-                        UniqueFieldList: [accounts[0].InternalID, accounts[1].InternalID, accounts[2].InternalID, accounts[3].InternalID],
-                        UniqueFieldID: 'InternalID'
+                    legacyAccounts = await service.get(
+                        `accounts?where=InternalID IN ('${accounts[0].InternalID}','${accounts[1].InternalID}','${accounts[2].InternalID}','${accounts[3].InternalID}')`,
+                    );
+                    const legacyUniqueFieldAccounts = await service.search('accounts', {
+                        UniqueFieldList: [
+                            accounts[0].InternalID,
+                            accounts[1].InternalID,
+                            accounts[2].InternalID,
+                            accounts[3].InternalID,
+                        ],
+                        UniqueFieldID: 'InternalID',
                     });
                     expect(legacyUniqueFieldAccounts.length).to.equal(legacyAccounts.length);
                     expect(legacyUniqueFieldAccounts).to.deep.equal(legacyAccounts);
@@ -463,10 +481,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 it('Fields', async () => {
                     legacyAccounts = await service.get(`accounts?where=InternalID=${accounts[0].InternalID}`);
-                    let legacyFieldsAccounts;
-                    legacyFieldsAccounts = await service.search(`accounts`, {
+                    const legacyFieldsAccounts = await service.search(`accounts`, {
                         Where: `InternalID=${accounts[0].InternalID}`,
-                        Fields: 'InternalID'
+                        Fields: 'InternalID',
                     });
                     expect(legacyFieldsAccounts.length).to.equal(legacyAccounts.length);
                     expect(legacyFieldsAccounts).to.deep.equal([{ InternalID: accounts[0].InternalID }]);
@@ -504,32 +521,32 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 users = await objectsService.getUsers();
                 userExternalID = 'Automated API User' + Math.floor(Math.random() * 1000000).toString();
                 userEmail =
-                'Email' +
-                Math.floor(Math.random() * 1000000).toString() +
-                '@' +
-                Math.floor(Math.random() * 1000000).toString() +
-                '.com';
+                    'Email' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '@' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '.com';
                 legacyUserExternalID = 'Automated API User' + Math.floor(Math.random() * 1000000).toString();
                 legacyUserEmail =
-                'Email' +
-                Math.floor(Math.random() * 1000000).toString() +
-                '@' +
-                Math.floor(Math.random() * 1000000).toString() +
-                '.com';
+                    'Email' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '@' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '.com';
 
                 createdUser = await objectsService.createAccount({
                     ExternalID: userExternalID,
-                    Email: userEmail
+                    Email: userEmail,
                 });
 
                 legacyCreatedUser = await service.post('users', {
                     ExternalID: legacyUserExternalID,
-                    Email: legacyUserEmail
-                })
+                    Email: legacyUserEmail,
+                });
 
                 createdUser.Key = createdUser.UUID;
-                let createdUserKeys = Object.keys(createdUser);
-                let legacyCreatedUserKeys = Object.keys(legacyCreatedUser);
+                const createdUserKeys = Object.keys(createdUser);
+                const legacyCreatedUserKeys = Object.keys(legacyCreatedUser);
                 expect(createdUserKeys).to.deep.equal(legacyCreatedUserKeys);
                 expect(legacyCreatedUser).to.have.property('InternalID').that.is.a('number');
                 expect(legacyCreatedUser).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
@@ -553,17 +570,17 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             it('Update user', async () => {
                 updatedUser = await objectsService.createAccount({
                     ExternalID: userExternalID,
-                    FirstName: 'Testing12345'
+                    FirstName: 'Testing12345',
                 });
 
                 legacyUpdatedUser = await service.post('users', {
                     ExternalID: legacyUserExternalID,
-                    FirstName: 'Testing12345'
+                    FirstName: 'Testing12345',
                 });
 
                 updatedUser.Key = updatedUser.UUID;
-                let updatedUserKeys = Object.keys(createdUser);
-                let legacyUpdatedUserKeys = Object.keys(legacyCreatedUser);
+                const updatedUserKeys = Object.keys(createdUser);
+                const legacyUpdatedUserKeys = Object.keys(legacyCreatedUser);
                 expect(updatedUserKeys).to.deep.equal(legacyUpdatedUserKeys);
                 expect(updatedUser.FirstName).to.equal(legacyUpdatedUser.FirstName);
                 expect(updatedUser.Hidden).to.equal(legacyUpdatedUser.Hidden);
@@ -577,40 +594,40 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get user by key', async () => {
-                let getByKeyUser = await service.getByKey('users', legacyCreatedUser.Key);
+                const getByKeyUser = await service.getByKey('users', legacyCreatedUser.Key);
                 expect(getByKeyUser).to.deep.equal(legacyUpdatedUser);
-                await expect(
-                    service.getByKey('users', '1234'),
-                ).eventually.to.be.rejected;
+                await expect(service.getByKey('users', '1234')).eventually.to.be.rejected;
             });
 
             it('Get user by Unique key', async () => {
-                let getUserByInternalID = await service.getByUniqueKey('users', 'InternalID', legacyCreatedUser.InternalID);
+                const getUserByInternalID = await service.getByUniqueKey(
+                    'users',
+                    'InternalID',
+                    legacyCreatedUser.InternalID,
+                );
                 expect(getUserByInternalID).to.deep.equal(legacyUpdatedUser);
-                let getUserByUUID = await service.getByUniqueKey('users', 'UUID', legacyCreatedUser.UUID);
+                const getUserByUUID = await service.getByUniqueKey('users', 'UUID', legacyCreatedUser.UUID);
                 expect(getUserByUUID).to.deep.equal(legacyUpdatedUser);
-                let getUserByExternalID = await service.getByUniqueKey('users', 'ExternalID', legacyCreatedUser.ExternalID);
+                const getUserByExternalID = await service.getByUniqueKey(
+                    'users',
+                    'ExternalID',
+                    legacyCreatedUser.ExternalID,
+                );
                 expect(getUserByExternalID).to.deep.equal(legacyUpdatedUser);
-                let getUserByKey = await service.getByUniqueKey('users', 'Key', legacyCreatedUser.Key);
+                const getUserByKey = await service.getByUniqueKey('users', 'Key', legacyCreatedUser.Key);
                 expect(getUserByKey).to.deep.equal(legacyUpdatedUser);
-                await expect(
-                    service.getByUniqueKey('users', 'InternalID', '123412'),
-                ).eventually.to.be.rejected;
-                await expect(
-                    service.getByUniqueKey('users', 'Price', '123412'),
-                ).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('users', 'InternalID', '123412')).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('users', 'Price', '123412')).eventually.to.be.rejected;
             });
 
             describe('Users search', () => {
                 let legacyUsers;
                 it('Where', async () => {
-                    let whereUsers;
-                    whereUsers = await objectsService.getUsers({ where: `ExternalID='Automated API User'` });
-                    let legacyWhereUsers;
-                    legacyWhereUsers = await service.search('users', {
-                        where: `ExternalID='Automated API User'`
+                    const whereUsers = await objectsService.getUsers({ where: `ExternalID='Automated API User'` });
+                    const legacyWhereUsers = await service.search('users', {
+                        where: `ExternalID='Automated API User'`,
                     });
-                    expect(whereUsers.length).to.equal(legacyWhereUsers.length)
+                    expect(whereUsers.length).to.equal(legacyWhereUsers.length);
                 });
 
                 it('Page and PageSize', async () => {
@@ -618,42 +635,49 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     let legacyPageUsers;
                     legacyPageUsers = await service.search('users', {
                         page: 1,
-                        pageSize: 1
+                        pageSize: 1,
                     });
                     expect(legacyPageUsers.length).to.equal(1);
                     expect(legacyPageUsers[0]).to.deep.equal(legacyUsers[0]);
                     legacyPageUsers = await service.search('users', {
                         page: 2,
-                        pageSize: 1
+                        pageSize: 1,
                     });
                     expect(legacyPageUsers.length).to.equal(1);
                     expect(legacyPageUsers[0]).to.deep.equal(legacyUsers[1]);
                     legacyPageUsers = await service.search('users', {
-                        pageSize: 5
+                        pageSize: 5,
                     });
                     expect(legacyPageUsers.length).to.equal(5);
                     legacyPageUsers = await service.search('users', {
-                        pageSize: -1
+                        pageSize: -1,
                     });
                     expect(legacyPageUsers.length).to.equal(legacyUsers.length);
                 });
 
                 it('KeyList', async () => {
-                    legacyUsers = await service.get(`users?where=UUID IN ('${users[0].UUID}','${users[1].UUID}','${users[2].UUID}','${users[3].UUID}')`);
-                    let legacyKeyListUsers;
-                    legacyKeyListUsers = await service.search('users', {
-                        KeyList: [users[0].UUID, users[1].UUID, users[2].UUID, users[3].UUID]
+                    legacyUsers = await service.get(
+                        `users?where=UUID IN ('${users[0].UUID}','${users[1].UUID}','${users[2].UUID}','${users[3].UUID}')`,
+                    );
+                    const legacyKeyListUsers = await service.search('users', {
+                        KeyList: [users[0].UUID, users[1].UUID, users[2].UUID, users[3].UUID],
                     });
                     expect(legacyKeyListUsers.length).to.equal(legacyUsers.length);
                     expect(legacyKeyListUsers).to.deep.equal(legacyUsers);
                 });
 
                 it('UniqueFieldList', async () => {
-                    legacyUsers = await service.get(`users?where=InternalID IN ('${users[0].InternalID}','${users[1].InternalID}','${users[2].InternalID}','${users[3].InternalID}')`);
-                    let legacyUniqueFieldUsers;
-                    legacyUniqueFieldUsers = await service.search('users', {
-                        UniqueFieldList: [users[0].InternalID, users[1].InternalID, users[2].InternalID, users[3].InternalID],
-                        UniqueFieldID: 'InternalID'
+                    legacyUsers = await service.get(
+                        `users?where=InternalID IN ('${users[0].InternalID}','${users[1].InternalID}','${users[2].InternalID}','${users[3].InternalID}')`,
+                    );
+                    const legacyUniqueFieldUsers = await service.search('users', {
+                        UniqueFieldList: [
+                            users[0].InternalID,
+                            users[1].InternalID,
+                            users[2].InternalID,
+                            users[3].InternalID,
+                        ],
+                        UniqueFieldID: 'InternalID',
                     });
                     expect(legacyUniqueFieldUsers.length).to.equal(legacyUsers.length);
                     expect(legacyUniqueFieldUsers).to.deep.equal(legacyUsers);
@@ -661,10 +685,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 it('Fields', async () => {
                     legacyUsers = await service.get(`users?where=InternalID=${users[0].InternalID}`);
-                    let legacyFieldsUsers;
-                    legacyFieldsUsers = await service.search(`users`, {
+                    const legacyFieldsUsers = await service.search(`users`, {
                         Where: `InternalID=${users[0].InternalID}`,
-                        Fields: 'InternalID'
+                        Fields: 'InternalID',
                     });
                     expect(legacyFieldsUsers.length).to.equal(legacyUsers.length);
                     expect(legacyFieldsUsers).to.deep.equal([{ InternalID: users[0].InternalID }]);
