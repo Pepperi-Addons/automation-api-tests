@@ -118,14 +118,15 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Validate Correct Error Reject Message`, async () => {
-                let postResponse;
                 let responseWithError = false;
                 try {
-                    postResponse = await udcService.postScheme(schemaTestData);
+                    await udcService.postScheme(schemaTestData);
                 } catch (error) {
                     responseWithError = true;
-                    let message = (error as any).message;
-                    expect(message).to.include(`"fault":{"faultstring":"Failed due to exception: Fields.optionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.optionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.optionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.optionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`);
+                    const message = (error as any).message;
+                    expect(message).to.include(
+                        `"fault":{"faultstring":"Failed due to exception: Fields.optionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.optionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.optionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.optionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`,
+                    );
                 }
                 expect(responseWithError).to.be.true;
             });
@@ -318,14 +319,15 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Validate Correct Error Reject Message`, async () => {
-                let postResponse;
                 let responseWithError = false;
                 try {
-                    postResponse = await udcService.postScheme(schemaTestData);
+                    await udcService.postScheme(schemaTestData);
                 } catch (error) {
                     responseWithError = true;
-                    let message = (error as any).message;
-                    expect(message).to.include(`"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`);
+                    const message = (error as any).message;
+                    expect(message).to.include(
+                        `"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`,
+                    );
                 }
                 expect(responseWithError).to.be.true;
                 // await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
