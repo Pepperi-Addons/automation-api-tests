@@ -9,8 +9,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     const whaitOwnerUUID = '2c199913-dba2-4533-ad78-747b6553acf8';
     const whaitSecretKey = '55cd2b56-2def-4e4e-b461-a56eb3e31689';
-    const adalOwnerId ='00000000-0000-0000-0000-00000000ada1';
-    
+    const adalOwnerId = '00000000-0000-0000-0000-00000000ada1';
 
     const logcash: any = {};
     let counter = 0;
@@ -34,10 +33,9 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
-        'training' :['2c199913-dba2-4533-ad78-747b6553acf8','0.0.12'],
+        training: ['2c199913-dba2-4533-ad78-747b6553acf8', '0.0.12'],
         Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c','']
-        
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -84,16 +82,17 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                 });
             }
         });
-         
-        
+
         describe('Create Schema type data with indexed fields + elastic verification', () => {
             it('Test Initiation', async () => {
                 // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
             });
             it('Create Schema with indexed fileds with OwnerID - not from white list', async () => {
-
-                assert(logcash.createSchemaTypeDataIndexNegativeStatus, logcash.createSchemaTypeDataIndexNegativeErrorMessage);
+                assert(
+                    logcash.createSchemaTypeDataIndexNegativeStatus,
+                    logcash.createSchemaTypeDataIndexNegativeErrorMessage,
+                );
             });
             it('Get dedicated schema - negative', () => {
                 assert(logcash.getDedicatedSchemeNegativeStatus, logcash.getDedicatedSchemeNegativeErrorMessage);
@@ -107,9 +106,9 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                 assert(logcash.createSchemaTypeDataIndexStatus, logcash.createSchemaTypeDataIndexErrorMessage);
             });
             it('Get dedicated schema', () => {
-                assert( logcash.getDedicatedSchemeStatus, logcash.getDedicatedSchemeErrorMessage);
+                assert(logcash.getDedicatedSchemeStatus, logcash.getDedicatedSchemeErrorMessage);
             });
-            
+
             it('Upsert schema fields - change fields to indexed', () => {
                 assert(logcash.upsertSchemaTypeDataIndexStatus, logcash.upsertSchemaTypeDataIndexErrorMessage);
             });
@@ -120,7 +119,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                 assert(logcash.insertDataToDataTableStatus, logcash.insertDataToDataTableError);
             });
             it('Get Data From dedicated table', () => {
-                assert(logcash.getDataDedicatedStatus, logcash.getDataDedicatedError);     
+                assert(logcash.getDataDedicatedStatus, logcash.getDataDedicatedError);
             });
             it('Get Data From ADAL table(order by indexed fields)', () => {
                 assert(logcash.getDataADALbyNameStatus, logcash.getDataADALbyNameError);
@@ -129,7 +128,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                 assert(logcash.getDataADALbyName2Status, logcash.getDataADALbyName2Error);
             });
             it('Drop Existing Table: Finished', () => {
-                assert(logcash.getDataADALStatus, logcash.getDataADALError);   
+                assert(logcash.getDataADALStatus, logcash.getDataADALError);
             });
             it('Upsert ADAL schema fields type to indexed', () => {
                 assert(logcash.upsertSchemaAddIndexedFieldStatus, logcash.upsertSchemaAddIndexedFieldErrorMessage);
@@ -152,7 +151,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         });
     });
     logcash.getDataADALbyName2Status = false;
-             logcash.getDataADALbyName2Error
+    logcash.getDataADALbyName2Error;
     //#endregion Mocha
 
     //get secret key
@@ -168,9 +167,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         await createSchemaTypeDataIndexNegative();
     }
 
-   
     //#region Schema creation negative - owner and secret not from whait list addon
-    
+
     // create schema type data with owner/secret not from white list. Just root schema will be created
     async function createSchemaTypeDataIndexNegative() {
         logcash.createSchemaTypeDataIndexNegative = await generalService
@@ -190,9 +188,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                         testBoolean: { Type: 'Bool' },
                         TestInteger: { Type: 'Integer' },
                         TestDouble: { Type: 'Double' },
-                        TestDateTime: {Type: 'DateTime', Indexed: true}
+                        TestDateTime: { Type: 'DateTime', Indexed: true },
                     },
-                    
                 }),
             })
             .then((res) => res.Body);
@@ -211,27 +208,36 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         } else {
             logcash.createSchemaTypeDataIndexNegativeStatus = false;
             logcash.createSchemaTypeDataIndexNegativeErrorMessage =
-                'One of parameters on Schema updating get with wrong value: ' + logcash.createSchemaTypeDataIndexNegative;
+                'One of parameters on Schema updating get with wrong value: ' +
+                logcash.createSchemaTypeDataIndexNegative;
         }
         await getDedicatedSchemeNegative();
     }
 
     async function getDedicatedSchemeNegative() {
         logcash.getDedicatedSchemeNegative = await generalService
-            .fetchStatus(baseURL + '/addons/data/schemes'+ '/' + addonUUID + '_' + logcash.createSchemaTypeDataIndexNegative.Name, {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': adalOwnerId,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/schemes' +
+                    '/' +
+                    addonUUID +
+                    '_' +
+                    logcash.createSchemaTypeDataIndexNegative.Name,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': adalOwnerId,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-                
-            })
+            )
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.getDedicatedSchemeNegative.fault.faultstring.includes('Failed due to exception: Object ID does not exist.')
-            
+            logcash.getDedicatedSchemeNegative.fault.faultstring.includes(
+                'Failed due to exception: Object ID does not exist.',
+            )
         ) {
             logcash.getDedicatedSchemeNegativeStatus = true;
         } else {
@@ -280,7 +286,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                 },
                 body: JSON.stringify({
                     //Name: ('DataTypeIndexedTable' + Date()).replace(/\s+/g, ""),
-                    Name: ('dataTypeIndexedTable' + newUuid()),
+                    Name: 'dataTypeIndexedTable' + newUuid(),
                     Type: 'data',
                     StringIndexName: 'my_index_table',
                     Fields: {
@@ -288,9 +294,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                         testBoolean: { Type: 'Bool' },
                         TestInteger: { Type: 'Integer' },
                         TestDouble: { Type: 'Double' },
-                        TestDateTime: {Type: 'DateTime', Indexed: true}
+                        TestDateTime: { Type: 'DateTime', Indexed: true },
                     },
-                    
                 }),
             })
             .then((res) => res.Body);
@@ -316,15 +321,17 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     async function getDedicatedScheme() {
         logcash.getDedicatedScheme = await generalService
-            .fetchStatus(baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': adalOwnerId,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': adalOwnerId,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-                
-            })
+            )
             .then((res) => res.Body);
         //debugger;
         if (
@@ -337,18 +344,16 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             logcash.getDedicatedScheme.Fields.Key.Indexed == true &&
             logcash.getDedicatedScheme.Fields.Key.Type == 'String' &&
             logcash.getDedicatedScheme.Fields.ModificationDateTime.Indexed == true &&
-            logcash.getDedicatedScheme.Fields.ModificationDateTime.Type == 'DateTime'&&
+            logcash.getDedicatedScheme.Fields.ModificationDateTime.Type == 'DateTime' &&
             logcash.getDedicatedScheme.Fields.TestDateTime.Indexed == true &&
             logcash.getDedicatedScheme.Fields.TestDateTime.Type == 'DateTime' &&
             logcash.getDedicatedScheme.Fields.testString.Indexed == true &&
-            logcash.getDedicatedScheme.Fields.testString.Type =='String'
-
+            logcash.getDedicatedScheme.Fields.testString.Type == 'String'
         ) {
             logcash.getDedicatedSchemeStatus = true;
         } else {
             logcash.getDedicatedSchemeStatus = false;
-            logcash.getDedicatedSchemeErrorMessage =
-                'The dedicated scheme will be created, but actuall get empty ';
+            logcash.getDedicatedSchemeErrorMessage = 'The dedicated scheme will be created, but actuall get empty ';
         }
         await upsertSchemaTypeDataIndex();
     }
@@ -369,20 +374,19 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                     StringIndexName: 'my_index_table',
                     Fields: {
                         testString: { Type: 'String', Indexed: true },
-                        testBoolean: { Type: 'Bool' , Indexed: true},
-                        TestInteger: { Type: 'Integer' , Indexed: true },
-                        TestDouble: { Type: 'Double' , Indexed: true},
-                        TestDateTime: {Type: 'DateTime', Indexed: true},
-                        secString: {Type: 'String'},
-                        secInteger: { Type: 'Integer' }
+                        testBoolean: { Type: 'Bool', Indexed: true },
+                        TestInteger: { Type: 'Integer', Indexed: true },
+                        TestDouble: { Type: 'Double', Indexed: true },
+                        TestDateTime: { Type: 'DateTime', Indexed: true },
+                        secString: { Type: 'String' },
+                        secInteger: { Type: 'Integer' },
                     },
-                    
                 }),
             })
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.upsertSchemaTypeDataIndex.Name.includes ('dataTypeIndexedTable') &&
+            logcash.upsertSchemaTypeDataIndex.Name.includes('dataTypeIndexedTable') &&
             logcash.upsertSchemaTypeDataIndex.Hidden == false &&
             logcash.upsertSchemaTypeDataIndex.Type == 'data' &&
             logcash.upsertSchemaTypeDataIndex.Fields.testBoolean.Type == 'Bool' &&
@@ -404,15 +408,17 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     async function getDedicatedSchemeAferUpsert() {
         logcash.getDedicatedSchemeAferUpsert = await generalService
-            .fetchStatus(baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': adalOwnerId,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL + '/addons/data/schemes/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': adalOwnerId,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-                
-            })
+            )
             .then((res) => res.Body);
         //debugger;
         if (
@@ -425,18 +431,17 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             logcash.getDedicatedSchemeAferUpsert.Fields.Key.Indexed == true &&
             logcash.getDedicatedSchemeAferUpsert.Fields.Key.Type == 'String' &&
             logcash.getDedicatedSchemeAferUpsert.Fields.ModificationDateTime.Indexed == true &&
-            logcash.getDedicatedSchemeAferUpsert.Fields.ModificationDateTime.Type == 'DateTime'&&
+            logcash.getDedicatedSchemeAferUpsert.Fields.ModificationDateTime.Type == 'DateTime' &&
             logcash.getDedicatedSchemeAferUpsert.Fields.TestDateTime.Indexed == true &&
             logcash.getDedicatedSchemeAferUpsert.Fields.TestDateTime.Type == 'DateTime' &&
             logcash.getDedicatedSchemeAferUpsert.Fields.testString.Indexed == true &&
-            logcash.getDedicatedSchemeAferUpsert.Fields.testString.Type =='String' &&
+            logcash.getDedicatedSchemeAferUpsert.Fields.testString.Type == 'String' &&
             logcash.getDedicatedSchemeAferUpsert.Fields.testBoolean.Indexed == true &&
             logcash.getDedicatedSchemeAferUpsert.Fields.testBoolean.Type == 'Bool' &&
             logcash.getDedicatedSchemeAferUpsert.Fields.TestInteger.Indexed == true &&
             logcash.getDedicatedSchemeAferUpsert.Fields.TestInteger.Type == 'Integer' &&
             logcash.getDedicatedSchemeAferUpsert.Fields.TestDouble.Indexed == true &&
             logcash.getDedicatedSchemeAferUpsert.Fields.TestDouble.Type == 'Double'
-            
         ) {
             logcash.getDedicatedSchemeAferUpsertStatus = true;
         } else {
@@ -449,27 +454,32 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     async function insertDataToDataTable() {
         for (counter; counter < 10; counter++) {
-            let boolData = false; 
-            if(counter % 2 !=0){boolData = true};
+            let boolData = false;
+            if (counter % 2 != 0) {
+                boolData = true;
+            }
             logcash.insertDataToDataTable = await generalService
-                .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name, {
-                    method: 'POST',
-                    headers: {
-                        Authorization: 'Bearer ' + token,
-                        //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
-                        'X-Pepperi-SecretKey': whaitSecretKey,
+                .fetchStatus(
+                    baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                            'X-Pepperi-SecretKey': whaitSecretKey,
+                        },
+                        body: JSON.stringify({
+                            Key: 'insert ' + counter,
+                            testString: 'firstStrring-' + counter,
+                            testBoolean: boolData,
+                            TestInteger: counter,
+                            TestDouble: counter + '.5',
+                            TestDateTime: new Date(),
+                            secString: 'secondStrring-' + counter,
+                            secInteger: counter * 2,
+                        }),
                     },
-                    body: JSON.stringify({
-                        Key: 'insert ' + counter,
-                        testString: 'firstStrring-' + counter,
-                        testBoolean: boolData,
-                        TestInteger: counter,
-                        TestDouble: counter + '.5',
-                        TestDateTime: new Date(),
-                        secString: 'secondStrring-' + counter,
-                        secInteger: counter * 2
-                    }),
-                })
+                )
                 .then((res) => [res.Status, res.Body]);
             //debugger;
             //Failed due to exception: Table schema must exist, for table
@@ -487,60 +497,79 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     //#endregion Schema creation positive - Owner and SekretKey fom white list addon
     //#region  Get data from ADAL and ADAL indexed schemes
-    async function getDataDedicated() { // get data from elastic
+    async function getDataDedicated() {
+        // get data from elastic
         logcash.getDataDedicatedStatus = true;
         logcash.getDataDedicated = await generalService
-        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    //'X-Pepperi-OwnerID': addonUUID,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    whaitOwnerUUID +
+                    '_data/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaTypeDataIndex.Name,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataDedicated.length == 10){
-            for (let index = 0; index < logcash.getDataDedicated.length -1; index++) {
+        if (logcash.getDataDedicated.length == 10) {
+            for (let index = 0; index < logcash.getDataDedicated.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataDedicated[index]).length == 9 &&
-                    logcash.getDataDedicated[index]["testBoolean"] != undefined  &&
-                    logcash.getDataDedicated[index]["TestDateTime"] != '' &&
-                    logcash.getDataDedicated[index]["testString"] != '' &&
-                    logcash.getDataDedicated[index]["TestDouble"] != '' &&
-                    logcash.getDataDedicated[index]["TestInteger"] != undefined
+                    logcash.getDataDedicated[index]['testBoolean'] != undefined &&
+                    logcash.getDataDedicated[index]['TestDateTime'] != '' &&
+                    logcash.getDataDedicated[index]['testString'] != '' &&
+                    logcash.getDataDedicated[index]['TestDouble'] != '' &&
+                    logcash.getDataDedicated[index]['TestInteger'] != undefined
                 ) {
                     //logcash.getDataDedicatedStatus = true;
-                }
-                else{
+                } else {
                     logcash.getDataDedicatedStatus = false;
-                    logcash.getDataDedicatedError = 'Only indexed fields will be added to dedicated scheme'
+                    logcash.getDataDedicatedError = 'Only indexed fields will be added to dedicated scheme';
                 }
             }
-        }
-        else{logcash.getDataDedicatedStatus = false;
-             logcash.getDataDedicatedError = 'will be created 10 objects , but actually created ' + logcash.getDataDedicated.length
+        } else {
+            logcash.getDataDedicatedStatus = false;
+            logcash.getDataDedicatedError =
+                'will be created 10 objects , but actually created ' + logcash.getDataDedicated.length;
         }
         //debugger;
         await getDataADAL();
     }
 
-    
     async function getDataADAL() {
         logcash.getDataADALStatus = true;
         logcash.getDataADAL = await generalService
-        .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name +'?include_deleted=true', {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    // 'X-Pepperi-OwnerID': addonUUID,
-                    // 'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSchemaTypeDataIndex.Name +
+                    '?include_deleted=true',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        // 'X-Pepperi-OwnerID': addonUUID,
+                        // 'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataADAL.length == 10){
-            for (let index = 0; index < logcash.getDataADAL.length -1; index++) {
+        if (logcash.getDataADAL.length == 10) {
+            for (let index = 0; index < logcash.getDataADAL.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataADAL[index]).length == 11 //&&
                     // logcash.getDataADAL[index]["testBoolean"] != '' &&
@@ -550,15 +579,15 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                     // logcash.getDataADAL[index]["TestInteger"] != ''
                 ) {
                     //logcash.getDataDedicatedStatus = true;
-                }
-                else{
+                } else {
                     logcash.getDataADALStatus = false;
-                    logcash.getDataADALError = '--'
+                    logcash.getDataADALError = '--';
                 }
             }
-        }
-        else{logcash.getDataDedicatedStatus = false;
-             logcash.getDataDedicatedError = 'will be created 10 objects , but actually created ' + logcash.getDataADAL.length
+        } else {
+            logcash.getDataDedicatedStatus = false;
+            logcash.getDataDedicatedError =
+                'will be created 10 objects , but actually created ' + logcash.getDataADAL.length;
         }
         //debugger;
         await getDataADALbyName();
@@ -567,18 +596,26 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     async function getDataADALbyName() {
         logcash.getDataADALbyNameStatus = true;
         logcash.getDataADALbyName = await generalService
-        .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name +'?include_deleted=true&fields=TestDateTime,Key&order_by=TestDateTime', {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    // 'X-Pepperi-OwnerID': addonUUID,
-                    // 'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSchemaTypeDataIndex.Name +
+                    '?include_deleted=true&fields=TestDateTime,Key&order_by=TestDateTime',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        // 'X-Pepperi-OwnerID': addonUUID,
+                        // 'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataADALbyName.length == 10){
-            for (let index = 0; index < logcash.getDataADALbyName.length -1; index++) {
+        if (logcash.getDataADALbyName.length == 10) {
+            for (let index = 0; index < logcash.getDataADALbyName.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataADALbyName[index]).length == 2 &&
                     Object.entries(logcash.getDataADALbyName[index])[1][1] == 'insert ' + index //&&
@@ -588,15 +625,15 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                     // logcash.getDataDedicated[index]["TestInteger"] != ''
                 ) {
                     //logcash.getDataDedicatedStatus = true;
-                }
-                else{
+                } else {
                     logcash.getDataADALbyNameStatus = false;
-                    logcash.getDataADALbyNameError = 'Get data by key failed'
+                    logcash.getDataADALbyNameError = 'Get data by key failed';
                 }
             }
-        }
-        else{logcash.getDataADALbyNameStatus = false;
-             logcash.getDataADALbyNameError = 'will be get 10 objects , but actually get ' + logcash.getDataADALbyName.length
+        } else {
+            logcash.getDataADALbyNameStatus = false;
+            logcash.getDataADALbyNameError =
+                'will be get 10 objects , but actually get ' + logcash.getDataADALbyName.length;
         }
         //debugger;
         await getDataADALbyName2();
@@ -605,36 +642,44 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     async function getDataADALbyName2() {
         logcash.getDataADALbyName2Status = true;
         logcash.getDataADALbyName2 = await generalService
-        .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name +'?include_deleted=true&fields=TestDateTime,Key,secInteger&order_by=TestDateTime', {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    // 'X-Pepperi-OwnerID': addonUUID,
-                    // 'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSchemaTypeDataIndex.Name +
+                    '?include_deleted=true&fields=TestDateTime,Key,secInteger&order_by=TestDateTime',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        // 'X-Pepperi-OwnerID': addonUUID,
+                        // 'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataADALbyName2.length == 10){
-            for (let index = 0; index < logcash.getDataADALbyName2.length -1; index++) {
+        if (logcash.getDataADALbyName2.length == 10) {
+            for (let index = 0; index < logcash.getDataADALbyName2.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataADALbyName2[index]).length == 3 &&
-                    Object.entries(logcash.getDataADALbyName2[index])[2][1]== 'insert ' + index //&&
+                    Object.entries(logcash.getDataADALbyName2[index])[2][1] == 'insert ' + index //&&
                     // logcash.getDataDedicated[index]["TestDateTime"] != '' &&
                     // logcash.getDataDedicated[index]["testString"] != '' &&
                     // logcash.getDataDedicated[index]["TestDouble"] != '' &&
                     // logcash.getDataDedicated[index]["TestInteger"] != ''
                 ) {
                     //logcash.getDataDedicatedStatus = true;
-                }
-                else{
+                } else {
                     logcash.getDataADALbyName2Status = false;
-                    logcash.getDataADALbyName2Error = 'Get data by key failed'
+                    logcash.getDataADALbyName2Error = 'Get data by key failed';
                 }
             }
-        }
-        else{logcash.getDataADALbyName2Status = false;
-             logcash.getDataADALbyName2Error = 'will be get 10 objects , but actually get ' + logcash.getDataADALbyName2.length
+        } else {
+            logcash.getDataADALbyName2Status = false;
+            logcash.getDataADALbyName2Error =
+                'will be get 10 objects , but actually get ' + logcash.getDataADALbyName2.length;
         }
         //debugger;
         await upsertSchemaAddIndexedField();
@@ -657,20 +702,19 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
                     StringIndexName: 'my_index_table',
                     Fields: {
                         testString: { Type: 'String', Indexed: true },
-                        testBoolean: { Type: 'Bool' , Indexed: true},
-                        TestInteger: { Type: 'Integer' , Indexed: true },
-                        TestDouble: { Type: 'Double' , Indexed: true},
-                        TestDateTime: {Type: 'DateTime', Indexed: true},
-                        secString: {Type: 'String', Indexed: true},
-                        secInteger: { Type: 'Integer' }
+                        testBoolean: { Type: 'Bool', Indexed: true },
+                        TestInteger: { Type: 'Integer', Indexed: true },
+                        TestDouble: { Type: 'Double', Indexed: true },
+                        TestDateTime: { Type: 'DateTime', Indexed: true },
+                        secString: { Type: 'String', Indexed: true },
+                        secInteger: { Type: 'Integer' },
                     },
-                    
                 }),
             })
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.upsertSchemaAddIndexedField.Name.includes ('dataTypeIndexedTable') &&
+            logcash.upsertSchemaAddIndexedField.Name.includes('dataTypeIndexedTable') &&
             logcash.upsertSchemaAddIndexedField.Hidden == false &&
             logcash.upsertSchemaAddIndexedField.Type == 'data' &&
             logcash.upsertSchemaAddIndexedField.Fields.testBoolean.Type == 'Bool' &&
@@ -692,87 +736,100 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
     }
 
     async function cleanRebuild() {
-
-            logcash.cleanRebuild = await generalService
-                .fetchStatus(baseURL + '/addons/api/async/' + adalOwnerId + '/' + 'indexed_adal_api/clean_rebuild?table_name=' + logcash.createSchemaTypeDataIndex.Name, {
+        logcash.cleanRebuild = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/api/async/' +
+                    adalOwnerId +
+                    '/' +
+                    'indexed_adal_api/clean_rebuild?table_name=' +
+                    logcash.createSchemaTypeDataIndex.Name,
+                {
                     method: 'POST',
                     headers: {
                         Authorization: 'Bearer ' + token,
-                        'X-Pepperi-OwnerID': whaitOwnerUUID,  
+                        'X-Pepperi-OwnerID': whaitOwnerUUID,
                         'X-Pepperi-SecretKey': whaitSecretKey,
                     },
-                    
-                })
-                .then((res) => [res.Status, res.Body]);
-            //debugger;
-            //Failed due to exception: Table schema must exist, for table
-            if (logcash.cleanRebuild[0] == 200) {
-                logcash.cleanRebuildStatus = true;
-            } else {
-                logcash.cleanRebuildStatus = false;
-                logcash.cleanRebuildError = 'Clean rebuild failed' ;
-            }
-        
+                },
+            )
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        //Failed due to exception: Table schema must exist, for table
+        if (logcash.cleanRebuild[0] == 200) {
+            logcash.cleanRebuildStatus = true;
+        } else {
+            logcash.cleanRebuildStatus = false;
+            logcash.cleanRebuildError = 'Clean rebuild failed';
+        }
+
         //debugger;
         generalService.sleep(50000);
         await getAuditLog();
     }
 
+    async function getAuditLog() {
+        logcash.getAuditLog = await generalService.fetchStatus('/audit_logs/' + logcash.cleanRebuild[1].ExecutionUUID, {
+            method: 'GET',
+        });
 
-    async function getAuditLog(){ 
-        logcash.getAuditLog = await generalService.fetchStatus(
-        '/audit_logs/' + logcash.cleanRebuild[1].ExecutionUUID,
-        { method: 'GET' },
-    );
-
-            logcash.getAuditLog.parsedResultObject = JSON.parse(
-            logcash.getAuditLog.Body.AuditInfo.ResultObject,
-    );
-        if(logcash.getAuditLog .parsedResultObject.success==true){
-            logcash.getAuditLogStatus = true
+        logcash.getAuditLog.parsedResultObject = JSON.parse(logcash.getAuditLog.Body.AuditInfo.ResultObject);
+        if (logcash.getAuditLog.parsedResultObject.success == true) {
+            logcash.getAuditLogStatus = true;
+        } else {
+            logcash.getAuditLogStatus = false;
+            logcash.getAuditLogError = 'get error on audit log';
         }
-        else{
-            logcash.getAuditLogStatus = false
-            logcash.getAuditLogError = 'get error on audit log'
-        }
-    //debugger;
-    await getDataDedicatedAfterInsert();
+        //debugger;
+        await getDataDedicatedAfterInsert();
     }
 
-    async function getDataDedicatedAfterInsert() { // get data from elastic
+    async function getDataDedicatedAfterInsert() {
+        // get data from elastic
         logcash.getDataDedicatedAfterInsertStatus = true;
         logcash.getDataDedicatedAfterInsert = await generalService
-        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    //'X-Pepperi-OwnerID': addonUUID,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    whaitOwnerUUID +
+                    '_data/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaTypeDataIndex.Name,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataDedicatedAfterInsert.length == 10){
-            for (let index = 0; index < logcash.getDataDedicatedAfterInsert.length -1; index++) {
+        if (logcash.getDataDedicatedAfterInsert.length == 10) {
+            for (let index = 0; index < logcash.getDataDedicatedAfterInsert.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataDedicatedAfterInsert[index]).length == 10 &&
-                    logcash.getDataDedicatedAfterInsert[index]["testBoolean"] != undefined  &&
-                    logcash.getDataDedicatedAfterInsert[index]["TestDateTime"] != '' &&
-                    logcash.getDataDedicatedAfterInsert[index]["testString"] != '' &&
-                    logcash.getDataDedicatedAfterInsert[index]["TestDouble"] != '' &&
-                    logcash.getDataDedicatedAfterInsert[index]["TestInteger"] != undefined &&
-                    logcash.getDataDedicatedAfterInsert[index]["secString"] != ''
+                    logcash.getDataDedicatedAfterInsert[index]['testBoolean'] != undefined &&
+                    logcash.getDataDedicatedAfterInsert[index]['TestDateTime'] != '' &&
+                    logcash.getDataDedicatedAfterInsert[index]['testString'] != '' &&
+                    logcash.getDataDedicatedAfterInsert[index]['TestDouble'] != '' &&
+                    logcash.getDataDedicatedAfterInsert[index]['TestInteger'] != undefined &&
+                    logcash.getDataDedicatedAfterInsert[index]['secString'] != ''
                 ) {
                     //logcash.getDataDedicatedStatus = true;
-                }
-                else{
+                } else {
                     logcash.getDataDedicatedAfterInsertStatus = false;
-                    logcash.getDataDedicatedAfterInsertError = 'Only indexed fields will be added to dedicated scheme'
+                    logcash.getDataDedicatedAfterInsertError = 'Only indexed fields will be added to dedicated scheme';
                 }
             }
-        }
-        else{logcash.getDataDedicatedAfterInsertStatus = false;
-             logcash.getDataDedicatedAfterInsertError = 'will be created 10 objects , but actually created ' + logcash.getDataDedicated.length
+        } else {
+            logcash.getDataDedicatedAfterInsertStatus = false;
+            logcash.getDataDedicatedAfterInsertError =
+                'will be created 10 objects , but actually created ' + logcash.getDataDedicated.length;
         }
         //debugger;
         await dropTableSec();
@@ -803,28 +860,39 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         await getDataDedicatedAfterDrop();
     }
     //#endregion
-    //#region  verify if elastic data and dedicated schemo deleted 
-    async function getDataDedicatedAfterDrop() { // get data from elastic
+    //#region  verify if elastic data and dedicated schemo deleted
+    async function getDataDedicatedAfterDrop() {
+        // get data from elastic
         logcash.getDataDedicatedAfterDrop = await generalService
-        .fetchStatus(baseURL + '/addons/shared_index/index/' + whaitOwnerUUID + '_data/' + adalOwnerId +'/' + whaitOwnerUUID + '~' + logcash.createSchemaTypeDataIndex.Name, {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    //'X-Pepperi-OwnerID': addonUUID,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    whaitOwnerUUID +
+                    '_data/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaTypeDataIndex.Name,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
                 },
-            })
+            )
             .then((res) => res.Body);
         //debugger;
-        if(logcash.getDataDedicatedAfterDrop.length == 0){
+        if (logcash.getDataDedicatedAfterDrop.length == 0) {
             logcash.getDataDedicatedAfterDropStatus = true;
-        }
-        else{logcash.getDataDedicatedAfterDropStatus = false;
-             logcash.getDataDedicatedAfterDropError = 'Dedicated schema need be deleted '
+        } else {
+            logcash.getDataDedicatedAfterDropStatus = false;
+            logcash.getDataDedicatedAfterDropError = 'Dedicated schema need be deleted ';
         }
         //debugger;
         //await dropTableSec();
     }
     //#endregion
-
 }

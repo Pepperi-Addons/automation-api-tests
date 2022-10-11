@@ -1,5 +1,4 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { v4 as newUuid } from 'uuid';
 //('newSchema' + newUuid())
 
 export async function DBSchemaTests(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -26,15 +25,15 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     const baseURL = generalService['client'].BaseURL;
     const token = generalService['client'].OAuthAccessToken;
     //#region create random string by lenght
-    const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     function generateString(length) {
-    let result = ' ';
-    const charactersLength = characters.length;
-    for ( let i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        let result = ' ';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
-    return result;
-}
     //#endregion
     //#region Upgrade ADAL
     const testData = {
@@ -619,14 +618,11 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             })
             .then((res) => res.Body);
         //debugger;
-        if (
-            logcash.insertDataToTableKeyLenghtNegative.fault.faultstring.includes('length exceeds the maximum size')
-        ) {
+        if (logcash.insertDataToTableKeyLenghtNegative.fault.faultstring.includes('length exceeds the maximum size')) {
             logcash.insertDataToTableKeyLenghtNegativeStatus = true;
         } else {
             logcash.insertDataToTableKeyLenghtNegativeStatus = false;
-            logcash.insertDataToTableKeyLenghtNegativeError =
-                'The key exceeds the maximum size and will fail';
+            logcash.insertDataToTableKeyLenghtNegativeError = 'The key exceeds the maximum size and will fail';
         }
         await getDataToTableWithOwnerID();
     }
