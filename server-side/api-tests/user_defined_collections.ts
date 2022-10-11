@@ -10,6 +10,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade UDC
     const testData = {
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
