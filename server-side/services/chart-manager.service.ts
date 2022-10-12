@@ -31,9 +31,7 @@ export class ChartsManagerService {
     }
 
     async getChartByKey(key: string): Promise<Chart> {
-        const chartResponse = await this.papiClient.get(
-            `/charts?where=Key='${key}'`,
-        );
+        const chartResponse = await this.papiClient.get(`/charts?where=Key='${key}'`);
         return chartResponse;
     }
 
@@ -47,9 +45,7 @@ export class ChartsManagerService {
         let deletedCounter = 0;
 
         for (let index = 0; index < allChartsObjects.length; index++) {
-            if (
-                allChartsObjects[index].System === false
-            ) {
+            if (allChartsObjects[index].System === false) {
                 allChartsObjects[index].Hidden = true;
                 await this.postChart(allChartsObjects[index]);
                 deletedCounter++;

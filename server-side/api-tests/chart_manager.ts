@@ -116,7 +116,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             'Benchmark chart',
                             'Value scorecard',
                             'User defined',
-                            'Series scorecard'
+                            'Series scorecard',
                         ]);
                         expect(jsonChartData).to.have.own.property('System');
                         expect(jsonChartData.System).to.be.a('Boolean');
@@ -203,18 +203,15 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     });
                     it('Updating An Existing Chart ', async () => {
                         const allChartsFromServer = await chartManagerService.getCharts();
-                        const chartsPostedByMe = allChartsFromServer.filter(
-                            (chart) => chart.Description?.includes('chart-desc-basic'));
-                        const defaultStackedColumnChart = allChartsFromServer.filter(
-                            (chart) => chart.Description === 'Default stacked column',
+                        const chartsPostedByMe = allChartsFromServer.filter((chart) =>
+                            chart.Description?.includes('chart-desc-basic'),
                         );
                         const chart: Chart = {
                             Key: chartsPostedByMe[0].Key,
                             Name: chartsPostedByMe[0].Name,
                             ScriptURI: chartsPostedByMe[0].ScriptURI,
-                            Description: "newDesc",
-                            Type: "Chart"
-
+                            Description: 'newDesc',
+                            Type: 'Chart',
                         } as Chart;
                         const chartResponse = await chartManagerService.postChart(chart);
                         expect(chartResponse).to.have.own.property('Key');
@@ -275,10 +272,11 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         } catch (error) {
                             isError = true;
                             expect((error as any).message).to.equal(
-                                'Failed due to exception: Name is a required field', "wrong error message w/o name"
+                                'Failed due to exception: Name is a required field',
+                                'wrong error message w/o name',
                             );
                         }
-                        expect(isError, "no error w/o name").to.be.true;
+                        expect(isError, 'no error w/o name').to.be.true;
                     });
 
                     it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
@@ -292,10 +290,11 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         } catch (error) {
                             isError = true;
                             expect((error as any).message).to.include(
-                                'Failed due to exception: ScriptURI is a required field', "wrong message w/o script URI"
+                                'Failed due to exception: ScriptURI is a required field',
+                                'wrong message w/o script URI',
                             );
                         }
-                        expect(isError, "no error w/o scriptURI").to.be.true;
+                        expect(isError, 'no error w/o scriptURI').to.be.true;
                     });
 
                     it('Upsert Chart - With Non Existing Type', async () => {
@@ -303,7 +302,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             Description: 'desc',
                             Name: generalService.generateRandomString(7),
                             ScriptURI: scriptURI,
-                            Type: "xsgnjosdfgbhuoidfgh"
+                            Type: 'xsgnjosdfgbhuoidfgh',
                         } as Chart;
                         let isError = false;
                         try {
@@ -314,7 +313,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                                 'Failed due to exception: ScriptURI is a required field',
                             );
                         }
-                        expect(isError, "no error - non existing type").to.be.true;
+                        expect(isError, 'no error - non existing type').to.be.true;
                     });
                 });
             });
@@ -380,9 +379,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 try {
                     await chartManagerService.postChart(chart);
                 } catch (error) {
-                    expect((error as any).message).to.include(
-                        'Failed due to exception: Failed upsert file storage',
-                    );
+                    expect((error as any).message).to.include('Failed due to exception: Failed upsert file storage');
                 }
             });
 
@@ -447,7 +444,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         'Value',
                         'Value and change',
                         'Value with area',
-                        'Value with columns'
+                        'Value with columns',
                     ]);
                     expect(jsonChartData).to.have.own.property('Description');
                     expect(jsonChartData.Description).to.be.oneOf([
