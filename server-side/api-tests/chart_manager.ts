@@ -17,8 +17,8 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             const chartToPush: Chart = {
                 Description: `chart-desc-${i}`,
                 Name: generalService.generateRandomString(7),
-                ReadOnly: false,
                 ScriptURI: scriptURI,
+                System: false,
             };
             listOfCharts.push(chartToPush);
         }
@@ -31,8 +31,9 @@ export async function ChartManagerTests(generalService: GeneralService, request,
     //#region Upgrade Data Visualisation
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '0.0.172'], //hardcoded because phased version is OLD
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //papi index
@@ -87,9 +88,13 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 it('Get Charts - Retriving all chart data and validating its format', async () => {
                     const jsonDataFromAuditLog = await chartManagerService.getCharts();
                     jsonDataFromAuditLog.forEach((jsonChartData) => {
-                        debugger;
                         expect(jsonChartData).to.have.own.property('Key');
                         expect(jsonChartData).to.have.own.property('Name');
+                        expect(jsonChartData).to.have.own.property('CreationDateTime');
+                        expect(jsonChartData.CreationDateTime).to.not.equal(undefined);
+                        expect(jsonChartData.CreationDateTime).to.not.equal(null);
+                        expect(jsonChartData.CreationDateTime).to.not.equal('');
+                        expect(jsonChartData).to.have.own.property('ModificationDateTime');
                         if (jsonChartData.Description) expect(jsonChartData).to.have.own.property('Description');
                         expect(jsonChartData).to.have.own.property('ScriptURI');
                         expect(jsonChartData.ScriptURI).to.not.equal(undefined);
@@ -102,9 +107,20 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                             'cdn.staging.pepperi.com',
                         ]);
                         expect(jsonChartData.ScriptURI).to.include('.js');
-                        expect(jsonChartData.ScriptURI).to.include(jsonChartData.Name);
-                        expect(jsonChartData).to.have.own.property('ReadOnly');
-                        expect(jsonChartData.ReadOnly).to.be.a('Boolean');
+                        expect(jsonChartData.ScriptURI).to.include(jsonChartData.Key);
+                        expect(jsonChartData).to.have.own.property('Hidden');
+                        expect(jsonChartData.Hidden).to.be.a('Boolean');
+                        expect(jsonChartData).to.have.own.property('Type');
+                        expect(jsonChartData.Type).to.include.oneOf([
+                            'Chart',
+                            'Benchmark chart',
+                            'Value scorecard',
+                            'User defined',
+                            'Series scorecard'
+                        ]);
+                        expect(jsonChartData).to.have.own.property('System');
+                        expect(jsonChartData.System).to.be.a('Boolean');
+                        expect(jsonChartData.System).to.equal(true);
                     });
                 });
                 it('Get Chart By Key', async () => {
@@ -133,11 +149,19 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         'cdn.staging.pepperi.com',
                     ]);
                     expect(keyChart.ScriptURI).to.include('.js');
-                    expect(keyChart.ScriptURI).to.include(keyChartJsonDataFromAuditLog[0].Name);
+                    expect(keyChart.ScriptURI).to.include(keyChartJsonDataFromAuditLog[0].Key);
                     expect(keyChart.ScriptURI).to.equal(allChartsJsonDataFromAuditLog[0].ScriptURI);
-                    expect(keyChart).to.have.own.property('ReadOnly');
-                    expect(keyChart.ReadOnly).to.be.a('Boolean');
-                    expect(keyChart.ReadOnly).to.equal(allChartsJsonDataFromAuditLog[0].ReadOnly);
+                    expect(keyChart).to.have.own.property('Hidden');
+                    expect(keyChart.Hidden).to.be.a('Boolean');
+                    expect(keyChart).to.have.own.property('Type');
+                    expect(keyChart.Type).to.equal(allChartsJsonDataFromAuditLog[0].Type);
+                    expect(keyChart).to.have.own.property('System');
+                    expect(keyChart.System).to.be.a('Boolean');
+                    expect(keyChart).to.have.own.property('CreationDateTime');
+                    expect(keyChart.CreationDateTime).to.not.equal(undefined);
+                    expect(keyChart.CreationDateTime).to.not.equal(null);
+                    expect(keyChart.CreationDateTime).to.not.equal('');
+                    expect(keyChart).to.have.own.property('ModificationDateTime');
                 });
             });
 
@@ -147,84 +171,77 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const chart: Chart = {
                             Description: 'chart-desc-basic',
                             Name: generalService.generateRandomString(7),
-                            ReadOnly: false,
                             ScriptURI: scriptURI,
-                            Type: 'User defined',
+                            Type: 'Chart',
                         } as Chart;
-                        const chartResponse = await generalService.fetchStatus(
-                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'X-Pepperi-SecretKey': '', //TODO: add the secret key here -- maybe should be stored in KMS
-                                },
-                                body: JSON.stringify(chart),
-                            },
-                        );
-                        debugger; //TODO
-                        expect(chartResponse.Status).to.equal(200);
-                        expect(chartResponse.Ok).to.be.true;
-                        expect(chartResponse.Body).to.have.own.property('Key');
-                        expect(chartResponse.Body).to.have.own.property('Name');
-                        expect(chartResponse.Body.Name).to.equal(chart.Name);
-                        expect(chartResponse.Body).to.have.own.property('Description');
-                        expect(chartResponse.Body.Description).to.equal(chart.Description);
-                        expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                        expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
-                        expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-                        expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                        expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                        const chartResponse = await chartManagerService.postChart(chart);
+                        expect(chartResponse).to.have.own.property('Key');
+                        expect(chartResponse).to.have.own.property('Name');
+                        expect(chartResponse.Name).to.equal(chart.Name);
+                        expect(chartResponse).to.have.own.property('Description');
+                        expect(chartResponse.Description).to.equal(chart.Description);
+                        expect(chartResponse).to.have.own.property('ScriptURI');
+                        expect(chartResponse.ScriptURI).to.not.equal(undefined);
+                        expect(chartResponse.ScriptURI).to.not.equal(null);
+                        expect(chartResponse.ScriptURI).to.not.equal('');
+                        expect(chartResponse.ScriptURI).to.include.oneOf([
                             'pfs.pepperi.com',
                             'cdn.pepperi.com',
                             'pfs.staging.pepperi.com',
                             'cdn.staging.pepperi.com',
                         ]);
-                        expect(chartResponse.Body.ScriptURI).to.include('.js');
-                        expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
-                        expect(chartResponse.Body).to.have.own.property('ReadOnly');
-                        expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+                        expect(chartResponse.ScriptURI).to.include('.js');
+                        expect(chartResponse.ScriptURI).to.include(chartResponse.Name);
+                        expect(chartResponse).to.have.own.property('Hidden');
+                        expect(chartResponse.Hidden).to.be.a('Boolean');
+                        expect(chartResponse.Hidden).to.equal(false);
+                        expect(chartResponse).to.have.own.property('Type');
+                        expect(chartResponse.Type).to.equal(chart.Type);
+                        expect(chartResponse).to.have.own.property('System');
+                        expect(chartResponse.System).to.be.a('Boolean');
+                        expect(chartResponse.System).to.equal(false);
                     });
                     it('Updating An Existing Chart ', async () => {
                         const allChartsFromServer = await chartManagerService.getCharts();
                         const chartsPostedByMe = allChartsFromServer.filter(
-                            (chart) => chart.Description?.includes('chart-desc-basic') && chart.ReadOnly === false,
-                        );
+                            (chart) => chart.Description?.includes('chart-desc-basic'));
                         const defaultStackedColumnChart = allChartsFromServer.filter(
                             (chart) => chart.Description === 'Default stacked column',
                         );
                         const chart: Chart = {
                             Key: chartsPostedByMe[0].Key,
                             Name: chartsPostedByMe[0].Name,
-                            ScriptURI: defaultStackedColumnChart[0].ScriptURI,
+                            ScriptURI: chartsPostedByMe[0].ScriptURI,
+                            Description: "newDesc",
+                            Type: "Chart"
+
                         } as Chart;
-                        const chartResponse = await generalService.fetchStatus(
-                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                            },
-                        );
-                        expect(chartResponse.Status).to.equal(200);
-                        expect(chartResponse.Ok).to.be.true;
-                        expect(chartResponse.Body).to.have.own.property('Key');
-                        expect(chartResponse.Body).to.have.own.property('Name');
-                        expect(chartResponse.Body.Name).to.equal(chartsPostedByMe[0].Name);
-                        expect(chartResponse.Body).to.have.own.property('Description');
-                        expect(chartResponse.Body.Description).to.equal(chartsPostedByMe[0].Description);
-                        expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                        expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
-                        expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-                        expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                        expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                        const chartResponse = await chartManagerService.postChart(chart);
+                        expect(chartResponse).to.have.own.property('Key');
+                        expect(chartResponse).to.have.own.property('Name');
+                        expect(chartResponse.Name).to.equal(chartsPostedByMe[0].Name);
+                        expect(chartResponse).to.have.own.property('Description');
+                        expect(chartResponse.Description).to.equal(chart.Description);
+                        expect(chartResponse).to.have.own.property('ScriptURI');
+                        expect(chartResponse.ScriptURI).to.not.equal(undefined);
+                        expect(chartResponse.ScriptURI).to.not.equal(null);
+                        expect(chartResponse.ScriptURI).to.not.equal('');
+                        expect(chartResponse.ScriptURI).to.include.oneOf([
                             'pfs.pepperi.com',
                             'cdn.pepperi.com',
                             'pfs.staging.pepperi.com',
                             'cdn.staging.pepperi.com',
                         ]);
-                        expect(chartResponse.Body.ScriptURI).to.include('.js');
-                        expect(chartResponse.Body.ScriptURI).to.include(chartsPostedByMe[0].Name);
-                        expect(chartResponse.Body).to.have.own.property('ReadOnly');
-                        expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+                        expect(chartResponse.ScriptURI).to.include('.js');
+                        expect(chartResponse.ScriptURI).to.include(chartsPostedByMe[0].Key);
+                        expect(chartResponse).to.have.own.property('Hidden');
+                        expect(chartResponse.Hidden).to.be.a('Boolean');
+                        expect(chartResponse.Hidden).to.equal(false);
+                        expect(chartResponse).to.have.own.property('Type');
+                        expect(chartResponse.Type).to.equal(chart.Type);
+                        expect(chartResponse).to.have.own.property('System');
+                        expect(chartResponse.System).to.be.a('Boolean');
+                        expect(chartResponse.System).to.equal(false);
                     });
                 });
 
@@ -233,7 +250,6 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         const chart: Chart = {
                             Description: 'desc',
                             Name: generalService.generateRandomString(7),
-                            ReadOnly: false,
                             ScriptURI: scriptURI,
                         } as Chart;
                         const headers = {
@@ -252,38 +268,53 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     });
 
                     it('Upsert chart - w/o mandatory field: Name', async () => {
-                        const chart: Chart = { Description: '', ReadOnly: true, ScriptURI: scriptURI } as Chart;
-                        const chartResponse = await generalService.fetchStatus(
-                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                            },
-                        );
-                        expect(chartResponse.Status).to.equal(400);
-                        expect(chartResponse.Body.fault.faultstring).to.equal(
-                            'Failed due to exception: Name is a required field',
-                        );
+                        const chart: Chart = { Description: '', ScriptURI: scriptURI } as Chart;
+                        let isError = false;
+                        try {
+                            await chartManagerService.postChart(chart);
+                        } catch (error) {
+                            isError = true;
+                            expect((error as any).message).to.equal(
+                                'Failed due to exception: Name is a required field', "wrong error message w/o name"
+                            );
+                        }
+                        expect(isError, "no error w/o name").to.be.true;
                     });
 
                     it('Upsert chart - w/o mandatory field: ScriptURI', async () => {
                         const chart: Chart = {
                             Name: generalService.generateRandomString(7),
                             Description: 'desc',
-                            ReadOnly: false,
                         } as Chart;
+                        let isError = false;
+                        try {
+                            await chartManagerService.postChart(chart);
+                        } catch (error) {
+                            isError = true;
+                            expect((error as any).message).to.include(
+                                'Failed due to exception: ScriptURI is a required field', "wrong message w/o script URI"
+                            );
+                        }
+                        expect(isError, "no error w/o scriptURI").to.be.true;
+                    });
 
-                        const chartResponse = await generalService.fetchStatus(
-                            `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(chart),
-                            },
-                        );
-                        expect(chartResponse.Status).to.equal(400);
-                        expect(chartResponse.Body.fault.faultstring).to.equal(
-                            'Failed due to exception: ScriptURI is a required field',
-                        );
+                    it('Upsert Chart - With Non Existing Type', async () => {
+                        const chart: Chart = {
+                            Description: 'desc',
+                            Name: generalService.generateRandomString(7),
+                            ScriptURI: scriptURI,
+                            Type: "xsgnjosdfgbhuoidfgh"
+                        } as Chart;
+                        let isError = false;
+                        try {
+                            await chartManagerService.postChart(chart);
+                        } catch (error) {
+                            isError = true;
+                            expect((error as any).message).to.include(
+                                'Failed due to exception: ScriptURI is a required field',
+                            );
+                        }
+                        expect(isError, "no error - non existing type").to.be.true;
                     });
                 });
             });
@@ -293,40 +324,28 @@ export async function ChartManagerTests(generalService: GeneralService, request,
             it('Testing UPSERT (POST) - UPSERTING 5 valid charts - testing server response is in valid format', async () => {
                 for (let i = 0; i < listOfChartsToUpsert.length; i++) {
                     listOfChartsToUpsert[i].Hidden = false;
-                    const chartResponse = await generalService.fetchStatus(
-                        `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(listOfChartsToUpsert[i]),
-                        },
-                    );
-
-                    expect(chartResponse.Status).to.equal(200);
-                    expect(chartResponse.Ok).to.be.true;
-                    expect(chartResponse.Body).to.have.own.property('Key');
-                    expect(chartResponse.Body).to.have.own.property('Name');
-                    expect(chartResponse.Body.Name).to.equal(listOfChartsToUpsert[i].Name);
-                    expect(chartResponse.Body).to.have.own.property('Description');
-                    expect(chartResponse.Body.Description).to.equal(listOfChartsToUpsert[i].Description);
-                    expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                    expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                    expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
-                    expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-                    expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                    expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                    const chartResponse = await chartManagerService.postChart(listOfChartsToUpsert[i]);
+                    expect(chartResponse).to.have.own.property('Key');
+                    expect(chartResponse).to.have.own.property('Name');
+                    expect(chartResponse.Name).to.equal(listOfChartsToUpsert[i].Name);
+                    expect(chartResponse).to.have.own.property('Description');
+                    expect(chartResponse.Description).to.equal(listOfChartsToUpsert[i].Description);
+                    expect(chartResponse).to.have.own.property('ScriptURI');
+                    expect(chartResponse).to.have.own.property('ScriptURI');
+                    expect(chartResponse.ScriptURI).to.not.equal(undefined);
+                    expect(chartResponse.ScriptURI).to.not.equal(null);
+                    expect(chartResponse.ScriptURI).to.not.equal('');
+                    expect(chartResponse.ScriptURI).to.include.oneOf([
                         'pfs.pepperi.com',
                         'cdn.pepperi.com',
                         'pfs.staging.pepperi.com',
                         'cdn.staging.pepperi.com',
                     ]);
-                    expect(chartResponse.Body.ScriptURI).to.include('.js');
-                    expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
-                    expect(chartResponse.Body).to.have.own.property('ReadOnly');
-                    expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+                    expect(chartResponse.ScriptURI).to.include('.js');
+                    expect(chartResponse.ScriptURI).to.include(chartResponse.Name);
                     //using returning data from server to save this chart script uri, read only and key attributes
-                    listOfChartsToUpsert[i].ScriptURI = chartResponse.Body.ScriptURI;
-                    listOfChartsToUpsert[i].ReadOnly = chartResponse.Body.ReadOnly;
-                    listOfChartsToUpsert[i].Key = chartResponse.Body.Key;
+                    listOfChartsToUpsert[i].ScriptURI = chartResponse.ScriptURI;
+                    listOfChartsToUpsert[i].Key = chartResponse.Key;
                 }
             });
 
@@ -355,76 +374,57 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
                     Description: 'desc',
-                    ReadOnly: false,
                     ScriptURI: 721346,
+                    System: false,
                 };
-                const chartResponse = await generalService.fetchStatus(
-                    `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(chart),
-                    },
-                );
-                expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.include(
-                    'Failed due to exception: Failed upsert file storage',
-                );
-                expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
+                try {
+                    await chartManagerService.postChart(chart);
+                } catch (error) {
+                    expect((error as any).message).to.include(
+                        'Failed due to exception: Failed upsert file storage',
+                    );
+                }
             });
 
             it('POST - upserting a chart with non url string as script uri', async () => {
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
                     Description: 'desc',
-                    ReadOnly: false,
                     ScriptURI: 'https:fsdjkfd',
                 };
-                const chartResponse = await generalService.fetchStatus(`/charts`, {
-                    method: 'POST',
-                    body: JSON.stringify(chart),
-                });
-                expect(chartResponse.Status).to.equal(400);
-                expect(chartResponse.Body.fault.faultstring).to.include(
-                    'Failed due to exception: Failed upsert file storage',
-                );
-                expect(chartResponse.Body.fault.faultstring).to.include('failed with status: 400');
+                try {
+                    await chartManagerService.postChart(chart);
+                } catch (error) {
+                    expect((error as any).message).to.include(
+                        'Failed due to exception: Only absolute URLs are supported',
+                    );
+                }
             });
             it('POST - upserting a chart with desc as empty string', async () => {
                 const chart: Chart = {
                     Name: generalService.generateRandomString(7),
-                    ReadOnly: false,
                     ScriptURI: scriptURI,
                 };
-                const chartResponse = await generalService.fetchStatus(
-                    `/addons/data/3d118baf-f576-4cdb-a81e-c2cc9af4d7ad/Charts`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(chart),
-                    },
-                );
-                expect(chartResponse.Status).to.equal(200);
-                expect(chartResponse.Ok).to.be.true;
-                expect(chartResponse.Body).to.have.own.property('Key');
-                expect(chartResponse.Body).to.have.own.property('Name');
-                expect(chartResponse.Body.Name).to.equal(chart.Name);
-                expect(chartResponse.Body).to.have.own.property('ScriptURI');
-                expect(chartResponse.Body.ScriptURI).to.not.equal(undefined);
-                expect(chartResponse.Body.ScriptURI).to.not.equal(null);
-                expect(chartResponse.Body.ScriptURI).to.not.equal('');
-                expect(chartResponse.Body.ScriptURI).to.include.oneOf([
+                const chartResponse = await chartManagerService.postChart(chart);
+                expect(chartResponse).to.have.own.property('Key');
+                expect(chartResponse).to.have.own.property('Name');
+                expect(chartResponse.Name).to.equal(chart.Name);
+                expect(chartResponse).to.have.own.property('ScriptURI');
+                expect(chartResponse.ScriptURI).to.not.equal(undefined);
+                expect(chartResponse.ScriptURI).to.not.equal(null);
+                expect(chartResponse.ScriptURI).to.not.equal('');
+                expect(chartResponse.ScriptURI).to.include.oneOf([
                     'pfs.pepperi.com',
                     'cdn.pepperi.com',
                     'pfs.staging.pepperi.com',
                     'cdn.staging.pepperi.com',
                 ]);
-                expect(chartResponse.Body.ScriptURI).to.include('.js');
-                expect(chartResponse.Body.ScriptURI).to.include(chartResponse.Body.Name);
-                expect(chartResponse.Body).to.have.own.property('ReadOnly');
-                expect(chartResponse.Body.ReadOnly).to.be.a('Boolean');
+                expect(chartResponse.ScriptURI).to.include('.js');
+                expect(chartResponse.ScriptURI).to.include(chartResponse.Key);
             });
         });
         describe('Test Clean Up (Hidden = true)', () => {
-            it('All The Charts Hidden', async () => {
+            it('Trying To Hide (set Hidden=true) All Non System Charts', async () => {
                 await expect(chartManagerService.TestCleanUp()).eventually.to.be.above(0);
             });
             it('Validate After Cleansing Only Deafult Charts Remain', async () => {
@@ -434,16 +434,34 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                     expect(jsonChartData).to.have.own.property('Name');
                     expect(jsonChartData.Name).to.be.oneOf([
                         'Bar',
+                        'Benchmark bar',
+                        'Benchmark column',
+                        'Benchmark column line',
                         'Column',
+                        'Gauge',
                         'Line',
                         'Pie',
-                        'Stacked_bar',
-                        'Stacked_column',
+                        'Stacked bar',
+                        'Progress bar',
+                        'Stacked column',
+                        'Value',
+                        'Value and change',
+                        'Value with area',
+                        'Value with columns'
                     ]);
                     expect(jsonChartData).to.have.own.property('Description');
                     expect(jsonChartData.Description).to.be.oneOf([
                         'Default bar',
-                        'Default Column',
+                        'Default benchmark bar with markers',
+                        'Default benchmark column with markers',
+                        'Default benchmark column and line',
+                        'Default column',
+                        'Default gauge',
+                        'Default value',
+                        'Default value and change',
+                        'Default value with area',
+                        'Default value with columns',
+                        'Default progress bar',
                         'Default line',
                         'Default pie',
                         'Default stacked bar',
@@ -460,10 +478,14 @@ export async function ChartManagerTests(generalService: GeneralService, request,
                         'cdn.staging.pepperi.com',
                     ]);
                     expect(jsonChartData.ScriptURI).to.include('.js');
-                    expect(jsonChartData.ScriptURI).to.include(jsonChartData.Name);
-                    expect(jsonChartData).to.have.own.property('ReadOnly');
-                    expect(jsonChartData.ReadOnly).to.be.a('Boolean');
-                    expect(jsonChartData.ReadOnly).to.equal(true);
+                    expect(jsonChartData.ScriptURI).to.include(jsonChartData.Key);
+                    expect(jsonChartData).to.have.own.property('Hidden');
+                    expect(jsonChartData.Hidden).to.be.a('Boolean');
+                    expect(jsonChartData.Hidden).to.equal(false);
+                    expect(jsonChartData).to.have.own.property('Type');
+                    expect(jsonChartData).to.have.own.property('System');
+                    expect(jsonChartData.System).to.be.a('Boolean');
+                    expect(jsonChartData.System).to.equal(true);
                 });
             });
         });
