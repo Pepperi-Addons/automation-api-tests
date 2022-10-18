@@ -1,5 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { AddonRelationService } from '../services/addon-relation.service';
+import { v4 as newUuid } from 'uuid';
 
 export async function DimxDataImportTestsTestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await DimxDataImportTests(generalService, request, tester);
@@ -229,7 +230,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'CreateSchemaWithMandatoryField ' + Date(),
+                    //Name: 'CreateSchemaWithMandatoryField ' + Date(),   
+                    Name: 'CreateSchemaWithMandatoryField'  + newUuid(),
                     Type: 'data',
                 }),
             })
@@ -342,7 +344,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport test', // mandatory
+                Name: 'DIMXDataImport_test', // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -381,7 +383,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 },
             )
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         // if (
         //     logcash.insertDataToTableWithRelation.ExecutionUUID != '' &&
         //     logcash.insertDataToTableWithRelation.URI != ''

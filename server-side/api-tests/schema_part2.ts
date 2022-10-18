@@ -30,7 +30,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
     //#endregion
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.431'], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         // 'cpi-node':['bb6ee826-1c6b-4a11-9758-40a46acb69c5','0.4.16'],
         // 'User Defined Collections' :['122c0e9d-c240-4865-b446-f37ece866c22', '0.6.126'],
@@ -882,8 +882,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 },
             )
             .then((res) => res.Body);
-        debugger;
-        const schemaModDate = new Date(logcash.updateSchemeHiddenFalse.ModificationDateTime);
+        //debugger;
+        const schemaModDate = new Date(logcash.updateScheme.ModificationDateTime);
         const millisecondsschemModification = schemaModDate.getTime();
         const objectModeDate1 = new Date(logcash.getDataTableOrderByKey[0].ModificationDateTime);
         const objectModification1 = objectModeDate1.getTime();
