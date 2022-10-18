@@ -230,8 +230,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    //Name: 'CreateSchemaWithMandatoryField ' + Date(),   
-                    Name: 'CreateSchemaWithMandatoryField'  + newUuid(),
+                    //Name: 'CreateSchemaWithMandatoryField ' + Date(),
+                    Name: 'CreateSchemaWithMandatoryField' + newUuid(),
                     Type: 'data',
                 }),
             })
