@@ -26,6 +26,8 @@ import {
     AddonAuditLogsTests,
     AddonAsyncExecutionTests,
     DBSchemaTests,
+    DBSchemaTestsPart2,
+    SchemaTypeDataIndexedTests,
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
@@ -425,6 +427,30 @@ export async function schema(client: Client, request: Request, testerFunctions: 
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
+}
+
+export async function schema_part2(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'SchemaPart2';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await DBSchemaTestsPart2(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function schema_type_data_index(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Schema_Type_Data_Indexed';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        SchemaTypeDataIndexedTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
 }
 
 export async function batch_upsert(client: Client, request: Request, testerFunctions: TesterFunctions) {

@@ -1,4 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
+//('newSchema' + newUuid())
 
 export async function DBSchemaTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
@@ -23,7 +24,17 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
     const baseURL = generalService['client'].BaseURL;
     const token = generalService['client'].OAuthAccessToken;
-
+    //#region create random string by lenght
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    function generateString(length) {
+        let result = ' ';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+    //#endregion
     //#region Upgrade ADAL
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
@@ -101,6 +112,12 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 assert(
                     logcash.insertDataToTableWithoutOwnerIDNegativeStatus,
                     logcash.insertDataToTableWithoutOwnerIDNegativeError,
+                );
+            });
+            it('Insert Data with Key length bigger to 512 charaters (Negative): Finished', () => {
+                assert(
+                    logcash.insertDataToTableKeyLenghtNegativeStatus,
+                    logcash.insertDataToTableKeyLenghtNegativeError,
                 );
             });
             it('Insert Data To Schema With Type meta_data With OwnerId, Key And One Column Values: Finished', () => {
@@ -184,7 +201,9 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             it('Order by indexed field : finished', async () => {
                 assert(logcash.getDataFromIndexedDataStatus, logcash.getDataFromIndexedDataError);
             });
-
+            it('Order by KEY : finished', async () => {
+                assert(logcash.getDataFromIndexedDataOrderByKeyStatus, logcash.getDataFromIndexedDataOrderByKeyError);
+            });
             it('Negative : Order by not indexed field: Finished', () => {
                 assert(logcash.getDataFromIndexedDataNegativeStatus, logcash.getDataFromIndexedDataNegativeError);
             });
@@ -426,7 +445,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
                 logcash.createSchemaWithoutNameStatus = false;
                 logcash.createSchemaWithoutNameError =
                     'Will get error: Cannot read property <Name> of null, but acctually get:' +
-                    logcash.createSchemaWithoutName;
+                    logcash.createSchemaWithoutName.fault.faultstring;
             }
         } else {
             logcash.createSchemaWithoutNameStatus == false;
@@ -577,6 +596,33 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.insertDataToTableWithOwnerIDStatus = false;
             logcash.insertDataToTableWithOwnerIDError =
                 'One of parameters is wrong: ' + logcash.insertDataToTableWithOwnerID;
+        }
+        await insertDataToTableKeyLenghtNegative();
+    }
+
+    ///////////////////////negative - try to insert data with key lengt bigger to 512 characters 05-09-22
+
+    async function insertDataToTableKeyLenghtNegative() {
+        logcash.insertDataToTableKeyLenghtNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: generateString(513),
+                    Column1: ['Value1', 'Value2', 'Value3'],
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.insertDataToTableKeyLenghtNegative.fault.faultstring.includes('length exceeds the maximum size')) {
+            logcash.insertDataToTableKeyLenghtNegativeStatus = true;
+        } else {
+            logcash.insertDataToTableKeyLenghtNegativeStatus = false;
+            logcash.insertDataToTableKeyLenghtNegativeError = 'The key exceeds the maximum size and will fail';
         }
         await getDataToTableWithOwnerID();
     }
@@ -1703,7 +1749,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             logcash.getDataFromIndexedDataStatus = false;
             logcash.getDataFromIndexedDataError =
                 'The get wit order_by result is wrong.Will get 300 objects but result is :' +
-                logcash.getDataFromDataTableWhereClouse.length;
+                logcash.getDataFromIndexedData.length;
         }
         logcash.count = 0;
         for (counter; counter < 300; counter++) {
@@ -1712,8 +1758,52 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             }
         }
         counter = 0;
+        await getDataFromIndexedDataOrderByKey();
+    }
+
+    ////////added test order_by = key 07-09-22
+    async function getDataFromIndexedDataOrderByKey() {
+        logcash.getDataFromIndexedDataOrderByKey = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithIndexedDataType.Name +
+                    '?order_by=Key&page_size=-1', //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataFromIndexedData.length == 300 //&&
+            // logcash.getDataFromIndexedData[12].Field2 == 'String1-109' &&
+            // logcash.getDataFromIndexedData[189].Field2 == 'String1-269'
+        ) {
+            logcash.getDataFromIndexedDataOrderByKeyStatus = true;
+        } else {
+            logcash.getDataFromIndexedDataOrderByKeyStatus = false;
+            logcash.getDataFromIndexedDataOrderByKeyError =
+                'The get wit order_by result is wrong.Will get 300 objects but result is :' +
+                logcash.getDataFromIndexedDataOrderByKey.length;
+        }
+        // logcash.count = 0;
+        // for (counter; counter < 300; counter++) {
+        //     if (logcash.getDataFromIndexedData[counter].IndexedInt1 == 4) {
+        //         logcash.count++;
+        //     }
+        // }
+        // counter = 0;
         await getDataFromIndexedDataNegative();
     }
+    /////////////
 
     async function getDataFromIndexedDataNegative() {
         logcash.getDataFromIndexedDataNegative = await generalService
