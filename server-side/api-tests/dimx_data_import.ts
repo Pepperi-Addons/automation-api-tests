@@ -344,8 +344,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: logcash.createSchemaWithMandFieldName.Name,  // relation name will be same to schema name 19/10/22
-                //Name: 'DIMXDataImport_test', // mandatory    
+                Name: logcash.createSchemaWithMandFieldName.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -1076,8 +1076,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name:  logcash.createSchemaTypeData.Name,  // relation name will be same to schema name 19/10/22
-                //Name: 'DIMXDataImport_test', // mandatory    
+                Name: logcash.createSchemaTypeData.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -1239,8 +1239,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name:  logcash.createSchemaTypeIndexedData.Name,  // relation name will be same to schema name 19/10/22
-                //Name: 'DIMXDataImport_test', // mandatory    
+                Name: logcash.createSchemaTypeIndexedData.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
