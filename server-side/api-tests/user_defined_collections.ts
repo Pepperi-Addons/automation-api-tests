@@ -9,17 +9,20 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     const it = tester.it;
 
     //#region Upgrade UDC
+    const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
+        ? 'Export and Import Framework'
+        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.459'],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.0.33'],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.0.11'],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.0.8'],
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
     };
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
