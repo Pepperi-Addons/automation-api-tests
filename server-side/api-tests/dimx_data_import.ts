@@ -47,7 +47,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     //#region Upgrade ADAL
     const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
         ? 'Export and Import Framework'
-        : 'Export and Import Framework (DIMX)';
+        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
