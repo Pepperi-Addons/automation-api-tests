@@ -344,7 +344,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport_test', // mandatory
+                Name: logcash.createSchemaWithMandFieldName.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -383,7 +384,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 },
             )
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         // if (
         //     logcash.insertDataToTableWithRelation.ExecutionUUID != '' &&
         //     logcash.insertDataToTableWithRelation.URI != ''
@@ -920,7 +921,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport test', // mandatory
+                Name: logcash.createSchemaWithMandFieldName.Name, // mandatory /
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -993,7 +994,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport test', // mandatory
+                Name: logcash.createSchemaWithMandFieldName.Name, // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -1042,7 +1043,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'createSchemaTypeData ' + Date(),
+                    Name: 'createSchemaTypeData ' + newUuid(), //+ Date(),
                     Type: 'meta_data',
                 }),
             })
@@ -1063,6 +1064,29 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             logcash.createSchemaTypeDataErrorMessage =
                 'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaTypeData;
         }
+        await CreateRelation1();
+    }
+
+    async function CreateRelation1() {
+        //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
+        const relationResponce = await relationService.postRelationStatus(
+            {
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+                // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+            },
+            {
+                Name: logcash.createSchemaTypeData.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
+                AddonUUID: addonUUID, // mandatory
+                RelationName: 'DataImportResource', // mandatory
+                Type: 'AddonAPI', // mandatory on create
+                Description: 'DIMX Data Import test',
+                AddonRelativeURL: '', // mandatory on create
+            },
+        );
+        //debugger;
+        expect(relationResponce).to.equal(200);
         await insertDataToTable();
     }
 
@@ -1178,7 +1202,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'createSchemaTypeIndexedData ' + Date(),
+                    Name: 'CreateSchemaTypeIndexedData ' + newUuid(),
                     Type: 'indexed_data',
                     Fields: {
                         IndexedString: { Type: 'String', Indexed: true },
@@ -1203,6 +1227,29 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             logcash.createSchemaTypeIndexedDataErrorMessage =
                 'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaTypeIndexedData;
         }
+        await CreateRelation2();
+    }
+
+    async function CreateRelation2() {
+        //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
+        const relationResponce = await relationService.postRelationStatus(
+            {
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+                // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+            },
+            {
+                Name: logcash.createSchemaTypeIndexedData.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
+                AddonUUID: addonUUID, // mandatory
+                RelationName: 'DataImportResource', // mandatory
+                Type: 'AddonAPI', // mandatory on create
+                Description: 'DIMX Data Import test',
+                AddonRelativeURL: '', // mandatory on create
+            },
+        );
+        //debugger;
+        expect(relationResponce).to.equal(200);
         await insertDataToTableIndexedData();
     }
 
@@ -1232,7 +1279,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 },
             )
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (
             logcash.insertDataToTableIndexedData[0].Key == 'Key1-1' &&
             logcash.insertDataToTableIndexedData[1].Key == 'Key2-1' &&
