@@ -1279,7 +1279,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 },
             )
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
             logcash.insertDataToTableIndexedData[0].Key == 'Key1-1' &&
             logcash.insertDataToTableIndexedData[1].Key == 'Key2-1' &&
