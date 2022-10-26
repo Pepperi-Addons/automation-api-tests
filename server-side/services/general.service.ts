@@ -28,6 +28,7 @@ export const testData = {
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
