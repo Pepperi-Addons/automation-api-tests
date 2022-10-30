@@ -41,7 +41,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
         });
 
         describe('Initiation Steps', async function () {
-            this.retries(1);
+            this.retries(0);
 
             beforeEach(async function () {
                 driver = await Browser.initiateChrome();
@@ -54,6 +54,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             });
 
             it(`Login To New Distributor`, async function () {
+                debugger;
                 let password = varPass;
                 if (varPassEU) {
                     password = varPassEU;
@@ -82,6 +83,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     Company: distributorCompany,
                     Password: distributorPassword,
                 });
+                debugger;
                 //(DI-19116):
                 if (
                     newDistributor.Status === 500 &&
@@ -195,7 +197,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
                     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
                     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '16.65.'], //16.60.38 //16.60
+                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.'], //17.14.97
                 };
 
                 const isInstalledArr = await adminService.areAddonsInstalled(testData);
@@ -268,6 +270,9 @@ export async function CreateDistributorTests(generalService: GeneralService, var
 
                 // await driver.click(webAppHeader.Settings);//problem -- why do this anyway?
                 await driver.click(webAppSettingsSidePanel.ObjectEditorTransactions);
+                if (await this.browser.isElementVisible(By.xpath("//span[text()='Sales Order - Transaction']"))) {
+                    await this.browser.click(By.xpath("//pep-icon[@name='arrow_left_alt']"));
+                }
 
                 await driver.sendKeys(webAppTopBar.EditorSearchField, 'Sales Order' + Key.ENTER);
 
