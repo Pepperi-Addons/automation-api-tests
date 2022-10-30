@@ -277,7 +277,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyUpdatedAccount;
 
             it('Create Account', async () => {
-                debugger;
+                // debugger;
                 accounts = await objectsService.getAccounts();
                 accountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
                 legacyAccountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
