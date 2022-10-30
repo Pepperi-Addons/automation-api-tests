@@ -59,6 +59,7 @@ export class BrandedApp extends AddonPage {
 
         let isRemovable;
         try {
+            this.browser.sleep(3000);
             isRemovable = await this.browser.untilIsVisible(buttonsLocator);
         } catch (error) {
             console.log('%cNo Button To Remove, Test Continue', ConsoleColors.PageMessage);
