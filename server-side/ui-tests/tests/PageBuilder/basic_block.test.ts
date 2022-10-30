@@ -4,7 +4,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
 import { v4 as newUuid } from 'uuid';
-import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
+import { PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { StaticTester } from '../../pom/addons/Blocks/PageTester/StaticTester.block';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
@@ -102,7 +102,7 @@ export function BasicBlockTests(pagesService: PagesService, pagesReq: PageTestRe
 
         basicPage.Layout.Sections.add(section);
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(basicPage).catch((error) => {
+        const pageResult: any = await pagesService.createOrUpdatePage(basicPage).catch((error) => {
             console.log((error as Error).message);
             throw error;
         });
