@@ -270,8 +270,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
 
                 // await driver.click(webAppHeader.Settings);//problem -- why do this anyway?
                 await driver.click(webAppSettingsSidePanel.ObjectEditorTransactions);
-                if (await this.browser.isElementVisible(By.xpath("//span[text()='Sales Order - Transaction']"))) {
-                    await this.browser.click(By.xpath("//pep-icon[@name='arrow_left_alt']"));
+                if (await driver.isElementVisible(By.xpath("//span[text()='Sales Order - Transaction']"))) {
+                    await driver.click(By.xpath("//pep-icon[@name='arrow_left_alt']"));
                 }
 
                 await driver.sendKeys(webAppTopBar.EditorSearchField, 'Sales Order' + Key.ENTER);
