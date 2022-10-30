@@ -4,7 +4,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
 import { v4 as newUuid } from 'uuid';
-import { NgComponentRelation, Page, PageBlock } from '@pepperi-addons/papi-sdk';
+import { NgComponentRelation, PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
@@ -177,7 +177,7 @@ export function BlockLoadTests(pagesService: PagesService, pagesReq: PageTestReq
             testPage.Layout.Sections.add(section);
         }
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(testPage).catch((error) => {
+        const pageResult: any = await pagesService.createOrUpdatePage(testPage).catch((error) => {
             console.log((error as Error).message);
             throw error;
         });

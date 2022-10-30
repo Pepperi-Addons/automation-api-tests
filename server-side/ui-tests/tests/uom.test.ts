@@ -237,7 +237,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                     let webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.returnToHomePage();
                     await webAppHomePage.manualResync(client);
-                    debugger;
+                    // debugger;
                     await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                     await uom.testUomAtdUIWithItemConfig();
                     const addonPage = new AddonPage(driver);

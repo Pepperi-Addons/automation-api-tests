@@ -97,7 +97,7 @@ export async function LoginPerfTestsReload(email: string, password: string, varP
                 console.log(`THIS TEST WAS PERFORMED AT: ${dateTime}`);
             });
             it('getting the AVG from ADAL', async function () {
-                debugger;
+                // debugger;
                 const adalResponseReload = await adalService.getDataFromSchema(
                     //querying the ADAL scheme to get saved avarages
                     'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',

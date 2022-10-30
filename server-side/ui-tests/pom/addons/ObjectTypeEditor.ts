@@ -242,7 +242,6 @@ export class ObjectTypeEditor extends AddonPage {
         switch (postAction) {
             case WorkflowAction.UpdateInventory:
                 const webAppDialog = new WebAppDialog(this.browser);
-
                 //Wait for all Ifreames to load after the main Iframe finished before switching between freames.
                 await this.browser.switchTo(this.AddonContainerIframe);
                 await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -256,6 +255,15 @@ export class ObjectTypeEditor extends AddonPage {
                 expect(await this.isEditorTabVisible('WorkflowV2')).to.be.true;
 
                 //Validate Editor Page Loaded
+                if (await this.browser.isElementVisible(By.xpath("//b[text()='Set Status Form']"))) {
+                    await this.selectTabByText('Actions');
+                    await this.browser.switchTo(this.AddonContainerIframe);
+                    await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                    await this.selectTabByText('Workflows');
+                    await this.browser.switchTo(this.AddonContainerIframe);
+                    await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                    expect(await this.isEditorTabVisible('WorkflowV2')).to.be.true;
+                }
                 expect(await this.browser.findElement(this.AddonContainerATDEditorWorkflowFlowchartIndicator));
 
                 //Edit the Workflow
@@ -607,6 +615,10 @@ export class ObjectTypeEditor extends AddonPage {
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
         await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
+
+        if (await this.browser.isElementVisible(By.xpath("//span[text()='UI Workflow Test ATD - Transaction']"))) {
+            await this.browser.click(By.xpath("//pep-icon[@name='arrow_left_alt']"));
+        }
 
         //Remove all the transactions of this ATD, or the UI will block the manual removal
         const transactionsToRemoveInCleanup = await objectsService.getTransaction({
