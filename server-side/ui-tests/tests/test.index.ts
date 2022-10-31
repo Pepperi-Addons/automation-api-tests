@@ -567,11 +567,11 @@ export async function replaceUIControlsTests(that: any, generalService: GeneralS
                     const setOrderCartGridBinded = setOrderCartGrid.bind(that);
                     await setOrderCartGridBinded(generalService, uIControlArr[j]);
                 });
-            } else if (uIControlArr[j]['Type'] == '[OA#0]OrderBanner') {
-                it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
-                    const setOrderBannerBinded = setOrderBanner.bind(that);
-                    await setOrderBannerBinded(generalService, uIControlArr[j]);
-                });
+                // } else if (uIControlArr[j]['Type'] == '[OA#0]OrderBanner') {
+                //     it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
+                //         const setOrderBannerBinded = setOrderBanner.bind(that);
+                //         await setOrderBannerBinded(generalService, uIControlArr[j]);
+                //     });
             } else if (uIControlArr[j]['Type'] == '[OA#0]OrderCartOpenedFooter') {
                 it(`Add UIControls ${uIControlArr[j]['Type']}`, async function () {
                     const setOrderCartOpenedFooterBinded = setOrderCartOpenedFooter.bind(that);

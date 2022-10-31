@@ -591,7 +591,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
             });
 
             it(`Recursive export`, async () => {
-                debugger;
+                // debugger;
                 const pfsService = new PFSService(generalService);
                 const distributor = await pfsService.getDistributor();
                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')

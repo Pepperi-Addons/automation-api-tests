@@ -52,7 +52,7 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "^0.0.36",
-        "@pepperi-addons/papi-sdk": "^1.37.0",
+        "@pepperi-addons/papi-sdk": "^1.42.0",
         "@rollup/plugin-json": "^4.1.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",

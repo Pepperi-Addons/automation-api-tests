@@ -65,7 +65,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             await webAppHeader.navigate();
             await driver.click(webAppHeader.Settings);
             const brandedApp = new BrandedApp(driver);
-            await brandedApp.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME} `);
+            await brandedApp.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME}`);
         });
 
         it('Workflow Scenario: Update Inventory', async function () {
@@ -78,7 +78,6 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
 
             await objectTypeEditor.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
-
             await objectTypeEditor.editATDWorkflow(WorkflowAction.UpdateInventory);
 
             const brandedApp = new BrandedApp(driver);
