@@ -214,7 +214,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Items search', () => {
                 let legacyItems;
                 it('Where', async () => {
-                    const whereItems = await objectsService.getItems({ where: `ExternalID like '%Automated API Item%'` });
+                    const whereItems = await objectsService.getItems({
+                        where: `ExternalID like '%Automated API Item%'`,
+                    });
                     const legacyWhereItems = await service.search('items', {
                         Where: `ExternalID like '%Automated API Item%'`,
                     });
@@ -281,14 +283,15 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         Fields: ['InternalID', 'ExternalID'],
                     });
                     expect(legacyFieldsItems.Objects.length).to.equal(legacyItems.length);
-                    expect(legacyFieldsItems.Objects).to.deep.equal([{ InternalID: items[0].InternalID, ExternalID: items[0].ExternalID }]);
+                    expect(legacyFieldsItems.Objects).to.deep.equal([
+                        { InternalID: items[0].InternalID, ExternalID: items[0].ExternalID },
+                    ]);
                 });
 
                 it('Include Count', async () => {
                     legacyItems = await service.get(`items`);
-                    let legacyIncludeCountItems;
-                    legacyIncludeCountItems = await service.search('items', {
-                        IncludeCount: true
+                    const legacyIncludeCountItems = await service.search('items', {
+                        IncludeCount: true,
                     });
                     expect(legacyIncludeCountItems.Objects.length).to.equal(legacyItems.length);
                     expect(legacyIncludeCountItems.Count).equal(legacyItems.length);
@@ -296,16 +299,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Delete items', async () => {
-                let deletedItem = await objectsService.postItem({
+                const deletedItem = await objectsService.postItem({
                     ExternalID: itemExternalID,
                     MainCategoryID: mainCategoryID,
-                    Hidden: true
+                    Hidden: true,
                 });
 
-                let legacyDeletedItem = await service.post('items', {
+                const legacyDeletedItem = await service.post('items', {
                     ExternalID: legacyItemExternalID,
                     MainCategoryID: mainCategoryID,
-                    Hidden: true
+                    Hidden: true,
                 });
                 expect(deletedItem).to.have.property('Hidden').that.is.true;
                 expect(legacyDeletedItem).to.have.property('Hidden').that.is.true;
@@ -531,16 +534,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         Fields: ['InternalID', 'ExternalID'],
                     });
                     expect(legacyFieldsAccounts.Objects.length).to.equal(legacyAccounts.length);
-                    expect(legacyFieldsAccounts.Objects).to.deep.equal([{ InternalID: accounts[0].InternalID, ExternalID: accounts[0].ExternalID }]);
+                    expect(legacyFieldsAccounts.Objects).to.deep.equal([
+                        { InternalID: accounts[0].InternalID, ExternalID: accounts[0].ExternalID },
+                    ]);
                 });
 
-
                 it('Include Count', async () => {
-                    let legacyAccountsForCountValidation = await service.get(`accounts?page_size=-1`);
+                    const legacyAccountsForCountValidation = await service.get(`accounts?page_size=-1`);
                     legacyAccounts = await service.get(`accounts`);
-                    let legacyIncludeCountAccounts;
-                    legacyIncludeCountAccounts = await service.search('accounts', {
-                        IncludeCount: true
+                    const legacyIncludeCountAccounts = await service.search('accounts', {
+                        IncludeCount: true,
                     });
                     expect(legacyIncludeCountAccounts.Objects.length).to.equal(legacyAccounts.length);
                     expect(legacyIncludeCountAccounts.Count).equal(legacyAccountsForCountValidation.length);
@@ -548,14 +551,14 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Delete accounts', async () => {
-                let deletedAccount = await objectsService.createAccount({
+                const deletedAccount = await objectsService.createAccount({
                     ExternalID: accountExternalID,
-                    Hidden: true
+                    Hidden: true,
                 });
 
-                let legacyDeletedAccount = await service.post('accounts', {
+                const legacyDeletedAccount = await service.post('accounts', {
                     ExternalID: legacyAccountExternalID,
-                    Hidden: true
+                    Hidden: true,
                 });
                 expect(deletedAccount).to.have.property('Hidden').that.is.true;
                 expect(legacyDeletedAccount).to.have.property('Hidden').that.is.true;
@@ -745,18 +748,19 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyUsers = await service.get(`users?where=InternalID=${users[0].InternalID}`);
                     const legacyFieldsUsers = await service.search(`users`, {
                         Where: `InternalID=${users[0].InternalID}`,
-                        Fields: ['InternalID','ExternalID'],
+                        Fields: ['InternalID', 'ExternalID'],
                     });
                     expect(legacyFieldsUsers.Objects.length).to.equal(legacyUsers.length);
-                    expect(legacyFieldsUsers.Objects).to.deep.equal([{ InternalID: users[0].InternalID, ExternalID: users[0].ExternalID }]);
+                    expect(legacyFieldsUsers.Objects).to.deep.equal([
+                        { InternalID: users[0].InternalID, ExternalID: users[0].ExternalID },
+                    ]);
                 });
 
                 it('Include Count', async () => {
-                    let legacyUsersForCountValidation = await service.get(`users?page_size=-1`);
+                    const legacyUsersForCountValidation = await service.get(`users?page_size=-1`);
                     legacyUsers = await service.get(`users`);
-                    let legacyIncludeCountUsers;
-                    legacyIncludeCountUsers = await service.search('users', {
-                        IncludeCount: true
+                    const legacyIncludeCountUsers = await service.search('users', {
+                        IncludeCount: true,
                     });
                     expect(legacyIncludeCountUsers.Objects.length).to.equal(legacyUsers.length);
                     expect(legacyIncludeCountUsers.Count).equal(legacyUsersForCountValidation.length);
@@ -764,16 +768,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Delete users', async () => {
-                let deletedUser = await objectsService.updateUser({
+                const deletedUser = await objectsService.updateUser({
                     ExternalID: userExternalID,
                     Email: userEmail,
-                    Hidden: true
+                    Hidden: true,
                 });
 
-                let legacyDeletedUser = await service.post('users', {
+                const legacyDeletedUser = await service.post('users', {
                     ExternalID: legacyUserExternalID,
                     Email: legacyUserEmail,
-                    Hidden: true
+                    Hidden: true,
                 });
                 expect(deletedUser).to.have.property('Hidden').that.is.true;
                 expect(legacyDeletedUser).to.have.property('Hidden').that.is.true;
