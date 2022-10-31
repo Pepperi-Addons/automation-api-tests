@@ -32,7 +32,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'], //hardcoded because 1.0.x (while x>2) is failing currently 31/10/22 (evgeny)
     };
     testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
