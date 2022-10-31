@@ -937,7 +937,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     uninstallAddonAuditLogResponse.Status?.ID,
                     JSON.stringify(uninstallAddonAuditLogResponse.AuditInfo.ResultObject),
                 ).to.equal(1);
-                generalService.sleep(20000);
+                generalService.sleep(40000);
             });
 
             it('Read After Delete Shared Index Document', async () => {

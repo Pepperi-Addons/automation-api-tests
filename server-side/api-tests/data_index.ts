@@ -343,7 +343,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.8'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     };
     let varKey;
@@ -352,8 +352,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     } else {
         varKey = request.body.varKeyPro;
     }
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade Data Index
 
     // var date = new Date();

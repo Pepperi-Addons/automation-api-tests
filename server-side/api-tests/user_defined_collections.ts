@@ -9,10 +9,20 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     const it = tester.it;
 
     //#region Upgrade UDC
+    const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
+        ? 'Export and Import Framework'
+        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.0.459'],
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.0.33'],
+        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.0.11'],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.0.8'],
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -20,8 +30,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     } else {
         varKey = request.body.varKeyPro;
     }
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade UDC
 
     describe('UDC Tests Suites', () => {
@@ -66,35 +76,35 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 CompositeKeyFields: ['Field1', 'Field2'],
                 CompositeKeyType: 'Key',
                 Fields: {
-                    StringField1: {
+                    stringField1: {
                         Type: 'String',
                         Mandatory: true,
                     },
-                    StringField2: {
+                    stringField2: {
                         Type: 'String',
                         Mandatory: true,
                     },
-                    IntegerField1: {
+                    integerField1: {
                         Type: 'Integer',
                         Mandatory: false,
                     },
-                    IntegerField2: {
+                    integerField2: {
                         Type: 'Integer',
                         Mandatory: false,
                     },
-                    OptionalValuesField: {
+                    optionalValuesField: {
                         OptionalValues: ['1', '2', '3'],
                         Type: 'Integer',
                         Mandatory: false,
                     },
-                    StringArray: {
+                    stringArray: {
                         Type: 'Array',
                         Items: {
                             Type: 'String',
                         },
                         Mandatory: false,
                     },
-                    IntegerArray: {
+                    integerArray: {
                         Type: 'Array',
                         Items: {
                             Type: 'Integer',
@@ -111,9 +121,17 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Validate Correct Error Reject Message`, async () => {
-                await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
-                    `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Fields.OptionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.OptionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.OptionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`,
-                );
+                let responseWithError = false;
+                try {
+                    await udcService.postScheme(schemaTestData);
+                } catch (error) {
+                    responseWithError = true;
+                    const message = (error as any).message;
+                    expect(message).to.include(
+                        `"fault":{"faultstring":"Failed due to exception: Fields.optionalValuesField does not match allOf schema [subschema 1] with 3 error[s]:\\nFields.optionalValuesField.OptionalValues[0] does not meet maximum length of 0\\nFields.optionalValuesField.OptionalValues[1] does not meet maximum length of 0\\nFields.optionalValuesField.OptionalValues[2] does not meet maximum length of 0\\ninstance requires property \\"ListView\\"`,
+                    );
+                }
+                expect(responseWithError).to.be.true;
             });
             //TODO: Create CRUD test when possible after API changed to block some API configuration that are not supported by the UI
             /*it(`Create`, async () => {
@@ -243,35 +261,35 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 CompositeKeyFields: ['Field1', 'Field2'],
                 CompositeKeyType: 'Key',
                 Fields: {
-                    StringField1: {
+                    stringField1: {
                         Type: 'String',
                         Mandatory: true,
                     },
-                    StringField2: {
+                    stringField2: {
                         Type: 'String',
                         Mandatory: true,
                     },
-                    IntegerField1: {
+                    integerField1: {
                         Type: 'Integer',
                         Mandatory: false,
                     },
-                    IntegerField2: {
+                    integerField2: {
                         Type: 'Integer',
                         Mandatory: false,
                     },
-                    OptionalValuesField: {
+                    optionalValuesField: {
                         OptionalValues: ['1', '2', '3'],
                         Type: 'String',
                         Mandatory: false,
                     },
-                    StringArray: {
+                    stringArray: {
                         Type: 'Array',
                         Items: {
                             Type: 'String',
                         },
                         Mandatory: false,
                     },
-                    IntegerArray: {
+                    integerArray: {
                         Type: 'Array',
                         Items: {
                             Type: 'Integer',
@@ -304,9 +322,20 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Validate Correct Error Reject Message`, async () => {
-                await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
-                    `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`,
-                );
+                let responseWithError = false;
+                try {
+                    await udcService.postScheme(schemaTestData);
+                } catch (error) {
+                    responseWithError = true;
+                    const message = (error as any).message;
+                    expect(message).to.include(
+                        `"fault":{"faultstring":"Failed due to exception: instance requires property \\"ListView\\"`,
+                    );
+                }
+                expect(responseWithError).to.be.true;
+                // await expect(udcService.postScheme(schemaTestData)).eventually.to.be.rejectedWith(
+                //     `.pepperi.com/V1.0/user_defined_collections/schemes failed with status: 400 - Bad Request error: {,
+                // );
             });
             //TODO: Create CRUD test when possible after API changed to block some API configuration that are not supported by the UI
             /*it(`Create Scheme`, async () => {

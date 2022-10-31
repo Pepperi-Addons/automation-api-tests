@@ -4,7 +4,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { PagesService } from '../../../services/pages/pages.service';
 import { v4 as newUuid } from 'uuid';
-import { Page, PageBlock } from '@pepperi-addons/papi-sdk';
+import { PageBlock } from '@pepperi-addons/papi-sdk';
 import { PagesList } from '../../pom/addons/PageBuilder/PagesList';
 import { PageEditor } from '../../pom/addons/PageBuilder/PageEditor';
 import addContext from 'mochawesome/addContext';
@@ -97,7 +97,7 @@ export function ProduceConsumeTests(pagesService: PagesService, pagesReq: PageTe
 
         prodConsPage.Layout.Sections.add(section);
 
-        const pageResult: Page = await pagesService.createOrUpdatePage(prodConsPage).catch((error) => {
+        const pageResult: any = await pagesService.createOrUpdatePage(prodConsPage).catch((error) => {
             console.log((error as Error).message);
             throw error;
         });

@@ -37,7 +37,7 @@ export class WebAppSettingsSidePanel extends Component {
 
     //Branded App / Settings Framework Locators
     public SettingsFrameworkHomeButtons: By = By.id(
-        'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_webapp_homebuttons',
+        'settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/app_home_screen?view=company_webapp_homebuttons',
     );
     public BrandedAppBranding: By = By.id('settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=company_branding');
     public CatalogsSection: By = By.id('settings/354c5123-a7d0-4f52-8fce-3cf1ebc95314/editor?view=catalogs_manage');

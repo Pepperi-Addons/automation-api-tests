@@ -1,5 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { AddonRelationService } from '../services/addon-relation.service';
+import { v4 as newUuid } from 'uuid';
 
 export async function DimxDataImportTestsTestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await DimxDataImportTests(generalService, request, tester);
@@ -44,11 +45,15 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
     };
 
     //#region Upgrade ADAL
+    const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
+        ? 'Export and Import Framework'
+        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
-        'Export and Import Framework': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
+
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
@@ -187,6 +192,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 'X-Pepperi-SecretKey': logcash.secretKey,
             },
             relationBody.RelationName,
+            addonUUID,
         );
         //debugger;
         if (relationResponse.length == 0 || relationResponse.length == undefined) {
@@ -228,7 +234,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'CreateSchemaWithMandatoryField ' + Date(),
+                    //Name: 'CreateSchemaWithMandatoryField ' + Date(),
+                    Name: 'CreateSchemaWithMandatoryField' + newUuid(),
                     Type: 'data',
                 }),
             })
@@ -341,7 +348,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport test', // mandatory
+                Name: logcash.createSchemaWithMandFieldName.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -917,7 +925,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport test', // mandatory
+                Name: logcash.createSchemaWithMandFieldName.Name, // mandatory /
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -990,7 +998,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
             },
             {
-                Name: 'DIMXDataImport test', // mandatory
+                Name: logcash.createSchemaWithMandFieldName.Name, // mandatory
                 AddonUUID: addonUUID, // mandatory
                 RelationName: 'DataImportResource', // mandatory
                 Type: 'AddonAPI', // mandatory on create
@@ -1039,7 +1047,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'createSchemaTypeData ' + Date(),
+                    Name: 'createSchemaTypeData ' + newUuid(), //+ Date(),
                     Type: 'meta_data',
                 }),
             })
@@ -1060,6 +1068,29 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             logcash.createSchemaTypeDataErrorMessage =
                 'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaTypeData;
         }
+        await CreateRelation1();
+    }
+
+    async function CreateRelation1() {
+        //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
+        const relationResponce = await relationService.postRelationStatus(
+            {
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+                // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+            },
+            {
+                Name: logcash.createSchemaTypeData.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
+                AddonUUID: addonUUID, // mandatory
+                RelationName: 'DataImportResource', // mandatory
+                Type: 'AddonAPI', // mandatory on create
+                Description: 'DIMX Data Import test',
+                AddonRelativeURL: '', // mandatory on create
+            },
+        );
+        //debugger;
+        expect(relationResponce).to.equal(200);
         await insertDataToTable();
     }
 
@@ -1175,7 +1206,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'createSchemaTypeIndexedData ' + Date(),
+                    Name: 'CreateSchemaTypeIndexedData ' + newUuid(),
                     Type: 'indexed_data',
                     Fields: {
                         IndexedString: { Type: 'String', Indexed: true },
@@ -1200,6 +1231,29 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             logcash.createSchemaTypeIndexedDataErrorMessage =
                 'One of parameters on Schema creation get with wrong value: ' + logcash.createSchemaTypeIndexedData;
         }
+        await CreateRelation2();
+    }
+
+    async function CreateRelation2() {
+        //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
+        const relationResponce = await relationService.postRelationStatus(
+            {
+                'X-Pepperi-OwnerID': addonUUID,
+                'X-Pepperi-SecretKey': logcash.secretKey,
+                // 'X-Pepperi-ActionID': 'afecaa32-98e6-45e1-93c9-1ba6cc06ea7d',
+            },
+            {
+                Name: logcash.createSchemaTypeIndexedData.Name, // relation name will be same to schema name 19/10/22
+                //Name: 'DIMXDataImport_test', // mandatory
+                AddonUUID: addonUUID, // mandatory
+                RelationName: 'DataImportResource', // mandatory
+                Type: 'AddonAPI', // mandatory on create
+                Description: 'DIMX Data Import test',
+                AddonRelativeURL: '', // mandatory on create
+            },
+        );
+        //debugger;
+        expect(relationResponce).to.equal(200);
         await insertDataToTableIndexedData();
     }
 
@@ -1229,7 +1283,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 },
             )
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (
             logcash.insertDataToTableIndexedData[0].Key == 'Key1-1' &&
             logcash.insertDataToTableIndexedData[1].Key == 'Key2-1' &&
