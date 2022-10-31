@@ -242,7 +242,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
         //debugger;
         if (
             logcash.createSchemaUDFalseFieldsNegative.fault.faultstring.includes(
-                "Invalid field name, the field name 'TestStringPascalCase' did not match the pattern",
+                "Invalid field name, the fields name 'TestStringPascalCase' did not match the pattern",
             )
         ) {
             logcash.createSchemaUDFalseFieldsNegativeStatus = true;
