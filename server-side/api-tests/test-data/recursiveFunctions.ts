@@ -1,7 +1,3 @@
-exports.AsIs = async (Client, Request) => {
-    return Request.body;
-};
-
 exports.RecursiveImportTestHost_ImportRelativeURL = async (Client, Request) => {
     const addonUUID = Client.BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -13,11 +9,7 @@ exports.RecursiveImportTestHost_ImportRelativeURL = async (Client, Request) => {
 
     // this is our general mapping object, containing the mapping objects of all resources
     if (Request.body['Mapping']) {
-        const mappingObject: {
-            [addonUUID_resource: string]: {
-                [original_key: string]: { Action: 'Replace'; NewKey: string };
-            };
-        } = Request.body['Mapping'];
+        const mappingObject = Request.body['Mapping'];
 
         if (mappingObject[addonUUIDName] && mappingObject[addonUUIDrefName]) {
             // myMapping is the specific mapping object of the Host resource
@@ -52,11 +44,7 @@ exports.RecursiveImportTestReference_ImportRelativeURL = async (Client, Request)
     const addonUUIDName = addonUUID + '_' + name;
     // this is our general mapping object, containing the mapping objects of all resources
     if (Request.body['Mapping']) {
-        const mappingObject: {
-            [addonUUID_resource: string]: {
-                [original_key: string]: { Action: 'Replace'; NewKey: string };
-            };
-        } = Request.body['Mapping'];
+        const mappingObject = Request.body['Mapping'];
 
         if (mappingObject[addonUUIDName]) {
             // myMapping is the specific mapping object of the Reference resource
@@ -76,8 +64,8 @@ exports.RecursiveImportTestReference_ImportRelativeURL = async (Client, Request)
 };
 
 exports.RecursiveImportTestHost_MappingRelativeURL = async (Client, Request) => {
-    const mappingArray: { [original_key: string]: { Action: 'Replace'; NewKey: string } } = {};
-    const objects: any[] = Request.body.Objects;
+    const mappingArray = {};
+    const objects = Request.body.Objects;
     objects.forEach((el) => {
         mappingArray[el.Key] = { Action: 'Replace', NewKey: 'Mapped ' + el.Key };
     });
@@ -85,8 +73,8 @@ exports.RecursiveImportTestHost_MappingRelativeURL = async (Client, Request) => 
 };
 
 exports.RecursiveImportTestReference_MappingRelativeURL = async (Client, Request) => {
-    const mappingArray: { [original_key: string]: { Action: 'Replace'; NewKey: string } } = {};
-    const objects: any[] = Request.body.Objects;
+    const mappingArray = {};
+    const objects = Request.body.Objects;
     objects.forEach((el) => {
         mappingArray[el.Key] = { Action: 'Replace', NewKey: 'Mapped ' + el.Key };
     });
