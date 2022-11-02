@@ -33,7 +33,7 @@ export const testData = {
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.'],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
