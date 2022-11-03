@@ -32,7 +32,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     //#endregion Upgrade Data Index ADAL Pepperitest (Jenkins Special Addon)
 
     describe('Data Index ADAL Tests Suites', () => {
-        const distributorUUID = generalService.getClientData('DistributorUUID');
+        // const distributorUUID = generalService.getClientData('DistributorUUID');
         describe('Prerequisites Addon for Data Index ADAL Tests', () => {
             //Test Datas
             //Data Index ADAL, Pepperi Notification Service
