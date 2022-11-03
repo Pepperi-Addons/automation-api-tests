@@ -12,7 +12,7 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
     let driver: Browser;
     const generalService = new GeneralService(client);
     const adalService = new ADALService(generalService.papiClient);
-    //     //GLOBALS
+    // GLOBALS
     let _sumOfDurationAfterKillingSqlite = 0;
     const numOfRuns = 10;
     let _adalAfterKliingBaseLine = 0;
@@ -45,7 +45,7 @@ export async function LoginPerfSqlitefTests(email: string, password: string, var
 
     // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const testData = {
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.74'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'],
     };
 
     // const addonVersions =

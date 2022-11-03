@@ -29,7 +29,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         ? 'Export and Import Framework'
         : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.2.6'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'], //hardcoded because 1.0.x (while x>2) is failing currently 31/10/22 (evgeny)

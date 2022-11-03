@@ -43,7 +43,7 @@ export async function LoginPerfTestsReload(email: string, password: string, varP
     // await generalService.baseAddonVersionsInstallation(varPass);
     // // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const testData = {
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.74'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'],
     };
 
     // const addonVersions =
