@@ -11,7 +11,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
     //#region Upgrade Legacy Resources
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.2.6'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.0.11'],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.0.33'],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.0.8'],
