@@ -3,7 +3,7 @@ import { describe, it, afterEach, beforeEach } from 'mocha';
 import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { expect } from 'chai';
 import { VarDistPage } from '../pom/addons/VarDistPage';
-import { Key } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
@@ -15,7 +15,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
     //GLOBALS
     let _sumOfDurationAfterRecycling = 0;
     let _sumODurationNoRecycle = 0;
-    const numOfRuns = 10;
+    const numOfRuns = 2;
     let _adalNoRecBaseLine = 0;
     let _adalWithRecBaseLine = 0;
     const today = new Date();
@@ -42,38 +42,35 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'],
     };
 
-    // const addonVersions =
-    await generalService.baseAddonVersionsInstallation(varPass);
-    // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    await generalService.areAddonsInstalled(testData);
-    // const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
+    // await generalService.baseAddonVersionsInstallation(varPass);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // await generalService.areAddonsInstalled(testData);
 
     describe('Login Performance Tests Suites', () => {
-        describe('Prerequisites Addon for Login Performance Test', () => {
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
+        // describe('Prerequisites Addon for Login Performance Test', () => {
+        //     for (const addonName in testData) {
+        //         const addonUUID = testData[addonName][0];
+        //         const version = testData[addonName][1];
+        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
+        //         const changeType = chnageVersionResponseArr[addonName][3];
+        //         describe(`Test Data: ${addonName}`, () => {
+        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+        //                 } else {
+        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+        //                 }
+        //             });
 
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
-        });
+        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(varLatestVersion);
+        //             });
+        //         });
+        //     }
+        // });
 
         describe('Basic UI Tests Suit', async function () {
             this.retries(0);
@@ -109,8 +106,13 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
-                    await webAppSettingsSidePanel.selectSettingsByID('Var');
-                    await driver.click(webAppSettingsSidePanel.VarDistsEditor);
+                    if (_env === 'stage') {
+                        await driver.click(By.xpath(`(//span[@id='Var'])[2]`));
+                        await driver.click(By.id('settings/2cabad50-2df0-4136-abda-03ab9c901953/var_distributors?view=var_distributors&uri=grid/vardistributors'));
+                    } else {
+                        await webAppSettingsSidePanel.selectSettingsByID('Var');
+                        await driver.click(webAppSettingsSidePanel.VarDistsEditor);
+                    }
                     const varListOfDistsPage = new VarDistPage(driver);
                     await varListOfDistsPage.isSpinnerDone();
                     await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
