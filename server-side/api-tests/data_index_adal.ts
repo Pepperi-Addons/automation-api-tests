@@ -553,18 +553,18 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read All Documents', async () => {
+                debugger;
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
                     typedIndexSchema,
                     'shared_index',
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                 );
-                expect(readDocumentResponse).to.deep.include.members([
-                    secondDocument,
-                    thirdDocument,
-                    createDocumentTestData,
-                ]);
                 expect(readDocumentResponse.length).to.equal(3);
+                for (let index = 0; index < readDocumentResponse.length; index++) {
+                    const elem = readDocumentResponse[index];
+                    expect([secondDocument, thirdDocument, createDocumentTestData]).to.deep.contain(elem);
+                }
             });
 
             it('Get totals shared index', async () => {
