@@ -563,10 +563,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 expect(readDocumentResponse.length).to.equal(3);
                 for (let index = 0; index < readDocumentResponse.length; index++) {
                     const elem = readDocumentResponse[index];
-                    expect([secondDocument,
-                        thirdDocument,
-                        createDocumentTestData]).to.deep.contain(elem);                 
-                }    
+                    expect([secondDocument, thirdDocument, createDocumentTestData]).to.deep.contain(elem);
+                }
             });
 
             it('Get totals shared index', async () => {
