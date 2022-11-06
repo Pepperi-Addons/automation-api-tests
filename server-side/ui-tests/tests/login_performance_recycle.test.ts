@@ -108,7 +108,11 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
                     if (_env === 'stage') {
                         await driver.click(By.xpath(`(//span[@id='Var'])[2]`));
-                        await driver.click(By.id('settings/2cabad50-2df0-4136-abda-03ab9c901953/var_distributors?view=var_distributors&uri=grid/vardistributors'));
+                        await driver.click(
+                            By.id(
+                                'settings/2cabad50-2df0-4136-abda-03ab9c901953/var_distributors?view=var_distributors&uri=grid/vardistributors',
+                            ),
+                        );
                     } else {
                         await webAppSettingsSidePanel.selectSettingsByID('Var');
                         await driver.click(webAppSettingsSidePanel.VarDistsEditor);
