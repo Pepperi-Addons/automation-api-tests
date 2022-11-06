@@ -740,9 +740,10 @@ export default class GeneralService {
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
-            // if (addonName == 'ADAL' && this.papiClient['options'].baseURL.includes('staging')) {
-            //     searchString = `AND Version Like '${version}%' AND Available Like 1`;
-            // }
+            if (addonName == 'File Service Framework') {
+                //because 1.0.2 works but 1.0.29 isnt - 1.0.2% = 1.0.29 (evgeny - 6/11)
+                searchString = `AND Version Like '${version}' AND Available Like 1`;
+            }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',
