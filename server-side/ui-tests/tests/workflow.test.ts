@@ -48,7 +48,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
             const objectTypeEditor = new ObjectTypeEditor(driver);
 
-            const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
+            const _TEST_DATA_ATD_NAME = `UI Workflow Test ATD ${generalService.generateRandomString(5)}`;
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
 
             const atdToRemove = await generalService.getAllTypes({
