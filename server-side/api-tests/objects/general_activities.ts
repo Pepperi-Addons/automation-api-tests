@@ -875,6 +875,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
         });
 
         it('Verify bulk jobinfo', async () => {
+            generalService.sleep(5000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateActivity.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateActivity.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
