@@ -502,7 +502,7 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
         await this.browser.click(locatorForFieldType);
         const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|textToFill|', nameOfFieldToEdit);
         await this.browser.click(By.xpath(injectedFieldEditingBtn));
         await this.browser.sleep(2000);
@@ -621,7 +621,7 @@ export class ObjectTypeEditor extends AddonPage {
 
         //Remove the new ATD
         const webAppHeader = new WebAppHeader(this.browser);
-        if ((!await this.browser.isElementVisible(By.xpath("//span[text()='Settings']"))))
+        if (!(await this.browser.isElementVisible(By.xpath("//span[text()='Settings']"))))
             await this.browser.click(webAppHeader.Settings);
 
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
@@ -675,7 +675,6 @@ export class ObjectTypeEditor extends AddonPage {
             this.browser.refresh();
             this.browser.sleep(8000);
             await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
-
         }
 
         await webAppList.clickOnFromListRowWebElement();

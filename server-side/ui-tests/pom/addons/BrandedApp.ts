@@ -25,8 +25,7 @@ export class BrandedApp extends AddonPage {
             await this.isSpinnerDone();
             await this.browser.switchTo(this.AddonContainerIframe);
             await this.isAddonFullyLoaded(AddonLoadCondition.Content);
-        }
-        catch (error) {
+        } catch (error) {
             this.browser.refresh();
             this.browser.sleep(6500);
             await this.isSpinnerDone();
@@ -61,8 +60,7 @@ export class BrandedApp extends AddonPage {
             await this.isSpinnerDone();
             await this.browser.switchTo(this.AddonContainerIframe);
             await this.isAddonFullyLoaded(AddonLoadCondition.Content);
-        }
-        catch (error) {
+        } catch (error) {
             this.browser.refresh();
             this.browser.sleep(6500);
             await this.isSpinnerDone();
