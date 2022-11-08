@@ -115,7 +115,13 @@ export class ObjectTypeEditor extends AddonPage {
         await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
 
         const webAppTopBar = new WebAppTopBar(this.browser);
-        await this.browser.click(webAppTopBar.EditorAddBtn);
+        try {
+            await this.browser.click(webAppTopBar.EditorAddBtn);
+        } catch (error) {
+            await this.browser.refresh();
+            this.browser.sleep(4500);
+            await this.browser.click(webAppTopBar.EditorAddBtn);
+        }
 
         const webAppDialog = new WebAppDialog(this.browser);
         await this.browser.sendKeys(webAppDialog.EditorTextBoxInput, name);
@@ -180,8 +186,14 @@ export class ObjectTypeEditor extends AddonPage {
                 //Wait after POST new ATD from the API before getting it in the UI
                 console.log('ATD Updated by using the API');
                 this.browser.sleep(4000);
-
-                await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
+                debugger;
+                try {
+                    await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
+                } catch (error) {
+                    this.browser.refresh();
+                    this.browser.sleep(4500);
+                    await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
+                }
 
                 await webAppList.clickOnFromListRowWebElement();
 
@@ -256,9 +268,8 @@ export class ObjectTypeEditor extends AddonPage {
 
                 //Validate Editor Page Loaded
                 if (await this.browser.isElementVisible(By.xpath("//b[text()='Set Status Form']"))) {
-                    await this.selectTabByText('Actions');
-                    await this.browser.switchTo(this.AddonContainerIframe);
-                    await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                    await this.browser.refresh();
+                    this.browser.sleep(7500);
                     await this.selectTabByText('Workflows');
                     await this.browser.switchTo(this.AddonContainerIframe);
                     await this.isAddonFullyLoaded(AddonLoadCondition.Footer);
@@ -491,7 +502,7 @@ export class ObjectTypeEditor extends AddonPage {
         expect(await this.browser.untilIsVisible(this.AddonContainerATDEditorFieldsAddCustomArr, 75000)).to.be.true;
         await this.browser.click(locatorForFieldType);
         const injectedFieldEditingBtn = this.FieldEditingBtn.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', nameOfFieldToEdit);
         await this.browser.click(By.xpath(injectedFieldEditingBtn));
         await this.browser.sleep(2000);
@@ -610,15 +621,17 @@ export class ObjectTypeEditor extends AddonPage {
 
         //Remove the new ATD
         const webAppHeader = new WebAppHeader(this.browser);
-        await this.browser.click(webAppHeader.Settings);
+        if ((!await this.browser.isElementVisible(By.xpath("//span[text()='Settings']"))))
+            await this.browser.click(webAppHeader.Settings);
 
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
         await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
 
-        if (await this.browser.isElementVisible(By.xpath("//span[text()='UI Workflow Test ATD - Transaction']"))) {
+        if (await this.browser.isElementVisible(By.xpath(`//span[text()='${name} - Transaction']`))) {
             await this.browser.click(By.xpath("//pep-icon[@name='arrow_left_alt']"));
         }
+        debugger;
 
         //Remove all the transactions of this ATD, or the UI will block the manual removal
         const transactionsToRemoveInCleanup = await objectsService.getTransaction({
@@ -656,7 +669,14 @@ export class ObjectTypeEditor extends AddonPage {
         const webAppList = new WebAppList(this.browser);
         const webAppTopBar = new WebAppTopBar(this.browser);
 
-        await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
+        try {
+            await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
+        } catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(8000);
+            await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
+
+        }
 
         await webAppList.clickOnFromListRowWebElement();
 

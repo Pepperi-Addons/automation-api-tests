@@ -21,12 +21,21 @@ export class BrandedApp extends AddonPage {
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
-
-        await this.isSpinnerDone();
-        await this.browser.switchTo(this.AddonContainerIframe);
-        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+        try {
+            await this.isSpinnerDone();
+            await this.browser.switchTo(this.AddonContainerIframe);
+            await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+        catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6500);
+            await this.isSpinnerDone();
+            await this.browser.switchTo(this.AddonContainerIframe);
+            await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
 
         await this.browser.click(this.AddonContainerEditAdmin);
+
         await this.browser.sendKeys(this.SettingsFrameworkEditorSearch, activtiyName + Key.ENTER);
         await this.browser.click(this.AddonContainerEditorSave);
         this.browser.sleep(3500);
@@ -48,9 +57,18 @@ export class BrandedApp extends AddonPage {
         await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
         await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
 
-        await this.isSpinnerDone();
-        await this.browser.switchTo(this.AddonContainerIframe);
-        await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+        try {
+            await this.isSpinnerDone();
+            await this.browser.switchTo(this.AddonContainerIframe);
+            await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+        catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6500);
+            await this.isSpinnerDone();
+            await this.browser.switchTo(this.AddonContainerIframe);
+            await this.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
 
         await this.browser.click(this.AddonContainerEditAdmin);
 
