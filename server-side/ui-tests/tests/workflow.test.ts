@@ -138,8 +138,6 @@ export async function WorkflowTests(email: string, password: string, client: Cli
 
             await webAppHomePage.isDialogOnHomePAge(this);
 
-            debugger;
-
             await objectTypeEditor.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
 
             //Wait after refresh for the ATD list to load before searching in list
