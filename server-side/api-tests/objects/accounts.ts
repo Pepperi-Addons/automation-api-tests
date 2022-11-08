@@ -1005,6 +1005,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         });
 
         it('Verify bulk jobinfo', async () => {
+            generalService.sleep(5000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateAccount.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateAccount.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
