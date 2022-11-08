@@ -27,7 +27,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
     let driver: Browser;
 
     describe('Workflow UI Tests Suit', async function () {
-        this.retries(1);
+        this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
@@ -43,12 +43,13 @@ export async function WorkflowTests(email: string, password: string, client: Cli
         });
 
         it('Pre Test: Remove Workflow ATD', async function () {
+            // debugger;
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.loginWithImage(email, password);
 
             const objectTypeEditor = new ObjectTypeEditor(driver);
 
-            const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
+            const _TEST_DATA_ATD_NAME = `UI Workflow Test ATD`;
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
 
             const atdToRemove = await generalService.getAllTypes({
@@ -65,16 +66,18 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             await webAppHeader.navigate();
             await driver.click(webAppHeader.Settings);
             const brandedApp = new BrandedApp(driver);
+            // debugger;
             await brandedApp.removeAdminHomePageButtons(`${_TEST_DATA_ATD_NAME}`);
         });
 
         it('Workflow Scenario: Update Inventory', async function () {
+            // debugger;
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.loginWithImage(email, password);
 
             const objectTypeEditor = new ObjectTypeEditor(driver);
 
-            const _TEST_DATA_ATD_NAME = 'UI Workflow Test ATD';
+            const _TEST_DATA_ATD_NAME = `UI Workflow Test ATD ${generalService.generateRandomString(5)}`;
             const _TEST_DATA_ATD_DESCRIPTION = 'UI Workflow Test ATD Description';
 
             await objectTypeEditor.createNewATD(this, generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
@@ -134,6 +137,8 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             expect(inventoryAfter[0].InStockQuantity).to.equal(100 - _TEST_DATA_ITEM_QUANTITY_TO_BUY);
 
             await webAppHomePage.isDialogOnHomePAge(this);
+
+            debugger;
 
             await objectTypeEditor.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
 

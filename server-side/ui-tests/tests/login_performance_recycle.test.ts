@@ -3,7 +3,7 @@ import { describe, it, afterEach, beforeEach } from 'mocha';
 import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { expect } from 'chai';
 import { VarDistPage } from '../pom/addons/VarDistPage';
-import { Key } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import addContext from 'mochawesome/addContext';
 import { GeneralService } from '../../services';
 import { ADALService } from '../../services/adal.service';
@@ -42,12 +42,9 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'],
     };
 
-    // const addonVersions =
     await generalService.baseAddonVersionsInstallation(varPass);
-    // const webAPIVersion = addonVersions.chnageVersionResponseArr['WebApp API Framework'][2];
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     await generalService.areAddonsInstalled(testData);
-    // const urlToLookFor = `https://${_envUrlBase}.pepperi.com/${webAPIVersion}/webapi/Service1.svc/v1/HomePage`;
 
     describe('Login Performance Tests Suites', () => {
         describe('Prerequisites Addon for Login Performance Test', () => {
@@ -109,8 +106,17 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
                     const webAppHeader = new WebAppHeader(driver);
                     await webAppHeader.openSettings();
                     const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
-                    await webAppSettingsSidePanel.selectSettingsByID('Var');
-                    await driver.click(webAppSettingsSidePanel.VarDistsEditor);
+                    if (_env === 'stage') {
+                        await driver.click(By.xpath(`(//span[@id='Var'])[2]`));
+                        await driver.click(
+                            By.id(
+                                'settings/2cabad50-2df0-4136-abda-03ab9c901953/var_distributors?view=var_distributors&uri=grid/vardistributors',
+                            ),
+                        );
+                    } else {
+                        await webAppSettingsSidePanel.selectSettingsByID('Var');
+                        await driver.click(webAppSettingsSidePanel.VarDistsEditor);
+                    }
                     const varListOfDistsPage = new VarDistPage(driver);
                     await varListOfDistsPage.isSpinnerDone();
                     await driver.switchTo(varListOfDistsPage.AddonContainerIframe);
