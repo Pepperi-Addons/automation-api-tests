@@ -38,7 +38,7 @@ export class AddonPage extends Page {
 
     public AddonContainerActionsRadioBtn: By = By.xpath('//div[contains(@class,"choose")] //input[@type="radio"]');
     public AddonContainerEditorTrashBtn: By = By.xpath(
-        `//*[@data-id="ATD_PLACE_HOLDER"]//div[@class="lb-item-header"]//span[contains(@class,"trashCanIcon")]`,
+        `//input[contains(@value,'ATD_PLACE_HOLDER') and @class='lb-title-edit']/../span[@class='lb-close trashCanIcon trashCanIconDisable']`,
     );
     public MatOptionDropBox: By = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
 
