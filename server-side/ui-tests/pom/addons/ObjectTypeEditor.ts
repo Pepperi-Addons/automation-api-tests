@@ -190,7 +190,7 @@ export class ObjectTypeEditor extends AddonPage {
                 try {
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
                 } catch (error) {
-                    this.browser.refresh();
+                    await this.browser.refresh();
                     this.browser.sleep(4500);
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
                 }
@@ -673,7 +673,7 @@ export class ObjectTypeEditor extends AddonPage {
         try {
             await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
         } catch (error) {
-            this.browser.refresh();
+            await this.browser.refresh();
             this.browser.sleep(8000);
             await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
         }
