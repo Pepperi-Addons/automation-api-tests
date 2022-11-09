@@ -117,7 +117,7 @@ export async function UDTTests(generalService: GeneralService, tester: TesterFun
         });
 
         it('Verify bulk jobinfo', async () => {
-            generalService.sleep(5000);
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkUpdateUDT.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkUpdateUDT.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
