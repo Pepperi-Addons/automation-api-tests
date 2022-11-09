@@ -887,7 +887,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
         });
 
         it('Verify bulk jobinfo', async () => {
-            generalService.sleep(5000);
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
@@ -982,6 +982,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
         });
 
         it('Verify bulk update jobinfo', async () => {
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);

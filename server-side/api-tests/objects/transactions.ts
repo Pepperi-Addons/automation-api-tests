@@ -1690,7 +1690,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Verify bulk jobinfo', async () => {
-            generalService.sleep(5000);
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
@@ -1763,6 +1763,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Verify bulk update jobinfo', async () => {
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransaction.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateTransaction.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
@@ -1809,7 +1810,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Verify bulk jobinfo', async () => {
-            generalService.sleep(5000);
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
@@ -1857,6 +1858,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Verify bulk update jobinfo', async () => {
+            generalService.sleep(10000);
             bulkJobInfo = await service.waitForBulkJobStatus(bulkCreateTransactionLines.JobID, 30000);
             expect(bulkJobInfo.ID).to.equal(bulkCreateTransactionLines.JobID);
             expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
