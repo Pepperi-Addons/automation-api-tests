@@ -190,7 +190,7 @@ export class ObjectTypeEditor extends AddonPage {
                 try {
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
                 } catch (error) {
-                    this.browser.refresh();
+                    await this.browser.refresh();
                     this.browser.sleep(4500);
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
                 }
@@ -628,10 +628,11 @@ export class ObjectTypeEditor extends AddonPage {
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
         await this.browser.click(webAppSettingsSidePanel.ObjectEditorTransactions);
 
+        this.browser.sleep(3500);
         if (await this.browser.isElementVisible(By.xpath(`//span[text()='${name} - Transaction']`))) {
             await this.browser.click(By.xpath("//pep-icon[@name='arrow_left_alt']"));
+            this.browser.sleep(4000);
         }
-        debugger;
 
         //Remove all the transactions of this ATD, or the UI will block the manual removal
         const transactionsToRemoveInCleanup = await objectsService.getTransaction({
@@ -672,7 +673,7 @@ export class ObjectTypeEditor extends AddonPage {
         try {
             await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
         } catch (error) {
-            this.browser.refresh();
+            await this.browser.refresh();
             this.browser.sleep(8000);
             await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalIDInCleanup + Key.ENTER);
         }
