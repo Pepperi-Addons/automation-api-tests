@@ -230,25 +230,26 @@ export async function UDCTests(email: string, password: string, varPass: string,
                 //1. service init
                 const udcService = new UDCService(generalService);
                 //2. data to upsert
-                const udcName = "UdcTestInfraFunc";
+                const udcName = 'UdcTestInfraFunc';
                 const fieldTestString: UdcField = {
-                    Name: "testFieldString",
+                    Name: 'testFieldString',
                     Mandatory: false,
-                    Type: "String",
-                    Value: "abc123"
+                    Type: 'String',
+                    Value: 'abc123',
                 };
                 const fieldTestNumber: UdcField = {
-                    Name: "testFieldNumber",
+                    Name: 'testFieldNumber',
                     Mandatory: false,
-                    Type: "Integer",
-                    Value: 123
+                    Type: 'Integer',
+                    Value: 123,
                 };
                 const fieldsToSend = [fieldTestString, fieldTestNumber];
                 //3. infra function to use
                 const udcResponse = await udcService.createUDCWithFields(udcName, fieldsToSend);
                 //4. testing all went well
-                expect(udcResponse.Fail).to.be.undefined;//flag i created to test if whole flow was successful 
-                for (let index = 0; index < fieldsToSend.length; index++) {//iterate throuth all fields and test each is found + with correct value
+                expect(udcResponse.Fail).to.be.undefined; //flag i created to test if whole flow was successful
+                for (let index = 0; index < fieldsToSend.length; index++) {
+                    //iterate throuth all fields and test each is found + with correct value
                     const field = fieldsToSend[index];
                     expect(udcResponse[field.Name]).to.not.be.undefined;
                     expect(udcResponse[field.Name].Value).to.equal(field.Value);
