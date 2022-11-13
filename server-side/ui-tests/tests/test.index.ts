@@ -214,7 +214,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
     }
 
     if (tests.includes('evgeny')) {
-        await WorkflowTests(email, pass, client);
+        await OrderTests(email, pass, client);
     }
 
     if (tests.includes('Workflow')) {
