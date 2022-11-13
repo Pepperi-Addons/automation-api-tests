@@ -6,6 +6,7 @@ import { WebAppLoginPage, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettin
 import { CollectionField, CollectionMain } from '../pom/addons/Udc';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server';
+import { UdcField, UDCService } from '../../services/user-defined-collections.service';
 
 chai.use(promised);
 
@@ -224,6 +225,35 @@ export async function UDCTests(email: string, password: string, varPass: string,
             it('Create WebApp Session', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.loginWithImage(email, password);
+            });
+            it('For Hagit Infra Example', async function () {
+                //1. service init
+                const udcService = new UDCService(generalService);
+                //2. data to upsert
+                const udcName = 'UdcTestInfraFunc';
+                const fieldTestString: UdcField = {
+                    Name: 'testFieldString',
+                    Mandatory: false,
+                    Type: 'String',
+                    Value: 'abc123',
+                };
+                const fieldTestNumber: UdcField = {
+                    Name: 'testFieldNumber',
+                    Mandatory: false,
+                    Type: 'Integer',
+                    Value: 123,
+                };
+                const fieldsToSend = [fieldTestString, fieldTestNumber];
+                //3. infra function to use
+                const udcResponse = await udcService.createUDCWithFields(udcName, fieldsToSend);
+                //4. testing all went well
+                expect(udcResponse.Fail).to.be.undefined; //flag i created to test if whole flow was successful
+                for (let index = 0; index < fieldsToSend.length; index++) {
+                    //iterate throuth all fields and test each is found + with correct value
+                    const field = fieldsToSend[index];
+                    expect(udcResponse[field.Name]).to.not.be.undefined;
+                    expect(udcResponse[field.Name].Value).to.equal(field.Value);
+                }
             });
             it('Open UDC', async function () {
                 const webAppHeader = new WebAppHeader(driver);
