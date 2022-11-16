@@ -1,5 +1,6 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
+//import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
+import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import {
@@ -24,150 +25,151 @@ export async function OrderTests(email: string, password: string, client: Client
     const objectsService = new ObjectsService(generalService);
     let driver: Browser;
 
-    describe('Order UI Tests Suit (New Browser per test (it) scenarios)', async function () {
-        this.retries(1);
+    // describe('Order UI Tests Suit (New Browser per test (it) scenarios)', async function () {
+    //     this.retries(1);
 
-        beforeEach(async function () {
-            driver = await Browser.initiateChrome();
-        });
+    //     beforeEach(async function () {
+    //         driver = await Browser.initiateChrome();
+    //     });
 
-        afterEach(async function () {
-            const webAppHomePage = new WebAppHomePage(driver);
-            await webAppHomePage.collectEndTestData(this);
-            await driver.quit();
-        });
+    //     afterEach(async function () {
+    //         const webAppHomePage = new WebAppHomePage(driver);
+    //         await webAppHomePage.collectEndTestData(this);
+    //         await driver.quit();
+    //     });
 
-        it('Order The Most Expensive Three Items and validate with API', async function () {
-            const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.loginWithImage(email, password);
+    //     it('Order The Most Expensive Three Items and validate with API', async function () {
+    //         const webAppLoginPage = new WebAppLoginPage(driver);
+    //         await webAppLoginPage.loginWithImage(email, password);
 
-            const webAppHomePage = new WebAppHomePage(driver);
-            await webAppHomePage.initiateSalesActivity();
+    //         const webAppHomePage = new WebAppHomePage(driver);
+    //         await webAppHomePage.initiateSalesActivity();
 
-            //Create new transaction from the UI
-            const itemsScopeURL = await driver.getCurrentUrl();
-            const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
-            const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
+    //         //Create new transaction from the UI
+    //         const itemsScopeURL = await driver.getCurrentUrl();
+    //         const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
+    //         const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
 
-            //Sorting items by price
-            const webAppList = new WebAppList(driver);
-            const webAppTopBar = new WebAppTopBar(driver);
-            await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
-            await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+    //         //Sorting items by price
+    //         const webAppList = new WebAppList(driver);
+    //         const webAppTopBar = new WebAppTopBar(driver);
+    //         await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
+    //         await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
-            //This sleep is mandaroy while the list is re-sorting after the sorting click
-            console.log('Sorting List');
-            driver.sleep(3000);
-            const cartItems = await driver.findElements(webAppList.CartListElements);
-            let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
-            let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+    //         //This sleep is mandaroy while the list is re-sorting after the sorting click
+    //         console.log('Sorting List');
+    //         driver.sleep(3000);
+    //         const cartItems = await driver.findElements(webAppList.CartListElements);
+    //         let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+    //         let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
 
-            //Verify that matrix is sorted as expected
-            if (topPrice < secondPrice) {
-                await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
+    //         //Verify that matrix is sorted as expected
+    //         if (topPrice < secondPrice) {
+    //             await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
-                //This sleep is mandaroy while the list is re-sorting after the sorting click
-                console.log('Sorting List');
-                driver.sleep(3000);
-                const cartItems = await driver.findElements(webAppList.CartListElements);
-                topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
-                secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
-            }
+    //             //This sleep is mandaroy while the list is re-sorting after the sorting click
+    //             console.log('Sorting List');
+    //             driver.sleep(3000);
+    //             const cartItems = await driver.findElements(webAppList.CartListElements);
+    //             topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
+    //             secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
+    //         }
 
-            addContext(this, {
-                title: `The two top items after the sort`,
-                value: [topPrice, secondPrice],
-            });
+    //         addContext(this, {
+    //             title: `The two top items after the sort`,
+    //             value: [topPrice, secondPrice],
+    //         });
 
-            expect(topPrice).to.be.above(secondPrice);
+    //         expect(topPrice).to.be.above(secondPrice);
 
-            const cartMatrix: string[][] = await webAppList.getCartListGridlineAsMatrix();
-            //console.table(cartMatrix);
-            const sorteCartMatrixByPrice = cartMatrix.sort(compareArrayByPriceInDollar);
-            //console.table(sorteCartMatrixByPrice);
-            for (let i = 0; i < cartMatrix.length; i++) {
-                expect(cartMatrix[i]).to.equal(sorteCartMatrixByPrice[i]);
-                // console.log(cartMatrix[i], sorteCartMatrixByPrice[i]);
-            }
+    //         const cartMatrix: string[][] = await webAppList.getCartListGridlineAsMatrix();
+    //         //console.table(cartMatrix);
+    //         const sorteCartMatrixByPrice = cartMatrix.sort(compareArrayByPriceInDollar);
+    //         //console.table(sorteCartMatrixByPrice);
+    //         for (let i = 0; i < cartMatrix.length; i++) {
+    //             expect(cartMatrix[i]).to.equal(sorteCartMatrixByPrice[i]);
+    //             // console.log(cartMatrix[i], sorteCartMatrixByPrice[i]);
+    //         }
 
-            addContext(this, {
-                title: `The items from the UI (soreted by price)`,
-                value: sorteCartMatrixByPrice,
-            });
+    //         addContext(this, {
+    //             title: `The items from the UI (soreted by price)`,
+    //             value: sorteCartMatrixByPrice,
+    //         });
 
-            const totalPrice =
-                webAppList.getPriceFromArray(sorteCartMatrixByPrice[0]) +
-                webAppList.getPriceFromArray(sorteCartMatrixByPrice[1]) +
-                webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
+    //         const totalPrice =
+    //             webAppList.getPriceFromArray(sorteCartMatrixByPrice[0]) +
+    //             webAppList.getPriceFromArray(sorteCartMatrixByPrice[1]) +
+    //             webAppList.getPriceFromArray(sorteCartMatrixByPrice[2]);
 
-            //Adding most expensive items to cart
-            for (let i = 0; i < 3; i++) {
-                await webAppTransaction.addItemToCart(this, sorteCartMatrixByPrice[i][1], 1, true);
-                console.log('Ordering Items');
-                driver.sleep(500);
-            }
+    //         //Adding most expensive items to cart
+    //         for (let i = 0; i < 3; i++) {
+    //             await webAppTransaction.addItemToCart(this, sorteCartMatrixByPrice[i][1], 1, true);
+    //             console.log('Ordering Items');
+    //             driver.sleep(500);
+    //         }
 
-            await webAppList.click(webAppTopBar.CartViewBtn);
-            await webAppList.click(webAppTopBar.CartSumbitBtn);
+    //         debugger;
+    //         await webAppList.click(webAppTopBar.CartViewBtn);
+    //         await webAppList.click(webAppTopBar.CartSumbitBtn);
 
-            await webAppHomePage.isDialogOnHomePAge(this);
+    //         await webAppHomePage.isDialogOnHomePAge(this);
 
-            //Validating transaction created via the API
-            let lastTransaction;
-            let loopCounter = 20;
-            do {
-                lastTransaction = await objectsService.getTransaction({
-                    order_by: 'ModificationDateTime DESC',
-                });
-                if (lastTransaction[0].Status != 2) {
-                    console.log(`Transaction StatusName Was: ${lastTransaction[0].StatusName}`);
-                    generalService.sleep(2000);
-                }
-                loopCounter--;
-            } while (lastTransaction[0].Status != 2 && loopCounter > 0);
+    //         //Validating transaction created via the API
+    //         let lastTransaction;
+    //         let loopCounter = 20;
+    //         do {
+    //             lastTransaction = await objectsService.getTransaction({
+    //                 order_by: 'ModificationDateTime DESC',
+    //             });
+    //             if (lastTransaction[0].Status != 2) {
+    //                 console.log(`Transaction StatusName Was: ${lastTransaction[0].StatusName}`);
+    //                 generalService.sleep(2000);
+    //             }
+    //             loopCounter--;
+    //         } while (lastTransaction[0].Status != 2 && loopCounter > 0);
 
-            const lastTransactionLines = await objectsService.getTransactionLines({
-                where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
-            });
+    //         const lastTransactionLines = await objectsService.getTransactionLines({
+    //             where: `Transaction.InternalID=${lastTransaction[0].InternalID}`,
+    //         });
 
-            addContext(this, {
-                title: `Last transaction lines total price from API`,
-                value: lastTransaction[0].GrandTotal,
-            });
+    //         addContext(this, {
+    //             title: `Last transaction lines total price from API`,
+    //             value: lastTransaction[0].GrandTotal,
+    //         });
 
-            expect(lastTransaction[0].GrandTotal).to.equal(totalPrice);
+    //         expect(lastTransaction[0].GrandTotal).to.equal(totalPrice);
 
-            //Adding information that is probably important to the test report
-            Object.keys(lastTransactionLines[0]).forEach(
-                (key) => lastTransactionLines[0][key] == null && delete lastTransactionLines[0][key],
-            );
-            Object.keys(lastTransactionLines[1]).forEach(
-                (key) => lastTransactionLines[1][key] == null && delete lastTransactionLines[1][key],
-            );
-            Object.keys(lastTransactionLines[2]).forEach(
-                (key) => lastTransactionLines[2][key] == null && delete lastTransactionLines[2][key],
-            );
+    //         //Adding information that is probably important to the test report
+    //         Object.keys(lastTransactionLines[0]).forEach(
+    //             (key) => lastTransactionLines[0][key] == null && delete lastTransactionLines[0][key],
+    //         );
+    //         Object.keys(lastTransactionLines[1]).forEach(
+    //             (key) => lastTransactionLines[1][key] == null && delete lastTransactionLines[1][key],
+    //         );
+    //         Object.keys(lastTransactionLines[2]).forEach(
+    //             (key) => lastTransactionLines[2][key] == null && delete lastTransactionLines[2][key],
+    //         );
 
-            addContext(this, {
-                title: `Last transaction lines from API`,
-                value: lastTransactionLines,
-            });
+    //         addContext(this, {
+    //             title: `Last transaction lines from API`,
+    //             value: lastTransactionLines,
+    //         });
 
-            //Validating what are the 3 most expensive items via the API are the same as from the UI and ending the tests
-            const threeMostExpnsiveItems = await objectsService.getItems({ page_size: 3, order_by: 'Price DESC' });
-            const PriceOfMostExpensiveItems = threeMostExpnsiveItems.reduce(
-                (total, item) => total + Number(item.Price),
-                0,
-            );
+    //         //Validating what are the 3 most expensive items via the API are the same as from the UI and ending the tests
+    //         const threeMostExpnsiveItems = await objectsService.getItems({ page_size: 3, order_by: 'Price DESC' });
+    //         const PriceOfMostExpensiveItems = threeMostExpnsiveItems.reduce(
+    //             (total, item) => total + Number(item.Price),
+    //             0,
+    //         );
 
-            expect(PriceOfMostExpensiveItems).to.equal(totalPrice);
-            const webAppHeader = new WebAppHeader(driver);
-            await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
+    //         expect(PriceOfMostExpensiveItems).to.equal(totalPrice);
+    //         const webAppHeader = new WebAppHeader(driver);
+    //         await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
 
-            const testDataTransaction = await objectsService.deleteTransaction(Number(lastTransaction[0].InternalID));
-            expect(testDataTransaction).to.be.true;
-        });
-    });
+    //         const testDataTransaction = await objectsService.deleteTransaction(Number(lastTransaction[0].InternalID));
+    //         expect(testDataTransaction).to.be.true;
+    //     });
+    // });
 
     describe('Order UI Tests Suit (One browser per suite (describe) scenarios)', async function () {
         let accountId;
@@ -176,7 +178,7 @@ export async function OrderTests(email: string, password: string, client: Client
         let transactionId;
         let transactionUUID;
 
-        this.retries(1);
+        this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
@@ -305,8 +307,10 @@ export async function OrderTests(email: string, password: string, client: Client
                         driver.sleep(500);
                     }
 
+                    console.log('TIME: ' + new Date().toLocaleString());
                     await webAppList.click(webAppTopBar.CartViewBtn);
                     await webAppList.click(webAppTopBar.CartSumbitBtn);
+                    console.log('TIME: ' + new Date().toLocaleString());
 
                     const webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.isDialogOnHomePAge(this);
