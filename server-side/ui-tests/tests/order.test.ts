@@ -17,6 +17,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { Account, Catalog, Transaction } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
+import { By } from 'selenium-webdriver/lib/by';
 
 chai.use(promised);
 
@@ -244,9 +245,12 @@ export async function OrderTests(email: string, password: string, client: Client
                     });
                     transactionId = testDataTransaction.InternalID;
                     transactionUUID = testDataTransaction.UUID;
+                    console.log(testDataTransaction.UUID);
+                    console.log("!!! DISCOUNT: " + testDataTransaction.DiscountPercentage);
                 });
 
                 it(`Order The Most Expensive Three Items And Validate ${discount}% Discount`, async function () {
+                    // driver.sleep(1000 * 10);
                     const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
                     await webAppTransaction.navigate();
 
@@ -309,9 +313,10 @@ export async function OrderTests(email: string, password: string, client: Client
 
                     console.log('TIME: ' + new Date().toLocaleString());
                     await webAppList.click(webAppTopBar.CartViewBtn);
+                    await driver.click(By.css(`[data-qa="Continue ordering"]`));
+                    await webAppList.click(webAppTopBar.CartViewBtn);
                     await webAppList.click(webAppTopBar.CartSumbitBtn);
-                    console.log('TIME: ' + new Date().toLocaleString());
-
+                    console.log('TIME: ' + new Date().toLocaleString());//
                     const webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.isDialogOnHomePAge(this);
 
