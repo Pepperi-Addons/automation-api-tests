@@ -246,7 +246,7 @@ export async function OrderTests(email: string, password: string, client: Client
                     transactionId = testDataTransaction.InternalID;
                     transactionUUID = testDataTransaction.UUID;
                     console.log(testDataTransaction.UUID);
-                    console.log("!!! DISCOUNT: " + testDataTransaction.DiscountPercentage);
+                    console.log('!!! DISCOUNT: ' + testDataTransaction.DiscountPercentage);
                 });
 
                 it(`Order The Most Expensive Three Items And Validate ${discount}% Discount`, async function () {
@@ -316,7 +316,7 @@ export async function OrderTests(email: string, password: string, client: Client
                     await driver.click(By.css(`[data-qa="Continue ordering"]`));
                     await webAppList.click(webAppTopBar.CartViewBtn);
                     await webAppList.click(webAppTopBar.CartSumbitBtn);
-                    console.log('TIME: ' + new Date().toLocaleString());//
+                    console.log('TIME: ' + new Date().toLocaleString()); //
                     const webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.isDialogOnHomePAge(this);
 
