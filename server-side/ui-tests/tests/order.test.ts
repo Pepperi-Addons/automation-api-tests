@@ -1,5 +1,6 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
+//import { describe, it, beforeEach, afterEach, before, after } from 'mocha';
+import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import {
@@ -306,10 +307,10 @@ export async function OrderTests(email: string, password: string, client: Client
                         driver.sleep(500);
                     }
 
-                    console.log("TIME: " + new Date().toLocaleString());
+                    console.log('TIME: ' + new Date().toLocaleString());
                     await webAppList.click(webAppTopBar.CartViewBtn);
                     await webAppList.click(webAppTopBar.CartSumbitBtn);
-                    console.log("TIME: " + new Date().toLocaleString());
+                    console.log('TIME: ' + new Date().toLocaleString());
 
                     const webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.isDialogOnHomePAge(this);
