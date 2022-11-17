@@ -17,6 +17,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { Account, Catalog, Transaction } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
+// import { By } from 'selenium-webdriver/lib/by';
 
 chai.use(promised);
 
@@ -244,21 +245,27 @@ export async function OrderTests(email: string, password: string, client: Client
                     });
                     transactionId = testDataTransaction.InternalID;
                     transactionUUID = testDataTransaction.UUID;
+                    console.log(testDataTransaction.UUID);
+                    console.log('!!! DISCOUNT: ' + testDataTransaction.DiscountPercentage);
                 });
 
                 it(`Order The Most Expensive Three Items And Validate ${discount}% Discount`, async function () {
+                    driver.sleep(1000 * 1);
                     const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
+
                     await webAppTransaction.navigate();
 
                     //Sorting items by price
                     const webAppList = new WebAppList(driver);
                     const webAppTopBar = new WebAppTopBar(driver);
+                    driver.sleep(1000 * 1);
                     await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
+                    driver.sleep(1000 * 1);
                     await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
                     //This sleep is mandaroy while the list is re-sorting after the sorting click
                     console.log('Sorting List');
-                    driver.sleep(3000);
+                    driver.sleep(1000 * 1);
                     const cartItems = await driver.findElements(webAppList.CartListElements);
                     let topPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[0].getText());
                     let secondPrice = webAppList.getPriceFromLineOfMatrix(await cartItems[1].getText());
@@ -266,7 +273,6 @@ export async function OrderTests(email: string, password: string, client: Client
                     //Verify that matrix is sorted as expected
                     if (topPrice < secondPrice) {
                         await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
-
                         //This sleep is mandaroy while the list is re-sorting after the sorting click
                         console.log('Sorting List');
                         driver.sleep(3000);
@@ -309,9 +315,11 @@ export async function OrderTests(email: string, password: string, client: Client
 
                     console.log('TIME: ' + new Date().toLocaleString());
                     await webAppList.click(webAppTopBar.CartViewBtn);
+                    // await driver.click(By.css(`[data-qa="Continue ordering"]`));
+                    // await webAppList.click(webAppTopBar.CartViewBtn);
+                    driver.sleep(1000 * 1);
                     await webAppList.click(webAppTopBar.CartSumbitBtn);
-                    console.log('TIME: ' + new Date().toLocaleString());
-
+                    console.log('TIME: ' + new Date().toLocaleString()); //
                     const webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.isDialogOnHomePAge(this);
 
@@ -353,6 +361,7 @@ export async function OrderTests(email: string, password: string, client: Client
 
                     const webAppHeader = new WebAppHeader(driver);
                     await expect(webAppHeader.untilIsVisible(webAppHeader.CompanyLogo)).eventually.to.be.true;
+                    // debugger;
                 });
 
                 it('Delete Transaction', async function () {
