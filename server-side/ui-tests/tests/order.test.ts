@@ -17,7 +17,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { Account, Catalog, Transaction } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { By } from 'selenium-webdriver/lib/by';
+// import { By } from 'selenium-webdriver/lib/by';
 
 chai.use(promised);
 
@@ -252,14 +252,14 @@ export async function OrderTests(email: string, password: string, client: Client
                 it(`Order The Most Expensive Three Items And Validate ${discount}% Discount`, async function () {
                     driver.sleep(1000 * 1);
                     const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
-                    
+
                     await webAppTransaction.navigate();
 
                     //Sorting items by price
                     const webAppList = new WebAppList(driver);
                     const webAppTopBar = new WebAppTopBar(driver);
                     driver.sleep(1000 * 1);
-                    await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');                    
+                    await webAppTopBar.selectFromMenuByText(webAppTopBar.ChangeViewButton, 'Grid View');
                     driver.sleep(1000 * 1);
                     await webAppList.click(webAppList.CartListGridLineHeaderItemPrice);
 
