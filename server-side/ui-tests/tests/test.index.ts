@@ -205,6 +205,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         await replaceItemsTests(generalService);
 
         await newUserDependenciesTests(generalService, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Sanity')) {
@@ -215,6 +216,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('evgeny')) {
         await OrderTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Workflow')) {
