@@ -15,9 +15,10 @@ export class WebAppAPI extends Page {
     }
 
     async getSyncResponse(accessToken: string, loopsAmount = 30) {
+        debugger;
         const generalService = new GeneralService(this._CLIENT);
         let syncStatusReposnse;
-        const URL = `${this._BASE_URL === '' ? await this.getBaseURL() : this._BASE_URL}/Service1.svc/v1/GetSyncStatus`;
+        const URL = `${await this.getBaseURL()}/Service1.svc/v1/GetSyncStatus`;
         do {
             syncStatusReposnse = await generalService.fetchStatus(URL, {
                 method: 'GET',
@@ -151,8 +152,8 @@ export class WebAppAPI extends Page {
         const generalService = new GeneralService(this._CLIENT);
         console.log("performing GET call to 'base_url' to recive correct URL to use as base in all API calls");
         this._BASE_URL = await (await generalService.papiClient.get('/webapi/base_url')).BaseURL;
-        //06/04/2022: after we talked with benny: the wrapper knows by itself whether we work with EU or prod so we can ALWAYS call the prod
-        this._BASE_URL = this._BASE_URL.replace('euwebapi', 'webapi');
+        // //06/04/2022: after we talked with benny: the wrapper knows by itself whether we work with EU or prod so we can ALWAYS call the prod
+        // this._BASE_URL = this._BASE_URL.replace('euwebapi', 'webapi');
         return this._BASE_URL;
     }
 }
