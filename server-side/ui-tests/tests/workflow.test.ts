@@ -108,6 +108,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const itemsScopeURL = await driver.getCurrentUrl();
             const transactionUUID = itemsScopeURL.split(/[/'|'?']/)[5];
             const webAppTransaction = new WebAppTransaction(driver, transactionUUID);
+            console.log(`trans UUID: ${transactionUUID}`);
 
             await webAppTransaction.addItemToCart(
                 this,
@@ -121,6 +122,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
             const webAppTopBar = new WebAppTopBar(driver);
             await webAppList.click(webAppTopBar.CartViewBtn);
             await webAppList.click(webAppTopBar.CartSumbitBtn);
+            driver.sleep(5 * 1000);
 
             //Validating transaction created via the API
             let inventoryAfter;
