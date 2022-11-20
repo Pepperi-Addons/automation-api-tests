@@ -350,9 +350,9 @@ export default class GeneralService {
         const base64Credentials = Buffer.from(kmsSecret).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
-        const jobNameAsUrlSafe = encodeURI(jobName);
-        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobPath, jobNameAsUrlSafe, jobQueueId);
-        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobPath, jobNameAsUrlSafe);
+        // const jobNameAsUrlSafe = encodeURI(jobName);
+        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobPath, jobQueueId);
+        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobPath);
     }
 
     async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
