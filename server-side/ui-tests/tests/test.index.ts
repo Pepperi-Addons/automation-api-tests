@@ -407,15 +407,16 @@ const addon = process.env.npm_config_addon as string;
         // const addonVersion = addonVersionArg;
         console.log(`Asked To Run: '${addonName}'`);
         //1. realise which addon should run
-        const jobResponse = 'FAILURE';
-        // switch (addonName) {
-        //     case "ADAL":
-        //         jobResponse = await service.runJenkinsJobRemotely('JenkinsBuildUserCred',
-        //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
-        //             'Test - A1 Production - ADAL');
-        //         break;
-        // }
-        debugger;
+        let jobResponse = '';
+        switch (addonName) {
+            case 'ADAL':
+                jobResponse = await service.runJenkinsJobRemotely(
+                    'JenkinsBuildUserCred',
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
+                    'Test - A1 Production - ADAL',
+                );
+                break;
+        }
         const bodyToSend = {
             Name: `${addonName} Approvment Tests Status`,
             Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
@@ -447,7 +448,6 @@ const addon = process.env.npm_config_addon as string;
         if (Object.keys(monitoringResponse.Error).length !== 0) {
             throw `ERROR: system monitor returned ERROR: ${monitoringResponse.Error}`;
         }
-        debugger;
     }
 
     //
