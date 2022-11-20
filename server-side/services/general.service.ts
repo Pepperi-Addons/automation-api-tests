@@ -345,7 +345,7 @@ export default class GeneralService {
         return kmsData;
     }
 
-    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string) {
+    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string): Promise<string> {
         const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
         const base64Credentials = Buffer.from(kmsSecret).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
@@ -416,7 +416,7 @@ export default class GeneralService {
         return;
     }
 
-    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobPath: string) {
+    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobPath: string): Promise<string> {
         let gottenResultFromJenkins = '';
         let jenkinsJobResponsePolling: FetchStatusResponse = {
             Ok: false,
