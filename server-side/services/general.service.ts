@@ -350,9 +350,9 @@ export default class GeneralService {
         const base64Credentials = Buffer.from(kmsSecret).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
-        const jobNameAsUrlSafe = encodeURI(jobName);
-        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobNameAsUrlSafe, jobQueueId);
-        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobNameAsUrlSafe);
+        // const jobNameAsUrlSafe = encodeURI(jobName);
+        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobPath, jobQueueId);
+        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobPath);
     }
 
     async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
@@ -384,7 +384,8 @@ export default class GeneralService {
 
     async pollJenkinsEndPointUntillJobStarted(
         buildUserCredsBase64: string,
-        jobNameAsUrlSafe: string,
+        jobPath: string,
+        //jobNameAsUrlSafe: string,
         jenkinsRunQueueNumberAsNumber: number,
     ) {
         let gottenIdFromJenkins = 0;
@@ -394,9 +395,11 @@ export default class GeneralService {
             Body: undefined,
             Error: undefined,
         };
+        const path = jobPath.split('/build')[0];
         do {
             jenkinsJobResponsePolling = await this.fetchStatus(
-                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                `https://admin-box.pepperi.com/job/${path}/lastBuild/api/json`,
+                //https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/lastBuild/api/json
                 {
                     method: 'GET',
                     headers: {
@@ -410,9 +413,10 @@ export default class GeneralService {
         } while (gottenIdFromJenkins !== jenkinsRunQueueNumberAsNumber);
         const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
         console.log(`job: ${jenkinsJobName} STARTED execution`);
+        return;
     }
 
-    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobNameAsUrlSafe: string) {
+    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobPath: string) {
         let gottenResultFromJenkins = '';
         let jenkinsJobResponsePolling: FetchStatusResponse = {
             Ok: false,
@@ -420,9 +424,10 @@ export default class GeneralService {
             Body: undefined,
             Error: undefined,
         };
+        const path = jobPath.split('/build')[0];
         do {
             jenkinsJobResponsePolling = await this.fetchStatus(
-                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                `https://admin-box.pepperi.com/job/${path}/lastBuild/api/json`,
                 {
                     method: 'GET',
                     headers: {

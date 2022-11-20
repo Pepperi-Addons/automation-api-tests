@@ -62,6 +62,8 @@ const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
 const varPassEU = process.env.npm_config_var_pass_eu as string;
+const addon = process.env.npm_config_addon as string;
+// const addonVersionArg = process.env.addonVersion as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -205,6 +207,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         await replaceItemsTests(generalService);
 
         await newUserDependenciesTests(generalService, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Sanity')) {
@@ -215,6 +218,7 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
 
     if (tests.includes('evgeny')) {
         await OrderTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Workflow')) {
@@ -396,6 +400,57 @@ const varPassEU = process.env.npm_config_var_pass_eu as string;
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+
+    if (tests.includes('Remote_Jenkins_Handler')) {
+        const service = new GeneralService(client);
+        const addonName = addon;
+        // const addonVersion = addonVersionArg;
+        console.log(`Asked To Run: '${addonName}'`);
+        //1. realise which addon should run
+        const jobResponse = 'FAILURE';
+        // switch (addonName) {
+        //     case "ADAL":
+        //         jobResponse = await service.runJenkinsJobRemotely('JenkinsBuildUserCred',
+        //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
+        //             'Test - A1 Production - ADAL');
+        //         break;
+        // }
+        debugger;
+        const bodyToSend = {
+            Name: `${addonName} Approvment Tests Status`,
+            Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
+            Status: jobResponse === 'FAILURE' ? 'ERROR' : 'SUCCESS',
+            Message: 'evgeny :)',
+            NotificationWebhook:
+                'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
+            SendNotification: 'Always',
+        };
+        const addonsSK = service.getSecret()[1];
+        const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+        const monitoringResponse = await service.fetchStatus(
+            'https://papi.pepperi.com/v1.0/system_health/notifications',
+            {
+                method: 'POST',
+                headers: {
+                    'X-Pepperi-SecretKey': addonsSK,
+                    'X-Pepperi-OwnerID': testingAddonUUID,
+                },
+                body: JSON.stringify(bodyToSend),
+            },
+        );
+        if (monitoringResponse.Ok !== true) {
+            throw `ERROR: system monitor returned error OK: ${monitoringResponse.Ok}`;
+        }
+        if (monitoringResponse.Status !== 200) {
+            throw `ERROR: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+        }
+        if (Object.keys(monitoringResponse.Error).length !== 0) {
+            throw `ERROR: system monitor returned ERROR: ${monitoringResponse.Error}`;
+        }
+        debugger;
+    }
+
+    //
 
     run();
 })();
