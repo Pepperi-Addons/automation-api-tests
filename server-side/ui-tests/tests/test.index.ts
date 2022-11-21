@@ -402,6 +402,13 @@ const addon = process.env.npm_config_addon as string;
     }
 
     if (tests.includes('Remote_Jenkins_Handler')) {
+        //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+        if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+            generalService['client'].AddonSecretKey = await generalService.getSecretKey(
+                generalService['client'].AddonUUID,
+                varPass,
+            );
+        }
         const service = new GeneralService(client);
         const addonName = addon;
         // const addonVersion = addonVersionArg;
