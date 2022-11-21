@@ -436,7 +436,11 @@ export default class GeneralService {
                 },
             );
             gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
-            console.log(`received result is ${gottenResultFromJenkins}`);
+            console.log(
+                `received result is ${gottenResultFromJenkins} ${
+                    gottenResultFromJenkins === 'null' ? '(still running)' : ''
+                }`,
+            );
             this.sleep(4500);
             // debugger;
         } while (gottenResultFromJenkins === null);
