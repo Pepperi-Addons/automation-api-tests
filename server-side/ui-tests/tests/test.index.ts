@@ -62,8 +62,7 @@ const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
 const varPass = process.env.npm_config_var_pass as string;
 const varPassEU = process.env.npm_config_var_pass_eu as string;
-const addon = process.env.npm_config_addon as string;
-// const addonVersionArg = process.env.addonVersion as string;
+// const addon = process.env.npm_config_addon as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
