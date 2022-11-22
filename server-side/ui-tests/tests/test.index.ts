@@ -473,16 +473,16 @@ const addon = process.env.npm_config_addon as string;
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
                         'Test - A1 Production - ADAL',
                     ),
-                    // service.runJenkinsJobRemotely(
-                    //     'JenkinsBuildUserCred',
-                    //     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
-                    //     'Test - A1 EU - ADAL',
-                    // ),
-                    // service.runJenkinsJobRemotely(
-                    //     'JenkinsBuildUserCred',
-                    //     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
-                    //     'Test - A1 Stage - ADAL',
-                    // ),
+                    service.runJenkinsJobRemotely(
+                        'JenkinsBuildUserCred',
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
+                        'Test - A1 EU - ADAL',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        'JenkinsBuildUserCred',
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
+                        'Test - A1 Stage - ADAL',
+                    ),
                 ]);
                 debugger; //check whats inside a
                 break;
