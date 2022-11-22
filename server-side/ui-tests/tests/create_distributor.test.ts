@@ -63,8 +63,9 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 const lorem = new LoremIpsum({});
                 const distributorFirstName = lorem.generateWords(1);
                 const distributorLastName = lorem.generateWords(1);
-                const distributorEmail = `${distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
-                    }.${distributorLastName}@pepperitest.com`;
+                const distributorEmail = `${
+                    distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
+                }.${distributorLastName}@pepperitest.com`;
                 const distributorCompany = lorem.generateWords(3);
                 const lettersGenerator = lorem.generateWords(1).substring(0, 2);
                 const distributorPassword =
@@ -82,8 +83,12 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     Password: distributorPassword,
                 });
                 debugger;
-                if (typeof newDistributor.Ok == 'undefined' && typeof newDistributor.Status == 'undefined' && typeof newDistributor.Headers == 'undefined'
-                    && varPassEU) {
+                if (
+                    typeof newDistributor.Ok == 'undefined' &&
+                    typeof newDistributor.Status == 'undefined' &&
+                    typeof newDistributor.Headers == 'undefined' &&
+                    varPassEU
+                ) {
                     console.log('%cBug exist for this response: (DI-19118)', ConsoleColors.BugSkipped);
                     console.log('%cVAR - Create Distributor - The API call never return', ConsoleColors.BugSkipped);
                     generalService.sleep(1000 * 75 * 1);
@@ -266,8 +271,9 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 await addonPage.isAddonFullyLoaded(AddonLoadCondition.Content);
 
-                const fileLocation = `${__dirname.split('server-side')[0]
-                    }server-side\\api-tests\\test-data\\Temp_Distributor.jpg`;
+                const fileLocation = `${
+                    __dirname.split('server-side')[0]
+                }server-side\\api-tests\\test-data\\Temp_Distributor.jpg`;
                 const brandedApp = new BrandedApp(driver);
                 await (
                     await driver.findElements(brandedApp.BrandedAppUploadInputArr, undefined, false)
