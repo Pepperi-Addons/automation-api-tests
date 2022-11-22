@@ -403,106 +403,123 @@ const addon = process.env.npm_config_addon as string;
 
     if (tests.includes('Remote_Jenkins_Handler')) {
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
-        if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
-            generalService['client'].AddonSecretKey = await generalService.getSecretKey(
-                generalService['client'].AddonUUID,
-                varPass,
-            );
-        }
-        const service = new GeneralService(client);
-        const addonName = addon;
-        const base64VARCredentials = Buffer.from(varPass).toString('base64');
-        //1. realise which addon should run
-        let jobResponse = '';
-        let addonUUID = '';
-        let addonVersion = '';
-        let addonEntryUUID = '';
-        switch (addonName) {
-            case 'ADAL':
-                addonUUID = '00000000-0000-0000-0000-00000000ada1';
-                const response = await service.fetchStatus(
-                    `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Basic ${base64VARCredentials}`,
-                        },
-                    },
-                );
-                addonVersion = response.Body[0].Version;
-                addonEntryUUID = response.Body[0].UUID;
-                console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersion}`);
-                jobResponse = await service.runJenkinsJobRemotely(
-                    'JenkinsBuildUserCred',
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
-                    'Test - A1 Production - ADAL',
-                );
-                break;
-        }
-        // const bodyToSend = {
-        //     Name: `${addonName} Approvment Tests Status`,
-        //     Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
-        //     Status: jobResponse === 'FAILURE' ? 'ERROR' : 'SUCCESS',
-        //     Message: 'evgeny :)',
-        //     NotificationWebhook:
-        //         'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-        //     SendNotification: 'Always',
+        // if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        //     generalService['client'].AddonSecretKey = await generalService.getSecretKey(
+        //         generalService['client'].AddonUUID,
+        //         varPass,
+        //     );
+        // }
+        // const service = new GeneralService(client);
+        // const addonName = addon;
+        // const base64VARCredentials = Buffer.from(varPass).toString('base64');
+        // //1. realise which addon should run
+        // let JenkinsBuildResultsAllEnvs: string[][] = [[]];
+        // let addonUUID = '';
+        // let addonVersion = '';
+        // let addonEntryUUID = '';
+        // switch (addonName) {
+        //     case 'ADAL':
+        //         addonUUID = '00000000-0000-0000-0000-00000000ada1';
+        //         const response = await service.fetchStatus(
+        //             `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+        //             {
+        //                 method: 'GET',
+        //                 headers: {
+        //                     Authorization: `Basic ${base64VARCredentials}`,
+        //                 },
+        //             },
+        //         );
+        //         addonVersion = response.Body[0].Version;
+        //         addonEntryUUID = response.Body[0].UUID;
+        //         console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersion}`);
+        //         JenkinsBuildResultsAllEnvs = await Promise.all([
+        //             service.runJenkinsJobRemotely(
+        //                 'JenkinsBuildUserCred',
+        //                 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
+        //                 'Test - A1 Production - ADAL',
+        //             ),
+        //             service.runJenkinsJobRemotely(
+        //                 'JenkinsBuildUserCred',
+        //                 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
+        //                 'Test - A1 Production - ADAL',
+        //             ),
+        //             service.runJenkinsJobRemotely(
+        //                 'JenkinsBuildUserCred',
+        //                 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
+        //                 'Test - A1 Production - ADAL',
+        //             ),
+        //         ]);
+        //         debugger; //check whats inside a
+        //         break;
+        // }
+        // // const bodyToSend = {
+        // //     Name: `${addonName} Approvment Tests Status`,
+        // //     Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
+        // //     Status: jobResponse === 'FAILURE' ? 'ERROR' : 'SUCCESS',
+        // //     Message: 'evgeny :)',
+        // //     NotificationWebhook:
+        // //         'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
+        // //     SendNotification: 'Always',
+        // // };
+        // // const addonsSK = service.getSecret()[1];
+        // // const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+        // // const monitoringResponse = await service.fetchStatus(
+        // //     'https://papi.pepperi.com/v1.0/system_health/notifications',
+        // //     {
+        // //         method: 'POST',
+        // //         headers: {
+        // //             'X-Pepperi-SecretKey': addonsSK,
+        // //             'X-Pepperi-OwnerID': testingAddonUUID,
+        // //         },
+        // //         body: JSON.stringify(bodyToSend),
+        // //     },
+        // // );
+        // // if (monitoringResponse.Ok !== true) {
+        // //     throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+        // // }
+        // // if (monitoringResponse.Status !== 200) {
+        // //     throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+        // // }
+        // // if (Object.keys(monitoringResponse.Error).length !== 0) {
+        // //     throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+        // // }
+        // const bodyToSendVAR = {
+        //     UUID: addonEntryUUID,
+        //     Version: addonVersion,
+        //     Available: false,
+        //     AddonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
         // };
-        // const addonsSK = service.getSecret()[1];
-        // const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
-        // const monitoringResponse = await service.fetchStatus(
-        //     'https://papi.pepperi.com/v1.0/system_health/notifications',
-        //     {
-        //         method: 'POST',
-        //         headers: {
-        //             'X-Pepperi-SecretKey': addonsSK,
-        //             'X-Pepperi-OwnerID': testingAddonUUID,
-        //         },
-        //         body: JSON.stringify(bodyToSend),
-        //     },
-        // );
-        // if (monitoringResponse.Ok !== true) {
-        //     throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+        // for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+        //     const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+        //     if (resultAndEnv[0] === 'FAILURE') {
+        //         //get the env and send the HTTP
+        //         const varResponse = await service.fetchStatus(
+        //             `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
+        //             {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     Authorization: `Basic ${base64VARCredentials}`,
+        //                 },
+        //                 body: JSON.stringify(bodyToSendVAR),
+        //             },
+        //         );
+        //         if (varResponse.Ok !== true) {
+        //             throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponse.Ok}`;
+        //         }
+        //         if (varResponse.Status !== 200) {
+        //             throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponse.Status}`;
+        //         }
+        //         if (varResponse.Body.AddonUUID !== addonUUID) {
+        //             throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponse.Body.AddonUUID} instead of ${addonUUID}`;
+        //         }
+        //         if (varResponse.Body.Version !== addonVersion) {
+        //             throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponse.Body.Version} instead of ${addonVersion}`;
+        //         }
+        //         if (varResponse.Body.Available !== false) {
+        //             throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponse.Body.Available} instead of false`;
+        //         }
+        //     }
         // }
-        // if (monitoringResponse.Status !== 200) {
-        //     throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-        // }
-        // if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //     throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
-        // }
-        const bodyToSendVAR = {
-            UUID: addonEntryUUID,
-            Version: addonVersion,
-            Available: false,
-            AddonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-        };
-        if (jobResponse === 'FAILURE') {
-            const varResponse = await service.fetchStatus(
-                `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Basic ${base64VARCredentials}`,
-                    },
-                    body: JSON.stringify(bodyToSendVAR),
-                },
-            );
-            if (varResponse.Ok !== true) {
-                throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponse.Ok}`;
-            }
-            if (varResponse.Status !== 200) {
-                throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponse.Status}`;
-            }
-            if (varResponse.Body.AddonUUID !== addonUUID) {
-                throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponse.Body.AddonUUID} instead of ${addonUUID}`;
-            }
-            if (varResponse.Body.Version !== addonVersion) {
-                throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponse.Body.Version} instead of ${addonVersion}`;
-            }
-            if (varResponse.Body.Available !== false) {
-                throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponse.Body.Available} instead of false`;
-            }
-        }
     }
 
     //

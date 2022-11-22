@@ -311,6 +311,7 @@ export async function CreateDistributorTests(generalService: GeneralService, var
 
                     await LoginTests(clientArr[0].Email, clientArr[0].Password);
 
+                    debugger;
                     await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);
                 });
             });
