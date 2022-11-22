@@ -54,7 +54,6 @@ export async function CreateDistributorTests(generalService: GeneralService, var
             });
 
             it(`Login To New Distributor`, async function () {
-                debugger;
                 let password = varPass;
                 if (varPassEU) {
                     password = varPassEU;
@@ -64,9 +63,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 const lorem = new LoremIpsum({});
                 const distributorFirstName = lorem.generateWords(1);
                 const distributorLastName = lorem.generateWords(1);
-                const distributorEmail = `${
-                    distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
-                }.${distributorLastName}@pepperitest.com`;
+                const distributorEmail = `${distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
+                    }.${distributorLastName}@pepperitest.com`;
                 const distributorCompany = lorem.generateWords(3);
                 const lettersGenerator = lorem.generateWords(1).substring(0, 2);
                 const distributorPassword =
@@ -84,6 +82,43 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     Password: distributorPassword,
                 });
                 debugger;
+                if (typeof newDistributor.Ok == 'undefined' && typeof newDistributor.Status == 'undefined' && typeof newDistributor.Headers == 'undefined'
+                    && varPassEU) {
+                    console.log('%cBug exist for this response: (DI-19118)', ConsoleColors.BugSkipped);
+                    console.log('%cVAR - Create Distributor - The API call never return', ConsoleColors.BugSkipped);
+                    generalService.sleep(1000 * 75 * 1);
+                    const adminClient = await generalService.initiateTester(clientArr[0].Email, clientArr[0].Password);
+                    const adminService = new GeneralService(adminClient);
+                    const systemAddons = await adminService.fetchStatus('/addons?page_size=-1&where=Type LIKE 1');
+                    expect(systemAddons.Body.length).to.be.above(10);
+                    const webAppLoginPage = new WebAppLoginPage(driver);
+                    await webAppLoginPage.navigate();
+                    await webAppLoginPage.signIn(clientArr[0].Email, clientArr[0].Password);
+                    const webAppHomePage = new WebAppHomePage(driver);
+                    let tryCounter = 0;
+                    let isHomePageLoaded = false;
+                    do {
+                        isHomePageLoaded = await webAppHomePage.safeUntilIsVisible(
+                            webAppHomePage.MainHomePageBtn,
+                            90000,
+                        );
+                        if (!isHomePageLoaded) {
+                            tryCounter++;
+                            await driver.refresh();
+                            generalService.sleep(1000 * 5 * 1);
+                            const isErrorPresented = await webAppHomePage.safeUntilIsVisible(
+                                By.xpath('//span[contains(text(),"Error")]'),
+                            );
+                            if (isErrorPresented) {
+                                await driver.refresh();
+                            }
+                        }
+                    } while (!isHomePageLoaded && tryCounter < 15);
+                    await expect(webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn, 90000)).eventually.to.be
+                        .true;
+                    const adminAddons = await adminService.getInstalledAddons();
+                    expect(adminAddons.length).to.be.above(10);
+                }
                 //(DI-19116):
                 if (
                     newDistributor.Status === 500 &&
@@ -231,9 +266,8 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                 await driver.switchTo(addonPage.AddonContainerIframe);
                 await addonPage.isAddonFullyLoaded(AddonLoadCondition.Content);
 
-                const fileLocation = `${
-                    __dirname.split('server-side')[0]
-                }server-side\\api-tests\\test-data\\Temp_Distributor.jpg`;
+                const fileLocation = `${__dirname.split('server-side')[0]
+                    }server-side\\api-tests\\test-data\\Temp_Distributor.jpg`;
                 const brandedApp = new BrandedApp(driver);
                 await (
                     await driver.findElements(brandedApp.BrandedAppUploadInputArr, undefined, false)
