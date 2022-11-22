@@ -21,8 +21,8 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.518'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.205'], //cpapi locked on TLS 2 version
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.515'], //PAPI locked on TLS 2 version
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.195'], //cpapi locked on TLS 2 version
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.22'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.7'], //cpi-node (Cross Platform Engine)
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'], //NG14 latest webapp
@@ -345,14 +345,24 @@ export default class GeneralService {
         return kmsData;
     }
 
-    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string): Promise<string> {
+    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string): Promise<string[]> {
         const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
         const base64Credentials = Buffer.from(kmsSecret).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
         // const jobNameAsUrlSafe = encodeURI(jobName);
         await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobPath, jobQueueId);
-        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobPath);
+        const JenkinBuildResult = await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobPath);
+        if (jobPath.includes('Production')) {
+            return [JenkinBuildResult, 'Production'];
+        }
+        if (jobPath.includes('EU')) {
+            return [JenkinBuildResult, 'EU'];
+        }
+        if (jobPath.includes('Stage')) {
+            return [JenkinBuildResult, 'Stage'];
+        }
+        return [JenkinBuildResult];
     }
 
     async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
@@ -438,7 +448,7 @@ export default class GeneralService {
             gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
             console.log(
                 `received result is ${gottenResultFromJenkins} ${
-                    gottenResultFromJenkins === 'null' ? '(still running)' : ''
+                    gottenResultFromJenkins === null ? '(still running)' : ''
                 }`,
             );
             this.sleep(4500);
