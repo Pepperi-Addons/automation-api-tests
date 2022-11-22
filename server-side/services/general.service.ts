@@ -452,7 +452,7 @@ export default class GeneralService {
                         ? '(still running)'
                         : typeof gottenResultFromJenkins === 'undefined'
                         ? '(networking error should be resolved)'
-                        : '(unkown)'
+                        : '(finished)'
                 }`,
             );
             this.sleep(4500);
