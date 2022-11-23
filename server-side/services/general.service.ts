@@ -484,7 +484,7 @@ export default class GeneralService {
             try {
                 sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
             } catch (error) {
-                console.log(`% cSK Not found: ${error} `, ConsoleColors.SystemInformation);
+                console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
                 sk = '00000000-0000-0000-0000-000000000000';
             }
         }
@@ -497,11 +497,11 @@ export default class GeneralService {
         for (const key in used) {
             memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
         }
-        console.log(`% cMemory Use in MB = ${JSON.stringify(memoryUsed)} `, ConsoleColors.SystemInformation);
+        console.log(`%cMemory Use in MB = ${JSON.stringify(memoryUsed)}`, ConsoleColors.SystemInformation);
     }
 
     PrintMemoryUseToLog(state, testName) {
-        console.log(`% c${state} ${testName} Test System Information: `, ConsoleColors.SystemInformation);
+        console.log(`%c${state} ${testName} Test System Information: `, ConsoleColors.SystemInformation);
         this.CalculateUsedMemory();
     }
 
@@ -550,23 +550,23 @@ export default class GeneralService {
     }
 
     getVARInstalledAddons(varKey: string, options: QueryOptions = {}) {
-        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')} /var/addons / installed_addons`;
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/addons/installed_addons`;
         url = this.addQueryAndOptions(url, options);
         return this.fetchStatus(url, {
             method: `GET`,
             headers: {
-                Authorization: `Basic ${Buffer.from(varKey).toString('base64')} `,
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
             },
         });
     }
 
     getVARDistributor(varKey: string, options: QueryOptions = {}) {
-        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')} /var/distributors`;
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/distributors`;
         url = this.addQueryAndOptions(url, options);
         return this.fetchStatus(url, {
             method: `GET`,
             headers: {
-                Authorization: `Basic ${Buffer.from(varKey).toString('base64')} `,
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
             },
         });
     }
@@ -619,7 +619,7 @@ export default class GeneralService {
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
                 this.sleep(2000);
                 console.log(
-                    `% c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
+                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
                         auditLogResponse.Status.ID
                     }, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
@@ -679,7 +679,6 @@ export default class GeneralService {
                 throw new Error('Error in Type and Event in Audit Log API Response');
             }
         } catch (error) {
-            debugger;
             if (error instanceof Error) {
                 error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
             }
@@ -779,7 +778,7 @@ export default class GeneralService {
                 {
                     method: `GET`,
                     headers: {
-                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')} `,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                     },
                 },
             );
@@ -910,14 +909,14 @@ export default class GeneralService {
         let parsed: any = {};
         let errorMessage: any = {};
         let OptionalHeaders = {
-            Authorization: `Bearer ${this.papiClient['options'].token} `,
+            Authorization: `Bearer ${this.papiClient['options'].token}`,
             ...requestInit?.headers,
         };
         if (requestInit?.headers?.Authorization === null) {
             OptionalHeaders = undefined as any;
         }
-        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri} `, {
-            method: `${requestInit?.method ? requestInit?.method : 'GET'} `,
+        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
+            method: `${requestInit?.method ? requestInit?.method : 'GET'}`,
             body: typeof requestInit?.body == 'string' ? requestInit.body : JSON.stringify(requestInit?.body),
             headers: OptionalHeaders,
             timeout: requestInit?.timeout,
@@ -927,7 +926,7 @@ export default class GeneralService {
                 const end = performance.now();
                 const isSucsess = response.status > 199 && response.status < 400 ? true : false;
                 console[isSucsess ? 'log' : 'debug'](
-                    `% cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
                         uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
                     `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information} `,

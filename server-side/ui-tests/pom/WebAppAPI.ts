@@ -15,7 +15,6 @@ export class WebAppAPI extends Page {
     }
 
     async getSyncResponse(accessToken: string, loopsAmount = 30) {
-        debugger;
         const generalService = new GeneralService(this._CLIENT);
         let syncStatusReposnse;
         const URL = `${await this.getBaseURL()}/Service1.svc/v1/GetSyncStatus`;

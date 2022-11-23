@@ -186,7 +186,6 @@ export class ObjectTypeEditor extends AddonPage {
                 //Wait after POST new ATD from the API before getting it in the UI
                 console.log('ATD Updated by using the API');
                 this.browser.sleep(4000);
-                debugger;
                 try {
                     await this.browser.sendKeys(webAppTopBar.EditorSearchField, tempATDExternalID + Key.ENTER);
                 } catch (error) {

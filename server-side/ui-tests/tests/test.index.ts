@@ -402,7 +402,6 @@ const addon = process.env.npm_config_addon as string;
     }
 
     if (tests.includes('Remote_Jenkins_Handler')) {
-        debugger;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
         if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
             generalService['client'].AddonSecretKey = await generalService.getSecretKey(
@@ -485,7 +484,6 @@ const addon = process.env.npm_config_addon as string;
                         'Test - A1 Stage - ADAL',
                     ),
                 ]);
-                debugger; //check whats inside a
                 break;
         }
         // const bodyToSend = {
@@ -520,7 +518,6 @@ const addon = process.env.npm_config_addon as string;
         //     throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
         // }
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
-            debugger;
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
             if (resultAndEnv[0] === 'FAILURE') {
                 switch (resultAndEnv[1]) {
