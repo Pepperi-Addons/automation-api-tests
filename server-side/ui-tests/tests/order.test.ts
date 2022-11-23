@@ -108,7 +108,6 @@ export async function OrderTests(email: string, password: string, client: Client
                 driver.sleep(500);
             }
 
-            debugger;
             await webAppList.click(webAppTopBar.CartViewBtn);
             await webAppList.click(webAppTopBar.CartSumbitBtn);
 
