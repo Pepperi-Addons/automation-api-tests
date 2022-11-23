@@ -402,6 +402,7 @@ const addon = process.env.npm_config_addon as string;
     }
 
     if (tests.includes('Remote_Jenkins_Handler')) {
+        debugger;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
         if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
             generalService['client'].AddonSecretKey = await generalService.getSecretKey(
@@ -555,6 +556,9 @@ const addon = process.env.npm_config_addon as string;
                         if (varResponseEU.Body.Available !== false) {
                             throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`;
                         }
+                        console.log(
+                            `${addonName}, version: ${addonVersionEU}  on EU became unavailable: Approvment tests didnt pass`,
+                        );
                         break;
                     case 'Production':
                         const bodyToSendVARProd = {
@@ -588,6 +592,9 @@ const addon = process.env.npm_config_addon as string;
                         if (varResponseProd.Body.Available !== false) {
                             throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`;
                         }
+                        console.log(
+                            `${addonName}, version: ${addonVersionProd}  on Production became unavailable: Approvment tests didnt pass`,
+                        );
                         break;
                     case 'Stage':
                         const bodyToSendVARSb = {
@@ -621,6 +628,9 @@ const addon = process.env.npm_config_addon as string;
                         if (varResponseSb.Body.Available !== false) {
                             throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`;
                         }
+                        console.log(
+                            `${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`,
+                        );
                         break;
                 }
                 //get the env and send the HTTP

@@ -82,7 +82,6 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     Company: distributorCompany,
                     Password: distributorPassword,
                 });
-                debugger;
                 if (
                     typeof newDistributor.Ok == 'undefined' &&
                     typeof newDistributor.Status == 'undefined' &&

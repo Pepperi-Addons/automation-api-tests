@@ -352,7 +352,7 @@ export default class GeneralService {
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
         // const jobNameAsUrlSafe = encodeURI(jobName);
         await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobPath, jobQueueId);
-        const JenkinBuildResult = await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobPath);
+        const JenkinBuildResult = await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobName, jobPath);
         if (jobPath.includes('Production')) {
             return [JenkinBuildResult, 'Production'];
         }
@@ -426,7 +426,11 @@ export default class GeneralService {
         return;
     }
 
-    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobPath: string): Promise<string> {
+    async pollJenkinsEndPointUntillJobEnded(
+        buildUserCredsBase64: string,
+        jobName: string,
+        jobPath: string,
+    ): Promise<string> {
         let gottenResultFromJenkins = '';
         let jenkinsJobResponsePolling: FetchStatusResponse = {
             Ok: false,
@@ -447,20 +451,20 @@ export default class GeneralService {
             );
             gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
             console.log(
-                `received result is ${gottenResultFromJenkins} ${
+                `${jobName}: received result is ${gottenResultFromJenkins} ${
                     gottenResultFromJenkins === null
                         ? '(still running)'
                         : typeof gottenResultFromJenkins === 'undefined'
                         ? '(networking error should be resolved)'
                         : '(finished)'
-                }`,
+                } `,
             );
             this.sleep(4500);
             // debugger;
         } while (gottenResultFromJenkins === null || typeof gottenResultFromJenkins === 'undefined');
         const jenkinsJobResult = jenkinsJobResponsePolling.Body.result;
         const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
-        console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult}`);
+        console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult} `);
         return jenkinsJobResult;
     }
 
@@ -480,7 +484,7 @@ export default class GeneralService {
             try {
                 sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
             } catch (error) {
-                console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
+                console.log(`% cSK Not found: ${error} `, ConsoleColors.SystemInformation);
                 sk = '00000000-0000-0000-0000-000000000000';
             }
         }
@@ -493,11 +497,11 @@ export default class GeneralService {
         for (const key in used) {
             memoryUsed[key] = Math.round((used[key] / 1024 / 1024) * 100) / 100;
         }
-        console.log(`%cMemory Use in MB = ${JSON.stringify(memoryUsed)}`, ConsoleColors.SystemInformation);
+        console.log(`% cMemory Use in MB = ${JSON.stringify(memoryUsed)} `, ConsoleColors.SystemInformation);
     }
 
     PrintMemoryUseToLog(state, testName) {
-        console.log(`%c${state} ${testName} Test System Information:`, ConsoleColors.SystemInformation);
+        console.log(`% c${state} ${testName} Test System Information: `, ConsoleColors.SystemInformation);
         this.CalculateUsedMemory();
     }
 
@@ -546,23 +550,23 @@ export default class GeneralService {
     }
 
     getVARInstalledAddons(varKey: string, options: QueryOptions = {}) {
-        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/addons/installed_addons`;
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')} /var/addons / installed_addons`;
         url = this.addQueryAndOptions(url, options);
         return this.fetchStatus(url, {
             method: `GET`,
             headers: {
-                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')} `,
             },
         });
     }
 
     getVARDistributor(varKey: string, options: QueryOptions = {}) {
-        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')}/var/distributors`;
+        let url = `${this.client.BaseURL.replace('papi-eu', 'papi')} /var/distributors`;
         url = this.addQueryAndOptions(url, options);
         return this.fetchStatus(url, {
             method: `GET`,
             headers: {
-                Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                Authorization: `Basic ${Buffer.from(varKey).toString('base64')} `,
             },
         });
     }
@@ -615,7 +619,7 @@ export default class GeneralService {
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
                 this.sleep(2000);
                 console.log(
-                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
+                    `% c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
                         auditLogResponse.Status.ID
                     }, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
@@ -698,23 +702,23 @@ export default class GeneralService {
                 //API Testing Framework AddonUUID
                 if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID}`)
+                        .addonUUID(`${addonUUID} `)
                         .install('0.0.235');
                 } else {
                     if (version.match(/\d+[\.]\d+[/.]\d+/)) {
                         const versionToInstall = version.match(/\d+[\.]\d+[/.]\d+/);
                         if (version?.length && typeof version[0] === 'string') {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${addonUUID}`)
+                                .addonUUID(`${addonUUID} `)
                                 .install(String(versionToInstall));
                         } else {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${addonUUID}`)
+                                .addonUUID(`${addonUUID} `)
                                 .install();
                         }
                     } else {
                         installResponse = await this.papiClient.addons.installedAddons
-                            .addonUUID(`${addonUUID}`)
+                            .addonUUID(`${addonUUID} `)
                             .install();
                     }
                 }
@@ -771,11 +775,11 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                )} /var/addons / versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
-                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')} `,
                     },
                 },
             );
@@ -788,18 +792,18 @@ export default class GeneralService {
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             varLatestVersion.Status
-                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
+                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                     );
                 }
             } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
                 throw new Error(
-                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title} `,
                 );
             } else if (fetchVarResponse.Body.length > 0) {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchVarResponse.Status
-                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
+                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                 );
             }
             if (varLatestVersion) {
@@ -813,7 +817,7 @@ export default class GeneralService {
                 varLatestValidVersion = undefined;
             }
             let upgradeResponse = await this.papiClient.addons.installedAddons
-                .addonUUID(`${addonUUID}`)
+                .addonUUID(`${addonUUID} `)
                 .upgrade(varLatestValidVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
             if (fetchVarResponse.Body.length === 0) {
@@ -827,7 +831,7 @@ export default class GeneralService {
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID}`)
+                        .addonUUID(`${addonUUID} `)
                         .downgrade(varLatestValidVersion as string);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
@@ -848,7 +852,7 @@ export default class GeneralService {
             let changeType = 'Upgrade';
             const searchString = `AND Version Like '${version}%' AND Available Like 1`;
             const fetchResponse = await this.fetchStatus(
-                `${this.client.BaseURL}/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                `${this.client.BaseURL} /addons/versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                 },
@@ -861,20 +865,20 @@ export default class GeneralService {
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             LatestVersion.Status
-                        }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
+                        }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                     );
                 }
             } else {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchResponse.Status
-                    }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
+                    }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                 );
             }
             testData[addonName].push(LatestVersion);
 
             let upgradeResponse = await this.papiClient.addons.installedAddons
-                .addonUUID(`${addonUUID}`)
+                .addonUUID(`${addonUUID} `)
                 .upgrade(LatestVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
@@ -886,7 +890,7 @@ export default class GeneralService {
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID}`)
+                        .addonUUID(`${addonUUID} `)
                         .downgrade(LatestVersion);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
                     testData[addonName].push(changeType);
@@ -906,14 +910,14 @@ export default class GeneralService {
         let parsed: any = {};
         let errorMessage: any = {};
         let OptionalHeaders = {
-            Authorization: `Bearer ${this.papiClient['options'].token}`,
+            Authorization: `Bearer ${this.papiClient['options'].token} `,
             ...requestInit?.headers,
         };
         if (requestInit?.headers?.Authorization === null) {
             OptionalHeaders = undefined as any;
         }
-        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
-            method: `${requestInit?.method ? requestInit?.method : 'GET'}`,
+        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri} `, {
+            method: `${requestInit?.method ? requestInit?.method : 'GET'} `,
             body: typeof requestInit?.body == 'string' ? requestInit.body : JSON.stringify(requestInit?.body),
             headers: OptionalHeaders,
             timeout: requestInit?.timeout,
@@ -923,10 +927,10 @@ export default class GeneralService {
                 const end = performance.now();
                 const isSucsess = response.status > 199 && response.status < 400 ? true : false;
                 console[isSucsess ? 'log' : 'debug'](
-                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                    `% cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
                         uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
-                    `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information}`,
+                    `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information} `,
                 );
                 try {
                     if (response.headers.get('content-type')?.startsWith('image')) {
@@ -975,7 +979,7 @@ export default class GeneralService {
                 };
             })
             .catch((error) => {
-                console.error(`Error type: ${error.type}, ${error}`);
+                console.error(`Error type: ${error.type}, ${error} `);
                 return {
                     Ok: undefined as any,
                     Status: undefined as any,
@@ -1025,8 +1029,8 @@ export default class GeneralService {
     //     const current = new Date();
     //     const time = current.toLocaleTimeString();
     //     const body = {
-    //         Name: `${testName}_${time}`, //param:addon was tested (test name)
-    //         Description: `Running on: ${userName} - ${env}`, //param: version of the addon
+    //         Name: `${ testName }_${ time } `, //param:addon was tested (test name)
+    //         Description: `Running on: ${ userName } - ${ env } `, //param: version of the addon
     //         Status: testStatus, //param is passing
     //         Message: 'evgeny', //param link to Jenkins
     //         NotificationWebhook: '',
@@ -1107,7 +1111,7 @@ export default class GeneralService {
      */
     async getSecretKey(addonUUID: string, varKey: string): Promise<string> {
         const updateVersionResponse = await this.fetchStatus(
-            this['client'].BaseURL.replace('papi-eu', 'papi') + `/var/addons/${addonUUID}/secret_key`,
+            this['client'].BaseURL.replace('papi-eu', 'papi') + `/var/addons/${addonUUID} /secret_key`,
             {
                 method: `GET`,
                 headers: {
