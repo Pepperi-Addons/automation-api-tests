@@ -1573,7 +1573,7 @@ export async function PepperiNotificationServiceTests(
                 //Downgrade PNS
                 downgradeAddon = await generalService.papiClient.addons.installedAddons
                     .addonUUID(testData['ADAL'][0])
-                    .downgrade('1.0.131');
+                    .downgrade('1.0.260');
 
                 expect(downgradeAddon).to.have.property('URI');
 
