@@ -812,7 +812,10 @@ export async function PepperiNotificationServiceTests(
                         );
                         maxLoopsCounter--;
                     } while (getSubscribeResponse[0] && maxLoopsCounter > 0);
-                    expect(getSubscribeResponse).to.deep.equal([]);
+                    const subsNoUninstalledAddon = getSubscribeResponse.filter(
+                        (sub) => sub.AddonUUID === createdAddon.Body.UUID,
+                    );
+                    expect(subsNoUninstalledAddon).to.deep.equal([]);
                 });
 
                 it('Validate PNS Triggered After Addon Uninstall', async () => {
@@ -1601,7 +1604,7 @@ export async function PepperiNotificationServiceTests(
                 //Upgrade PNS
                 upgradeAddon = await generalService.papiClient.addons.installedAddons
                     .addonUUID(testData['ADAL'][0])
-                    .upgrade('1.0.167');
+                    .upgrade('1.2.20'); //has to be maintaned - no better option currently
 
                 expect(upgradeAddon).to.have.property('URI');
 
