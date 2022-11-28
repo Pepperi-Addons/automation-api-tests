@@ -774,7 +774,7 @@ export default class GeneralService {
                 `${this.client.BaseURL.replace(
                     'papi-eu',
                     'papi',
-                )} /var/addons / versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                     headers: {
@@ -816,7 +816,7 @@ export default class GeneralService {
                 varLatestValidVersion = undefined;
             }
             let upgradeResponse = await this.papiClient.addons.installedAddons
-                .addonUUID(`${addonUUID} `)
+                .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestValidVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
             if (fetchVarResponse.Body.length === 0) {
@@ -830,7 +830,7 @@ export default class GeneralService {
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID} `)
+                        .addonUUID(`${addonUUID}`)
                         .downgrade(varLatestValidVersion as string);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 40);
                     testData[addonName].push(changeType);
@@ -851,7 +851,7 @@ export default class GeneralService {
             let changeType = 'Upgrade';
             const searchString = `AND Version Like '${version}%' AND Available Like 1`;
             const fetchResponse = await this.fetchStatus(
-                `${this.client.BaseURL} /addons/versions ? where = AddonUUID = '${addonUUID}'${searchString}& order_by=CreationDateTime DESC`,
+                `${this.client.BaseURL}/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
                 {
                     method: `GET`,
                 },
@@ -877,7 +877,7 @@ export default class GeneralService {
             testData[addonName].push(LatestVersion);
 
             let upgradeResponse = await this.papiClient.addons.installedAddons
-                .addonUUID(`${addonUUID} `)
+                .addonUUID(`${addonUUID}`)
                 .upgrade(LatestVersion);
             let auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
@@ -889,7 +889,7 @@ export default class GeneralService {
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID} `)
+                        .addonUUID(`${addonUUID}`)
                         .downgrade(LatestVersion);
                     auditLogResponse = await this.getAuditLogResultObjectIfValid(upgradeResponse.URI as string, 90);
                     testData[addonName].push(changeType);
