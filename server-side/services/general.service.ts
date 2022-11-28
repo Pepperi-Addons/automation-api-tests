@@ -1110,7 +1110,7 @@ export default class GeneralService {
      */
     async getSecretKey(addonUUID: string, varKey: string): Promise<string> {
         const updateVersionResponse = await this.fetchStatus(
-            this['client'].BaseURL.replace('papi-eu', 'papi') + `/var/addons/${addonUUID} /secret_key`,
+            this['client'].BaseURL.replace('papi-eu', 'papi') + `/var/addons/${addonUUID}/secret_key`,
             {
                 method: `GET`,
                 headers: {
