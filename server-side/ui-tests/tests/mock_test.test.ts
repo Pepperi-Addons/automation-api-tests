@@ -1,6 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { describe, afterEach, before, after } from 'mocha';
-import { step } from 'mocha-steps';
+import { describe, it, afterEach, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -50,19 +49,19 @@ export async function MockTest(email: string, password: string, varPass: string,
                 await webAppHomePage.collectEndTestData(this);
             });
 
-            step('Pepperi Login', async () => {
+            it('Pepperi Login', async () => {
                 await webAppLoginPage.login(email, password);
             });
-            step('Open Settings', async () => {
+            it('Open Settings', async () => {
                 await webAppHeader.openSettings();
             });
-            step('Go to Editors Tab', async () => {
+            it('Go to Editors Tab', async () => {
                 await webAppSettingsSidePanel.selectSettingsByID('Pages');
                 await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_selector, 'Pages');
                 await resourceList.waitTillVisible(resourceList.PepTopArea, 15000);
                 await resourceList.clickTab('EditorsTab');
             });
-            step('Add Editor With Resource "accounts"', async () => {
+            it('Add Editor With Resource "accounts"', async () => {
                 resourceEditors.setResourceName('accounts');
                 test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
                 test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
@@ -85,7 +84,7 @@ export async function MockTest(email: string, password: string, varPass: string,
                 await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
                 await resourceList.clickTab('EditorsTab');
             });
-            step('Delete the Editor that was created', async () => {
+            it('Delete the Editor that was created', async () => {
                 await resourceEditors.pause(5000);
                 await resourceEditors.selectFromListByName(test_name);
                 await resourceEditors.openPencilMenu();

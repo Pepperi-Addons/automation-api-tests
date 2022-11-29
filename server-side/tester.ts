@@ -55,6 +55,9 @@ export default function Tester(client?: Client, testName?: string, environment?:
         it: (name: string, fn: Mocha.Func | Mocha.AsyncFunc | undefined) => {
             context?.addTest(new Mocha.Test(name, fn));
         },
+        step: (name: string, fn: Mocha.Func | Mocha.AsyncFunc | undefined) => {
+            context?.addTest(new Mocha.Test(name, fn));
+        },
 
         expect: expect,
 
