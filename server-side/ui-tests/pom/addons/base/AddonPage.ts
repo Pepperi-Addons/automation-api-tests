@@ -156,18 +156,19 @@ export class AddonPage extends Page {
     }
 
     public async selectDropBoxByString(locator: By, option: string, index?: number): Promise<void> {
-        await this.browser.sleep(3000);
+        // this.browser.sleep(3000);
+        this.browser.untilIsVisible(locator);
         if (index !== undefined) {
             await this.browser.click(locator, index);
         } else {
             await this.browser.click(locator);
         }
-        await this.browser.sleep(3000);
+        this.browser.sleep(3000);
         const matOptionWithStringInjected: string = this.MatOptionDropBox.valueOf()
             ['value'].slice()
             .replace('|textToFill|', option);
         await this.browser.click(By.xpath(matOptionWithStringInjected));
-        await this.browser.sleep(3000);
+        // this.browser.sleep(3000);
         return;
     }
 
@@ -256,10 +257,63 @@ export class AddonPage extends Page {
     }
 
     public async submitOrder(): Promise<void> {
-        await this.browser.sleep(1000);
+        this.browser.sleep(1000);
         await this.browser.click(this.SubmitOrderCartBtn);
         await this.isSpinnerDone();
         const homePage = new WebAppHomePage(this.browser);
         await expect(homePage.untilIsVisible(homePage.MainHomePageBtn, 90000)).eventually.to.be.true;
+    }
+
+    public async waitTillVisible(element: By, waitForTime: number): Promise<any> {
+        try {
+            await this.browser.untilIsVisible(element, waitForTime);  
+        } catch (error) {
+            console.info(`Element: ${element} - IS NOT LOCATED!!!`);
+            console.error(error);
+            expect(error).to.be.null;
+        }
+    }
+
+    public pause(forTime: number): any {
+        this.browser.sleep(forTime);
+    }
+
+    public async clickElement(elem: string): Promise<void> {
+        try {
+            await this.browser.click(this[elem]);
+        } catch (error) {
+            console.info(`Element: ${elem} - is not clicked - make sure you've provided a string and not By`);
+            console.error(error);
+            expect(error).to.be.null;
+        }
+    }
+
+    public async checkThatElementIsNotFound(elem: string): Promise<void> {
+        if (this[elem]) {
+            console.info(`We are in method checkThatElementIsNotFound looking for: ${this[elem]}`);
+            try {
+                let isElementFound = await this.browser.findElement(this[elem]);
+                console.info(`isElementFound: ${isElementFound}`);  
+            } catch (error) {
+                expect(error).to.not.be.undefined;
+            }
+        } else {
+            console.info(`Element: ${elem} - is NOT declared in the Addon file`);
+            expect(`${this[elem]} to be `).to.contain('in the Addon file, but is NOT');
+        }
+    }
+
+    public async checkThatElementIsSelected(elem: string): Promise<void> {
+        if (this[elem]) {
+            expect(await (await this.browser.findElement(this[elem])).isSelected()).to.be.true;
+        } else {
+            console.info(`Element: ${elem} - is NOT declared in the Addon file`);
+            expect(`${this[elem]} to be `).to.contain('in the Addon file, but is NOT');
+        }
+    }
+
+    public async insertTextToInputElement(text: string, inputElement: By) {
+        let elem = await this.browser.findElement(inputElement, 2000, true);
+        await elem.sendKeys(text);
     }
 }
