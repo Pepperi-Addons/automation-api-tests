@@ -11,7 +11,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
     //#region Upgrade Legacy Resources
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.2.6'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.0.11'],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.0.33'],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.0.8'],
@@ -325,7 +325,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyUpdatedAccount;
 
             it('Create Account', async () => {
-                // debugger;
                 accounts = await objectsService.getAccounts();
                 accountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
                 legacyAccountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
@@ -436,8 +435,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get account by key', async () => {
+                const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
+                accountAfterUpdate.Key = legacyCreatedAccount.UUID;
                 const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
-                expect(getByKeyAccount).to.deep.equal(legacyUpdatedAccount);
+                expect(getByKeyAccount).to.deep.equal(accountAfterUpdate);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
 

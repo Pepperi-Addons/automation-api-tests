@@ -3,7 +3,7 @@ import { UDCService } from '../services/user-defined-collections.service';
 
 export async function UDCTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
-    const udcService = new UDCService(generalService, UserDefinedCollectionsUUID);
+    const udcService = new UDCService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;

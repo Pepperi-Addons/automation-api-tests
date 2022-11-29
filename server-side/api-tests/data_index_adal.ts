@@ -32,7 +32,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     //#endregion Upgrade Data Index ADAL Pepperitest (Jenkins Special Addon)
 
     describe('Data Index ADAL Tests Suites', () => {
-        const distributorUUID = generalService.getClientData('DistributorUUID');
+        // const distributorUUID = generalService.getClientData('DistributorUUID');
         describe('Prerequisites Addon for Data Index ADAL Tests', () => {
             //Test Datas
             //Data Index ADAL, Pepperi Notification Service
@@ -131,11 +131,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             };
 
             it('Create Scheme', async () => {
-                const createSchemeResponse = await dataIndexAdalService.createScheme(
-                    'index',
-                    generalService.papiClient['options'].addonUUID,
-                    indexSchema,
-                );
+                const adalService = new ADALService(generalService.papiClient);
+                const createSchemeResponse = await adalService.postSchema(indexSchema as any);
                 expect(createSchemeResponse).to.have.property('DataSourceData');
                 expect(createSchemeResponse).to.have.property('Fields');
                 expect(createSchemeResponse.DataSourceURL).to.equal('https://url');
@@ -412,12 +409,9 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Remove Scheme', async () => {
-                const readDocumentResponse = await dataIndexAdalService.removeScheme(
-                    'index',
-                    generalService.papiClient['options'].addonUUID,
-                    indexSchema,
-                );
-                expect(readDocumentResponse).to.deep.equal({ success: true });
+                const adalService = new ADALService(generalService.papiClient);
+                const readDocumentResponse = await adalService.deleteSchema(indexSchema.Name);
+                expect(readDocumentResponse).to.deep.equal('');
             });
         });
 
@@ -565,12 +559,11 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                     generalService.papiClient['options'].addonUUID,
                     schemeName,
                 );
-                expect(readDocumentResponse).to.deep.include.members([
-                    secondDocument,
-                    thirdDocument,
-                    createDocumentTestData,
-                ]);
                 expect(readDocumentResponse.length).to.equal(3);
+                for (let index = 0; index < readDocumentResponse.length; index++) {
+                    const elem = readDocumentResponse[index];
+                    expect([secondDocument, thirdDocument, createDocumentTestData]).to.deep.contain(elem);
+                }
             });
 
             it('Get totals shared index', async () => {
@@ -768,12 +761,9 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Remove Scheme', async () => {
-                const readDocumentResponse = await dataIndexAdalService.removeScheme(
-                    'shared_index',
-                    generalService.papiClient['options'].addonUUID,
-                    typedIndexSchema,
-                );
-                expect(readDocumentResponse).to.deep.equal({ success: true });
+                const adalService = new ADALService(generalService.papiClient);
+                const readDocumentResponse = await adalService.deleteSchema(typedIndexSchema.Name);
+                expect(readDocumentResponse).to.deep.equal('');
             });
         });
 
@@ -949,7 +939,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         typedSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [${distributorUUID}_${addonUUID}_type_tester]: org.elasticsearch.index.IndexNotFoundException: no such index [${distributorUUID}_${addonUUID}_type_tester]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: ${generalService.papiClient['options'].baseURL}/addons/data/schemes/test_shared_index failed with status: 400 - Bad Request error: {\\\"fault\\\":{\\\"faultstring\\\":\\\"Failed due to exception: Object ID does not exist.\\\",\\\"detail\\\":{\\\"errorcode\\\":\\\"BadRequest\\\"}}}","detail":{"errorcode":"BadRequest"}}}`,
                 );
             });
 
@@ -962,7 +952,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         indexSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Error occurred in Elasticsearch engine: no such index [${distributorUUID}_${addonUUID}_test_index]: org.elasticsearch.index.IndexNotFoundException: no such index [${distributorUUID}_${addonUUID}_test_index]\\nFor more details, please send request for Json format to see the raw response from elasticsearch engine.","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: ${generalService.papiClient['options'].baseURL}/addons/data/schemes/test_index failed with status: 400 - Bad Request error: {\\\"fault\\\":{\\\"faultstring\\\":\\\"Failed due to exception: Object ID does not exist.\\\",\\\"detail\\\":{\\\"errorcode\\\":\\\"BadRequest\\\"}}}","detail":{"errorcode":"BadRequest"}}}`,
                 );
             });
 

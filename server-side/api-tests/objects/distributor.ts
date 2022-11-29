@@ -270,6 +270,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
                 });
 
                 it('Verify bulk jobinfo', async () => {
+                    generalService.sleep(5000);
                     bulkJobInfo = await adminObjectsService.waitForBulkJobStatus(bulkCreateContact.JobID, 30000);
                     expect(bulkJobInfo.ID).to.equal(bulkCreateContact.JobID);
                     expect(bulkJobInfo.CreationDate, 'CreationDate').to.contain(new Date().toISOString().split('T')[0]);
