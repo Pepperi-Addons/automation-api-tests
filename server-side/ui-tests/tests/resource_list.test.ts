@@ -4,7 +4,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel, WebAppList } from '../pom';
 import { ResourceList, ResourceEditors } from '../pom/addons/ResourceList';
 
 chai.use(promised);
@@ -16,6 +16,7 @@ export async function ResourceListTests(email: string, password: string, varPass
     let webAppHomePage: any;
     let webAppSettingsSidePanel: any;
     let webAppHeader: any;
+    let webAppList: any;
     let resourceList: any;
     let resourceEditors: any;
     const random_name: string = generalService.generateRandomString(5);
@@ -35,6 +36,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             webAppHomePage = new WebAppHomePage(driver);
             webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
             webAppHeader = new WebAppHeader(driver);
+            webAppList = new WebAppList(driver);
             resourceList = new ResourceList(driver);
             resourceEditors = new ResourceEditors(driver);
         });
@@ -92,6 +94,21 @@ export async function ResourceListTests(email: string, password: string, varPass
             // it('Verify that Editors List Content is loaded', async () => {
             //     await resourceEditors.validateEditorsListPageIsLoaded();
             // });
+        });
+
+        describe('Count Items in List', async () => {
+
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
+            it('Display Addon List', async () => {
+                let elementAsArray = await webAppList.getAddonListAsTable();
+                console.info(`webAppList.getListElementsAsArray: `);
+                console.table(elementAsArray);
+            });
+            
         });
 
         describe('Add Editor for accounts', async () => {
