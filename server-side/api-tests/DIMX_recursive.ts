@@ -35,7 +35,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'], //hardcoded because 1.0.x (while x>2) is failing currently 31/10/22 (evgeny)
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.29'];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.%'];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
 
