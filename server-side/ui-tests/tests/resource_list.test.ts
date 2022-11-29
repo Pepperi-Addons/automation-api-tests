@@ -3,7 +3,6 @@ import { describe, afterEach, before, after } from 'mocha';
 import { step } from 'mocha-steps';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
-import { ObjectsService } from '../../services/objects.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
@@ -13,7 +12,6 @@ chai.use(promised);
 
 export async function ResourceListTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
     let driver: Browser;
     let webAppLoginPage: any;
     let webAppHomePage: any;
