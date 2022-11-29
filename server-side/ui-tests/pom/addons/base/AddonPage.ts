@@ -266,7 +266,7 @@ export class AddonPage extends Page {
 
     public async waitTillVisible(element: By, waitForTime: number): Promise<any> {
         try {
-            await this.browser.untilIsVisible(element, waitForTime);  
+            await this.browser.untilIsVisible(element, waitForTime);
         } catch (error) {
             console.info(`Element: ${element} - IS NOT LOCATED!!!`);
             console.error(error);
@@ -292,8 +292,8 @@ export class AddonPage extends Page {
         if (this[elem]) {
             console.info(`We are in method checkThatElementIsNotFound looking for: ${this[elem]}`);
             try {
-                let isElementFound = await this.browser.findElement(this[elem]);
-                console.info(`isElementFound: ${isElementFound}`);  
+                const isElementFound = await this.browser.findElement(this[elem]);
+                console.info(`isElementFound: ${isElementFound}`);
             } catch (error) {
                 expect(error).to.not.be.undefined;
             }
@@ -313,7 +313,7 @@ export class AddonPage extends Page {
     }
 
     public async insertTextToInputElement(text: string, inputElement: By) {
-        let elem = await this.browser.findElement(inputElement, 2000, true);
+        const elem = await this.browser.findElement(inputElement, 2000, true);
         await elem.sendKeys(text);
     }
 }

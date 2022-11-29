@@ -25,7 +25,8 @@ export class WebAppSettingsSidePanel extends Component {
 
     public static getSubCategoryBtn(subCategoryId: string, categoryId: string): By {
         return By.xpath(
-            `${WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
+            `${
+                WebAppSettingsSidePanel.getCategoryBtn(categoryId).value
             }/parent::mat-expansion-panel//li[contains(@id,'${subCategoryId}')]`,
         );
     }
@@ -57,7 +58,7 @@ export class WebAppSettingsSidePanel extends Component {
     );
 
     // Pages Selectors
-    public ResourceViews: By = By.id('settings/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/views_and_editors')
+    public ResourceViews: By = By.id('settings/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/views_and_editors');
     //public Pages: Object = {};
 
     //config Selectors
@@ -65,20 +66,19 @@ export class WebAppSettingsSidePanel extends Component {
 
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         try {
-            let mat_expansion_panel_header_selector = `//*[@id="${settingsButtonID}"]/ancestor::mat-expansion-panel-header[@aria-expanded="false"]`;
+            const mat_expansion_panel_header_selector = `//*[@id="${settingsButtonID}"]/ancestor::mat-expansion-panel-header[@aria-expanded="false"]`;
             // console.log('mat_expansion_panel_header_selector:', mat_expansion_panel_header_selector)
             //*[@id="mat-expansion-panel-header-3"]
-            let isExpanded = await this.browser.findElement(By.xpath(mat_expansion_panel_header_selector));
+            const isExpanded = await this.browser.findElement(By.xpath(mat_expansion_panel_header_selector));
             // this.browser.sleep(5000);
             // console.log("Selected Settings Category Element:", isExpanded)
             // debugger
-            if(isExpanded) {
+            if (isExpanded) {
                 console.info(`${settingsButtonID} will be clicked`);
                 await this.browser.click(
                     By.xpath(`${this.SettingsBarContainer.value}//*[contains(@id,"${settingsButtonID}")]/../../..`),
                 );
             }
-            
         } catch (error) {
             console.error(error);
             console.info('Settings Category is probably already OPEN');
@@ -104,7 +104,7 @@ export class WebAppSettingsSidePanel extends Component {
     public async clickSettingsSubCategory(subCategoryId: string, categoryId: string): Promise<void> {
         try {
             await this.browser.click(WebAppSettingsSidePanel.getSubCategoryBtn(subCategoryId, categoryId));
-            return await this.browser.waitForLoading(WebAppPage.LoadingSpinner);  
+            return await this.browser.waitForLoading(WebAppPage.LoadingSpinner);
         } catch (error) {
             console.error(error);
             console.info('Settings Sub Category is NOT OPEN');
@@ -120,5 +120,4 @@ export class WebAppSettingsSidePanel extends Component {
     public async waitTillVisible(element: By, waitUntill: number) {
         return await this.browser.untilIsVisible(element, waitUntill);
     }
-
 }

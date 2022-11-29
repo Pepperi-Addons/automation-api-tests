@@ -1,19 +1,13 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, afterEach, beforeEach, before, after } from 'mocha';
+import { describe, afterEach, before, after } from 'mocha';
 import { step } from 'mocha-steps';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import {
-    WebAppHeader,
-    WebAppHomePage,
-    WebAppLoginPage,
-    WebAppSettingsSidePanel,
-} from '../pom';
-import { ResourceList, ResourceViews, ResourceEditors } from '../pom/addons/ResourceList';
-import addContext from 'mochawesome/addContext';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { ResourceList, ResourceEditors } from '../pom/addons/ResourceList';
 
 chai.use(promised);
 
@@ -27,8 +21,8 @@ export async function MockTest(email: string, password: string, varPass: string,
     let webAppHeader: any;
     let resourceList: any;
     let resourceEditors: any;
-    let random_name: string = generalService.generateRandomString(5);
-    let test_generic_decsription: string = 'for RL automated testing';
+    const random_name: string = generalService.generateRandomString(5);
+    const test_generic_decsription = 'for RL automated testing';
     let test_name: string;
     let test_decsription: string;
 
@@ -48,13 +42,11 @@ export async function MockTest(email: string, password: string, varPass: string,
             resourceEditors = new ResourceEditors(driver);
         });
 
-
         after(async function () {
             await driver.quit();
         });
 
         describe('Login and Open Settings', async () => {
-            
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
@@ -81,8 +73,14 @@ export async function MockTest(email: string, password: string, varPass: string,
                 await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
                 await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
                 await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
-                await resourceEditors.insertTextToInputElement(test_decsription, resourceEditors.AddEditorPopup_Description);
-                await resourceEditors.selectResource(resourceEditors.resourceName, resourceEditors.AddEditorPopupResourceDropdownSingleOption);
+                await resourceEditors.insertTextToInputElement(
+                    test_decsription,
+                    resourceEditors.AddEditorPopup_Description,
+                );
+                await resourceEditors.selectResource(
+                    resourceEditors.resourceName,
+                    resourceEditors.AddEditorPopupResourceDropdownSingleOption,
+                );
                 await resourceEditors.verifyResourceSelected();
                 await resourceEditors.clickElement('AddEditorPopup_Save');
                 await resourceEditors.verifyEditPageOpen(test_name);
@@ -92,13 +90,12 @@ export async function MockTest(email: string, password: string, varPass: string,
             step('Delete the Editor that was created', async () => {
                 await resourceEditors.pause(5000);
                 await resourceEditors.selectFromListByName(test_name);
-                await resourceEditors.openPencilMenu();   
+                await resourceEditors.openPencilMenu();
                 await resourceEditors.selectUnderPencil('Delete');
                 await resourceEditors.confirmDeleteClickRedButton();
                 await resourceList.clickTab('EditorsTab');
                 expect(await resourceEditors.selectFromListByName(test_name)).to.be.undefined;
             });
         });
-
     });
 }

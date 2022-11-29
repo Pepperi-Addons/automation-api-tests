@@ -32,7 +32,7 @@ import {
     ScriptPickerTests,
     LoginPerfSqlitefTests,
     ResourceListTests,
-    MockTest
+    MockTest,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';

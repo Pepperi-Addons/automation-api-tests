@@ -3,11 +3,14 @@ import { By } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 
 export class ResourceList extends AddonPage {
-
     // *general selectors for Resource Views*
 
-    public PepTopArea: By = By.xpath('/html/body/app-root/div[2]/main/div/pep-remote-loader-element/settings-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/app-settings/app-views-and-editors/pep-page-layout/div[4]/div[1]/h2');
-    public TabsContainer: By = By.xpath('/html/body/app-root/div[2]/main/div/pep-remote-loader-element/settings-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/app-settings/app-views-and-editors/pep-page-layout/div[4]/div[2]/mat-tab-group/mat-tab-header/div"]');
+    public PepTopArea: By = By.xpath(
+        '/html/body/app-root/div[2]/main/div/pep-remote-loader-element/settings-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/app-settings/app-views-and-editors/pep-page-layout/div[4]/div[1]/h2',
+    );
+    public TabsContainer: By = By.xpath(
+        '/html/body/app-root/div[2]/main/div/pep-remote-loader-element/settings-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/app-settings/app-views-and-editors/pep-page-layout/div[4]/div[2]/mat-tab-group/mat-tab-header/div"]',
+    );
     public ViewsTab: By = By.id('mat-tab-label-0-0');
     public EditorsTab: By = By.xpath('//div[contains(text(), "Editors")]/ancestor::div[@role="tab"]');
     // List
@@ -19,15 +22,23 @@ export class ResourceList extends AddonPage {
     public SelectedRadioButton: By = By.className('mat-radio-checked');
     public EditorsTabBody: By = By.id('mat-tab-content-0-1');
     public EditorsTab_Content: By = By.xpath('//*[@id="mat-tab-content-0-1"]/div/app-table');
-    public ResultsDiv: By = By.xpath('//*[@id="mat-tab-content-0-1"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div');
-    public NumberOfEditorsInList: By = By.xpath('//*[@id="mat-tab-content-0-1"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div/span');
+    public ResultsDiv: By = By.xpath(
+        '//*[@id="mat-tab-content-0-1"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
+    );
+    public NumberOfEditorsInList: By = By.xpath(
+        '//*[@id="mat-tab-content-0-1"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div/span',
+    );
     public EmptyEditorsList: By = By.id('mat-tab-content-0-0');
     public ContentEditorsList: By = By.id('mat-tab-content-1-0');
-    public NoResultsFoundDiv: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]/p');
+    public NoResultsFoundDiv: By = By.xpath(
+        '//*[@id="mat-tab-content-0-0"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]/p',
+    );
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
     public Pencil_Delete: By = this.getSelectorOfButtonUnderPencilMenu('Delete');
-    public EditorInList: By = By.xpath('//pep-list/virtual-scroller/div[@class="scrollable-content"]/div/fieldset/mat-radio-button/label/span/input');
+    public EditorInList: By = By.xpath(
+        '//pep-list/virtual-scroller/div[@class="scrollable-content"]/div/fieldset/mat-radio-button/label/span/input',
+    );
     // Delete Pop-up
     public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
     public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
@@ -93,19 +104,15 @@ export class ResourceList extends AddonPage {
     }
 }
 
-
 export class ResourceViews extends ResourceList {
-
     // *specific selectors for Views TAB under Resource Views*
 
     public ViewsTabBody: By = By.id('mat-tab-content-0-0');
     public ViewsTabContent: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/app-table');
 }
 
-
 export class ResourceEditors extends ResourceList {
-
-    public resourceName: string = 'resources';
+    public resourceName = 'resources';
 
     // *specific selectors for Editors TAB under Resource Views*
     public AddEditor_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
@@ -117,7 +124,9 @@ export class ResourceEditors extends ResourceList {
     public AddEditorPopup_Save: By = By.xpath('//button[@data-qa="Save"]');
     public AddEditorPopup_Resource: By = By.xpath('//*[@id="mat-select-value-1"]/span/span');
     public AddEditorPopupResourceDropdown: By = By.id('Resource-panel');
-    public AddEditorPopupResourceDropdownSingleOption: By = By.xpath('//*[@id="mat-dialog-0"]/app-add-form/pep-dialog/div[2]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]');
+    public AddEditorPopupResourceDropdownSingleOption: By = By.xpath(
+        '//*[@id="mat-dialog-0"]/app-add-form/pep-dialog/div[2]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]',
+    );
     // Edit Page
     public EditPageEditors_Title: By = By.xpath('//span[contains(text(), "Edit - ")]');
     public EditPageEditors_BackToList_Button: By = By.xpath('//span[@title="Back to list"]/ancestor::button');
@@ -130,15 +139,25 @@ export class ResourceEditors extends ResourceList {
     public EditPageEditors_GeneralTab_DescriptionTitle: By = By.linkText(' Description ');
     public EditPageEditors_GeneralTab_DescriptionInput: By = By.xpath('//input[@id="Description"]');
     public EditPageEditors_GeneralTab_ResourceTitle: By = By.linkText(' Resource ');
-    public EditPageEditors_GeneralTab_ResourceDropdownField: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/div[1]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]');
+    public EditPageEditors_GeneralTab_ResourceDropdownField: By = By.xpath(
+        '//*[@id="mat-tab-content-0-0"]/div/div[1]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]',
+    );
     public EditPageEditors_GeneralTab_DesignTitle: By = By.linkText(' Resource ');
     public EditPageEditors_GeneralTab_Design_OpenMode: By = By.linkText(' open mode ');
-    public EditPageEditors_GeneralTab_Design_OpenMode_DropdownField: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/div[2]/pep-select/mat-form-field/div/div[1]');
+    public EditPageEditors_GeneralTab_Design_OpenMode_DropdownField: By = By.xpath(
+        '//*[@id="mat-tab-content-0-0"]/div/div[2]/pep-select/mat-form-field/div/div[1]',
+    );
     public EditPageEditors_GeneralTab_ResourceFields_Title: By = By.xpath('//span[@title="ResourceFields"]');
-    public EditPageEditors_GeneralTab_ResourceFields_Results: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div');
-    public EditPageEditors_GeneralTab_ResourceFields_Search: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[3]/div[1]/pep-search/div/div/mat-form-field/div/div[1]');
+    public EditPageEditors_GeneralTab_ResourceFields_Results: By = By.xpath(
+        '//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
+    );
+    public EditPageEditors_GeneralTab_ResourceFields_Search: By = By.xpath(
+        '//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[3]/div[1]/pep-search/div/div/mat-form-field/div/div[1]',
+    );
     public EditPageEditors_GeneralTab_ResourceFields_SearchInput: By = By.xpath('//input[@id="mat-input-0"]');
-    public EditPageEditors_GeneralTab_ResourceFields_Content: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]');
+    public EditPageEditors_GeneralTab_ResourceFields_Content: By = By.xpath(
+        '//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]',
+    );
 
     private getSelectorOfEditPgaeTitleWithName(name: string) {
         return By.xpath(`//span[@title="Edit - ${name}"]`);
@@ -155,17 +174,16 @@ export class ResourceEditors extends ResourceList {
 
     public async selectResource(resName: string, dropdownElement: By) {
         await this.selectDropBoxByString(dropdownElement, resName);
-
     }
 
     public async verifyResourceSelected() {
         this.browser.sleep(2000);
-        let inputContent = await (await this.browser.findElement(this.AddEditorPopup_Resource)).getText()
+        const inputContent = await (await this.browser.findElement(this.AddEditorPopup_Resource)).getText();
         return expect(inputContent).to.equal(this.resourceName);
     }
 
     public async verifyEditPageOpen(testName: string) {
-        let selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
+        const selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
         // this.browser.sleep(8000);
         await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
         expect(await (await this.browser.findElement(this.EditPageEditors_Title)).getText()).to.contain(testName);
@@ -180,10 +198,7 @@ export class ResourceEditors extends ResourceList {
             console.error(error);
             expect(error).to.be.null;
         }
-
     }
-
-
 
     public async deleteEditorByName(name: string) {
         await this.selectFromListByName(name);
@@ -195,15 +210,15 @@ export class ResourceEditors extends ResourceList {
     public async deleteAllEditors() {
         await this.browser.untilIsVisible(By.xpath('//pep-list'), 3000);
         try {
-            debugger
+            debugger;
             await this.browser.findElements(this.EditorInList).then((editors) => {
-                debugger
+                debugger;
                 editors.forEach(async (editor) => {
                     editor.click();
                     await (await this.browser.findElement(this.Pencil_Delete)).click();
                     await (await this.browser.findElement(this.DeletePopup_Delete_Button)).click();
-                })
-            })
+                });
+            });
             // let allEditors = await this.browser.findElements(this.EditorInList);
             // debugger
             // if (allEditors) {
