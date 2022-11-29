@@ -26,7 +26,7 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.%'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.2.20'],
         'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     let varKey;
@@ -812,7 +812,10 @@ export async function PepperiNotificationServiceTests(
                         );
                         maxLoopsCounter--;
                     } while (getSubscribeResponse[0] && maxLoopsCounter > 0);
-                    expect(getSubscribeResponse).to.deep.equal([]);
+                    const subsNoUninstalledAddon = getSubscribeResponse.filter(
+                        (sub) => sub.AddonUUID === createdAddon.Body.UUID,
+                    );
+                    expect(subsNoUninstalledAddon).to.deep.equal([]);
                 });
 
                 it('Validate PNS Triggered After Addon Uninstall', async () => {
@@ -1573,7 +1576,7 @@ export async function PepperiNotificationServiceTests(
                 //Downgrade PNS
                 downgradeAddon = await generalService.papiClient.addons.installedAddons
                     .addonUUID(testData['ADAL'][0])
-                    .downgrade('1.0.131');
+                    .downgrade('1.0.260');
 
                 expect(downgradeAddon).to.have.property('URI');
 
@@ -1601,7 +1604,7 @@ export async function PepperiNotificationServiceTests(
                 //Upgrade PNS
                 upgradeAddon = await generalService.papiClient.addons.installedAddons
                     .addonUUID(testData['ADAL'][0])
-                    .upgrade('1.0.167');
+                    .upgrade('1.2.20'); //has to be maintaned - no better option currently
 
                 expect(upgradeAddon).to.have.property('URI');
 

@@ -553,7 +553,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read All Documents', async () => {
-                debugger;
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
                     typedIndexSchema,
                     'shared_index',

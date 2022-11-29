@@ -65,7 +65,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
                 generalService.sleep(500);
                 await webAppList.click(webAppTopBar.CartSumbitBtn);
                 await webAppHomePage.isDialogOnHomePAge(this);
-                //Validating transaction created via the API
+                //Validating transaction created via API
                 let lastTransaction;
                 let loopCounter = 20;
                 do {

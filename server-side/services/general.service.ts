@@ -21,13 +21,13 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.517'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.205'], //cpapi locked on TLS 2 version
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.22'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.7'], //cpi-node (Cross Platform Engine)
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.%'], //cpapi locked on TLS 2 version
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.%'], //cpi-node (Cross Platform Engine)
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
-    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
@@ -43,10 +43,10 @@ export const testData = {
 
 export const testDataForInitUser = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.517'], //PAPI locked on newest
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.205'], //cpapi
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.22'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.7'], //cpi-node (Cross Platform Engine)
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.%'], //cpapi
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.%'], //cpi-node (Cross Platform Engine)
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
@@ -345,14 +345,24 @@ export default class GeneralService {
         return kmsData;
     }
 
-    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string) {
+    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string): Promise<string[]> {
         const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
         const base64Credentials = Buffer.from(kmsSecret).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
-        const jobNameAsUrlSafe = encodeURI(jobName);
-        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobNameAsUrlSafe, jobQueueId);
-        return await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobNameAsUrlSafe);
+        // const jobNameAsUrlSafe = encodeURI(jobName);
+        await this.pollJenkinsEndPointUntillJobStarted(base64Credentials, jobPath, jobQueueId);
+        const JenkinBuildResult = await this.pollJenkinsEndPointUntillJobEnded(base64Credentials, jobName, jobPath);
+        if (jobPath.includes('Production')) {
+            return [JenkinBuildResult, 'Production'];
+        }
+        if (jobPath.includes('EU')) {
+            return [JenkinBuildResult, 'EU'];
+        }
+        if (jobPath.includes('Stage')) {
+            return [JenkinBuildResult, 'Stage'];
+        }
+        return [JenkinBuildResult];
     }
 
     async startJenkinsJobRemotely(base64Credentials: string, jobPath: string) {
@@ -384,7 +394,8 @@ export default class GeneralService {
 
     async pollJenkinsEndPointUntillJobStarted(
         buildUserCredsBase64: string,
-        jobNameAsUrlSafe: string,
+        jobPath: string,
+        //jobNameAsUrlSafe: string,
         jenkinsRunQueueNumberAsNumber: number,
     ) {
         let gottenIdFromJenkins = 0;
@@ -394,9 +405,11 @@ export default class GeneralService {
             Body: undefined,
             Error: undefined,
         };
+        const path = jobPath.split('/build')[0];
         do {
             jenkinsJobResponsePolling = await this.fetchStatus(
-                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                `https://admin-box.pepperi.com/job/${path}/lastBuild/api/json`,
+                //https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/lastBuild/api/json
                 {
                     method: 'GET',
                     headers: {
@@ -410,9 +423,14 @@ export default class GeneralService {
         } while (gottenIdFromJenkins !== jenkinsRunQueueNumberAsNumber);
         const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
         console.log(`job: ${jenkinsJobName} STARTED execution`);
+        return;
     }
 
-    async pollJenkinsEndPointUntillJobEnded(buildUserCredsBase64: string, jobNameAsUrlSafe: string) {
+    async pollJenkinsEndPointUntillJobEnded(
+        buildUserCredsBase64: string,
+        jobName: string,
+        jobPath: string,
+    ): Promise<string> {
         let gottenResultFromJenkins = '';
         let jenkinsJobResponsePolling: FetchStatusResponse = {
             Ok: false,
@@ -420,9 +438,10 @@ export default class GeneralService {
             Body: undefined,
             Error: undefined,
         };
+        const path = jobPath.split('/build')[0];
         do {
             jenkinsJobResponsePolling = await this.fetchStatus(
-                `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/${jobNameAsUrlSafe}/lastBuild/api/json`,
+                `https://admin-box.pepperi.com/job/${path}/lastBuild/api/json`,
                 {
                     method: 'GET',
                     headers: {
@@ -431,13 +450,21 @@ export default class GeneralService {
                 },
             );
             gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
-            console.log(`received result is ${gottenResultFromJenkins}`);
+            console.log(
+                `${jobName}: received result is ${gottenResultFromJenkins} ${
+                    gottenResultFromJenkins === null
+                        ? '(still running)'
+                        : typeof gottenResultFromJenkins === 'undefined'
+                        ? '(networking error should be resolved)'
+                        : '(finished)'
+                } `,
+            );
             this.sleep(4500);
             // debugger;
-        } while (gottenResultFromJenkins === null);
+        } while (gottenResultFromJenkins === null || typeof gottenResultFromJenkins === 'undefined');
         const jenkinsJobResult = jenkinsJobResponsePolling.Body.result;
         const jenkinsJobName = jenkinsJobResponsePolling.Body.fullDisplayName;
-        console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult}`);
+        console.log(`job: ${jenkinsJobName} is ended with status: ${jenkinsJobResult} `);
         return jenkinsJobResult;
     }
 
@@ -474,7 +501,7 @@ export default class GeneralService {
     }
 
     PrintMemoryUseToLog(state, testName) {
-        console.log(`%c${state} ${testName} Test System Information:`, ConsoleColors.SystemInformation);
+        console.log(`%c${state} ${testName} Test System Information: `, ConsoleColors.SystemInformation);
         this.CalculateUsedMemory();
     }
 
@@ -652,7 +679,6 @@ export default class GeneralService {
                 throw new Error('Error in Type and Event in Audit Log API Response');
             }
         } catch (error) {
-            debugger;
             if (error instanceof Error) {
                 error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
             }
@@ -675,23 +701,23 @@ export default class GeneralService {
                 //API Testing Framework AddonUUID
                 if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID}`)
+                        .addonUUID(`${addonUUID} `)
                         .install('0.0.235');
                 } else {
                     if (version.match(/\d+[\.]\d+[/.]\d+/)) {
                         const versionToInstall = version.match(/\d+[\.]\d+[/.]\d+/);
                         if (version?.length && typeof version[0] === 'string') {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${addonUUID}`)
+                                .addonUUID(`${addonUUID} `)
                                 .install(String(versionToInstall));
                         } else {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${addonUUID}`)
+                                .addonUUID(`${addonUUID} `)
                                 .install();
                         }
                     } else {
                         installResponse = await this.papiClient.addons.installedAddons
-                            .addonUUID(`${addonUUID}`)
+                            .addonUUID(`${addonUUID} `)
                             .install();
                     }
                 }
@@ -765,18 +791,18 @@ export default class GeneralService {
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             varLatestVersion.Status
-                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
+                        }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                     );
                 }
             } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
                 throw new Error(
-                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title}`,
+                    `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title} `,
                 );
             } else if (fetchVarResponse.Body.length > 0) {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchVarResponse.Status
-                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)}`,
+                    }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                 );
             }
             if (varLatestVersion) {
@@ -838,14 +864,14 @@ export default class GeneralService {
                     throw new Error(
                         `Get latest addon version failed: ${version}, Status: ${
                             LatestVersion.Status
-                        }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
+                        }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                     );
                 }
             } else {
                 throw new Error(
                     `Get latest addon version failed: ${version}, Status: ${
                         fetchResponse.Status
-                    }, Error Message: ${JSON.stringify(fetchResponse.Error)}`,
+                    }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                 );
             }
             testData[addonName].push(LatestVersion);
@@ -903,7 +929,7 @@ export default class GeneralService {
                     `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
                         uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
-                    `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information}`,
+                    `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information} `,
                 );
                 try {
                     if (response.headers.get('content-type')?.startsWith('image')) {
@@ -952,7 +978,7 @@ export default class GeneralService {
                 };
             })
             .catch((error) => {
-                console.error(`Error type: ${error.type}, ${error}`);
+                console.error(`Error type: ${error.type}, ${error} `);
                 return {
                     Ok: undefined as any,
                     Status: undefined as any,
@@ -1002,8 +1028,8 @@ export default class GeneralService {
     //     const current = new Date();
     //     const time = current.toLocaleTimeString();
     //     const body = {
-    //         Name: `${testName}_${time}`, //param:addon was tested (test name)
-    //         Description: `Running on: ${userName} - ${env}`, //param: version of the addon
+    //         Name: `${ testName }_${ time } `, //param:addon was tested (test name)
+    //         Description: `Running on: ${ userName } - ${ env } `, //param: version of the addon
     //         Status: testStatus, //param is passing
     //         Message: 'evgeny', //param link to Jenkins
     //         NotificationWebhook: '',
