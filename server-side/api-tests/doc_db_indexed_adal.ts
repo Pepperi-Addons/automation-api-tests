@@ -12,7 +12,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
     const adalOwnerId = '00000000-0000-0000-0000-00000000ada1';
 
     const logcash: any = {};
-    let counter = 0;
+    const counter = 0;
     //const keyCounter = 0;
     //const DataField = [];
     // const addonJobBody: any = {};
@@ -89,10 +89,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 await getSecretKey();
             });
             it('Create Schema (name accounts) with owner not from white list and without indexed fields', async () => {
-                assert(
-                    logcash.createMainSchemaStatus,
-                    logcash.createMainSchemaErrorMessage,
-                );
+                assert(logcash.createMainSchemaStatus, logcash.createMainSchemaErrorMessage);
             });
             it('Insert data to created account schema', () => {
                 assert(logcash.insertDataToAccountsTableStatus, logcash.insertDataToAccountsTableError);
@@ -101,20 +98,19 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 assert(logcash.createSecondSchemaStatus, logcash.createSecondSchemaErrorMessage);
             });
             it('Insert data to created survey schema ', () => {
-                assert(logcash.insertDataToSurveyTableStatus, logcash.insertDataToSurveyTableError );
+                assert(logcash.insertDataToSurveyTableStatus, logcash.insertDataToSurveyTableError);
             });
         });
         describe('Drop created schemas of the end of test', () => {
             it('Drop account schema', () => {
-                assert(logcash.dropAccountsTableStatus, logcash.dropAccountsTableError );
+                assert(logcash.dropAccountsTableStatus, logcash.dropAccountsTableError);
             });
             it('Drop survey schema', () => {
                 assert(logcash.dropSurveyTableStatus, logcash.dropSurveyTableError);
             });
         });
     });
-    
-            
+
     //#endregion Mocha
 
     //get secret key
@@ -130,7 +126,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         await createMainSchema();
     }
 
-    //#region First Schema creation 
+    //#region First Schema creation
 
     // create schema type data (Account_test) with owner/secret not from white list.
     async function createMainSchema() {
@@ -146,14 +142,13 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Name: 'account_test' + newUuid(),
                     Type: 'data',
                     DataSourceData: {
-                        IndexName: "my_index",
+                        IndexName: 'my_index',
                         //NumberOfShards: 3
                     },
-                    StringIndexName: "my_index",
+                    StringIndexName: 'my_index',
                     Fields: {
-                        Name: { "Type": "String"}
-                    }
-                   
+                        Name: { Type: 'String' },
+                    },
                 }),
             })
             .then((res) => res.Body);
@@ -167,38 +162,33 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.createMainSchemaStatus = true;
         } else {
             logcash.createMainSchemaStatus = false;
-            logcash.createMainSchemaErrorMessage =
-                'MAin Schema creation failed'
+            logcash.createMainSchemaErrorMessage = 'MAin Schema creation failed';
         }
         await insertDataToAccountsTable();
     }
 
     async function insertDataToAccountsTable() {
-            logcash.insertDataToAccountsTable = await generalService
-                .fetchStatus(
-                    baseURL + '/addons/data/' + addonUUID + '/' + logcash.createMainSchema.Name,
-                    {
-                        method: 'POST',
-                        headers: {
-                            Authorization: 'Bearer ' + token,
-                            //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
-                            'X-Pepperi-SecretKey': logcash.secretKey,
-                        },
-                        body: JSON.stringify({
-                            Key: '5',
-                            Name: 'First Table',
-                          
-                        }),
-                    },
-                )
-                .then((res) => [res.Status, res.Body]);
-            //debugger;
-            if (logcash.insertDataToAccountsTable[0] == 200) {
-                logcash.insertDataToAccountsTableStatus = true;
-            } else {
-                logcash.insertDataToAccountsTableStatus = false;
-                logcash.insertDataToAccountsTableError = 'Insert data to Accounts table failed';
-            }
+        logcash.insertDataToAccountsTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createMainSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: '5',
+                    Name: 'First Table',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertDataToAccountsTable[0] == 200) {
+            logcash.insertDataToAccountsTableStatus = true;
+        } else {
+            logcash.insertDataToAccountsTableStatus = false;
+            logcash.insertDataToAccountsTableError = 'Insert data to Accounts table failed';
+        }
         //debugger;
         await createSecondSchema();
     }
@@ -221,17 +211,16 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     },
                     StringIndexName: 'my_index',
                     Fields: {
-                        test: { Type: 'Integer', Indexed: true}
+                        test: { Type: 'Integer', Indexed: true },
                     },
-                        Account:{
-                            Type: 'Resource',
-                            AddonUUID: addonUUID,
-                            Indexed: true,
-                            IndexedFields:{
-                                Name:{Type: 'String', Indexed: true}
-                            }
-                        }
-                   
+                    Account: {
+                        Type: 'Resource',
+                        AddonUUID: addonUUID,
+                        Indexed: true,
+                        IndexedFields: {
+                            Name: { Type: 'String', Indexed: true },
+                        },
+                    },
                 }),
             })
             .then((res) => res.Body);
@@ -248,8 +237,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.createSecondSchemaStatus = true;
         } else {
             logcash.createSecondSchemaStatus = false;
-            logcash.createSecondSchemaErrorMessage =
-                'Second Schema (from white list addon) creation failed'
+            logcash.createSecondSchemaErrorMessage = 'Second Schema (from white list addon) creation failed';
         }
         //debugger;
         await insertDataToSurveyTable();
@@ -257,23 +245,19 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
 
     async function insertDataToSurveyTable() {
         logcash.insertDataToSurveyTable = await generalService
-            .fetchStatus(
-                baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSecondSchema.Name,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: 'Bearer ' + token,
-                        //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
-                        'X-Pepperi-SecretKey': whaitSecretKey,
-                    },
-                    body: JSON.stringify({
-                        Key: '1',
-                        test: '123',
-                        Account: '5'
-                      
-                    }),
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSecondSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
                 },
-            )
+                body: JSON.stringify({
+                    Key: '1',
+                    test: '123',
+                    Account: '5',
+                }),
+            })
             .then((res) => [res.Status, res.Body]);
         //debugger;
         if (logcash.insertDataToSurveyTable[0] == 200) {
@@ -282,48 +266,53 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.insertDataToSurveyTableStatus = false;
             logcash.insertDataToSurveyTableError = 'Insert data to Survey table failed';
         }
-    //debugger;
-    await getSurveyScheme();
-}
-
-async function getSurveyScheme() {
-    logcash.getSurveyScheme = await generalService
-        .fetchStatus(
-            baseURL + '/addons/data/' + whaitOwnerUUID + '/'+ logcash.createSecondSchema.Name +'?fields=test,Account.Name' ,
-            {
-                method: 'GET',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'X-Pepperi-OwnerID': whaitOwnerUUID,
-                    //'X-Pepperi-SecretKey': logcash.secretKey,
-                },
-            },
-        )
-        .then((res) => res.Body);
-    debugger;
-    if (
-        logcash.getSurveyScheme.AddonUUID == whaitOwnerUUID //&&
-        // logcash.getSurveyScheme.Fields.CreationDateTime.Indexed == true &&
-        // logcash.getSurveyScheme.Fields.CreationDateTime.Type == 'DateTime' &&
-        // logcash.getSurveyScheme.Fields.Hidden.Indexed == true &&
-        // logcash.getSurveyScheme.Fields.Hidden.Type == 'Bool' &&
-        // logcash.getSurveyScheme.Fields.Key.Keyword == true &&
-        // logcash.getSurveyScheme.Fields.Key.Indexed == true &&
-        // logcash.getSurveyScheme.Fields.Key.Type == 'String' &&
-        // logcash.getSurveyScheme.Fields.ModificationDateTime.Indexed == true &&
-        // logcash.getSurveyScheme.Fields.ModificationDateTime.Type == 'DateTime' &&
-        // logcash.getSurveyScheme.Fields.TestDateTime.Indexed == true &&
-        // logcash.getSurveyScheme.Fields.TestDateTime.Type == 'DateTime' &&
-        // logcash.getSurveyScheme.Fields.testString.Indexed == true &&
-        // logcash.getSurveyScheme.Fields.testString.Type == 'String'
-    ) {
-        logcash.getSurveySchemeStatus = true;
-    } else {
-        logcash.getSurveySchemeStatus = false;
-        logcash.getSurveySchemeErrorMessage = 'The survey scheme will be created, but actuall get empty ';
+        //debugger;
+        await getSurveyScheme();
     }
-    await dropAccountsTable();
-}
+
+    async function getSurveyScheme() {
+        logcash.getSurveyScheme = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSecondSchema.Name +
+                    '?fields=test,Account.Name',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': whaitOwnerUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        debugger;
+        if (
+            logcash.getSurveyScheme.AddonUUID == whaitOwnerUUID //&&
+            // logcash.getSurveyScheme.Fields.CreationDateTime.Indexed == true &&
+            // logcash.getSurveyScheme.Fields.CreationDateTime.Type == 'DateTime' &&
+            // logcash.getSurveyScheme.Fields.Hidden.Indexed == true &&
+            // logcash.getSurveyScheme.Fields.Hidden.Type == 'Bool' &&
+            // logcash.getSurveyScheme.Fields.Key.Keyword == true &&
+            // logcash.getSurveyScheme.Fields.Key.Indexed == true &&
+            // logcash.getSurveyScheme.Fields.Key.Type == 'String' &&
+            // logcash.getSurveyScheme.Fields.ModificationDateTime.Indexed == true &&
+            // logcash.getSurveyScheme.Fields.ModificationDateTime.Type == 'DateTime' &&
+            // logcash.getSurveyScheme.Fields.TestDateTime.Indexed == true &&
+            // logcash.getSurveyScheme.Fields.TestDateTime.Type == 'DateTime' &&
+            // logcash.getSurveyScheme.Fields.testString.Indexed == true &&
+            // logcash.getSurveyScheme.Fields.testString.Type == 'String'
+        ) {
+            logcash.getSurveySchemeStatus = true;
+        } else {
+            logcash.getSurveySchemeStatus = false;
+            logcash.getSurveySchemeErrorMessage = 'The survey scheme will be created, but actuall get empty ';
+        }
+        await dropAccountsTable();
+    }
 
     async function dropAccountsTable() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
@@ -345,7 +334,7 @@ async function getSurveyScheme() {
             logcash.dropAccountsTableStatus = true;
         } else {
             logcash.dropAccountsTableStatus = false;
-            logcash.dropAccountsTableError = 'Drop account schema failed. Error message'
+            logcash.dropAccountsTableError = 'Drop account schema failed. Error message';
         }
         await dropSurveyTable();
     }
@@ -369,9 +358,8 @@ async function getSurveyScheme() {
             logcash.dropSurveyTableStatus = true;
         } else {
             logcash.dropSurveyTableStatus = false;
-            logcash.dropSurveyTableError = 'Drop survry schema failed. Error message'
+            logcash.dropSurveyTableError = 'Drop survry schema failed. Error message';
         }
         //await createSchemaTypeDataIndex();
     }
-    
 }

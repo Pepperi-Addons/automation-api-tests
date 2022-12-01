@@ -8,6 +8,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
     const expect = tester.expect;
     const it = tester.it;
 
+    const genericResoureUUID = 'df90dba6-e7cc-477b-95cf-2c70114e44e0';
     const logcash: any = {};
     let counter = 0;
     // const fieldname = 'test!1';
@@ -30,9 +31,9 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
     //#endregion
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.42'], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.44'], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
-        // 'cpi-node':['bb6ee826-1c6b-4a11-9758-40a46acb69c5','0.4.16'],
+        // 'Generic Resource':['df90dba6-e7cc-477b-95cf-2c70114e44e0',''],
         // 'User Defined Collections' :['122c0e9d-c240-4865-b446-f37ece866c22', '0.6.126'],
     };
     let varKey;
@@ -85,6 +86,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             it('Test Initiation', async () => {
                 // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
+                //await getSecretKeyGR();
             });
             it('Negative - Try to create schema with UserDefine true with camelCase name', () => {
                 assert(logcash.createSchemaUDFalseNegativeStatus, logcash.createSchemaUDFalseNegativeErrorMessage);
@@ -123,12 +125,15 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 assert(logcash.createSchemaAbstractStatus, logcash.createSchemaAbstractErrorMessage);
             });
             it('Create abstract schema with UserDefine=false : camelCase/PascalCase - negative', () => {
-                assert(logcash.createSchemaAbstractNegativeCamelStatus, logcash.createSchemaAbstractNegativeCamelErrorMessage );
+                assert(
+                    logcash.createSchemaAbstractNegativeCamelStatus,
+                    logcash.createSchemaAbstractNegativeCamelErrorMessage,
+                );
             });
             it('Update extended schema fields', () => {
                 assert(logcash.updateExtendedSchemaStatus, logcash.updateExtendedSchemaErrorMessage);
             });
-            it('GET extending schema - verify all extended fields updated', () => {
+            it('GET extending schema - verify all extended fields updated and SuperTypes objects created', () => {
                 assert(logcash.getDataADALStatus, logcash.getDataADALError);
             });
             it('Update extending schema fields', () => {
@@ -145,6 +150,27 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             });
             it('Drop abstract table ', () => {
                 assert(logcash.dropAbstractTableStatus, logcash.dropAbstractTableError);
+            });
+            it('Negative - create genericResouce = true schema with Name PascalCase', () => {
+                assert(
+                    logcash.createGenericResourceSchemaFirstNegativeStatus,
+                    logcash.createGenericResourceSchemaFirstNegativeErrorMessage,
+                );
+            });
+            it('Negative - create genericResouce = true schema with Name camelCase and Field on camelCase instead of PAscalCase', () => {
+                assert(
+                    logcash.createGenericResourceSchemaSecNegativeStatus,
+                    logcash.createGenericResourceSchemaSecNegativeErrorMessage,
+                );
+            });
+            it('Positieve - create genericResouce = true schema with Name camelCase and Field on PascalCese', () => {
+                assert(
+                    logcash.createGenericResourceSchemaPositiveStatus,
+                    logcash.createGenericResourceSchemaPositiveErrorMessage,
+                );
+            });
+            it('Drop created schema with GenericResource = true', () => {
+                assert(logcash.dropTableGRStatus, logcash.dropTableGRError);
             });
         });
         describe('Contaned table type verification', () => {
@@ -345,7 +371,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
 
     //let addonUDC = '122c0e9d-c240-4865-b446-f37ece866c22'
 
-    async function createSchemaPositive() { //extendet schema
+    async function createSchemaPositive() {
+        //extendet schema
         //user define is default = false
         logcash.createSchemaPositive = await generalService
             .fetchStatus(baseURL + '/addons/data/schemes', {
@@ -356,8 +383,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Test-positive'+ newUuid(),
-                    Type: 'abstract',   // will be abstract type
+                    Name: 'Test-positive' + newUuid(),
+                    Type: 'abstract', // will be abstract type
                     UserDefined: true,
                     Fields: {
                         testString1: { Type: 'String' },
@@ -366,7 +393,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             })
             .then((res) => res.Body);
         //debugger;
-        if (logcash.createSchemaPositive.Name.includes ('Test-positive')) {
+        if (logcash.createSchemaPositive.Name.includes('Test-positive')) {
             logcash.createSchemaPositiveStatus = true;
         } else {
             logcash.createSchemaPositiveStatus = false;
@@ -431,7 +458,9 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => [res.Status, res.Body]);
         //debugger;
         if (
-            logcash.updateSchemaTypeNegative[1].fault.faultstring.includes( "Failed due to exception: Cannot change a schema type") &&
+            logcash.updateSchemaTypeNegative[1].fault.faultstring.includes(
+                'Failed due to exception: Cannot change a schema type',
+            ) &&
             logcash.updateSchemaTypeNegative[0] == 400
         ) {
             logcash.updateSchemaTypeNegativeStatus = true;
@@ -439,12 +468,47 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             logcash.updateSchemaTypeNegativeStatus = false;
             logcash.updateSchemaTypeNegativeErrorMessage = 'Schema type can only be set on creation';
         }
+        await createSchemaAbstract();
+    }
+
+    async function createSchemaAbstract() {
+        //extendet schema
+        //user define is default = false
+        logcash.createSchemaAbstract = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'Test-positive2' + newUuid(),
+                    Type: 'abstract', // will be abstract type
+                    UserDefined: true,
+                    Fields: {
+                        test2String: { Type: 'String' },
+                    },
+                    Extends: {
+                        AddonUUID: addonUUID,
+                        Name: logcash.createSchemaPositive.Name,
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.createSchemaAbstract.Name.includes('Test-positive2')) {
+            logcash.createSchemaAbstractStatus = true;
+        } else {
+            logcash.createSchemaAbstractStatus = false;
+            logcash.createSchemaAbstractErrorMessage = 'Schema will be created successfully, but actually failed';
+        }
         await createExtendingSchemePositive();
     }
 
-
     //#endregion
     //#region Extending abstract Schemes
+
     async function createExtendingSchemePositive() {
         //user define is default = false
         logcash.createExtendingSchemePositive = await generalService
@@ -457,7 +521,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 },
                 body: JSON.stringify({
                     Name: 'ExtendingSchema' + newUuid(),
-                    Type: 'data',    
+                    Type: 'data',
                     UserDefined: true,
                     Fields: {
                         string_Field1: { Type: 'String' },
@@ -465,14 +529,14 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     },
                     Extends: {
                         AddonUUID: addonUUID,
-                        Name: logcash.createSchemaPositive.Name,
+                        Name: logcash.createSchemaAbstract.Name,
                     },
                 }),
             })
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.createExtendingSchemePositive.Name.includes ('ExtendingSchema') &&
+            logcash.createExtendingSchemePositive.Name.includes('ExtendingSchema') &&
             logcash.createExtendingSchemePositive.Fields.testString1.ExtendedField == true &&
             logcash.createExtendingSchemePositive.Fields.string_Field1.ExtendedField == false &&
             logcash.createExtendingSchemePositive.Fields.int_Field2.ExtendedField == false
@@ -483,70 +547,44 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             logcash.createExtendingSchemePositiveErrorMessage =
                 'Schema will be created successfully  with extended fields, but actually failed';
         }
-        await createSchemaAbstract();
+        await createSchemaAbstractNegativeCamel();
     }
 
-//create another abstract schema 
-async function createSchemaAbstract() { //extendet schema
-    //user define is default = false
-    logcash.createSchemaAbstract = await generalService
-        .fetchStatus(baseURL + '/addons/data/schemes', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Name: 'Test-positive2'+ newUuid(),
-                Type: 'abstract',   // will be abstract type
-                UserDefined: true,
-                Fields: {
-                    test2String: { Type: 'String' },
+    //create abstract scheme negative - on abstract if userDefine false the schema name will be camelcase
+    async function createSchemaAbstractNegativeCamel() {
+        //extendet schema
+        //user define is default = false
+        logcash.createSchemaAbstractNegativeCamel = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            }),
-        })
-        .then((res) => res.Body);
-    //debugger;
-    if (logcash.createSchemaAbstract.Name.includes ('Test-positive2')) {
-        logcash.createSchemaAbstractStatus = true;
-    } else {
-        logcash.createSchemaAbstractStatus = false;
-        logcash.createSchemaAbstractErrorMessage = 'Schema will be created successfully, but actually failed';
+                body: JSON.stringify({
+                    Name: 'Test-negative' + newUuid(),
+                    Type: 'abstract', // will be abstract type
+                    //UserDefined: true,
+                    Fields: {
+                        test2String: { Type: 'String' },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaAbstractNegativeCamel.fault.faultstring.includes(
+                'did not match the pattern ^[a-z][a-zA-Z_0-9]',
+            )
+        ) {
+            logcash.createSchemaAbstractNegativeCamelStatus = true;
+        } else {
+            logcash.createSchemaAbstractNegativeCamelStatus = false;
+            logcash.createSchemaAbstractNegativeCamelErrorMessage = 'Schema will not be created';
+        }
+        await updateExtendedSchema();
     }
-    await createSchemaAbstractNegativeCamel();
-}
-
-//create abstract scheme negative - on abstract if userDefine false the schema name will be camelcase
-async function createSchemaAbstractNegativeCamel() { //extendet schema
-    //user define is default = false
-    logcash.createSchemaAbstractNegativeCamel = await generalService
-        .fetchStatus(baseURL + '/addons/data/schemes', {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'X-Pepperi-OwnerID': addonUUID,
-                'X-Pepperi-SecretKey': logcash.secretKey,
-            },
-            body: JSON.stringify({
-                Name: 'Test-negative'+ newUuid(),
-                Type: 'abstract',   // will be abstract type
-                //UserDefined: true,
-                Fields: {
-                    test2String: { Type: 'String' },
-                },
-            }),
-        })
-        .then((res) => res.Body);
-    //debugger;
-    if (logcash.createSchemaAbstractNegativeCamel.fault.faultstring.includes ('did not match the pattern ^[a-z][a-zA-Z_0-9]')) {
-        logcash.createSchemaAbstractNegativeCamelStatus = true;
-    } else {
-        logcash.createSchemaAbstractNegativeCamelStatus = false;
-        logcash.createSchemaAbstractNegativeCamelErrorMessage = 'Schema will not be created';
-    }
-    await updateExtendedSchema();
-}
 
     async function updateExtendedSchema() {
         //user define is default = false
@@ -565,10 +603,6 @@ async function createSchemaAbstractNegativeCamel() { //extendet schema
                     Fields: {
                         testString1_updated: { Type: 'String' },
                     },
-                    Extends: {
-                        AddonUUID: addonUUID,
-                        Name: logcash.createSchemaAbstract.Name,
-                    },
                 }),
             })
             .then((res) => res.Body);
@@ -579,47 +613,72 @@ async function createSchemaAbstractNegativeCamel() { //extendet schema
             logcash.updateExtendedSchemaStatus = false;
             logcash.updateExtendedSchemaErrorMessage = 'Schema will be updated successfully, but actually failed';
         }
-        generalService.sleep(10000);
-        await getDataADAL();
+        generalService.sleep(15000);
+        await getDataADAL2();
     }
-
-
-// add GET to verify if extending schema updated after extended schema changed - add sleep before
-async function getDataADAL() {
-    //logcash.getDataADALStatus = true;
-    logcash.getDataADAL = await generalService
-        .fetchStatus(
-            baseURL +
-                '/addons/data/schemes/'+
-                logcash.createExtendingSchemePositive.Name,
-            {
+    async function getDataADAL2() {
+        //logcash.getDataADALStatus = true;
+        logcash.getDataADAL2 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaAbstract.Name, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
-                     'X-Pepperi-OwnerID': addonUUID,
-                     //'X-Pepperi-SecretKey': logcash.secretKey,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    //'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            },
-        )
-        .then((res) => res.Body);
-    //debugger;
-            if (
-                logcash.getDataADAL.Fields.testString1_updated.ExtendedField == true &&
-                logcash.getDataADAL.Fields.test2String.ExtendedField == true &&
-                logcash.getDataADAL.Fields.string_Field1.ExtendedField == false &&
-                logcash.getDataADAL.Fields.int_Field2.ExtendedField == false
-                //will add 2 fields from extending addon
-            ) {
-                logcash.getDataADALStatus = true;
-            } else {
-                logcash.getDataADALStatus = false;
-                logcash.getDataADALError = 'Schema fields is wrong';
-            }
-        
-    //debugger;
-    await updateExtendingScheme();
-}
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataADAL2.Name.includes('Test-positive')
+            // logcash.getDataADAL.Fields.testString1_updated.ExtendedField == true &&
+            // logcash.getDataADAL.Fields.test2String.ExtendedField == true &&
+            // logcash.getDataADAL.Fields.string_Field1.ExtendedField == false &&
+            // logcash.getDataADAL.Fields.int_Field2.ExtendedField == false &&
+            // logcash.getDataADAL.SuperTypes[0].includes('Test-positive') &&
+            // logcash.getDataADAL.SuperTypes[1].includes('Test-positive2')
+        ) {
+            logcash.getDataADAL2Status = true;
+        } else {
+            logcash.getDataADAL2Status = false;
+            logcash.getDataADAL2Error = 'Schema fields is wrong';
+        }
 
+        //debugger;
+        await getDataADAL();
+    }
+
+    // add GET to verify if extending schema updated after extended schema changed - add sleep before
+    async function getDataADAL() {
+        //logcash.getDataADALStatus = true;
+        logcash.getDataADAL = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createExtendingSchemePositive.Name, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    //'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataADAL.Fields.testString1_updated.ExtendedField == true &&
+            logcash.getDataADAL.Fields.test2String.ExtendedField == true &&
+            logcash.getDataADAL.Fields.string_Field1.ExtendedField == false &&
+            logcash.getDataADAL.Fields.int_Field2.ExtendedField == false &&
+            logcash.getDataADAL.SuperTypes[0].includes('Test-positive') &&
+            logcash.getDataADAL.SuperTypes[1].includes('Test-positive2')
+        ) {
+            logcash.getDataADALStatus = true;
+        } else {
+            logcash.getDataADALStatus = false;
+            logcash.getDataADALError = 'Schema fields is wrong';
+        }
+
+        //debugger;
+        await updateExtendingScheme();
+    }
 
     async function updateExtendingScheme() {
         //user define is default = false
@@ -648,7 +707,7 @@ async function getDataADAL() {
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.updateExtendingScheme.Name.includes('ExtendedSchema') &&
+            logcash.updateExtendingScheme.Name.includes('ExtendingSchema') &&
             logcash.updateExtendingScheme.Fields.testString1_updated.ExtendedField == true &&
             logcash.updateExtendingScheme.Fields.string_Field1.ExtendedField == false &&
             logcash.updateExtendingScheme.Fields.int_Field2_updated.ExtendedField == false
@@ -690,14 +749,14 @@ async function getDataADAL() {
         //debugger;
         if (
             logcash.updateExtendingSchemeNegative.fault.faultstring.includes(
-                ' Cannot extend schema, fields [testString1_updated] exist in both schemas',
+                'Failed due to exception: Cannot extend schema, properties [testString1_updated] of Fields exist in both schemas',
             )
         ) {
             logcash.updateExtendingSchemeNegativeStatus = true;
         } else {
             logcash.updateExtendingSchemeNegativeStatus = false;
             logcash.updateExtendingSchemeNegativeErrorMessage =
-                ' Cannot extend schema, fields [testString1_updated] exist in both schemas';
+                'Tests will failed, bacouse the updated field appeared on extended schema';
         }
         await dropExtendedTable();
     }
@@ -772,9 +831,161 @@ async function getDataADAL() {
             logcash.dropAbstractTableStatus = false;
             logcash.dropAbstractTableError = 'Drop abstract schema failed.';
         }
-        await createContainedSchemaPositive();
+        await createGenericResourceSchemaFirstNegative();
     }
     //#endregion Extending Schemes
+    //#region Generic resource - userDefine true/false - camel?pascal verification
+    // async function getSecretKeyGR() {
+    //     try {
+    //         logcash.secretKeyGR = await generalService.getSecretKey(genericResoureUUID, varKey);
+    //     } catch (error) {
+    //         throw new Error(`Fail To Get Addon Secret Key ${error}`);
+    //     }
+    //     await createGenericResourceSchemaFirstNegative();
+    // }
+
+    async function createGenericResourceSchemaFirstNegative() {
+        // userDefine = false Schem name must be camelCase
+        //user define is default = false
+        logcash.createGenericResourceSchemaFirstNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'CamelCaseNegative',
+                    Type: 'data',
+                    GenericResource: true,
+                    UserDefined: false,
+                    // Fields: {
+                    //     testString: { Type: 'String' },
+                    //     testInt: { Type: 'Integer' },
+                    // },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createGenericResourceSchemaFirstNegative.fault.faultstring.includes(
+                'Failed due to exception: Invalid schema name, the name',
+            ) //&&
+            // logcash.createContainedSchemaPositive.Fields.testString.Type == 'String' &&
+            // logcash.createContainedSchemaPositive.Fields.testInt.Type == 'Integer'
+        ) {
+            logcash.createGenericResourceSchemaFirstNegativeStatus = true;
+        } else {
+            logcash.createGenericResourceSchemaFirstNegativeStatus = false;
+            logcash.createGenericResourceSchemaFirstNegativeErrorMessage =
+                'Schema creation will failed because on General resource schemes on UserDefine=false tne Schema name must be camelCase';
+        }
+        await createGenericResourceSchemaSecNegative();
+    }
+
+    async function createGenericResourceSchemaSecNegative() {
+        // userDefine = false Field name must be PascalCase
+        //user define is default = false
+        logcash.createGenericResourceSchemaSecNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'camelCaseNegative', //+ newUuid(),
+                    Type: 'data',
+                    GenericResource: true,
+                    UserDefined: false,
+                    Fields: {
+                        testString: { Type: 'String' },
+                        TestInt: { Type: 'Integer' },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createGenericResourceSchemaSecNegative.fault.faultstring.includes(
+                'Invalid field name, the fields name ',
+            ) //&&
+            // logcash.createContainedSchemaPositive.Fields.testString.Type == 'String' &&
+            // logcash.createContainedSchemaPositive.Fields.testInt.Type == 'Integer'
+        ) {
+            logcash.createGenericResourceSchemaSecNegativeStatus = true;
+        } else {
+            logcash.createGenericResourceSchemaSecNegativeStatus = false;
+            logcash.createGenericResourceSchemaSecNegativeErrorMessage =
+                'Schema creation will failed because on General resource schemes on UserDefine=false tne field name must be PascalCase';
+        }
+        await createGenericResourceSchemaPositive();
+    }
+
+    async function createGenericResourceSchemaPositive() {
+        // userDefine = false Field name must be PascalCase
+        //user define is default = false
+        logcash.createGenericResourceSchemaPositive = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'camelCase', //+ newUuid(),
+                    Type: 'data',
+                    GenericResource: true,
+                    UserDefined: false,
+                    Fields: {
+                        TestString: { Type: 'String' },
+                        TestInt: { Type: 'Integer' },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createGenericResourceSchemaPositive.Name == 'camelCase' &&
+            logcash.createGenericResourceSchemaPositive.Fields.TestString.Type == 'String' &&
+            logcash.createGenericResourceSchemaPositive.Fields.TestInt.Type == 'Integer'
+        ) {
+            logcash.createGenericResourceSchemaPositiveStatus = true;
+        } else {
+            logcash.createGenericResourceSchemaPositiveStatus = false;
+            logcash.createGenericResourceSchemaPositiveErrorMessage = 'Schema creation failed';
+        }
+        await dropTableGR();
+    }
+    async function dropTableGR() {
+        //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createGenericResourceSchemaPositive.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        ); //.then((data) => data.json())
+        //debugger;
+
+        //if(logcash.dropExistingTable.success == true){
+        if (res.Ok) {
+            logcash.dropTableGRStatus = true;
+        } else {
+            logcash.dropTableGRStatus = false;
+            logcash.dropTableGRError = 'Drop schema failed.';
+        }
+        await createContainedSchemaPositive();
+    }
+
+    //#endregion region Generic resource - userDefine true/false - camel?pascal verification
     //#region contained schema
 
     async function createContainedSchemaPositive() {
