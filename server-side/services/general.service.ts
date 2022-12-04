@@ -468,6 +468,21 @@ export default class GeneralService {
         return jenkinsJobResult;
     }
 
+    async getLatestJenkinsJobExecutionId(jobPath: string, kmsKeyToFetch: string) {
+        const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
+        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+        const jenkinsJobResponsePolling = await this.fetchStatus(
+            `https://admin-box.pepperi.com/job/${jobPath}/lastBuild/api/json`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Basic ` + base64Credentials,
+                },
+            },
+        );
+        return jenkinsJobResponsePolling.Body.number;
+    }
+
     getSecret() {
         let addonUUID;
         if (this.client.AddonUUID.length > 0) {
