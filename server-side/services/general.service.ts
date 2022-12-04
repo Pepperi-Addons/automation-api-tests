@@ -32,7 +32,7 @@ export const testData = {
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
-    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
@@ -762,6 +762,7 @@ export default class GeneralService {
                 // addonName == 'ADAL' || //evgeny
                 addonName == 'system_health' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
+                addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
