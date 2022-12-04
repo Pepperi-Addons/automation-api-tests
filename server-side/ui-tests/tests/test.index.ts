@@ -429,7 +429,7 @@ const addon = process.env.npm_config_addon as string;
         let jobPathPROD = '';
         let jobPathSB = '';
         switch (addonName) {
-            case 'ADAL'://add another 'case' here when adding new addons to this mehcanisem
+            case 'ADAL': //add another 'case' here when adding new addons to this mehcanisem
                 addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
@@ -634,36 +634,38 @@ const addon = process.env.npm_config_addon as string;
             failingEnvs.push('Production');
         }
 
-        const message = `${addonName}(${addonUUID}), Version:${addonVersionProd}:  |Passed On: ${
-            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } , Failed On: ${failingEnvs.join(', ')}`;
-        const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-        const bodyToSend = {
-            Name: `${addonName} Approvment Tests Status`,
-            Description: message,
-            Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-            Message: message2,
-            UserWebhook: handleTeamsURL(addonName),
-        };
-        const monitoringResponse = await service.fetchStatus(
-            'https://papi.pepperi.com/v1.0/system_health/notifications',
-            {
-                method: 'POST',
-                headers: {
-                    'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        if (failingEnvs.length > 0) {
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd}:  |Passed On: ${
+                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+            } , Failed On: ${failingEnvs.join(', ')}`;
+            const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+            const bodyToSend = {
+                Name: `${addonName} Approvment Tests Status`,
+                Description: message,
+                Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+                Message: message2,
+                UserWebhook: handleTeamsURL(addonName),
+            };
+            const monitoringResponse = await service.fetchStatus(
+                'https://papi.pepperi.com/v1.0/system_health/notifications',
+                {
+                    method: 'POST',
+                    headers: {
+                        'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+                        'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                    },
+                    body: JSON.stringify(bodyToSend),
                 },
-                body: JSON.stringify(bodyToSend),
-            },
-        );
-        if (monitoringResponse.Ok !== true) {
-            throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
-        }
-        if (monitoringResponse.Status !== 200) {
-            throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+            );
+            if (monitoringResponse.Ok !== true) {
+                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+            }
+            if (monitoringResponse.Status !== 200) {
+                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+            }
+            if (Object.keys(monitoringResponse.Error).length !== 0) {
+                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+            }
         }
     }
     run();
