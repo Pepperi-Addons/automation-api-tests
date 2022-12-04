@@ -295,7 +295,7 @@ export class AddonPage extends Page {
                 const isElementFound = await this.browser.findElement(this[elem]);
                 console.info(`isElementFound: ${isElementFound}`);
             } catch (error) {
-                expect(error).to.not.be.undefined;
+                expect(error).contains('The element is not visible');
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);

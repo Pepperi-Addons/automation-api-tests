@@ -15,18 +15,21 @@ export class ResourceList extends AddonPage {
     public EditorsTab: By = By.xpath('//div[contains(text(), "Editors")]/ancestor::div[@role="tab"]');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
-    public Label_Name: By = By.xpath('//label[@id="Name"]');
-    public Label_Description: By = By.xpath('//label[@id="Description"]');
-    public Label_Resource: By = By.xpath('//label[@id="Resource"]');
+    public Label_Name: By = this.getSelectorOfLabelUnderTableHeader('Name'); //By.xpath('//label[@id="Name"]');
+    public Label_Description: By = this.getSelectorOfLabelUnderTableHeader('Description'); //By.xpath('//label[@id="Description"]');
+    public Label_Resource: By = this.getSelectorOfLabelUnderTableHeader('Resource'); //By.xpath('//label[@id="Resource"]');
     public RadioButtons: By = By.xpath('//input[@type="radio"]');
-    public SelectedRadioButton: By = By.className('mat-radio-checked');
+    public FirstRadioButtonInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-radio-button');
+    public SelectedRadioButton: By = By.xpath(
+        '//mat-radio-button[contains(@class, "checked")]/label/span/input[@type="radio"]',
+    );
     public EditorsTabBody: By = By.id('mat-tab-content-0-1');
     public EditorsTab_Content: By = By.xpath('//*[@id="mat-tab-content-0-1"]/div/app-table');
     public ResultsDiv: By = By.xpath(
-        '//*[@id="mat-tab-content-0-1"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
+        '//*[contains(@id,"mat-tab-content")]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
     );
-    public NumberOfEditorsInList: By = By.xpath(
-        '//*[@id="mat-tab-content-0-1"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div/span',
+    public NumberOfItemsInList: By = By.xpath(
+        '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );
     public EmptyEditorsList: By = By.id('mat-tab-content-0-0');
     public ContentEditorsList: By = By.id('mat-tab-content-1-0');
@@ -45,11 +48,19 @@ export class ResourceList extends AddonPage {
     public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
 
     private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[text()=" ${title} "]/parent::button`);
+        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {
         return By.xpath(`//span[@title="${title}"]/parent::button`);
+    }
+
+    private getSelectorOfLabelUnderTableHeader(title: string) {
+        return By.xpath(`//label[@id="${title}"]`);
+    }
+
+    public getSelectorOfRowInListByName(name: string) {
+        return By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
     }
 
     public async clickTab(tabName: string): Promise<void> {
@@ -90,17 +101,53 @@ export class ResourceList extends AddonPage {
         }
     }
 
+    public async openPencilChooseDelete() {
+        await this.openPencilMenu();
+        await this.selectUnderPencil('Delete');
+    }
+
     public async confirmDeleteClickRedButton() {
         try {
-            await this.browser.untilIsVisible(this.DeletePopup_Delete_Button, 500);
-            await this.clickElement('DeletePopup_Delete_Button');
-            this.pause(1000);
+            //await this.browser.untilIsVisible(this.DeletePopup_Delete_Button, 500);
+            this.pause(500);
+            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
+            redDeleteButton.click();
+            // await this.browser.click(this.DeletePopup_Delete_Button);
+            // await this.clickElement('DeletePopup_Delete_Button');
+            this.pause(5000);
             await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
         } catch (error) {
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
             expect(error).to.be.null;
         }
+    }
+
+    public async deleteAllItems() {
+        await this.browser.untilIsVisible(By.xpath('//pep-list'), 3000);
+        try {
+            this.iterateOverList('openPencilChooseDelete');
+        } catch (error) {
+            console.error(error);
+            expect(error).to.be.null;
+        }
+    }
+
+    public async iterateOverList(methodName: string) {
+        let findElementError = '';
+        do {
+            try {
+                debugger;
+                if (this[methodName]) {
+                    await this.browser.click(this.FirstRadioButtonInList);
+                    await this[methodName].apply();
+                }
+            } catch (error) {
+                const m = (error as any).message;
+                console.info(`MESSAGE thrown in iterateOverList: ${m}`);
+                findElementError = m.includes('not found') ? m : 'other error occured';
+            }
+        } while (!findElementError);
     }
 }
 
@@ -191,8 +238,9 @@ export class ResourceEditors extends ResourceList {
 
     public async selectFromListByName(name: string) {
         try {
-            const selector: By = By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+            const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
             await this.browser.click(selector);
+            await this.browser.untilIsVisible(this.SelectedRadioButton);
         } catch (error) {
             console.info(`UNABLE TO SELECT: ${name}`);
             console.error(error);
@@ -208,34 +256,52 @@ export class ResourceEditors extends ResourceList {
     }
 
     public async deleteAllEditors() {
-        await this.browser.untilIsVisible(By.xpath('//pep-list'), 3000);
-        try {
-            debugger;
-            await this.browser.findElements(this.EditorInList).then((editors) => {
-                debugger;
-                editors.forEach(async (editor) => {
-                    editor.click();
-                    await (await this.browser.findElement(this.Pencil_Delete)).click();
-                    await (await this.browser.findElement(this.DeletePopup_Delete_Button)).click();
-                });
-            });
-            // let allEditors = await this.browser.findElements(this.EditorInList);
-            // debugger
-            // if (allEditors) {
-            //     debugger
-            //     allEditors.forEach(async (editor) => {
-            //         editor.click();
-            //         await this.browser.untilIsVisible(this.Pencil_Delete, 500);
-            //         await this.clickElement('Pencil_Delete');
-            //         await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
-            //         await this.browser.untilIsVisible(this.DeletePopup_Delete_Button, 500);
-            //         this.pause(1000);
-            //         await this.clickElement('DeletePopup_Delete_Button');
-            //     })
-            // }
-        } catch (error) {
-            console.error(error);
-            expect(error).to.be.null;
-        }
+        let numOfEditors;
+        do {
+            numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+            try {
+                this.browser.sleep(500);
+                await this.browser.click(this.FirstRadioButtonInList);
+                this.browser.sleep(500);
+                // await this.browser.untilIsVisible(this.SelectedRadioButton);
+                // this.browser.sleep(500);
+                await this.openPencilChooseDelete();
+                this.browser.sleep(500);
+                await this.confirmDeleteClickRedButton();
+                this.browser.sleep(500);
+                // const numberOfItemsAfterDeletion = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+                // expect(Number(numOfEditors)).to.equal(Number(numberOfItemsAfterDeletion) + 1);
+            } catch (error) {
+                const m: string = (error as any).message;
+                console.info(`MESSAGE thrown in deleteAllEditors: ${m}`);
+                break;
+            }
+        } while (Number(numOfEditors) > 0);
+        numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+        const arr = new Array(Number(numOfEditors)).fill(0);
+        console.info(`at deleteAllEditors, ${numOfEditors}, arr: ${arr}`);
+        expect(Number(numOfEditors)).to.equal(0);
     }
+
+    // public async deleteAllEditors() {
+    //     let numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+    //     let numberOfEditors = new Array(Number(numOfEditors)).fill(0);
+    //     numberOfEditors.forEach(async (element) => {
+    //         try {
+    //             this.browser.sleep(500);
+    //             await this.browser.click(this.FirstRadioButtonInList);
+    //             this.browser.sleep(500);
+    //             await this.openPencilChooseDelete();
+    //             this.browser.sleep(500);
+    //             await this.confirmDeleteClickRedButton();
+    //             this.browser.sleep(500);
+    //         } catch (error) {
+    //             const m: string = (error as any).message;
+    //             console.info(`MESSAGE thrown in deleteAllEditors: ${m}`);
+    //         }
+    //     });
+    //     numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+    //     console.info(`at deleteAllEditors, ${numOfEditors}`);
+    //     // expect(Number(numOfEditors)).to.equal(0);
+    // }
 }

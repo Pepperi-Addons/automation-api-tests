@@ -23,6 +23,8 @@ export async function ResourceListTests(email: string, password: string, varPass
     const test_generic_decsription = 'for RL automated testing';
     let test_name: string;
     let test_decsription: string;
+    let numOfElementsBeforeAdding: number;
+    let numOfElementsBeforeDeleting: number;
 
     // Selectors
     const ResourceViews_selector = 'settings/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/views_and_editors'; //id
@@ -97,18 +99,21 @@ export async function ResourceListTests(email: string, password: string, varPass
         });
 
         describe('Count Items in List', async () => {
-
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
             });
 
             it('Display Addon List', async () => {
-                let elementAsArray = await webAppList.getAddonListAsTable();
+                const elementAsArray = await webAppList.getAddonListAsTable();
                 console.info(`webAppList.getListElementsAsArray: `);
                 console.table(elementAsArray);
             });
-            
+
+            it('Display Num of Elements in List from Title', async () => {
+                const numOfElements = await webAppList.getNumOfElementsTitle();
+                console.info(`webAppList.getNumOfElementsTitle: ${numOfElements}`);
+            });
         });
 
         describe('Add Editor for accounts', async () => {
@@ -128,6 +133,10 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
             it('Wait untill Add Button on Editors page is visible', async () => {
                 await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
+            });
+            it('Get Number of Elements in List', async () => {
+                numOfElementsBeforeAdding = Number(await webAppList.getNumOfElementsTitle());
+                console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeAdding}`);
             });
             it('Click on Add Editor Button', async () => {
                 await resourceEditors.clickElement('AddEditor_Button');
@@ -176,6 +185,10 @@ export async function ResourceListTests(email: string, password: string, varPass
             it('Click Editors Tab (under Resource Views)', async () => {
                 await resourceList.clickTab('EditorsTab');
             });
+            it('Verify Editor Added', async () => {
+                const numOfElementsAfterAdding = Number(await webAppList.getNumOfElementsTitle());
+                expect(numOfElementsAfterAdding).to.equal(numOfElementsBeforeAdding + 1);
+            });
             // it('Verify that Editors List Content is loaded', async () => {
             //     await resourceEditors.validateEditorsListPageIsLoaded();
             // });
@@ -189,9 +202,16 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHomePage.collectEndTestData(this);
             });
 
+            it('Get Number of Elements in List', async () => {
+                numOfElementsBeforeDeleting = Number(await webAppList.getNumOfElementsTitle());
+                console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeDeleting}`);
+            });
             it('Select by name', async () => {
                 await resourceEditors.pause(3000);
+                await driver.untilIsVisible(resourceEditors.Label_Name);
+                await webAppList.searchInAddonList(test_name);
                 await resourceEditors.selectFromListByName(test_name);
+                // debugger
             });
             it('Click Pencil Button', async () => {
                 await resourceEditors.openPencilMenu();
@@ -208,6 +228,8 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
             it('Verify that Deleted', async () => {
                 await resourceList.clickTab('EditorsTab');
+                const numOfElementsAfterDeleting = Number(await webAppList.getNumOfElementsTitle());
+                expect(numOfElementsAfterDeleting).to.equal(numOfElementsBeforeDeleting - 1);
                 try {
                     await resourceEditors.selectFromListByName(test_name);
                 } catch (error) {
@@ -216,61 +238,65 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        // describe('Add Editor for items', async () => {
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Add Editor for items', async () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it("Test's settings", async () => {
-        //         resourceEditors.setResourceName('items');
-        //         test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
-        //         test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-        //     });
-        //     it('Go to Resource Views Editors tab', async () => {
-        //         await webAppSettingsSidePanel.selectSettingsByID('Pages');
-        //         await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_selector, 'Pages');
-        //         await resourceList.waitTillVisible(resourceList.PepTopArea, 15000);
-        //         await resourceList.clickTab('EditorsTab');
-        //         await resourceEditors.validateEditorsListPageIsLoaded();
-        //     })
-        //     it('Opening Add Form', async () => {
-        //         await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
-        //         await resourceEditors.clickElement('AddEditor_Button');
-        //         await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
-        //         await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
-        //     });
-        //     it('Filling Form', async () => {
-        //         await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
-        //         await resourceEditors.insertTextToInputElement(test_decsription, resourceEditors.AddEditorPopup_Description);
-        //         await resourceEditors.selectResource(resourceEditors.resourceName, resourceEditors.AddEditorPopupResourceDropdownSingleOption);
-        //         await resourceEditors.verifyResourceSelected();
-        //         await resourceEditors.clickElement('AddEditorPopup_Save');
-        //         resourceEditors.pause(5000);
-        //     });
-        //     it('Edit Page loaded', async () => {
-        //         await resourceEditors.verifyEditPageOpen(test_name);
-        //     });
-        // });
+            it("Test's settings", async () => {
+                resourceEditors.setResourceName('items');
+                test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
+                test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
+            });
+            it('Go to Resource Views Editors tab', async () => {
+                await webAppSettingsSidePanel.selectSettingsByID('Pages');
+                await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_selector, 'Pages');
+                await resourceList.waitTillVisible(resourceList.PepTopArea, 15000);
+                await resourceList.clickTab('EditorsTab');
+                await resourceEditors.validateEditorsListPageIsLoaded();
+            });
+            it('Opening Add Form', async () => {
+                await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
+                await resourceEditors.clickElement('AddEditor_Button');
+                await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
+                await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
+            });
+            it('Filling Form', async () => {
+                await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
+                await resourceEditors.insertTextToInputElement(
+                    test_decsription,
+                    resourceEditors.AddEditorPopup_Description,
+                );
+                await resourceEditors.selectResource(
+                    resourceEditors.resourceName,
+                    resourceEditors.AddEditorPopupResourceDropdownSingleOption,
+                );
+                await resourceEditors.verifyResourceSelected();
+                await resourceEditors.clickElement('AddEditorPopup_Save');
+                resourceEditors.pause(5000);
+            });
+            it('Edit Page loaded', async () => {
+                await resourceEditors.verifyEditPageOpen(test_name);
+            });
+        });
 
-        // describe('Go back to List then Editors tab', async () => {
+        describe('Go back to List then Editors tab', async () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
-
-        //     it('Go back to List', async () => {
-        //         await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
-        //     });
-        //     it('Click Editors Tab (under Resource Views)', async () => {
-        //         await resourceList.clickTab('EditorsTab');
-        //     });
-        //     // it('Verify that Editors List Content is loaded', async () => {
-        //     //     await resourceEditors.validateEditorsListPageIsLoaded();
-        //     // });
-
-        // });
+            it('Go back to List', async () => {
+                await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
+            });
+            it('Click Editors Tab (under Resource Views)', async () => {
+                await resourceList.clickTab('EditorsTab');
+            });
+            // it('Verify that Editors List Content is loaded', async () => {
+            //     await resourceEditors.validateEditorsListPageIsLoaded();
+            // });
+        });
 
         // describe('Delete Editor', async () => {
 
@@ -285,17 +311,22 @@ export async function ResourceListTests(email: string, password: string, varPass
 
         // });
 
-        // describe('Delete All Editors', async () => {
+        describe('Delete All Editors', async () => {
+            // this.retries(5);
 
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Delete All', async () => {
-        //         await resourceEditors.deleteAllEditors();
-        //     });
+            it('Delete All', async () => {
+                // debugger
+                await resourceEditors.deleteAllEditors();
+            });
 
-        // });
+            it('Wait', async () => {
+                driver.sleep(15000);
+            });
+        });
     });
 }
