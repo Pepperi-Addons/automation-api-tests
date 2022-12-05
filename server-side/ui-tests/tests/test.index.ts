@@ -31,6 +31,8 @@ import {
     LoginPerfTests,
     ScriptPickerTests,
     LoginPerfSqlitefTests,
+    ResourceListTests,
+    MockTest,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -261,6 +263,14 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('ResourceList')) {
+        await ResourceListTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('MockTest')) {
+        await MockTest(email, pass, varPass, client);
+    }
+
     if (tests.includes('Distributor')) {
         await DistributorTests(
             generalService,
@@ -414,7 +424,6 @@ const addon = process.env.npm_config_addon as string;
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
-        //1. realise which addon should run
         let JenkinsBuildResultsAllEnvs: string[][] = [[]];
         let addonUUID = '';
         let addonVersionProd = '';
@@ -423,8 +432,14 @@ const addon = process.env.npm_config_addon as string;
         let addonEntryUUIDProd = '';
         let addonEntryUUIDEu = '';
         let addonEntryUUIDSb = '';
+        let latestRunProd = '';
+        let latestRunEU = '';
+        let latestRunSB = '';
+        let jobPathEU = '';
+        let jobPathPROD = '';
+        let jobPathSB = '';
         switch (addonName) {
-            case 'ADAL':
+            case 'ADAL': //add another 'case' here when adding new addons to this mehcanisem
                 addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
@@ -467,6 +482,12 @@ const addon = process.env.npm_config_addon as string;
                     throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL';
+                jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL';
+                jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
                         'JenkinsBuildUserCred',
@@ -484,39 +505,17 @@ const addon = process.env.npm_config_addon as string;
                         'Test - A1 Stage - ADAL',
                     ),
                 ]);
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(
+                    jobPathPROD,
+                    'JenkinsBuildUserCred',
+                );
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(jobPathEU, 'JenkinsBuildUserCred');
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(jobPathSB, 'JenkinsBuildUserCred');
                 break;
         }
-        // const bodyToSend = {
-        //     Name: `${addonName} Approvment Tests Status`,
-        //     Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
-        //     Status: jobResponse === 'FAILURE' ? 'ERROR' : 'SUCCESS',
-        //     Message: 'evgeny :)',
-        //     NotificationWebhook:
-        //         'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-        //     SendNotification: 'Always',
-        // };
-        // const addonsSK = service.getSecret()[1];
-        // const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
-        // const monitoringResponse = await service.fetchStatus(
-        //     'https://papi.pepperi.com/v1.0/system_health/notifications',
-        //     {
-        //         method: 'POST',
-        //         headers: {
-        //             'X-Pepperi-SecretKey': addonsSK,
-        //             'X-Pepperi-OwnerID': testingAddonUUID,
-        //         },
-        //         body: JSON.stringify(bodyToSend),
-        //     },
-        // );
-        // if (monitoringResponse.Ok !== true) {
-        //     throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
-        // }
-        // if (monitoringResponse.Status !== 200) {
-        //     throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-        // }
-        // if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //     throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
-        // }
+        //these should work for every addon
+        const passingEnvs: string[] = [];
+        const failingEnvs: string[] = [];
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
             if (resultAndEnv[0] === 'FAILURE') {
@@ -556,6 +555,7 @@ const addon = process.env.npm_config_addon as string;
                         console.log(
                             `${addonName}, version: ${addonVersionEU}  on EU became unavailable: Approvment tests didnt pass`,
                         );
+                        failingEnvs.push(resultAndEnv[1]);
                         break;
                     case 'Production':
                         const bodyToSendVARProd = {
@@ -592,6 +592,7 @@ const addon = process.env.npm_config_addon as string;
                         console.log(
                             `${addonName}, version: ${addonVersionProd}  on Production became unavailable: Approvment tests didnt pass`,
                         );
+                        failingEnvs.push(resultAndEnv[1]);
                         break;
                     case 'Stage':
                         const bodyToSendVARSb = {
@@ -628,17 +629,64 @@ const addon = process.env.npm_config_addon as string;
                         console.log(
                             `${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`,
                         );
+                        failingEnvs.push(resultAndEnv[1]);
                         break;
                 }
-                //get the env and send the HTTP
+            }
+        }
+        if (!passingEnvs.includes('EU')) {
+            failingEnvs.push('EU');
+        }
+        if (!passingEnvs.includes('Stage')) {
+            failingEnvs.push('Stage');
+        }
+        if (!passingEnvs.includes('Production')) {
+            failingEnvs.push('Production');
+        }
+
+        if (failingEnvs.length > 0) {
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd}:  |Passed On: ${
+                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+            } , Failed On: ${failingEnvs.join(', ')}`;
+            const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+            const bodyToSend = {
+                Name: `${addonName} Approvment Tests Status`,
+                Description: message,
+                Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+                Message: message2,
+                UserWebhook: handleTeamsURL(addonName),
+            };
+            const monitoringResponse = await service.fetchStatus(
+                'https://papi.pepperi.com/v1.0/system_health/notifications',
+                {
+                    method: 'POST',
+                    headers: {
+                        'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+                        'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                    },
+                    body: JSON.stringify(bodyToSend),
+                },
+            );
+            if (monitoringResponse.Ok !== true) {
+                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+            }
+            if (monitoringResponse.Status !== 200) {
+                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+            }
+            if (Object.keys(monitoringResponse.Error).length !== 0) {
+                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
             }
         }
     }
-
-    //
-
     run();
 })();
+
+function handleTeamsURL(addonName) {
+    switch (addonName) {
+        case 'ADAL':
+            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+    }
+}
 
 export async function newUserDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(
