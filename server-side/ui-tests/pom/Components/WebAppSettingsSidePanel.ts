@@ -116,8 +116,4 @@ export class WebAppSettingsSidePanel extends Component {
         await this.expandSettingsCategory(categoryId);
         return await this.clickSettingsSubCategory(subCategoryId, categoryId);
     }
-
-    public async waitTillVisible(element: By, waitUntill: number) {
-        return await this.browser.untilIsVisible(element, waitUntill);
-    }
 }

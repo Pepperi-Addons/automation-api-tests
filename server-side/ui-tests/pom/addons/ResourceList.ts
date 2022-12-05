@@ -5,16 +5,16 @@ import { AddonPage } from './base/AddonPage';
 export class ResourceList extends AddonPage {
     // *general selectors for Resource Views*
 
-    public PepTopArea: By = By.xpath(
-        '/html/body/app-root/div[2]/main/div/pep-remote-loader-element/settings-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/app-settings/app-views-and-editors/pep-page-layout/div[4]/div[1]/h2',
-    );
-    public TabsContainer: By = By.xpath(
-        '/html/body/app-root/div[2]/main/div/pep-remote-loader-element/settings-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/app-settings/app-views-and-editors/pep-page-layout/div[4]/div[2]/mat-tab-group/mat-tab-header/div"]',
-    );
-    public ViewsTab: By = By.id('mat-tab-label-0-0');
-    public EditorsTab: By = By.xpath('//div[contains(text(), "Editors")]/ancestor::div[@role="tab"]');
+    public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]/h2');
+    public TabsContainer: By = By.xpath('//div[contains(@class, "mat-tab-labels")]');
+    // Tabs
+    public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views'); //By.xpath('//div[text()="Views"]/parent::div[@role="tab"]');
+    public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors'); //By.xpath('//div[text()="Editors"]/parent::div[@role="tab"]');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
+    public AddonSettingsContent_ListTitle: By = By.xpath('//pep-top-bar //span[@title="Views"]');
+    public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
+    public List_NoDataFound: By = By.xpath('//pep-list/div/p[contains(@class, "no-data")]');
     public Label_Name: By = this.getSelectorOfLabelUnderTableHeader('Name'); //By.xpath('//label[@id="Name"]');
     public Label_Description: By = this.getSelectorOfLabelUnderTableHeader('Description'); //By.xpath('//label[@id="Description"]');
     public Label_Resource: By = this.getSelectorOfLabelUnderTableHeader('Resource'); //By.xpath('//label[@id="Resource"]');
@@ -46,6 +46,10 @@ export class ResourceList extends AddonPage {
     public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
     public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
     public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
+
+    private getSelectorOfResourceListSettingsTab(title: string) {
+        return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"]`);
+    }
 
     private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
         return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
@@ -244,7 +248,7 @@ export class ResourceEditors extends ResourceList {
         } catch (error) {
             console.info(`UNABLE TO SELECT: ${name}`);
             console.error(error);
-            expect(error).to.be.null;
+            expect(`UNABLE TO SELECT: ${name}`).to.be.undefined;
         }
     }
 
@@ -256,25 +260,20 @@ export class ResourceEditors extends ResourceList {
     }
 
     public async deleteAllEditors() {
-        let numOfEditors;
+        let numOfEditors: string;
         do {
             numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
             try {
                 this.browser.sleep(500);
                 await this.browser.click(this.FirstRadioButtonInList);
                 this.browser.sleep(500);
-                // await this.browser.untilIsVisible(this.SelectedRadioButton);
-                // this.browser.sleep(500);
                 await this.openPencilChooseDelete();
                 this.browser.sleep(500);
                 await this.confirmDeleteClickRedButton();
                 this.browser.sleep(500);
-                // const numberOfItemsAfterDeletion = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
-                // expect(Number(numOfEditors)).to.equal(Number(numberOfItemsAfterDeletion) + 1);
             } catch (error) {
-                const m: string = (error as any).message;
-                console.info(`MESSAGE thrown in deleteAllEditors: ${m}`);
-                break;
+                const errorMessage: string = (error as any).message;
+                console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
             }
         } while (Number(numOfEditors) > 0);
         numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
