@@ -358,8 +358,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             if (returnedObject.Body[param] == updateValues[param]) {
             } else if (param == 'NextRunTime' || param == 'CreationDateTime' || param == 'ModificationDateTime') {
                 returnedObject.Body[param].includes(new Date().toISOString().split('T')[0]);
-            // } else if (param == 'FailureAlertEmailTo') {
-            //     returnedObject.Body[param][0] == 'oleg.y@pepperi.com';
+                // } else if (param == 'FailureAlertEmailTo') {
+                //     returnedObject.Body[param][0] == 'oleg.y@pepperi.com';
             } else if (param == 'Owner') {
                 //added owner validation 10/2/20
                 returnedObject.Body[param] == null;

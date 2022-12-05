@@ -9,10 +9,10 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
 
     const whaitOwnerUUID = '2c199913-dba2-4533-ad78-747b6553acf8';
     const whaitSecretKey = '55cd2b56-2def-4e4e-b461-a56eb3e31689';
-    const adalOwnerId = '00000000-0000-0000-0000-00000000ada1';
+    //const adalOwnerId = '00000000-0000-0000-0000-00000000ada1';
 
     const logcash: any = {};
-    const counter = 0;
+    //const counter = 0;
     //const keyCounter = 0;
     //const DataField = [];
     // const addonJobBody: any = {};
