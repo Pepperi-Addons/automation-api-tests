@@ -383,7 +383,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Test-positive' + newUuid(),
+                    //Name: 'Test-positive' + newUuid(),
+                    Name: 'Test-positive' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
                     UserDefined: true,
                     Fields: {
@@ -483,7 +484,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Test-positive2' + newUuid(),
+                    //Name: 'Test-positive2' + newUuid(),    
+                    Name: 'Test-positive2' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
                     UserDefined: true,
                     Fields: {
@@ -520,7 +522,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'ExtendingSchema' + newUuid(),
+                   // Name: 'ExtendingSchema' + newUuid(),  
+                   Name: 'ExtendingSchema' + generalService.generateRandomString(16),
                     Type: 'data',
                     UserDefined: true,
                     Fields: {
@@ -563,7 +566,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Test-negative' + newUuid(),
+                    //Name: 'Test-negative' + newUuid(),  
+                    Name: 'Test-negative' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
                     //UserDefined: true,
                     Fields: {
@@ -999,7 +1003,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Conteined-positive' + newUuid(),
+                    //Name: 'Conteined-positive' + newUuid(), 
+                    Name: 'Conteined-positive' + generalService.generateRandomString(16),
                     Type: 'contained',
                     UserDefined: true,
                     Fields: {
@@ -1034,7 +1039,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Conteined-positive' + newUuid(),
+                    //Name: 'Conteined-positive' + newUuid(), 
+                    Name: 'Conteined-positive' + generalService.generateRandomString(16),
                     Type: 'contained',
                     UserDefined: true,
                     Fields: {
@@ -1148,7 +1154,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'Hide_unhide_test' + newUuid(),
+                    //Name: 'Hide_unhide_test' + newUuid(), 
+                    Name: 'Hide_unhide_test' + generalService.generateRandomString(16),
                     Type: 'data',
                     //UserDefined: true,
                     Fields: {
