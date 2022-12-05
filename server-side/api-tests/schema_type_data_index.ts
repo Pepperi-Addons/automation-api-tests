@@ -150,8 +150,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             });
         });
     });
-    logcash.getDataADALbyName2Status = false;
-    logcash.getDataADALbyName2Error;
+    // logcash.getDataADALbyName2Status = false;
+    // logcash.getDataADALbyName2Error;
     //#endregion Mocha
 
     //get secret key

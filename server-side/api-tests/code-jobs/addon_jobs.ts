@@ -38,14 +38,14 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         CronExpression: '',
         NextRunTime: null,
         IsScheduled: false,
-        FailureAlertEmailTo: [],
-        FailureAlertEmailSubject: '',
-        ExecutedCode: '',
-        DraftCode: '',
+        // FailureAlertEmailTo: [],
+        // FailureAlertEmailSubject: '',
+        // ExecutedCode: '',
+        // DraftCode: '',
         CodeJobIsHidden: false,
         CreationDateTime: '',
         ModificationDateTime: '',
-        ExecutionMemoryLevel: 4,
+        // ExecutionMemoryLevel: 4,
         NumberOfTries: 1,
     };
     let updateValues: any = {};
@@ -264,14 +264,14 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             logcash.statusb = true;
             logcash.errorMessageb = '';
             defaultValues.CodeJobName = jobNameValue;
-
             for (const param in returnedObject.Body) {
                 if (returnedObject.Body[param] == defaultValues[param]) {
                 } else if (param == 'NextRunTime' || param == 'CreationDateTime' || param == 'ModificationDateTime') {
                     returnedObject.Body[param].includes(new Date().toISOString().split('T')[0]);
-                } else if (param == 'FailureAlertEmailTo') {
-                    returnedObject.Body[param][0] == '';
                 }
+                // } else if (param == 'FailureAlertEmailTo') {
+                //     returnedObject.Body[param][0] == '';
+                // }
                 //added new param verification 18-05-20 two else if functions
                 else if (param == 'Type') {
                     returnedObject.Body[param] == 'AddonJob'; //  'UserCodeJob'
@@ -311,9 +311,9 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             CronExpression: '0 9 16 12 *',
             NextRunTime: null,
             IsScheduled: false,
-            FailureAlertEmailTo: ['oleg.y@pepperi.com'],
-            FailureAlertEmailSubject: 'test updating',
-            ExecutedCode: '',
+            // FailureAlertEmailTo: ['oleg.y@pepperi.com'],
+            // FailureAlertEmailSubject: 'test updating',
+            // ExecutedCode: '',
             //Type: 'AddonJob',
             CodeJobIsHidden: false,
             CreationDateTime: '',
@@ -358,8 +358,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
             if (returnedObject.Body[param] == updateValues[param]) {
             } else if (param == 'NextRunTime' || param == 'CreationDateTime' || param == 'ModificationDateTime') {
                 returnedObject.Body[param].includes(new Date().toISOString().split('T')[0]);
-            } else if (param == 'FailureAlertEmailTo') {
-                returnedObject.Body[param][0] == 'oleg.y@pepperi.com';
+                // } else if (param == 'FailureAlertEmailTo') {
+                //     returnedObject.Body[param][0] == 'oleg.y@pepperi.com';
             } else if (param == 'Owner') {
                 //added owner validation 10/2/20
                 returnedObject.Body[param] == null;

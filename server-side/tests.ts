@@ -28,6 +28,7 @@ import {
     DBSchemaTests,
     DBSchemaTestsPart2,
     SchemaTypeDataIndexedTests,
+    DocDBIndexedAdal,
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
@@ -448,6 +449,19 @@ export async function schema_type_data_index(client: Client, request: Request, t
     const testResult = await Promise.all([
         await test_data(client, testerFunctions),
         SchemaTypeDataIndexedTests(service, request, testerFunctions),
+    ]).then(() => testerFunctions.run());
+    service.PrintMemoryUseToLog('End', testName);
+    return testResult;
+}
+
+export async function doc_db_indexed_adal(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Doc_DB_Indexed_ADAL';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const testResult = await Promise.all([
+        await test_data(client, testerFunctions),
+        DocDBIndexedAdal(service, request, testerFunctions),
     ]).then(() => testerFunctions.run());
     service.PrintMemoryUseToLog('End', testName);
     return testResult;
