@@ -31,6 +31,8 @@ import {
     LoginPerfTests,
     ScriptPickerTests,
     LoginPerfSqlitefTests,
+    ResourceListTests,
+    MockTest,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -259,6 +261,14 @@ const addon = process.env.npm_config_addon as string;
     if (tests.includes('PageBuilder')) {
         await PageBuilderTests(email, pass, varPass, generalService);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('ResourceList')) {
+        await ResourceListTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('MockTest')) {
+        await MockTest(email, pass, varPass, client);
     }
 
     if (tests.includes('Distributor')) {
