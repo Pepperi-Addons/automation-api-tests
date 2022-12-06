@@ -487,6 +487,7 @@ const addon = process.env.npm_config_addon as string;
                     throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL';
                 jobPathEU =
@@ -495,27 +496,24 @@ const addon = process.env.npm_config_addon as string;
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
+                        kmsSecret,
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
                         'Test - A1 Production - ADAL',
                     ),
                     service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
+                        kmsSecret,
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
                         'Test - A1 EU - ADAL',
                     ),
                     service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
+                        kmsSecret,
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
                         'Test - A1 Stage - ADAL',
                     ),
                 ]);
-                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(
-                    jobPathPROD,
-                    'JenkinsBuildUserCred',
-                );
-                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(jobPathEU, 'JenkinsBuildUserCred');
-                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(jobPathSB, 'JenkinsBuildUserCred');
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
             case 'DIMX': {
@@ -561,6 +559,7 @@ const addon = process.env.npm_config_addon as string;
                     throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Production%20-%20DIMX';
                 jobPathEU =
@@ -569,27 +568,24 @@ const addon = process.env.npm_config_addon as string;
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Stage%20-%20DIMX';
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
+                        kmsSecret,
                         `${jobPathPROD}/build?token=DIMXApprovmentTests`,
                         'Test - B1 Production - DIMX',
                     ),
                     service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
+                        kmsSecret,
                         `${jobPathEU}/build?token=DIMXApprovmentTests`,
                         'Test - A1 EU - DIMX',
                     ),
                     service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
+                        kmsSecret,
                         `${jobPathSB}/build?token=DIMXApprovmentTests`,
                         'Test - B1 Stage - DIMX',
                     ),
                 ]);
-                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(
-                    jobPathPROD,
-                    'JenkinsBuildUserCred',
-                );
-                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(jobPathEU, 'JenkinsBuildUserCred');
-                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(jobPathSB, 'JenkinsBuildUserCred');
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
         }
@@ -759,7 +755,6 @@ const addon = process.env.npm_config_addon as string;
                 throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
             }
         } else {
-            debugger;
             const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
                 passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
             } ||| Failed On: ${failingEnvs.join(', ')}`;
