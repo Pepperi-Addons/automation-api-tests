@@ -38,7 +38,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
-import {} from './script_picker.test';
+import { } from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
@@ -442,82 +442,82 @@ const addon = process.env.npm_config_addon as string;
         let jobPathSB = '';
         // 1. parse which addon should run and on which version, run the test on Jenkins
         switch (
-            addonName //add another 'case' here when adding new addons to this mehcanisem
+        addonName //add another 'case' here when adding new addons to this mehcanisem
         ) {
-            case 'ADAL': {
-                addonUUID = '00000000-0000-0000-0000-00000000ada1';
-                const responseProd = await service.fetchStatus(
-                    `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Basic ${base64VARCredentialsProd}`,
-                        },
-                    },
-                );
-                addonVersionProd = responseProd.Body[0].Version;
-                addonEntryUUIDProd = responseProd.Body[0].UUID;
-                const responseEu = await service.fetchStatus(
-                    `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Basic ${base64VARCredentialsEU}`,
-                        },
-                    },
-                );
-                addonVersionEU = responseEu.Body[0].Version;
-                addonEntryUUIDEu = responseEu.Body[0].UUID;
-                const responseSb = await service.fetchStatus(
-                    `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Basic ${base64VARCredentialsSB}`,
-                        },
-                    },
-                );
-                addonVersionSb = responseSb.Body[0].Version;
-                addonEntryUUIDSb = responseSb.Body[0].UUID;
-                if (
-                    addonVersionSb !== addonVersionEU ||
-                    addonVersionProd !== addonVersionEU ||
-                    addonVersionProd !== addonVersionSb
-                ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
-                }
-                console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
-                jobPathPROD =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL';
-                jobPathEU =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL';
-                jobPathSB =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
-                JenkinsBuildResultsAllEnvs = await Promise.all([
-                    service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
-                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
-                        'Test - A1 Production - ADAL',
-                    ),
-                    service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
-                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
-                        'Test - A1 EU - ADAL',
-                    ),
-                    service.runJenkinsJobRemotely(
-                        'JenkinsBuildUserCred',
-                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
-                        'Test - A1 Stage - ADAL',
-                    ),
-                ]);
-                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(
-                    jobPathPROD,
-                    'JenkinsBuildUserCred',
-                );
-                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(jobPathEU, 'JenkinsBuildUserCred');
-                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(jobPathSB, 'JenkinsBuildUserCred');
-                break;
-            }
+            // case 'ADAL': {
+            //     addonUUID = '00000000-0000-0000-0000-00000000ada1';
+            //     const responseProd = await service.fetchStatus(
+            //         `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            //         {
+            //             method: 'GET',
+            //             headers: {
+            //                 Authorization: `Basic ${base64VARCredentialsProd}`,
+            //             },
+            //         },
+            //     );
+            //     addonVersionProd = responseProd.Body[0].Version;
+            //     addonEntryUUIDProd = responseProd.Body[0].UUID;
+            //     const responseEu = await service.fetchStatus(
+            //         `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            //         {
+            //             method: 'GET',
+            //             headers: {
+            //                 Authorization: `Basic ${base64VARCredentialsEU}`,
+            //             },
+            //         },
+            //     );
+            //     addonVersionEU = responseEu.Body[0].Version;
+            //     addonEntryUUIDEu = responseEu.Body[0].UUID;
+            //     const responseSb = await service.fetchStatus(
+            //         `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            //         {
+            //             method: 'GET',
+            //             headers: {
+            //                 Authorization: `Basic ${base64VARCredentialsSB}`,
+            //             },
+            //         },
+            //     );
+            //     addonVersionSb = responseSb.Body[0].Version;
+            //     addonEntryUUIDSb = responseSb.Body[0].UUID;
+            //     if (
+            //         addonVersionSb !== addonVersionEU ||
+            //         addonVersionProd !== addonVersionEU ||
+            //         addonVersionProd !== addonVersionSb
+            //     ) {
+            //         throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+            //     }
+            //     console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+            //     jobPathPROD =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL';
+            //     jobPathEU =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL';
+            //     jobPathSB =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
+            //     JenkinsBuildResultsAllEnvs = await Promise.all([
+            //         service.runJenkinsJobRemotely(
+            //             'JenkinsBuildUserCred',
+            //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
+            //             'Test - A1 Production - ADAL',
+            //         ),
+            //         service.runJenkinsJobRemotely(
+            //             'JenkinsBuildUserCred',
+            //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
+            //             'Test - A1 EU - ADAL',
+            //         ),
+            //         service.runJenkinsJobRemotely(
+            //             'JenkinsBuildUserCred',
+            //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
+            //             'Test - A1 Stage - ADAL',
+            //         ),
+            //     ]);
+            //     latestRunProd = await generalService.getLatestJenkinsJobExecutionId(
+            //         jobPathPROD,
+            //         'JenkinsBuildUserCred',
+            //     );
+            //     latestRunEU = await generalService.getLatestJenkinsJobExecutionId(jobPathEU, 'JenkinsBuildUserCred');
+            //     latestRunSB = await generalService.getLatestJenkinsJobExecutionId(jobPathSB, 'JenkinsBuildUserCred');
+            //     break;
+            // }
             case 'DIMX': {
                 addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
                 const responseProd = await service.fetchStatus(
@@ -569,27 +569,30 @@ const addon = process.env.npm_config_addon as string;
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Stage%20-%20DIMX';
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
+                        email, pass,
                         'JenkinsBuildUserCred',
                         `${jobPathPROD}/build?token=DIMXApprovmentTests`,
                         'Test - B1 Production - DIMX',
                     ),
                     service.runJenkinsJobRemotely(
+                        email, pass,
                         'JenkinsBuildUserCred',
                         `${jobPathEU}/build?token=DIMXApprovmentTests`,
                         'Test - A1 EU - DIMX',
                     ),
                     service.runJenkinsJobRemotely(
+                        email, pass,
                         'JenkinsBuildUserCred',
                         `${jobPathSB}/build?token=DIMXApprovmentTests`,
                         'Test - B1 Stage - DIMX',
                     ),
                 ]);
-                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(email, pass,
                     jobPathPROD,
                     'JenkinsBuildUserCred',
                 );
-                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(jobPathEU, 'JenkinsBuildUserCred');
-                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(jobPathSB, 'JenkinsBuildUserCred');
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(email, pass,jobPathEU, 'JenkinsBuildUserCred');
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(email, pass,jobPathSB, 'JenkinsBuildUserCred');
                 break;
             }
         }
@@ -727,9 +730,8 @@ const addon = process.env.npm_config_addon as string;
 
         //3. send to Teams
         if (failingEnvs.length > 0) {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+                } ||| Failed On: ${failingEnvs.join(', ')}`;
             const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
             const bodyToSend = {
                 Name: `${addonName} Approvment Tests Status`,
@@ -760,9 +762,8 @@ const addon = process.env.npm_config_addon as string;
             }
         } else {
             debugger;
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+                } ||| Failed On: ${failingEnvs.join(', ')}`;
             const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
             const bodyToSend = {
                 Name: `${addonName} Approvment Tests Status`,
@@ -917,8 +918,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
