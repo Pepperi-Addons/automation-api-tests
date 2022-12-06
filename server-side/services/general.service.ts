@@ -356,15 +356,8 @@ export default class GeneralService {
         return kmsData.Body.Value;
     }
 
-    async runJenkinsJobRemotely(
-        email,
-        pass,
-        kmsKeyToFetch: string,
-        jobPath: string,
-        jobName: string,
-    ): Promise<string[]> {
-        const kmsSecret = await this.getSecretfromKMS(email, pass, kmsKeyToFetch);
-        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+    async runJenkinsJobRemotely(buildUserCredentials: string, jobPath: string, jobName: string): Promise<string[]> {
+        const base64Credentials = Buffer.from(buildUserCredentials).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
         // const jobNameAsUrlSafe = encodeURI(jobName);
@@ -485,9 +478,8 @@ export default class GeneralService {
         return jenkinsJobResult;
     }
 
-    async getLatestJenkinsJobExecutionId(email, pass, jobPath: string, kmsKeyToFetch: string) {
-        const kmsSecret = await this.getSecretfromKMS(email, pass, kmsKeyToFetch);
-        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+    async getLatestJenkinsJobExecutionId(buildUserCredentials, jobPath: string) {
+        const base64Credentials = Buffer.from(buildUserCredentials).toString('base64');
         const jenkinsJobResponsePolling = await this.fetchStatus(
             `https://admin-box.pepperi.com/job/${jobPath}/lastBuild/api/json`,
             {
