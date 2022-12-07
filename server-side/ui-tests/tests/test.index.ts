@@ -38,7 +38,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
-import {} from './script_picker.test';
+import { } from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
@@ -420,7 +420,7 @@ const addon = process.env.npm_config_addon as string;
             );
         }
         const service = new GeneralService(client);
-        const addonName = addon;
+        const addonName = addon.toUpperCase();
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
@@ -441,9 +441,8 @@ const addon = process.env.npm_config_addon as string;
         let jobPathPROD = '';
         let jobPathSB = '';
         // 1. parse which addon should run and on which version, run the test on Jenkins
-        switch (
-            addonName.toUpperCase() //add another 'case' here when adding new addons to this mehcanisem
-        ) {
+        switch (addonName) {
+            //add another 'case' here when adding new addons to this mehcanisem
             case 'ADAL': {
                 addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 const responseProd = await service.fetchStatus(
@@ -714,7 +713,7 @@ const addon = process.env.npm_config_addon as string;
         if (!failingEnvs.includes('EU')) {
             passingEnvs.push('EU');
         }
-        if (!failingEnvs.includes('Stage')) {
+        if (!failingEnvs.includes('Stage') || failingEnvs.includes('Staging')) {
             passingEnvs.push('Stage');
         }
         if (!failingEnvs.includes('Production')) {
@@ -723,9 +722,8 @@ const addon = process.env.npm_config_addon as string;
 
         //3. send to Teams
         if (failingEnvs.length > 0) {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+                } ||| Failed On: ${failingEnvs.join(', ')}`;
             const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
             const bodyToSend = {
                 Name: `${addonName} Approvment Tests Status`,
@@ -755,9 +753,8 @@ const addon = process.env.npm_config_addon as string;
                 throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
             }
         } else {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+                } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
             const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
             const bodyToSend = {
                 Name: `${addonName} Approvment Tests Status`,
@@ -912,8 +909,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
