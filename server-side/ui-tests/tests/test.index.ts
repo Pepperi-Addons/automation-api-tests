@@ -442,7 +442,7 @@ const addon = process.env.npm_config_addon as string;
         let jobPathSB = '';
         // 1. parse which addon should run and on which version, run the test on Jenkins
         switch (
-            addonName //add another 'case' here when adding new addons to this mehcanisem
+            addonName.toUpperCase() //add another 'case' here when adding new addons to this mehcanisem
         ) {
             case 'ADAL': {
                 addonUUID = '00000000-0000-0000-0000-00000000ada1';
