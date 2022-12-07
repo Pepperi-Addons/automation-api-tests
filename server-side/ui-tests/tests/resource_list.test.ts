@@ -32,7 +32,7 @@ export async function ResourceListTests(email: string, password: string, varPass
     const test_generic_decsription = 'for RL automated testing';
     let test_name: string;
     let test_decsription: string;
-    let resource: string;
+    let resource_name: string;
     let numOfElementsBeforeAdding: number;
     let numOfElementsBeforeDeleting: number;
 
@@ -419,18 +419,18 @@ export async function ResourceListTests(email: string, password: string, varPass
         });
 
         describe('Flow', async () => {
-            it("Set Resource to 'items'", async () => {
-                resource = 'items';
+            it("Set Resource to 'accounts'", async () => {
+                resource_name = 'accounts';
             });
 
-            describe(`Add Editor for Resource: ${resource}`, async () => {
+            describe(`Add Editor`, async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
                 it("Test's settings", async () => {
-                    resourceEditors.setResourceName(resource);
+                    resourceEditors.setResourceName(resource_name);
                     test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
                     test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
                 });
@@ -442,13 +442,13 @@ export async function ResourceListTests(email: string, password: string, varPass
                 it('Clear Editors List', async () => {
                     await resourceEditors.deleteAll();
                 });
-                it('Open Add Form', async () => {
+                it('Open, Fill and Submmit Add Form', async () => {
+                    // Open Add Form
                     await resourceEditors.waitTillVisible(resourceEditors.Add_Button, 5000);
                     await resourceEditors.clickElement('Add_Button');
                     await resourceEditors.waitTillVisible(resourceEditors.AddPopup_Title, 15000);
                     await resourceEditors.waitTillVisible(resourceEditors.AddPopup_Name, 5000);
-                });
-                it('Filling and Submitting Form', async () => {
+                    // Filling and Submitting Form
                     await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddPopup_Name);
                     await resourceEditors.insertTextToInputElement(
                         test_decsription,
@@ -460,29 +460,32 @@ export async function ResourceListTests(email: string, password: string, varPass
                     );
                     await resourceEditors.verifyResourceSelected();
                     await resourceEditors.clickElement('AddPopup_Save');
-                    resourceEditors.pause(5000);
                 });
                 it('Edit Page loaded', async () => {
                     await resourceEditors.verifyEditorEditPageOpen(test_name);
                     resourceEditors.setEditorName(test_name);
+                });
+            });
+            
+            describe('Configure Editor', async () => {
+                it("Edit - customize Editor", async () => {
+                    await resourceEditors.clickElement('Form_Tab');
+                    await resourceEditors.waitTillVisible(resourceEditors.EditPage_ConfigProfileCard_Rep, 15000);
+                    await resourceEditors.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
+                    resourceEditors.pause(7000);
+                    await resourceEditors.clickElement('EditPage_ProfileEdit_BackButton');
                     await resourceEditors.clickElement('EditPage_BackToList_Button');
                 });
             });
 
-            describe('Configure Editor', async () => {
-                it("Edit - customize Editor", async () => {
-
-                });
-            });
-
-            describe(`Add View for Resource: ${resource}`, async () => {
+            describe(`Add View`, async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
                 it("Test's settings", async () => {
-                    resourceViews.setResourceName(resource);
+                    resourceViews.setResourceName(resource_name);
                     test_name = `RL_Views_${resourceViews.resourceName}_Test_${random_name}`;
                     test_decsription = `View ${resourceViews.resourceName} ${test_generic_decsription}`;
                 });
@@ -493,13 +496,13 @@ export async function ResourceListTests(email: string, password: string, varPass
                 it('Clear Views List', async () => {
                     await resourceViews.deleteAll();
                 });
-                it('Open Add Form', async () => {
+                it('Open, Fill and Submmit Add Form', async () => {
+                    // Open Add Form
                     await resourceViews.waitTillVisible(resourceViews.Add_Button, 5000);
                     await resourceViews.clickElement('Add_Button');
                     await resourceViews.waitTillVisible(resourceViews.AddPopup_Title, 15000);
                     await resourceViews.waitTillVisible(resourceViews.AddPopup_Name, 5000);
-                });
-                it('Filling and Submitting Form', async () => {
+                    // Filling and Submitting Form
                     await resourceViews.insertTextToInputElement(test_name, resourceViews.AddPopup_Name);
                     await resourceViews.insertTextToInputElement(
                         test_decsription,
@@ -511,9 +514,8 @@ export async function ResourceListTests(email: string, password: string, varPass
                     );
                     await resourceViews.verifyResourceSelected();
                     await resourceViews.clickElement('AddPopup_Save');
-                    resourceViews.pause(5000);
                 });
-                it('Edit Page loaded', async () => {
+                it('Verify that Edit Page has loaded', async () => {
                     await resourceViews.verifyViewEditPageOpen(test_name);
                     resourceViews.setViewName(test_name);
                 });
@@ -542,7 +544,7 @@ async function nevigateToResourceListSettings(browser: Browser, header: WebAppHe
         await header.openSettings();
         await settingsSidePanel.selectSettingsByID('Pages');
         await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
-        await resourceList.waitTillVisible(resourceList.PepTopArea_title, 15000);
+        await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
     } catch (error) {
         console.error(error);
     }

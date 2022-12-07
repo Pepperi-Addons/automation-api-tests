@@ -285,7 +285,7 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${elem} - is not clicked - make sure you've provided a string and not By`);
             console.error(error);
-            expect(error).to.be.null;
+            expect(elem).to.contain('The Element Can NOT Be Found!');
         }
     }
 
@@ -296,7 +296,7 @@ export class AddonPage extends Page {
                 const isElementFound = await this.browser.findElement(this[elem]);
                 console.info(`isElementFound: ${isElementFound}`);
             } catch (error) {
-                expect(error).contains('The element is not visible');
+                expect(elem).contains('The element is not visible');
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);

@@ -11,6 +11,8 @@ export class ResourceList extends AddonPage {
     // Tabs
     public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views'); //By.xpath('//div[text()="Views"]/parent::div[@role="tab"]');
     public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors'); //By.xpath('//div[text()="Editors"]/parent::div[@role="tab"]');
+    public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General'); //By.xpath('//div[text()="General"]/parent::div[@role="tab"]');
+    public Form_Tab: By = this.getSelectorOfResourceListSettingsTab('Form'); //By.xpath('//div[contains(@class,"mat-tab-labels")] //div[text()="Form"]/parent::div[@role="tab"]');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
     public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
@@ -55,9 +57,17 @@ export class ResourceList extends AddonPage {
     public Update_Popup_PepDialog: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog');
     public Update_Popup_MessageDiv: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog/div[2]/div');
     public Update_Popup_Close_Button: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button');
+    // Edit Tabs Configuration
+    public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep'); //By.xpath('//span[contains(text(),"Rep")]/ancestor::pep-profile-data-views-card');
+    public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
+    public EditPage_ProfileCard_Menu: By = By.xpath('//button[@data-qa="Add profile"]');
+    public EditPage_ConfigProfileCard_EditButton_Rep: By = this.getSelectorOfProfileCardEditButtonByName('Rep');
+    // Edit Page Profile Edit
+    public EditPage_ProfileEdit_BackButton: By = By.xpath('//button[@data-qa="Back"]');
+    public EditPage_ProfileEdit_SaveButton: By = By.xpath('//button[@data-qa="Save"]');
 
-    private getSelectorOfResourceListSettingsTab(title: string) {
-        return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"]`);
+    public getSelectorOfResourceListSettingsTab(title: string) {
+        return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
     }
 
     private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
@@ -78,6 +88,14 @@ export class ResourceList extends AddonPage {
 
     private getSelectorOfEditPgaeTitleWithName(name: string) {
         return By.xpath(`//span[@title="Edit - ${name}"]`);
+    }
+
+    private getSelectorOfConfigProfileCardByName(name: string) {
+        return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
+    }
+
+    private getSelectorOfProfileCardEditButtonByName(name: string) {
+        return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`);
     }
 
     public setResourceName(resName: string): any {
@@ -192,6 +210,9 @@ export class ResourceViews extends ResourceList {
     /* specific selectors for Views TAB under Resource Views */
     public Views_List_Title: By = By.xpath('//span[@title="Views"]');
     public View_Edit_Title: By = By.xpath('//div[contains(@class,"pep-top-area")]/div[contains(@class,"header")]/h4');
+    // Tabs
+    public Menu_Tab: By = this.getSelectorOfResourceListSettingsTab('Menu');
+    public LineMenu_Tab: By = this.getSelectorOfResourceListSettingsTab('Line Menu');
     // Edit Page
     public SelectEditor_DropDown: By = By.xpath('//mat-select[@id="Editor"]/parent::div/parent::div');
 
