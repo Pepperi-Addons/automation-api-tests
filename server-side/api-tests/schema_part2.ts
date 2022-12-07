@@ -31,7 +31,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
     //#endregion
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.44'], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.49'], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         // 'Generic Resource':['df90dba6-e7cc-477b-95cf-2c70114e44e0',''],
         // 'User Defined Collections' :['122c0e9d-c240-4865-b446-f37ece866c22', '0.6.126'],
@@ -323,7 +323,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
         //debugger;
         if (
             logcash.createSchemaNegativePatternSpaceOnName.fault.faultstring.includes(
-                "Failed due to exception: Invalid schema name, the name 'PascalCase test' did not match the pattern ^[A-Z][-a-zA-Z_0-9]*$",
+                "Failed due to exception: Invalid schema name, the name 'PascalCase test' did not match the pattern ^[A-Z][a-zA-Z_0-9]*$",
             )
         ) {
             logcash.createSchemaNegativePatternSpaceOnNameStatus = true;
@@ -357,7 +357,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
         //debugger;
         if (
             logcash.createSchemaNegativePatternSpecialCharOnName.fault.faultstring.includes(
-                "Invalid schema name, the name 'PascalCase!test' did not match the pattern ^[A-Z][-a-zA-Z_0-9]*$",
+                "Invalid schema name, the name 'PascalCase!test' did not match the pattern ^[A-Z][a-zA-Z_0-9]*$",
             )
         ) {
             logcash.createSchemaNegativePatternSpecialCharOnNameStatus = true;
@@ -384,7 +384,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 },
                 body: JSON.stringify({
                     //Name: 'Test-positive' + newUuid(),
-                    Name: 'Test-positive' + generalService.generateRandomString(16),
+                    Name: 'Test_positive' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
                     UserDefined: true,
                     Fields: {
@@ -394,7 +394,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             })
             .then((res) => res.Body);
         //debugger;
-        if (logcash.createSchemaPositive.Name.includes('Test-positive')) {
+        if (logcash.createSchemaPositive.Name.includes('Test_positive')) {
             logcash.createSchemaPositiveStatus = true;
         } else {
             logcash.createSchemaPositiveStatus = false;
@@ -485,7 +485,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 },
                 body: JSON.stringify({
                     //Name: 'Test-positive2' + newUuid(),
-                    Name: 'Test-positive2' + generalService.generateRandomString(16),
+                    Name: 'Test_positive2' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
                     UserDefined: true,
                     Fields: {
@@ -499,7 +499,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             })
             .then((res) => res.Body);
         //debugger;
-        if (logcash.createSchemaAbstract.Name.includes('Test-positive2')) {
+        if (logcash.createSchemaAbstract.Name.includes('Test_positive2')) {
             logcash.createSchemaAbstractStatus = true;
         } else {
             logcash.createSchemaAbstractStatus = false;
@@ -634,7 +634,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.getDataADAL2.Name.includes('Test-positive')
+            logcash.getDataADAL2.Name.includes('Test_positive')
             // logcash.getDataADAL.Fields.testString1_updated.ExtendedField == true &&
             // logcash.getDataADAL.Fields.test2String.ExtendedField == true &&
             // logcash.getDataADAL.Fields.string_Field1.ExtendedField == false &&
@@ -671,8 +671,8 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             logcash.getDataADAL.Fields.test2String.ExtendedField == true &&
             logcash.getDataADAL.Fields.string_Field1.ExtendedField == false &&
             logcash.getDataADAL.Fields.int_Field2.ExtendedField == false &&
-            logcash.getDataADAL.SuperTypes[0].includes('Test-positive') &&
-            logcash.getDataADAL.SuperTypes[1].includes('Test-positive2')
+            logcash.getDataADAL.SuperTypes[0].includes('Test_positive') &&
+            logcash.getDataADAL.SuperTypes[1].includes('Test_positive2')
         ) {
             logcash.getDataADALStatus = true;
         } else {
@@ -1004,7 +1004,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 },
                 body: JSON.stringify({
                     //Name: 'Conteined-positive' + newUuid(),
-                    Name: 'Conteined-positive' + generalService.generateRandomString(16),
+                    Name: 'Conteined_positive' + generalService.generateRandomString(16),
                     Type: 'contained',
                     UserDefined: true,
                     Fields: {
@@ -1016,7 +1016,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.createContainedSchemaPositive.Name.includes('Conteined-positive') &&
+            logcash.createContainedSchemaPositive.Name.includes('Conteined_positive') &&
             logcash.createContainedSchemaPositive.Fields.testString.Type == 'String' &&
             logcash.createContainedSchemaPositive.Fields.testInt.Type == 'Integer'
         ) {
@@ -1040,7 +1040,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 },
                 body: JSON.stringify({
                     //Name: 'Conteined-positive' + newUuid(),
-                    Name: 'Conteined-positive' + generalService.generateRandomString(16),
+                    Name: 'Conteined_positive' + generalService.generateRandomString(16),
                     Type: 'contained',
                     UserDefined: true,
                     Fields: {
@@ -1053,7 +1053,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.updateContainedSchema.Name.includes('Conteined-positive') &&
+            logcash.updateContainedSchema.Name.includes('Conteined_positive') &&
             logcash.updateContainedSchema.Fields.testString.Type == 'String' &&
             logcash.updateContainedSchema.Fields.testInt.Type == 'Integer' &&
             logcash.updateContainedSchema.Fields.testInt1.Type == 'Integer'
